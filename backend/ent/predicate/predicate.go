@@ -6,6 +6,30 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// AuthAudit is the predicate function for authaudit builders.
+type AuthAudit func(*sql.Selector)
+
+// AuthChallenge is the predicate function for authchallenge builders.
+type AuthChallenge func(*sql.Selector)
+
+// AuthFlow is the predicate function for authflow builders.
+type AuthFlow func(*sql.Selector)
+
+// AuthIdentity is the predicate function for authidentity builders.
+type AuthIdentity func(*sql.Selector)
+
+// AuthMessage is the predicate function for authmessage builders.
+type AuthMessage func(*sql.Selector)
+
+// AuthRate is the predicate function for authrate builders.
+type AuthRate func(*sql.Selector)
+
+// AuthRecovery is the predicate function for authrecovery builders.
+type AuthRecovery func(*sql.Selector)
+
+// AuthSession is the predicate function for authsession builders.
+type AuthSession func(*sql.Selector)
+
 // Game is the predicate function for game builders.
 type Game func(*sql.Selector)
 

@@ -6,9 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/predicate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
@@ -52,6 +54,234 @@ func (_u *UserUpdate) SetNillableDisplayName(v *string) *UserUpdate {
 	if v != nil {
 		_u.SetDisplayName(*v)
 	}
+	return _u
+}
+
+// SetEmailVerifiedAt sets the "email_verified_at" field.
+func (_u *UserUpdate) SetEmailVerifiedAt(v time.Time) *UserUpdate {
+	_u.mutation.SetEmailVerifiedAt(v)
+	return _u
+}
+
+// SetNillableEmailVerifiedAt sets the "email_verified_at" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableEmailVerifiedAt(v *time.Time) *UserUpdate {
+	if v != nil {
+		_u.SetEmailVerifiedAt(*v)
+	}
+	return _u
+}
+
+// ClearEmailVerifiedAt clears the value of the "email_verified_at" field.
+func (_u *UserUpdate) ClearEmailVerifiedAt() *UserUpdate {
+	_u.mutation.ClearEmailVerifiedAt()
+	return _u
+}
+
+// SetRole sets the "role" field.
+func (_u *UserUpdate) SetRole(v string) *UserUpdate {
+	_u.mutation.SetRole(v)
+	return _u
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableRole(v *string) *UserUpdate {
+	if v != nil {
+		_u.SetRole(*v)
+	}
+	return _u
+}
+
+// SetStaffAlias sets the "staff_alias" field.
+func (_u *UserUpdate) SetStaffAlias(v string) *UserUpdate {
+	_u.mutation.SetStaffAlias(v)
+	return _u
+}
+
+// SetNillableStaffAlias sets the "staff_alias" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableStaffAlias(v *string) *UserUpdate {
+	if v != nil {
+		_u.SetStaffAlias(*v)
+	}
+	return _u
+}
+
+// SetSuspended sets the "suspended" field.
+func (_u *UserUpdate) SetSuspended(v bool) *UserUpdate {
+	_u.mutation.SetSuspended(v)
+	return _u
+}
+
+// SetNillableSuspended sets the "suspended" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableSuspended(v *bool) *UserUpdate {
+	if v != nil {
+		_u.SetSuspended(*v)
+	}
+	return _u
+}
+
+// SetAuthVersion sets the "auth_version" field.
+func (_u *UserUpdate) SetAuthVersion(v int64) *UserUpdate {
+	_u.mutation.ResetAuthVersion()
+	_u.mutation.SetAuthVersion(v)
+	return _u
+}
+
+// SetNillableAuthVersion sets the "auth_version" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableAuthVersion(v *int64) *UserUpdate {
+	if v != nil {
+		_u.SetAuthVersion(*v)
+	}
+	return _u
+}
+
+// AddAuthVersion adds value to the "auth_version" field.
+func (_u *UserUpdate) AddAuthVersion(v int64) *UserUpdate {
+	_u.mutation.AddAuthVersion(v)
+	return _u
+}
+
+// SetTermsVersion sets the "terms_version" field.
+func (_u *UserUpdate) SetTermsVersion(v string) *UserUpdate {
+	_u.mutation.SetTermsVersion(v)
+	return _u
+}
+
+// SetNillableTermsVersion sets the "terms_version" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableTermsVersion(v *string) *UserUpdate {
+	if v != nil {
+		_u.SetTermsVersion(*v)
+	}
+	return _u
+}
+
+// SetTermsAcceptedAt sets the "terms_accepted_at" field.
+func (_u *UserUpdate) SetTermsAcceptedAt(v time.Time) *UserUpdate {
+	_u.mutation.SetTermsAcceptedAt(v)
+	return _u
+}
+
+// SetNillableTermsAcceptedAt sets the "terms_accepted_at" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableTermsAcceptedAt(v *time.Time) *UserUpdate {
+	if v != nil {
+		_u.SetTermsAcceptedAt(*v)
+	}
+	return _u
+}
+
+// ClearTermsAcceptedAt clears the value of the "terms_accepted_at" field.
+func (_u *UserUpdate) ClearTermsAcceptedAt() *UserUpdate {
+	_u.mutation.ClearTermsAcceptedAt()
+	return _u
+}
+
+// SetNotifyUpdates sets the "notify_updates" field.
+func (_u *UserUpdate) SetNotifyUpdates(v bool) *UserUpdate {
+	_u.mutation.SetNotifyUpdates(v)
+	return _u
+}
+
+// SetNillableNotifyUpdates sets the "notify_updates" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableNotifyUpdates(v *bool) *UserUpdate {
+	if v != nil {
+		_u.SetNotifyUpdates(*v)
+	}
+	return _u
+}
+
+// SetMfaSecret sets the "mfa_secret" field.
+func (_u *UserUpdate) SetMfaSecret(v []byte) *UserUpdate {
+	_u.mutation.SetMfaSecret(v)
+	return _u
+}
+
+// ClearMfaSecret clears the value of the "mfa_secret" field.
+func (_u *UserUpdate) ClearMfaSecret() *UserUpdate {
+	_u.mutation.ClearMfaSecret()
+	return _u
+}
+
+// SetMfaPending sets the "mfa_pending" field.
+func (_u *UserUpdate) SetMfaPending(v []byte) *UserUpdate {
+	_u.mutation.SetMfaPending(v)
+	return _u
+}
+
+// ClearMfaPending clears the value of the "mfa_pending" field.
+func (_u *UserUpdate) ClearMfaPending() *UserUpdate {
+	_u.mutation.ClearMfaPending()
+	return _u
+}
+
+// SetMfaPendingExpires sets the "mfa_pending_expires" field.
+func (_u *UserUpdate) SetMfaPendingExpires(v time.Time) *UserUpdate {
+	_u.mutation.SetMfaPendingExpires(v)
+	return _u
+}
+
+// SetNillableMfaPendingExpires sets the "mfa_pending_expires" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableMfaPendingExpires(v *time.Time) *UserUpdate {
+	if v != nil {
+		_u.SetMfaPendingExpires(*v)
+	}
+	return _u
+}
+
+// ClearMfaPendingExpires clears the value of the "mfa_pending_expires" field.
+func (_u *UserUpdate) ClearMfaPendingExpires() *UserUpdate {
+	_u.mutation.ClearMfaPendingExpires()
+	return _u
+}
+
+// SetMfaCounter sets the "mfa_counter" field.
+func (_u *UserUpdate) SetMfaCounter(v int64) *UserUpdate {
+	_u.mutation.ResetMfaCounter()
+	_u.mutation.SetMfaCounter(v)
+	return _u
+}
+
+// SetNillableMfaCounter sets the "mfa_counter" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableMfaCounter(v *int64) *UserUpdate {
+	if v != nil {
+		_u.SetMfaCounter(*v)
+	}
+	return _u
+}
+
+// AddMfaCounter adds value to the "mfa_counter" field.
+func (_u *UserUpdate) AddMfaCounter(v int64) *UserUpdate {
+	_u.mutation.AddMfaCounter(v)
+	return _u
+}
+
+// SetMfaEnabled sets the "mfa_enabled" field.
+func (_u *UserUpdate) SetMfaEnabled(v bool) *UserUpdate {
+	_u.mutation.SetMfaEnabled(v)
+	return _u
+}
+
+// SetNillableMfaEnabled sets the "mfa_enabled" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableMfaEnabled(v *bool) *UserUpdate {
+	if v != nil {
+		_u.SetMfaEnabled(*v)
+	}
+	return _u
+}
+
+// SetMfaRecoveryHashes sets the "mfa_recovery_hashes" field.
+func (_u *UserUpdate) SetMfaRecoveryHashes(v []string) *UserUpdate {
+	_u.mutation.SetMfaRecoveryHashes(v)
+	return _u
+}
+
+// AppendMfaRecoveryHashes appends value to the "mfa_recovery_hashes" field.
+func (_u *UserUpdate) AppendMfaRecoveryHashes(v []string) *UserUpdate {
+	_u.mutation.AppendMfaRecoveryHashes(v)
+	return _u
+}
+
+// ClearMfaRecoveryHashes clears the value of the "mfa_recovery_hashes" field.
+func (_u *UserUpdate) ClearMfaRecoveryHashes() *UserUpdate {
+	_u.mutation.ClearMfaRecoveryHashes()
 	return _u
 }
 
@@ -99,6 +329,21 @@ func (_u *UserUpdate) check() error {
 			return &ValidationError{Name: "display_name", err: fmt.Errorf(`ent: validator failed for field "User.display_name": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Role(); ok {
+		if err := user.RoleValidator(v); err != nil {
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.StaffAlias(); ok {
+		if err := user.StaffAliasValidator(v); err != nil {
+			return &ValidationError{Name: "staff_alias", err: fmt.Errorf(`ent: validator failed for field "User.staff_alias": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.TermsVersion(); ok {
+		if err := user.TermsVersionValidator(v); err != nil {
+			return &ValidationError{Name: "terms_version", err: fmt.Errorf(`ent: validator failed for field "User.terms_version": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -119,6 +364,77 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.DisplayName(); ok {
 		_spec.SetField(user.FieldDisplayName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.EmailVerifiedAt(); ok {
+		_spec.SetField(user.FieldEmailVerifiedAt, field.TypeTime, value)
+	}
+	if _u.mutation.EmailVerifiedAtCleared() {
+		_spec.ClearField(user.FieldEmailVerifiedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.Role(); ok {
+		_spec.SetField(user.FieldRole, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.StaffAlias(); ok {
+		_spec.SetField(user.FieldStaffAlias, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Suspended(); ok {
+		_spec.SetField(user.FieldSuspended, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.AuthVersion(); ok {
+		_spec.SetField(user.FieldAuthVersion, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedAuthVersion(); ok {
+		_spec.AddField(user.FieldAuthVersion, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TermsVersion(); ok {
+		_spec.SetField(user.FieldTermsVersion, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.TermsAcceptedAt(); ok {
+		_spec.SetField(user.FieldTermsAcceptedAt, field.TypeTime, value)
+	}
+	if _u.mutation.TermsAcceptedAtCleared() {
+		_spec.ClearField(user.FieldTermsAcceptedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.NotifyUpdates(); ok {
+		_spec.SetField(user.FieldNotifyUpdates, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.MfaSecret(); ok {
+		_spec.SetField(user.FieldMfaSecret, field.TypeBytes, value)
+	}
+	if _u.mutation.MfaSecretCleared() {
+		_spec.ClearField(user.FieldMfaSecret, field.TypeBytes)
+	}
+	if value, ok := _u.mutation.MfaPending(); ok {
+		_spec.SetField(user.FieldMfaPending, field.TypeBytes, value)
+	}
+	if _u.mutation.MfaPendingCleared() {
+		_spec.ClearField(user.FieldMfaPending, field.TypeBytes)
+	}
+	if value, ok := _u.mutation.MfaPendingExpires(); ok {
+		_spec.SetField(user.FieldMfaPendingExpires, field.TypeTime, value)
+	}
+	if _u.mutation.MfaPendingExpiresCleared() {
+		_spec.ClearField(user.FieldMfaPendingExpires, field.TypeTime)
+	}
+	if value, ok := _u.mutation.MfaCounter(); ok {
+		_spec.SetField(user.FieldMfaCounter, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedMfaCounter(); ok {
+		_spec.AddField(user.FieldMfaCounter, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.MfaEnabled(); ok {
+		_spec.SetField(user.FieldMfaEnabled, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.MfaRecoveryHashes(); ok {
+		_spec.SetField(user.FieldMfaRecoveryHashes, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedMfaRecoveryHashes(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, user.FieldMfaRecoveryHashes, value)
+		})
+	}
+	if _u.mutation.MfaRecoveryHashesCleared() {
+		_spec.ClearField(user.FieldMfaRecoveryHashes, field.TypeJSON)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -165,6 +481,234 @@ func (_u *UserUpdateOne) SetNillableDisplayName(v *string) *UserUpdateOne {
 	if v != nil {
 		_u.SetDisplayName(*v)
 	}
+	return _u
+}
+
+// SetEmailVerifiedAt sets the "email_verified_at" field.
+func (_u *UserUpdateOne) SetEmailVerifiedAt(v time.Time) *UserUpdateOne {
+	_u.mutation.SetEmailVerifiedAt(v)
+	return _u
+}
+
+// SetNillableEmailVerifiedAt sets the "email_verified_at" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableEmailVerifiedAt(v *time.Time) *UserUpdateOne {
+	if v != nil {
+		_u.SetEmailVerifiedAt(*v)
+	}
+	return _u
+}
+
+// ClearEmailVerifiedAt clears the value of the "email_verified_at" field.
+func (_u *UserUpdateOne) ClearEmailVerifiedAt() *UserUpdateOne {
+	_u.mutation.ClearEmailVerifiedAt()
+	return _u
+}
+
+// SetRole sets the "role" field.
+func (_u *UserUpdateOne) SetRole(v string) *UserUpdateOne {
+	_u.mutation.SetRole(v)
+	return _u
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableRole(v *string) *UserUpdateOne {
+	if v != nil {
+		_u.SetRole(*v)
+	}
+	return _u
+}
+
+// SetStaffAlias sets the "staff_alias" field.
+func (_u *UserUpdateOne) SetStaffAlias(v string) *UserUpdateOne {
+	_u.mutation.SetStaffAlias(v)
+	return _u
+}
+
+// SetNillableStaffAlias sets the "staff_alias" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableStaffAlias(v *string) *UserUpdateOne {
+	if v != nil {
+		_u.SetStaffAlias(*v)
+	}
+	return _u
+}
+
+// SetSuspended sets the "suspended" field.
+func (_u *UserUpdateOne) SetSuspended(v bool) *UserUpdateOne {
+	_u.mutation.SetSuspended(v)
+	return _u
+}
+
+// SetNillableSuspended sets the "suspended" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableSuspended(v *bool) *UserUpdateOne {
+	if v != nil {
+		_u.SetSuspended(*v)
+	}
+	return _u
+}
+
+// SetAuthVersion sets the "auth_version" field.
+func (_u *UserUpdateOne) SetAuthVersion(v int64) *UserUpdateOne {
+	_u.mutation.ResetAuthVersion()
+	_u.mutation.SetAuthVersion(v)
+	return _u
+}
+
+// SetNillableAuthVersion sets the "auth_version" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableAuthVersion(v *int64) *UserUpdateOne {
+	if v != nil {
+		_u.SetAuthVersion(*v)
+	}
+	return _u
+}
+
+// AddAuthVersion adds value to the "auth_version" field.
+func (_u *UserUpdateOne) AddAuthVersion(v int64) *UserUpdateOne {
+	_u.mutation.AddAuthVersion(v)
+	return _u
+}
+
+// SetTermsVersion sets the "terms_version" field.
+func (_u *UserUpdateOne) SetTermsVersion(v string) *UserUpdateOne {
+	_u.mutation.SetTermsVersion(v)
+	return _u
+}
+
+// SetNillableTermsVersion sets the "terms_version" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableTermsVersion(v *string) *UserUpdateOne {
+	if v != nil {
+		_u.SetTermsVersion(*v)
+	}
+	return _u
+}
+
+// SetTermsAcceptedAt sets the "terms_accepted_at" field.
+func (_u *UserUpdateOne) SetTermsAcceptedAt(v time.Time) *UserUpdateOne {
+	_u.mutation.SetTermsAcceptedAt(v)
+	return _u
+}
+
+// SetNillableTermsAcceptedAt sets the "terms_accepted_at" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableTermsAcceptedAt(v *time.Time) *UserUpdateOne {
+	if v != nil {
+		_u.SetTermsAcceptedAt(*v)
+	}
+	return _u
+}
+
+// ClearTermsAcceptedAt clears the value of the "terms_accepted_at" field.
+func (_u *UserUpdateOne) ClearTermsAcceptedAt() *UserUpdateOne {
+	_u.mutation.ClearTermsAcceptedAt()
+	return _u
+}
+
+// SetNotifyUpdates sets the "notify_updates" field.
+func (_u *UserUpdateOne) SetNotifyUpdates(v bool) *UserUpdateOne {
+	_u.mutation.SetNotifyUpdates(v)
+	return _u
+}
+
+// SetNillableNotifyUpdates sets the "notify_updates" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableNotifyUpdates(v *bool) *UserUpdateOne {
+	if v != nil {
+		_u.SetNotifyUpdates(*v)
+	}
+	return _u
+}
+
+// SetMfaSecret sets the "mfa_secret" field.
+func (_u *UserUpdateOne) SetMfaSecret(v []byte) *UserUpdateOne {
+	_u.mutation.SetMfaSecret(v)
+	return _u
+}
+
+// ClearMfaSecret clears the value of the "mfa_secret" field.
+func (_u *UserUpdateOne) ClearMfaSecret() *UserUpdateOne {
+	_u.mutation.ClearMfaSecret()
+	return _u
+}
+
+// SetMfaPending sets the "mfa_pending" field.
+func (_u *UserUpdateOne) SetMfaPending(v []byte) *UserUpdateOne {
+	_u.mutation.SetMfaPending(v)
+	return _u
+}
+
+// ClearMfaPending clears the value of the "mfa_pending" field.
+func (_u *UserUpdateOne) ClearMfaPending() *UserUpdateOne {
+	_u.mutation.ClearMfaPending()
+	return _u
+}
+
+// SetMfaPendingExpires sets the "mfa_pending_expires" field.
+func (_u *UserUpdateOne) SetMfaPendingExpires(v time.Time) *UserUpdateOne {
+	_u.mutation.SetMfaPendingExpires(v)
+	return _u
+}
+
+// SetNillableMfaPendingExpires sets the "mfa_pending_expires" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableMfaPendingExpires(v *time.Time) *UserUpdateOne {
+	if v != nil {
+		_u.SetMfaPendingExpires(*v)
+	}
+	return _u
+}
+
+// ClearMfaPendingExpires clears the value of the "mfa_pending_expires" field.
+func (_u *UserUpdateOne) ClearMfaPendingExpires() *UserUpdateOne {
+	_u.mutation.ClearMfaPendingExpires()
+	return _u
+}
+
+// SetMfaCounter sets the "mfa_counter" field.
+func (_u *UserUpdateOne) SetMfaCounter(v int64) *UserUpdateOne {
+	_u.mutation.ResetMfaCounter()
+	_u.mutation.SetMfaCounter(v)
+	return _u
+}
+
+// SetNillableMfaCounter sets the "mfa_counter" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableMfaCounter(v *int64) *UserUpdateOne {
+	if v != nil {
+		_u.SetMfaCounter(*v)
+	}
+	return _u
+}
+
+// AddMfaCounter adds value to the "mfa_counter" field.
+func (_u *UserUpdateOne) AddMfaCounter(v int64) *UserUpdateOne {
+	_u.mutation.AddMfaCounter(v)
+	return _u
+}
+
+// SetMfaEnabled sets the "mfa_enabled" field.
+func (_u *UserUpdateOne) SetMfaEnabled(v bool) *UserUpdateOne {
+	_u.mutation.SetMfaEnabled(v)
+	return _u
+}
+
+// SetNillableMfaEnabled sets the "mfa_enabled" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableMfaEnabled(v *bool) *UserUpdateOne {
+	if v != nil {
+		_u.SetMfaEnabled(*v)
+	}
+	return _u
+}
+
+// SetMfaRecoveryHashes sets the "mfa_recovery_hashes" field.
+func (_u *UserUpdateOne) SetMfaRecoveryHashes(v []string) *UserUpdateOne {
+	_u.mutation.SetMfaRecoveryHashes(v)
+	return _u
+}
+
+// AppendMfaRecoveryHashes appends value to the "mfa_recovery_hashes" field.
+func (_u *UserUpdateOne) AppendMfaRecoveryHashes(v []string) *UserUpdateOne {
+	_u.mutation.AppendMfaRecoveryHashes(v)
+	return _u
+}
+
+// ClearMfaRecoveryHashes clears the value of the "mfa_recovery_hashes" field.
+func (_u *UserUpdateOne) ClearMfaRecoveryHashes() *UserUpdateOne {
+	_u.mutation.ClearMfaRecoveryHashes()
 	return _u
 }
 
@@ -225,6 +769,21 @@ func (_u *UserUpdateOne) check() error {
 			return &ValidationError{Name: "display_name", err: fmt.Errorf(`ent: validator failed for field "User.display_name": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Role(); ok {
+		if err := user.RoleValidator(v); err != nil {
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.StaffAlias(); ok {
+		if err := user.StaffAliasValidator(v); err != nil {
+			return &ValidationError{Name: "staff_alias", err: fmt.Errorf(`ent: validator failed for field "User.staff_alias": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.TermsVersion(); ok {
+		if err := user.TermsVersionValidator(v); err != nil {
+			return &ValidationError{Name: "terms_version", err: fmt.Errorf(`ent: validator failed for field "User.terms_version": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -262,6 +821,77 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	}
 	if value, ok := _u.mutation.DisplayName(); ok {
 		_spec.SetField(user.FieldDisplayName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.EmailVerifiedAt(); ok {
+		_spec.SetField(user.FieldEmailVerifiedAt, field.TypeTime, value)
+	}
+	if _u.mutation.EmailVerifiedAtCleared() {
+		_spec.ClearField(user.FieldEmailVerifiedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.Role(); ok {
+		_spec.SetField(user.FieldRole, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.StaffAlias(); ok {
+		_spec.SetField(user.FieldStaffAlias, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Suspended(); ok {
+		_spec.SetField(user.FieldSuspended, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.AuthVersion(); ok {
+		_spec.SetField(user.FieldAuthVersion, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedAuthVersion(); ok {
+		_spec.AddField(user.FieldAuthVersion, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TermsVersion(); ok {
+		_spec.SetField(user.FieldTermsVersion, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.TermsAcceptedAt(); ok {
+		_spec.SetField(user.FieldTermsAcceptedAt, field.TypeTime, value)
+	}
+	if _u.mutation.TermsAcceptedAtCleared() {
+		_spec.ClearField(user.FieldTermsAcceptedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.NotifyUpdates(); ok {
+		_spec.SetField(user.FieldNotifyUpdates, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.MfaSecret(); ok {
+		_spec.SetField(user.FieldMfaSecret, field.TypeBytes, value)
+	}
+	if _u.mutation.MfaSecretCleared() {
+		_spec.ClearField(user.FieldMfaSecret, field.TypeBytes)
+	}
+	if value, ok := _u.mutation.MfaPending(); ok {
+		_spec.SetField(user.FieldMfaPending, field.TypeBytes, value)
+	}
+	if _u.mutation.MfaPendingCleared() {
+		_spec.ClearField(user.FieldMfaPending, field.TypeBytes)
+	}
+	if value, ok := _u.mutation.MfaPendingExpires(); ok {
+		_spec.SetField(user.FieldMfaPendingExpires, field.TypeTime, value)
+	}
+	if _u.mutation.MfaPendingExpiresCleared() {
+		_spec.ClearField(user.FieldMfaPendingExpires, field.TypeTime)
+	}
+	if value, ok := _u.mutation.MfaCounter(); ok {
+		_spec.SetField(user.FieldMfaCounter, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedMfaCounter(); ok {
+		_spec.AddField(user.FieldMfaCounter, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.MfaEnabled(); ok {
+		_spec.SetField(user.FieldMfaEnabled, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.MfaRecoveryHashes(); ok {
+		_spec.SetField(user.FieldMfaRecoveryHashes, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedMfaRecoveryHashes(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, user.FieldMfaRecoveryHashes, value)
+		})
+	}
+	if _u.mutation.MfaRecoveryHashesCleared() {
+		_spec.ClearField(user.FieldMfaRecoveryHashes, field.TypeJSON)
 	}
 	_node = &User{config: _u.config}
 	_spec.Assign = _node.assignValues

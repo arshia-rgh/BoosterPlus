@@ -14,6 +14,22 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// AuthAudit is the client for interacting with the AuthAudit builders.
+	AuthAudit *AuthAuditClient
+	// AuthChallenge is the client for interacting with the AuthChallenge builders.
+	AuthChallenge *AuthChallengeClient
+	// AuthFlow is the client for interacting with the AuthFlow builders.
+	AuthFlow *AuthFlowClient
+	// AuthIdentity is the client for interacting with the AuthIdentity builders.
+	AuthIdentity *AuthIdentityClient
+	// AuthMessage is the client for interacting with the AuthMessage builders.
+	AuthMessage *AuthMessageClient
+	// AuthRate is the client for interacting with the AuthRate builders.
+	AuthRate *AuthRateClient
+	// AuthRecovery is the client for interacting with the AuthRecovery builders.
+	AuthRecovery *AuthRecoveryClient
+	// AuthSession is the client for interacting with the AuthSession builders.
+	AuthSession *AuthSessionClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
 	// User is the client for interacting with the User builders.
@@ -149,6 +165,14 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.AuthAudit = NewAuthAuditClient(tx.config)
+	tx.AuthChallenge = NewAuthChallengeClient(tx.config)
+	tx.AuthFlow = NewAuthFlowClient(tx.config)
+	tx.AuthIdentity = NewAuthIdentityClient(tx.config)
+	tx.AuthMessage = NewAuthMessageClient(tx.config)
+	tx.AuthRate = NewAuthRateClient(tx.config)
+	tx.AuthRecovery = NewAuthRecoveryClient(tx.config)
+	tx.AuthSession = NewAuthSessionClient(tx.config)
 	tx.Game = NewGameClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
@@ -160,7 +184,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Game.QueryXXX(), the query will be executed
+// applies a query, for example: AuthAudit.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

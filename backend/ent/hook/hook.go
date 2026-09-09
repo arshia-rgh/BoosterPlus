@@ -9,6 +9,102 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 )
 
+// The AuthAuditFunc type is an adapter to allow the use of ordinary
+// function as AuthAudit mutator.
+type AuthAuditFunc func(context.Context, *ent.AuthAuditMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthAuditFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AuthAuditMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthAuditMutation", m)
+}
+
+// The AuthChallengeFunc type is an adapter to allow the use of ordinary
+// function as AuthChallenge mutator.
+type AuthChallengeFunc func(context.Context, *ent.AuthChallengeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthChallengeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AuthChallengeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthChallengeMutation", m)
+}
+
+// The AuthFlowFunc type is an adapter to allow the use of ordinary
+// function as AuthFlow mutator.
+type AuthFlowFunc func(context.Context, *ent.AuthFlowMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthFlowFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AuthFlowMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthFlowMutation", m)
+}
+
+// The AuthIdentityFunc type is an adapter to allow the use of ordinary
+// function as AuthIdentity mutator.
+type AuthIdentityFunc func(context.Context, *ent.AuthIdentityMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthIdentityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AuthIdentityMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthIdentityMutation", m)
+}
+
+// The AuthMessageFunc type is an adapter to allow the use of ordinary
+// function as AuthMessage mutator.
+type AuthMessageFunc func(context.Context, *ent.AuthMessageMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthMessageFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AuthMessageMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthMessageMutation", m)
+}
+
+// The AuthRateFunc type is an adapter to allow the use of ordinary
+// function as AuthRate mutator.
+type AuthRateFunc func(context.Context, *ent.AuthRateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthRateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AuthRateMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthRateMutation", m)
+}
+
+// The AuthRecoveryFunc type is an adapter to allow the use of ordinary
+// function as AuthRecovery mutator.
+type AuthRecoveryFunc func(context.Context, *ent.AuthRecoveryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthRecoveryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AuthRecoveryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthRecoveryMutation", m)
+}
+
+// The AuthSessionFunc type is an adapter to allow the use of ordinary
+// function as AuthSession mutator.
+type AuthSessionFunc func(context.Context, *ent.AuthSessionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthSessionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AuthSessionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthSessionMutation", m)
+}
+
 // The GameFunc type is an adapter to allow the use of ordinary
 // function as Game mutator.
 type GameFunc func(context.Context, *ent.GameMutation) (ent.Value, error)

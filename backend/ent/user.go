@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -21,6 +22,34 @@ type User struct {
 	Email string `json:"email,omitempty"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName string `json:"display_name,omitempty"`
+	// EmailVerifiedAt holds the value of the "email_verified_at" field.
+	EmailVerifiedAt *time.Time `json:"email_verified_at,omitempty"`
+	// Role holds the value of the "role" field.
+	Role string `json:"role,omitempty"`
+	// StaffAlias holds the value of the "staff_alias" field.
+	StaffAlias string `json:"staff_alias,omitempty"`
+	// Suspended holds the value of the "suspended" field.
+	Suspended bool `json:"suspended,omitempty"`
+	// AuthVersion holds the value of the "auth_version" field.
+	AuthVersion int64 `json:"auth_version,omitempty"`
+	// TermsVersion holds the value of the "terms_version" field.
+	TermsVersion string `json:"terms_version,omitempty"`
+	// TermsAcceptedAt holds the value of the "terms_accepted_at" field.
+	TermsAcceptedAt *time.Time `json:"terms_accepted_at,omitempty"`
+	// NotifyUpdates holds the value of the "notify_updates" field.
+	NotifyUpdates bool `json:"notify_updates,omitempty"`
+	// MfaSecret holds the value of the "mfa_secret" field.
+	MfaSecret []byte `json:"mfa_secret,omitempty"`
+	// MfaPending holds the value of the "mfa_pending" field.
+	MfaPending []byte `json:"mfa_pending,omitempty"`
+	// MfaPendingExpires holds the value of the "mfa_pending_expires" field.
+	MfaPendingExpires *time.Time `json:"mfa_pending_expires,omitempty"`
+	// MfaCounter holds the value of the "mfa_counter" field.
+	MfaCounter int64 `json:"mfa_counter,omitempty"`
+	// MfaEnabled holds the value of the "mfa_enabled" field.
+	MfaEnabled bool `json:"mfa_enabled,omitempty"`
+	// MfaRecoveryHashes holds the value of the "mfa_recovery_hashes" field.
+	MfaRecoveryHashes []string `json:"mfa_recovery_hashes,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt    time.Time `json:"created_at,omitempty"`
 	selectValues sql.SelectValues
@@ -31,9 +60,15 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID, user.FieldEmail, user.FieldDisplayName:
+		case user.FieldMfaSecret, user.FieldMfaPending, user.FieldMfaRecoveryHashes:
+			values[i] = new([]byte)
+		case user.FieldSuspended, user.FieldNotifyUpdates, user.FieldMfaEnabled:
+			values[i] = new(sql.NullBool)
+		case user.FieldAuthVersion, user.FieldMfaCounter:
+			values[i] = new(sql.NullInt64)
+		case user.FieldID, user.FieldEmail, user.FieldDisplayName, user.FieldRole, user.FieldStaffAlias, user.FieldTermsVersion:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt:
+		case user.FieldEmailVerifiedAt, user.FieldTermsAcceptedAt, user.FieldMfaPendingExpires, user.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -67,6 +102,95 @@ func (_m *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field display_name", values[i])
 			} else if value.Valid {
 				_m.DisplayName = value.String
+			}
+		case user.FieldEmailVerifiedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field email_verified_at", values[i])
+			} else if value.Valid {
+				_m.EmailVerifiedAt = new(time.Time)
+				*_m.EmailVerifiedAt = value.Time
+			}
+		case user.FieldRole:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field role", values[i])
+			} else if value.Valid {
+				_m.Role = value.String
+			}
+		case user.FieldStaffAlias:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field staff_alias", values[i])
+			} else if value.Valid {
+				_m.StaffAlias = value.String
+			}
+		case user.FieldSuspended:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field suspended", values[i])
+			} else if value.Valid {
+				_m.Suspended = value.Bool
+			}
+		case user.FieldAuthVersion:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field auth_version", values[i])
+			} else if value.Valid {
+				_m.AuthVersion = value.Int64
+			}
+		case user.FieldTermsVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field terms_version", values[i])
+			} else if value.Valid {
+				_m.TermsVersion = value.String
+			}
+		case user.FieldTermsAcceptedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field terms_accepted_at", values[i])
+			} else if value.Valid {
+				_m.TermsAcceptedAt = new(time.Time)
+				*_m.TermsAcceptedAt = value.Time
+			}
+		case user.FieldNotifyUpdates:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field notify_updates", values[i])
+			} else if value.Valid {
+				_m.NotifyUpdates = value.Bool
+			}
+		case user.FieldMfaSecret:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field mfa_secret", values[i])
+			} else if value != nil {
+				_m.MfaSecret = *value
+			}
+		case user.FieldMfaPending:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field mfa_pending", values[i])
+			} else if value != nil {
+				_m.MfaPending = *value
+			}
+		case user.FieldMfaPendingExpires:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field mfa_pending_expires", values[i])
+			} else if value.Valid {
+				_m.MfaPendingExpires = new(time.Time)
+				*_m.MfaPendingExpires = value.Time
+			}
+		case user.FieldMfaCounter:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field mfa_counter", values[i])
+			} else if value.Valid {
+				_m.MfaCounter = value.Int64
+			}
+		case user.FieldMfaEnabled:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field mfa_enabled", values[i])
+			} else if value.Valid {
+				_m.MfaEnabled = value.Bool
+			}
+		case user.FieldMfaRecoveryHashes:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field mfa_recovery_hashes", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.MfaRecoveryHashes); err != nil {
+					return fmt.Errorf("unmarshal field mfa_recovery_hashes: %w", err)
+				}
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -115,6 +239,54 @@ func (_m *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("display_name=")
 	builder.WriteString(_m.DisplayName)
+	builder.WriteString(", ")
+	if v := _m.EmailVerifiedAt; v != nil {
+		builder.WriteString("email_verified_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	builder.WriteString("role=")
+	builder.WriteString(_m.Role)
+	builder.WriteString(", ")
+	builder.WriteString("staff_alias=")
+	builder.WriteString(_m.StaffAlias)
+	builder.WriteString(", ")
+	builder.WriteString("suspended=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Suspended))
+	builder.WriteString(", ")
+	builder.WriteString("auth_version=")
+	builder.WriteString(fmt.Sprintf("%v", _m.AuthVersion))
+	builder.WriteString(", ")
+	builder.WriteString("terms_version=")
+	builder.WriteString(_m.TermsVersion)
+	builder.WriteString(", ")
+	if v := _m.TermsAcceptedAt; v != nil {
+		builder.WriteString("terms_accepted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	builder.WriteString("notify_updates=")
+	builder.WriteString(fmt.Sprintf("%v", _m.NotifyUpdates))
+	builder.WriteString(", ")
+	builder.WriteString("mfa_secret=")
+	builder.WriteString(fmt.Sprintf("%v", _m.MfaSecret))
+	builder.WriteString(", ")
+	builder.WriteString("mfa_pending=")
+	builder.WriteString(fmt.Sprintf("%v", _m.MfaPending))
+	builder.WriteString(", ")
+	if v := _m.MfaPendingExpires; v != nil {
+		builder.WriteString("mfa_pending_expires=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	builder.WriteString("mfa_counter=")
+	builder.WriteString(fmt.Sprintf("%v", _m.MfaCounter))
+	builder.WriteString(", ")
+	builder.WriteString("mfa_enabled=")
+	builder.WriteString(fmt.Sprintf("%v", _m.MfaEnabled))
+	builder.WriteString(", ")
+	builder.WriteString("mfa_recovery_hashes=")
+	builder.WriteString(fmt.Sprintf("%v", _m.MfaRecoveryHashes))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

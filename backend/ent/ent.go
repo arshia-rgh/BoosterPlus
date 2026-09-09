@@ -12,6 +12,14 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authidentity"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authmessage"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
@@ -74,8 +82,16 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			game.Table: game.ValidColumn,
-			user.Table: user.ValidColumn,
+			authaudit.Table:     authaudit.ValidColumn,
+			authchallenge.Table: authchallenge.ValidColumn,
+			authflow.Table:      authflow.ValidColumn,
+			authidentity.Table:  authidentity.ValidColumn,
+			authmessage.Table:   authmessage.ValidColumn,
+			authrate.Table:      authrate.ValidColumn,
+			authrecovery.Table:  authrecovery.ValidColumn,
+			authsession.Table:   authsession.ValidColumn,
+			game.Table:          game.ValidColumn,
+			user.Table:          user.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

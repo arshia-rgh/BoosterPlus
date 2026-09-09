@@ -6,7 +6,7 @@ help:
 	@printf '%s\n' 'install dev build start typecheck lint fmt fmt-check test test-e2e security pre-commit docker-build'
 install:
 	npm ci --include=dev
-dev:
+dev: setup-env
 	npm run dev
 build:
 	npm run build
@@ -51,3 +51,11 @@ contract-update:
 .PHONY: image-security
 image-security:
 	python3 ../scripts/scan-image.py boosterplus-frontend:local
+
+.PHONY: setup-env
+setup-env:
+	python3 scripts/setup-env.py
+
+.PHONY: test-server
+test-server: build
+	npm run test:server

@@ -5,6 +5,14 @@ package ent
 import (
 	"time"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authidentity"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authmessage"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/schema"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
@@ -14,6 +22,202 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	authauditFields := schema.AuthAudit{}.Fields()
+	_ = authauditFields
+	// authauditDescActorID is the schema descriptor for actor_id field.
+	authauditDescActorID := authauditFields[1].Descriptor()
+	// authaudit.DefaultActorID holds the default value on creation for the actor_id field.
+	authaudit.DefaultActorID = authauditDescActorID.Default.(string)
+	// authaudit.ActorIDValidator is a validator for the "actor_id" field. It is called by the builders before save.
+	authaudit.ActorIDValidator = authauditDescActorID.Validators[0].(func(string) error)
+	// authauditDescActorReference is the schema descriptor for actor_reference field.
+	authauditDescActorReference := authauditFields[2].Descriptor()
+	// authaudit.DefaultActorReference holds the default value on creation for the actor_reference field.
+	authaudit.DefaultActorReference = authauditDescActorReference.Default.(string)
+	// authaudit.ActorReferenceValidator is a validator for the "actor_reference" field. It is called by the builders before save.
+	authaudit.ActorReferenceValidator = authauditDescActorReference.Validators[0].(func(string) error)
+	// authauditDescAction is the schema descriptor for action field.
+	authauditDescAction := authauditFields[3].Descriptor()
+	// authaudit.ActionValidator is a validator for the "action" field. It is called by the builders before save.
+	authaudit.ActionValidator = authauditDescAction.Validators[0].(func(string) error)
+	// authauditDescTargetID is the schema descriptor for target_id field.
+	authauditDescTargetID := authauditFields[4].Descriptor()
+	// authaudit.DefaultTargetID holds the default value on creation for the target_id field.
+	authaudit.DefaultTargetID = authauditDescTargetID.Default.(string)
+	// authaudit.TargetIDValidator is a validator for the "target_id" field. It is called by the builders before save.
+	authaudit.TargetIDValidator = authauditDescTargetID.Validators[0].(func(string) error)
+	// authauditDescID is the schema descriptor for id field.
+	authauditDescID := authauditFields[0].Descriptor()
+	// authaudit.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	authaudit.IDValidator = authauditDescID.Validators[0].(func(string) error)
+	authchallengeFields := schema.AuthChallenge{}.Fields()
+	_ = authchallengeFields
+	// authchallengeDescEmail is the schema descriptor for email field.
+	authchallengeDescEmail := authchallengeFields[1].Descriptor()
+	// authchallenge.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	authchallenge.EmailValidator = authchallengeDescEmail.Validators[0].(func(string) error)
+	// authchallengeDescPurpose is the schema descriptor for purpose field.
+	authchallengeDescPurpose := authchallengeFields[2].Descriptor()
+	// authchallenge.PurposeValidator is a validator for the "purpose" field. It is called by the builders before save.
+	authchallenge.PurposeValidator = authchallengeDescPurpose.Validators[0].(func(string) error)
+	// authchallengeDescUserID is the schema descriptor for user_id field.
+	authchallengeDescUserID := authchallengeFields[3].Descriptor()
+	// authchallenge.DefaultUserID holds the default value on creation for the user_id field.
+	authchallenge.DefaultUserID = authchallengeDescUserID.Default.(string)
+	// authchallenge.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	authchallenge.UserIDValidator = authchallengeDescUserID.Validators[0].(func(string) error)
+	// authchallengeDescSessionID is the schema descriptor for session_id field.
+	authchallengeDescSessionID := authchallengeFields[4].Descriptor()
+	// authchallenge.DefaultSessionID holds the default value on creation for the session_id field.
+	authchallenge.DefaultSessionID = authchallengeDescSessionID.Default.(string)
+	// authchallenge.SessionIDValidator is a validator for the "session_id" field. It is called by the builders before save.
+	authchallenge.SessionIDValidator = authchallengeDescSessionID.Validators[0].(func(string) error)
+	// authchallengeDescBrowserHash is the schema descriptor for browser_hash field.
+	authchallengeDescBrowserHash := authchallengeFields[5].Descriptor()
+	// authchallenge.BrowserHashValidator is a validator for the "browser_hash" field. It is called by the builders before save.
+	authchallenge.BrowserHashValidator = authchallengeDescBrowserHash.Validators[0].(func(string) error)
+	// authchallengeDescCodeDigest is the schema descriptor for code_digest field.
+	authchallengeDescCodeDigest := authchallengeFields[6].Descriptor()
+	// authchallenge.CodeDigestValidator is a validator for the "code_digest" field. It is called by the builders before save.
+	authchallenge.CodeDigestValidator = authchallengeDescCodeDigest.Validators[0].(func(string) error)
+	// authchallengeDescAttempts is the schema descriptor for attempts field.
+	authchallengeDescAttempts := authchallengeFields[7].Descriptor()
+	// authchallenge.DefaultAttempts holds the default value on creation for the attempts field.
+	authchallenge.DefaultAttempts = authchallengeDescAttempts.Default.(int)
+	// authchallengeDescConsumed is the schema descriptor for consumed field.
+	authchallengeDescConsumed := authchallengeFields[8].Descriptor()
+	// authchallenge.DefaultConsumed holds the default value on creation for the consumed field.
+	authchallenge.DefaultConsumed = authchallengeDescConsumed.Default.(bool)
+	// authchallengeDescTermsVersion is the schema descriptor for terms_version field.
+	authchallengeDescTermsVersion := authchallengeFields[9].Descriptor()
+	// authchallenge.DefaultTermsVersion holds the default value on creation for the terms_version field.
+	authchallenge.DefaultTermsVersion = authchallengeDescTermsVersion.Default.(string)
+	// authchallenge.TermsVersionValidator is a validator for the "terms_version" field. It is called by the builders before save.
+	authchallenge.TermsVersionValidator = authchallengeDescTermsVersion.Validators[0].(func(string) error)
+	// authchallengeDescID is the schema descriptor for id field.
+	authchallengeDescID := authchallengeFields[0].Descriptor()
+	// authchallenge.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	authchallenge.IDValidator = authchallengeDescID.Validators[0].(func(string) error)
+	authflowFields := schema.AuthFlow{}.Fields()
+	_ = authflowFields
+	// authflowDescBrowserHash is the schema descriptor for browser_hash field.
+	authflowDescBrowserHash := authflowFields[1].Descriptor()
+	// authflow.BrowserHashValidator is a validator for the "browser_hash" field. It is called by the builders before save.
+	authflow.BrowserHashValidator = authflowDescBrowserHash.Validators[0].(func(string) error)
+	// authflowDescPurpose is the schema descriptor for purpose field.
+	authflowDescPurpose := authflowFields[2].Descriptor()
+	// authflow.PurposeValidator is a validator for the "purpose" field. It is called by the builders before save.
+	authflow.PurposeValidator = authflowDescPurpose.Validators[0].(func(string) error)
+	// authflowDescUserID is the schema descriptor for user_id field.
+	authflowDescUserID := authflowFields[3].Descriptor()
+	// authflow.DefaultUserID holds the default value on creation for the user_id field.
+	authflow.DefaultUserID = authflowDescUserID.Default.(string)
+	// authflow.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	authflow.UserIDValidator = authflowDescUserID.Validators[0].(func(string) error)
+	// authflowDescSessionID is the schema descriptor for session_id field.
+	authflowDescSessionID := authflowFields[4].Descriptor()
+	// authflow.DefaultSessionID holds the default value on creation for the session_id field.
+	authflow.DefaultSessionID = authflowDescSessionID.Default.(string)
+	// authflow.SessionIDValidator is a validator for the "session_id" field. It is called by the builders before save.
+	authflow.SessionIDValidator = authflowDescSessionID.Validators[0].(func(string) error)
+	// authflowDescNonce is the schema descriptor for nonce field.
+	authflowDescNonce := authflowFields[5].Descriptor()
+	// authflow.NonceValidator is a validator for the "nonce" field. It is called by the builders before save.
+	authflow.NonceValidator = authflowDescNonce.Validators[0].(func(string) error)
+	// authflowDescTermsVersion is the schema descriptor for terms_version field.
+	authflowDescTermsVersion := authflowFields[7].Descriptor()
+	// authflow.DefaultTermsVersion holds the default value on creation for the terms_version field.
+	authflow.DefaultTermsVersion = authflowDescTermsVersion.Default.(string)
+	// authflow.TermsVersionValidator is a validator for the "terms_version" field. It is called by the builders before save.
+	authflow.TermsVersionValidator = authflowDescTermsVersion.Validators[0].(func(string) error)
+	// authflowDescConsumed is the schema descriptor for consumed field.
+	authflowDescConsumed := authflowFields[8].Descriptor()
+	// authflow.DefaultConsumed holds the default value on creation for the consumed field.
+	authflow.DefaultConsumed = authflowDescConsumed.Default.(bool)
+	// authflowDescID is the schema descriptor for id field.
+	authflowDescID := authflowFields[0].Descriptor()
+	// authflow.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	authflow.IDValidator = authflowDescID.Validators[0].(func(string) error)
+	authidentityFields := schema.AuthIdentity{}.Fields()
+	_ = authidentityFields
+	// authidentityDescUserID is the schema descriptor for user_id field.
+	authidentityDescUserID := authidentityFields[1].Descriptor()
+	// authidentity.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	authidentity.UserIDValidator = authidentityDescUserID.Validators[0].(func(string) error)
+	// authidentityDescProvider is the schema descriptor for provider field.
+	authidentityDescProvider := authidentityFields[2].Descriptor()
+	// authidentity.ProviderValidator is a validator for the "provider" field. It is called by the builders before save.
+	authidentity.ProviderValidator = authidentityDescProvider.Validators[0].(func(string) error)
+	// authidentityDescSubject is the schema descriptor for subject field.
+	authidentityDescSubject := authidentityFields[3].Descriptor()
+	// authidentity.SubjectValidator is a validator for the "subject" field. It is called by the builders before save.
+	authidentity.SubjectValidator = authidentityDescSubject.Validators[0].(func(string) error)
+	// authidentityDescID is the schema descriptor for id field.
+	authidentityDescID := authidentityFields[0].Descriptor()
+	// authidentity.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	authidentity.IDValidator = authidentityDescID.Validators[0].(func(string) error)
+	authmessageFields := schema.AuthMessage{}.Fields()
+	_ = authmessageFields
+	// authmessageDescChallengeID is the schema descriptor for challenge_id field.
+	authmessageDescChallengeID := authmessageFields[1].Descriptor()
+	// authmessage.DefaultChallengeID holds the default value on creation for the challenge_id field.
+	authmessage.DefaultChallengeID = authmessageDescChallengeID.Default.(string)
+	// authmessage.ChallengeIDValidator is a validator for the "challenge_id" field. It is called by the builders before save.
+	authmessage.ChallengeIDValidator = authmessageDescChallengeID.Validators[0].(func(string) error)
+	// authmessageDescID is the schema descriptor for id field.
+	authmessageDescID := authmessageFields[0].Descriptor()
+	// authmessage.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	authmessage.IDValidator = authmessageDescID.Validators[0].(func(string) error)
+	authrateFields := schema.AuthRate{}.Fields()
+	_ = authrateFields
+	// authrateDescCount is the schema descriptor for count field.
+	authrateDescCount := authrateFields[1].Descriptor()
+	// authrate.DefaultCount holds the default value on creation for the count field.
+	authrate.DefaultCount = authrateDescCount.Default.(int)
+	// authrateDescID is the schema descriptor for id field.
+	authrateDescID := authrateFields[0].Descriptor()
+	// authrate.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	authrate.IDValidator = authrateDescID.Validators[0].(func(string) error)
+	authrecoveryFields := schema.AuthRecovery{}.Fields()
+	_ = authrecoveryFields
+	// authrecoveryDescUserID is the schema descriptor for user_id field.
+	authrecoveryDescUserID := authrecoveryFields[1].Descriptor()
+	// authrecovery.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	authrecovery.UserIDValidator = authrecoveryDescUserID.Validators[0].(func(string) error)
+	// authrecoveryDescNewEmail is the schema descriptor for new_email field.
+	authrecoveryDescNewEmail := authrecoveryFields[2].Descriptor()
+	// authrecovery.NewEmailValidator is a validator for the "new_email" field. It is called by the builders before save.
+	authrecovery.NewEmailValidator = authrecoveryDescNewEmail.Validators[0].(func(string) error)
+	// authrecoveryDescState is the schema descriptor for state field.
+	authrecoveryDescState := authrecoveryFields[3].Descriptor()
+	// authrecovery.DefaultState holds the default value on creation for the state field.
+	authrecovery.DefaultState = authrecoveryDescState.Default.(string)
+	// authrecovery.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	authrecovery.StateValidator = authrecoveryDescState.Validators[0].(func(string) error)
+	// authrecoveryDescCaseReference is the schema descriptor for case_reference field.
+	authrecoveryDescCaseReference := authrecoveryFields[4].Descriptor()
+	// authrecovery.DefaultCaseReference holds the default value on creation for the case_reference field.
+	authrecovery.DefaultCaseReference = authrecoveryDescCaseReference.Default.(string)
+	// authrecovery.CaseReferenceValidator is a validator for the "case_reference" field. It is called by the builders before save.
+	authrecovery.CaseReferenceValidator = authrecoveryDescCaseReference.Validators[0].(func(string) error)
+	// authrecoveryDescID is the schema descriptor for id field.
+	authrecoveryDescID := authrecoveryFields[0].Descriptor()
+	// authrecovery.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	authrecovery.IDValidator = authrecoveryDescID.Validators[0].(func(string) error)
+	authsessionFields := schema.AuthSession{}.Fields()
+	_ = authsessionFields
+	// authsessionDescUserID is the schema descriptor for user_id field.
+	authsessionDescUserID := authsessionFields[1].Descriptor()
+	// authsession.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	authsession.UserIDValidator = authsessionDescUserID.Validators[0].(func(string) error)
+	// authsessionDescTokenHash is the schema descriptor for token_hash field.
+	authsessionDescTokenHash := authsessionFields[2].Descriptor()
+	// authsession.TokenHashValidator is a validator for the "token_hash" field. It is called by the builders before save.
+	authsession.TokenHashValidator = authsessionDescTokenHash.Validators[0].(func(string) error)
+	// authsessionDescID is the schema descriptor for id field.
+	authsessionDescID := authsessionFields[0].Descriptor()
+	// authsession.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	authsession.IDValidator = authsessionDescID.Validators[0].(func(string) error)
 	gameFields := schema.Game{}.Fields()
 	_ = gameFields
 	// gameDescSlug is the schema descriptor for slug field.
@@ -98,8 +302,46 @@ func init() {
 	user.DefaultDisplayName = userDescDisplayName.Default.(string)
 	// user.DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
 	user.DisplayNameValidator = userDescDisplayName.Validators[0].(func(string) error)
+	// userDescRole is the schema descriptor for role field.
+	userDescRole := userFields[4].Descriptor()
+	// user.DefaultRole holds the default value on creation for the role field.
+	user.DefaultRole = userDescRole.Default.(string)
+	// user.RoleValidator is a validator for the "role" field. It is called by the builders before save.
+	user.RoleValidator = userDescRole.Validators[0].(func(string) error)
+	// userDescStaffAlias is the schema descriptor for staff_alias field.
+	userDescStaffAlias := userFields[5].Descriptor()
+	// user.DefaultStaffAlias holds the default value on creation for the staff_alias field.
+	user.DefaultStaffAlias = userDescStaffAlias.Default.(string)
+	// user.StaffAliasValidator is a validator for the "staff_alias" field. It is called by the builders before save.
+	user.StaffAliasValidator = userDescStaffAlias.Validators[0].(func(string) error)
+	// userDescSuspended is the schema descriptor for suspended field.
+	userDescSuspended := userFields[6].Descriptor()
+	// user.DefaultSuspended holds the default value on creation for the suspended field.
+	user.DefaultSuspended = userDescSuspended.Default.(bool)
+	// userDescAuthVersion is the schema descriptor for auth_version field.
+	userDescAuthVersion := userFields[7].Descriptor()
+	// user.DefaultAuthVersion holds the default value on creation for the auth_version field.
+	user.DefaultAuthVersion = userDescAuthVersion.Default.(int64)
+	// userDescTermsVersion is the schema descriptor for terms_version field.
+	userDescTermsVersion := userFields[8].Descriptor()
+	// user.DefaultTermsVersion holds the default value on creation for the terms_version field.
+	user.DefaultTermsVersion = userDescTermsVersion.Default.(string)
+	// user.TermsVersionValidator is a validator for the "terms_version" field. It is called by the builders before save.
+	user.TermsVersionValidator = userDescTermsVersion.Validators[0].(func(string) error)
+	// userDescNotifyUpdates is the schema descriptor for notify_updates field.
+	userDescNotifyUpdates := userFields[10].Descriptor()
+	// user.DefaultNotifyUpdates holds the default value on creation for the notify_updates field.
+	user.DefaultNotifyUpdates = userDescNotifyUpdates.Default.(bool)
+	// userDescMfaCounter is the schema descriptor for mfa_counter field.
+	userDescMfaCounter := userFields[14].Descriptor()
+	// user.DefaultMfaCounter holds the default value on creation for the mfa_counter field.
+	user.DefaultMfaCounter = userDescMfaCounter.Default.(int64)
+	// userDescMfaEnabled is the schema descriptor for mfa_enabled field.
+	userDescMfaEnabled := userFields[15].Descriptor()
+	// user.DefaultMfaEnabled holds the default value on creation for the mfa_enabled field.
+	user.DefaultMfaEnabled = userDescMfaEnabled.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[3].Descriptor()
+	userDescCreatedAt := userFields[17].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescID is the schema descriptor for id field.

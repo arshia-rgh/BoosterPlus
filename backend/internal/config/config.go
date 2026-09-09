@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
 // Config contains process configuration. Never log the whole value.
@@ -14,6 +15,7 @@ type Config struct {
 	Environment string
 	HTTPAddress string
 	DatabaseDSN string
+	Identity    identity.Config
 }
 
 // Load rejects unknown environments and malformed listener addresses.
@@ -33,5 +35,10 @@ func Load(getenv func(string) string) (Config, error) {
 	if err := database.Validate(cfg.DatabaseDSN, cfg.Environment); err != nil {
 		return Config{}, err
 	}
+	auth, authErr := Identity(getenv, cfg.Environment)
+	if authErr != nil {
+		return Config{}, authErr
+	}
+	cfg.Identity = auth
 	return cfg, nil
 }

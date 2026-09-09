@@ -103,18 +103,22 @@ func TestTiDBMigrationLifecycleAndEntQueries(t *testing.T) {
 		t.Fatal(err)
 	}
 	client := ent.NewClient(ent.Driver(entsql.OpenDB(dialect.MySQL, db)))
-	user, userErr := client.User.Create().SetEmail("customer@example.test").SetDisplayName("Customer").Save(t.Context())
-	if userErr != nil {
-		t.Fatal(userErr)
-	}
-	if _, err := client.User.Create().SetEmail(user.Email).Save(t.Context()); !ent.IsConstraintError(err) {
-		t.Fatalf("unique constraint not enforced: %v", err)
+	legacyID := "00000000-0000-4000-8000-000000000001"
+	if _, seedErr := db.ExecContext(t.Context(), "INSERT INTO users(id,email,display_name,created_at) VALUES (?,?,'Customer',UTC_TIMESTAMP(6))", legacyID, "customer@example.test"); seedErr != nil {
+		t.Fatal(seedErr)
 	}
 	if err := r.Apply(t.Context(), 0); err != nil {
 		t.Fatal(err)
 	}
 	if err := r.Apply(t.Context(), 0); err != nil {
 		t.Fatal("idempotent up:", err)
+	}
+	user, userErr := client.User.Get(t.Context(), legacyID)
+	if userErr != nil {
+		t.Fatal(userErr)
+	}
+	if _, duplicateErr := client.User.Create().SetEmail(user.Email).Save(t.Context()); !ent.IsConstraintError(duplicateErr) {
+		t.Fatal("unique constraint not enforced", duplicateErr)
 	}
 	created, createErr := client.Game.Create().SetSlug("mobile-legends").SetName("Mobile Legends").SetConfiguration(map[string]any{"mode": "draft", "regions": []string{"example"}}).Save(t.Context())
 	if createErr != nil {

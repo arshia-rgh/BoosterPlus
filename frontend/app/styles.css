@@ -215,3 +215,130 @@ footer {
     scroll-behavior: auto !important;
   }
 }
+
+.identity-page {
+  max-width: 1180px;
+}
+.identity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+.identity-card {
+  padding: 1.3rem;
+  margin: 1rem 0;
+  background: #141d2c;
+  border: 1px solid #354259;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+.identity-card h2 {
+  font-size: 1.2rem;
+  margin-top: 0;
+}
+.identity-card h3 {
+  font-size: 1.05rem;
+}
+.identity-card fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.identity-card label {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+.identity-card input,
+.identity-card select {
+  width: 100%;
+  padding: 0.8rem;
+  color: #edf2fc;
+  background: #0b1220;
+  border: 1px solid #62728d;
+  border-radius: 6px;
+  font: inherit;
+}
+.identity-card .check {
+  display: block;
+  line-height: 1.7;
+}
+.identity-card .check input {
+  width: auto;
+  margin-right: 0.6rem;
+}
+.identity-card button,
+.identity-page button {
+  cursor: pointer;
+  font: inherit;
+}
+.identity-card button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.identity-card p {
+  font-size: 0.95rem;
+}
+.identity-page a:not(.button) {
+  text-decoration: underline;
+  color: #a9d9ff;
+}
+.identity-page details {
+  margin: 1.5rem 0;
+  border: 1px solid #354259;
+  padding: 1rem;
+  border-radius: 8px;
+}
+.identity-page summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.identity-page :focus-visible {
+  outline: 3px solid #b6f263;
+  outline-offset: 4px;
+}
+.secret {
+  border: 1px solid #b6f263;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+  overflow-wrap: anywhere;
+}
+.secret code {
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+}
+.account-nav {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.muted {
+  color: #b8c5d9;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+.audit-list {
+  overflow-wrap: anywhere;
+}
+.audit-list li {
+  margin: 1rem 0;
+}
+@media (max-width: 760px) {
+  .identity-grid {
+    grid-template-columns: 1fr;
+  }
+  .identity-card {
+    padding: 1rem;
+  }
+}
+
+.legal-text {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  max-width: 75ch;
+  overflow-wrap: anywhere;
+}

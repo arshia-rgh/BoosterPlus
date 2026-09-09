@@ -3,11 +3,215 @@
 package migrate
 
 import (
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql/schema"
 	"entgo.io/ent/schema/field"
 )
 
 var (
+	// AuthAuditsColumns holds the columns for the "auth_audits" table.
+	AuthAuditsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "actor_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "actor_reference", Type: field.TypeString, Size: 80, Default: ""},
+		{Name: "action", Type: field.TypeString, Size: 64},
+		{Name: "target_id", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "metadata", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// AuthAuditsTable holds the schema information for the "auth_audits" table.
+	AuthAuditsTable = &schema.Table{
+		Name:       "auth_audits",
+		Columns:    AuthAuditsColumns,
+		PrimaryKey: []*schema.Column{AuthAuditsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "authaudit_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AuthAuditsColumns[6]},
+			},
+		},
+	}
+	// AuthChallengesColumns holds the columns for the "auth_challenges" table.
+	AuthChallengesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "email", Type: field.TypeString, Size: 254},
+		{Name: "purpose", Type: field.TypeString, Size: 32},
+		{Name: "user_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "session_id", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "browser_hash", Type: field.TypeString, Size: 64},
+		{Name: "code_digest", Type: field.TypeString, Size: 64},
+		{Name: "attempts", Type: field.TypeInt, Default: 0},
+		{Name: "consumed", Type: field.TypeBool, Default: false},
+		{Name: "terms_version", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "expires_at", Type: field.TypeTime},
+	}
+	// AuthChallengesTable holds the schema information for the "auth_challenges" table.
+	AuthChallengesTable = &schema.Table{
+		Name:       "auth_challenges",
+		Columns:    AuthChallengesColumns,
+		PrimaryKey: []*schema.Column{AuthChallengesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "authchallenge_email_purpose",
+				Unique:  false,
+				Columns: []*schema.Column{AuthChallengesColumns[1], AuthChallengesColumns[2]},
+			},
+			{
+				Name:    "authchallenge_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{AuthChallengesColumns[11]},
+			},
+		},
+	}
+	// AuthFlowsColumns holds the columns for the "auth_flows" table.
+	AuthFlowsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "browser_hash", Type: field.TypeString, Size: 64},
+		{Name: "purpose", Type: field.TypeString, Size: 32},
+		{Name: "user_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "session_id", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "nonce", Type: field.TypeString, Size: 64},
+		{Name: "verifier", Type: field.TypeBytes},
+		{Name: "terms_version", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "consumed", Type: field.TypeBool, Default: false},
+		{Name: "expires_at", Type: field.TypeTime},
+	}
+	// AuthFlowsTable holds the schema information for the "auth_flows" table.
+	AuthFlowsTable = &schema.Table{
+		Name:       "auth_flows",
+		Columns:    AuthFlowsColumns,
+		PrimaryKey: []*schema.Column{AuthFlowsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "authflow_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{AuthFlowsColumns[9]},
+			},
+		},
+	}
+	// AuthIdentitiesColumns holds the columns for the "auth_identities" table.
+	AuthIdentitiesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "provider", Type: field.TypeString, Size: 16},
+		{Name: "subject", Type: field.TypeString, Size: 255},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// AuthIdentitiesTable holds the schema information for the "auth_identities" table.
+	AuthIdentitiesTable = &schema.Table{
+		Name:       "auth_identities",
+		Columns:    AuthIdentitiesColumns,
+		PrimaryKey: []*schema.Column{AuthIdentitiesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "authidentity_provider_subject",
+				Unique:  true,
+				Columns: []*schema.Column{AuthIdentitiesColumns[2], AuthIdentitiesColumns[3]},
+			},
+			{
+				Name:    "authidentity_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{AuthIdentitiesColumns[1]},
+			},
+		},
+	}
+	// AuthMessagesColumns holds the columns for the "auth_messages" table.
+	AuthMessagesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "challenge_id", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "encrypted_payload", Type: field.TypeBytes, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "sent_at", Type: field.TypeTime, Nullable: true},
+	}
+	// AuthMessagesTable holds the schema information for the "auth_messages" table.
+	AuthMessagesTable = &schema.Table{
+		Name:       "auth_messages",
+		Columns:    AuthMessagesColumns,
+		PrimaryKey: []*schema.Column{AuthMessagesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "authmessage_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{AuthMessagesColumns[4]},
+			},
+		},
+	}
+	// AuthRatesColumns holds the columns for the "auth_rates" table.
+	AuthRatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "count", Type: field.TypeInt, Default: 0},
+		{Name: "expires_at", Type: field.TypeTime},
+	}
+	// AuthRatesTable holds the schema information for the "auth_rates" table.
+	AuthRatesTable = &schema.Table{
+		Name:       "auth_rates",
+		Columns:    AuthRatesColumns,
+		PrimaryKey: []*schema.Column{AuthRatesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "authrate_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{AuthRatesColumns[2]},
+			},
+		},
+	}
+	// AuthRecoveriesColumns holds the columns for the "auth_recoveries" table.
+	AuthRecoveriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "new_email", Type: field.TypeString, Size: 254},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "pending"},
+		{Name: "case_reference", Type: field.TypeString, Size: 80, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "expires_at", Type: field.TypeTime},
+	}
+	// AuthRecoveriesTable holds the schema information for the "auth_recoveries" table.
+	AuthRecoveriesTable = &schema.Table{
+		Name:       "auth_recoveries",
+		Columns:    AuthRecoveriesColumns,
+		PrimaryKey: []*schema.Column{AuthRecoveriesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "authrecovery_state_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AuthRecoveriesColumns[3], AuthRecoveriesColumns[5]},
+			},
+		},
+	}
+	// AuthSessionsColumns holds the columns for the "auth_sessions" table.
+	AuthSessionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "token_hash", Type: field.TypeString, Unique: true, Size: 64},
+		{Name: "auth_version", Type: field.TypeInt64},
+		{Name: "authenticated_at", Type: field.TypeTime},
+		{Name: "mfa_verified_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "last_seen_at", Type: field.TypeTime},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "revoked_at", Type: field.TypeTime, Nullable: true},
+	}
+	// AuthSessionsTable holds the schema information for the "auth_sessions" table.
+	AuthSessionsTable = &schema.Table{
+		Name:       "auth_sessions",
+		Columns:    AuthSessionsColumns,
+		PrimaryKey: []*schema.Column{AuthSessionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "authsession_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{AuthSessionsColumns[1]},
+			},
+			{
+				Name:    "authsession_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{AuthSessionsColumns[8]},
+			},
+		},
+	}
 	// GamesColumns holds the columns for the "games" table.
 	GamesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -29,6 +233,20 @@ var (
 		{Name: "id", Type: field.TypeString, Size: 36},
 		{Name: "email", Type: field.TypeString, Unique: true, Size: 254},
 		{Name: "display_name", Type: field.TypeString, Size: 100, Default: ""},
+		{Name: "email_verified_at", Type: field.TypeTime, Nullable: true},
+		{Name: "role", Type: field.TypeString, Size: 32, Default: "customer"},
+		{Name: "staff_alias", Type: field.TypeString, Size: 80, Default: ""},
+		{Name: "suspended", Type: field.TypeBool, Default: false},
+		{Name: "auth_version", Type: field.TypeInt64, Default: 1},
+		{Name: "terms_version", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "terms_accepted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "notify_updates", Type: field.TypeBool, Default: true},
+		{Name: "mfa_secret", Type: field.TypeBytes, Nullable: true},
+		{Name: "mfa_pending", Type: field.TypeBytes, Nullable: true},
+		{Name: "mfa_pending_expires", Type: field.TypeTime, Nullable: true},
+		{Name: "mfa_counter", Type: field.TypeInt64, Default: -1},
+		{Name: "mfa_enabled", Type: field.TypeBool, Default: false},
+		{Name: "mfa_recovery_hashes", Type: field.TypeJSON, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 	}
 	// UsersTable holds the schema information for the "users" table.
@@ -39,10 +257,42 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AuthAuditsTable,
+		AuthChallengesTable,
+		AuthFlowsTable,
+		AuthIdentitiesTable,
+		AuthMessagesTable,
+		AuthRatesTable,
+		AuthRecoveriesTable,
+		AuthSessionsTable,
 		GamesTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	AuthAuditsTable.Annotation = &entsql.Annotation{
+		Table: "auth_audits",
+	}
+	AuthChallengesTable.Annotation = &entsql.Annotation{
+		Table: "auth_challenges",
+	}
+	AuthFlowsTable.Annotation = &entsql.Annotation{
+		Table: "auth_flows",
+	}
+	AuthIdentitiesTable.Annotation = &entsql.Annotation{
+		Table: "auth_identities",
+	}
+	AuthMessagesTable.Annotation = &entsql.Annotation{
+		Table: "auth_messages",
+	}
+	AuthRatesTable.Annotation = &entsql.Annotation{
+		Table: "auth_rates",
+	}
+	AuthRecoveriesTable.Annotation = &entsql.Annotation{
+		Table: "auth_recoveries",
+	}
+	AuthSessionsTable.Annotation = &entsql.Annotation{
+		Table: "auth_sessions",
+	}
 }

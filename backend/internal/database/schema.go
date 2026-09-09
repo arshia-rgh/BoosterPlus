@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 3
+const SchemaVersion = 4
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -32,16 +32,25 @@ func Ready(ctx context.Context, db *sql.DB) error {
 	if err := checkColumns(ctx, db); err != nil {
 		return err
 	}
-	return checkIndexes(ctx, db)
+	if err := checkIndexes(ctx, db); err != nil {
+		return err
+	}
+	var controls int
+	if err := db.QueryRowContext(ctx, "SELECT COUNT(*) FROM auth_controls WHERE id=1").Scan(&controls); err != nil || controls != 1 {
+		return errors.New("identity security control row is missing")
+	}
+	return nil
 }
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"users.email_verified_at": "datetime", "users.role": "varchar", "users.suspended": "tinyint", "users.auth_version": "bigint", "users.mfa_secret": "blob", "users.mfa_enabled": "tinyint",
+		"auth_sessions.token_hash": "char", "auth_sessions.auth_version": "bigint", "auth_sessions.mfa_verified_at": "datetime", "auth_challenges.code_digest": "char", "auth_challenges.browser_hash": "char", "auth_challenges.attempts": "int", "auth_challenges.consumed": "tinyint", "auth_messages.encrypted_payload": "blob", "auth_identities.subject": "varchar", "auth_flows.verifier": "blob", "auth_rates.count": "int", "auth_audits.metadata": "json", "auth_recoveries.new_email": "varchar", "auth_controls.version": "bigint",
 		"users.id": "varchar", "users.email": "varchar", "users.display_name": "varchar", "users.created_at": "datetime",
 		"games.id": "varchar", "games.slug": "varchar", "games.name": "varchar", "games.configuration": "json", "games.version": "bigint", "games.published": "tinyint", "games.created_at": "datetime",
 		"jobs.id": "varchar", "jobs.kind": "varchar", "jobs.idempotency_key": "varchar", "jobs.payload": "json", "jobs.request_hash": "char", "jobs.state": "varchar", "jobs.attempts": "int", "jobs.max_attempts": "int", "jobs.available_at": "datetime", "jobs.lease_until": "datetime", "jobs.owner": "varchar", "jobs.last_error": "varchar", "jobs.created_at": "datetime",
 	}
-	rows, err := db.QueryContext(ctx, "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name IN ('users','games','jobs')")
+	rows, err := db.QueryContext(ctx, "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name IN ('users','games','jobs','auth_sessions','auth_challenges','auth_messages','auth_identities','auth_flows','auth_rates','auth_audits','auth_recoveries','auth_controls')")
 	if err != nil {
 		return err
 	}
@@ -69,7 +78,8 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 }
 
 func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
-	expected := map[string]string{"users.PRIMARY": "id", "users.users_email_key": "email", "games.PRIMARY": "id", "games.games_slug_key": "slug", "jobs.PRIMARY": "id", "jobs.jobs_idempotency_key": "idempotency_key"}
+	expected := map[string]string{"auth_identities.auth_identity_subject": "provider,subject", "auth_sessions.auth_session_token": "token_hash", "auth_rates.PRIMARY": "id", "auth_controls.PRIMARY": "id",
+		"users.PRIMARY": "id", "users.users_email_key": "email", "games.PRIMARY": "id", "games.games_slug_key": "slug", "jobs.PRIMARY": "id", "jobs.jobs_idempotency_key": "idempotency_key"}
 	rows, err := db.QueryContext(ctx, "SELECT table_name,index_name,GROUP_CONCAT(column_name ORDER BY seq_in_index) FROM information_schema.statistics WHERE table_schema=DATABASE() AND non_unique=0 GROUP BY table_name,index_name")
 	if err != nil {
 		return err

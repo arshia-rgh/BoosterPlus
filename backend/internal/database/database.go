@@ -20,6 +20,14 @@ func Open(ctx context.Context, dsn, environment string) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Authorization updates count matched rows, including idempotent no-op writes.
+	cfg.ClientFoundRows = true
+	// TiDB READ COMMITTED is effective only in pessimistic transactions.
+	// Apply the mode on every new pooled connection, independent of cluster defaults.
+	if cfg.Params == nil {
+		cfg.Params = map[string]string{}
+	}
+	cfg.Params["tidb_txn_mode"] = "'pessimistic'"
 	cfg.ParseTime = true
 	cfg.Loc = time.UTC
 	cfg.Timeout = 5 * time.Second

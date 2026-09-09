@@ -37,7 +37,7 @@ A durable single-runner lock never expires automatically. A crashed runner there
 
 `make pre-commit` runs formatting checks, dependency tidy/verification, reproducible Ent generation, vet, the configured golangci-lint suite, standalone gosec, govulncheck, unit/race tests, real TiDB integration tests, migration validation, all three executable builds, Compose validation, a Docker build, and Trivy image scanning. Later feature tests are added to this same gate as implemented.
 
-All tools are pinned in the Makefile. Gosec scans authored production and test code; generated upstream code is compiled and dependency-scanned. Narrow suppressions in integration tests cover only database identifiers built from a fixed prefix and cryptographic randomness.
+All tools are pinned in the Makefile. Gosec scans authored production and test code; generated upstream code is compiled and dependency-scanned. Narrow suppressions document random test identifiers, local development cookie configuration, and Go’s random-nonce encryption API.
 
 The current Compose topology uses TiDB's single-node unistore mode for SQL compatibility testing, not production resilience. Distributed TiKV/PD load/recovery qualification belongs to the selected production topology and must be completed before launch.
 
@@ -54,10 +54,27 @@ make compose-down
 
 Stopping Compose preserves the named TiDB/storage volumes. Do not delete `.env` while retaining these volumes: existing local database/storage credentials are preserved. Local services are not a production deployment. TiDB listens on loopback port 14000, API on 8080, Mailpit UI/SMTP on 8025/1025, and S3 on 8333. S3's unauthenticated administrative/filer ports are not published. The `storage` profile is started explicitly by `dev-up`; `compose-up` starts only TiDB and Mailpit for lightweight tests. NATS is deferred because the durable database queue currently meets the requirements.
 
-`make build` creates `bin/server`, `bin/worker` and `bin/boosterplus`. Host processes require explicit `APP_ENV`, `DATABASE_DSN`, and optionally `HTTP_ADDR`; migrations use `MIGRATION_DATABASE_DSN` instead. `config validate` performs offline configuration checks. Defaults bind the host server only to loopback. Production needs a TLS gateway and a verified TLS database connection. API/worker startup checks schema version, required column types, and critical unique constraints without running DDL. The API has bounded request size, connection/header timeouts, generic errors, fresh request IDs, security headers and graceful shutdown.
+`make build` creates `bin/server`, `bin/worker` and `bin/boosterplus`. Host processes require the identity variables in `.env.example`, `APP_ENV`, `DATABASE_DSN`, and optionally `HTTP_ADDR`; migrations use `MIGRATION_DATABASE_DSN` instead. `config validate` performs offline configuration checks. Defaults bind the host server only to loopback. Production needs a TLS gateway and a verified TLS database connection. API/worker startup checks schema version, required column types, and critical unique constraints without running DDL. The API has bounded request size, connection/header timeouts, generic errors, fresh request IDs, security headers and graceful shutdown.
 
-The distroless runtime runs as UID 65532, with no shell; Compose adds a read-only root filesystem, dropped capabilities and resource limits. `/health/live` reports process liveness, `/health/ready` validates the database/schema, and `/api/v1/status` exposes only public prelaunch metadata. The Docker healthcheck assumes the container listener uses port 8080, as configured by Compose. Business endpoints follow later phases.
+The distroless runtime runs as UID 65532, with no shell; Compose adds a read-only root filesystem, dropped capabilities and resource limits. `/health/live` reports process liveness, `/health/ready` validates the database/schema, and `/api/v1/status` exposes only public prelaunch metadata. The Docker healthcheck assumes the container listener uses port 8080, as configured by Compose. Passwordless identity, account security and permissioned staff endpoints are implemented in P02; commerce endpoints follow later phases.
 
 See [background job guarantees and recovery](../docs/background-jobs.md). API responses are validated against [OpenAPI](api/openapi.json) in tests. The frontend consumes its own explicitly copied contract and generated types. Updating a contract requires `make -C frontend contract-update` from the repository root.
 
 Image checks fail on fixable high/critical findings and retain a full JSON report in `.cache/image-vulnerabilities.json`. This threshold does not claim zero lower-severity or unfixed advisories. Application dependency scans have their own stricter gates. Only the application images are part of this scan; deployment/vendor-service audits, distributed failure testing and hardening remain release work.
+
+
+## Passwordless identity
+
+See [identity design and operations](../docs/identity-design.md) for email/Google setup, mandatory staff MFA, first-owner bootstrap, recovery and production inputs. SQL migration 4 introduces identities, server sessions, encrypted delivery state, throttles, audits and recovery records. Ent is used only for queries. Every connection selects TiDB pessimistic transactions; identity operations use READ COMMITTED for current authorization decisions after locking. The gate includes a simultaneous-owner-demotion regression.
+
+Useful commands from `backend/`:
+
+```sh
+make setup-env
+make dev-up
+make pre-commit
+# After signing up and enrolling MFA in the frontend:
+docker compose run --rm --entrypoint /app/boosterplus api identity bootstrap-owner --user <user-id> --operator <operator-reference>
+```
+
+The operator reference is an auditable identifier, never a password or free-form case history. Setup appends missing identity keys without rotating existing secrets. Use `PUBLIC_ORIGIN=http://127.0.0.1:3000` in the local backend `.env` if testing Google with the production frontend server instead of Vite on port 5173.

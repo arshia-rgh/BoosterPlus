@@ -14,8 +14,11 @@ import (
 type Ready func(context.Context) error
 
 // New builds the API. Business routes are added in their implementation phases.
-func New(ready Ready, logger *slog.Logger, production bool) http.Handler {
+func New(ready Ready, logger *slog.Logger, production bool, register ...func(*http.ServeMux)) http.Handler {
 	mux := http.NewServeMux()
+	for _, routes := range register {
+		routes(mux)
+	}
 	mux.HandleFunc("GET /health/live", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(r.Context(), logger, w, http.StatusOK, map[string]string{"status": "ok"})
 	})

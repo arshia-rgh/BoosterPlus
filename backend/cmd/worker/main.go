@@ -9,8 +9,13 @@ import (
 	"os/signal"
 	"syscall"
 
+	"entgo.io/ent/dialect"
+	entsql "entgo.io/ent/dialect/sql"
+
+	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/config"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 )
 
@@ -40,10 +45,24 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 	if err := database.Ready(ctx, db); err != nil {
 		return err
 	}
+	auth, authErr := identity.New(ent.NewClient(ent.Driver(entsql.OpenDB(dialect.MySQL, db))), cfg.Identity, nil, nil)
+	if authErr != nil {
+		return authErr
+	}
+	sender, senderErr := identity.NewSMTP(cfg.Identity)
+	if senderErr != nil {
+		return senderErr
+	}
+	maintenance, stopMaintenance := context.WithCancel(ctx)
+	defer stopMaintenance()
+	done := make(chan struct{})
+	go func() { defer close(done); auth.RunCleanup(maintenance, logger) }()
+	defer func() { stopMaintenance(); <-done }()
 	logger.InfoContext(ctx, "worker started")
 	handlers := map[string]jobs.Handler{"system.ping": func(ctx context.Context, job jobs.Job) error {
 		logger.InfoContext(ctx, "system job completed", "job_id", job.ID)
 		return nil
 	}}
+	handlers["identity.email"] = auth.EmailHandler(sender)
 	return jobs.Run(ctx, jobs.New(db), handlers, logger)
 }

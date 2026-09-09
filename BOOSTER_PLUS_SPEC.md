@@ -386,7 +386,7 @@ Use opaque random server-side sessions stored as digests in TiDB, delivered in S
 
 Deploy the frontend and `/api` behind one public origin to simplify cookies and CSRF controls while keeping separate projects and containers. Check Origin/CSRF tokens on state-changing requests; allowlist development origins. Apply shared rate limits so adding API replicas does not multiply allowances.
 
-Admins use explicitly granted identities, never public role selection or a hard-coded email suffix. Bootstrap the first owner through an audited CLI command targeting an already verified user. Proposed additional safeguard: staff MFA/step-up for refunds, credential access, and role changes, without introducing site passwords. The exact MFA method is an owner decision.
+Admins use explicitly granted identities, never public role selection or a hard-coded email suffix. Bootstrap the first owner through an audited CLI command targeting an already verified user. Proposed additional safeguard: staff MFA/step-up for refunds, credential access, and role changes, without introducing site passwords. The owner selected authenticator-app codes at every staff sign-in on 9 September 2026; sensitive actions also require recent verification.
 
 Use [OWASP authentication guidance](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html) when implementing generic failures, throttling, reauthentication, and session protections.
 
@@ -779,7 +779,7 @@ No phase may substitute mock payment success or hard-coded Mobile Legends-only f
 | D08 | Cancellation, refund, partial-work, missed-target, and dispute policies? | Admin review workflow; exact policy remains open. | Public paid launch. |
 | D09 | Account ownership handoff, proof requirements, guarantees, payout fees/asset/network, and dispute hold periods? | Manual secure delivery proposed. | Account launch. |
 | D10 — resolved | Do separate boosters need logins/assignments now? | Yes: booster portal, manual assignment, assigned-order-only access, and aliases approved on 9 September 2026. | Roadmap P02/P08. |
-| D11 | Email code or magic link? Additional staff MFA method? | Email code; recommend staff step-up. | Auth UX/hardening. |
+| D11 — resolved | Email code and staff MFA method | Email code; authenticator-app second factor required at every staff sign-in, confirmed 9 September 2026. Sensitive actions require recent verification. | P02/P12. |
 | D12 | Hosting provider/region, domain, email service, object storage, budget, traffic, backup objectives? | Container deployment; production services unselected. | Infrastructure provisioning. |
 | D13 — resolved | Two Git repositories or one repository with independent projects? | One monorepo with independent frontend/backend projects; direct main commits/pushes after both pre-commit gates, confirmed 9 September 2026. | Enforced through AGENTS.md and the tracked hook. |
 | D14 | Brand colors, logo, visual references, support hours, and business policy content? | Use Booster Plus name; visual direction remains open. | Final storefront design. |

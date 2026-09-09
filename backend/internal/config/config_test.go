@@ -1,6 +1,8 @@
 package config_test
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"strings"
 	"testing"
 
@@ -12,7 +14,15 @@ func TestConfiguration(t *testing.T) {
 		environment, address, dsn string
 		valid                     bool
 	}{{"test", "", "root@tcp(localhost:4000)/test", true}, {"production", "127.0.0.1:8080", "app@tcp(db:4000)/app?tls=true", true}, {"", "", "", false}, {"test", "invalid", "secret", false}, {"production", "localhost:8080", "", false}} {
-		values := map[string]string{"APP_ENV": scenario.environment, "HTTP_ADDR": scenario.address, "DATABASE_DSN": scenario.dsn}
+		key := make([]byte, 32)
+		if _, err := rand.Read(key); err != nil {
+			t.Fatal(err)
+		}
+		proxy := make([]byte, 32)
+		if _, err := rand.Read(proxy); err != nil {
+			t.Fatal(err)
+		}
+		values := map[string]string{"AUTH_KEY": hex.EncodeToString(key), "PROXY_SHARED_KEY": hex.EncodeToString(proxy), "PUBLIC_ORIGIN": "https://boosterplus.example.test", "TERMS_VERSION": "test-v1", "SMTP_HOST": "smtp.example.test", "SMTP_PORT": "587", "SMTP_FROM": "no-reply@example.test", "SMTP_TLS": "required", "APP_ENV": scenario.environment, "HTTP_ADDR": scenario.address, "DATABASE_DSN": scenario.dsn}
 		cfg, err := config.Load(func(key string) string { return values[key] })
 		if (err == nil) != scenario.valid {
 			t.Errorf("unexpected validation %v", err)

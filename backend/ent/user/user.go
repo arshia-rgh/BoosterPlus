@@ -17,6 +17,34 @@ const (
 	FieldEmail = "email"
 	// FieldDisplayName holds the string denoting the display_name field in the database.
 	FieldDisplayName = "display_name"
+	// FieldEmailVerifiedAt holds the string denoting the email_verified_at field in the database.
+	FieldEmailVerifiedAt = "email_verified_at"
+	// FieldRole holds the string denoting the role field in the database.
+	FieldRole = "role"
+	// FieldStaffAlias holds the string denoting the staff_alias field in the database.
+	FieldStaffAlias = "staff_alias"
+	// FieldSuspended holds the string denoting the suspended field in the database.
+	FieldSuspended = "suspended"
+	// FieldAuthVersion holds the string denoting the auth_version field in the database.
+	FieldAuthVersion = "auth_version"
+	// FieldTermsVersion holds the string denoting the terms_version field in the database.
+	FieldTermsVersion = "terms_version"
+	// FieldTermsAcceptedAt holds the string denoting the terms_accepted_at field in the database.
+	FieldTermsAcceptedAt = "terms_accepted_at"
+	// FieldNotifyUpdates holds the string denoting the notify_updates field in the database.
+	FieldNotifyUpdates = "notify_updates"
+	// FieldMfaSecret holds the string denoting the mfa_secret field in the database.
+	FieldMfaSecret = "mfa_secret"
+	// FieldMfaPending holds the string denoting the mfa_pending field in the database.
+	FieldMfaPending = "mfa_pending"
+	// FieldMfaPendingExpires holds the string denoting the mfa_pending_expires field in the database.
+	FieldMfaPendingExpires = "mfa_pending_expires"
+	// FieldMfaCounter holds the string denoting the mfa_counter field in the database.
+	FieldMfaCounter = "mfa_counter"
+	// FieldMfaEnabled holds the string denoting the mfa_enabled field in the database.
+	FieldMfaEnabled = "mfa_enabled"
+	// FieldMfaRecoveryHashes holds the string denoting the mfa_recovery_hashes field in the database.
+	FieldMfaRecoveryHashes = "mfa_recovery_hashes"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// Table holds the table name of the user in the database.
@@ -28,6 +56,20 @@ var Columns = []string{
 	FieldID,
 	FieldEmail,
 	FieldDisplayName,
+	FieldEmailVerifiedAt,
+	FieldRole,
+	FieldStaffAlias,
+	FieldSuspended,
+	FieldAuthVersion,
+	FieldTermsVersion,
+	FieldTermsAcceptedAt,
+	FieldNotifyUpdates,
+	FieldMfaSecret,
+	FieldMfaPending,
+	FieldMfaPendingExpires,
+	FieldMfaCounter,
+	FieldMfaEnabled,
+	FieldMfaRecoveryHashes,
 	FieldCreatedAt,
 }
 
@@ -48,6 +90,28 @@ var (
 	DefaultDisplayName string
 	// DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
 	DisplayNameValidator func(string) error
+	// DefaultRole holds the default value on creation for the "role" field.
+	DefaultRole string
+	// RoleValidator is a validator for the "role" field. It is called by the builders before save.
+	RoleValidator func(string) error
+	// DefaultStaffAlias holds the default value on creation for the "staff_alias" field.
+	DefaultStaffAlias string
+	// StaffAliasValidator is a validator for the "staff_alias" field. It is called by the builders before save.
+	StaffAliasValidator func(string) error
+	// DefaultSuspended holds the default value on creation for the "suspended" field.
+	DefaultSuspended bool
+	// DefaultAuthVersion holds the default value on creation for the "auth_version" field.
+	DefaultAuthVersion int64
+	// DefaultTermsVersion holds the default value on creation for the "terms_version" field.
+	DefaultTermsVersion string
+	// TermsVersionValidator is a validator for the "terms_version" field. It is called by the builders before save.
+	TermsVersionValidator func(string) error
+	// DefaultNotifyUpdates holds the default value on creation for the "notify_updates" field.
+	DefaultNotifyUpdates bool
+	// DefaultMfaCounter holds the default value on creation for the "mfa_counter" field.
+	DefaultMfaCounter int64
+	// DefaultMfaEnabled holds the default value on creation for the "mfa_enabled" field.
+	DefaultMfaEnabled bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultID holds the default value on creation for the "id" field.
@@ -72,6 +136,61 @@ func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 // ByDisplayName orders the results by the display_name field.
 func ByDisplayName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDisplayName, opts...).ToFunc()
+}
+
+// ByEmailVerifiedAt orders the results by the email_verified_at field.
+func ByEmailVerifiedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEmailVerifiedAt, opts...).ToFunc()
+}
+
+// ByRole orders the results by the role field.
+func ByRole(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRole, opts...).ToFunc()
+}
+
+// ByStaffAlias orders the results by the staff_alias field.
+func ByStaffAlias(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStaffAlias, opts...).ToFunc()
+}
+
+// BySuspended orders the results by the suspended field.
+func BySuspended(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSuspended, opts...).ToFunc()
+}
+
+// ByAuthVersion orders the results by the auth_version field.
+func ByAuthVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAuthVersion, opts...).ToFunc()
+}
+
+// ByTermsVersion orders the results by the terms_version field.
+func ByTermsVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTermsVersion, opts...).ToFunc()
+}
+
+// ByTermsAcceptedAt orders the results by the terms_accepted_at field.
+func ByTermsAcceptedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTermsAcceptedAt, opts...).ToFunc()
+}
+
+// ByNotifyUpdates orders the results by the notify_updates field.
+func ByNotifyUpdates(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNotifyUpdates, opts...).ToFunc()
+}
+
+// ByMfaPendingExpires orders the results by the mfa_pending_expires field.
+func ByMfaPendingExpires(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMfaPendingExpires, opts...).ToFunc()
+}
+
+// ByMfaCounter orders the results by the mfa_counter field.
+func ByMfaCounter(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMfaCounter, opts...).ToFunc()
+}
+
+// ByMfaEnabled orders the results by the mfa_enabled field.
+func ByMfaEnabled(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMfaEnabled, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

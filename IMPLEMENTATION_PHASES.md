@@ -4,7 +4,7 @@ Version: 1.0 · Date: 9 September 2026 · Status: approved scope organized for i
 
 This roadmap turns the [product and technical specification](BOOSTER_PLUS_SPEC.md) into deliverable phases. The owner accepted the specification and requested that all seven features previously listed as worth considering be included. Those features are now part of the complete first release described here.
 
-Implementation has started. P00 is committed and pushed; P01 foundations are implemented and locally verified, with remote CI status still to be confirmed. P02–P12 have not started. [Implementation progress](docs/progress.md) records executed checks, limitations, and delivery status. Phase order expresses dependencies, not delivery dates. Development milestones may be demonstrated in staging, but the complete release includes all phases and their production checks.
+Implementation has started. P00 and P01 are committed and pushed. P02 identity is implemented and verified, with its delivery recorded in the phase commit; P03–P12 have not started. Remote GitHub Actions status still requires authenticated verification. [Implementation progress](docs/progress.md) records executed checks, limitations, and delivery status. Phase order expresses dependencies, not delivery dates. Development milestones may be demonstrated in staging, but the complete release includes all phases and their production checks.
 
 The specification remains the detailed product and architecture reference. This document owns implementation order, the added feature requirements, and phase completion criteria. Update both documents when scope changes. Unresolved commercial choices stay open; accepting this roadmap does not invent a payment provider, seller payout arrangement, or win-rate guarantee.
 
@@ -109,7 +109,7 @@ Deliverables:
 - Customer, booster, administrator, and owner permissions; optional support role if staffing requires it. Privileged identities are granted explicitly through admin controls or audited owner bootstrap.
 - Login/profile screens and protected route shells. Booster accounts use the same permitted Google/email methods and have no public role self-selection.
 - Staff alias field separate from legal/contact identity, plus audit entries that preserve the real internal actor.
-- Audit foundation and recent-authentication checks for sensitive actions. Record and implement the selected staff MFA/step-up policy before launch.
+- Audit foundation and recent-authentication checks for sensitive actions. Staff must complete an authenticator check at every sign-in; sensitive actions require recent verification of both factors (D11 resolved).
 
 Completion evidence:
 

@@ -25,6 +25,7 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 
 - Follow `BOOSTER_PLUS_SPEC.md` and `IMPLEMENTATION_PHASES.md`; keep phase status accurate. All seven additional features are in scope.
 - Go backend with Ent query generation; explicit SQL migrations in `backend/migration/`, driven by the Cobra CLI. Never run Ent/Atlas migrations or automatic startup migration, including in tests.
+- Staff must complete Google/email verification and an authenticator check at every sign-in. Sensitive actions require recent verification of both factors. Single-use recovery codes substitute only for the second factor.
 - Google/email passwordless login only; no customer/seller wallet. Crypto checkout uses verified evidence, idempotency, reconciliation, and explicit refund/payout records.
 - Keep private information, game credentials, provider secrets, auth codes, and personal data out of logs, commits, public files, and message/event payloads that do not require them.
 - Missing business decisions may block their dependent features, not unrelated implementation. Do not invent live prices, payout terms, or win-rate guarantees.

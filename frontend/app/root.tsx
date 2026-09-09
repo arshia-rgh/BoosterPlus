@@ -6,12 +6,21 @@ import {
   Scripts,
   ScrollRestoration,
   Link,
+  useRouteLoaderData,
 } from "react-router";
 import type { ReactNode } from "react";
 import type { Route } from "./+types/root";
 import "./styles.css";
 
+export function loader({ request }: Route.LoaderArgs) {
+  return { nonce: request.headers.get("x-csp-nonce") ?? undefined };
+}
+export function shouldRevalidate() {
+  return false;
+}
+
 export function Layout({ children }: { children: ReactNode }) {
+  const data = useRouteLoaderData<typeof loader>("root");
   return (
     <html lang="en">
       <head>
@@ -30,7 +39,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </Link>
           <nav aria-label="Main navigation">
             <Link to="/games">Games</Link>
-            <span className="launch-label">Opening soon</span>
+            <Link to="/account">Account</Link>
           </nav>
         </header>
         {children}
@@ -38,8 +47,8 @@ export function Layout({ children }: { children: ReactNode }) {
           <span>Booster Plus</span>
           <span>Game boosting. Account trading.</span>
         </footer>
-        <ScrollRestoration />
-        <Scripts />
+        <ScrollRestoration nonce={data?.nonce} />
+        <Scripts nonce={data?.nonce} />
       </body>
     </html>
   );

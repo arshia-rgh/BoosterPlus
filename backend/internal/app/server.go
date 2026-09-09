@@ -10,9 +10,14 @@ import (
 	"net/http"
 	"time"
 
+	"entgo.io/ent/dialect"
+	entsql "entgo.io/ent/dialect/sql"
+
+	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/config"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/httpapi"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
 // Server opens the runtime database without DDL privileges and serves HTTP.
@@ -26,12 +31,20 @@ func Server(ctx context.Context, cfg config.Config, logger *slog.Logger) (result
 	if readyErr := ready(ctx); readyErr != nil {
 		return readyErr
 	}
+	provider, providerErr := identity.NewGoogle(ctx, cfg.Identity)
+	if providerErr != nil {
+		return providerErr
+	}
+	auth, authErr := identity.New(ent.NewClient(ent.Driver(entsql.OpenDB(dialect.MySQL, db))), cfg.Identity, nil, provider)
+	if authErr != nil {
+		return authErr
+	}
 	listener, err := (&net.ListenConfig{}).Listen(ctx, "tcp", cfg.HTTPAddress)
 	if err != nil {
 		return fmt.Errorf("listen: %w", err)
 	}
 	logger.InfoContext(ctx, "API listening", "address", listener.Addr().String())
-	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment == "production"))
+	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register))
 }
 
 // Serve applies transport timeouts and drains in-flight work on cancellation.

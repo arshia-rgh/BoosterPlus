@@ -28,8 +28,8 @@ ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000
 WORKDIR /app
 COPY --from=production-dependencies --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/build ./build
-COPY --chown=node:node package.json ./
+COPY --chown=node:node package.json server.mjs ./
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=15s --timeout=5s --start-period=15s --retries=3 CMD ["node", "--input-type=module", "-e", "const r=await fetch('http://127.0.0.1:3000/',{signal:AbortSignal.timeout(3000)});process.exit(r.ok?0:1)"]
-CMD ["node", "node_modules/@react-router/serve/dist/cli.js", "build/server/index.js"]
+CMD ["node", "server.mjs"]

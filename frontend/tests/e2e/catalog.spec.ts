@@ -55,12 +55,17 @@ for (const [path, title] of [
 ] as const) {
   test(`${path} shell is accessible and exposes no account data`, async ({
     page,
-  }) => {
+  }, info) => {
     await page.goto(path);
     await expect(page.getByRole("heading", { name: title })).toBeVisible();
     await expect(
-      page.getByText("Secure sign-in is being prepared.", { exact: false }),
+      page.getByText("Sign in with Google or an email code.", { exact: false }),
     ).toBeVisible();
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    if (path === "/account")
+      await page.screenshot({
+        path: ".cache/account-" + info.project.name + ".png",
+        fullPage: true,
+      });
   });
 }

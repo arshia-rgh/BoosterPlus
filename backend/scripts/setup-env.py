@@ -16,3 +16,14 @@ else:
     with os.fdopen(descriptor, "w") as handle:
         handle.write(content)
     print("Created private local .env. Never reuse these credentials in production.")
+
+# Upgrade existing local setup without rotating any existing secret.
+existing = output.read_text()
+additions = ""
+for key in ["AUTH_KEY", "PROXY_SHARED_KEY"]:
+    if not any(line.startswith(key + "=") for line in existing.splitlines()):
+        additions += key + "=" + secrets.token_hex(32) + "\n"
+if additions:
+    with output.open("a") as handle:
+        handle.write(additions)
+    print("Added missing identity secrets; existing credentials preserved.")
