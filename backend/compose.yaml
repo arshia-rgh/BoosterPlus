@@ -1,0 +1,16 @@
+name: boosterplus
+services:
+  tidb:
+    image: pingcap/tidb:v8.5.7@sha256:41708a564e47e96d346fed433c3b9bc40d1950fdcc9c768812daeff6aadd930c
+    command: ["--store=unistore", "--path=/data", "--host=0.0.0.0", "--status=10080"]
+    ports:
+      - "127.0.0.1:14000:4000"
+    volumes:
+      - tidb-data:/data
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 2g
+    cpus: 2
+    restart: unless-stopped
+volumes:
+  tidb-data:

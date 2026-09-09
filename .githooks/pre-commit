@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+cd "$(git rev-parse --show-toplevel)"
+if ! git diff --quiet; then
+  printf '%s\n' 'Stage the intended tracked changes before committing: checks must match the staged source.' >&2
+  exit 1
+fi
+if [ "$(git branch --show-current)" != main ]; then
+  printf '%s\n' 'Repository policy requires commits on main.' >&2
+  exit 1
+fi
+exec make pre-commit

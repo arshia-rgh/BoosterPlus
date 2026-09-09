@@ -1,0 +1,49 @@
+import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+
+test("home and game catalog are accessible and navigate correctly", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page).toHaveTitle(/Booster Plus/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "YOUR NEXT",
+  );
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.getByRole("link", { name: /explore games/i }).click();
+  await expect(page).toHaveURL(/\/games$/);
+  await expect(
+    page.getByRole("heading", { name: "Mobile Legends" }),
+  ).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test("missing pages return 404 without reflecting malicious input", async ({
+  page,
+}) => {
+  const response = await page.goto(
+    "/missing?message=%3Cscript%3Ealert(1)%3C/script%3E",
+  );
+  expect(response?.status()).toBe(404);
+  await expect(
+    page.getByRole("heading", { name: "Page not found" }),
+  ).toBeVisible();
+  await expect(page.getByText("alert(1)")).toHaveCount(0);
+  await page.getByRole("link", { name: "Back to home" }).click();
+  await expect(page).toHaveURL("/");
+});
+
+test("keyboard users can skip navigation", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("link", { name: "Skip to content" }),
+  ).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#main$/);
+});
