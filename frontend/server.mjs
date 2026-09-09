@@ -113,7 +113,13 @@ app.use("/api", (req, res) => {
   let bytes = 0;
   req.on("data", (chunk) => {
     bytes += chunk.length;
-    if (bytes > 16384) {
+    if (
+      bytes >
+      (req.path.startsWith("/v1/admin/catalog/") ||
+      req.path.startsWith("/v1/catalog/")
+        ? 262144
+        : 16384)
+    ) {
       upstream.destroy();
       if (!res.headersSent) res.status(413).end();
       req.destroy();

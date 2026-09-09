@@ -96,6 +96,48 @@ func (_u *GameUpdate) SetNillablePublished(v *bool) *GameUpdate {
 	return _u
 }
 
+// SetPaused sets the "paused" field.
+func (_u *GameUpdate) SetPaused(v bool) *GameUpdate {
+	_u.mutation.SetPaused(v)
+	return _u
+}
+
+// SetNillablePaused sets the "paused" field if the given value is not nil.
+func (_u *GameUpdate) SetNillablePaused(v *bool) *GameUpdate {
+	if v != nil {
+		_u.SetPaused(*v)
+	}
+	return _u
+}
+
+// SetArchived sets the "archived" field.
+func (_u *GameUpdate) SetArchived(v bool) *GameUpdate {
+	_u.mutation.SetArchived(v)
+	return _u
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (_u *GameUpdate) SetNillableArchived(v *bool) *GameUpdate {
+	if v != nil {
+		_u.SetArchived(*v)
+	}
+	return _u
+}
+
+// SetCurrentRelease sets the "current_release" field.
+func (_u *GameUpdate) SetCurrentRelease(v string) *GameUpdate {
+	_u.mutation.SetCurrentRelease(v)
+	return _u
+}
+
+// SetNillableCurrentRelease sets the "current_release" field if the given value is not nil.
+func (_u *GameUpdate) SetNillableCurrentRelease(v *string) *GameUpdate {
+	if v != nil {
+		_u.SetCurrentRelease(*v)
+	}
+	return _u
+}
+
 // Mutation returns the GameMutation object of the builder.
 func (_u *GameUpdate) Mutation() *GameMutation {
 	return _u.mutation
@@ -145,6 +187,11 @@ func (_u *GameUpdate) check() error {
 			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "Game.version": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.CurrentRelease(); ok {
+		if err := game.CurrentReleaseValidator(v); err != nil {
+			return &ValidationError{Name: "current_release", err: fmt.Errorf(`ent: validator failed for field "Game.current_release": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -177,6 +224,15 @@ func (_u *GameUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Published(); ok {
 		_spec.SetField(game.FieldPublished, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.Paused(); ok {
+		_spec.SetField(game.FieldPaused, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.Archived(); ok {
+		_spec.SetField(game.FieldArchived, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.CurrentRelease(); ok {
+		_spec.SetField(game.FieldCurrentRelease, field.TypeString, value)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -267,6 +323,48 @@ func (_u *GameUpdateOne) SetNillablePublished(v *bool) *GameUpdateOne {
 	return _u
 }
 
+// SetPaused sets the "paused" field.
+func (_u *GameUpdateOne) SetPaused(v bool) *GameUpdateOne {
+	_u.mutation.SetPaused(v)
+	return _u
+}
+
+// SetNillablePaused sets the "paused" field if the given value is not nil.
+func (_u *GameUpdateOne) SetNillablePaused(v *bool) *GameUpdateOne {
+	if v != nil {
+		_u.SetPaused(*v)
+	}
+	return _u
+}
+
+// SetArchived sets the "archived" field.
+func (_u *GameUpdateOne) SetArchived(v bool) *GameUpdateOne {
+	_u.mutation.SetArchived(v)
+	return _u
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (_u *GameUpdateOne) SetNillableArchived(v *bool) *GameUpdateOne {
+	if v != nil {
+		_u.SetArchived(*v)
+	}
+	return _u
+}
+
+// SetCurrentRelease sets the "current_release" field.
+func (_u *GameUpdateOne) SetCurrentRelease(v string) *GameUpdateOne {
+	_u.mutation.SetCurrentRelease(v)
+	return _u
+}
+
+// SetNillableCurrentRelease sets the "current_release" field if the given value is not nil.
+func (_u *GameUpdateOne) SetNillableCurrentRelease(v *string) *GameUpdateOne {
+	if v != nil {
+		_u.SetCurrentRelease(*v)
+	}
+	return _u
+}
+
 // Mutation returns the GameMutation object of the builder.
 func (_u *GameUpdateOne) Mutation() *GameMutation {
 	return _u.mutation
@@ -329,6 +427,11 @@ func (_u *GameUpdateOne) check() error {
 			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "Game.version": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.CurrentRelease(); ok {
+		if err := game.CurrentReleaseValidator(v); err != nil {
+			return &ValidationError{Name: "current_release", err: fmt.Errorf(`ent: validator failed for field "Game.current_release": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -378,6 +481,15 @@ func (_u *GameUpdateOne) sqlSave(ctx context.Context) (_node *Game, err error) {
 	}
 	if value, ok := _u.mutation.Published(); ok {
 		_spec.SetField(game.FieldPublished, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.Paused(); ok {
+		_spec.SetField(game.FieldPaused, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.Archived(); ok {
+		_spec.SetField(game.FieldArchived, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.CurrentRelease(); ok {
+		_spec.SetField(game.FieldCurrentRelease, field.TypeString, value)
 	}
 	_node = &Game{config: _u.config}
 	_spec.Assign = _node.assignValues

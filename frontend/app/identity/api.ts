@@ -61,6 +61,11 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "catalog_conflict",
+    "This catalog changed or is unavailable. Reload it before continuing.",
+  ],
+  ["catalog_invalid", "Review the highlighted catalog issues."],
+  [
     "invalid_verification",
     "Verification failed. Use a fresh code; codes expire and cannot be reused.",
   ],
@@ -81,7 +86,9 @@ const messages = new Map([
     "Too many attempts. Wait a few minutes before trying again.",
   ],
 ]);
-export class APIError extends Error {}
+export class APIError extends Error {
+  issues: { path: string; message: string }[] = [];
+}
 async function read(
   path: string,
   body?: unknown,
@@ -110,13 +117,22 @@ async function read(
       typeof window !== "undefined"
     )
       window.dispatchEvent(new Event("boosterplus:session-changed"));
-    const problem = z.object({ code: z.string() }).safeParse(result);
-    throw new APIError(
+    const problem = z
+      .object({
+        code: z.string(),
+        issues: z
+          .array(z.object({ path: z.string(), message: z.string() }))
+          .optional(),
+      })
+      .safeParse(result);
+    const error = new APIError(
       problem.success
         ? (messages.get(problem.data.code) ??
             "The service is unavailable. Please try again.")
         : "The service is unavailable. Please try again.",
     );
+    if (problem.success) error.issues = problem.data.issues ?? [];
+    throw error;
   }
   return result;
 }

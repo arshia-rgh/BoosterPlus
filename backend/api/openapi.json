@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Booster Plus API",
-    "version": "0.2.0",
-    "description": "Operational and passwordless identity API. Staff require a second factor on every sign-in. Mutations require browser/session cookies, same-origin Origin, and a fresh CSRF header."
+    "version": "0.3.0",
+    "description": "Operational and passwordless identity API. Staff require a second factor on every sign-in. Mutations require browser/session cookies, same-origin Origin, and a fresh CSRF header. Configurable catalog drafts and immutable publications use revision checks. Numeric form values and monetary minor units are exact strings."
   },
   "servers": [
     {
@@ -1182,6 +1182,1170 @@
           }
         ]
       }
+    },
+    "/api/v1/catalog/games": {
+      "get": {
+        "operationId": "listCatalogGames",
+        "summary": "listCatalogGames",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogListing"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/catalog/games/{slug}": {
+      "get": {
+        "operationId": "getCatalogGame",
+        "summary": "getCatalogGame",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogRelease"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/catalog/games/{slug}/validate": {
+      "post": {
+        "operationId": "validateCatalogAnswers",
+        "summary": "validateCatalogAnswers",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogValidation"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogValidationInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games": {
+      "get": {
+        "operationId": "listCatalogDrafts",
+        "summary": "listCatalogDrafts",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogListing"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createCatalogDraft",
+        "summary": "createCatalogDraft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogDraft"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogCreate"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games/{id}": {
+      "get": {
+        "operationId": "getCatalogDraft",
+        "summary": "getCatalogDraft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogDraft"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games/{id}/preview": {
+      "get": {
+        "operationId": "previewCatalogDraft",
+        "summary": "previewCatalogDraft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogPreview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games/{id}/history": {
+      "get": {
+        "operationId": "getCatalogHistory",
+        "summary": "getCatalogHistory",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogHistory"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games/{id}/save": {
+      "post": {
+        "operationId": "saveCatalogDraft",
+        "summary": "saveCatalogDraft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogDraft"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogChange"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games/{id}/publish": {
+      "post": {
+        "operationId": "publishCatalogDraft",
+        "summary": "publishCatalogDraft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogDraft"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogChange"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games/{id}/pause": {
+      "post": {
+        "operationId": "pauseCatalogDraft",
+        "summary": "pauseCatalogDraft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogDraft"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogChange"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games/{id}/resume": {
+      "post": {
+        "operationId": "resumeCatalogDraft",
+        "summary": "resumeCatalogDraft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogDraft"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogChange"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games/{id}/archive": {
+      "post": {
+        "operationId": "archiveCatalogDraft",
+        "summary": "archiveCatalogDraft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogDraft"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogChange"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games/{id}/restore": {
+      "post": {
+        "operationId": "restoreCatalogDraft",
+        "summary": "restoreCatalogDraft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogDraft"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogChange"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games/{id}/delete": {
+      "post": {
+        "operationId": "deleteCatalogDraft",
+        "summary": "deleteCatalogDraft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Unpublished game deleted."
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogChange"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/games/{id}/validate-preview": {
+      "post": {
+        "operationId": "validateCatalogPreview",
+        "summary": "Validate ordinary answers against a saved administrator draft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogValidation"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogPreviewInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1666,6 +2830,742 @@
           }
         },
         "required": ["status"]
+      },
+      "CatalogConfiguration": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "type": "integer",
+            "const": 1
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "asset": {
+            "type": "string"
+          },
+          "asset_alt": {
+            "type": "string"
+          },
+          "reviewed": {
+            "type": "boolean"
+          },
+          "references": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogReference"
+            }
+          },
+          "services": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogServiceDefinition"
+            }
+          },
+          "packages": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogPackage"
+            }
+          },
+          "faqs": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogFAQ"
+            }
+          }
+        },
+        "required": [
+          "schema_version",
+          "name",
+          "description",
+          "asset",
+          "asset_alt",
+          "reviewed",
+          "references",
+          "services",
+          "packages",
+          "faqs"
+        ]
+      },
+      "CatalogReference": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "options": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogOption"
+            }
+          }
+        },
+        "required": ["key", "label", "kind", "options"]
+      },
+      "CatalogOption": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "units": {
+            "type": "integer"
+          }
+        },
+        "required": ["key", "label", "units"]
+      },
+      "CatalogServiceDefinition": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "evaluator": {
+            "type": "string"
+          },
+          "fields": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogField"
+            }
+          },
+          "rules": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogRule"
+            }
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "description",
+          "evaluator",
+          "fields",
+          "rules"
+        ]
+      },
+      "CatalogField": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "help": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "select",
+              "radio",
+              "rank",
+              "multiselect",
+              "boolean",
+              "integer",
+              "decimal",
+              "short_text",
+              "long_text",
+              "attachment"
+            ]
+          },
+          "stage": {
+            "type": "string",
+            "enum": ["estimate", "order", "fulfillment"]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "options": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogOption"
+            }
+          },
+          "min": {
+            "type": "string"
+          },
+          "max": {
+            "type": "string"
+          },
+          "step": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "min_length": {
+            "type": "integer"
+          },
+          "max_length": {
+            "type": "integer"
+          },
+          "min_selections": {
+            "type": "integer"
+          },
+          "max_selections": {
+            "type": "integer"
+          },
+          "default": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "visible_when": {
+            "$ref": "#/components/schemas/CatalogCondition"
+          },
+          "required_when": {
+            "$ref": "#/components/schemas/CatalogCondition"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "help",
+          "type",
+          "stage",
+          "required",
+          "reference",
+          "options",
+          "min",
+          "max",
+          "step",
+          "unit",
+          "min_length",
+          "max_length",
+          "min_selections",
+          "max_selections"
+        ]
+      },
+      "CatalogCondition": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "op": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "values": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "string"
+            }
+          },
+          "children": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogCondition"
+            }
+          }
+        },
+        "required": ["op", "field", "values", "children"]
+      },
+      "CatalogRule": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "when": {
+            "$ref": "#/components/schemas/CatalogCondition"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "from_units": {
+            "type": "string"
+          },
+          "to_units": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "kind",
+          "message",
+          "from",
+          "to",
+          "from_units",
+          "to_units"
+        ]
+      },
+      "CatalogPackage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "service": {
+            "type": "string"
+          },
+          "variants": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogVariant"
+            }
+          }
+        },
+        "required": ["key", "name", "description", "service", "variants"]
+      },
+      "CatalogVariant": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "amount_minor": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "integer"
+          },
+          "delivery_min_hours": {
+            "type": "integer"
+          },
+          "delivery_max_hours": {
+            "type": "integer"
+          },
+          "required_fields": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "string"
+            }
+          },
+          "eligibility": {
+            "$ref": "#/components/schemas/CatalogCondition"
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "currency",
+          "amount_minor",
+          "delivery_min_hours",
+          "delivery_max_hours",
+          "required_fields"
+        ]
+      },
+      "CatalogFAQ": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          }
+        },
+        "required": ["question", "answer"]
+      },
+      "CatalogIssue": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["path", "message"]
+      },
+      "CatalogValidation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          },
+          "issues": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogIssue"
+            }
+          }
+        },
+        "required": ["answers", "issues"]
+      },
+      "CatalogDraft": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "published": {
+            "type": "boolean"
+          },
+          "paused": {
+            "type": "boolean"
+          },
+          "archived": {
+            "type": "boolean"
+          },
+          "current_release": {
+            "type": "string"
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/CatalogConfiguration"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "revision",
+          "published",
+          "paused",
+          "archived",
+          "current_release",
+          "configuration"
+        ]
+      },
+      "CatalogListing": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "games": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogSummary"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        },
+        "required": ["games", "next"]
+      },
+      "CatalogSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "asset": {
+            "type": "string"
+          },
+          "asset_alt": {
+            "type": "string"
+          },
+          "paused": {
+            "type": "boolean"
+          },
+          "published": {
+            "type": "boolean"
+          },
+          "archived": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "description",
+          "asset",
+          "asset_alt",
+          "paused",
+          "published",
+          "archived",
+          "revision"
+        ]
+      },
+      "CatalogRelease": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "game_id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "paused": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/CatalogConfiguration"
+          }
+        },
+        "required": [
+          "id",
+          "game_id",
+          "slug",
+          "version",
+          "paused",
+          "created_at",
+          "configuration"
+        ]
+      },
+      "CatalogChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "revision": {
+            "type": "integer"
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/CatalogConfiguration"
+          }
+        },
+        "required": ["revision", "configuration"]
+      },
+      "CatalogCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/CatalogConfiguration"
+          }
+        },
+        "required": ["slug", "configuration"]
+      },
+      "CatalogValidationInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "release_id": {
+            "type": "string"
+          },
+          "service": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string",
+            "enum": ["estimate", "order"]
+          },
+          "package": {
+            "type": "string"
+          },
+          "variant": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "required": ["release_id", "service", "stage", "answers"]
+      },
+      "CatalogProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "issues": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogIssue"
+            }
+          }
+        },
+        "required": ["code"]
+      },
+      "CatalogPreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "draft": {
+            "$ref": "#/components/schemas/CatalogDraft"
+          },
+          "issues": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogIssue"
+            }
+          }
+        },
+        "required": ["draft", "issues"]
+      },
+      "CatalogHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "releases": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogRelease"
+            }
+          }
+        },
+        "required": ["releases"]
+      },
+      "CatalogPreviewInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "release_id": {
+            "type": "string",
+            "description": "Saved draft revision as a decimal integer string."
+          },
+          "service": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string",
+            "enum": ["estimate", "order", "fulfillment"]
+          },
+          "package": {
+            "type": "string"
+          },
+          "variant": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "required": ["release_id", "service", "stage", "answers"]
       }
     },
     "securitySchemes": {

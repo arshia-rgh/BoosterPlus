@@ -458,6 +458,262 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/catalog/games": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** listCatalogGames */
+    get: operations["listCatalogGames"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/catalog/games/{slug}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** getCatalogGame */
+    get: operations["getCatalogGame"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/catalog/games/{slug}/validate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** validateCatalogAnswers */
+    post: operations["validateCatalogAnswers"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** listCatalogDrafts */
+    get: operations["listCatalogDrafts"];
+    put?: never;
+    /** createCatalogDraft */
+    post: operations["createCatalogDraft"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** getCatalogDraft */
+    get: operations["getCatalogDraft"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}/preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** previewCatalogDraft */
+    get: operations["previewCatalogDraft"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** getCatalogHistory */
+    get: operations["getCatalogHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}/save": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** saveCatalogDraft */
+    post: operations["saveCatalogDraft"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}/publish": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** publishCatalogDraft */
+    post: operations["publishCatalogDraft"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}/pause": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** pauseCatalogDraft */
+    post: operations["pauseCatalogDraft"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}/resume": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** resumeCatalogDraft */
+    post: operations["resumeCatalogDraft"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}/archive": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** archiveCatalogDraft */
+    post: operations["archiveCatalogDraft"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}/restore": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** restoreCatalogDraft */
+    post: operations["restoreCatalogDraft"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}/delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** deleteCatalogDraft */
+    post: operations["deleteCatalogDraft"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}/validate-preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Validate ordinary answers against a saved administrator draft */
+    post: operations["validateCatalogPreview"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -602,6 +858,197 @@ export interface components {
     PortalReady: {
       /** @constant */
       status: "ready";
+    };
+    CatalogConfiguration: {
+      /** @constant */
+      schema_version: 1;
+      name: string;
+      description: string;
+      asset: string;
+      asset_alt: string;
+      reviewed: boolean;
+      references: components["schemas"]["CatalogReference"][] | null;
+      services: components["schemas"]["CatalogServiceDefinition"][] | null;
+      packages: components["schemas"]["CatalogPackage"][] | null;
+      faqs: components["schemas"]["CatalogFAQ"][] | null;
+    };
+    CatalogReference: {
+      key: string;
+      label: string;
+      kind: string;
+      options: components["schemas"]["CatalogOption"][] | null;
+    };
+    CatalogOption: {
+      key: string;
+      label: string;
+      units: number;
+    };
+    CatalogServiceDefinition: {
+      key: string;
+      name: string;
+      description: string;
+      evaluator: string;
+      fields: components["schemas"]["CatalogField"][] | null;
+      rules: components["schemas"]["CatalogRule"][] | null;
+    };
+    CatalogField: {
+      key: string;
+      label: string;
+      help: string;
+      /** @enum {string} */
+      type:
+        | "select"
+        | "radio"
+        | "rank"
+        | "multiselect"
+        | "boolean"
+        | "integer"
+        | "decimal"
+        | "short_text"
+        | "long_text"
+        | "attachment";
+      /** @enum {string} */
+      stage: "estimate" | "order" | "fulfillment";
+      required: boolean;
+      reference: string;
+      options: components["schemas"]["CatalogOption"][] | null;
+      min: string;
+      max: string;
+      step: string;
+      unit: string;
+      min_length: number;
+      max_length: number;
+      min_selections: number;
+      max_selections: number;
+      default?: string | boolean | string[];
+      visible_when?: components["schemas"]["CatalogCondition"];
+      required_when?: components["schemas"]["CatalogCondition"];
+    };
+    CatalogCondition: {
+      op: string;
+      field: string;
+      values: string[] | null;
+      children: components["schemas"]["CatalogCondition"][] | null;
+    };
+    CatalogRule: {
+      key: string;
+      kind: string;
+      message: string;
+      when?: components["schemas"]["CatalogCondition"];
+      from: string;
+      to: string;
+      from_units: string;
+      to_units: string;
+    };
+    CatalogPackage: {
+      key: string;
+      name: string;
+      description: string;
+      service: string;
+      variants: components["schemas"]["CatalogVariant"][] | null;
+    };
+    CatalogVariant: {
+      key: string;
+      name: string;
+      currency: string;
+      amount_minor: string;
+      capacity?: number;
+      delivery_min_hours: number;
+      delivery_max_hours: number;
+      required_fields: string[] | null;
+      eligibility?: components["schemas"]["CatalogCondition"];
+    };
+    CatalogFAQ: {
+      question: string;
+      answer: string;
+    };
+    CatalogIssue: {
+      path: string;
+      message: string;
+    };
+    CatalogValidation: {
+      answers: {
+        [key: string]: string | boolean | string[];
+      };
+      issues: components["schemas"]["CatalogIssue"][] | null;
+    };
+    CatalogDraft: {
+      id: string;
+      slug: string;
+      revision: number;
+      published: boolean;
+      paused: boolean;
+      archived: boolean;
+      current_release: string;
+      configuration: components["schemas"]["CatalogConfiguration"];
+    };
+    CatalogListing: {
+      games: components["schemas"]["CatalogSummary"][] | null;
+      next: string;
+    };
+    CatalogSummary: {
+      id: string;
+      slug: string;
+      name: string;
+      description: string;
+      asset: string;
+      asset_alt: string;
+      paused: boolean;
+      published: boolean;
+      archived: boolean;
+      revision: number;
+    };
+    CatalogRelease: {
+      id: string;
+      game_id: string;
+      slug: string;
+      version: number;
+      paused: boolean;
+      /** Format: date-time */
+      created_at: string;
+      configuration: components["schemas"]["CatalogConfiguration"];
+    };
+    CatalogChange: {
+      revision: number;
+      configuration: components["schemas"]["CatalogConfiguration"];
+    };
+    CatalogCreate: {
+      slug: string;
+      configuration: components["schemas"]["CatalogConfiguration"];
+    };
+    CatalogValidationInput: {
+      release_id: string;
+      service: string;
+      /** @enum {string} */
+      stage: "estimate" | "order";
+      package?: string;
+      variant?: string;
+      answers: {
+        [key: string]: string | boolean | string[];
+      };
+    };
+    CatalogProblem: {
+      code: string;
+      issues?: components["schemas"]["CatalogIssue"][] | null;
+    };
+    CatalogPreview: {
+      draft: components["schemas"]["CatalogDraft"];
+      issues: components["schemas"]["CatalogIssue"][] | null;
+    };
+    CatalogHistory: {
+      releases: components["schemas"]["CatalogRelease"][] | null;
+    };
+    CatalogPreviewInput: {
+      /** @description Saved draft revision as a decimal integer string. */
+      release_id: string;
+      service: string;
+      /** @enum {string} */
+      stage: "estimate" | "order" | "fulfillment";
+      package?: string;
+      variant?: string;
+      answers: {
+        [key: string]: string | boolean | string[];
+      };
     };
   };
   responses: never;
@@ -1436,6 +1883,848 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  listCatalogGames: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogListing"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getCatalogGame: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogRelease"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  validateCatalogAnswers: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogValidationInput"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogValidation"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  listCatalogDrafts: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogListing"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  createCatalogDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogDraft"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getCatalogDraft: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogDraft"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  previewCatalogDraft: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogPreview"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getCatalogHistory: {
+    parameters: {
+      query?: {
+        before?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogHistory"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  saveCatalogDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogChange"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogDraft"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  publishCatalogDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogChange"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogDraft"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  pauseCatalogDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogChange"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogDraft"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  resumeCatalogDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogChange"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogDraft"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  archiveCatalogDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogChange"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogDraft"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  restoreCatalogDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogChange"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogDraft"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  deleteCatalogDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogChange"];
+      };
+    };
+    responses: {
+      /** @description Unpublished game deleted. */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  validateCatalogPreview: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogPreviewInput"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogValidation"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */
       default: {

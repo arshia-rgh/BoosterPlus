@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// Game stores a catalog draft; publication and validated forms arrive in P03.
+// Game stores a mutable catalog draft and the current immutable release pointer.
 type Game struct{ ent.Schema }
 
 // Fields defines the draft catalog mapping.
@@ -21,6 +21,9 @@ func (Game) Fields() []ent.Field {
 		field.JSON("configuration", map[string]any{}),
 		field.Int("version").Default(1).Positive(),
 		field.Bool("published").Default(false),
+		field.Bool("paused").Default(false),
+		field.Bool("archived").Default(false),
+		field.String("current_release").MaxLen(36).Default(""),
 		field.Time("created_at").Default(time.Now).Immutable(),
 	}
 }

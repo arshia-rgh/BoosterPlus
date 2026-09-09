@@ -20,6 +20,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
@@ -82,16 +83,17 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			authaudit.Table:     authaudit.ValidColumn,
-			authchallenge.Table: authchallenge.ValidColumn,
-			authflow.Table:      authflow.ValidColumn,
-			authidentity.Table:  authidentity.ValidColumn,
-			authmessage.Table:   authmessage.ValidColumn,
-			authrate.Table:      authrate.ValidColumn,
-			authrecovery.Table:  authrecovery.ValidColumn,
-			authsession.Table:   authsession.ValidColumn,
-			game.Table:          game.ValidColumn,
-			user.Table:          user.ValidColumn,
+			authaudit.Table:      authaudit.ValidColumn,
+			authchallenge.Table:  authchallenge.ValidColumn,
+			authflow.Table:       authflow.ValidColumn,
+			authidentity.Table:   authidentity.ValidColumn,
+			authmessage.Table:    authmessage.ValidColumn,
+			authrate.Table:       authrate.ValidColumn,
+			authrecovery.Table:   authrecovery.ValidColumn,
+			authsession.Table:    authsession.ValidColumn,
+			catalogrelease.Table: catalogrelease.ValidColumn,
+			game.Table:           game.ValidColumn,
+			user.Table:           user.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

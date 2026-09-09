@@ -84,6 +84,21 @@ func Published(v bool) predicate.Game {
 	return predicate.Game(sql.FieldEQ(FieldPublished, v))
 }
 
+// Paused applies equality check predicate on the "paused" field. It's identical to PausedEQ.
+func Paused(v bool) predicate.Game {
+	return predicate.Game(sql.FieldEQ(FieldPaused, v))
+}
+
+// Archived applies equality check predicate on the "archived" field. It's identical to ArchivedEQ.
+func Archived(v bool) predicate.Game {
+	return predicate.Game(sql.FieldEQ(FieldArchived, v))
+}
+
+// CurrentRelease applies equality check predicate on the "current_release" field. It's identical to CurrentReleaseEQ.
+func CurrentRelease(v string) predicate.Game {
+	return predicate.Game(sql.FieldEQ(FieldCurrentRelease, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Game {
 	return predicate.Game(sql.FieldEQ(FieldCreatedAt, v))
@@ -267,6 +282,91 @@ func PublishedEQ(v bool) predicate.Game {
 // PublishedNEQ applies the NEQ predicate on the "published" field.
 func PublishedNEQ(v bool) predicate.Game {
 	return predicate.Game(sql.FieldNEQ(FieldPublished, v))
+}
+
+// PausedEQ applies the EQ predicate on the "paused" field.
+func PausedEQ(v bool) predicate.Game {
+	return predicate.Game(sql.FieldEQ(FieldPaused, v))
+}
+
+// PausedNEQ applies the NEQ predicate on the "paused" field.
+func PausedNEQ(v bool) predicate.Game {
+	return predicate.Game(sql.FieldNEQ(FieldPaused, v))
+}
+
+// ArchivedEQ applies the EQ predicate on the "archived" field.
+func ArchivedEQ(v bool) predicate.Game {
+	return predicate.Game(sql.FieldEQ(FieldArchived, v))
+}
+
+// ArchivedNEQ applies the NEQ predicate on the "archived" field.
+func ArchivedNEQ(v bool) predicate.Game {
+	return predicate.Game(sql.FieldNEQ(FieldArchived, v))
+}
+
+// CurrentReleaseEQ applies the EQ predicate on the "current_release" field.
+func CurrentReleaseEQ(v string) predicate.Game {
+	return predicate.Game(sql.FieldEQ(FieldCurrentRelease, v))
+}
+
+// CurrentReleaseNEQ applies the NEQ predicate on the "current_release" field.
+func CurrentReleaseNEQ(v string) predicate.Game {
+	return predicate.Game(sql.FieldNEQ(FieldCurrentRelease, v))
+}
+
+// CurrentReleaseIn applies the In predicate on the "current_release" field.
+func CurrentReleaseIn(vs ...string) predicate.Game {
+	return predicate.Game(sql.FieldIn(FieldCurrentRelease, vs...))
+}
+
+// CurrentReleaseNotIn applies the NotIn predicate on the "current_release" field.
+func CurrentReleaseNotIn(vs ...string) predicate.Game {
+	return predicate.Game(sql.FieldNotIn(FieldCurrentRelease, vs...))
+}
+
+// CurrentReleaseGT applies the GT predicate on the "current_release" field.
+func CurrentReleaseGT(v string) predicate.Game {
+	return predicate.Game(sql.FieldGT(FieldCurrentRelease, v))
+}
+
+// CurrentReleaseGTE applies the GTE predicate on the "current_release" field.
+func CurrentReleaseGTE(v string) predicate.Game {
+	return predicate.Game(sql.FieldGTE(FieldCurrentRelease, v))
+}
+
+// CurrentReleaseLT applies the LT predicate on the "current_release" field.
+func CurrentReleaseLT(v string) predicate.Game {
+	return predicate.Game(sql.FieldLT(FieldCurrentRelease, v))
+}
+
+// CurrentReleaseLTE applies the LTE predicate on the "current_release" field.
+func CurrentReleaseLTE(v string) predicate.Game {
+	return predicate.Game(sql.FieldLTE(FieldCurrentRelease, v))
+}
+
+// CurrentReleaseContains applies the Contains predicate on the "current_release" field.
+func CurrentReleaseContains(v string) predicate.Game {
+	return predicate.Game(sql.FieldContains(FieldCurrentRelease, v))
+}
+
+// CurrentReleaseHasPrefix applies the HasPrefix predicate on the "current_release" field.
+func CurrentReleaseHasPrefix(v string) predicate.Game {
+	return predicate.Game(sql.FieldHasPrefix(FieldCurrentRelease, v))
+}
+
+// CurrentReleaseHasSuffix applies the HasSuffix predicate on the "current_release" field.
+func CurrentReleaseHasSuffix(v string) predicate.Game {
+	return predicate.Game(sql.FieldHasSuffix(FieldCurrentRelease, v))
+}
+
+// CurrentReleaseEqualFold applies the EqualFold predicate on the "current_release" field.
+func CurrentReleaseEqualFold(v string) predicate.Game {
+	return predicate.Game(sql.FieldEqualFold(FieldCurrentRelease, v))
+}
+
+// CurrentReleaseContainsFold applies the ContainsFold predicate on the "current_release" field.
+func CurrentReleaseContainsFold(v string) predicate.Game {
+	return predicate.Game(sql.FieldContainsFold(FieldCurrentRelease, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

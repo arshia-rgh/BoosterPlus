@@ -120,7 +120,7 @@ func TestTiDBMigrationLifecycleAndEntQueries(t *testing.T) {
 	if _, duplicateErr := client.User.Create().SetEmail(user.Email).Save(t.Context()); !ent.IsConstraintError(duplicateErr) {
 		t.Fatal("unique constraint not enforced", duplicateErr)
 	}
-	created, createErr := client.Game.Create().SetSlug("mobile-legends").SetName("Mobile Legends").SetConfiguration(map[string]any{"mode": "draft", "regions": []string{"example"}}).Save(t.Context())
+	created, createErr := client.Game.Create().SetSlug("migration-fixture").SetName("Mobile Legends").SetConfiguration(map[string]any{"mode": "draft", "regions": []string{"example"}}).Save(t.Context())
 	if createErr != nil {
 		t.Fatal(createErr)
 	}

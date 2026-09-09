@@ -14,6 +14,7 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/config"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/httpapi"
@@ -35,7 +36,8 @@ func Server(ctx context.Context, cfg config.Config, logger *slog.Logger) (result
 	if providerErr != nil {
 		return providerErr
 	}
-	auth, authErr := identity.New(ent.NewClient(ent.Driver(entsql.OpenDB(dialect.MySQL, db))), cfg.Identity, nil, provider)
+	client := ent.NewClient(ent.Driver(entsql.OpenDB(dialect.MySQL, db)))
+	auth, authErr := identity.New(client, cfg.Identity, nil, provider)
 	if authErr != nil {
 		return authErr
 	}
@@ -44,7 +46,7 @@ func Server(ctx context.Context, cfg config.Config, logger *slog.Logger) (result
 		return fmt.Errorf("listen: %w", err)
 	}
 	logger.InfoContext(ctx, "API listening", "address", listener.Addr().String())
-	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register))
+	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, catalog.New(client, auth).Register))
 }
 
 // Serve applies transport timeouts and drains in-flight work on cancellation.

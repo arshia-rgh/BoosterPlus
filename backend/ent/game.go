@@ -28,6 +28,12 @@ type Game struct {
 	Version int `json:"version,omitempty"`
 	// Published holds the value of the "published" field.
 	Published bool `json:"published,omitempty"`
+	// Paused holds the value of the "paused" field.
+	Paused bool `json:"paused,omitempty"`
+	// Archived holds the value of the "archived" field.
+	Archived bool `json:"archived,omitempty"`
+	// CurrentRelease holds the value of the "current_release" field.
+	CurrentRelease string `json:"current_release,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt    time.Time `json:"created_at,omitempty"`
 	selectValues sql.SelectValues
@@ -40,11 +46,11 @@ func (*Game) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case game.FieldConfiguration:
 			values[i] = new([]byte)
-		case game.FieldPublished:
+		case game.FieldPublished, game.FieldPaused, game.FieldArchived:
 			values[i] = new(sql.NullBool)
 		case game.FieldVersion:
 			values[i] = new(sql.NullInt64)
-		case game.FieldID, game.FieldSlug, game.FieldName:
+		case game.FieldID, game.FieldSlug, game.FieldName, game.FieldCurrentRelease:
 			values[i] = new(sql.NullString)
 		case game.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -100,6 +106,24 @@ func (_m *Game) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field published", values[i])
 			} else if value.Valid {
 				_m.Published = value.Bool
+			}
+		case game.FieldPaused:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field paused", values[i])
+			} else if value.Valid {
+				_m.Paused = value.Bool
+			}
+		case game.FieldArchived:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field archived", values[i])
+			} else if value.Valid {
+				_m.Archived = value.Bool
+			}
+		case game.FieldCurrentRelease:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field current_release", values[i])
+			} else if value.Valid {
+				_m.CurrentRelease = value.String
 			}
 		case game.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -157,6 +181,15 @@ func (_m *Game) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("published=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Published))
+	builder.WriteString(", ")
+	builder.WriteString("paused=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Paused))
+	builder.WriteString(", ")
+	builder.WriteString("archived=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Archived))
+	builder.WriteString(", ")
+	builder.WriteString("current_release=")
+	builder.WriteString(_m.CurrentRelease)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

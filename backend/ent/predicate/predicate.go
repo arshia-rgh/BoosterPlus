@@ -30,6 +30,9 @@ type AuthRecovery func(*sql.Selector)
 // AuthSession is the predicate function for authsession builders.
 type AuthSession func(*sql.Selector)
 
+// CatalogRelease is the predicate function for catalogrelease builders.
+type CatalogRelease func(*sql.Selector)
+
 // Game is the predicate function for game builders.
 type Game func(*sql.Selector)
 

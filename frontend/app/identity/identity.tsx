@@ -701,9 +701,11 @@ function Administration({
 export default function Identity({
   title,
   capability = "account",
+  children,
 }: {
   title: string;
   capability?: "account" | "admin" | "booster";
+  children?: React.ReactNode;
 }) {
   const [search] = useSearchParams();
   const googleError = new Map([
@@ -833,7 +835,10 @@ export default function Identity({
               <nav className="account-nav" aria-label="Account navigation">
                 <Link to="/account">Profile and security</Link>
                 {session.capabilities.includes("admin") && (
-                  <Link to="/admin">Administration</Link>
+                  <>
+                    <Link to="/admin">Administration</Link>
+                    <Link to="/admin/catalog">Catalog editor</Link>
+                  </>
                 )}
                 {session.capabilities.includes("booster") && (
                   <Link to="/booster">Booster portal</Link>
@@ -868,6 +873,8 @@ export default function Identity({
                 </>
               ) : !session.capabilities.includes(capability) ? (
                 <p role="alert">You do not have access to this portal.</p>
+              ) : children ? (
+                children
               ) : capability === "admin" ? (
                 <Administration session={session} refresh={refresh} />
               ) : capability === "booster" ? (

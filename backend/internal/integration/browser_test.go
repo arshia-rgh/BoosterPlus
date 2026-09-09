@@ -15,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/httpapi"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
@@ -52,9 +53,12 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	fixtures := map[string]string{}
 	for _, project := range []string{"desktop", "mobile"} {
-		for _, role := range []string{"customer", "booster", "administrator", "owner", "target"} {
+		for _, role := range []string{"customer", "booster", "administrator", "owner", "target", "catalog"} {
 			email := strings.ToLower(role + "-" + project + "-" + rand.Text() + "@example.test")
 			account, createErr := f.client.User.Create().SetEmail(email).SetEmailVerifiedAt(time.Now()).SetTermsVersion("test-v1").SetTermsAcceptedAt(time.Now()).SetRole(func() string {
+				if role == "catalog" {
+					return "administrator"
+				}
 				if role == "target" {
 					return "customer"
 				}
@@ -67,7 +71,7 @@ func TestBrowserEnvironment(t *testing.T) {
 			fixtures[project+"_"+role+"_id"] = account.ID
 		}
 	}
-	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, service.Register))
+	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, service.Register, catalog.New(f.client, service).Register))
 	defer server.Close()
 	work, cancel := context.WithCancel(t.Context())
 	defer cancel()

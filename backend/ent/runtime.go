@@ -13,6 +13,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/schema"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
@@ -218,6 +219,30 @@ func init() {
 	authsessionDescID := authsessionFields[0].Descriptor()
 	// authsession.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	authsession.IDValidator = authsessionDescID.Validators[0].(func(string) error)
+	catalogreleaseFields := schema.CatalogRelease{}.Fields()
+	_ = catalogreleaseFields
+	// catalogreleaseDescGameID is the schema descriptor for game_id field.
+	catalogreleaseDescGameID := catalogreleaseFields[1].Descriptor()
+	// catalogrelease.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
+	catalogrelease.GameIDValidator = catalogreleaseDescGameID.Validators[0].(func(string) error)
+	// catalogreleaseDescVersion is the schema descriptor for version field.
+	catalogreleaseDescVersion := catalogreleaseFields[2].Descriptor()
+	// catalogrelease.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	catalogrelease.VersionValidator = catalogreleaseDescVersion.Validators[0].(func(int) error)
+	// catalogreleaseDescCreatedBy is the schema descriptor for created_by field.
+	catalogreleaseDescCreatedBy := catalogreleaseFields[4].Descriptor()
+	// catalogrelease.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	catalogrelease.CreatedByValidator = catalogreleaseDescCreatedBy.Validators[0].(func(string) error)
+	// catalogreleaseDescCreatedAt is the schema descriptor for created_at field.
+	catalogreleaseDescCreatedAt := catalogreleaseFields[5].Descriptor()
+	// catalogrelease.DefaultCreatedAt holds the default value on creation for the created_at field.
+	catalogrelease.DefaultCreatedAt = catalogreleaseDescCreatedAt.Default.(func() time.Time)
+	// catalogreleaseDescID is the schema descriptor for id field.
+	catalogreleaseDescID := catalogreleaseFields[0].Descriptor()
+	// catalogrelease.DefaultID holds the default value on creation for the id field.
+	catalogrelease.DefaultID = catalogreleaseDescID.Default.(func() string)
+	// catalogrelease.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	catalogrelease.IDValidator = catalogreleaseDescID.Validators[0].(func(string) error)
 	gameFields := schema.Game{}.Fields()
 	_ = gameFields
 	// gameDescSlug is the schema descriptor for slug field.
@@ -266,8 +291,22 @@ func init() {
 	gameDescPublished := gameFields[5].Descriptor()
 	// game.DefaultPublished holds the default value on creation for the published field.
 	game.DefaultPublished = gameDescPublished.Default.(bool)
+	// gameDescPaused is the schema descriptor for paused field.
+	gameDescPaused := gameFields[6].Descriptor()
+	// game.DefaultPaused holds the default value on creation for the paused field.
+	game.DefaultPaused = gameDescPaused.Default.(bool)
+	// gameDescArchived is the schema descriptor for archived field.
+	gameDescArchived := gameFields[7].Descriptor()
+	// game.DefaultArchived holds the default value on creation for the archived field.
+	game.DefaultArchived = gameDescArchived.Default.(bool)
+	// gameDescCurrentRelease is the schema descriptor for current_release field.
+	gameDescCurrentRelease := gameFields[8].Descriptor()
+	// game.DefaultCurrentRelease holds the default value on creation for the current_release field.
+	game.DefaultCurrentRelease = gameDescCurrentRelease.Default.(string)
+	// game.CurrentReleaseValidator is a validator for the "current_release" field. It is called by the builders before save.
+	game.CurrentReleaseValidator = gameDescCurrentRelease.Validators[0].(func(string) error)
 	// gameDescCreatedAt is the schema descriptor for created_at field.
-	gameDescCreatedAt := gameFields[6].Descriptor()
+	gameDescCreatedAt := gameFields[9].Descriptor()
 	// game.DefaultCreatedAt holds the default value on creation for the created_at field.
 	game.DefaultCreatedAt = gameDescCreatedAt.Default.(func() time.Time)
 	// gameDescID is the schema descriptor for id field.

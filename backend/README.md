@@ -78,3 +78,7 @@ docker compose run --rm --entrypoint /app/boosterplus api identity bootstrap-own
 ```
 
 The operator reference is an auditable identifier, never a password or free-form case history. Setup appends missing identity keys without rotating existing secrets. Use `PUBLIC_ORIGIN=http://127.0.0.1:3000` in the local backend `.env` if testing Google with the production frontend server instead of Vite on port 5173.
+
+## Catalog and SQL publication storage
+
+SQL migrations 5–6 add `catalog_releases`, a current-release pointer on `games`, guarded upgrade/rollback visibility, and an unverified Mobile Legends draft. Ent maps queries; it never owns migration execution. P03 routes expose admin drafts/preview/publication/history and public catalog/selection validation. Staff mutations share the identity authorization transaction and publication requires recent verification of both factors. See [catalog operations](../docs/catalog.md) for configuration limits, exact-decimal answers, immutable revisions and remaining launch inputs.

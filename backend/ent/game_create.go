@@ -66,6 +66,48 @@ func (_c *GameCreate) SetNillablePublished(v *bool) *GameCreate {
 	return _c
 }
 
+// SetPaused sets the "paused" field.
+func (_c *GameCreate) SetPaused(v bool) *GameCreate {
+	_c.mutation.SetPaused(v)
+	return _c
+}
+
+// SetNillablePaused sets the "paused" field if the given value is not nil.
+func (_c *GameCreate) SetNillablePaused(v *bool) *GameCreate {
+	if v != nil {
+		_c.SetPaused(*v)
+	}
+	return _c
+}
+
+// SetArchived sets the "archived" field.
+func (_c *GameCreate) SetArchived(v bool) *GameCreate {
+	_c.mutation.SetArchived(v)
+	return _c
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (_c *GameCreate) SetNillableArchived(v *bool) *GameCreate {
+	if v != nil {
+		_c.SetArchived(*v)
+	}
+	return _c
+}
+
+// SetCurrentRelease sets the "current_release" field.
+func (_c *GameCreate) SetCurrentRelease(v string) *GameCreate {
+	_c.mutation.SetCurrentRelease(v)
+	return _c
+}
+
+// SetNillableCurrentRelease sets the "current_release" field if the given value is not nil.
+func (_c *GameCreate) SetNillableCurrentRelease(v *string) *GameCreate {
+	if v != nil {
+		_c.SetCurrentRelease(*v)
+	}
+	return _c
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_c *GameCreate) SetCreatedAt(v time.Time) *GameCreate {
 	_c.mutation.SetCreatedAt(v)
@@ -137,6 +179,18 @@ func (_c *GameCreate) defaults() {
 		v := game.DefaultPublished
 		_c.mutation.SetPublished(v)
 	}
+	if _, ok := _c.mutation.Paused(); !ok {
+		v := game.DefaultPaused
+		_c.mutation.SetPaused(v)
+	}
+	if _, ok := _c.mutation.Archived(); !ok {
+		v := game.DefaultArchived
+		_c.mutation.SetArchived(v)
+	}
+	if _, ok := _c.mutation.CurrentRelease(); !ok {
+		v := game.DefaultCurrentRelease
+		_c.mutation.SetCurrentRelease(v)
+	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := game.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
@@ -178,6 +232,20 @@ func (_c *GameCreate) check() error {
 	}
 	if _, ok := _c.mutation.Published(); !ok {
 		return &ValidationError{Name: "published", err: errors.New(`ent: missing required field "Game.published"`)}
+	}
+	if _, ok := _c.mutation.Paused(); !ok {
+		return &ValidationError{Name: "paused", err: errors.New(`ent: missing required field "Game.paused"`)}
+	}
+	if _, ok := _c.mutation.Archived(); !ok {
+		return &ValidationError{Name: "archived", err: errors.New(`ent: missing required field "Game.archived"`)}
+	}
+	if _, ok := _c.mutation.CurrentRelease(); !ok {
+		return &ValidationError{Name: "current_release", err: errors.New(`ent: missing required field "Game.current_release"`)}
+	}
+	if v, ok := _c.mutation.CurrentRelease(); ok {
+		if err := game.CurrentReleaseValidator(v); err != nil {
+			return &ValidationError{Name: "current_release", err: fmt.Errorf(`ent: validator failed for field "Game.current_release": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Game.created_at"`)}
@@ -241,6 +309,18 @@ func (_c *GameCreate) createSpec() (*Game, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Published(); ok {
 		_spec.SetField(game.FieldPublished, field.TypeBool, value)
 		_node.Published = value
+	}
+	if value, ok := _c.mutation.Paused(); ok {
+		_spec.SetField(game.FieldPaused, field.TypeBool, value)
+		_node.Paused = value
+	}
+	if value, ok := _c.mutation.Archived(); ok {
+		_spec.SetField(game.FieldArchived, field.TypeBool, value)
+		_node.Archived = value
+	}
+	if value, ok := _c.mutation.CurrentRelease(); ok {
+		_spec.SetField(game.FieldCurrentRelease, field.TypeString, value)
+		_node.CurrentRelease = value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(game.FieldCreatedAt, field.TypeTime, value)

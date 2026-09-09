@@ -30,6 +30,8 @@ type Tx struct {
 	AuthRecovery *AuthRecoveryClient
 	// AuthSession is the client for interacting with the AuthSession builders.
 	AuthSession *AuthSessionClient
+	// CatalogRelease is the client for interacting with the CatalogRelease builders.
+	CatalogRelease *CatalogReleaseClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
 	// User is the client for interacting with the User builders.
@@ -173,6 +175,7 @@ func (tx *Tx) init() {
 	tx.AuthRate = NewAuthRateClient(tx.config)
 	tx.AuthRecovery = NewAuthRecoveryClient(tx.config)
 	tx.AuthSession = NewAuthSessionClient(tx.config)
+	tx.CatalogRelease = NewCatalogReleaseClient(tx.config)
 	tx.Game = NewGameClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }

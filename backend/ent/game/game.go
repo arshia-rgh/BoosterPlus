@@ -23,6 +23,12 @@ const (
 	FieldVersion = "version"
 	// FieldPublished holds the string denoting the published field in the database.
 	FieldPublished = "published"
+	// FieldPaused holds the string denoting the paused field in the database.
+	FieldPaused = "paused"
+	// FieldArchived holds the string denoting the archived field in the database.
+	FieldArchived = "archived"
+	// FieldCurrentRelease holds the string denoting the current_release field in the database.
+	FieldCurrentRelease = "current_release"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// Table holds the table name of the game in the database.
@@ -37,6 +43,9 @@ var Columns = []string{
 	FieldConfiguration,
 	FieldVersion,
 	FieldPublished,
+	FieldPaused,
+	FieldArchived,
+	FieldCurrentRelease,
 	FieldCreatedAt,
 }
 
@@ -61,6 +70,14 @@ var (
 	VersionValidator func(int) error
 	// DefaultPublished holds the default value on creation for the "published" field.
 	DefaultPublished bool
+	// DefaultPaused holds the default value on creation for the "paused" field.
+	DefaultPaused bool
+	// DefaultArchived holds the default value on creation for the "archived" field.
+	DefaultArchived bool
+	// DefaultCurrentRelease holds the default value on creation for the "current_release" field.
+	DefaultCurrentRelease string
+	// CurrentReleaseValidator is a validator for the "current_release" field. It is called by the builders before save.
+	CurrentReleaseValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultID holds the default value on creation for the "id" field.
@@ -95,6 +112,21 @@ func ByVersion(opts ...sql.OrderTermOption) OrderOption {
 // ByPublished orders the results by the published field.
 func ByPublished(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPublished, opts...).ToFunc()
+}
+
+// ByPaused orders the results by the paused field.
+func ByPaused(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPaused, opts...).ToFunc()
+}
+
+// ByArchived orders the results by the archived field.
+func ByArchived(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldArchived, opts...).ToFunc()
+}
+
+// ByCurrentRelease orders the results by the current_release field.
+func ByCurrentRelease(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCurrentRelease, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

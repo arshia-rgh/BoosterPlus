@@ -19,6 +19,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/predicate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
@@ -33,16 +34,17 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAuthAudit     = "AuthAudit"
-	TypeAuthChallenge = "AuthChallenge"
-	TypeAuthFlow      = "AuthFlow"
-	TypeAuthIdentity  = "AuthIdentity"
-	TypeAuthMessage   = "AuthMessage"
-	TypeAuthRate      = "AuthRate"
-	TypeAuthRecovery  = "AuthRecovery"
-	TypeAuthSession   = "AuthSession"
-	TypeGame          = "Game"
-	TypeUser          = "User"
+	TypeAuthAudit      = "AuthAudit"
+	TypeAuthChallenge  = "AuthChallenge"
+	TypeAuthFlow       = "AuthFlow"
+	TypeAuthIdentity   = "AuthIdentity"
+	TypeAuthMessage    = "AuthMessage"
+	TypeAuthRate       = "AuthRate"
+	TypeAuthRecovery   = "AuthRecovery"
+	TypeAuthSession    = "AuthSession"
+	TypeCatalogRelease = "CatalogRelease"
+	TypeGame           = "Game"
+	TypeUser           = "User"
 )
 
 // AuthAuditMutation represents an operation that mutates the AuthAudit nodes in the graph.
@@ -5267,23 +5269,610 @@ func (m *AuthSessionMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown AuthSession edge %s", name)
 }
 
-// GameMutation represents an operation that mutates the Game nodes in the graph.
-type GameMutation struct {
+// CatalogReleaseMutation represents an operation that mutates the CatalogRelease nodes in the graph.
+type CatalogReleaseMutation struct {
 	config
 	op            Op
 	typ           string
 	id            *string
-	slug          *string
-	name          *string
-	configuration *map[string]interface{}
+	game_id       *string
 	version       *int
 	addversion    *int
-	published     *bool
+	configuration *map[string]interface{}
+	created_by    *string
 	created_at    *time.Time
 	clearedFields map[string]struct{}
 	done          bool
-	oldValue      func(context.Context) (*Game, error)
-	predicates    []predicate.Game
+	oldValue      func(context.Context) (*CatalogRelease, error)
+	predicates    []predicate.CatalogRelease
+}
+
+var _ ent.Mutation = (*CatalogReleaseMutation)(nil)
+
+// catalogreleaseOption allows management of the mutation configuration using functional options.
+type catalogreleaseOption func(*CatalogReleaseMutation)
+
+// newCatalogReleaseMutation creates new mutation for the CatalogRelease entity.
+func newCatalogReleaseMutation(c config, op Op, opts ...catalogreleaseOption) *CatalogReleaseMutation {
+	m := &CatalogReleaseMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCatalogRelease,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCatalogReleaseID sets the ID field of the mutation.
+func withCatalogReleaseID(id string) catalogreleaseOption {
+	return func(m *CatalogReleaseMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CatalogRelease
+		)
+		m.oldValue = func(ctx context.Context) (*CatalogRelease, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CatalogRelease.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCatalogRelease sets the old CatalogRelease of the mutation.
+func withCatalogRelease(node *CatalogRelease) catalogreleaseOption {
+	return func(m *CatalogReleaseMutation) {
+		m.oldValue = func(context.Context) (*CatalogRelease, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CatalogReleaseMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CatalogReleaseMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of CatalogRelease entities.
+func (m *CatalogReleaseMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CatalogReleaseMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CatalogReleaseMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CatalogRelease.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetGameID sets the "game_id" field.
+func (m *CatalogReleaseMutation) SetGameID(s string) {
+	m.game_id = &s
+}
+
+// GameID returns the value of the "game_id" field in the mutation.
+func (m *CatalogReleaseMutation) GameID() (r string, exists bool) {
+	v := m.game_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGameID returns the old "game_id" field's value of the CatalogRelease entity.
+// If the CatalogRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CatalogReleaseMutation) OldGameID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGameID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGameID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGameID: %w", err)
+	}
+	return oldValue.GameID, nil
+}
+
+// ResetGameID resets all changes to the "game_id" field.
+func (m *CatalogReleaseMutation) ResetGameID() {
+	m.game_id = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *CatalogReleaseMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *CatalogReleaseMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the CatalogRelease entity.
+// If the CatalogRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CatalogReleaseMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *CatalogReleaseMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *CatalogReleaseMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *CatalogReleaseMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetConfiguration sets the "configuration" field.
+func (m *CatalogReleaseMutation) SetConfiguration(value map[string]interface{}) {
+	m.configuration = &value
+}
+
+// Configuration returns the value of the "configuration" field in the mutation.
+func (m *CatalogReleaseMutation) Configuration() (r map[string]interface{}, exists bool) {
+	v := m.configuration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfiguration returns the old "configuration" field's value of the CatalogRelease entity.
+// If the CatalogRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CatalogReleaseMutation) OldConfiguration(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConfiguration is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConfiguration requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfiguration: %w", err)
+	}
+	return oldValue.Configuration, nil
+}
+
+// ResetConfiguration resets all changes to the "configuration" field.
+func (m *CatalogReleaseMutation) ResetConfiguration() {
+	m.configuration = nil
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *CatalogReleaseMutation) SetCreatedBy(s string) {
+	m.created_by = &s
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *CatalogReleaseMutation) CreatedBy() (r string, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the CatalogRelease entity.
+// If the CatalogRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CatalogReleaseMutation) OldCreatedBy(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *CatalogReleaseMutation) ResetCreatedBy() {
+	m.created_by = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CatalogReleaseMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CatalogReleaseMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CatalogRelease entity.
+// If the CatalogRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CatalogReleaseMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CatalogReleaseMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the CatalogReleaseMutation builder.
+func (m *CatalogReleaseMutation) Where(ps ...predicate.CatalogRelease) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CatalogReleaseMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CatalogReleaseMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CatalogRelease, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CatalogReleaseMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CatalogReleaseMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CatalogRelease).
+func (m *CatalogReleaseMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CatalogReleaseMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.game_id != nil {
+		fields = append(fields, catalogrelease.FieldGameID)
+	}
+	if m.version != nil {
+		fields = append(fields, catalogrelease.FieldVersion)
+	}
+	if m.configuration != nil {
+		fields = append(fields, catalogrelease.FieldConfiguration)
+	}
+	if m.created_by != nil {
+		fields = append(fields, catalogrelease.FieldCreatedBy)
+	}
+	if m.created_at != nil {
+		fields = append(fields, catalogrelease.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CatalogReleaseMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case catalogrelease.FieldGameID:
+		return m.GameID()
+	case catalogrelease.FieldVersion:
+		return m.Version()
+	case catalogrelease.FieldConfiguration:
+		return m.Configuration()
+	case catalogrelease.FieldCreatedBy:
+		return m.CreatedBy()
+	case catalogrelease.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CatalogReleaseMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case catalogrelease.FieldGameID:
+		return m.OldGameID(ctx)
+	case catalogrelease.FieldVersion:
+		return m.OldVersion(ctx)
+	case catalogrelease.FieldConfiguration:
+		return m.OldConfiguration(ctx)
+	case catalogrelease.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case catalogrelease.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CatalogRelease field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CatalogReleaseMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case catalogrelease.FieldGameID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGameID(v)
+		return nil
+	case catalogrelease.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case catalogrelease.FieldConfiguration:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfiguration(v)
+		return nil
+	case catalogrelease.FieldCreatedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case catalogrelease.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CatalogRelease field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CatalogReleaseMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, catalogrelease.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CatalogReleaseMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case catalogrelease.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CatalogReleaseMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case catalogrelease.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CatalogRelease numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CatalogReleaseMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CatalogReleaseMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CatalogReleaseMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown CatalogRelease nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CatalogReleaseMutation) ResetField(name string) error {
+	switch name {
+	case catalogrelease.FieldGameID:
+		m.ResetGameID()
+		return nil
+	case catalogrelease.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case catalogrelease.FieldConfiguration:
+		m.ResetConfiguration()
+		return nil
+	case catalogrelease.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case catalogrelease.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CatalogRelease field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CatalogReleaseMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CatalogReleaseMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CatalogReleaseMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CatalogReleaseMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CatalogReleaseMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CatalogReleaseMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CatalogReleaseMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CatalogRelease unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CatalogReleaseMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CatalogRelease edge %s", name)
+}
+
+// GameMutation represents an operation that mutates the Game nodes in the graph.
+type GameMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *string
+	slug            *string
+	name            *string
+	configuration   *map[string]interface{}
+	version         *int
+	addversion      *int
+	published       *bool
+	paused          *bool
+	archived        *bool
+	current_release *string
+	created_at      *time.Time
+	clearedFields   map[string]struct{}
+	done            bool
+	oldValue        func(context.Context) (*Game, error)
+	predicates      []predicate.Game
 }
 
 var _ ent.Mutation = (*GameMutation)(nil)
@@ -5590,6 +6179,114 @@ func (m *GameMutation) ResetPublished() {
 	m.published = nil
 }
 
+// SetPaused sets the "paused" field.
+func (m *GameMutation) SetPaused(b bool) {
+	m.paused = &b
+}
+
+// Paused returns the value of the "paused" field in the mutation.
+func (m *GameMutation) Paused() (r bool, exists bool) {
+	v := m.paused
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPaused returns the old "paused" field's value of the Game entity.
+// If the Game object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GameMutation) OldPaused(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPaused is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPaused requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPaused: %w", err)
+	}
+	return oldValue.Paused, nil
+}
+
+// ResetPaused resets all changes to the "paused" field.
+func (m *GameMutation) ResetPaused() {
+	m.paused = nil
+}
+
+// SetArchived sets the "archived" field.
+func (m *GameMutation) SetArchived(b bool) {
+	m.archived = &b
+}
+
+// Archived returns the value of the "archived" field in the mutation.
+func (m *GameMutation) Archived() (r bool, exists bool) {
+	v := m.archived
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldArchived returns the old "archived" field's value of the Game entity.
+// If the Game object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GameMutation) OldArchived(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldArchived is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldArchived requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldArchived: %w", err)
+	}
+	return oldValue.Archived, nil
+}
+
+// ResetArchived resets all changes to the "archived" field.
+func (m *GameMutation) ResetArchived() {
+	m.archived = nil
+}
+
+// SetCurrentRelease sets the "current_release" field.
+func (m *GameMutation) SetCurrentRelease(s string) {
+	m.current_release = &s
+}
+
+// CurrentRelease returns the value of the "current_release" field in the mutation.
+func (m *GameMutation) CurrentRelease() (r string, exists bool) {
+	v := m.current_release
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurrentRelease returns the old "current_release" field's value of the Game entity.
+// If the Game object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GameMutation) OldCurrentRelease(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurrentRelease is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurrentRelease requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurrentRelease: %w", err)
+	}
+	return oldValue.CurrentRelease, nil
+}
+
+// ResetCurrentRelease resets all changes to the "current_release" field.
+func (m *GameMutation) ResetCurrentRelease() {
+	m.current_release = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *GameMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -5660,7 +6357,7 @@ func (m *GameMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GameMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 9)
 	if m.slug != nil {
 		fields = append(fields, game.FieldSlug)
 	}
@@ -5675,6 +6372,15 @@ func (m *GameMutation) Fields() []string {
 	}
 	if m.published != nil {
 		fields = append(fields, game.FieldPublished)
+	}
+	if m.paused != nil {
+		fields = append(fields, game.FieldPaused)
+	}
+	if m.archived != nil {
+		fields = append(fields, game.FieldArchived)
+	}
+	if m.current_release != nil {
+		fields = append(fields, game.FieldCurrentRelease)
 	}
 	if m.created_at != nil {
 		fields = append(fields, game.FieldCreatedAt)
@@ -5697,6 +6403,12 @@ func (m *GameMutation) Field(name string) (ent.Value, bool) {
 		return m.Version()
 	case game.FieldPublished:
 		return m.Published()
+	case game.FieldPaused:
+		return m.Paused()
+	case game.FieldArchived:
+		return m.Archived()
+	case game.FieldCurrentRelease:
+		return m.CurrentRelease()
 	case game.FieldCreatedAt:
 		return m.CreatedAt()
 	}
@@ -5718,6 +6430,12 @@ func (m *GameMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldVersion(ctx)
 	case game.FieldPublished:
 		return m.OldPublished(ctx)
+	case game.FieldPaused:
+		return m.OldPaused(ctx)
+	case game.FieldArchived:
+		return m.OldArchived(ctx)
+	case game.FieldCurrentRelease:
+		return m.OldCurrentRelease(ctx)
 	case game.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	}
@@ -5763,6 +6481,27 @@ func (m *GameMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPublished(v)
+		return nil
+	case game.FieldPaused:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPaused(v)
+		return nil
+	case game.FieldArchived:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetArchived(v)
+		return nil
+	case game.FieldCurrentRelease:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurrentRelease(v)
 		return nil
 	case game.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -5849,6 +6588,15 @@ func (m *GameMutation) ResetField(name string) error {
 		return nil
 	case game.FieldPublished:
 		m.ResetPublished()
+		return nil
+	case game.FieldPaused:
+		m.ResetPaused()
+		return nil
+	case game.FieldArchived:
+		m.ResetArchived()
+		return nil
+	case game.FieldCurrentRelease:
+		m.ResetCurrentRelease()
 		return nil
 	case game.FieldCreatedAt:
 		m.ResetCreatedAt()

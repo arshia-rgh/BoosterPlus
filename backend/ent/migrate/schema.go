@@ -212,6 +212,28 @@ var (
 			},
 		},
 	}
+	// CatalogReleasesColumns holds the columns for the "catalog_releases" table.
+	CatalogReleasesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "game_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "configuration", Type: field.TypeJSON},
+		{Name: "created_by", Type: field.TypeString, Size: 36},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// CatalogReleasesTable holds the schema information for the "catalog_releases" table.
+	CatalogReleasesTable = &schema.Table{
+		Name:       "catalog_releases",
+		Columns:    CatalogReleasesColumns,
+		PrimaryKey: []*schema.Column{CatalogReleasesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "catalog_release_revision",
+				Unique:  true,
+				Columns: []*schema.Column{CatalogReleasesColumns[1], CatalogReleasesColumns[2]},
+			},
+		},
+	}
 	// GamesColumns holds the columns for the "games" table.
 	GamesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -220,6 +242,9 @@ var (
 		{Name: "configuration", Type: field.TypeJSON},
 		{Name: "version", Type: field.TypeInt, Default: 1},
 		{Name: "published", Type: field.TypeBool, Default: false},
+		{Name: "paused", Type: field.TypeBool, Default: false},
+		{Name: "archived", Type: field.TypeBool, Default: false},
+		{Name: "current_release", Type: field.TypeString, Size: 36, Default: ""},
 		{Name: "created_at", Type: field.TypeTime},
 	}
 	// GamesTable holds the schema information for the "games" table.
@@ -265,6 +290,7 @@ var (
 		AuthRatesTable,
 		AuthRecoveriesTable,
 		AuthSessionsTable,
+		CatalogReleasesTable,
 		GamesTable,
 		UsersTable,
 	}

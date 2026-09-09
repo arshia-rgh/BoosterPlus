@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import Home, { meta as homeMeta } from "./home";
 import Games, { meta as gamesMeta } from "./games";
 
@@ -31,3 +31,8 @@ describe("prelaunch catalog", () => {
     expect(gamesMeta()[0]).toEqual({ title: "Games — Booster Plus" });
   });
 });
+
+vi.mock("react-router", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("react-router")>()),
+  useLoaderData: () => ({ games: [], next: "" }),
+}));

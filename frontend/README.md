@@ -1,6 +1,6 @@
 # Booster Plus frontend
 
-Independent React/TypeScript project in the Booster Plus monorepo. P02 includes email/Google sign-in, account settings, authenticator enrollment, recovery codes, session controls, and protected administrator/booster portals. Commerce remains prelaunch.
+Independent React/TypeScript project in the Booster Plus monorepo. P02 includes email/Google sign-in, account settings, authenticator enrollment, recovery codes, session controls, and protected administrator/booster portals. P03 adds published game/service/package pages and the protected catalog/form editor. Orders and checkout remain prelaunch.
 
 ## Commands
 
@@ -17,13 +17,13 @@ Install development dependencies explicitly (`npm ci --include=dev`), including 
 
 The installed JSX accessibility linter currently requires ESLint 9, so ESLint 9.39.5 is pinned despite its upstream deprecation notice. Track migration to ESLint 10 when a compatible accessibility plugin is available; do not bypass peer dependency checks. Dependency audits remain mandatory. TypeScript 5.9.3 is pinned because the current OpenAPI generator requires TypeScript 5; it is also supported by typescript-eslint. A targeted `js-yaml` 4.3.2 override fixes the vulnerable version pinned by the generator's Redocly dependency. Remove that override after upstream includes the patch.
 
-Public pages are rendered on the server through React Router. Go owns authentication, authorization, pricing, database, and financial decisions. Docker packaging and a generated typed OpenAPI client are included. Subsequent phases replace prelaunch content with actual published offerings.
+Public pages are rendered on the server through React Router. Go owns authentication, authorization, pricing, database, and financial decisions. Docker packaging and a generated typed OpenAPI client are included. Catalog pages load published offerings from Go; API outages return an error rather than fabricated catalog data.
 
 ## API contract
 
 `contracts/openapi.json` is the pinned frontend input. `make contract-generate` regenerates types; `make contract-check` fails when those types are stale. Updating from the monorepo's backend is an explicit `make contract-update` operation. Normal install/build/generation never imports backend files. The root gate checks the published and pinned contracts match.
 
-`createAPIClient` takes a trusted API origin and returns a client typed from this contract. It does not invent success responses when the API fails. Identity responses are validated at runtime with Zod against generated contract types. Only Google and email sign-in are supported, without passwords. Staff need MFA at every sign-in.
+`createAPIClient` takes a trusted API origin and returns a client typed from this contract. It does not invent success responses when the API fails. Identity and catalog responses are validated at runtime with Zod; Go tests verify catalog JSON against the pinned OpenAPI schemas. Only Google and email sign-in are supported, without passwords. Staff need MFA at every sign-in.
 
 ## Independent production image
 
@@ -43,3 +43,7 @@ Start `make -C backend dev-up` from the monorepo root, then `make dev` here. The
 `make build start` runs the production SSR server on port 3000 (set HOST/PORT as needed). `API_ORIGIN` and `PROXY_SHARED_KEY` are server-only. Public deployment requires explicit `APP_ENV=production`, approved `ACCOUNT_TERMS_TEXT`, matching frontend/backend `TERMS_VERSION`, HTTPS at the gateway and exact `TRUST_PROXY_CIDRS`; the server checks terms-version alignment at startup. Never publicly launch with preview terms. See [identity operations](../docs/identity-design.md).
 
 Browser tests require local TiDB and Mailpit and launch a disposable database through `scripts/browser-tests.py`. They test actual email delivery, API cookies/CSRF and SQL persistence, not mocked successful sign-in. They drop only the randomly named test schema on completion. Private fixture configuration is mode 0600 and deleted afterward. Browser traces use synthetic accounts and remain ignored. Unit route coverage remains enforced separately from component and browser behavior; its percentage is not a claim of whole-application coverage.
+
+## Catalog editor
+
+Administrators and owners can open `/admin/catalog` after both sign-in factors. The UI manages game drafts, reference catalogs, typed forms, conditions, package variants, preview/publication, availability and historical releases. See [catalog operations and limits](../docs/catalog.md). Numeric answers and monetary minor units remain exact strings. Public media lives under `public/catalog-assets/`; private uploads and secure credential handoff belong to later phases.

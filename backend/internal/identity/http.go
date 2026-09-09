@@ -85,6 +85,10 @@ func (s *Service) cookie(w http.ResponseWriter, kind, value string, maxAge int) 
 func (s *Service) csrf(browser, token string) string { return s.digest("csrf", browser, token) }
 
 func (s *Service) handle(next endpoint) http.HandlerFunc {
+	return s.handleLimit(next, 16<<10)
+}
+
+func (s *Service) handleLimit(next endpoint, bodyLimit int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		w.Header().Set("Vary", "Cookie, Origin")
@@ -123,7 +127,7 @@ func (s *Service) handle(next endpoint) http.HandlerFunc {
 				respondError(w, ErrForbidden)
 				return
 			}
-			r.Body = http.MaxBytesReader(w, r.Body, 16<<10)
+			r.Body = http.MaxBytesReader(w, r.Body, bodyLimit)
 		}
 		if err := next(w, r, state); err != nil {
 			respondError(w, err)

@@ -22,6 +22,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 
@@ -49,6 +50,8 @@ type Client struct {
 	AuthRecovery *AuthRecoveryClient
 	// AuthSession is the client for interacting with the AuthSession builders.
 	AuthSession *AuthSessionClient
+	// CatalogRelease is the client for interacting with the CatalogRelease builders.
+	CatalogRelease *CatalogReleaseClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
 	// User is the client for interacting with the User builders.
@@ -72,6 +75,7 @@ func (c *Client) init() {
 	c.AuthRate = NewAuthRateClient(c.config)
 	c.AuthRecovery = NewAuthRecoveryClient(c.config)
 	c.AuthSession = NewAuthSessionClient(c.config)
+	c.CatalogRelease = NewCatalogReleaseClient(c.config)
 	c.Game = NewGameClient(c.config)
 	c.User = NewUserClient(c.config)
 }
@@ -164,18 +168,19 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:           ctx,
-		config:        cfg,
-		AuthAudit:     NewAuthAuditClient(cfg),
-		AuthChallenge: NewAuthChallengeClient(cfg),
-		AuthFlow:      NewAuthFlowClient(cfg),
-		AuthIdentity:  NewAuthIdentityClient(cfg),
-		AuthMessage:   NewAuthMessageClient(cfg),
-		AuthRate:      NewAuthRateClient(cfg),
-		AuthRecovery:  NewAuthRecoveryClient(cfg),
-		AuthSession:   NewAuthSessionClient(cfg),
-		Game:          NewGameClient(cfg),
-		User:          NewUserClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		AuthAudit:      NewAuthAuditClient(cfg),
+		AuthChallenge:  NewAuthChallengeClient(cfg),
+		AuthFlow:       NewAuthFlowClient(cfg),
+		AuthIdentity:   NewAuthIdentityClient(cfg),
+		AuthMessage:    NewAuthMessageClient(cfg),
+		AuthRate:       NewAuthRateClient(cfg),
+		AuthRecovery:   NewAuthRecoveryClient(cfg),
+		AuthSession:    NewAuthSessionClient(cfg),
+		CatalogRelease: NewCatalogReleaseClient(cfg),
+		Game:           NewGameClient(cfg),
+		User:           NewUserClient(cfg),
 	}, nil
 }
 
@@ -193,18 +198,19 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:           ctx,
-		config:        cfg,
-		AuthAudit:     NewAuthAuditClient(cfg),
-		AuthChallenge: NewAuthChallengeClient(cfg),
-		AuthFlow:      NewAuthFlowClient(cfg),
-		AuthIdentity:  NewAuthIdentityClient(cfg),
-		AuthMessage:   NewAuthMessageClient(cfg),
-		AuthRate:      NewAuthRateClient(cfg),
-		AuthRecovery:  NewAuthRecoveryClient(cfg),
-		AuthSession:   NewAuthSessionClient(cfg),
-		Game:          NewGameClient(cfg),
-		User:          NewUserClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		AuthAudit:      NewAuthAuditClient(cfg),
+		AuthChallenge:  NewAuthChallengeClient(cfg),
+		AuthFlow:       NewAuthFlowClient(cfg),
+		AuthIdentity:   NewAuthIdentityClient(cfg),
+		AuthMessage:    NewAuthMessageClient(cfg),
+		AuthRate:       NewAuthRateClient(cfg),
+		AuthRecovery:   NewAuthRecoveryClient(cfg),
+		AuthSession:    NewAuthSessionClient(cfg),
+		CatalogRelease: NewCatalogReleaseClient(cfg),
+		Game:           NewGameClient(cfg),
+		User:           NewUserClient(cfg),
 	}, nil
 }
 
@@ -235,7 +241,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
-		c.AuthRate, c.AuthRecovery, c.AuthSession, c.Game, c.User,
+		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Game, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -246,7 +252,7 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
-		c.AuthRate, c.AuthRecovery, c.AuthSession, c.Game, c.User,
+		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Game, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -271,6 +277,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AuthRecovery.mutate(ctx, m)
 	case *AuthSessionMutation:
 		return c.AuthSession.mutate(ctx, m)
+	case *CatalogReleaseMutation:
+		return c.CatalogRelease.mutate(ctx, m)
 	case *GameMutation:
 		return c.Game.mutate(ctx, m)
 	case *UserMutation:
@@ -1344,6 +1352,139 @@ func (c *AuthSessionClient) mutate(ctx context.Context, m *AuthSessionMutation) 
 	}
 }
 
+// CatalogReleaseClient is a client for the CatalogRelease schema.
+type CatalogReleaseClient struct {
+	config
+}
+
+// NewCatalogReleaseClient returns a client for the CatalogRelease from the given config.
+func NewCatalogReleaseClient(c config) *CatalogReleaseClient {
+	return &CatalogReleaseClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `catalogrelease.Hooks(f(g(h())))`.
+func (c *CatalogReleaseClient) Use(hooks ...Hook) {
+	c.hooks.CatalogRelease = append(c.hooks.CatalogRelease, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `catalogrelease.Intercept(f(g(h())))`.
+func (c *CatalogReleaseClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CatalogRelease = append(c.inters.CatalogRelease, interceptors...)
+}
+
+// Create returns a builder for creating a CatalogRelease entity.
+func (c *CatalogReleaseClient) Create() *CatalogReleaseCreate {
+	mutation := newCatalogReleaseMutation(c.config, OpCreate)
+	return &CatalogReleaseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CatalogRelease entities.
+func (c *CatalogReleaseClient) CreateBulk(builders ...*CatalogReleaseCreate) *CatalogReleaseCreateBulk {
+	return &CatalogReleaseCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CatalogReleaseClient) MapCreateBulk(slice any, setFunc func(*CatalogReleaseCreate, int)) *CatalogReleaseCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CatalogReleaseCreateBulk{err: fmt.Errorf("calling to CatalogReleaseClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CatalogReleaseCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CatalogReleaseCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CatalogRelease.
+func (c *CatalogReleaseClient) Update() *CatalogReleaseUpdate {
+	mutation := newCatalogReleaseMutation(c.config, OpUpdate)
+	return &CatalogReleaseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CatalogReleaseClient) UpdateOne(_m *CatalogRelease) *CatalogReleaseUpdateOne {
+	mutation := newCatalogReleaseMutation(c.config, OpUpdateOne, withCatalogRelease(_m))
+	return &CatalogReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CatalogReleaseClient) UpdateOneID(id string) *CatalogReleaseUpdateOne {
+	mutation := newCatalogReleaseMutation(c.config, OpUpdateOne, withCatalogReleaseID(id))
+	return &CatalogReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CatalogRelease.
+func (c *CatalogReleaseClient) Delete() *CatalogReleaseDelete {
+	mutation := newCatalogReleaseMutation(c.config, OpDelete)
+	return &CatalogReleaseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CatalogReleaseClient) DeleteOne(_m *CatalogRelease) *CatalogReleaseDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CatalogReleaseClient) DeleteOneID(id string) *CatalogReleaseDeleteOne {
+	builder := c.Delete().Where(catalogrelease.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CatalogReleaseDeleteOne{builder}
+}
+
+// Query returns a query builder for CatalogRelease.
+func (c *CatalogReleaseClient) Query() *CatalogReleaseQuery {
+	return &CatalogReleaseQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCatalogRelease},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CatalogRelease entity by its id.
+func (c *CatalogReleaseClient) Get(ctx context.Context, id string) (*CatalogRelease, error) {
+	return c.Query().Where(catalogrelease.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CatalogReleaseClient) GetX(ctx context.Context, id string) *CatalogRelease {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CatalogReleaseClient) Hooks() []Hook {
+	return c.hooks.CatalogRelease
+}
+
+// Interceptors returns the client interceptors.
+func (c *CatalogReleaseClient) Interceptors() []Interceptor {
+	return c.inters.CatalogRelease
+}
+
+func (c *CatalogReleaseClient) mutate(ctx context.Context, m *CatalogReleaseMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CatalogReleaseCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CatalogReleaseUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CatalogReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CatalogReleaseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CatalogRelease mutation op: %q", m.Op())
+	}
+}
+
 // GameClient is a client for the Game schema.
 type GameClient struct {
 	config
@@ -1614,11 +1755,11 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 type (
 	hooks struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, Game, User []ent.Hook
+		AuthRecovery, AuthSession, CatalogRelease, Game, User []ent.Hook
 	}
 	inters struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, Game, User []ent.Interceptor
+		AuthRecovery, AuthSession, CatalogRelease, Game, User []ent.Interceptor
 	}
 )
 
