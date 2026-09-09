@@ -7,6 +7,7 @@ export default tseslint.config(
   {
     ignores: [
       "build/**",
+      ".cache/**",
       ".react-router/**",
       "coverage/**",
       "playwright-report/**",
@@ -23,7 +24,7 @@ export default tseslint.config(
       },
     },
   },
-  { files: ["**/*.js"], extends: [tseslint.configs.disableTypeChecked] },
+  { files: ["**/*.{js,mjs}"], extends: [tseslint.configs.disableTypeChecked] },
   {
     files: ["app/**/*.{ts,tsx}"],
     plugins: { "react-hooks": hooks, "jsx-a11y": a11y, security },

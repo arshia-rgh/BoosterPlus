@@ -26,7 +26,7 @@ func New(output io.Writer, getenv func(string) string) *cobra.Command {
 	root.SetOut(output)
 	root.SetErr(output)
 	root.AddCommand(&cobra.Command{Use: "version", Args: cobra.NoArgs, RunE: func(cmd *cobra.Command, _ []string) error {
-		_, err := fmt.Fprintln(cmd.OutOrStdout(), "boosterplus 0.1.0; supported schema: 2")
+		_, err := fmt.Fprintf(cmd.OutOrStdout(), "boosterplus 0.1.0; supported schema: %d\n", database.SchemaVersion)
 		return err
 	}})
 	db := &cobra.Command{Use: "db", Short: "Database operations"}
@@ -119,6 +119,7 @@ func New(output io.Writer, getenv func(string) string) *cobra.Command {
 	}
 	db.AddCommand(group)
 	root.AddCommand(db)
+	addOperations(root, getenv)
 	return root
 }
 

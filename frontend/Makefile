@@ -30,9 +30,24 @@ security:
 	npm run security
 pre-commit ci:
 	npm run pre-commit
+	$(MAKE) docker-build image-security
+	python3 scripts/container-smoke.py
 clean:
 	rm -rf build coverage test-results playwright-report .react-router
 docker-build:
 	docker build -t boosterplus-frontend:local .
 docker-run:
 	docker run --rm -p 127.0.0.1:3000:3000 boosterplus-frontend:local
+
+.PHONY: contract-generate contract-check contract-update
+contract-generate:
+	npm run contract:generate
+contract-check:
+	npm run contract:check
+contract-update:
+	cp ../backend/api/openapi.json contracts/openapi.json
+	$(MAKE) contract-generate
+
+.PHONY: image-security
+image-security:
+	python3 ../scripts/scan-image.py boosterplus-frontend:local

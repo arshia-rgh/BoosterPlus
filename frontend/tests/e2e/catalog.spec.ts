@@ -47,3 +47,20 @@ test("keyboard users can skip navigation", async ({ page }) => {
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/#main$/);
 });
+
+for (const [path, title] of [
+  ["/account", "Your account"],
+  ["/admin", "Administration"],
+  ["/booster", "Booster portal"],
+] as const) {
+  test(`${path} shell is accessible and exposes no account data`, async ({
+    page,
+  }) => {
+    await page.goto(path);
+    await expect(page.getByRole("heading", { name: title })).toBeVisible();
+    await expect(
+      page.getByText("Secure sign-in is being prepared.", { exact: false }),
+    ).toBeVisible();
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  });
+}

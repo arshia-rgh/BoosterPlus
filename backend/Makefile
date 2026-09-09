@@ -37,7 +37,10 @@ generate:
 	go generate ./ent
 generate-check:
 	sh scripts/check-generated.sh
-build build-cli:
+build: build-cli
+	go build -trimpath -o bin/server ./cmd/server
+	go build -trimpath -o bin/worker ./cmd/worker
+build-cli:
 	go build -trimpath -o bin/boosterplus ./cmd/cli
 migrate-validate:
 	go run ./cmd/cli db migrate validate
@@ -52,14 +55,40 @@ migrate-down:
 migrate-verify:
 	go run ./cmd/cli db migrate verify
 compose-up:
-	docker compose up -d
+	docker compose up -d tidb mailpit
 compose-down:
-	docker compose down
+	docker compose --profile storage down
 compose-logs:
 	docker compose logs --tail=100
 pre-commit ci:
 	$(MAKE) fmt-check
 	go mod tidy -diff
-	$(MAKE) generate-check vet lint security test-race test-integration migrate-validate build
+	$(MAKE) generate-check vet lint security test-race test-integration migrate-validate build compose-check docker-build image-security
 clean:
 	rm -rf bin coverage.out
+
+.PHONY: setup-env compose-check docker-build dev-up dev-smoke run worker config-validate
+setup-env:
+	python3 scripts/setup-env.py
+compose-check:
+	DEV_S3_SECRET_KEY=configuration-validation-only docker compose config --quiet
+docker-build:
+	docker build -t boosterplus-backend:local .
+dev-up: setup-env docker-build compose-up
+	python3 scripts/wait-tidb.py
+	docker compose run --rm bootstrap
+	docker compose run --rm migrate
+	docker compose --profile storage up -d api worker storage
+	python3 scripts/smoke.py
+dev-smoke:
+	python3 scripts/smoke.py
+run:
+	go run ./cmd/server
+worker:
+	go run ./cmd/worker
+config-validate:
+	go run ./cmd/cli config validate
+
+.PHONY: image-security
+image-security:
+	python3 ../scripts/scan-image.py boosterplus-backend:local

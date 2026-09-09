@@ -1,16 +1,79 @@
 name: boosterplus
+x-app: &app
+  image: boosterplus-backend:local
+  build: .
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs: ["/tmp:size=16m,noexec,nosuid"]
+  mem_limit: 256m
+  cpus: 1
+x-runtime-env: &runtime-env
+  APP_ENV: development
+  HTTP_ADDR: 0.0.0.0:8080
+  DATABASE_DSN: boosterplus_runtime:${DEV_DATABASE_PASSWORD:-}@tcp(tidb:4000)/boosterplus
 services:
   tidb:
     image: pingcap/tidb:v8.5.7@sha256:41708a564e47e96d346fed433c3b9bc40d1950fdcc9c768812daeff6aadd930c
     command: ["--store=unistore", "--path=/data", "--host=0.0.0.0", "--status=10080"]
-    ports:
-      - "127.0.0.1:14000:4000"
-    volumes:
-      - tidb-data:/data
-    security_opt:
-      - no-new-privileges:true
+    ports: ["127.0.0.1:14000:4000"]
+    volumes: [tidb-data:/data]
+    security_opt: [no-new-privileges:true]
     mem_limit: 2g
     cpus: 2
     restart: unless-stopped
+  bootstrap:
+    <<: *app
+    profiles: [tools]
+    entrypoint: [/app/boosterplus, dev, bootstrap]
+    healthcheck: {disable: true}
+    environment:
+      APP_ENV: development
+      DEV_ADMIN_DATABASE_DSN: root@tcp(tidb:4000)/mysql
+      DEV_DATABASE_PASSWORD: ${DEV_DATABASE_PASSWORD:-}
+  migrate:
+    <<: *app
+    profiles: [tools]
+    entrypoint: [/app/boosterplus]
+    command: [db, migrate, up]
+    healthcheck: {disable: true}
+    environment:
+      APP_ENV: development
+      MIGRATION_DATABASE_DSN: boosterplus_migration:${DEV_DATABASE_PASSWORD:-}@tcp(tidb:4000)/boosterplus
+  api:
+    <<: *app
+    environment: *runtime-env
+    ports: ["127.0.0.1:8080:8080"]
+    restart: unless-stopped
+  worker:
+    <<: *app
+    entrypoint: [/app/worker]
+    environment: *runtime-env
+    healthcheck: {disable: true}
+    restart: unless-stopped
+  mailpit:
+    image: axllent/mailpit:v1.31.1@sha256:98b916bd3c8d61f7633a52d3ea2f58d00620cb01ca57ab59edde68c347a95365
+    ports: ["127.0.0.1:8025:8025", "127.0.0.1:1025:1025"]
+    environment:
+      MP_UI_BIND_ADDR: 0.0.0.0:8025
+    read_only: true
+    tmpfs: ["/tmp:size=64m,noexec,nosuid"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+  storage:
+    image: chrislusf/seaweedfs:4.46@sha256:08d516132314207d10c8e37cbffc1f32b147d870169688734cc61c6231625b62
+    profiles: [storage]
+    command: [mini, "-dir=/data"]
+    ports: ["127.0.0.1:8333:8333"]
+    environment:
+      AWS_ACCESS_KEY_ID: boosterplus-local
+      AWS_SECRET_ACCESS_KEY: ${DEV_S3_SECRET_KEY:?Run make setup-env first}
+      S3_BUCKET: boosterplus-private
+    volumes: [storage-data:/data]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 1g
+    cpus: 1
 volumes:
   tidb-data:
+  storage-data:

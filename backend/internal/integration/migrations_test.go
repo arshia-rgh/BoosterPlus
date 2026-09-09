@@ -89,7 +89,7 @@ func TestTiDBMigrationLifecycleAndEntQueries(t *testing.T) {
 	db := testDB(t)
 	r := runner(t, db)
 	statuses, statusErr := r.Status(t.Context())
-	if statusErr != nil || len(statuses) != 2 || statuses[0].State != "pending" {
+	if statusErr != nil || len(statuses) != len(r.Files()) || statuses[0].State != "pending" {
 		t.Fatalf("empty status: %v %v", statuses, statusErr)
 	}
 	var tables int
@@ -138,7 +138,7 @@ func TestTiDBMigrationLifecycleAndEntQueries(t *testing.T) {
 	if loadErr != nil || loaded.Name != "Mobile Legends" {
 		t.Fatalf("rollback failed: %v", loadErr)
 	}
-	if err := r.Down(t.Context(), 1); err != nil {
+	if err := r.Down(t.Context(), len(r.Files())-1); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := client.Game.Query().All(t.Context()); err == nil {
@@ -312,8 +312,8 @@ func TestConcurrentMigrationInvocationsNeverApplyTwice(t *testing.T) {
 	if err := db.QueryRowContext(t.Context(), "SELECT COUNT(*) FROM goose_db_version WHERE version_id > 0 AND is_applied=TRUE").Scan(&applied); err != nil {
 		t.Fatal(err)
 	}
-	if applied != 2 {
-		t.Fatalf("expected exactly two applied versions, got %d", applied)
+	if applied != len(r.Files()) {
+		t.Fatalf("expected all applied versions, got %d", applied)
 	}
 }
 

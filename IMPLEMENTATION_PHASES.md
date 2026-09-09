@@ -4,7 +4,7 @@ Version: 1.0 · Date: 9 September 2026 · Status: approved scope organized for i
 
 This roadmap turns the [product and technical specification](BOOSTER_PLUS_SPEC.md) into deliverable phases. The owner accepted the specification and requested that all seven features previously listed as worth considering be included. Those features are now part of the complete first release described here.
 
-Implementation has started. P00 technical compatibility is verified, P01 foundations are in progress, and P02–P12 have not started. [Implementation progress](docs/progress.md) records executed checks, limitations, and delivery status. Phase order expresses dependencies, not delivery dates. Development milestones may be demonstrated in staging, but the complete release includes all phases and their production checks.
+Implementation has started. P00 is committed and pushed; P01 foundations are implemented and locally verified, with remote CI status still to be confirmed. P02–P12 have not started. [Implementation progress](docs/progress.md) records executed checks, limitations, and delivery status. Phase order expresses dependencies, not delivery dates. Development milestones may be demonstrated in staging, but the complete release includes all phases and their production checks.
 
 The specification remains the detailed product and architecture reference. This document owns implementation order, the added feature requirements, and phase completion criteria. Update both documents when scope changes. Unresolved commercial choices stay open; accepting this roadmap does not invent a payment provider, seller payout arrangement, or win-rate guarantee.
 
