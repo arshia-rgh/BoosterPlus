@@ -18,6 +18,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/config"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/conversations"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/httpapi"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
@@ -55,7 +56,11 @@ func Server(ctx context.Context, cfg config.Config, logger *slog.Logger) (result
 		return noticeErr
 	}
 	files := media.New(client, auth, media.NewS3(cfg.Media.Endpoint, cfg.Media.Region, cfg.Media.Bucket, cfg.Media.Access, cfg.Media.Secret, "media/"), media.Clamd{Network: cfg.Media.ScannerNetwork, Address: cfg.Media.ScannerAddress})
-	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.New(client, auth, nil).Register, notices.Register, files.Register))
+	work, workErr := fulfillment.New(client, auth, cfg.Vault, nil)
+	if workErr != nil {
+		return workErr
+	}
+	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.New(client, auth, nil).Register, notices.Register, files.Register, work.Register))
 }
 
 // Serve applies transport timeouts and drains in-flight work on cancellation.

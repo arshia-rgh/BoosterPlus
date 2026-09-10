@@ -35,13 +35,14 @@ type Option struct {
 
 // ServiceDefinition pins its form, catalogs and evaluator in the same release.
 type ServiceDefinition struct {
-	Key         string     `json:"key"`
-	Name        string     `json:"name"`
-	Description string     `json:"description"`
-	Evaluator   string     `json:"evaluator"`
-	Fields      []Field    `json:"fields"`
-	Rules       []Rule     `json:"rules"`
-	Pricing     *PricePlan `json:"pricing,omitempty"`
+	Key         string             `json:"key"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	Evaluator   string             `json:"evaluator"`
+	Fields      []Field            `json:"fields"`
+	Rules       []Rule             `json:"rules"`
+	Pricing     *PricePlan         `json:"pricing,omitempty"`
+	Fulfillment *FulfillmentPolicy `json:"fulfillment,omitempty"`
 }
 
 // Field is declarative. Numeric answers and bounds use exact decimal strings.

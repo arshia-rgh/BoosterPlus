@@ -28,6 +28,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponclaim"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
@@ -113,6 +114,7 @@ func checkColumn(t, c string) error {
 			couponclaim.Table:         couponclaim.ValidColumn,
 			couponrevision.Table:      couponrevision.ValidColumn,
 			favorite.Table:            favorite.ValidColumn,
+			fulfillment.Table:         fulfillment.ValidColumn,
 			game.Table:                game.ValidColumn,
 			mediafile.Table:           mediafile.ValidColumn,
 			notification.Table:        notification.ValidColumn,

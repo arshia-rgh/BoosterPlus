@@ -1,3 +1,4 @@
+import FulfillmentEditor from "./fulfillment-editor";
 import { PricingEditor } from "./pricing-editor";
 import {
   Action,
@@ -546,6 +547,12 @@ export function ServicesEditor({
           <PricingEditor
             service={service}
             config={config}
+            change={(patch) => {
+              update(i, patch);
+            }}
+          />
+          <FulfillmentEditor
+            service={service}
             change={(patch) => {
               update(i, patch);
             }}

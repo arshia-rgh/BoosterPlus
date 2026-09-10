@@ -313,6 +313,19 @@ export default function DynamicForm({
     >
       <fieldset disabled={busy || unavailable}>
         <legend>{service.name} selections</legend>
+        {service.fulfillment && (
+          <p>
+            After payment, your assigned booster can see these selected fields:{" "}
+            {service.fields
+              .filter((field) =>
+                service.fulfillment?.share_fields.includes(field.key),
+              )
+              .map((field) => field.label)
+              .join(", ") || "none"}
+            . Temporary game access is collected separately only for
+            play-on-account work.
+          </p>
+        )}
         {service.fields
           .filter(
             (field) =>

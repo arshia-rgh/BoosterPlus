@@ -46,6 +46,8 @@ type Tx struct {
 	CouponRevision *CouponRevisionClient
 	// Favorite is the client for interacting with the Favorite builders.
 	Favorite *FavoriteClient
+	// Fulfillment is the client for interacting with the Fulfillment builders.
+	Fulfillment *FulfillmentClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
 	// MediaFile is the client for interacting with the MediaFile builders.
@@ -211,6 +213,7 @@ func (tx *Tx) init() {
 	tx.CouponClaim = NewCouponClaimClient(tx.config)
 	tx.CouponRevision = NewCouponRevisionClient(tx.config)
 	tx.Favorite = NewFavoriteClient(tx.config)
+	tx.Fulfillment = NewFulfillmentClient(tx.config)
 	tx.Game = NewGameClient(tx.config)
 	tx.MediaFile = NewMediaFileClient(tx.config)
 	tx.Notification = NewNotificationClient(tx.config)

@@ -103,6 +103,14 @@ export const pricePlanSchema = z.object({
 export type PricePlan = z.infer<typeof pricePlanSchema>;
 export type PriceRule = z.infer<typeof priceRuleSchema>;
 export type PriceCase = z.infer<typeof priceCaseSchema>;
+export const fulfillmentPolicySchema = z.object({
+  mode: z.enum(["account", "together", "selection"]),
+  field: z.string(),
+  account_value: z.string(),
+  together_value: z.string(),
+  secret_hours: z.number().int(),
+  share_fields: list(z.string()),
+});
 export const serviceSchema = z.object({
   key: z.string(),
   name: z.string(),
@@ -111,6 +119,7 @@ export const serviceSchema = z.object({
   fields: list(fieldSchema),
   rules: list(ruleSchema),
   pricing: pricePlanSchema.optional(),
+  fulfillment: fulfillmentPolicySchema.optional(),
 });
 export const variantSchema = z.object({
   key: z.string(),

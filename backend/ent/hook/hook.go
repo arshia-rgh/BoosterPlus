@@ -201,6 +201,18 @@ func (f FavoriteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FavoriteMutation", m)
 }
 
+// The FulfillmentFunc type is an adapter to allow the use of ordinary
+// function as Fulfillment mutator.
+type FulfillmentFunc func(context.Context, *ent.FulfillmentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FulfillmentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FulfillmentMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FulfillmentMutation", m)
+}
+
 // The GameFunc type is an adapter to allow the use of ordinary
 // function as Game mutator.
 type GameFunc func(context.Context, *ent.GameMutation) (ent.Value, error)

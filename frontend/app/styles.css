@@ -594,3 +594,12 @@ button:disabled {
   border-color: #b8a963;
   background: #26251b;
 }
+
+.secret-value {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-inline-size: 100%;
+}
+.catalog-section > fieldset {
+  min-inline-size: 0;
+}

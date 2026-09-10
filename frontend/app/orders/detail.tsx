@@ -1,3 +1,4 @@
+import FulfillmentPanel from "../fulfillment/panel";
 import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { Action, Check, ErrorNotice, Issues, Text } from "../catalog/controls";
@@ -247,9 +248,11 @@ function Decisions({
         )}
         {detail.contract && (
           <p>
-            {detail.contract.payment_state === "retired"
-              ? "This unpaid contract was retired."
-              : "Crypto checkout is being prepared. No payment has been verified for this order."}
+            {detail.contract.payment_state === "settled"
+              ? "Payment is verified. Follow the fulfillment updates above."
+              : detail.contract.payment_state === "retired"
+                ? "This unpaid contract was retired."
+                : "Crypto checkout is being prepared. No payment has been verified for this order."}
           </p>
         )}
       </fieldset>
@@ -413,6 +416,13 @@ export default function OrderDetail({ admin = false }: { admin?: boolean }) {
             {detail.order.game_name} · {stateLabel(detail.order.state)}
           </h2>
           <p className="order-id">Order {detail.order.id}</p>
+          {detail.contract?.payment_state === "settled" && (
+            <FulfillmentPanel
+              detail={detail}
+              admin={admin}
+              reload={resource.reload}
+            />
+          )}
           <OrderSupport
             id={detail.order.id}
             name={detail.order.game_name}

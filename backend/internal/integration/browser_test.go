@@ -17,12 +17,14 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/conversations"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/httpapi"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
 )
 
 // TestBrowserEnvironment runs only through the frontend gate, with a private temporary ready/stop directory.
@@ -57,13 +59,16 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	fixtures := map[string]string{}
 	for _, project := range []string{"desktop", "mobile"} {
-		for _, role := range []string{"customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother"} {
+		for _, role := range []string{"customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond"} {
 			email := strings.ToLower(role + "-" + project + "-" + rand.Text() + "@example.test")
 			account, createErr := f.client.User.Create().SetEmail(email).SetEmailVerifiedAt(time.Now()).SetTermsVersion("test-v1").SetTermsAcceptedAt(time.Now()).SetRole(func() string {
-				if role == "catalog" || role == "orderadmin" || role == "supportadmin" {
+				if role == "workbooster" || role == "worksecond" {
+					return "booster"
+				}
+				if role == "workadmin" || role == "catalog" || role == "orderadmin" || role == "supportadmin" {
 					return "administrator"
 				}
-				if role == "target" || role == "orders" || role == "orderother" || role == "supportbuyer" || role == "supportother" {
+				if role == "workbuyer" || role == "workother" || role == "target" || role == "orders" || role == "orderother" || role == "supportbuyer" || role == "supportother" {
 					return "customer"
 				}
 				return role
@@ -75,12 +80,21 @@ func TestBrowserEnvironment(t *testing.T) {
 			fixtures[project+"_"+role+"_id"] = account.ID
 		}
 	}
+	seedBrowserFulfillment(t, f, fixtures)
+	ring, ringErr := vault.NewKeyring("v1", map[string][]byte{"v1": vaultKey(t)})
+	if ringErr != nil {
+		t.Fatal(ringErr)
+	}
+	execution, executionErr := fulfillment.New(f.client, service, ring, nil)
+	if executionErr != nil {
+		t.Fatal(executionErr)
+	}
 	notices, noticeErr := notifications.New(f.client, service, f.cfg.PublicOrigin)
 	if noticeErr != nil {
 		t.Fatal(noticeErr)
 	}
 	files := media.New(f.client, service, mediaObjects(t, f.client), media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
-	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register))
+	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, execution.Register))
 	defer server.Close()
 	work, cancel := context.WithCancel(t.Context())
 	defer cancel()

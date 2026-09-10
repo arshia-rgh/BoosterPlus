@@ -440,6 +440,41 @@ var (
 			},
 		},
 	}
+	// FulfillmentsColumns holds the columns for the "fulfillments" table.
+	FulfillmentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "access_version", Type: field.TypeInt, Default: 1},
+		{Name: "assigned_id", Type: field.TypeString, Size: 36},
+		{Name: "mode", Type: field.TypeEnum, Enums: []string{"account", "together"}},
+		{Name: "progress", Type: field.TypeInt, Default: 0},
+		{Name: "completion_pending", Type: field.TypeBool, Default: false},
+		{Name: "current_note", Type: field.TypeString},
+		{Name: "estimated_start", Type: field.TypeTime, Nullable: true},
+		{Name: "estimated_finish", Type: field.TypeTime, Nullable: true},
+		{Name: "answers", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// FulfillmentsTable holds the schema information for the "fulfillments" table.
+	FulfillmentsTable = &schema.Table{
+		Name:       "fulfillments",
+		Columns:    FulfillmentsColumns,
+		PrimaryKey: []*schema.Column{FulfillmentsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "fulfillment_order",
+				Unique:  true,
+				Columns: []*schema.Column{FulfillmentsColumns[1]},
+			},
+			{
+				Name:    "fulfillment_assignee",
+				Unique:  false,
+				Columns: []*schema.Column{FulfillmentsColumns[4], FulfillmentsColumns[13], FulfillmentsColumns[0]},
+			},
+		},
+	}
 	// GamesColumns holds the columns for the "games" table.
 	GamesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -751,6 +786,7 @@ var (
 		CouponClaimsTable,
 		CouponRevisionsTable,
 		FavoritesTable,
+		FulfillmentsTable,
 		GamesTable,
 		MediaFilesTable,
 		NotificationsTable,

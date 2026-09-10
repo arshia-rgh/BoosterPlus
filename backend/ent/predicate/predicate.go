@@ -54,6 +54,9 @@ type CouponRevision func(*sql.Selector)
 // Favorite is the predicate function for favorite builders.
 type Favorite func(*sql.Selector)
 
+// Fulfillment is the predicate function for fulfillment builders.
+type Fulfillment func(*sql.Selector)
+
 // Game is the predicate function for game builders.
 type Game func(*sql.Selector)
 

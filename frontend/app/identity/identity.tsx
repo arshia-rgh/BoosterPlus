@@ -848,7 +848,7 @@ export default function Identity({
                   </>
                 )}
                 {session.capabilities.includes("booster") && (
-                  <Link to="/booster">Booster portal</Link>
+                  <Link to="/booster/orders">Assigned work</Link>
                 )}
               </nav>
               <Form

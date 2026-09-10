@@ -30,6 +30,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponclaim"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
@@ -80,6 +81,8 @@ type Client struct {
 	CouponRevision *CouponRevisionClient
 	// Favorite is the client for interacting with the Favorite builders.
 	Favorite *FavoriteClient
+	// Fulfillment is the client for interacting with the Fulfillment builders.
+	Fulfillment *FulfillmentClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
 	// MediaFile is the client for interacting with the MediaFile builders.
@@ -125,6 +128,7 @@ func (c *Client) init() {
 	c.CouponClaim = NewCouponClaimClient(c.config)
 	c.CouponRevision = NewCouponRevisionClient(c.config)
 	c.Favorite = NewFavoriteClient(c.config)
+	c.Fulfillment = NewFulfillmentClient(c.config)
 	c.Game = NewGameClient(c.config)
 	c.MediaFile = NewMediaFileClient(c.config)
 	c.Notification = NewNotificationClient(c.config)
@@ -242,6 +246,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CouponClaim:         NewCouponClaimClient(cfg),
 		CouponRevision:      NewCouponRevisionClient(cfg),
 		Favorite:            NewFavoriteClient(cfg),
+		Fulfillment:         NewFulfillmentClient(cfg),
 		Game:                NewGameClient(cfg),
 		MediaFile:           NewMediaFileClient(cfg),
 		Notification:        NewNotificationClient(cfg),
@@ -286,6 +291,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CouponClaim:         NewCouponClaimClient(cfg),
 		CouponRevision:      NewCouponRevisionClient(cfg),
 		Favorite:            NewFavoriteClient(cfg),
+		Fulfillment:         NewFulfillmentClient(cfg),
 		Game:                NewGameClient(cfg),
 		MediaFile:           NewMediaFileClient(cfg),
 		Notification:        NewNotificationClient(cfg),
@@ -327,8 +333,9 @@ func (c *Client) Use(hooks ...Hook) {
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
 		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Conversation,
 		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
-		c.CouponRevision, c.Favorite, c.Game, c.MediaFile, c.Notification, c.Order,
-		c.OrderContract, c.OrderEvent, c.OrderQuote, c.SecretBundle, c.User,
+		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.MediaFile,
+		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
+		c.SecretBundle, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -341,8 +348,9 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
 		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Conversation,
 		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
-		c.CouponRevision, c.Favorite, c.Game, c.MediaFile, c.Notification, c.Order,
-		c.OrderContract, c.OrderEvent, c.OrderQuote, c.SecretBundle, c.User,
+		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.MediaFile,
+		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
+		c.SecretBundle, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -383,6 +391,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CouponRevision.mutate(ctx, m)
 	case *FavoriteMutation:
 		return c.Favorite.mutate(ctx, m)
+	case *FulfillmentMutation:
+		return c.Fulfillment.mutate(ctx, m)
 	case *GameMutation:
 		return c.Game.mutate(ctx, m)
 	case *MediaFileMutation:
@@ -2534,6 +2544,139 @@ func (c *FavoriteClient) mutate(ctx context.Context, m *FavoriteMutation) (Value
 	}
 }
 
+// FulfillmentClient is a client for the Fulfillment schema.
+type FulfillmentClient struct {
+	config
+}
+
+// NewFulfillmentClient returns a client for the Fulfillment from the given config.
+func NewFulfillmentClient(c config) *FulfillmentClient {
+	return &FulfillmentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `fulfillment.Hooks(f(g(h())))`.
+func (c *FulfillmentClient) Use(hooks ...Hook) {
+	c.hooks.Fulfillment = append(c.hooks.Fulfillment, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `fulfillment.Intercept(f(g(h())))`.
+func (c *FulfillmentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Fulfillment = append(c.inters.Fulfillment, interceptors...)
+}
+
+// Create returns a builder for creating a Fulfillment entity.
+func (c *FulfillmentClient) Create() *FulfillmentCreate {
+	mutation := newFulfillmentMutation(c.config, OpCreate)
+	return &FulfillmentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Fulfillment entities.
+func (c *FulfillmentClient) CreateBulk(builders ...*FulfillmentCreate) *FulfillmentCreateBulk {
+	return &FulfillmentCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *FulfillmentClient) MapCreateBulk(slice any, setFunc func(*FulfillmentCreate, int)) *FulfillmentCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &FulfillmentCreateBulk{err: fmt.Errorf("calling to FulfillmentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*FulfillmentCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &FulfillmentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Fulfillment.
+func (c *FulfillmentClient) Update() *FulfillmentUpdate {
+	mutation := newFulfillmentMutation(c.config, OpUpdate)
+	return &FulfillmentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FulfillmentClient) UpdateOne(_m *Fulfillment) *FulfillmentUpdateOne {
+	mutation := newFulfillmentMutation(c.config, OpUpdateOne, withFulfillment(_m))
+	return &FulfillmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FulfillmentClient) UpdateOneID(id string) *FulfillmentUpdateOne {
+	mutation := newFulfillmentMutation(c.config, OpUpdateOne, withFulfillmentID(id))
+	return &FulfillmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Fulfillment.
+func (c *FulfillmentClient) Delete() *FulfillmentDelete {
+	mutation := newFulfillmentMutation(c.config, OpDelete)
+	return &FulfillmentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *FulfillmentClient) DeleteOne(_m *Fulfillment) *FulfillmentDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *FulfillmentClient) DeleteOneID(id string) *FulfillmentDeleteOne {
+	builder := c.Delete().Where(fulfillment.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FulfillmentDeleteOne{builder}
+}
+
+// Query returns a query builder for Fulfillment.
+func (c *FulfillmentClient) Query() *FulfillmentQuery {
+	return &FulfillmentQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeFulfillment},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Fulfillment entity by its id.
+func (c *FulfillmentClient) Get(ctx context.Context, id string) (*Fulfillment, error) {
+	return c.Query().Where(fulfillment.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FulfillmentClient) GetX(ctx context.Context, id string) *Fulfillment {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *FulfillmentClient) Hooks() []Hook {
+	return c.hooks.Fulfillment
+}
+
+// Interceptors returns the client interceptors.
+func (c *FulfillmentClient) Interceptors() []Interceptor {
+	return c.inters.Fulfillment
+}
+
+func (c *FulfillmentClient) mutate(ctx context.Context, m *FulfillmentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&FulfillmentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&FulfillmentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&FulfillmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&FulfillmentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Fulfillment mutation op: %q", m.Op())
+	}
+}
+
 // GameClient is a client for the Game schema.
 type GameClient struct {
 	config
@@ -3736,15 +3879,15 @@ type (
 	hooks struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
 		AuthRecovery, AuthSession, CatalogRelease, Conversation, ConversationMessage,
-		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Game,
-		MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
+		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
+		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
 		SecretBundle, User []ent.Hook
 	}
 	inters struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
 		AuthRecovery, AuthSession, CatalogRelease, Conversation, ConversationMessage,
-		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Game,
-		MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
+		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
+		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
 		SecretBundle, User []ent.Interceptor
 	}
 )

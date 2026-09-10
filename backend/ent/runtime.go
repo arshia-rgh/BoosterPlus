@@ -21,6 +21,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponclaim"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
@@ -507,6 +508,46 @@ func init() {
 	favorite.DefaultID = favoriteDescID.Default.(func() string)
 	// favorite.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	favorite.IDValidator = favoriteDescID.Validators[0].(func(string) error)
+	fulfillmentFields := schema.Fulfillment{}.Fields()
+	_ = fulfillmentFields
+	// fulfillmentDescOrderID is the schema descriptor for order_id field.
+	fulfillmentDescOrderID := fulfillmentFields[1].Descriptor()
+	// fulfillment.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	fulfillment.OrderIDValidator = fulfillmentDescOrderID.Validators[0].(func(string) error)
+	// fulfillmentDescVersion is the schema descriptor for version field.
+	fulfillmentDescVersion := fulfillmentFields[2].Descriptor()
+	// fulfillment.DefaultVersion holds the default value on creation for the version field.
+	fulfillment.DefaultVersion = fulfillmentDescVersion.Default.(int)
+	// fulfillmentDescAccessVersion is the schema descriptor for access_version field.
+	fulfillmentDescAccessVersion := fulfillmentFields[3].Descriptor()
+	// fulfillment.DefaultAccessVersion holds the default value on creation for the access_version field.
+	fulfillment.DefaultAccessVersion = fulfillmentDescAccessVersion.Default.(int)
+	// fulfillmentDescAssignedID is the schema descriptor for assigned_id field.
+	fulfillmentDescAssignedID := fulfillmentFields[4].Descriptor()
+	// fulfillment.AssignedIDValidator is a validator for the "assigned_id" field. It is called by the builders before save.
+	fulfillment.AssignedIDValidator = fulfillmentDescAssignedID.Validators[0].(func(string) error)
+	// fulfillmentDescProgress is the schema descriptor for progress field.
+	fulfillmentDescProgress := fulfillmentFields[6].Descriptor()
+	// fulfillment.DefaultProgress holds the default value on creation for the progress field.
+	fulfillment.DefaultProgress = fulfillmentDescProgress.Default.(int)
+	// fulfillmentDescCompletionPending is the schema descriptor for completion_pending field.
+	fulfillmentDescCompletionPending := fulfillmentFields[7].Descriptor()
+	// fulfillment.DefaultCompletionPending holds the default value on creation for the completion_pending field.
+	fulfillment.DefaultCompletionPending = fulfillmentDescCompletionPending.Default.(bool)
+	// fulfillmentDescCreatedAt is the schema descriptor for created_at field.
+	fulfillmentDescCreatedAt := fulfillmentFields[12].Descriptor()
+	// fulfillment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	fulfillment.DefaultCreatedAt = fulfillmentDescCreatedAt.Default.(func() time.Time)
+	// fulfillmentDescUpdatedAt is the schema descriptor for updated_at field.
+	fulfillmentDescUpdatedAt := fulfillmentFields[13].Descriptor()
+	// fulfillment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	fulfillment.DefaultUpdatedAt = fulfillmentDescUpdatedAt.Default.(func() time.Time)
+	// fulfillmentDescID is the schema descriptor for id field.
+	fulfillmentDescID := fulfillmentFields[0].Descriptor()
+	// fulfillment.DefaultID holds the default value on creation for the id field.
+	fulfillment.DefaultID = fulfillmentDescID.Default.(func() string)
+	// fulfillment.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	fulfillment.IDValidator = fulfillmentDescID.Validators[0].(func(string) error)
 	gameFields := schema.Game{}.Fields()
 	_ = gameFields
 	// gameDescSlug is the schema descriptor for slug field.

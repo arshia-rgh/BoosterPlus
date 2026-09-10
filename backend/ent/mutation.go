@@ -27,6 +27,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponclaim"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
@@ -64,6 +65,7 @@ const (
 	TypeCouponClaim         = "CouponClaim"
 	TypeCouponRevision      = "CouponRevision"
 	TypeFavorite            = "Favorite"
+	TypeFulfillment         = "Fulfillment"
 	TypeGame                = "Game"
 	TypeMediaFile           = "MediaFile"
 	TypeNotification        = "Notification"
@@ -11351,6 +11353,1129 @@ func (m *FavoriteMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *FavoriteMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Favorite edge %s", name)
+}
+
+// FulfillmentMutation represents an operation that mutates the Fulfillment nodes in the graph.
+type FulfillmentMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *string
+	order_id           *string
+	version            *int
+	addversion         *int
+	access_version     *int
+	addaccess_version  *int
+	assigned_id        *string
+	mode               *fulfillment.Mode
+	progress           *int
+	addprogress        *int
+	completion_pending *bool
+	current_note       *string
+	estimated_start    *time.Time
+	estimated_finish   *time.Time
+	answers            *map[string]interface{}
+	created_at         *time.Time
+	updated_at         *time.Time
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*Fulfillment, error)
+	predicates         []predicate.Fulfillment
+}
+
+var _ ent.Mutation = (*FulfillmentMutation)(nil)
+
+// fulfillmentOption allows management of the mutation configuration using functional options.
+type fulfillmentOption func(*FulfillmentMutation)
+
+// newFulfillmentMutation creates new mutation for the Fulfillment entity.
+func newFulfillmentMutation(c config, op Op, opts ...fulfillmentOption) *FulfillmentMutation {
+	m := &FulfillmentMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeFulfillment,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withFulfillmentID sets the ID field of the mutation.
+func withFulfillmentID(id string) fulfillmentOption {
+	return func(m *FulfillmentMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Fulfillment
+		)
+		m.oldValue = func(ctx context.Context) (*Fulfillment, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Fulfillment.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withFulfillment sets the old Fulfillment of the mutation.
+func withFulfillment(node *Fulfillment) fulfillmentOption {
+	return func(m *FulfillmentMutation) {
+		m.oldValue = func(context.Context) (*Fulfillment, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m FulfillmentMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m FulfillmentMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Fulfillment entities.
+func (m *FulfillmentMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *FulfillmentMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *FulfillmentMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Fulfillment.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetOrderID sets the "order_id" field.
+func (m *FulfillmentMutation) SetOrderID(s string) {
+	m.order_id = &s
+}
+
+// OrderID returns the value of the "order_id" field in the mutation.
+func (m *FulfillmentMutation) OrderID() (r string, exists bool) {
+	v := m.order_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrderID returns the old "order_id" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldOrderID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrderID: %w", err)
+	}
+	return oldValue.OrderID, nil
+}
+
+// ResetOrderID resets all changes to the "order_id" field.
+func (m *FulfillmentMutation) ResetOrderID() {
+	m.order_id = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *FulfillmentMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *FulfillmentMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *FulfillmentMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *FulfillmentMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *FulfillmentMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetAccessVersion sets the "access_version" field.
+func (m *FulfillmentMutation) SetAccessVersion(i int) {
+	m.access_version = &i
+	m.addaccess_version = nil
+}
+
+// AccessVersion returns the value of the "access_version" field in the mutation.
+func (m *FulfillmentMutation) AccessVersion() (r int, exists bool) {
+	v := m.access_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccessVersion returns the old "access_version" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldAccessVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAccessVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAccessVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccessVersion: %w", err)
+	}
+	return oldValue.AccessVersion, nil
+}
+
+// AddAccessVersion adds i to the "access_version" field.
+func (m *FulfillmentMutation) AddAccessVersion(i int) {
+	if m.addaccess_version != nil {
+		*m.addaccess_version += i
+	} else {
+		m.addaccess_version = &i
+	}
+}
+
+// AddedAccessVersion returns the value that was added to the "access_version" field in this mutation.
+func (m *FulfillmentMutation) AddedAccessVersion() (r int, exists bool) {
+	v := m.addaccess_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAccessVersion resets all changes to the "access_version" field.
+func (m *FulfillmentMutation) ResetAccessVersion() {
+	m.access_version = nil
+	m.addaccess_version = nil
+}
+
+// SetAssignedID sets the "assigned_id" field.
+func (m *FulfillmentMutation) SetAssignedID(s string) {
+	m.assigned_id = &s
+}
+
+// AssignedID returns the value of the "assigned_id" field in the mutation.
+func (m *FulfillmentMutation) AssignedID() (r string, exists bool) {
+	v := m.assigned_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAssignedID returns the old "assigned_id" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldAssignedID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAssignedID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAssignedID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAssignedID: %w", err)
+	}
+	return oldValue.AssignedID, nil
+}
+
+// ResetAssignedID resets all changes to the "assigned_id" field.
+func (m *FulfillmentMutation) ResetAssignedID() {
+	m.assigned_id = nil
+}
+
+// SetMode sets the "mode" field.
+func (m *FulfillmentMutation) SetMode(f fulfillment.Mode) {
+	m.mode = &f
+}
+
+// Mode returns the value of the "mode" field in the mutation.
+func (m *FulfillmentMutation) Mode() (r fulfillment.Mode, exists bool) {
+	v := m.mode
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMode returns the old "mode" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldMode(ctx context.Context) (v fulfillment.Mode, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMode: %w", err)
+	}
+	return oldValue.Mode, nil
+}
+
+// ResetMode resets all changes to the "mode" field.
+func (m *FulfillmentMutation) ResetMode() {
+	m.mode = nil
+}
+
+// SetProgress sets the "progress" field.
+func (m *FulfillmentMutation) SetProgress(i int) {
+	m.progress = &i
+	m.addprogress = nil
+}
+
+// Progress returns the value of the "progress" field in the mutation.
+func (m *FulfillmentMutation) Progress() (r int, exists bool) {
+	v := m.progress
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProgress returns the old "progress" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldProgress(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProgress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProgress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProgress: %w", err)
+	}
+	return oldValue.Progress, nil
+}
+
+// AddProgress adds i to the "progress" field.
+func (m *FulfillmentMutation) AddProgress(i int) {
+	if m.addprogress != nil {
+		*m.addprogress += i
+	} else {
+		m.addprogress = &i
+	}
+}
+
+// AddedProgress returns the value that was added to the "progress" field in this mutation.
+func (m *FulfillmentMutation) AddedProgress() (r int, exists bool) {
+	v := m.addprogress
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetProgress resets all changes to the "progress" field.
+func (m *FulfillmentMutation) ResetProgress() {
+	m.progress = nil
+	m.addprogress = nil
+}
+
+// SetCompletionPending sets the "completion_pending" field.
+func (m *FulfillmentMutation) SetCompletionPending(b bool) {
+	m.completion_pending = &b
+}
+
+// CompletionPending returns the value of the "completion_pending" field in the mutation.
+func (m *FulfillmentMutation) CompletionPending() (r bool, exists bool) {
+	v := m.completion_pending
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCompletionPending returns the old "completion_pending" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldCompletionPending(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCompletionPending is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCompletionPending requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCompletionPending: %w", err)
+	}
+	return oldValue.CompletionPending, nil
+}
+
+// ResetCompletionPending resets all changes to the "completion_pending" field.
+func (m *FulfillmentMutation) ResetCompletionPending() {
+	m.completion_pending = nil
+}
+
+// SetCurrentNote sets the "current_note" field.
+func (m *FulfillmentMutation) SetCurrentNote(s string) {
+	m.current_note = &s
+}
+
+// CurrentNote returns the value of the "current_note" field in the mutation.
+func (m *FulfillmentMutation) CurrentNote() (r string, exists bool) {
+	v := m.current_note
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurrentNote returns the old "current_note" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldCurrentNote(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurrentNote is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurrentNote requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurrentNote: %w", err)
+	}
+	return oldValue.CurrentNote, nil
+}
+
+// ResetCurrentNote resets all changes to the "current_note" field.
+func (m *FulfillmentMutation) ResetCurrentNote() {
+	m.current_note = nil
+}
+
+// SetEstimatedStart sets the "estimated_start" field.
+func (m *FulfillmentMutation) SetEstimatedStart(t time.Time) {
+	m.estimated_start = &t
+}
+
+// EstimatedStart returns the value of the "estimated_start" field in the mutation.
+func (m *FulfillmentMutation) EstimatedStart() (r time.Time, exists bool) {
+	v := m.estimated_start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEstimatedStart returns the old "estimated_start" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldEstimatedStart(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEstimatedStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEstimatedStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEstimatedStart: %w", err)
+	}
+	return oldValue.EstimatedStart, nil
+}
+
+// ClearEstimatedStart clears the value of the "estimated_start" field.
+func (m *FulfillmentMutation) ClearEstimatedStart() {
+	m.estimated_start = nil
+	m.clearedFields[fulfillment.FieldEstimatedStart] = struct{}{}
+}
+
+// EstimatedStartCleared returns if the "estimated_start" field was cleared in this mutation.
+func (m *FulfillmentMutation) EstimatedStartCleared() bool {
+	_, ok := m.clearedFields[fulfillment.FieldEstimatedStart]
+	return ok
+}
+
+// ResetEstimatedStart resets all changes to the "estimated_start" field.
+func (m *FulfillmentMutation) ResetEstimatedStart() {
+	m.estimated_start = nil
+	delete(m.clearedFields, fulfillment.FieldEstimatedStart)
+}
+
+// SetEstimatedFinish sets the "estimated_finish" field.
+func (m *FulfillmentMutation) SetEstimatedFinish(t time.Time) {
+	m.estimated_finish = &t
+}
+
+// EstimatedFinish returns the value of the "estimated_finish" field in the mutation.
+func (m *FulfillmentMutation) EstimatedFinish() (r time.Time, exists bool) {
+	v := m.estimated_finish
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEstimatedFinish returns the old "estimated_finish" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldEstimatedFinish(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEstimatedFinish is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEstimatedFinish requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEstimatedFinish: %w", err)
+	}
+	return oldValue.EstimatedFinish, nil
+}
+
+// ClearEstimatedFinish clears the value of the "estimated_finish" field.
+func (m *FulfillmentMutation) ClearEstimatedFinish() {
+	m.estimated_finish = nil
+	m.clearedFields[fulfillment.FieldEstimatedFinish] = struct{}{}
+}
+
+// EstimatedFinishCleared returns if the "estimated_finish" field was cleared in this mutation.
+func (m *FulfillmentMutation) EstimatedFinishCleared() bool {
+	_, ok := m.clearedFields[fulfillment.FieldEstimatedFinish]
+	return ok
+}
+
+// ResetEstimatedFinish resets all changes to the "estimated_finish" field.
+func (m *FulfillmentMutation) ResetEstimatedFinish() {
+	m.estimated_finish = nil
+	delete(m.clearedFields, fulfillment.FieldEstimatedFinish)
+}
+
+// SetAnswers sets the "answers" field.
+func (m *FulfillmentMutation) SetAnswers(value map[string]interface{}) {
+	m.answers = &value
+}
+
+// Answers returns the value of the "answers" field in the mutation.
+func (m *FulfillmentMutation) Answers() (r map[string]interface{}, exists bool) {
+	v := m.answers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAnswers returns the old "answers" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldAnswers(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAnswers is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAnswers requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAnswers: %w", err)
+	}
+	return oldValue.Answers, nil
+}
+
+// ResetAnswers resets all changes to the "answers" field.
+func (m *FulfillmentMutation) ResetAnswers() {
+	m.answers = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *FulfillmentMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *FulfillmentMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *FulfillmentMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *FulfillmentMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *FulfillmentMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *FulfillmentMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the FulfillmentMutation builder.
+func (m *FulfillmentMutation) Where(ps ...predicate.Fulfillment) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the FulfillmentMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *FulfillmentMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Fulfillment, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *FulfillmentMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *FulfillmentMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Fulfillment).
+func (m *FulfillmentMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *FulfillmentMutation) Fields() []string {
+	fields := make([]string, 0, 13)
+	if m.order_id != nil {
+		fields = append(fields, fulfillment.FieldOrderID)
+	}
+	if m.version != nil {
+		fields = append(fields, fulfillment.FieldVersion)
+	}
+	if m.access_version != nil {
+		fields = append(fields, fulfillment.FieldAccessVersion)
+	}
+	if m.assigned_id != nil {
+		fields = append(fields, fulfillment.FieldAssignedID)
+	}
+	if m.mode != nil {
+		fields = append(fields, fulfillment.FieldMode)
+	}
+	if m.progress != nil {
+		fields = append(fields, fulfillment.FieldProgress)
+	}
+	if m.completion_pending != nil {
+		fields = append(fields, fulfillment.FieldCompletionPending)
+	}
+	if m.current_note != nil {
+		fields = append(fields, fulfillment.FieldCurrentNote)
+	}
+	if m.estimated_start != nil {
+		fields = append(fields, fulfillment.FieldEstimatedStart)
+	}
+	if m.estimated_finish != nil {
+		fields = append(fields, fulfillment.FieldEstimatedFinish)
+	}
+	if m.answers != nil {
+		fields = append(fields, fulfillment.FieldAnswers)
+	}
+	if m.created_at != nil {
+		fields = append(fields, fulfillment.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, fulfillment.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *FulfillmentMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case fulfillment.FieldOrderID:
+		return m.OrderID()
+	case fulfillment.FieldVersion:
+		return m.Version()
+	case fulfillment.FieldAccessVersion:
+		return m.AccessVersion()
+	case fulfillment.FieldAssignedID:
+		return m.AssignedID()
+	case fulfillment.FieldMode:
+		return m.Mode()
+	case fulfillment.FieldProgress:
+		return m.Progress()
+	case fulfillment.FieldCompletionPending:
+		return m.CompletionPending()
+	case fulfillment.FieldCurrentNote:
+		return m.CurrentNote()
+	case fulfillment.FieldEstimatedStart:
+		return m.EstimatedStart()
+	case fulfillment.FieldEstimatedFinish:
+		return m.EstimatedFinish()
+	case fulfillment.FieldAnswers:
+		return m.Answers()
+	case fulfillment.FieldCreatedAt:
+		return m.CreatedAt()
+	case fulfillment.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *FulfillmentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case fulfillment.FieldOrderID:
+		return m.OldOrderID(ctx)
+	case fulfillment.FieldVersion:
+		return m.OldVersion(ctx)
+	case fulfillment.FieldAccessVersion:
+		return m.OldAccessVersion(ctx)
+	case fulfillment.FieldAssignedID:
+		return m.OldAssignedID(ctx)
+	case fulfillment.FieldMode:
+		return m.OldMode(ctx)
+	case fulfillment.FieldProgress:
+		return m.OldProgress(ctx)
+	case fulfillment.FieldCompletionPending:
+		return m.OldCompletionPending(ctx)
+	case fulfillment.FieldCurrentNote:
+		return m.OldCurrentNote(ctx)
+	case fulfillment.FieldEstimatedStart:
+		return m.OldEstimatedStart(ctx)
+	case fulfillment.FieldEstimatedFinish:
+		return m.OldEstimatedFinish(ctx)
+	case fulfillment.FieldAnswers:
+		return m.OldAnswers(ctx)
+	case fulfillment.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case fulfillment.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Fulfillment field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FulfillmentMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case fulfillment.FieldOrderID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrderID(v)
+		return nil
+	case fulfillment.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case fulfillment.FieldAccessVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccessVersion(v)
+		return nil
+	case fulfillment.FieldAssignedID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAssignedID(v)
+		return nil
+	case fulfillment.FieldMode:
+		v, ok := value.(fulfillment.Mode)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMode(v)
+		return nil
+	case fulfillment.FieldProgress:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProgress(v)
+		return nil
+	case fulfillment.FieldCompletionPending:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCompletionPending(v)
+		return nil
+	case fulfillment.FieldCurrentNote:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurrentNote(v)
+		return nil
+	case fulfillment.FieldEstimatedStart:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEstimatedStart(v)
+		return nil
+	case fulfillment.FieldEstimatedFinish:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEstimatedFinish(v)
+		return nil
+	case fulfillment.FieldAnswers:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAnswers(v)
+		return nil
+	case fulfillment.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case fulfillment.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Fulfillment field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *FulfillmentMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, fulfillment.FieldVersion)
+	}
+	if m.addaccess_version != nil {
+		fields = append(fields, fulfillment.FieldAccessVersion)
+	}
+	if m.addprogress != nil {
+		fields = append(fields, fulfillment.FieldProgress)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *FulfillmentMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case fulfillment.FieldVersion:
+		return m.AddedVersion()
+	case fulfillment.FieldAccessVersion:
+		return m.AddedAccessVersion()
+	case fulfillment.FieldProgress:
+		return m.AddedProgress()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FulfillmentMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case fulfillment.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	case fulfillment.FieldAccessVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAccessVersion(v)
+		return nil
+	case fulfillment.FieldProgress:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddProgress(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Fulfillment numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *FulfillmentMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(fulfillment.FieldEstimatedStart) {
+		fields = append(fields, fulfillment.FieldEstimatedStart)
+	}
+	if m.FieldCleared(fulfillment.FieldEstimatedFinish) {
+		fields = append(fields, fulfillment.FieldEstimatedFinish)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *FulfillmentMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *FulfillmentMutation) ClearField(name string) error {
+	switch name {
+	case fulfillment.FieldEstimatedStart:
+		m.ClearEstimatedStart()
+		return nil
+	case fulfillment.FieldEstimatedFinish:
+		m.ClearEstimatedFinish()
+		return nil
+	}
+	return fmt.Errorf("unknown Fulfillment nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *FulfillmentMutation) ResetField(name string) error {
+	switch name {
+	case fulfillment.FieldOrderID:
+		m.ResetOrderID()
+		return nil
+	case fulfillment.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case fulfillment.FieldAccessVersion:
+		m.ResetAccessVersion()
+		return nil
+	case fulfillment.FieldAssignedID:
+		m.ResetAssignedID()
+		return nil
+	case fulfillment.FieldMode:
+		m.ResetMode()
+		return nil
+	case fulfillment.FieldProgress:
+		m.ResetProgress()
+		return nil
+	case fulfillment.FieldCompletionPending:
+		m.ResetCompletionPending()
+		return nil
+	case fulfillment.FieldCurrentNote:
+		m.ResetCurrentNote()
+		return nil
+	case fulfillment.FieldEstimatedStart:
+		m.ResetEstimatedStart()
+		return nil
+	case fulfillment.FieldEstimatedFinish:
+		m.ResetEstimatedFinish()
+		return nil
+	case fulfillment.FieldAnswers:
+		m.ResetAnswers()
+		return nil
+	case fulfillment.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case fulfillment.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Fulfillment field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *FulfillmentMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *FulfillmentMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *FulfillmentMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *FulfillmentMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *FulfillmentMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *FulfillmentMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *FulfillmentMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Fulfillment unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *FulfillmentMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Fulfillment edge %s", name)
 }
 
 // GameMutation represents an operation that mutates the Game nodes in the graph.

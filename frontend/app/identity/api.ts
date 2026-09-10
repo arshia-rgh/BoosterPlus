@@ -61,6 +61,14 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "fulfillment_invalid",
+    "Review the fulfillment fields and limits before continuing.",
+  ],
+  [
+    "fulfillment_conflict",
+    "This work changed or is not ready. Refresh the order and check its assignment, payment and handoff status.",
+  ],
+  [
     "media_invalid",
     "Choose a valid JPEG, PNG, or WebP matching the upload requirements.",
   ],
@@ -106,6 +114,7 @@ const messages = new Map([
   ],
 ]);
 export class APIError extends Error {
+  code = "";
   issues: { path: string; message: string }[] = [];
 }
 async function read(
@@ -150,7 +159,10 @@ async function read(
             "The service is unavailable. Please try again.")
         : "The service is unavailable. Please try again.",
     );
-    if (problem.success) error.issues = problem.data.issues ?? [];
+    if (problem.success) {
+      error.issues = problem.data.issues ?? [];
+      error.code = problem.data.code;
+    }
     throw error;
   }
   return result;
