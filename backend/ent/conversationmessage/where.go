@@ -624,6 +624,26 @@ func AttachmentsNotNil() predicate.ConversationMessage {
 	return predicate.ConversationMessage(sql.FieldNotNull(FieldAttachments))
 }
 
+// PurposeEQ applies the EQ predicate on the "purpose" field.
+func PurposeEQ(v Purpose) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldEQ(FieldPurpose, v))
+}
+
+// PurposeNEQ applies the NEQ predicate on the "purpose" field.
+func PurposeNEQ(v Purpose) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldNEQ(FieldPurpose, v))
+}
+
+// PurposeIn applies the In predicate on the "purpose" field.
+func PurposeIn(vs ...Purpose) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldIn(FieldPurpose, vs...))
+}
+
+// PurposeNotIn applies the NotIn predicate on the "purpose" field.
+func PurposeNotIn(vs ...Purpose) predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldNotIn(FieldPurpose, vs...))
+}
+
 // BodyEQ applies the EQ predicate on the "body" field.
 func BodyEQ(v string) predicate.ConversationMessage {
 	return predicate.ConversationMessage(sql.FieldEQ(FieldBody, v))

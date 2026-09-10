@@ -36,6 +36,9 @@ function StaffControls({
           state: action === "state" ? state : "",
           assigned_to: action === "assign" ? assigned : "",
           order_id: action === "link" ? order : "",
+          ...(action === "sharing"
+            ? { booster_shared: !thread.booster_shared }
+            : {}),
         },
         conversationSchema,
       );
@@ -92,6 +95,13 @@ function StaffControls({
         <Action disabled={!staff.data} onClick={() => void change("assign")}>
           Save assignment
         </Action>
+        {thread.kind === "fulfillment" && (
+          <Action onClick={() => void change("sharing")}>
+            {thread.booster_shared
+              ? "Pause booster sharing"
+              : "Resume booster sharing"}
+          </Action>
+        )}
         {thread.kind === "presales" && !thread.linked_order_id && (
           <>
             <Text
@@ -116,12 +126,15 @@ function StaffControls({
 function Compose({
   base,
   admin,
+  proofAllowed,
   done,
 }: {
   base: string;
   admin: boolean;
+  proofAllowed: boolean;
   done: () => void;
 }) {
+  const [purpose, setPurpose] = useState("message");
   const [body, setBody] = useState(""),
     [visibility, setVisibility] = useState("public"),
     [key, setKey] = useState(() => crypto.randomUUID()),
@@ -144,6 +157,7 @@ function Compose({
         base + "/messages",
         {
           request_key: key,
+          purpose,
           body,
           visibility,
           attachments: attachment ? [attachment] : [],
@@ -178,6 +192,7 @@ function Compose({
             value={visibility}
             change={(value) => {
               setVisibility(value);
+              setPurpose("message");
               setAttachment("");
               setUploadPending(false);
               setKey(crypto.randomUUID());
@@ -185,6 +200,20 @@ function Compose({
             options={[
               ["public", "Customer-visible reply"],
               ["internal", "Internal staff note"],
+            ]}
+          />
+        )}
+        {proofAllowed && visibility === "public" && (
+          <Select
+            label="Message type"
+            value={purpose}
+            change={(value) => {
+              setPurpose(value);
+              setKey(crypto.randomUUID());
+            }}
+            options={[
+              ["message", "Coordination message"],
+              ["proof", "Publish proof images"],
             ]}
           />
         )}
@@ -208,13 +237,19 @@ function Compose({
         <button
           className="button"
           type="submit"
-          disabled={!body.trim() || uploadPending}
+          disabled={
+            !body.trim() ||
+            uploadPending ||
+            (purpose === "proof" && !attachment)
+          }
         >
           {busy
             ? "Sending…"
             : visibility === "internal"
               ? "Save internal note"
-              : "Send message"}
+              : purpose === "proof"
+                ? "Publish proof"
+                : "Send message"}
         </button>
       </fieldset>
       <ErrorNotice error={error} />
@@ -224,10 +259,12 @@ function Compose({
 function Messages({
   thread,
   admin,
+  booster,
   refresh,
 }: {
   thread: Conversation;
   admin: boolean;
+  booster: boolean;
   refresh: () => void;
 }) {
   const base = (admin ? "/admin" : "") + "/conversations/" + thread.id,
@@ -265,6 +302,7 @@ function Messages({
       };
       source.onerror = () => {
         setLive(false);
+        refresh();
       };
       source.addEventListener("change", () => {
         reload();
@@ -305,8 +343,10 @@ function Messages({
           Refresh conversation
         </Action>
         <ErrorNotice error={resource.error ?? error} />
-        {!resource.data ? (
-          <p role="status">Loading messages…</p>
+        {!resource.data || resource.error ? (
+          <p role="status">
+            {resource.error ? "Messages are unavailable." : "Loading messages…"}
+          </p>
         ) : (
           <>
             {resource.data.messages.length === 0 && (
@@ -342,6 +382,9 @@ function Messages({
                 >
                   <div className="message-meta">
                     <strong>{message.sender_label}</strong>
+                    {message.purpose === "proof" && (
+                      <span className="status">Published proof</span>
+                    )}
                     {message.visibility === "internal" && (
                       <span className="status">Internal · staff only</span>
                     )}
@@ -359,32 +402,55 @@ function Messages({
           </>
         )}
       </section>
-      <Compose base={base} admin={admin} done={sent} />
+      <Compose
+        base={base}
+        admin={admin}
+        proofAllowed={(admin || booster) && thread.kind === "fulfillment"}
+        done={sent}
+      />
     </>
   );
 }
-export default function Thread({ admin = false }: { admin?: boolean }) {
+export default function Thread({
+  admin = false,
+  booster = false,
+}: {
+  admin?: boolean;
+  booster?: boolean;
+}) {
   const { id = "" } = useParams(),
     base = (admin ? "/admin" : "") + "/conversations/" + encodeURIComponent(id),
     resource = useResource(base, conversationSchema),
-    thread = resource.data;
+    thread = resource.error ? null : resource.data;
   return (
     <section>
-      <Link to={(admin ? "/admin" : "") + "/support"}>← Conversations</Link>
+      <Link
+        to={booster ? "/booster/orders" : (admin ? "/admin" : "") + "/support"}
+      >
+        ← {booster ? "Assigned work" : "Conversations"}
+      </Link>
       <ErrorNotice error={resource.error} />
       {!thread ? (
-        <p role="status">Loading conversation…</p>
+        <p role="status">
+          {resource.error
+            ? "Conversation access is unavailable."
+            : "Loading conversation…"}
+        </p>
       ) : (
         <>
           <h2>{thread.subject}</h2>
           <p>
-            {thread.kind === "presales" ? "Pre-sales support" : "Order support"}{" "}
+            {thread.kind === "fulfillment"
+              ? "Shared boosting coordination"
+              : thread.kind === "presales"
+                ? "Pre-sales support"
+                : "Order support"}{" "}
             · {thread.state} · {thread.unread} unread
           </p>
           {(thread.order_id || thread.linked_order_id) && (
             <Link
               to={
-                (admin ? "/admin" : "") +
+                (booster ? "/booster" : admin ? "/admin" : "") +
                 "/orders/" +
                 (thread.order_id || thread.linked_order_id)
               }
@@ -392,10 +458,18 @@ export default function Thread({ admin = false }: { admin?: boolean }) {
               View linked order
             </Link>
           )}
+          {thread.kind === "fulfillment" && (
+            <p>
+              {thread.booster_shared
+                ? "The currently assigned booster can read shared messages and proof. Internal notes stay restricted to administrators."
+                : "Booster sharing is paused. Customer and administrator history is retained."}
+            </p>
+          )}
           <Messages
             key={thread.id}
             thread={thread}
             admin={admin}
+            booster={booster}
             refresh={resource.reload}
           />
           {admin && (

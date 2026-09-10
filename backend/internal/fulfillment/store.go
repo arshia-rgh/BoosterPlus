@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
@@ -58,6 +59,13 @@ func view(ctx context.Context, c *ent.Client, row *ent.Order, work *ent.Fulfillm
 		alias = "Boosting team"
 	}
 	result := View{OrderID: row.ID, OrderVersion: row.Version, Version: work.Version, AccessVersion: work.AccessVersion, Game: row.GameName, Service: service.Name, State: string(row.State), Mode: string(work.Mode), SecretHours: service.Fulfillment.SecretHours, Alias: alias, Progress: work.Progress, CompletionPending: work.CompletionPending, Note: work.CurrentNote, EstimatedStart: work.EstimatedStart, EstimatedFinish: work.EstimatedFinish, Shared: []SharedField{}, UpdatedAt: work.UpdatedAt}
+	thread, threadErr := c.Conversation.Query().Where(conversation.FulfillmentOrderIDEQ(row.ID)).Only(ctx)
+	if threadErr != nil && !ent.IsNotFound(threadErr) {
+		return View{}, threadErr
+	}
+	if thread != nil && (audience != "booster" || thread.BoosterShared && active(row)) {
+		result.CoordinationID, result.CoordinationShared = thread.ID, thread.BoosterShared
+	}
 	if audience != "booster" {
 		result.Handoff = later
 	}

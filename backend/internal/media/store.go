@@ -14,6 +14,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/communication"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 )
@@ -41,12 +42,14 @@ func member(ctx context.Context, client *ent.Client, p *identity.Principal, id s
 	if err := identity.Require(p, capFor(admin)); err != nil {
 		return err
 	}
-	q := client.Conversation.Query().Where(conversation.IDEQ(id))
-	if !admin {
-		q.Where(conversation.UserIDEQ(p.User.ID))
+	row, err := client.Conversation.Get(ctx, id)
+	if err != nil {
+		return err
 	}
-	_, err := q.Only(ctx)
-	return err
+	if !admin && row.UserID != p.User.ID && row.Kind != conversation.KindFulfillment {
+		return &ent.NotFoundError{}
+	}
+	return communication.Member(ctx, client, p, row, admin)
 }
 func audit(ctx context.Context, tx *ent.Tx, p *identity.Principal, id, action string, now time.Time) error {
 	_, err := tx.AuthAudit.Create().SetID(uuid.NewString()).SetActorID(p.User.ID).SetAction(action).SetTargetID(id).SetMetadata(map[string]string{}).SetCreatedAt(now).Save(ctx)

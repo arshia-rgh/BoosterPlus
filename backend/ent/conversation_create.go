@@ -46,6 +46,34 @@ func (_c *ConversationCreate) SetNillableOrderID(v *string) *ConversationCreate 
 	return _c
 }
 
+// SetFulfillmentOrderID sets the "fulfillment_order_id" field.
+func (_c *ConversationCreate) SetFulfillmentOrderID(v string) *ConversationCreate {
+	_c.mutation.SetFulfillmentOrderID(v)
+	return _c
+}
+
+// SetNillableFulfillmentOrderID sets the "fulfillment_order_id" field if the given value is not nil.
+func (_c *ConversationCreate) SetNillableFulfillmentOrderID(v *string) *ConversationCreate {
+	if v != nil {
+		_c.SetFulfillmentOrderID(*v)
+	}
+	return _c
+}
+
+// SetBoosterShared sets the "booster_shared" field.
+func (_c *ConversationCreate) SetBoosterShared(v bool) *ConversationCreate {
+	_c.mutation.SetBoosterShared(v)
+	return _c
+}
+
+// SetNillableBoosterShared sets the "booster_shared" field if the given value is not nil.
+func (_c *ConversationCreate) SetNillableBoosterShared(v *bool) *ConversationCreate {
+	if v != nil {
+		_c.SetBoosterShared(*v)
+	}
+	return _c
+}
+
 // SetLinkedOrderID sets the "linked_order_id" field.
 func (_c *ConversationCreate) SetLinkedOrderID(v string) *ConversationCreate {
 	_c.mutation.SetLinkedOrderID(v)
@@ -273,6 +301,10 @@ func (_c *ConversationCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *ConversationCreate) defaults() {
+	if _, ok := _c.mutation.BoosterShared(); !ok {
+		v := conversation.DefaultBoosterShared
+		_c.mutation.SetBoosterShared(v)
+	}
 	if _, ok := _c.mutation.Slug(); !ok {
 		v := conversation.DefaultSlug
 		_c.mutation.SetSlug(v)
@@ -341,6 +373,14 @@ func (_c *ConversationCreate) check() error {
 		if err := conversation.OrderIDValidator(v); err != nil {
 			return &ValidationError{Name: "order_id", err: fmt.Errorf(`ent: validator failed for field "Conversation.order_id": %w`, err)}
 		}
+	}
+	if v, ok := _c.mutation.FulfillmentOrderID(); ok {
+		if err := conversation.FulfillmentOrderIDValidator(v); err != nil {
+			return &ValidationError{Name: "fulfillment_order_id", err: fmt.Errorf(`ent: validator failed for field "Conversation.fulfillment_order_id": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.BoosterShared(); !ok {
+		return &ValidationError{Name: "booster_shared", err: errors.New(`ent: missing required field "Conversation.booster_shared"`)}
 	}
 	if v, ok := _c.mutation.LinkedOrderID(); ok {
 		if err := conversation.LinkedOrderIDValidator(v); err != nil {
@@ -475,6 +515,14 @@ func (_c *ConversationCreate) createSpec() (*Conversation, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.OrderID(); ok {
 		_spec.SetField(conversation.FieldOrderID, field.TypeString, value)
 		_node.OrderID = &value
+	}
+	if value, ok := _c.mutation.FulfillmentOrderID(); ok {
+		_spec.SetField(conversation.FieldFulfillmentOrderID, field.TypeString, value)
+		_node.FulfillmentOrderID = &value
+	}
+	if value, ok := _c.mutation.BoosterShared(); ok {
+		_spec.SetField(conversation.FieldBoosterShared, field.TypeBool, value)
+		_node.BoosterShared = value
 	}
 	if value, ok := _c.mutation.LinkedOrderID(); ok {
 		_spec.SetField(conversation.FieldLinkedOrderID, field.TypeString, value)

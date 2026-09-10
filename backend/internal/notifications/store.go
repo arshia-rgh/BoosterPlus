@@ -65,6 +65,8 @@ func Enqueue(ctx context.Context, tx *ent.Tx, userID, resourceID, eventID, kind 
 }
 func path(kind, id string) (string, bool) {
 	switch kind {
+	case "coordination_booster":
+		return "/booster/support/" + url.PathEscape(id), true
 	case "conversation_customer":
 		return "/support/" + url.PathEscape(id), true
 	case "conversation_staff":
@@ -161,6 +163,12 @@ func (s *Store) EmailHandler(sender identity.Sender) jobs.Handler {
 			allowed := row.Kind != "conversation_staff" || account.Role == identity.RoleAdmin || account.Role == identity.RoleOwner
 			if row.Kind == "booking_customer" || row.Kind == "booking_staff" {
 				allowed, err = s.bookingAllowed(ctx, row, account)
+				if err != nil {
+					return err
+				}
+			}
+			if row.Kind == "coordination_booster" {
+				allowed, err = s.coordinationAllowed(ctx, row, account)
 				if err != nil {
 					return err
 				}

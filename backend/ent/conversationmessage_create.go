@@ -88,6 +88,20 @@ func (_c *ConversationMessageCreate) SetAttachments(v []string) *ConversationMes
 	return _c
 }
 
+// SetPurpose sets the "purpose" field.
+func (_c *ConversationMessageCreate) SetPurpose(v conversationmessage.Purpose) *ConversationMessageCreate {
+	_c.mutation.SetPurpose(v)
+	return _c
+}
+
+// SetNillablePurpose sets the "purpose" field if the given value is not nil.
+func (_c *ConversationMessageCreate) SetNillablePurpose(v *conversationmessage.Purpose) *ConversationMessageCreate {
+	if v != nil {
+		_c.SetPurpose(*v)
+	}
+	return _c
+}
+
 // SetBody sets the "body" field.
 func (_c *ConversationMessageCreate) SetBody(v string) *ConversationMessageCreate {
 	_c.mutation.SetBody(v)
@@ -157,6 +171,10 @@ func (_c *ConversationMessageCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *ConversationMessageCreate) defaults() {
+	if _, ok := _c.mutation.Purpose(); !ok {
+		v := conversationmessage.DefaultPurpose
+		_c.mutation.SetPurpose(v)
+	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := conversationmessage.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
@@ -226,6 +244,14 @@ func (_c *ConversationMessageCreate) check() error {
 	if v, ok := _c.mutation.RequestHash(); ok {
 		if err := conversationmessage.RequestHashValidator(v); err != nil {
 			return &ValidationError{Name: "request_hash", err: fmt.Errorf(`ent: validator failed for field "ConversationMessage.request_hash": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Purpose(); !ok {
+		return &ValidationError{Name: "purpose", err: errors.New(`ent: missing required field "ConversationMessage.purpose"`)}
+	}
+	if v, ok := _c.mutation.Purpose(); ok {
+		if err := conversationmessage.PurposeValidator(v); err != nil {
+			return &ValidationError{Name: "purpose", err: fmt.Errorf(`ent: validator failed for field "ConversationMessage.purpose": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Body(); !ok {
@@ -318,6 +344,10 @@ func (_c *ConversationMessageCreate) createSpec() (*ConversationMessage, *sqlgra
 	if value, ok := _c.mutation.Attachments(); ok {
 		_spec.SetField(conversationmessage.FieldAttachments, field.TypeJSON, value)
 		_node.Attachments = value
+	}
+	if value, ok := _c.mutation.Purpose(); ok {
+		_spec.SetField(conversationmessage.FieldPurpose, field.TypeEnum, value)
+		_node.Purpose = value
 	}
 	if value, ok := _c.mutation.Body(); ok {
 		_spec.SetField(conversationmessage.FieldBody, field.TypeString, value)

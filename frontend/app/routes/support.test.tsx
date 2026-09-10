@@ -7,6 +7,9 @@ import AdminSupport, { meta as adminMeta } from "./support-admin";
 import AdminConversation, {
   meta as adminConversationMeta,
 } from "./conversation-admin";
+import BoosterConversation, {
+  meta as boosterMeta,
+} from "./conversation-booster";
 import Notifications, { meta as noticesMeta } from "./notifications";
 vi.mock("../identity/identity", () => ({
   default: ({
@@ -37,6 +40,7 @@ it("uses explicit customer and staff identity boundaries for support routes", ()
     adminMeta,
     adminConversationMeta,
     noticesMeta,
+    boosterMeta,
   ])
     expect(meta()[0]?.title).toContain("Booster Plus");
   render(
@@ -46,7 +50,11 @@ it("uses explicit customer and staff identity boundaries for support routes", ()
       <AdminSupport />
       <AdminConversation />
       <Notifications />
+      <BoosterConversation />
     </>,
+  );
+  expect(screen.getByRole("region", { name: "booster" })).toHaveTextContent(
+    "Customer thread",
   );
   expect(screen.getAllByRole("region", { name: "account" })).toHaveLength(3);
   expect(screen.getAllByRole("region", { name: "admin" })).toHaveLength(2);

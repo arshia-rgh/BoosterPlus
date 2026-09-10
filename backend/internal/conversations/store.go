@@ -11,9 +11,11 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/communication"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -47,14 +49,23 @@ func owned(ctx context.Context, client *ent.Client, p *identity.Principal, id st
 	if err := identity.Require(p, capability(admin)); err != nil {
 		return nil, err
 	}
-	q := client.Conversation.Query().Where(conversation.IDEQ(id))
-	if !admin {
-		q.Where(conversation.UserIDEQ(p.User.ID))
+	row, err := client.Conversation.Get(ctx, id)
+	if err != nil {
+		return nil, err
 	}
-	return q.Only(ctx)
+	if !admin && row.UserID != p.User.ID && row.Kind != conversation.KindFulfillment {
+		return nil, &ent.NotFoundError{}
+	}
+	if err = communication.Member(ctx, client, p, row, admin); err != nil {
+		return nil, err
+	}
+	return row, nil
 }
 func visible(ctx context.Context, client *ent.Client, p *identity.Principal, row *ent.Conversation, admin bool) (View, error) {
-	result := View{ID: row.ID, Kind: string(row.Kind), Subject: row.Subject, Slug: row.Slug, State: string(row.State), Version: row.PublicVersion, Sequence: row.PublicSequence, UpdatedAt: row.PublicUpdatedAt, CreatedAt: row.CreatedAt}
+	result := View{BoosterShared: row.BoosterShared, ID: row.ID, Kind: string(row.Kind), Subject: row.Subject, Slug: row.Slug, State: string(row.State), Version: row.PublicVersion, Sequence: row.PublicSequence, UpdatedAt: row.PublicUpdatedAt, CreatedAt: row.CreatedAt}
+	if row.FulfillmentOrderID != nil {
+		result.OrderID = *row.FulfillmentOrderID
+	}
 	if row.OrderID != nil {
 		result.OrderID = *row.OrderID
 	}
@@ -80,6 +91,10 @@ func visible(ctx context.Context, client *ent.Client, p *identity.Principal, row
 
 // Get reads an owned thread; administrative visibility requires the explicit staff route.
 func (s *Store) Get(ctx context.Context, p *identity.Principal, id string, admin bool) (View, error) {
+	p, err := s.auth.Recheck(ctx, p, capability(admin))
+	if err != nil {
+		return View{}, err
+	}
 	row, err := owned(ctx, s.client, p, id, admin)
 	if err != nil {
 		return View{}, err
@@ -90,7 +105,8 @@ func (s *Store) Get(ctx context.Context, p *identity.Principal, id string, admin
 // List returns bounded inbox entries without message bodies or internal previews.
 func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, after, state, assigned, orderID string) (Listing, error) {
 	result := Listing{Conversations: []View{}}
-	if err := identity.Require(p, capability(admin)); err != nil {
+	p, err := s.auth.Recheck(ctx, p, capability(admin))
+	if err != nil {
 		return result, err
 	}
 	q := s.client.Conversation.Query().Order(ent.Desc(conversation.FieldID)).Limit(51)
@@ -98,7 +114,7 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, aft
 		q.Where(conversation.UserIDEQ(p.User.ID))
 	}
 	if after != "" {
-		if _, err := uuid.Parse(after); err != nil {
+		if _, parseErr := uuid.Parse(after); parseErr != nil {
 			return result, ErrConflict
 		}
 		q.Where(conversation.IDLT(after))
@@ -123,10 +139,10 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, aft
 		}
 	}
 	if orderID != "" {
-		if _, err := uuid.Parse(orderID); err != nil {
+		if _, parseErr := uuid.Parse(orderID); parseErr != nil {
 			return result, ErrConflict
 		}
-		q.Where(conversation.Or(conversation.OrderIDEQ(orderID), conversation.LinkedOrderIDEQ(orderID)))
+		q.Where(conversation.Or(conversation.OrderIDEQ(orderID), conversation.LinkedOrderIDEQ(orderID), conversation.FulfillmentOrderIDEQ(orderID)))
 	}
 	rows, err := q.All(ctx)
 	if err != nil {
@@ -236,11 +252,14 @@ func audit(ctx context.Context, tx *ent.Tx, p *identity.Principal, id, action st
 
 // Change updates staff state/assignment or links a pre-sales thread to the same customer's order.
 func (s *Store) Change(ctx context.Context, p *identity.Principal, id, action string, input Change) (View, error) {
-	if !slices.Contains([]string{"state", "assign", "link"}, action) {
+	if !slices.Contains([]string{"state", "assign", "link", "sharing"}, action) {
+		return View{}, ErrConflict
+	}
+	if action != "sharing" && input.BoosterShared != nil {
 		return View{}, ErrConflict
 	}
 	var result View
-	err := s.auth.StaffTransaction(ctx, p, false, func(tx *ent.Tx, current *identity.Principal) error {
+	err := s.auth.StaffTransaction(ctx, p, action == "sharing", func(tx *ent.Tx, current *identity.Principal) error {
 		row, e := owned(ctx, tx.Client(), current, id, true)
 		if e != nil {
 			return e
@@ -251,6 +270,24 @@ func (s *Store) Change(ctx context.Context, p *identity.Principal, id, action st
 		now := s.now().UTC()
 		update := tx.Conversation.Update().Where(conversation.IDEQ(id), conversation.VersionEQ(input.Version)).AddVersion(1).SetUpdatedAt(now)
 		switch action {
+		case "sharing":
+			if row.Kind != conversation.KindFulfillment || row.FulfillmentOrderID == nil || input.BoosterShared == nil || input.State != "" || input.AssignedTo != "" || input.OrderID != "" {
+				return ErrConflict
+			}
+			if *input.BoosterShared {
+				work, readErr := tx.Fulfillment.Query().Where(fulfillment.OrderIDEQ(*row.FulfillmentOrderID)).Only(ctx)
+				if readErr != nil {
+					return readErr
+				}
+				staff, readErr := tx.User.Get(ctx, work.AssignedID)
+				if readErr != nil {
+					return readErr
+				}
+				if readErr = communication.AssignedUser(ctx, tx.Client(), staff, *row.FulfillmentOrderID, row.UserID); readErr != nil {
+					return readErr
+				}
+			}
+			update.SetBoosterShared(*input.BoosterShared).AddPublicVersion(1).SetPublicUpdatedAt(now)
 		case "state":
 			if !slices.Contains([]string{"open", "waiting", "resolved"}, input.State) || input.AssignedTo != "" || input.OrderID != "" {
 				return ErrConflict

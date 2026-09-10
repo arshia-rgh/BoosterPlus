@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 13
+const SchemaVersion = 14
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -44,6 +44,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"conversations.fulfillment_order_id": "varchar", "conversations.booster_shared": "tinyint", "conversation_messages.purpose": "varchar",
 		"staff_profiles.timezone": "varchar", "availability_windows.starts_at": "datetime", "bookings.starts_at": "datetime", "bookings.state": "varchar", "booking_events.note": "text",
 		"fulfillments.order_id": "varchar", "fulfillments.assigned_id": "varchar", "fulfillments.answers": "json", "fulfillments.version": "bigint", "fulfillments.access_version": "bigint",
 		"secret_bundles.encrypted_payload": "blob", "secret_bundles.wrapped_key": "blob", "secret_bundles.key_version": "varchar", "secret_bundles.expires_at": "datetime",
@@ -86,7 +87,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 }
 
 func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
-	expected := map[string]string{"availability_windows.availability_request": "user_id,request_key", "bookings.booking_request": "user_id,request_key", "booking_events.booking_event_version": "booking_id,version", "fulfillments.fulfillment_order": "order_id", "secret_bundles.secret_scope": "purpose,resource_id,owner_id", "media_files.media_request": "user_id,request_key", "conversations.conversation_order": "order_id", "conversations.conversation_request": "created_by,request_key", "conversation_messages.conversation_message_request": "conversation_id,sender_id,request_key", "conversation_messages.conversation_message_sequence": "conversation_id,sequence", "conversation_messages.conversation_message_public": "conversation_id,public_sequence", "conversation_reads.conversation_reader": "conversation_id,user_id,audience", "notifications.notification_message": "user_id,message_id", "orders.PRIMARY": "id", "orders.order_request": "user_id,request_key", "order_quotes.order_quote_revision": "order_id,revision", "order_contracts.order_active_contract": "active_order_id", "order_events.order_event_revision": "order_id,version", "favorites.favorite_target": "user_id,target", "coupons.PRIMARY": "id", "coupons.coupon_code": "code", "coupon_revisions.coupon_revision": "coupon_id,version", "coupon_claims.coupon_contract": "contract_id", "catalog_releases.PRIMARY": "id", "catalog_releases.catalog_release_revision": "game_id,version", "auth_identities.auth_identity_subject": "provider,subject", "auth_sessions.auth_session_token": "token_hash", "auth_rates.PRIMARY": "id", "auth_controls.PRIMARY": "id",
+	expected := map[string]string{"conversations.conversation_fulfillment": "fulfillment_order_id", "availability_windows.availability_request": "user_id,request_key", "bookings.booking_request": "user_id,request_key", "booking_events.booking_event_version": "booking_id,version", "fulfillments.fulfillment_order": "order_id", "secret_bundles.secret_scope": "purpose,resource_id,owner_id", "media_files.media_request": "user_id,request_key", "conversations.conversation_order": "order_id", "conversations.conversation_request": "created_by,request_key", "conversation_messages.conversation_message_request": "conversation_id,sender_id,request_key", "conversation_messages.conversation_message_sequence": "conversation_id,sequence", "conversation_messages.conversation_message_public": "conversation_id,public_sequence", "conversation_reads.conversation_reader": "conversation_id,user_id,audience", "notifications.notification_message": "user_id,message_id", "orders.PRIMARY": "id", "orders.order_request": "user_id,request_key", "order_quotes.order_quote_revision": "order_id,revision", "order_contracts.order_active_contract": "active_order_id", "order_events.order_event_revision": "order_id,version", "favorites.favorite_target": "user_id,target", "coupons.PRIMARY": "id", "coupons.coupon_code": "code", "coupon_revisions.coupon_revision": "coupon_id,version", "coupon_claims.coupon_contract": "contract_id", "catalog_releases.PRIMARY": "id", "catalog_releases.catalog_release_revision": "game_id,version", "auth_identities.auth_identity_subject": "provider,subject", "auth_sessions.auth_session_token": "token_hash", "auth_rates.PRIMARY": "id", "auth_controls.PRIMARY": "id",
 		"users.PRIMARY": "id", "users.users_email_key": "email", "games.PRIMARY": "id", "games.games_slug_key": "slug", "jobs.PRIMARY": "id", "jobs.jobs_idempotency_key": "idempotency_key"}
 	rows, err := db.QueryContext(ctx, "SELECT table_name,index_name,GROUP_CONCAT(column_name ORDER BY seq_in_index) FROM information_schema.statistics WHERE table_schema=DATABASE() AND non_unique=0 GROUP BY table_name,index_name")
 	if err != nil {

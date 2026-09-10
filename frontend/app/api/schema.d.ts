@@ -2510,6 +2510,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/fulfillment/{id}/conversation": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Explicitly share a separate paid-order coordination thread after recent staff factors */
+    post: operations["openFulfillmentCoordination"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/sharing": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Pause or resume assigned booster sharing with recent staff factors and expected thread version */
+    post: operations["changeBoosterConversationSharing"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3152,7 +3186,7 @@ export interface components {
       slug: string;
       assigned_to?: string;
       /** @enum {string} */
-      kind: "order" | "presales";
+      kind: "order" | "presales" | "fulfillment";
       /** @enum {string} */
       state: "open" | "waiting" | "resolved";
       version: number;
@@ -3162,6 +3196,7 @@ export interface components {
       created_at: string;
       /** Format: date-time */
       updated_at: string;
+      booster_shared: boolean;
     };
     ConversationCreate: {
       /** Format: uuid */
@@ -3179,12 +3214,18 @@ export interface components {
       /** @enum {string} */
       visibility: "public" | "internal";
       attachments?: string[];
+      /**
+       * @description Proof requires a shared fulfillment scope, staff authority and ready same-uploader public images.
+       * @enum {string}
+       */
+      purpose?: "" | "message" | "proof";
     };
     ConversationChange: {
       version: number;
       state: string;
       assigned_to: string;
       order_id: string;
+      booster_shared?: boolean;
     };
     ConversationRead: {
       sequence: number;
@@ -3201,6 +3242,8 @@ export interface components {
       /** Format: date-time */
       created_at: string;
       attachments?: string[];
+      /** @enum {string} */
+      purpose: "message" | "proof";
     };
     ConversationMessages: {
       messages: components["schemas"]["ConversationMessage"][];
@@ -3308,6 +3351,8 @@ export interface components {
         [key: string]: string | boolean | string[];
       };
       access_version: number;
+      coordination_id: string;
+      coordination_shared: boolean;
     };
     FulfillmentListing: {
       items: components["schemas"]["FulfillmentView"][];
@@ -11292,6 +11337,118 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  openFulfillmentCoordination: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FulfillmentSecretRevoke"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Conversation"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  changeBoosterConversationSharing: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConversationChange"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Conversation"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
         };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */

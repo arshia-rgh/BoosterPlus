@@ -28,6 +28,20 @@ func (_u *ConversationUpdate) Where(ps ...predicate.Conversation) *ConversationU
 	return _u
 }
 
+// SetBoosterShared sets the "booster_shared" field.
+func (_u *ConversationUpdate) SetBoosterShared(v bool) *ConversationUpdate {
+	_u.mutation.SetBoosterShared(v)
+	return _u
+}
+
+// SetNillableBoosterShared sets the "booster_shared" field if the given value is not nil.
+func (_u *ConversationUpdate) SetNillableBoosterShared(v *bool) *ConversationUpdate {
+	if v != nil {
+		_u.SetBoosterShared(*v)
+	}
+	return _u
+}
+
 // SetLinkedOrderID sets the "linked_order_id" field.
 func (_u *ConversationUpdate) SetLinkedOrderID(v string) *ConversationUpdate {
 	_u.mutation.SetLinkedOrderID(v)
@@ -255,6 +269,12 @@ func (_u *ConversationUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if _u.mutation.OrderIDCleared() {
 		_spec.ClearField(conversation.FieldOrderID, field.TypeString)
 	}
+	if _u.mutation.FulfillmentOrderIDCleared() {
+		_spec.ClearField(conversation.FieldFulfillmentOrderID, field.TypeString)
+	}
+	if value, ok := _u.mutation.BoosterShared(); ok {
+		_spec.SetField(conversation.FieldBoosterShared, field.TypeBool, value)
+	}
 	if value, ok := _u.mutation.LinkedOrderID(); ok {
 		_spec.SetField(conversation.FieldLinkedOrderID, field.TypeString, value)
 	}
@@ -315,6 +335,20 @@ type ConversationUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *ConversationMutation
+}
+
+// SetBoosterShared sets the "booster_shared" field.
+func (_u *ConversationUpdateOne) SetBoosterShared(v bool) *ConversationUpdateOne {
+	_u.mutation.SetBoosterShared(v)
+	return _u
+}
+
+// SetNillableBoosterShared sets the "booster_shared" field if the given value is not nil.
+func (_u *ConversationUpdateOne) SetNillableBoosterShared(v *bool) *ConversationUpdateOne {
+	if v != nil {
+		_u.SetBoosterShared(*v)
+	}
+	return _u
 }
 
 // SetLinkedOrderID sets the "linked_order_id" field.
@@ -573,6 +607,12 @@ func (_u *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversati
 	}
 	if _u.mutation.OrderIDCleared() {
 		_spec.ClearField(conversation.FieldOrderID, field.TypeString)
+	}
+	if _u.mutation.FulfillmentOrderIDCleared() {
+		_spec.ClearField(conversation.FieldFulfillmentOrderID, field.TypeString)
+	}
+	if value, ok := _u.mutation.BoosterShared(); ok {
+		_spec.SetField(conversation.FieldBoosterShared, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.LinkedOrderID(); ok {
 		_spec.SetField(conversation.FieldLinkedOrderID, field.TypeString, value)

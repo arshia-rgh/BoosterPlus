@@ -11572,6 +11572,184 @@
           }
         }
       }
+    },
+    "/api/v1/admin/fulfillment/{id}/conversation": {
+      "post": {
+        "operationId": "openFulfillmentCoordination",
+        "summary": "Explicitly share a separate paid-order coordination thread after recent staff factors",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FulfillmentSecretRevoke"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/conversations/{id}/sharing": {
+      "post": {
+        "operationId": "changeBoosterConversationSharing",
+        "summary": "Pause or resume assigned booster sharing with recent staff factors and expected thread version",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationChange"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -13955,7 +14133,8 @@
           "sequence",
           "unread",
           "created_at",
-          "updated_at"
+          "updated_at",
+          "booster_shared"
         ],
         "properties": {
           "id": {
@@ -13978,7 +14157,7 @@
           },
           "kind": {
             "type": "string",
-            "enum": ["order", "presales"]
+            "enum": ["order", "presales", "fulfillment"]
           },
           "state": {
             "type": "string",
@@ -14006,6 +14185,9 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "booster_shared": {
+            "type": "boolean"
           }
         }
       },
@@ -14062,6 +14244,11 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          "purpose": {
+            "type": "string",
+            "enum": ["", "message", "proof"],
+            "description": "Proof requires a shared fulfillment scope, staff authority and ready same-uploader public images."
           }
         }
       },
@@ -14083,6 +14270,9 @@
           },
           "order_id": {
             "type": "string"
+          },
+          "booster_shared": {
+            "type": "boolean"
           }
         }
       },
@@ -14108,7 +14298,8 @@
           "body",
           "sequence",
           "visibility",
-          "created_at"
+          "created_at",
+          "purpose"
         ],
         "properties": {
           "id": {
@@ -14147,6 +14338,10 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          "purpose": {
+            "type": "string",
+            "enum": ["message", "proof"]
           }
         }
       },
@@ -14418,7 +14613,9 @@
           "estimated_finish",
           "updated_at",
           "shared",
-          "access_version"
+          "access_version",
+          "coordination_id",
+          "coordination_shared"
         ],
         "properties": {
           "order_id": {
@@ -14526,6 +14723,12 @@
           "access_version": {
             "type": "integer",
             "minimum": 1
+          },
+          "coordination_id": {
+            "type": "string"
+          },
+          "coordination_shared": {
+            "type": "boolean"
           }
         }
       },

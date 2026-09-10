@@ -20,6 +20,10 @@ const (
 	FieldKind = "kind"
 	// FieldOrderID holds the string denoting the order_id field in the database.
 	FieldOrderID = "order_id"
+	// FieldFulfillmentOrderID holds the string denoting the fulfillment_order_id field in the database.
+	FieldFulfillmentOrderID = "fulfillment_order_id"
+	// FieldBoosterShared holds the string denoting the booster_shared field in the database.
+	FieldBoosterShared = "booster_shared"
 	// FieldLinkedOrderID holds the string denoting the linked_order_id field in the database.
 	FieldLinkedOrderID = "linked_order_id"
 	// FieldSubject holds the string denoting the subject field in the database.
@@ -60,6 +64,8 @@ var Columns = []string{
 	FieldUserID,
 	FieldKind,
 	FieldOrderID,
+	FieldFulfillmentOrderID,
+	FieldBoosterShared,
 	FieldLinkedOrderID,
 	FieldSubject,
 	FieldSlug,
@@ -92,6 +98,10 @@ var (
 	UserIDValidator func(string) error
 	// OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
 	OrderIDValidator func(string) error
+	// FulfillmentOrderIDValidator is a validator for the "fulfillment_order_id" field. It is called by the builders before save.
+	FulfillmentOrderIDValidator func(string) error
+	// DefaultBoosterShared holds the default value on creation for the "booster_shared" field.
+	DefaultBoosterShared bool
 	// LinkedOrderIDValidator is a validator for the "linked_order_id" field. It is called by the builders before save.
 	LinkedOrderIDValidator func(string) error
 	// SubjectValidator is a validator for the "subject" field. It is called by the builders before save.
@@ -135,8 +145,9 @@ type Kind string
 
 // Kind values.
 const (
-	KindOrder    Kind = "order"
-	KindPresales Kind = "presales"
+	KindOrder       Kind = "order"
+	KindPresales    Kind = "presales"
+	KindFulfillment Kind = "fulfillment"
 )
 
 func (k Kind) String() string {
@@ -146,7 +157,7 @@ func (k Kind) String() string {
 // KindValidator is a validator for the "kind" field enum values. It is called by the builders before save.
 func KindValidator(k Kind) error {
 	switch k {
-	case KindOrder, KindPresales:
+	case KindOrder, KindPresales, KindFulfillment:
 		return nil
 	default:
 		return fmt.Errorf("conversation: invalid enum value for kind field: %q", k)
@@ -201,6 +212,16 @@ func ByKind(opts ...sql.OrderTermOption) OrderOption {
 // ByOrderID orders the results by the order_id field.
 func ByOrderID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOrderID, opts...).ToFunc()
+}
+
+// ByFulfillmentOrderID orders the results by the fulfillment_order_id field.
+func ByFulfillmentOrderID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFulfillmentOrderID, opts...).ToFunc()
+}
+
+// ByBoosterShared orders the results by the booster_shared field.
+func ByBoosterShared(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBoosterShared, opts...).ToFunc()
 }
 
 // ByLinkedOrderID orders the results by the linked_order_id field.

@@ -35,6 +35,7 @@ type CreateInput struct {
 
 // SendInput cannot name a sender, alias, sequence or customer.
 type SendInput struct {
+	Purpose     string   `json:"purpose,omitempty"`
 	Attachments []string `json:"attachments,omitempty"`
 	RequestKey  string   `json:"request_key"`
 	Body        string   `json:"body"`
@@ -43,14 +44,16 @@ type SendInput struct {
 
 // Change requires a staff-observed revision for state, assignment and order linking.
 type Change struct {
-	Version    int    `json:"version"`
-	State      string `json:"state"`
-	AssignedTo string `json:"assigned_to"`
-	OrderID    string `json:"order_id"`
+	BoosterShared *bool  `json:"booster_shared,omitempty"`
+	Version       int    `json:"version"`
+	State         string `json:"state"`
+	AssignedTo    string `json:"assigned_to"`
+	OrderID       string `json:"order_id"`
 }
 
 // View has a separate public sequence/revision/time for customer privacy.
 type View struct {
+	BoosterShared bool      `json:"booster_shared"`
 	ID            string    `json:"id"`
 	Kind          string    `json:"kind"`
 	OrderID       string    `json:"order_id"`
@@ -68,6 +71,7 @@ type View struct {
 
 // Message never exposes a private sender ID to the customer API.
 type Message struct {
+	Purpose     string    `json:"purpose"`
 	Attachments []string  `json:"attachments,omitempty"`
 	ID          string    `json:"id"`
 	Sequence    int       `json:"sequence"`

@@ -16,11 +16,10 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
-	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 )
 
 func messageView(row *ent.ConversationMessage, admin bool) Message {
-	result := Message{Attachments: row.Attachments, ID: row.ID, Sequence: row.Sequence, SenderLabel: row.SenderLabel, SenderRole: row.SenderRole, Visibility: string(row.Visibility), Body: row.Body, CreatedAt: row.CreatedAt}
+	result := Message{Purpose: string(row.Purpose), Attachments: row.Attachments, ID: row.ID, Sequence: row.Sequence, SenderLabel: row.SenderLabel, SenderRole: row.SenderRole, Visibility: string(row.Visibility), Body: row.Body, CreatedAt: row.CreatedAt}
 	if admin {
 		result.SenderID = row.SenderID
 	} else if row.PublicSequence != nil {
@@ -35,6 +34,10 @@ func messageView(row *ent.ConversationMessage, admin bool) Message {
 // Messages pages persisted visible messages; internal notes cannot influence customer pagination.
 func (s *Store) Messages(ctx context.Context, p *identity.Principal, id string, admin bool, after int) (Messages, error) {
 	result := Messages{Messages: []Message{}}
+	p, err := s.auth.Recheck(ctx, p, capability(admin))
+	if err != nil {
+		return result, err
+	}
 	row, err := owned(ctx, s.client, p, id, admin)
 	if err != nil {
 		return result, err
@@ -81,6 +84,12 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 	if input.Visibility == "internal" && !admin {
 		return Message{}, identity.ErrForbidden
 	}
+	if input.Purpose == "message" {
+		input.Purpose = ""
+	}
+	if input.Purpose != "" && input.Purpose != "proof" {
+		return Message{}, ErrConflict
+	}
 	raw, err := json.Marshal(input)
 	if err != nil {
 		return Message{}, err
@@ -92,6 +101,10 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 		if e != nil {
 			return e
 		}
+		if input.Purpose == "proof" && (row.Kind != conversation.KindFulfillment || input.Visibility != "public" || len(input.Attachments) == 0 || (!admin && current.User.ID == row.UserID)) {
+			return identity.ErrForbidden
+		}
+		staffSender := admin || current.User.ID != row.UserID
 		existing, e := tx.ConversationMessage.Query().Where(conversationmessage.ConversationIDEQ(id), conversationmessage.SenderIDEQ(current.User.ID), conversationmessage.RequestKeyEQ(input.RequestKey)).Only(ctx)
 		if e == nil {
 			if existing.RequestHash != digest || !admin && existing.Visibility == conversationmessage.VisibilityInternal {
@@ -108,7 +121,7 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 		}
 		now := s.now().UTC()
 		label, role := "Customer", "customer"
-		if admin {
+		if staffSender {
 			label = current.User.StaffAlias
 			if label == "" {
 				label = "Booster Plus support"
@@ -116,11 +129,14 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 			role = current.User.Role
 		}
 		create := tx.ConversationMessage.Create().SetConversationID(id).SetSenderID(current.User.ID).SetSenderRole(role).SetSenderLabel(label).SetVisibility(conversationmessage.Visibility(input.Visibility)).SetSequence(row.Sequence + 1).SetRequestKey(input.RequestKey).SetRequestHash(digest).SetBody(input.Body).SetAttachments(input.Attachments).SetCreatedAt(now)
+		if input.Purpose == "proof" {
+			create.SetPurpose(conversationmessage.PurposeProof)
+		}
 		update := tx.Conversation.Update().Where(conversation.IDEQ(id), conversation.VersionEQ(row.Version)).AddVersion(1).AddSequence(1).SetUpdatedAt(now)
 		if input.Visibility == "public" {
 			create.SetPublicSequence(row.PublicSequence + 1)
 			update.AddPublicSequence(1).AddPublicVersion(1).SetPublicUpdatedAt(now)
-			if admin {
+			if staffSender {
 				update.SetState(conversation.StateWaiting)
 			} else {
 				update.SetState(conversation.StateOpen)
@@ -143,19 +159,17 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 		if count != 1 {
 			return ErrConflict
 		}
-		if input.Visibility == "public" {
-			target, kind := row.AssignedTo, "conversation_staff"
-			if admin {
-				target = row.UserID
-				kind = "conversation_customer"
-			}
-			if target != "" && target != current.User.ID {
-				if e = notifications.Enqueue(ctx, tx, target, id, message.ID, kind, now); e != nil {
-					return e
-				}
+		if e = s.notifyMessage(ctx, tx, current, row, message, admin); e != nil {
+			return e
+		}
+		action := "conversation_message"
+		if input.Purpose == "proof" {
+			action = "fulfillment_proof_published"
+			if e = s.recordProof(ctx, tx, current, row); e != nil {
+				return e
 			}
 		}
-		if e = audit(ctx, tx, current, id, "conversation_message", now); e != nil {
+		if e = audit(ctx, tx, current, id, action, now); e != nil {
 			return e
 		}
 		result = messageView(message, admin)
@@ -219,6 +233,10 @@ const StreamDuration = 8 * time.Second
 // History reads the latest bounded window or earlier history in display order.
 func (s *Store) History(ctx context.Context, p *identity.Principal, id string, admin bool, before int) (Messages, error) {
 	result := Messages{Messages: []Message{}}
+	p, err := s.auth.Recheck(ctx, p, capability(admin))
+	if err != nil {
+		return result, err
+	}
 	row, err := owned(ctx, s.client, p, id, admin)
 	if err != nil {
 		return result, err

@@ -74,6 +74,16 @@ func OrderID(v string) predicate.Conversation {
 	return predicate.Conversation(sql.FieldEQ(FieldOrderID, v))
 }
 
+// FulfillmentOrderID applies equality check predicate on the "fulfillment_order_id" field. It's identical to FulfillmentOrderIDEQ.
+func FulfillmentOrderID(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldEQ(FieldFulfillmentOrderID, v))
+}
+
+// BoosterShared applies equality check predicate on the "booster_shared" field. It's identical to BoosterSharedEQ.
+func BoosterShared(v bool) predicate.Conversation {
+	return predicate.Conversation(sql.FieldEQ(FieldBoosterShared, v))
+}
+
 // LinkedOrderID applies equality check predicate on the "linked_order_id" field. It's identical to LinkedOrderIDEQ.
 func LinkedOrderID(v string) predicate.Conversation {
 	return predicate.Conversation(sql.FieldEQ(FieldLinkedOrderID, v))
@@ -302,6 +312,91 @@ func OrderIDEqualFold(v string) predicate.Conversation {
 // OrderIDContainsFold applies the ContainsFold predicate on the "order_id" field.
 func OrderIDContainsFold(v string) predicate.Conversation {
 	return predicate.Conversation(sql.FieldContainsFold(FieldOrderID, v))
+}
+
+// FulfillmentOrderIDEQ applies the EQ predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDEQ(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldEQ(FieldFulfillmentOrderID, v))
+}
+
+// FulfillmentOrderIDNEQ applies the NEQ predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDNEQ(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldNEQ(FieldFulfillmentOrderID, v))
+}
+
+// FulfillmentOrderIDIn applies the In predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDIn(vs ...string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldIn(FieldFulfillmentOrderID, vs...))
+}
+
+// FulfillmentOrderIDNotIn applies the NotIn predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDNotIn(vs ...string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldNotIn(FieldFulfillmentOrderID, vs...))
+}
+
+// FulfillmentOrderIDGT applies the GT predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDGT(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldGT(FieldFulfillmentOrderID, v))
+}
+
+// FulfillmentOrderIDGTE applies the GTE predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDGTE(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldGTE(FieldFulfillmentOrderID, v))
+}
+
+// FulfillmentOrderIDLT applies the LT predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDLT(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldLT(FieldFulfillmentOrderID, v))
+}
+
+// FulfillmentOrderIDLTE applies the LTE predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDLTE(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldLTE(FieldFulfillmentOrderID, v))
+}
+
+// FulfillmentOrderIDContains applies the Contains predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDContains(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldContains(FieldFulfillmentOrderID, v))
+}
+
+// FulfillmentOrderIDHasPrefix applies the HasPrefix predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDHasPrefix(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldHasPrefix(FieldFulfillmentOrderID, v))
+}
+
+// FulfillmentOrderIDHasSuffix applies the HasSuffix predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDHasSuffix(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldHasSuffix(FieldFulfillmentOrderID, v))
+}
+
+// FulfillmentOrderIDIsNil applies the IsNil predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDIsNil() predicate.Conversation {
+	return predicate.Conversation(sql.FieldIsNull(FieldFulfillmentOrderID))
+}
+
+// FulfillmentOrderIDNotNil applies the NotNil predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDNotNil() predicate.Conversation {
+	return predicate.Conversation(sql.FieldNotNull(FieldFulfillmentOrderID))
+}
+
+// FulfillmentOrderIDEqualFold applies the EqualFold predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDEqualFold(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldEqualFold(FieldFulfillmentOrderID, v))
+}
+
+// FulfillmentOrderIDContainsFold applies the ContainsFold predicate on the "fulfillment_order_id" field.
+func FulfillmentOrderIDContainsFold(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldContainsFold(FieldFulfillmentOrderID, v))
+}
+
+// BoosterSharedEQ applies the EQ predicate on the "booster_shared" field.
+func BoosterSharedEQ(v bool) predicate.Conversation {
+	return predicate.Conversation(sql.FieldEQ(FieldBoosterShared, v))
+}
+
+// BoosterSharedNEQ applies the NEQ predicate on the "booster_shared" field.
+func BoosterSharedNEQ(v bool) predicate.Conversation {
+	return predicate.Conversation(sql.FieldNEQ(FieldBoosterShared, v))
 }
 
 // LinkedOrderIDEQ applies the EQ predicate on the "linked_order_id" field.

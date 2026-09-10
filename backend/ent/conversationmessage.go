@@ -38,6 +38,8 @@ type ConversationMessage struct {
 	RequestHash string `json:"request_hash,omitempty"`
 	// Attachments holds the value of the "attachments" field.
 	Attachments []string `json:"attachments,omitempty"`
+	// Purpose holds the value of the "purpose" field.
+	Purpose conversationmessage.Purpose `json:"purpose,omitempty"`
 	// Body holds the value of the "body" field.
 	Body string `json:"body,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -54,7 +56,7 @@ func (*ConversationMessage) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case conversationmessage.FieldSequence, conversationmessage.FieldPublicSequence:
 			values[i] = new(sql.NullInt64)
-		case conversationmessage.FieldID, conversationmessage.FieldConversationID, conversationmessage.FieldSenderID, conversationmessage.FieldSenderRole, conversationmessage.FieldSenderLabel, conversationmessage.FieldVisibility, conversationmessage.FieldRequestKey, conversationmessage.FieldRequestHash, conversationmessage.FieldBody:
+		case conversationmessage.FieldID, conversationmessage.FieldConversationID, conversationmessage.FieldSenderID, conversationmessage.FieldSenderRole, conversationmessage.FieldSenderLabel, conversationmessage.FieldVisibility, conversationmessage.FieldRequestKey, conversationmessage.FieldRequestHash, conversationmessage.FieldPurpose, conversationmessage.FieldBody:
 			values[i] = new(sql.NullString)
 		case conversationmessage.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -142,6 +144,12 @@ func (_m *ConversationMessage) assignValues(columns []string, values []any) erro
 					return fmt.Errorf("unmarshal field attachments: %w", err)
 				}
 			}
+		case conversationmessage.FieldPurpose:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field purpose", values[i])
+			} else if value.Valid {
+				_m.Purpose = conversationmessage.Purpose(value.String)
+			}
 		case conversationmessage.FieldBody:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field body", values[i])
@@ -221,6 +229,9 @@ func (_m *ConversationMessage) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("attachments=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Attachments))
+	builder.WriteString(", ")
+	builder.WriteString("purpose=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Purpose))
 	builder.WriteString(", ")
 	builder.WriteString("body=")
 	builder.WriteString(_m.Body)

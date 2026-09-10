@@ -23,6 +23,10 @@ type Conversation struct {
 	Kind conversation.Kind `json:"kind,omitempty"`
 	// OrderID holds the value of the "order_id" field.
 	OrderID *string `json:"order_id,omitempty"`
+	// FulfillmentOrderID holds the value of the "fulfillment_order_id" field.
+	FulfillmentOrderID *string `json:"fulfillment_order_id,omitempty"`
+	// BoosterShared holds the value of the "booster_shared" field.
+	BoosterShared bool `json:"booster_shared,omitempty"`
 	// LinkedOrderID holds the value of the "linked_order_id" field.
 	LinkedOrderID *string `json:"linked_order_id,omitempty"`
 	// Subject holds the value of the "subject" field.
@@ -61,9 +65,11 @@ func (*Conversation) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case conversation.FieldBoosterShared:
+			values[i] = new(sql.NullBool)
 		case conversation.FieldVersion, conversation.FieldPublicVersion, conversation.FieldSequence, conversation.FieldPublicSequence:
 			values[i] = new(sql.NullInt64)
-		case conversation.FieldID, conversation.FieldUserID, conversation.FieldKind, conversation.FieldOrderID, conversation.FieldLinkedOrderID, conversation.FieldSubject, conversation.FieldSlug, conversation.FieldRequestKey, conversation.FieldRequestHash, conversation.FieldCreatedBy, conversation.FieldState, conversation.FieldAssignedTo:
+		case conversation.FieldID, conversation.FieldUserID, conversation.FieldKind, conversation.FieldOrderID, conversation.FieldFulfillmentOrderID, conversation.FieldLinkedOrderID, conversation.FieldSubject, conversation.FieldSlug, conversation.FieldRequestKey, conversation.FieldRequestHash, conversation.FieldCreatedBy, conversation.FieldState, conversation.FieldAssignedTo:
 			values[i] = new(sql.NullString)
 		case conversation.FieldUpdatedAt, conversation.FieldPublicUpdatedAt, conversation.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -106,6 +112,19 @@ func (_m *Conversation) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.OrderID = new(string)
 				*_m.OrderID = value.String
+			}
+		case conversation.FieldFulfillmentOrderID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field fulfillment_order_id", values[i])
+			} else if value.Valid {
+				_m.FulfillmentOrderID = new(string)
+				*_m.FulfillmentOrderID = value.String
+			}
+		case conversation.FieldBoosterShared:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field booster_shared", values[i])
+			} else if value.Valid {
+				_m.BoosterShared = value.Bool
 			}
 		case conversation.FieldLinkedOrderID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -244,6 +263,14 @@ func (_m *Conversation) String() string {
 		builder.WriteString("order_id=")
 		builder.WriteString(*v)
 	}
+	builder.WriteString(", ")
+	if v := _m.FulfillmentOrderID; v != nil {
+		builder.WriteString("fulfillment_order_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	builder.WriteString("booster_shared=")
+	builder.WriteString(fmt.Sprintf("%v", _m.BoosterShared))
 	builder.WriteString(", ")
 	if v := _m.LinkedOrderID; v != nil {
 		builder.WriteString("linked_order_id=")

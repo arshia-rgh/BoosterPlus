@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { answerSchema, answersSchema } from "../catalog/model";
 export const workSchema = z.object({
+  coordination_id: z.string(),
+  coordination_shared: z.boolean(),
   order_id: z.string(),
   order_version: z.number().int(),
   access_version: z.number().int(),

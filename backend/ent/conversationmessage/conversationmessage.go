@@ -34,6 +34,8 @@ const (
 	FieldRequestHash = "request_hash"
 	// FieldAttachments holds the string denoting the attachments field in the database.
 	FieldAttachments = "attachments"
+	// FieldPurpose holds the string denoting the purpose field in the database.
+	FieldPurpose = "purpose"
 	// FieldBody holds the string denoting the body field in the database.
 	FieldBody = "body"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -55,6 +57,7 @@ var Columns = []string{
 	FieldRequestKey,
 	FieldRequestHash,
 	FieldAttachments,
+	FieldPurpose,
 	FieldBody,
 	FieldCreatedAt,
 }
@@ -115,6 +118,32 @@ func VisibilityValidator(v Visibility) error {
 	}
 }
 
+// Purpose defines the type for the "purpose" enum field.
+type Purpose string
+
+// PurposeMessage is the default value of the Purpose enum.
+const DefaultPurpose = PurposeMessage
+
+// Purpose values.
+const (
+	PurposeMessage Purpose = "message"
+	PurposeProof   Purpose = "proof"
+)
+
+func (pu Purpose) String() string {
+	return string(pu)
+}
+
+// PurposeValidator is a validator for the "purpose" field enum values. It is called by the builders before save.
+func PurposeValidator(pu Purpose) error {
+	switch pu {
+	case PurposeMessage, PurposeProof:
+		return nil
+	default:
+		return fmt.Errorf("conversationmessage: invalid enum value for purpose field: %q", pu)
+	}
+}
+
 // OrderOption defines the ordering options for the ConversationMessage queries.
 type OrderOption func(*sql.Selector)
 
@@ -166,6 +195,11 @@ func ByRequestKey(opts ...sql.OrderTermOption) OrderOption {
 // ByRequestHash orders the results by the request_hash field.
 func ByRequestHash(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRequestHash, opts...).ToFunc()
+}
+
+// ByPurpose orders the results by the purpose field.
+func ByPurpose(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPurpose, opts...).ToFunc()
 }
 
 // ByBody orders the results by the body field.

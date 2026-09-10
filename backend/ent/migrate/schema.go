@@ -345,8 +345,10 @@ var (
 	ConversationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
 		{Name: "user_id", Type: field.TypeString, Size: 36},
-		{Name: "kind", Type: field.TypeEnum, Enums: []string{"order", "presales"}},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"order", "presales", "fulfillment"}},
 		{Name: "order_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "fulfillment_order_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "booster_shared", Type: field.TypeBool, Default: false},
 		{Name: "linked_order_id", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "subject", Type: field.TypeString, Size: 160},
 		{Name: "slug", Type: field.TypeString, Size: 80, Default: ""},
@@ -370,6 +372,11 @@ var (
 		PrimaryKey: []*schema.Column{ConversationsColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "conversation_fulfillment",
+				Unique:  true,
+				Columns: []*schema.Column{ConversationsColumns[4]},
+			},
+			{
 				Name:    "conversation_order",
 				Unique:  true,
 				Columns: []*schema.Column{ConversationsColumns[3]},
@@ -377,17 +384,17 @@ var (
 			{
 				Name:    "conversation_request",
 				Unique:  true,
-				Columns: []*schema.Column{ConversationsColumns[9], ConversationsColumns[7]},
+				Columns: []*schema.Column{ConversationsColumns[11], ConversationsColumns[9]},
 			},
 			{
 				Name:    "conversation_customer",
 				Unique:  false,
-				Columns: []*schema.Column{ConversationsColumns[1], ConversationsColumns[17], ConversationsColumns[0]},
+				Columns: []*schema.Column{ConversationsColumns[1], ConversationsColumns[19], ConversationsColumns[0]},
 			},
 			{
 				Name:    "conversation_inbox",
 				Unique:  false,
-				Columns: []*schema.Column{ConversationsColumns[10], ConversationsColumns[16], ConversationsColumns[0]},
+				Columns: []*schema.Column{ConversationsColumns[12], ConversationsColumns[18], ConversationsColumns[0]},
 			},
 		},
 	}
@@ -404,6 +411,7 @@ var (
 		{Name: "request_key", Type: field.TypeString, Size: 36},
 		{Name: "request_hash", Type: field.TypeString, Size: 64},
 		{Name: "attachments", Type: field.TypeJSON, Nullable: true},
+		{Name: "purpose", Type: field.TypeEnum, Enums: []string{"message", "proof"}, Default: "message"},
 		{Name: "body", Type: field.TypeString, Size: 4000},
 		{Name: "created_at", Type: field.TypeTime},
 	}

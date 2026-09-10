@@ -109,25 +109,27 @@ type SharedField struct {
 
 // View intentionally omits customer identity, prices, coupons and payment metadata.
 type View struct {
-	OrderID           string          `json:"order_id"`
-	OrderVersion      int             `json:"order_version"`
-	AccessVersion     int             `json:"access_version"`
-	Version           int             `json:"version"`
-	Game              string          `json:"game"`
-	Service           string          `json:"service"`
-	State             string          `json:"state"`
-	Mode              string          `json:"mode"`
-	SecretHours       int             `json:"secret_hours"`
-	AssignedID        string          `json:"assigned_id,omitempty"`
-	Alias             string          `json:"alias"`
-	Progress          int             `json:"progress"`
-	CompletionPending bool            `json:"completion_pending"`
-	Note              string          `json:"note"`
-	EstimatedStart    *time.Time      `json:"estimated_start"`
-	EstimatedFinish   *time.Time      `json:"estimated_finish"`
-	Handoff           catalog.Answers `json:"handoff,omitempty"`
-	Shared            []SharedField   `json:"shared"`
-	UpdatedAt         time.Time       `json:"updated_at"`
+	CoordinationID     string          `json:"coordination_id"`
+	CoordinationShared bool            `json:"coordination_shared"`
+	OrderID            string          `json:"order_id"`
+	OrderVersion       int             `json:"order_version"`
+	AccessVersion      int             `json:"access_version"`
+	Version            int             `json:"version"`
+	Game               string          `json:"game"`
+	Service            string          `json:"service"`
+	State              string          `json:"state"`
+	Mode               string          `json:"mode"`
+	SecretHours        int             `json:"secret_hours"`
+	AssignedID         string          `json:"assigned_id,omitempty"`
+	Alias              string          `json:"alias"`
+	Progress           int             `json:"progress"`
+	CompletionPending  bool            `json:"completion_pending"`
+	Note               string          `json:"note"`
+	EstimatedStart     *time.Time      `json:"estimated_start"`
+	EstimatedFinish    *time.Time      `json:"estimated_finish"`
+	Handoff            catalog.Answers `json:"handoff,omitempty"`
+	Shared             []SharedField   `json:"shared"`
+	UpdatedAt          time.Time       `json:"updated_at"`
 }
 
 // Assignment binds a staff change to both observed execution and order versions.

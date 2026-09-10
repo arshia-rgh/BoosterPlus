@@ -1,4 +1,5 @@
 import Bookings from "./bookings";
+import Coordination from "./coordination";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router";
 import { Action, ErrorNotice } from "../catalog/controls";
@@ -81,6 +82,11 @@ export default function FulfillmentPanel({
         {work ? (
           <>
             <Summary work={work} />
+            <Coordination
+              work={work}
+              audience={admin ? "admin" : "account"}
+              reload={refresh}
+            />
             {work.mode === "together" && (
               <Bookings
                 work={work}
@@ -222,6 +228,11 @@ export function BoosterOrder() {
             {work.game} · {work.service}
           </h2>
           <Summary work={work} />
+          <Coordination
+            work={work}
+            audience="booster"
+            reload={resource.reload}
+          />
           {work.mode === "together" && (
             <Bookings work={work} audience="booster" reload={resource.reload} />
           )}

@@ -14,6 +14,8 @@ vi.mock("./secrets", () => ({
 }));
 it("disables booster edits until the refreshed work revision is ready", async () => {
   const work: Work = {
+    coordination_id: "",
+    coordination_shared: false,
     order_id: "synthetic-order",
     order_version: 1,
     access_version: 1,

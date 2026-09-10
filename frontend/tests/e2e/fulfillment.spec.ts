@@ -79,6 +79,47 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       .getByRole("button", { name: "Save temporary game access", exact: true })
       .click();
     await expect(buyer.getByText(/^Status: active/)).toBeVisible();
+    await page
+      .getByRole("button", { name: "Enable shared coordination", exact: true })
+      .click();
+    await expect(page.getByRole("alert")).toContainText(
+      "This conversation changed",
+    );
+    await page
+      .getByRole("button", { name: "Refresh fulfillment", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Enable shared coordination", exact: true })
+      .click();
+    const shared = page.getByRole("link", {
+      name: "Open coordination conversation",
+      exact: true,
+    });
+    await expect(shared).toBeVisible();
+    const sharedHref = await shared.getAttribute("href");
+    expect(sharedHref).toBeTruthy();
+    await shared.click();
+    await page.getByLabel("Message audience").selectOption("internal");
+    await page
+      .getByLabel("Internal note", { exact: true })
+      .fill("Internal scope never shared with boosters");
+    await page
+      .getByRole("button", { name: "Save internal note", exact: true })
+      .click();
+    await expect(page.locator(".internal-note")).toContainText(
+      "Internal scope never shared with boosters",
+    );
+    await buyer.goto(sharedHref?.replace("/admin/", "/") ?? "/support");
+    await buyer
+      .getByLabel("Message", { exact: true })
+      .fill("Ready to coordinate with assigned staff");
+    await buyer
+      .getByRole("button", { name: "Send message", exact: true })
+      .click();
+    await expect(buyer.locator(".message-list")).toContainText(
+      "Ready to coordinate with assigned staff",
+    );
+    await page.goto(`/admin/orders/${accountID}`);
     await staff.goto("/booster/orders");
     await staff.getByRole("link", { name: /Fulfillment journey game/ }).click();
     const work = await staff.request.get(
@@ -103,6 +144,83 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     await staff
       .getByRole("button", { name: "Hide game access", exact: true })
       .click();
+    await staff
+      .getByRole("link", {
+        name: "Open coordination conversation",
+        exact: true,
+      })
+      .click();
+    await expect(staff.locator(".message-list")).toContainText(
+      "Ready to coordinate with assigned staff",
+    );
+    await expect(
+      staff.getByText("Internal scope never shared with boosters"),
+    ).toHaveCount(0);
+    await staff.getByLabel("Message type").selectOption("proof");
+    await staff
+      .getByLabel("Message", { exact: true })
+      .fill("Synthetic completed rank proof");
+    await staff
+      .getByLabel("Choose image")
+      .setInputFiles("tests/fixtures/proof.png");
+    await staff
+      .getByRole("button", { name: "Upload image", exact: true })
+      .click();
+    await expect(
+      staff.getByText("Image checked and ready to send."),
+    ).toBeVisible({ timeout: 30000 });
+    await staff
+      .getByRole("button", { name: "Publish proof", exact: true })
+      .click();
+    await expect(staff.locator(".message-list")).toContainText(
+      "Published proof",
+    );
+    await accessible(staff);
+    await buyer
+      .getByRole("button", { name: "Refresh conversation", exact: true })
+      .click();
+    await expect(buyer.locator(".message-list")).toContainText(
+      "Synthetic completed rank proof",
+    );
+    await buyer
+      .getByRole("button", { name: "Get image download", exact: true })
+      .click();
+    await expect(
+      buyer.getByRole("link", { name: "Download image", exact: true }),
+    ).toBeVisible();
+    await accessible(buyer);
+    await buyer.screenshot({
+      path: `test-results/coordination-${info.project.name}.png`,
+      fullPage: true,
+    });
+    await page.goto(sharedHref ?? "/admin/support");
+    await page
+      .getByRole("button", { name: "Pause booster sharing", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Resume booster sharing", exact: true }),
+    ).toBeVisible();
+    await expect(
+      staff.getByText("Conversation access is unavailable."),
+    ).toBeVisible({ timeout: 10000 });
+    await expect(
+      staff.getByText("Synthetic completed rank proof", { exact: true }),
+    ).toHaveCount(0);
+    await page
+      .getByRole("button", { name: "Resume booster sharing", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Pause booster sharing", exact: true }),
+    ).toBeVisible();
+    await staff.goto(
+      sharedHref?.replace("/admin/", "/booster/") ?? "/booster/orders",
+    );
+    await expect(staff.locator(".message-list")).toContainText(
+      "Published proof",
+    );
+    await page.goto(`/admin/orders/${accountID}`);
+    await buyer.goto(`/orders/${accountID}`);
+    await staff.goto(`/booster/orders/${accountID}`);
     await staff
       .getByLabel("Customer-visible update", { exact: true })
       .fill("Ready to begin");

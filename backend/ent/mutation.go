@@ -8510,35 +8510,37 @@ func (m *CatalogReleaseMutation) ResetEdge(name string) error {
 // ConversationMutation represents an operation that mutates the Conversation nodes in the graph.
 type ConversationMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *string
-	user_id            *string
-	kind               *conversation.Kind
-	order_id           *string
-	linked_order_id    *string
-	subject            *string
-	slug               *string
-	request_key        *string
-	request_hash       *string
-	created_by         *string
-	state              *conversation.State
-	assigned_to        *string
-	version            *int
-	addversion         *int
-	public_version     *int
-	addpublic_version  *int
-	sequence           *int
-	addsequence        *int
-	public_sequence    *int
-	addpublic_sequence *int
-	updated_at         *time.Time
-	public_updated_at  *time.Time
-	created_at         *time.Time
-	clearedFields      map[string]struct{}
-	done               bool
-	oldValue           func(context.Context) (*Conversation, error)
-	predicates         []predicate.Conversation
+	op                   Op
+	typ                  string
+	id                   *string
+	user_id              *string
+	kind                 *conversation.Kind
+	order_id             *string
+	fulfillment_order_id *string
+	booster_shared       *bool
+	linked_order_id      *string
+	subject              *string
+	slug                 *string
+	request_key          *string
+	request_hash         *string
+	created_by           *string
+	state                *conversation.State
+	assigned_to          *string
+	version              *int
+	addversion           *int
+	public_version       *int
+	addpublic_version    *int
+	sequence             *int
+	addsequence          *int
+	public_sequence      *int
+	addpublic_sequence   *int
+	updated_at           *time.Time
+	public_updated_at    *time.Time
+	created_at           *time.Time
+	clearedFields        map[string]struct{}
+	done                 bool
+	oldValue             func(context.Context) (*Conversation, error)
+	predicates           []predicate.Conversation
 }
 
 var _ ent.Mutation = (*ConversationMutation)(nil)
@@ -8764,6 +8766,91 @@ func (m *ConversationMutation) OrderIDCleared() bool {
 func (m *ConversationMutation) ResetOrderID() {
 	m.order_id = nil
 	delete(m.clearedFields, conversation.FieldOrderID)
+}
+
+// SetFulfillmentOrderID sets the "fulfillment_order_id" field.
+func (m *ConversationMutation) SetFulfillmentOrderID(s string) {
+	m.fulfillment_order_id = &s
+}
+
+// FulfillmentOrderID returns the value of the "fulfillment_order_id" field in the mutation.
+func (m *ConversationMutation) FulfillmentOrderID() (r string, exists bool) {
+	v := m.fulfillment_order_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFulfillmentOrderID returns the old "fulfillment_order_id" field's value of the Conversation entity.
+// If the Conversation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConversationMutation) OldFulfillmentOrderID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFulfillmentOrderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFulfillmentOrderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFulfillmentOrderID: %w", err)
+	}
+	return oldValue.FulfillmentOrderID, nil
+}
+
+// ClearFulfillmentOrderID clears the value of the "fulfillment_order_id" field.
+func (m *ConversationMutation) ClearFulfillmentOrderID() {
+	m.fulfillment_order_id = nil
+	m.clearedFields[conversation.FieldFulfillmentOrderID] = struct{}{}
+}
+
+// FulfillmentOrderIDCleared returns if the "fulfillment_order_id" field was cleared in this mutation.
+func (m *ConversationMutation) FulfillmentOrderIDCleared() bool {
+	_, ok := m.clearedFields[conversation.FieldFulfillmentOrderID]
+	return ok
+}
+
+// ResetFulfillmentOrderID resets all changes to the "fulfillment_order_id" field.
+func (m *ConversationMutation) ResetFulfillmentOrderID() {
+	m.fulfillment_order_id = nil
+	delete(m.clearedFields, conversation.FieldFulfillmentOrderID)
+}
+
+// SetBoosterShared sets the "booster_shared" field.
+func (m *ConversationMutation) SetBoosterShared(b bool) {
+	m.booster_shared = &b
+}
+
+// BoosterShared returns the value of the "booster_shared" field in the mutation.
+func (m *ConversationMutation) BoosterShared() (r bool, exists bool) {
+	v := m.booster_shared
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBoosterShared returns the old "booster_shared" field's value of the Conversation entity.
+// If the Conversation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConversationMutation) OldBoosterShared(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBoosterShared is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBoosterShared requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBoosterShared: %w", err)
+	}
+	return oldValue.BoosterShared, nil
+}
+
+// ResetBoosterShared resets all changes to the "booster_shared" field.
+func (m *ConversationMutation) ResetBoosterShared() {
+	m.booster_shared = nil
 }
 
 // SetLinkedOrderID sets the "linked_order_id" field.
@@ -9433,7 +9520,7 @@ func (m *ConversationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConversationMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 20)
 	if m.user_id != nil {
 		fields = append(fields, conversation.FieldUserID)
 	}
@@ -9442,6 +9529,12 @@ func (m *ConversationMutation) Fields() []string {
 	}
 	if m.order_id != nil {
 		fields = append(fields, conversation.FieldOrderID)
+	}
+	if m.fulfillment_order_id != nil {
+		fields = append(fields, conversation.FieldFulfillmentOrderID)
+	}
+	if m.booster_shared != nil {
+		fields = append(fields, conversation.FieldBoosterShared)
 	}
 	if m.linked_order_id != nil {
 		fields = append(fields, conversation.FieldLinkedOrderID)
@@ -9502,6 +9595,10 @@ func (m *ConversationMutation) Field(name string) (ent.Value, bool) {
 		return m.Kind()
 	case conversation.FieldOrderID:
 		return m.OrderID()
+	case conversation.FieldFulfillmentOrderID:
+		return m.FulfillmentOrderID()
+	case conversation.FieldBoosterShared:
+		return m.BoosterShared()
 	case conversation.FieldLinkedOrderID:
 		return m.LinkedOrderID()
 	case conversation.FieldSubject:
@@ -9547,6 +9644,10 @@ func (m *ConversationMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldKind(ctx)
 	case conversation.FieldOrderID:
 		return m.OldOrderID(ctx)
+	case conversation.FieldFulfillmentOrderID:
+		return m.OldFulfillmentOrderID(ctx)
+	case conversation.FieldBoosterShared:
+		return m.OldBoosterShared(ctx)
 	case conversation.FieldLinkedOrderID:
 		return m.OldLinkedOrderID(ctx)
 	case conversation.FieldSubject:
@@ -9606,6 +9707,20 @@ func (m *ConversationMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetOrderID(v)
+		return nil
+	case conversation.FieldFulfillmentOrderID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFulfillmentOrderID(v)
+		return nil
+	case conversation.FieldBoosterShared:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBoosterShared(v)
 		return nil
 	case conversation.FieldLinkedOrderID:
 		v, ok := value.(string)
@@ -9796,6 +9911,9 @@ func (m *ConversationMutation) ClearedFields() []string {
 	if m.FieldCleared(conversation.FieldOrderID) {
 		fields = append(fields, conversation.FieldOrderID)
 	}
+	if m.FieldCleared(conversation.FieldFulfillmentOrderID) {
+		fields = append(fields, conversation.FieldFulfillmentOrderID)
+	}
 	if m.FieldCleared(conversation.FieldLinkedOrderID) {
 		fields = append(fields, conversation.FieldLinkedOrderID)
 	}
@@ -9816,6 +9934,9 @@ func (m *ConversationMutation) ClearField(name string) error {
 	case conversation.FieldOrderID:
 		m.ClearOrderID()
 		return nil
+	case conversation.FieldFulfillmentOrderID:
+		m.ClearFulfillmentOrderID()
+		return nil
 	case conversation.FieldLinkedOrderID:
 		m.ClearLinkedOrderID()
 		return nil
@@ -9835,6 +9956,12 @@ func (m *ConversationMutation) ResetField(name string) error {
 		return nil
 	case conversation.FieldOrderID:
 		m.ResetOrderID()
+		return nil
+	case conversation.FieldFulfillmentOrderID:
+		m.ResetFulfillmentOrderID()
+		return nil
+	case conversation.FieldBoosterShared:
+		m.ResetBoosterShared()
 		return nil
 	case conversation.FieldLinkedOrderID:
 		m.ResetLinkedOrderID()
@@ -9952,6 +10079,7 @@ type ConversationMessageMutation struct {
 	request_hash       *string
 	attachments        *[]string
 	appendattachments  []string
+	purpose            *conversationmessage.Purpose
 	body               *string
 	created_at         *time.Time
 	clearedFields      map[string]struct{}
@@ -10507,6 +10635,42 @@ func (m *ConversationMessageMutation) ResetAttachments() {
 	delete(m.clearedFields, conversationmessage.FieldAttachments)
 }
 
+// SetPurpose sets the "purpose" field.
+func (m *ConversationMessageMutation) SetPurpose(c conversationmessage.Purpose) {
+	m.purpose = &c
+}
+
+// Purpose returns the value of the "purpose" field in the mutation.
+func (m *ConversationMessageMutation) Purpose() (r conversationmessage.Purpose, exists bool) {
+	v := m.purpose
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPurpose returns the old "purpose" field's value of the ConversationMessage entity.
+// If the ConversationMessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConversationMessageMutation) OldPurpose(ctx context.Context) (v conversationmessage.Purpose, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPurpose is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPurpose requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPurpose: %w", err)
+	}
+	return oldValue.Purpose, nil
+}
+
+// ResetPurpose resets all changes to the "purpose" field.
+func (m *ConversationMessageMutation) ResetPurpose() {
+	m.purpose = nil
+}
+
 // SetBody sets the "body" field.
 func (m *ConversationMessageMutation) SetBody(s string) {
 	m.body = &s
@@ -10613,7 +10777,7 @@ func (m *ConversationMessageMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConversationMessageMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.conversation_id != nil {
 		fields = append(fields, conversationmessage.FieldConversationID)
 	}
@@ -10643,6 +10807,9 @@ func (m *ConversationMessageMutation) Fields() []string {
 	}
 	if m.attachments != nil {
 		fields = append(fields, conversationmessage.FieldAttachments)
+	}
+	if m.purpose != nil {
+		fields = append(fields, conversationmessage.FieldPurpose)
 	}
 	if m.body != nil {
 		fields = append(fields, conversationmessage.FieldBody)
@@ -10678,6 +10845,8 @@ func (m *ConversationMessageMutation) Field(name string) (ent.Value, bool) {
 		return m.RequestHash()
 	case conversationmessage.FieldAttachments:
 		return m.Attachments()
+	case conversationmessage.FieldPurpose:
+		return m.Purpose()
 	case conversationmessage.FieldBody:
 		return m.Body()
 	case conversationmessage.FieldCreatedAt:
@@ -10711,6 +10880,8 @@ func (m *ConversationMessageMutation) OldField(ctx context.Context, name string)
 		return m.OldRequestHash(ctx)
 	case conversationmessage.FieldAttachments:
 		return m.OldAttachments(ctx)
+	case conversationmessage.FieldPurpose:
+		return m.OldPurpose(ctx)
 	case conversationmessage.FieldBody:
 		return m.OldBody(ctx)
 	case conversationmessage.FieldCreatedAt:
@@ -10793,6 +10964,13 @@ func (m *ConversationMessageMutation) SetField(name string, value ent.Value) err
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAttachments(v)
+		return nil
+	case conversationmessage.FieldPurpose:
+		v, ok := value.(conversationmessage.Purpose)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPurpose(v)
 		return nil
 	case conversationmessage.FieldBody:
 		v, ok := value.(string)
@@ -10928,6 +11106,9 @@ func (m *ConversationMessageMutation) ResetField(name string) error {
 		return nil
 	case conversationmessage.FieldAttachments:
 		m.ResetAttachments()
+		return nil
+	case conversationmessage.FieldPurpose:
+		m.ResetPurpose()
 		return nil
 	case conversationmessage.FieldBody:
 		m.ResetBody()
