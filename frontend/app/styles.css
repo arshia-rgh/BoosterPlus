@@ -514,3 +514,10 @@ button:disabled {
     padding: 0.8rem;
   }
 }
+
+.coupon-history {
+  max-width: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

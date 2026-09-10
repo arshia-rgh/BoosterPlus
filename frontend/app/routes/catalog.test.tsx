@@ -13,6 +13,7 @@ import Package, {
   meta as packageMeta,
 } from "./package";
 import Admin, { meta as adminMeta } from "./catalog-admin";
+import CouponAdmin, { meta as couponMeta } from "./coupon-admin";
 vi.mock("../catalog/loaders.server", () => ({
   loadCatalog: vi.fn(),
   loadGame: vi.fn(),
@@ -24,6 +25,7 @@ vi.mock("../catalog/public", () => ({
   ServicePage: () => <h1>Service page</h1>,
   PackagePage: () => <h1>Package page</h1>,
 }));
+vi.mock("../catalog/coupons", () => ({ default: () => <p>Coupon child</p> }));
 vi.mock("../catalog/admin", () => ({ default: () => <p>Catalog child</p> }));
 vi.mock("../identity/identity", () => ({
   default: ({
@@ -44,7 +46,14 @@ it("routes catalog requests through authoritative loaders", async () => {
   expect(loadGame).toHaveBeenCalledWith("test");
   expect(loadOffering).toHaveBeenCalledWith("test", "boost", "service");
   expect(loadOffering).toHaveBeenCalledWith("test", "fixed", "package");
-  for (const meta of [gamesMeta, gameMeta, serviceMeta, packageMeta, adminMeta])
+  for (const meta of [
+    gamesMeta,
+    gameMeta,
+    serviceMeta,
+    packageMeta,
+    adminMeta,
+    couponMeta,
+  ])
     expect(meta()[0]?.title).toContain("Booster Plus");
   render(
     <>
@@ -52,10 +61,11 @@ it("routes catalog requests through authoritative loaders", async () => {
       <Service />
       <Package />
       <Admin />
+      <CouponAdmin />
     </>,
   );
   expect(screen.getByRole("heading", { name: "Game page" })).toBeVisible();
-  expect(screen.getByRole("region", { name: "admin" })).toHaveTextContent(
+  expect(screen.getAllByRole("region", { name: "admin" })[0]).toHaveTextContent(
     "Catalog child",
   );
 });

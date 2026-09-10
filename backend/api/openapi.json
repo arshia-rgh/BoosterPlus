@@ -2504,6 +2504,367 @@
           }
         ]
       }
+    },
+    "/api/v1/admin/catalog/coupons": {
+      "get": {
+        "operationId": "listCoupons",
+        "summary": "listCoupons",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponListing"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createCoupon",
+        "summary": "createCoupon",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CouponSave"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/coupons/{id}/save": {
+      "post": {
+        "operationId": "saveCoupon",
+        "summary": "saveCoupon",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CouponSave"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/catalog/coupons/{id}/history": {
+      "get": {
+        "operationId": "couponHistory",
+        "summary": "couponHistory",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponHistory"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/catalog/games/{slug}/discount": {
+      "post": {
+        "operationId": "checkCoupon",
+        "summary": "Indicative current-price coupon check, limited to 30 attempts per minute per verified client address and signed-in account. Does not reserve a use or authorize payment.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful catalog response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogEstimate"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CouponCheck"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -3939,6 +4300,9 @@
             "items": {
               "$ref": "#/components/schemas/CatalogIssue"
             }
+          },
+          "discount": {
+            "$ref": "#/components/schemas/CouponDiscount"
           }
         },
         "required": [
@@ -3985,6 +4349,224 @@
           }
         },
         "required": ["release_id", "service", "answers"]
+      },
+      "CouponDefinition": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "starts_at": {
+            "type": "string"
+          },
+          "ends_at": {
+            "type": "string"
+          },
+          "minimum_subtotal": {
+            "type": "string"
+          },
+          "maximum_discount": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "global_limit": {
+            "type": "integer"
+          },
+          "customer_limit": {
+            "type": "integer"
+          },
+          "games": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "string"
+            }
+          },
+          "services": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "string"
+            }
+          },
+          "packages": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "string"
+            }
+          },
+          "categories": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "kind",
+          "value",
+          "currency",
+          "starts_at",
+          "ends_at",
+          "minimum_subtotal",
+          "maximum_discount",
+          "enabled",
+          "global_limit",
+          "customer_limit",
+          "games",
+          "services",
+          "packages",
+          "categories"
+        ]
+      },
+      "CouponView": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/CouponDefinition"
+          }
+        },
+        "required": ["id", "version", "definition"]
+      },
+      "CouponListing": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "coupons": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CouponView"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        },
+        "required": ["coupons", "next"]
+      },
+      "CouponHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "coupons": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CouponView"
+            }
+          }
+        },
+        "required": ["coupons"]
+      },
+      "CouponSave": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/CouponDefinition"
+          }
+        },
+        "required": ["version", "definition"]
+      },
+      "CouponCheck": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "release_id": {
+            "type": "string"
+          },
+          "service": {
+            "type": "string"
+          },
+          "package": {
+            "type": "string"
+          },
+          "variant": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "release_id",
+          "service",
+          "package",
+          "variant",
+          "code",
+          "answers"
+        ]
+      },
+      "CouponDiscount": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "coupon_id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          },
+          "amount_minor": {
+            "type": "string"
+          },
+          "indicative": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "coupon_id",
+          "version",
+          "code",
+          "amount_minor",
+          "indicative"
+        ]
       }
     },
     "securitySchemes": {

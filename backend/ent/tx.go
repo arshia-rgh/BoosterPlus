@@ -32,6 +32,12 @@ type Tx struct {
 	AuthSession *AuthSessionClient
 	// CatalogRelease is the client for interacting with the CatalogRelease builders.
 	CatalogRelease *CatalogReleaseClient
+	// Coupon is the client for interacting with the Coupon builders.
+	Coupon *CouponClient
+	// CouponClaim is the client for interacting with the CouponClaim builders.
+	CouponClaim *CouponClaimClient
+	// CouponRevision is the client for interacting with the CouponRevision builders.
+	CouponRevision *CouponRevisionClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
 	// User is the client for interacting with the User builders.
@@ -176,6 +182,9 @@ func (tx *Tx) init() {
 	tx.AuthRecovery = NewAuthRecoveryClient(tx.config)
 	tx.AuthSession = NewAuthSessionClient(tx.config)
 	tx.CatalogRelease = NewCatalogReleaseClient(tx.config)
+	tx.Coupon = NewCouponClient(tx.config)
+	tx.CouponClaim = NewCouponClaimClient(tx.config)
+	tx.CouponRevision = NewCouponRevisionClient(tx.config)
 	tx.Game = NewGameClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }

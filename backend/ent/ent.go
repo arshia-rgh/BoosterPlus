@@ -21,6 +21,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/coupon"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponclaim"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
@@ -92,6 +95,9 @@ func checkColumn(t, c string) error {
 			authrecovery.Table:   authrecovery.ValidColumn,
 			authsession.Table:    authsession.ValidColumn,
 			catalogrelease.Table: catalogrelease.ValidColumn,
+			coupon.Table:         coupon.ValidColumn,
+			couponclaim.Table:    couponclaim.ValidColumn,
+			couponrevision.Table: couponrevision.ValidColumn,
 			game.Table:           game.ValidColumn,
 			user.Table:           user.ValidColumn,
 		})

@@ -42,6 +42,38 @@ test("staff builds, previews, publishes and archives another game through the ge
   const slug = `synthetic-${info.project.name}-${randomUUID()}`;
   await signIn(page, request, fixture(info.project.name, "catalog"));
   await enroll(page);
+  const couponCode =
+    `SAVE-${info.project.name}-${randomUUID().slice(0, 8)}`.toUpperCase();
+  await page.getByRole("link", { name: "Coupons", exact: true }).click();
+  await page.getByRole("button", { name: "New coupon", exact: true }).click();
+  await page.getByLabel("Coupon code", { exact: true }).fill(couponCode);
+  await page
+    .getByLabel("Coupon name", { exact: true })
+    .fill("Synthetic half-price coupon");
+  await page.getByLabel("Enable coupon", { exact: true }).check();
+  await page.getByLabel("Discount value", { exact: true }).fill("25");
+  await page.getByLabel("Coupon currency", { exact: true }).selectOption("USD");
+  await page.getByLabel("Eligible game slugs", { exact: true }).fill(slug);
+  await page.getByRole("button", { name: "Save coupon", exact: true }).click();
+  await expect(page.getByText("Coupon saved.", { exact: true })).toBeVisible();
+  await page.getByLabel("Discount value", { exact: true }).fill("50");
+  await page.getByRole("button", { name: "Save coupon", exact: true }).click();
+  await expect(page.getByText("Coupon saved.", { exact: true })).toBeVisible();
+  await page
+    .getByRole("button", { name: "Coupon revision history", exact: true })
+    .click();
+  await expect(page.getByText("Revision 1", { exact: true })).toBeVisible();
+  await expect(page.getByText("Revision 2", { exact: true })).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: `.cache/coupons-${info.project.name}.png`,
+    fullPage: true,
+  });
   await page.getByRole("link", { name: "Catalog editor", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Edit Mobile Legends", exact: true }),
@@ -271,6 +303,23 @@ test("staff builds, previews, publishes and archives another game through the ge
       path: `.cache/pricing-${info.project.name}.png`,
       fullPage: true,
     });
+    await customer.getByLabel("Coupon code (optional)").fill(couponCode);
+    await customer
+      .getByRole("button", { name: "Check selections", exact: true })
+      .click();
+    await expect(
+      customer.getByRole("heading", {
+        name: "Estimated price: USD 1.50",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      customer.getByText(/Coupon checks do not reserve a use/),
+    ).toBeVisible();
+    expect(
+      (await new AxeBuilder({ page: customer }).analyze()).violations,
+    ).toEqual([]);
+
     await customer.goto(`http://127.0.0.1:4173/games/${slug}/packages/starter`);
     await expect(customer.locator(".package-price")).toHaveText("USD 12.34");
     await customer.getByLabel("Play mode (required)").selectOption("duo");
@@ -286,6 +335,23 @@ test("staff builds, previews, publishes and archives another game through the ge
       .getByRole("button", { name: "Check selections", exact: true })
       .click();
     await expect(customer.getByText(/Selections are valid/)).toBeVisible();
+    await customer.getByLabel("Coupon code (optional)").fill("UNKNOWN-COUPON");
+    await customer
+      .getByRole("button", { name: "Check selections", exact: true })
+      .click();
+    await expect(
+      customer.getByText(/This code is unavailable for these selections/),
+    ).toBeVisible();
+    await customer.getByLabel("Coupon code (optional)").fill(couponCode);
+    await customer
+      .getByRole("button", { name: "Check selections", exact: true })
+      .click();
+    await expect(
+      customer.getByRole("heading", {
+        name: "Estimated price: USD 6.17",
+        exact: true,
+      }),
+    ).toBeVisible();
     await customer.screenshot({
       path: `.cache/catalog-package-${info.project.name}.png`,
       fullPage: true,

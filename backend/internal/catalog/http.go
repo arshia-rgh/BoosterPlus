@@ -19,6 +19,11 @@ func (s *Store) Register(mux *http.ServeMux) {
 		capability string
 		endpoint   func(http.ResponseWriter, *http.Request, *identity.Principal) error
 	}{
+		"GET /api/v1/admin/catalog/coupons":                      {"admin", s.listCoupons},
+		"POST /api/v1/admin/catalog/coupons":                     {"admin", s.saveCoupon},
+		"POST /api/v1/admin/catalog/coupons/{id}/save":           {"admin", s.saveCoupon},
+		"GET /api/v1/admin/catalog/coupons/{id}/history":         {"admin", s.couponHistory},
+		"POST /api/v1/catalog/games/{slug}/discount":             {"", s.checkCoupon},
 		"POST /api/v1/catalog/games/{slug}/estimate":             {"", s.estimate(false)},
 		"POST /api/v1/admin/catalog/games/{id}/estimate-preview": {"admin", s.estimate(true)},
 		"GET /api/v1/catalog/games":                              {"", s.list(false)},
@@ -33,7 +38,7 @@ func (s *Store) Register(mux *http.ServeMux) {
 		"POST /api/v1/admin/catalog/games/{id}/{action}":         {"admin", s.mutate},
 	}
 	for pattern, route := range routes {
-		mux.HandleFunc(pattern, s.auth.Protect(route.capability, func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+		handler := func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 			err := route.endpoint(w, r, p)
 			var invalid *Invalid
 			if errors.As(err, &invalid) {
@@ -43,7 +48,12 @@ func (s *Store) Register(mux *http.ServeMux) {
 				return write(w, http.StatusConflict, map[string]string{"code": "catalog_conflict"})
 			}
 			return err
-		}))
+		}
+		if pattern == "POST /api/v1/catalog/games/{slug}/discount" {
+			mux.HandleFunc(pattern, s.auth.ProtectRate(route.capability, "coupon-check", 30, time.Minute, handler))
+		} else {
+			mux.HandleFunc(pattern, s.auth.Protect(route.capability, handler))
+		}
 	}
 }
 

@@ -368,6 +368,15 @@ export function price(variant: Variant): string {
 }
 
 export const estimateSchema = z.object({
+  discount: z
+    .object({
+      coupon_id: z.string(),
+      version: z.number().int(),
+      code: z.string(),
+      amount_minor: z.string(),
+      indicative: z.boolean(),
+    })
+    .optional(),
   release_id: z.string(),
   version: z.number().int(),
   evaluator: z.string(),

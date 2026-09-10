@@ -14,6 +14,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/coupon"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponclaim"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/schema"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
@@ -243,6 +246,80 @@ func init() {
 	catalogrelease.DefaultID = catalogreleaseDescID.Default.(func() string)
 	// catalogrelease.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	catalogrelease.IDValidator = catalogreleaseDescID.Validators[0].(func(string) error)
+	couponFields := schema.Coupon{}.Fields()
+	_ = couponFields
+	// couponDescCode is the schema descriptor for code field.
+	couponDescCode := couponFields[1].Descriptor()
+	// coupon.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	coupon.CodeValidator = couponDescCode.Validators[0].(func(string) error)
+	// couponDescVersion is the schema descriptor for version field.
+	couponDescVersion := couponFields[2].Descriptor()
+	// coupon.DefaultVersion holds the default value on creation for the version field.
+	coupon.DefaultVersion = couponDescVersion.Default.(int)
+	// coupon.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	coupon.VersionValidator = couponDescVersion.Validators[0].(func(int) error)
+	// couponDescCreatedAt is the schema descriptor for created_at field.
+	couponDescCreatedAt := couponFields[4].Descriptor()
+	// coupon.DefaultCreatedAt holds the default value on creation for the created_at field.
+	coupon.DefaultCreatedAt = couponDescCreatedAt.Default.(func() time.Time)
+	// couponDescID is the schema descriptor for id field.
+	couponDescID := couponFields[0].Descriptor()
+	// coupon.DefaultID holds the default value on creation for the id field.
+	coupon.DefaultID = couponDescID.Default.(func() string)
+	// coupon.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	coupon.IDValidator = couponDescID.Validators[0].(func(string) error)
+	couponclaimFields := schema.CouponClaim{}.Fields()
+	_ = couponclaimFields
+	// couponclaimDescCouponID is the schema descriptor for coupon_id field.
+	couponclaimDescCouponID := couponclaimFields[1].Descriptor()
+	// couponclaim.CouponIDValidator is a validator for the "coupon_id" field. It is called by the builders before save.
+	couponclaim.CouponIDValidator = couponclaimDescCouponID.Validators[0].(func(string) error)
+	// couponclaimDescCouponVersion is the schema descriptor for coupon_version field.
+	couponclaimDescCouponVersion := couponclaimFields[2].Descriptor()
+	// couponclaim.CouponVersionValidator is a validator for the "coupon_version" field. It is called by the builders before save.
+	couponclaim.CouponVersionValidator = couponclaimDescCouponVersion.Validators[0].(func(int) error)
+	// couponclaimDescUserID is the schema descriptor for user_id field.
+	couponclaimDescUserID := couponclaimFields[3].Descriptor()
+	// couponclaim.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	couponclaim.UserIDValidator = couponclaimDescUserID.Validators[0].(func(string) error)
+	// couponclaimDescContractID is the schema descriptor for contract_id field.
+	couponclaimDescContractID := couponclaimFields[4].Descriptor()
+	// couponclaim.ContractIDValidator is a validator for the "contract_id" field. It is called by the builders before save.
+	couponclaim.ContractIDValidator = couponclaimDescContractID.Validators[0].(func(string) error)
+	// couponclaimDescCreatedAt is the schema descriptor for created_at field.
+	couponclaimDescCreatedAt := couponclaimFields[6].Descriptor()
+	// couponclaim.DefaultCreatedAt holds the default value on creation for the created_at field.
+	couponclaim.DefaultCreatedAt = couponclaimDescCreatedAt.Default.(func() time.Time)
+	// couponclaimDescID is the schema descriptor for id field.
+	couponclaimDescID := couponclaimFields[0].Descriptor()
+	// couponclaim.DefaultID holds the default value on creation for the id field.
+	couponclaim.DefaultID = couponclaimDescID.Default.(func() string)
+	// couponclaim.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	couponclaim.IDValidator = couponclaimDescID.Validators[0].(func(string) error)
+	couponrevisionFields := schema.CouponRevision{}.Fields()
+	_ = couponrevisionFields
+	// couponrevisionDescCouponID is the schema descriptor for coupon_id field.
+	couponrevisionDescCouponID := couponrevisionFields[1].Descriptor()
+	// couponrevision.CouponIDValidator is a validator for the "coupon_id" field. It is called by the builders before save.
+	couponrevision.CouponIDValidator = couponrevisionDescCouponID.Validators[0].(func(string) error)
+	// couponrevisionDescVersion is the schema descriptor for version field.
+	couponrevisionDescVersion := couponrevisionFields[2].Descriptor()
+	// couponrevision.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	couponrevision.VersionValidator = couponrevisionDescVersion.Validators[0].(func(int) error)
+	// couponrevisionDescCreatedAt is the schema descriptor for created_at field.
+	couponrevisionDescCreatedAt := couponrevisionFields[4].Descriptor()
+	// couponrevision.DefaultCreatedAt holds the default value on creation for the created_at field.
+	couponrevision.DefaultCreatedAt = couponrevisionDescCreatedAt.Default.(func() time.Time)
+	// couponrevisionDescCreatedBy is the schema descriptor for created_by field.
+	couponrevisionDescCreatedBy := couponrevisionFields[5].Descriptor()
+	// couponrevision.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	couponrevision.CreatedByValidator = couponrevisionDescCreatedBy.Validators[0].(func(string) error)
+	// couponrevisionDescID is the schema descriptor for id field.
+	couponrevisionDescID := couponrevisionFields[0].Descriptor()
+	// couponrevision.DefaultID holds the default value on creation for the id field.
+	couponrevision.DefaultID = couponrevisionDescID.Default.(func() string)
+	// couponrevision.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	couponrevision.IDValidator = couponrevisionDescID.Validators[0].(func(string) error)
 	gameFields := schema.Game{}.Fields()
 	_ = gameFields
 	// gameDescSlug is the schema descriptor for slug field.

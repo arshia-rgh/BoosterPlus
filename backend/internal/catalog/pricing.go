@@ -59,16 +59,18 @@ type PriceLine struct {
 
 // Estimate never authorizes a payment. A later accepted administrator quote does.
 type Estimate struct {
-	ReleaseID   string      `json:"release_id"`
-	Version     int         `json:"version"`
-	Evaluator   string      `json:"evaluator"`
-	ExpiresAt   time.Time   `json:"expires_at"`
-	Outcome     string      `json:"outcome"`
-	Currency    string      `json:"currency"`
-	AmountMinor string      `json:"amount_minor"`
-	Answers     Answers     `json:"answers"`
-	Lines       []PriceLine `json:"lines"`
-	Issues      []Issue     `json:"issues"`
+	Discount      *Discount `json:"discount,omitempty"`
+	exactSubtotal *big.Rat
+	ReleaseID     string      `json:"release_id"`
+	Version       int         `json:"version"`
+	Evaluator     string      `json:"evaluator"`
+	ExpiresAt     time.Time   `json:"expires_at"`
+	Outcome       string      `json:"outcome"`
+	Currency      string      `json:"currency"`
+	AmountMinor   string      `json:"amount_minor"`
+	Answers       Answers     `json:"answers"`
+	Lines         []PriceLine `json:"lines"`
+	Issues        []Issue     `json:"issues"`
 }
 
 func rounded(n *big.Rat) *big.Int {
@@ -92,12 +94,14 @@ func Calculate(release Release, serviceKey string, submitted Answers, now time.T
 	}
 	service := release.Configuration.Services[index]
 	result.Evaluator = service.Evaluator
-	result.Outcome, result.Currency, result.AmountMinor, result.Lines = evaluatePrice(release.Configuration, service, result.Answers)
+	result.Outcome, result.Currency, result.AmountMinor, result.Lines, result.exactSubtotal = evaluatePrice(release.Configuration, service, result.Answers)
 	return result
 }
 
-func evaluatePrice(c Configuration, service ServiceDefinition, answers Answers) (string, string, string, []PriceLine) {
-	manual := func() (string, string, string, []PriceLine) { return "manual_review", "", "", []PriceLine{} }
+func evaluatePrice(c Configuration, service ServiceDefinition, answers Answers) (string, string, string, []PriceLine, *big.Rat) {
+	manual := func() (string, string, string, []PriceLine, *big.Rat) {
+		return "manual_review", "", "", []PriceLine{}, nil
+	}
 	if service.Evaluator != "pricing-v1" || service.Pricing == nil {
 		return manual()
 	}
@@ -167,7 +171,7 @@ func evaluatePrice(c Configuration, service ServiceDefinition, answers Answers) 
 	if delta := new(big.Int).Sub(rounded(total), before); delta.Sign() != 0 {
 		lines = append(lines, PriceLine{"bounds", "Configured price bounds", delta.String()})
 	}
-	return "estimated", plan.Currency, rounded(total).String(), lines
+	return "estimated", plan.Currency, rounded(total).String(), lines, total
 }
 
 func rankAmount(c Configuration, fields map[string]Field, rule PriceRule, answers Answers) (*big.Rat, bool) {
@@ -356,7 +360,7 @@ func validatePriceCases(c Configuration, add func(string, string)) {
 				add(path, "Saved selections must satisfy the current form.")
 				continue
 			}
-			outcome, _, amount, _ := evaluatePrice(c, service, validated.Answers)
+			outcome, _, amount, _, _ := evaluatePrice(c, service, validated.Answers)
 			if example.Outcome != outcome || example.AmountMinor != amount {
 				add(path, "Expected result differs from the current pricing rules.")
 			}

@@ -217,7 +217,9 @@ export default function DynamicForm({
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
     [valid, setValid] = useState(false),
-    [estimate, setEstimate] = useState<Estimate | null>(null);
+    [estimate, setEstimate] = useState<Estimate | null>(null),
+    [coupon, setCoupon] = useState("");
+  const couponID = useId();
   const values = visibleAnswers(service, raw, stage);
   const unavailable = paused || variant?.capacity === 0;
   async function submit(event: SubmitEvent<HTMLFormElement>) {
@@ -242,15 +244,27 @@ export default function DynamicForm({
       );
       setIssues(result.issues);
       setRaw(result.answers);
-      if (result.issues.length === 0 && !variant && stage === "estimate") {
+      if (
+        result.issues.length === 0 &&
+        (coupon.trim() !== "" || (!variant && stage === "estimate"))
+      ) {
         const price = await post(
-          previewPath
-            ? previewPath.replace("validate-preview", "estimate-preview")
-            : `/catalog/games/${encodeURIComponent(slug)}/estimate`,
+          coupon.trim() !== ""
+            ? `/catalog/games/${encodeURIComponent(slug)}/discount`
+            : previewPath
+              ? previewPath.replace("validate-preview", "estimate-preview")
+              : `/catalog/games/${encodeURIComponent(slug)}/estimate`,
           {
             release_id: releaseID,
             service: service.key,
             answers: result.answers,
+            ...(coupon.trim() !== ""
+              ? {
+                  code: coupon.trim(),
+                  package: pack,
+                  variant: variant?.key ?? "",
+                }
+              : {}),
           },
           estimateSchema,
         );
@@ -306,6 +320,26 @@ export default function DynamicForm({
               error={issues.find((issue) => issue.path === field.key)?.message}
             />
           ))}
+        {!previewPath && (stage === "estimate" || variant) && (
+          <div className="catalog-input">
+            <label htmlFor={couponID}>Coupon code (optional)</label>
+            <input
+              id={couponID}
+              value={coupon}
+              maxLength={40}
+              onChange={(event) => {
+                setCoupon(event.target.value);
+                setEstimate(null);
+                setValid(false);
+                setError(null);
+              }}
+            />
+            <p className="quiet">
+              One code per order. Eligibility is rechecked when you accept the
+              final price.
+            </p>
+          </div>
+        )}
         <button className="button" type="submit">
           {busy ? "Checking…" : "Check selections"}
         </button>
@@ -337,9 +371,19 @@ export default function DynamicForm({
                 ))}
               </ul>
               <p>
-                Final price requires an administrator’s quote. This estimate
-                expires {new Date(estimate.expires_at).toLocaleTimeString()}.
+                {variant
+                  ? "Package discount is provisional until checkout."
+                  : "Final price requires an administrator’s quote."}{" "}
+                This estimate expires{" "}
+                {new Date(estimate.expires_at).toLocaleTimeString()}.
               </p>
+              {estimate.discount && (
+                <p>
+                  Coupon checks do not reserve a use. Personal limits apply when
+                  signed in; eligibility is checked again when the order becomes
+                  payable.
+                </p>
+              )}
             </>
           ) : estimate.outcome === "manual_review" ? (
             <p>Your selections need a manual price review.</p>

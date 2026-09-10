@@ -193,3 +193,60 @@ it("does not retain validation success when pricing detects a stale release", as
     screen.queryByRole("heading", { name: /Estimated price/ }),
   ).not.toBeInTheDocument();
 });
+
+it("checks a coupon against selections without accepting a client price", async () => {
+  vi.mocked(post)
+    .mockResolvedValueOnce({ answers: { one: false }, issues: [] })
+    .mockResolvedValueOnce({
+      release_id: "release",
+      version: 1,
+      evaluator: "pricing-v1",
+      expires_at: "2026-09-10T00:15:00Z",
+      outcome: "estimated",
+      currency: "USD",
+      amount_minor: "50",
+      answers: { one: false },
+      issues: [],
+      lines: [],
+      discount: {
+        coupon_id: "id",
+        version: 1,
+        code: "SAVE50",
+        amount_minor: "51",
+        indicative: true,
+      },
+    });
+  render(
+    <DynamicForm
+      config={config}
+      service={service}
+      slug="test"
+      releaseID="release"
+    />,
+  );
+  fireEvent.change(screen.getByLabelText("Coupon code (optional)"), {
+    target: { value: "SAVE50" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Check selections" }));
+  expect(
+    await screen.findByRole("heading", { name: "Estimated price: USD 0.50" }),
+  ).toBeVisible();
+  expect(post).toHaveBeenLastCalledWith(
+    "/catalog/games/test/discount",
+    {
+      release_id: "release",
+      service: "boost",
+      answers: { one: false },
+      code: "SAVE50",
+      package: "",
+      variant: "",
+    },
+    expect.anything(),
+  );
+  fireEvent.change(screen.getByLabelText("Coupon code (optional)"), {
+    target: { value: "DIFFERENT" },
+  });
+  expect(
+    screen.queryByRole("heading", { name: /Estimated price/ }),
+  ).not.toBeInTheDocument();
+});

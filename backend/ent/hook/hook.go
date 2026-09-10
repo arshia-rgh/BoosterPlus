@@ -117,6 +117,42 @@ func (f CatalogReleaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CatalogReleaseMutation", m)
 }
 
+// The CouponFunc type is an adapter to allow the use of ordinary
+// function as Coupon mutator.
+type CouponFunc func(context.Context, *ent.CouponMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CouponFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CouponMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CouponMutation", m)
+}
+
+// The CouponClaimFunc type is an adapter to allow the use of ordinary
+// function as CouponClaim mutator.
+type CouponClaimFunc func(context.Context, *ent.CouponClaimMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CouponClaimFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CouponClaimMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CouponClaimMutation", m)
+}
+
+// The CouponRevisionFunc type is an adapter to allow the use of ordinary
+// function as CouponRevision mutator.
+type CouponRevisionFunc func(context.Context, *ent.CouponRevisionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CouponRevisionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CouponRevisionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CouponRevisionMutation", m)
+}
+
 // The GameFunc type is an adapter to allow the use of ordinary
 // function as Game mutator.
 type GameFunc func(context.Context, *ent.GameMutation) (ent.Value, error)

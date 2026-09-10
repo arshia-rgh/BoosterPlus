@@ -234,6 +234,77 @@ var (
 			},
 		},
 	}
+	// CouponsColumns holds the columns for the "coupons" table.
+	CouponsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "code", Type: field.TypeString, Size: 40},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "definition", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// CouponsTable holds the schema information for the "coupons" table.
+	CouponsTable = &schema.Table{
+		Name:       "coupons",
+		Columns:    CouponsColumns,
+		PrimaryKey: []*schema.Column{CouponsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "coupon_code",
+				Unique:  true,
+				Columns: []*schema.Column{CouponsColumns[1]},
+			},
+		},
+	}
+	// CouponClaimsColumns holds the columns for the "coupon_claims" table.
+	CouponClaimsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "coupon_id", Type: field.TypeString, Size: 36},
+		{Name: "coupon_version", Type: field.TypeInt},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "contract_id", Type: field.TypeString, Size: 36},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"held", "redeemed", "released"}},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// CouponClaimsTable holds the schema information for the "coupon_claims" table.
+	CouponClaimsTable = &schema.Table{
+		Name:       "coupon_claims",
+		Columns:    CouponClaimsColumns,
+		PrimaryKey: []*schema.Column{CouponClaimsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "coupon_contract",
+				Unique:  true,
+				Columns: []*schema.Column{CouponClaimsColumns[4]},
+			},
+			{
+				Name:    "coupon_usage",
+				Unique:  false,
+				Columns: []*schema.Column{CouponClaimsColumns[1], CouponClaimsColumns[5], CouponClaimsColumns[3]},
+			},
+		},
+	}
+	// CouponRevisionsColumns holds the columns for the "coupon_revisions" table.
+	CouponRevisionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "coupon_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "definition", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "created_by", Type: field.TypeString, Size: 36},
+	}
+	// CouponRevisionsTable holds the schema information for the "coupon_revisions" table.
+	CouponRevisionsTable = &schema.Table{
+		Name:       "coupon_revisions",
+		Columns:    CouponRevisionsColumns,
+		PrimaryKey: []*schema.Column{CouponRevisionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "coupon_revision",
+				Unique:  true,
+				Columns: []*schema.Column{CouponRevisionsColumns[1], CouponRevisionsColumns[2]},
+			},
+		},
+	}
 	// GamesColumns holds the columns for the "games" table.
 	GamesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -291,6 +362,9 @@ var (
 		AuthRecoveriesTable,
 		AuthSessionsTable,
 		CatalogReleasesTable,
+		CouponsTable,
+		CouponClaimsTable,
+		CouponRevisionsTable,
 		GamesTable,
 		UsersTable,
 	}

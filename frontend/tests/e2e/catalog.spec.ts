@@ -51,6 +51,7 @@ test("keyboard users can skip navigation", async ({ page }) => {
 for (const [path, title] of [
   ["/account", "Your account"],
   ["/admin", "Administration"],
+  ["/admin/coupons", "Coupons"],
   ["/booster", "Booster portal"],
 ] as const) {
   test(`${path} shell is accessible and exposes no account data`, async ({

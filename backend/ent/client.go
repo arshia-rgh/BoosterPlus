@@ -23,6 +23,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/coupon"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponclaim"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 
@@ -52,6 +55,12 @@ type Client struct {
 	AuthSession *AuthSessionClient
 	// CatalogRelease is the client for interacting with the CatalogRelease builders.
 	CatalogRelease *CatalogReleaseClient
+	// Coupon is the client for interacting with the Coupon builders.
+	Coupon *CouponClient
+	// CouponClaim is the client for interacting with the CouponClaim builders.
+	CouponClaim *CouponClaimClient
+	// CouponRevision is the client for interacting with the CouponRevision builders.
+	CouponRevision *CouponRevisionClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
 	// User is the client for interacting with the User builders.
@@ -76,6 +85,9 @@ func (c *Client) init() {
 	c.AuthRecovery = NewAuthRecoveryClient(c.config)
 	c.AuthSession = NewAuthSessionClient(c.config)
 	c.CatalogRelease = NewCatalogReleaseClient(c.config)
+	c.Coupon = NewCouponClient(c.config)
+	c.CouponClaim = NewCouponClaimClient(c.config)
+	c.CouponRevision = NewCouponRevisionClient(c.config)
 	c.Game = NewGameClient(c.config)
 	c.User = NewUserClient(c.config)
 }
@@ -179,6 +191,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AuthRecovery:   NewAuthRecoveryClient(cfg),
 		AuthSession:    NewAuthSessionClient(cfg),
 		CatalogRelease: NewCatalogReleaseClient(cfg),
+		Coupon:         NewCouponClient(cfg),
+		CouponClaim:    NewCouponClaimClient(cfg),
+		CouponRevision: NewCouponRevisionClient(cfg),
 		Game:           NewGameClient(cfg),
 		User:           NewUserClient(cfg),
 	}, nil
@@ -209,6 +224,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AuthRecovery:   NewAuthRecoveryClient(cfg),
 		AuthSession:    NewAuthSessionClient(cfg),
 		CatalogRelease: NewCatalogReleaseClient(cfg),
+		Coupon:         NewCouponClient(cfg),
+		CouponClaim:    NewCouponClaimClient(cfg),
+		CouponRevision: NewCouponRevisionClient(cfg),
 		Game:           NewGameClient(cfg),
 		User:           NewUserClient(cfg),
 	}, nil
@@ -241,7 +259,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
-		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Game, c.User,
+		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Coupon,
+		c.CouponClaim, c.CouponRevision, c.Game, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -252,7 +271,8 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
-		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Game, c.User,
+		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Coupon,
+		c.CouponClaim, c.CouponRevision, c.Game, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -279,6 +299,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AuthSession.mutate(ctx, m)
 	case *CatalogReleaseMutation:
 		return c.CatalogRelease.mutate(ctx, m)
+	case *CouponMutation:
+		return c.Coupon.mutate(ctx, m)
+	case *CouponClaimMutation:
+		return c.CouponClaim.mutate(ctx, m)
+	case *CouponRevisionMutation:
+		return c.CouponRevision.mutate(ctx, m)
 	case *GameMutation:
 		return c.Game.mutate(ctx, m)
 	case *UserMutation:
@@ -1485,6 +1511,405 @@ func (c *CatalogReleaseClient) mutate(ctx context.Context, m *CatalogReleaseMuta
 	}
 }
 
+// CouponClient is a client for the Coupon schema.
+type CouponClient struct {
+	config
+}
+
+// NewCouponClient returns a client for the Coupon from the given config.
+func NewCouponClient(c config) *CouponClient {
+	return &CouponClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `coupon.Hooks(f(g(h())))`.
+func (c *CouponClient) Use(hooks ...Hook) {
+	c.hooks.Coupon = append(c.hooks.Coupon, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `coupon.Intercept(f(g(h())))`.
+func (c *CouponClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Coupon = append(c.inters.Coupon, interceptors...)
+}
+
+// Create returns a builder for creating a Coupon entity.
+func (c *CouponClient) Create() *CouponCreate {
+	mutation := newCouponMutation(c.config, OpCreate)
+	return &CouponCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Coupon entities.
+func (c *CouponClient) CreateBulk(builders ...*CouponCreate) *CouponCreateBulk {
+	return &CouponCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CouponClient) MapCreateBulk(slice any, setFunc func(*CouponCreate, int)) *CouponCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CouponCreateBulk{err: fmt.Errorf("calling to CouponClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CouponCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CouponCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Coupon.
+func (c *CouponClient) Update() *CouponUpdate {
+	mutation := newCouponMutation(c.config, OpUpdate)
+	return &CouponUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CouponClient) UpdateOne(_m *Coupon) *CouponUpdateOne {
+	mutation := newCouponMutation(c.config, OpUpdateOne, withCoupon(_m))
+	return &CouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CouponClient) UpdateOneID(id string) *CouponUpdateOne {
+	mutation := newCouponMutation(c.config, OpUpdateOne, withCouponID(id))
+	return &CouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Coupon.
+func (c *CouponClient) Delete() *CouponDelete {
+	mutation := newCouponMutation(c.config, OpDelete)
+	return &CouponDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CouponClient) DeleteOne(_m *Coupon) *CouponDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CouponClient) DeleteOneID(id string) *CouponDeleteOne {
+	builder := c.Delete().Where(coupon.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CouponDeleteOne{builder}
+}
+
+// Query returns a query builder for Coupon.
+func (c *CouponClient) Query() *CouponQuery {
+	return &CouponQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCoupon},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Coupon entity by its id.
+func (c *CouponClient) Get(ctx context.Context, id string) (*Coupon, error) {
+	return c.Query().Where(coupon.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CouponClient) GetX(ctx context.Context, id string) *Coupon {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CouponClient) Hooks() []Hook {
+	return c.hooks.Coupon
+}
+
+// Interceptors returns the client interceptors.
+func (c *CouponClient) Interceptors() []Interceptor {
+	return c.inters.Coupon
+}
+
+func (c *CouponClient) mutate(ctx context.Context, m *CouponMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CouponCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CouponUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CouponUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CouponDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Coupon mutation op: %q", m.Op())
+	}
+}
+
+// CouponClaimClient is a client for the CouponClaim schema.
+type CouponClaimClient struct {
+	config
+}
+
+// NewCouponClaimClient returns a client for the CouponClaim from the given config.
+func NewCouponClaimClient(c config) *CouponClaimClient {
+	return &CouponClaimClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `couponclaim.Hooks(f(g(h())))`.
+func (c *CouponClaimClient) Use(hooks ...Hook) {
+	c.hooks.CouponClaim = append(c.hooks.CouponClaim, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `couponclaim.Intercept(f(g(h())))`.
+func (c *CouponClaimClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CouponClaim = append(c.inters.CouponClaim, interceptors...)
+}
+
+// Create returns a builder for creating a CouponClaim entity.
+func (c *CouponClaimClient) Create() *CouponClaimCreate {
+	mutation := newCouponClaimMutation(c.config, OpCreate)
+	return &CouponClaimCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CouponClaim entities.
+func (c *CouponClaimClient) CreateBulk(builders ...*CouponClaimCreate) *CouponClaimCreateBulk {
+	return &CouponClaimCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CouponClaimClient) MapCreateBulk(slice any, setFunc func(*CouponClaimCreate, int)) *CouponClaimCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CouponClaimCreateBulk{err: fmt.Errorf("calling to CouponClaimClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CouponClaimCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CouponClaimCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CouponClaim.
+func (c *CouponClaimClient) Update() *CouponClaimUpdate {
+	mutation := newCouponClaimMutation(c.config, OpUpdate)
+	return &CouponClaimUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CouponClaimClient) UpdateOne(_m *CouponClaim) *CouponClaimUpdateOne {
+	mutation := newCouponClaimMutation(c.config, OpUpdateOne, withCouponClaim(_m))
+	return &CouponClaimUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CouponClaimClient) UpdateOneID(id string) *CouponClaimUpdateOne {
+	mutation := newCouponClaimMutation(c.config, OpUpdateOne, withCouponClaimID(id))
+	return &CouponClaimUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CouponClaim.
+func (c *CouponClaimClient) Delete() *CouponClaimDelete {
+	mutation := newCouponClaimMutation(c.config, OpDelete)
+	return &CouponClaimDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CouponClaimClient) DeleteOne(_m *CouponClaim) *CouponClaimDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CouponClaimClient) DeleteOneID(id string) *CouponClaimDeleteOne {
+	builder := c.Delete().Where(couponclaim.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CouponClaimDeleteOne{builder}
+}
+
+// Query returns a query builder for CouponClaim.
+func (c *CouponClaimClient) Query() *CouponClaimQuery {
+	return &CouponClaimQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCouponClaim},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CouponClaim entity by its id.
+func (c *CouponClaimClient) Get(ctx context.Context, id string) (*CouponClaim, error) {
+	return c.Query().Where(couponclaim.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CouponClaimClient) GetX(ctx context.Context, id string) *CouponClaim {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CouponClaimClient) Hooks() []Hook {
+	return c.hooks.CouponClaim
+}
+
+// Interceptors returns the client interceptors.
+func (c *CouponClaimClient) Interceptors() []Interceptor {
+	return c.inters.CouponClaim
+}
+
+func (c *CouponClaimClient) mutate(ctx context.Context, m *CouponClaimMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CouponClaimCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CouponClaimUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CouponClaimUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CouponClaimDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CouponClaim mutation op: %q", m.Op())
+	}
+}
+
+// CouponRevisionClient is a client for the CouponRevision schema.
+type CouponRevisionClient struct {
+	config
+}
+
+// NewCouponRevisionClient returns a client for the CouponRevision from the given config.
+func NewCouponRevisionClient(c config) *CouponRevisionClient {
+	return &CouponRevisionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `couponrevision.Hooks(f(g(h())))`.
+func (c *CouponRevisionClient) Use(hooks ...Hook) {
+	c.hooks.CouponRevision = append(c.hooks.CouponRevision, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `couponrevision.Intercept(f(g(h())))`.
+func (c *CouponRevisionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CouponRevision = append(c.inters.CouponRevision, interceptors...)
+}
+
+// Create returns a builder for creating a CouponRevision entity.
+func (c *CouponRevisionClient) Create() *CouponRevisionCreate {
+	mutation := newCouponRevisionMutation(c.config, OpCreate)
+	return &CouponRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CouponRevision entities.
+func (c *CouponRevisionClient) CreateBulk(builders ...*CouponRevisionCreate) *CouponRevisionCreateBulk {
+	return &CouponRevisionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CouponRevisionClient) MapCreateBulk(slice any, setFunc func(*CouponRevisionCreate, int)) *CouponRevisionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CouponRevisionCreateBulk{err: fmt.Errorf("calling to CouponRevisionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CouponRevisionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CouponRevisionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CouponRevision.
+func (c *CouponRevisionClient) Update() *CouponRevisionUpdate {
+	mutation := newCouponRevisionMutation(c.config, OpUpdate)
+	return &CouponRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CouponRevisionClient) UpdateOne(_m *CouponRevision) *CouponRevisionUpdateOne {
+	mutation := newCouponRevisionMutation(c.config, OpUpdateOne, withCouponRevision(_m))
+	return &CouponRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CouponRevisionClient) UpdateOneID(id string) *CouponRevisionUpdateOne {
+	mutation := newCouponRevisionMutation(c.config, OpUpdateOne, withCouponRevisionID(id))
+	return &CouponRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CouponRevision.
+func (c *CouponRevisionClient) Delete() *CouponRevisionDelete {
+	mutation := newCouponRevisionMutation(c.config, OpDelete)
+	return &CouponRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CouponRevisionClient) DeleteOne(_m *CouponRevision) *CouponRevisionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CouponRevisionClient) DeleteOneID(id string) *CouponRevisionDeleteOne {
+	builder := c.Delete().Where(couponrevision.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CouponRevisionDeleteOne{builder}
+}
+
+// Query returns a query builder for CouponRevision.
+func (c *CouponRevisionClient) Query() *CouponRevisionQuery {
+	return &CouponRevisionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCouponRevision},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CouponRevision entity by its id.
+func (c *CouponRevisionClient) Get(ctx context.Context, id string) (*CouponRevision, error) {
+	return c.Query().Where(couponrevision.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CouponRevisionClient) GetX(ctx context.Context, id string) *CouponRevision {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CouponRevisionClient) Hooks() []Hook {
+	return c.hooks.CouponRevision
+}
+
+// Interceptors returns the client interceptors.
+func (c *CouponRevisionClient) Interceptors() []Interceptor {
+	return c.inters.CouponRevision
+}
+
+func (c *CouponRevisionClient) mutate(ctx context.Context, m *CouponRevisionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CouponRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CouponRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CouponRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CouponRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CouponRevision mutation op: %q", m.Op())
+	}
+}
+
 // GameClient is a client for the Game schema.
 type GameClient struct {
 	config
@@ -1755,11 +2180,13 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 type (
 	hooks struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, CatalogRelease, Game, User []ent.Hook
+		AuthRecovery, AuthSession, CatalogRelease, Coupon, CouponClaim, CouponRevision,
+		Game, User []ent.Hook
 	}
 	inters struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, CatalogRelease, Game, User []ent.Interceptor
+		AuthRecovery, AuthSession, CatalogRelease, Coupon, CouponClaim, CouponRevision,
+		Game, User []ent.Interceptor
 	}
 )
 

@@ -149,7 +149,7 @@ func TestCatalogPublicationAndConcurrency(t *testing.T) {
 	}
 	// An explicitly destructive development rollback removes history, but must
 	// never leave a visible game pointing to a release that no longer exists.
-	if err = runner(t, f.db).Down(ctx, 2); err != nil {
+	if err = runner(t, f.db).Down(ctx, database.SchemaVersion-4); err != nil {
 		t.Fatal(err)
 	}
 	if err = runner(t, f.db).Apply(ctx, 0); err != nil {

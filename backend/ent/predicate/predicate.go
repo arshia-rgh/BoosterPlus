@@ -33,6 +33,15 @@ type AuthSession func(*sql.Selector)
 // CatalogRelease is the predicate function for catalogrelease builders.
 type CatalogRelease func(*sql.Selector)
 
+// Coupon is the predicate function for coupon builders.
+type Coupon func(*sql.Selector)
+
+// CouponClaim is the predicate function for couponclaim builders.
+type CouponClaim func(*sql.Selector)
+
+// CouponRevision is the predicate function for couponrevision builders.
+type CouponRevision func(*sql.Selector)
+
 // Game is the predicate function for game builders.
 type Game func(*sql.Selector)
 

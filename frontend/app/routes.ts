@@ -9,6 +9,7 @@ export default [
   route("games/:slug/services/:service", "routes/service.tsx"),
   route("games/:slug/packages/:pack", "routes/package.tsx"),
   route("admin/catalog", "routes/catalog-admin.tsx"),
+  route("admin/coupons", "routes/coupon-admin.tsx"),
   route("account", "routes/portal.tsx", { id: "account" }),
   route("admin", "routes/portal.tsx", { id: "admin" }),
   route("booster", "routes/portal.tsx", { id: "booster" }),

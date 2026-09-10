@@ -748,6 +748,75 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/catalog/coupons": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** listCoupons */
+    get: operations["listCoupons"];
+    put?: never;
+    /** createCoupon */
+    post: operations["createCoupon"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/coupons/{id}/save": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** saveCoupon */
+    post: operations["saveCoupon"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/coupons/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** couponHistory */
+    get: operations["couponHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/catalog/games/{slug}/discount": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Indicative current-price coupon check, limited to 30 attempts per minute per verified client address and signed-in account. Does not reserve a use or authorize payment. */
+    post: operations["checkCoupon"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1136,6 +1205,7 @@ export interface components {
       };
       lines: components["schemas"]["CatalogPriceLine"][] | null;
       issues: components["schemas"]["CatalogIssue"][] | null;
+      discount?: components["schemas"]["CouponDiscount"];
     };
     CatalogEstimateInput: {
       release_id: string;
@@ -1143,6 +1213,57 @@ export interface components {
       answers: {
         [key: string]: string | boolean | string[];
       };
+    };
+    CouponDefinition: {
+      code: string;
+      name: string;
+      kind: string;
+      value: string;
+      currency: string;
+      starts_at: string;
+      ends_at: string;
+      minimum_subtotal: string;
+      maximum_discount: string;
+      enabled: boolean;
+      global_limit: number;
+      customer_limit: number;
+      games: string[] | null;
+      services: string[] | null;
+      packages: string[] | null;
+      categories: string[] | null;
+    };
+    CouponView: {
+      id: string;
+      version: number;
+      definition: components["schemas"]["CouponDefinition"];
+    };
+    CouponListing: {
+      coupons: components["schemas"]["CouponView"][] | null;
+      next: string;
+    };
+    CouponHistory: {
+      coupons: components["schemas"]["CouponView"][] | null;
+    };
+    CouponSave: {
+      version: number;
+      definition: components["schemas"]["CouponDefinition"];
+    };
+    CouponCheck: {
+      release_id: string;
+      service: string;
+      package: string;
+      variant: string;
+      code: string;
+      answers: {
+        [key: string]: string | boolean | string[];
+      };
+    };
+    CouponDiscount: {
+      coupon_id: string;
+      version: number;
+      code: string;
+      amount_minor: string;
+      indicative: boolean;
     };
   };
   responses: never;
@@ -2900,6 +3021,269 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["CatalogEstimateInput"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogEstimate"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  listCoupons: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CouponListing"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  createCoupon: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CouponSave"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CouponView"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  saveCoupon: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CouponSave"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CouponView"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  couponHistory: {
+    parameters: {
+      query?: {
+        before?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CouponHistory"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  checkCoupon: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CouponCheck"];
       };
     };
     responses: {

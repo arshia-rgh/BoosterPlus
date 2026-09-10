@@ -3,6 +3,7 @@ package identity
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 )
@@ -44,4 +45,31 @@ func (s *Service) StaffTransaction(ctx context.Context, p *Principal, sensitive 
 		}
 		return fn(tx, current)
 	})
+}
+
+// ProtectRate applies shared per-address and per-account limits after the usual
+// authenticated proxy, session, Origin and CSRF checks. Client headers cannot
+// select the bucket identity without the configured proxy authentication key.
+func (s *Service) ProtectRate(capability, scope string, limit int, window time.Duration, next func(http.ResponseWriter, *http.Request, *Principal) error) http.HandlerFunc {
+	return s.handleLimit(func(w http.ResponseWriter, r *http.Request, state requestState) error {
+		if capability != "" {
+			if err := Require(state.principal, capability); err != nil {
+				return err
+			}
+		}
+		keys := []string{"ip:" + state.ip}
+		if state.principal != nil {
+			keys = append(keys, "user:"+state.principal.User.ID)
+		}
+		for _, key := range keys {
+			allowed, err := s.Throttle(r.Context(), scope, key, limit, window)
+			if err != nil {
+				return err
+			}
+			if !allowed {
+				return ErrLimited
+			}
+		}
+		return next(w, r, state.principal)
+	}, 256<<10)
 }

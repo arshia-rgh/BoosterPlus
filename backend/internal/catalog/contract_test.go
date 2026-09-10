@@ -23,6 +23,9 @@ func TestCatalogJSONContract(t *testing.T) {
 	c := fixture()
 	for name, value := range map[string]any{
 		"CatalogConfiguration": pricedFixture(),
+		"CouponView":           CouponView{ID: "id", Version: 1, Definition: couponFixture(time.Now())},
+		"CouponListing":        CouponListing{Coupons: []CouponView{}, Next: ""},
+		"CouponDiscount":       Discount{CouponID: "id", Version: 1, Code: "TEST50", AmountMinor: "50", Indicative: true},
 		"CatalogEstimate":      Calculate(Release{ID: "release", Version: 1, Configuration: pricedFixture()}, "boost", answers(), time.Now()),
 		"CatalogDraft":         Draft{ID: "id", Slug: "game", Revision: 1, Configuration: c},
 		"CatalogRelease":       Release{ID: "release", GameID: "id", Slug: "game", Version: 1, CreatedAt: time.Now(), Configuration: c},

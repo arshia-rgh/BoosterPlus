@@ -838,6 +838,7 @@ export default function Identity({
                   <>
                     <Link to="/admin">Administration</Link>
                     <Link to="/admin/catalog">Catalog editor</Link>
+                    <Link to="/admin/coupons">Coupons</Link>
                   </>
                 )}
                 {session.capabilities.includes("booster") && (
