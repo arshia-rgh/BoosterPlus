@@ -33,6 +33,15 @@ type AuthSession func(*sql.Selector)
 // CatalogRelease is the predicate function for catalogrelease builders.
 type CatalogRelease func(*sql.Selector)
 
+// Conversation is the predicate function for conversation builders.
+type Conversation func(*sql.Selector)
+
+// ConversationMessage is the predicate function for conversationmessage builders.
+type ConversationMessage func(*sql.Selector)
+
+// ConversationRead is the predicate function for conversationread builders.
+type ConversationRead func(*sql.Selector)
+
 // Coupon is the predicate function for coupon builders.
 type Coupon func(*sql.Selector)
 
@@ -47,6 +56,9 @@ type Favorite func(*sql.Selector)
 
 // Game is the predicate function for game builders.
 type Game func(*sql.Selector)
+
+// Notification is the predicate function for notification builders.
+type Notification func(*sql.Selector)
 
 // Order is the predicate function for order builders.
 type Order func(*sql.Selector)

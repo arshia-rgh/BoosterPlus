@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { z } from "zod";
 import { get } from "../identity/api";
 // Private data is held in component memory and discarded on route/session unmount.
@@ -22,11 +22,12 @@ export function useResource<T>(path: string, schema: z.ZodType<T>) {
       active = false;
     };
   }, [path, schema, revision]);
+  const reload = useCallback(() => {
+    setRevision((v) => v + 1);
+  }, []);
   return {
     data: value?.path === path ? value.data : null,
     error,
-    reload: () => {
-      setRevision((v) => v + 1);
-    },
+    reload,
   };
 }

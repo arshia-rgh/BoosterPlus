@@ -21,11 +21,15 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/coupon"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponclaim"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
@@ -91,25 +95,29 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			authaudit.Table:      authaudit.ValidColumn,
-			authchallenge.Table:  authchallenge.ValidColumn,
-			authflow.Table:       authflow.ValidColumn,
-			authidentity.Table:   authidentity.ValidColumn,
-			authmessage.Table:    authmessage.ValidColumn,
-			authrate.Table:       authrate.ValidColumn,
-			authrecovery.Table:   authrecovery.ValidColumn,
-			authsession.Table:    authsession.ValidColumn,
-			catalogrelease.Table: catalogrelease.ValidColumn,
-			coupon.Table:         coupon.ValidColumn,
-			couponclaim.Table:    couponclaim.ValidColumn,
-			couponrevision.Table: couponrevision.ValidColumn,
-			favorite.Table:       favorite.ValidColumn,
-			game.Table:           game.ValidColumn,
-			order.Table:          order.ValidColumn,
-			ordercontract.Table:  ordercontract.ValidColumn,
-			orderevent.Table:     orderevent.ValidColumn,
-			orderquote.Table:     orderquote.ValidColumn,
-			user.Table:           user.ValidColumn,
+			authaudit.Table:           authaudit.ValidColumn,
+			authchallenge.Table:       authchallenge.ValidColumn,
+			authflow.Table:            authflow.ValidColumn,
+			authidentity.Table:        authidentity.ValidColumn,
+			authmessage.Table:         authmessage.ValidColumn,
+			authrate.Table:            authrate.ValidColumn,
+			authrecovery.Table:        authrecovery.ValidColumn,
+			authsession.Table:         authsession.ValidColumn,
+			catalogrelease.Table:      catalogrelease.ValidColumn,
+			conversation.Table:        conversation.ValidColumn,
+			conversationmessage.Table: conversationmessage.ValidColumn,
+			conversationread.Table:    conversationread.ValidColumn,
+			coupon.Table:              coupon.ValidColumn,
+			couponclaim.Table:         couponclaim.ValidColumn,
+			couponrevision.Table:      couponrevision.ValidColumn,
+			favorite.Table:            favorite.ValidColumn,
+			game.Table:                game.ValidColumn,
+			notification.Table:        notification.ValidColumn,
+			order.Table:               order.ValidColumn,
+			ordercontract.Table:       ordercontract.ValidColumn,
+			orderevent.Table:          orderevent.ValidColumn,
+			orderquote.Table:          orderquote.ValidColumn,
+			user.Table:                user.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

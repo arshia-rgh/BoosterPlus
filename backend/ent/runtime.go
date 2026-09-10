@@ -14,11 +14,15 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/coupon"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponclaim"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
@@ -251,6 +255,142 @@ func init() {
 	catalogrelease.DefaultID = catalogreleaseDescID.Default.(func() string)
 	// catalogrelease.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	catalogrelease.IDValidator = catalogreleaseDescID.Validators[0].(func(string) error)
+	conversationFields := schema.Conversation{}.Fields()
+	_ = conversationFields
+	// conversationDescUserID is the schema descriptor for user_id field.
+	conversationDescUserID := conversationFields[1].Descriptor()
+	// conversation.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	conversation.UserIDValidator = conversationDescUserID.Validators[0].(func(string) error)
+	// conversationDescOrderID is the schema descriptor for order_id field.
+	conversationDescOrderID := conversationFields[3].Descriptor()
+	// conversation.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	conversation.OrderIDValidator = conversationDescOrderID.Validators[0].(func(string) error)
+	// conversationDescLinkedOrderID is the schema descriptor for linked_order_id field.
+	conversationDescLinkedOrderID := conversationFields[4].Descriptor()
+	// conversation.LinkedOrderIDValidator is a validator for the "linked_order_id" field. It is called by the builders before save.
+	conversation.LinkedOrderIDValidator = conversationDescLinkedOrderID.Validators[0].(func(string) error)
+	// conversationDescSubject is the schema descriptor for subject field.
+	conversationDescSubject := conversationFields[5].Descriptor()
+	// conversation.SubjectValidator is a validator for the "subject" field. It is called by the builders before save.
+	conversation.SubjectValidator = conversationDescSubject.Validators[0].(func(string) error)
+	// conversationDescSlug is the schema descriptor for slug field.
+	conversationDescSlug := conversationFields[6].Descriptor()
+	// conversation.DefaultSlug holds the default value on creation for the slug field.
+	conversation.DefaultSlug = conversationDescSlug.Default.(string)
+	// conversation.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	conversation.SlugValidator = conversationDescSlug.Validators[0].(func(string) error)
+	// conversationDescRequestKey is the schema descriptor for request_key field.
+	conversationDescRequestKey := conversationFields[7].Descriptor()
+	// conversation.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
+	conversation.RequestKeyValidator = conversationDescRequestKey.Validators[0].(func(string) error)
+	// conversationDescRequestHash is the schema descriptor for request_hash field.
+	conversationDescRequestHash := conversationFields[8].Descriptor()
+	// conversation.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	conversation.RequestHashValidator = conversationDescRequestHash.Validators[0].(func(string) error)
+	// conversationDescCreatedBy is the schema descriptor for created_by field.
+	conversationDescCreatedBy := conversationFields[9].Descriptor()
+	// conversation.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	conversation.CreatedByValidator = conversationDescCreatedBy.Validators[0].(func(string) error)
+	// conversationDescAssignedTo is the schema descriptor for assigned_to field.
+	conversationDescAssignedTo := conversationFields[11].Descriptor()
+	// conversation.DefaultAssignedTo holds the default value on creation for the assigned_to field.
+	conversation.DefaultAssignedTo = conversationDescAssignedTo.Default.(string)
+	// conversation.AssignedToValidator is a validator for the "assigned_to" field. It is called by the builders before save.
+	conversation.AssignedToValidator = conversationDescAssignedTo.Validators[0].(func(string) error)
+	// conversationDescVersion is the schema descriptor for version field.
+	conversationDescVersion := conversationFields[12].Descriptor()
+	// conversation.DefaultVersion holds the default value on creation for the version field.
+	conversation.DefaultVersion = conversationDescVersion.Default.(int)
+	// conversationDescPublicVersion is the schema descriptor for public_version field.
+	conversationDescPublicVersion := conversationFields[13].Descriptor()
+	// conversation.DefaultPublicVersion holds the default value on creation for the public_version field.
+	conversation.DefaultPublicVersion = conversationDescPublicVersion.Default.(int)
+	// conversationDescSequence is the schema descriptor for sequence field.
+	conversationDescSequence := conversationFields[14].Descriptor()
+	// conversation.DefaultSequence holds the default value on creation for the sequence field.
+	conversation.DefaultSequence = conversationDescSequence.Default.(int)
+	// conversationDescPublicSequence is the schema descriptor for public_sequence field.
+	conversationDescPublicSequence := conversationFields[15].Descriptor()
+	// conversation.DefaultPublicSequence holds the default value on creation for the public_sequence field.
+	conversation.DefaultPublicSequence = conversationDescPublicSequence.Default.(int)
+	// conversationDescUpdatedAt is the schema descriptor for updated_at field.
+	conversationDescUpdatedAt := conversationFields[16].Descriptor()
+	// conversation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	conversation.DefaultUpdatedAt = conversationDescUpdatedAt.Default.(func() time.Time)
+	// conversationDescPublicUpdatedAt is the schema descriptor for public_updated_at field.
+	conversationDescPublicUpdatedAt := conversationFields[17].Descriptor()
+	// conversation.DefaultPublicUpdatedAt holds the default value on creation for the public_updated_at field.
+	conversation.DefaultPublicUpdatedAt = conversationDescPublicUpdatedAt.Default.(func() time.Time)
+	// conversationDescCreatedAt is the schema descriptor for created_at field.
+	conversationDescCreatedAt := conversationFields[18].Descriptor()
+	// conversation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	conversation.DefaultCreatedAt = conversationDescCreatedAt.Default.(func() time.Time)
+	// conversationDescID is the schema descriptor for id field.
+	conversationDescID := conversationFields[0].Descriptor()
+	// conversation.DefaultID holds the default value on creation for the id field.
+	conversation.DefaultID = conversationDescID.Default.(func() string)
+	// conversation.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	conversation.IDValidator = conversationDescID.Validators[0].(func(string) error)
+	conversationmessageFields := schema.ConversationMessage{}.Fields()
+	_ = conversationmessageFields
+	// conversationmessageDescConversationID is the schema descriptor for conversation_id field.
+	conversationmessageDescConversationID := conversationmessageFields[1].Descriptor()
+	// conversationmessage.ConversationIDValidator is a validator for the "conversation_id" field. It is called by the builders before save.
+	conversationmessage.ConversationIDValidator = conversationmessageDescConversationID.Validators[0].(func(string) error)
+	// conversationmessageDescSenderID is the schema descriptor for sender_id field.
+	conversationmessageDescSenderID := conversationmessageFields[2].Descriptor()
+	// conversationmessage.SenderIDValidator is a validator for the "sender_id" field. It is called by the builders before save.
+	conversationmessage.SenderIDValidator = conversationmessageDescSenderID.Validators[0].(func(string) error)
+	// conversationmessageDescSenderRole is the schema descriptor for sender_role field.
+	conversationmessageDescSenderRole := conversationmessageFields[3].Descriptor()
+	// conversationmessage.SenderRoleValidator is a validator for the "sender_role" field. It is called by the builders before save.
+	conversationmessage.SenderRoleValidator = conversationmessageDescSenderRole.Validators[0].(func(string) error)
+	// conversationmessageDescSenderLabel is the schema descriptor for sender_label field.
+	conversationmessageDescSenderLabel := conversationmessageFields[4].Descriptor()
+	// conversationmessage.SenderLabelValidator is a validator for the "sender_label" field. It is called by the builders before save.
+	conversationmessage.SenderLabelValidator = conversationmessageDescSenderLabel.Validators[0].(func(string) error)
+	// conversationmessageDescRequestKey is the schema descriptor for request_key field.
+	conversationmessageDescRequestKey := conversationmessageFields[8].Descriptor()
+	// conversationmessage.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
+	conversationmessage.RequestKeyValidator = conversationmessageDescRequestKey.Validators[0].(func(string) error)
+	// conversationmessageDescRequestHash is the schema descriptor for request_hash field.
+	conversationmessageDescRequestHash := conversationmessageFields[9].Descriptor()
+	// conversationmessage.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	conversationmessage.RequestHashValidator = conversationmessageDescRequestHash.Validators[0].(func(string) error)
+	// conversationmessageDescBody is the schema descriptor for body field.
+	conversationmessageDescBody := conversationmessageFields[10].Descriptor()
+	// conversationmessage.BodyValidator is a validator for the "body" field. It is called by the builders before save.
+	conversationmessage.BodyValidator = conversationmessageDescBody.Validators[0].(func(string) error)
+	// conversationmessageDescCreatedAt is the schema descriptor for created_at field.
+	conversationmessageDescCreatedAt := conversationmessageFields[11].Descriptor()
+	// conversationmessage.DefaultCreatedAt holds the default value on creation for the created_at field.
+	conversationmessage.DefaultCreatedAt = conversationmessageDescCreatedAt.Default.(func() time.Time)
+	// conversationmessageDescID is the schema descriptor for id field.
+	conversationmessageDescID := conversationmessageFields[0].Descriptor()
+	// conversationmessage.DefaultID holds the default value on creation for the id field.
+	conversationmessage.DefaultID = conversationmessageDescID.Default.(func() string)
+	// conversationmessage.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	conversationmessage.IDValidator = conversationmessageDescID.Validators[0].(func(string) error)
+	conversationreadFields := schema.ConversationRead{}.Fields()
+	_ = conversationreadFields
+	// conversationreadDescConversationID is the schema descriptor for conversation_id field.
+	conversationreadDescConversationID := conversationreadFields[1].Descriptor()
+	// conversationread.ConversationIDValidator is a validator for the "conversation_id" field. It is called by the builders before save.
+	conversationread.ConversationIDValidator = conversationreadDescConversationID.Validators[0].(func(string) error)
+	// conversationreadDescUserID is the schema descriptor for user_id field.
+	conversationreadDescUserID := conversationreadFields[2].Descriptor()
+	// conversationread.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	conversationread.UserIDValidator = conversationreadDescUserID.Validators[0].(func(string) error)
+	// conversationreadDescSequence is the schema descriptor for sequence field.
+	conversationreadDescSequence := conversationreadFields[4].Descriptor()
+	// conversationread.DefaultSequence holds the default value on creation for the sequence field.
+	conversationread.DefaultSequence = conversationreadDescSequence.Default.(int)
+	// conversationreadDescID is the schema descriptor for id field.
+	conversationreadDescID := conversationreadFields[0].Descriptor()
+	// conversationread.DefaultID holds the default value on creation for the id field.
+	conversationread.DefaultID = conversationreadDescID.Default.(func() string)
+	// conversationread.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	conversationread.IDValidator = conversationreadDescID.Validators[0].(func(string) error)
 	couponFields := schema.Coupon{}.Fields()
 	_ = couponFields
 	// couponDescCode is the schema descriptor for code field.
@@ -437,6 +577,34 @@ func init() {
 	game.DefaultID = gameDescID.Default.(func() string)
 	// game.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	game.IDValidator = gameDescID.Validators[0].(func(string) error)
+	notificationFields := schema.Notification{}.Fields()
+	_ = notificationFields
+	// notificationDescUserID is the schema descriptor for user_id field.
+	notificationDescUserID := notificationFields[1].Descriptor()
+	// notification.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	notification.UserIDValidator = notificationDescUserID.Validators[0].(func(string) error)
+	// notificationDescResourceID is the schema descriptor for resource_id field.
+	notificationDescResourceID := notificationFields[2].Descriptor()
+	// notification.ResourceIDValidator is a validator for the "resource_id" field. It is called by the builders before save.
+	notification.ResourceIDValidator = notificationDescResourceID.Validators[0].(func(string) error)
+	// notificationDescMessageID is the schema descriptor for message_id field.
+	notificationDescMessageID := notificationFields[3].Descriptor()
+	// notification.MessageIDValidator is a validator for the "message_id" field. It is called by the builders before save.
+	notification.MessageIDValidator = notificationDescMessageID.Validators[0].(func(string) error)
+	// notificationDescKind is the schema descriptor for kind field.
+	notificationDescKind := notificationFields[4].Descriptor()
+	// notification.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	notification.KindValidator = notificationDescKind.Validators[0].(func(string) error)
+	// notificationDescCreatedAt is the schema descriptor for created_at field.
+	notificationDescCreatedAt := notificationFields[8].Descriptor()
+	// notification.DefaultCreatedAt holds the default value on creation for the created_at field.
+	notification.DefaultCreatedAt = notificationDescCreatedAt.Default.(func() time.Time)
+	// notificationDescID is the schema descriptor for id field.
+	notificationDescID := notificationFields[0].Descriptor()
+	// notification.DefaultID holds the default value on creation for the id field.
+	notification.DefaultID = notificationDescID.Default.(func() string)
+	// notification.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	notification.IDValidator = notificationDescID.Validators[0].(func(string) error)
 	orderFields := schema.Order{}.Fields()
 	_ = orderFields
 	// orderDescUserID is the schema descriptor for user_id field.

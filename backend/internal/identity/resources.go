@@ -88,3 +88,21 @@ func (s *Service) ProtectRate(capability, scope string, limit int, window time.D
 		return next(w, r, state.principal)
 	}, 256<<10)
 }
+
+// Recheck refreshes a read-only long-lived operation's session/role without
+// retaining a database transaction or a stale authority snapshot across waits.
+func (s *Service) Recheck(ctx context.Context, p *Principal, capability string) (*Principal, error) {
+	if err := Require(p, capability); err != nil {
+		return nil, err
+	}
+	var current *Principal
+	err := s.transaction(ctx, func(tx *ent.Tx) error {
+		var err error
+		current, err = s.fresh(ctx, tx, p)
+		if err != nil {
+			return err
+		}
+		return Require(current, capability)
+	})
+	return current, err
+}

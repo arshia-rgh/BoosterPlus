@@ -234,6 +234,115 @@ var (
 			},
 		},
 	}
+	// ConversationsColumns holds the columns for the "conversations" table.
+	ConversationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"order", "presales"}},
+		{Name: "order_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "linked_order_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "subject", Type: field.TypeString, Size: 160},
+		{Name: "slug", Type: field.TypeString, Size: 80, Default: ""},
+		{Name: "request_key", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "created_by", Type: field.TypeString, Size: 36},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"open", "waiting", "resolved"}, Default: "open"},
+		{Name: "assigned_to", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "public_version", Type: field.TypeInt, Default: 1},
+		{Name: "sequence", Type: field.TypeInt, Default: 0},
+		{Name: "public_sequence", Type: field.TypeInt, Default: 0},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "public_updated_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ConversationsTable holds the schema information for the "conversations" table.
+	ConversationsTable = &schema.Table{
+		Name:       "conversations",
+		Columns:    ConversationsColumns,
+		PrimaryKey: []*schema.Column{ConversationsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "conversation_order",
+				Unique:  true,
+				Columns: []*schema.Column{ConversationsColumns[3]},
+			},
+			{
+				Name:    "conversation_request",
+				Unique:  true,
+				Columns: []*schema.Column{ConversationsColumns[9], ConversationsColumns[7]},
+			},
+			{
+				Name:    "conversation_customer",
+				Unique:  false,
+				Columns: []*schema.Column{ConversationsColumns[1], ConversationsColumns[17], ConversationsColumns[0]},
+			},
+			{
+				Name:    "conversation_inbox",
+				Unique:  false,
+				Columns: []*schema.Column{ConversationsColumns[10], ConversationsColumns[16], ConversationsColumns[0]},
+			},
+		},
+	}
+	// ConversationMessagesColumns holds the columns for the "conversation_messages" table.
+	ConversationMessagesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "conversation_id", Type: field.TypeString, Size: 36},
+		{Name: "sender_id", Type: field.TypeString, Size: 36},
+		{Name: "sender_role", Type: field.TypeString, Size: 32},
+		{Name: "sender_label", Type: field.TypeString, Size: 100},
+		{Name: "visibility", Type: field.TypeEnum, Enums: []string{"public", "internal"}},
+		{Name: "sequence", Type: field.TypeInt},
+		{Name: "public_sequence", Type: field.TypeInt, Nullable: true},
+		{Name: "request_key", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "body", Type: field.TypeString, Size: 4000},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ConversationMessagesTable holds the schema information for the "conversation_messages" table.
+	ConversationMessagesTable = &schema.Table{
+		Name:       "conversation_messages",
+		Columns:    ConversationMessagesColumns,
+		PrimaryKey: []*schema.Column{ConversationMessagesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "conversation_message_request",
+				Unique:  true,
+				Columns: []*schema.Column{ConversationMessagesColumns[1], ConversationMessagesColumns[2], ConversationMessagesColumns[8]},
+			},
+			{
+				Name:    "conversation_message_sequence",
+				Unique:  true,
+				Columns: []*schema.Column{ConversationMessagesColumns[1], ConversationMessagesColumns[6]},
+			},
+			{
+				Name:    "conversation_message_public",
+				Unique:  true,
+				Columns: []*schema.Column{ConversationMessagesColumns[1], ConversationMessagesColumns[7]},
+			},
+		},
+	}
+	// ConversationReadsColumns holds the columns for the "conversation_reads" table.
+	ConversationReadsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "conversation_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "audience", Type: field.TypeEnum, Enums: []string{"public", "staff"}},
+		{Name: "sequence", Type: field.TypeInt, Default: 0},
+	}
+	// ConversationReadsTable holds the schema information for the "conversation_reads" table.
+	ConversationReadsTable = &schema.Table{
+		Name:       "conversation_reads",
+		Columns:    ConversationReadsColumns,
+		PrimaryKey: []*schema.Column{ConversationReadsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "conversation_reader",
+				Unique:  true,
+				Columns: []*schema.Column{ConversationReadsColumns[1], ConversationReadsColumns[2], ConversationReadsColumns[3]},
+			},
+		},
+	}
 	// CouponsColumns holds the columns for the "coupons" table.
 	CouponsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -348,6 +457,31 @@ var (
 		Name:       "games",
 		Columns:    GamesColumns,
 		PrimaryKey: []*schema.Column{GamesColumns[0]},
+	}
+	// NotificationsColumns holds the columns for the "notifications" table.
+	NotificationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "resource_id", Type: field.TypeString, Size: 36},
+		{Name: "message_id", Type: field.TypeString, Size: 36},
+		{Name: "kind", Type: field.TypeString, Size: 32},
+		{Name: "read_at", Type: field.TypeTime, Nullable: true},
+		{Name: "emailed_at", Type: field.TypeTime, Nullable: true},
+		{Name: "email_state", Type: field.TypeEnum, Enums: []string{"pending", "sent", "suppressed"}, Default: "pending"},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// NotificationsTable holds the schema information for the "notifications" table.
+	NotificationsTable = &schema.Table{
+		Name:       "notifications",
+		Columns:    NotificationsColumns,
+		PrimaryKey: []*schema.Column{NotificationsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "notification_message",
+				Unique:  true,
+				Columns: []*schema.Column{NotificationsColumns[1], NotificationsColumns[3]},
+			},
+		},
 	}
 	// OrdersColumns holds the columns for the "orders" table.
 	OrdersColumns = []*schema.Column{
@@ -520,11 +654,15 @@ var (
 		AuthRecoveriesTable,
 		AuthSessionsTable,
 		CatalogReleasesTable,
+		ConversationsTable,
+		ConversationMessagesTable,
+		ConversationReadsTable,
 		CouponsTable,
 		CouponClaimsTable,
 		CouponRevisionsTable,
 		FavoritesTable,
 		GamesTable,
+		NotificationsTable,
 		OrdersTable,
 		OrderContractsTable,
 		OrderEventsTable,

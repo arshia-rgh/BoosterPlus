@@ -1159,6 +1159,299 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/conversations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** customerConversations */
+    get: operations["customerConversations"];
+    put?: never;
+    /** Create authenticated pre-sales support or an order’s single private thread. Idempotent, limited to 20 attempts/hour per address and account. */
+    post: operations["customerCreateConversation"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/conversations/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** customerConversation */
+    get: operations["customerConversation"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/conversations/{id}/messages": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Forward backfill with after, or latest/earlier window with before (0 means latest). Mutually exclusive cursors; up to 50 visible messages. Customer sequences exclude internal notes. */
+    get: operations["customerConversationMessages"];
+    put?: never;
+    /** Immutable, idempotent send with transactional notices and audit. Internal visibility requires the staff endpoint. Limited to 60 attempts/minute per address and account. */
+    post: operations["customerSendConversationMessage"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/conversations/{id}/read": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** customerReadConversation */
+    post: operations["customerReadConversation"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/conversations/{id}/stream": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Eight-second SSE stream, reconnectable using Last-Event-ID. Sends change cursor hints and heartbeats only, rechecks live session authority, and excludes internal activity from customer cursors. Polling/backfill remains authoritative. */
+    get: operations["customerConversationStream"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** staffConversations */
+    get: operations["staffConversations"];
+    put?: never;
+    /** Create authenticated pre-sales support or an order’s single private thread. Idempotent, limited to 20 attempts/hour per address and account. */
+    post: operations["staffCreateConversation"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** staffConversation */
+    get: operations["staffConversation"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/messages": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Forward backfill with after, or latest/earlier window with before (0 means latest). Mutually exclusive cursors; up to 50 visible messages. Customer sequences exclude internal notes. */
+    get: operations["staffConversationMessages"];
+    put?: never;
+    /** Immutable, idempotent send with transactional notices and audit. Internal visibility requires the staff endpoint. Limited to 60 attempts/minute per address and account. */
+    post: operations["staffSendConversationMessage"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/read": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** staffReadConversation */
+    post: operations["staffReadConversation"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/stream": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Eight-second SSE stream, reconnectable using Last-Event-ID. Sends change cursor hints and heartbeats only, rechecks live session authority, and excludes internal activity from customer cursors. Polling/backfill remains authoritative. */
+    get: operations["staffConversationStream"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/state": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** staffStateConversation */
+    post: operations["staffStateConversation"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/assign": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** staffAssignConversation */
+    post: operations["staffAssignConversation"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/conversations/{id}/link": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** staffLinkConversation */
+    post: operations["staffLinkConversation"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/me/notifications": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** listActivityNotices */
+    get: operations["listActivityNotices"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/me/notifications/{id}/read": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** readActivityNotice */
+    post: operations["readActivityNotice"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/notifications/deliveries": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** activityEmailDeliveries */
+    get: operations["activityEmailDeliveries"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/notifications/deliveries/{id}/retry": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Requires recent staff primary and authenticator verification; restarts only failed activity jobs with audit. Running/completed jobs cannot be restarted. */
+    post: operations["retryActivityEmail"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1786,6 +2079,99 @@ export interface components {
     Favorites: {
       favorites: components["schemas"]["Favorite"][];
       next: string;
+    };
+    ConversationProblem: {
+      /** @enum {string} */
+      code: "conversation_invalid" | "conversation_conflict";
+      issues?: components["schemas"]["CatalogIssue"][];
+    };
+    Conversation: {
+      id: string;
+      order_id: string;
+      linked_order_id: string;
+      subject: string;
+      slug: string;
+      assigned_to?: string;
+      /** @enum {string} */
+      kind: "order" | "presales";
+      /** @enum {string} */
+      state: "open" | "waiting" | "resolved";
+      version: number;
+      sequence: number;
+      unread: number;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    ConversationCreate: {
+      /** Format: uuid */
+      request_key: string;
+      /** @enum {string} */
+      kind: "order" | "presales";
+      order_id: string;
+      subject: string;
+      slug: string;
+    };
+    ConversationSend: {
+      /** Format: uuid */
+      request_key: string;
+      body: string;
+      /** @enum {string} */
+      visibility: "public" | "internal";
+    };
+    ConversationChange: {
+      version: number;
+      state: string;
+      assigned_to: string;
+      order_id: string;
+    };
+    ConversationRead: {
+      sequence: number;
+    };
+    ConversationMessage: {
+      id: string;
+      sender_label: string;
+      sender_role: string;
+      sender_id?: string;
+      body: string;
+      sequence: number;
+      /** @enum {string} */
+      visibility: "public" | "internal";
+      /** Format: date-time */
+      created_at: string;
+    };
+    ConversationMessages: {
+      messages: components["schemas"]["ConversationMessage"][];
+      next: number;
+      latest: number;
+    };
+    ConversationListing: {
+      conversations: components["schemas"]["Conversation"][];
+      next: string;
+    };
+    ActivityNotice: {
+      id: string;
+      kind: string;
+      href: string;
+      read: boolean;
+      /** Format: date-time */
+      created_at: string;
+    };
+    ActivityNotices: {
+      notifications: components["schemas"]["ActivityNotice"][];
+      next: string;
+    };
+    ActivityDelivery: {
+      id: string;
+      state: string;
+      attempts: number;
+      last_error: string;
+      /** Format: date-time */
+      created_at: string;
+    };
+    ActivityDeliveries: {
+      deliveries: components["schemas"]["ActivityDelivery"][];
     };
   };
   responses: never;
@@ -4999,6 +5385,1092 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["OrderProblem"];
         };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  customerConversations: {
+    parameters: {
+      query?: {
+        after?: string;
+        state?: string;
+        assigned?: string;
+        order_id?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationListing"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  customerCreateConversation: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConversationCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Conversation"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  customerConversation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Conversation"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  customerConversationMessages: {
+    parameters: {
+      query?: {
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationMessages"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  customerSendConversationMessage: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConversationSend"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationMessage"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  customerReadConversation: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConversationRead"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  customerConversationStream: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: {
+        "Last-Event-ID"?: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private server-sent change cursor hints. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "text/event-stream": string;
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffConversations: {
+    parameters: {
+      query?: {
+        after?: string;
+        state?: string;
+        assigned?: string;
+        order_id?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationListing"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffCreateConversation: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConversationCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Conversation"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffConversation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Conversation"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffConversationMessages: {
+    parameters: {
+      query?: {
+        after?: string;
+        before?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationMessages"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffSendConversationMessage: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConversationSend"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationMessage"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffReadConversation: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConversationRead"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffConversationStream: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: {
+        "Last-Event-ID"?: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private server-sent change cursor hints. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "text/event-stream": string;
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffStateConversation: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConversationChange"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Conversation"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffAssignConversation: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConversationChange"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Conversation"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  staffLinkConversation: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConversationChange"];
+      };
+    };
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Conversation"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  listActivityNotices: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ActivityNotices"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  readActivityNotice: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  activityEmailDeliveries: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ActivityDeliveries"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  retryActivityEmail: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */
       default: {

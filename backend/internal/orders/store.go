@@ -18,6 +18,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 )
 
 // Store shares Ent and identity's transactional authority. The optional clock is
@@ -196,8 +197,14 @@ func variantFor(release catalog.Release, service, packKey, variantKey string) (*
 	return &v, nil
 }
 func event(ctx context.Context, tx *ent.Tx, p *identity.Principal, row *ent.Order, action, message string, now time.Time) error {
-	_, err := tx.OrderEvent.Create().SetOrderID(row.ID).SetVersion(row.Version).SetAction(action).SetMessage(message).SetActorID(p.User.ID).SetActorRole(p.User.Role).SetCreatedAt(now).Save(ctx)
-	return err
+	entry, err := tx.OrderEvent.Create().SetOrderID(row.ID).SetVersion(row.Version).SetAction(action).SetMessage(message).SetActorID(p.User.ID).SetActorRole(p.User.Role).SetCreatedAt(now).Save(ctx)
+	if err != nil {
+		return err
+	}
+	if p.User.ID != row.UserID {
+		return notifications.Enqueue(ctx, tx, row.UserID, row.ID, entry.ID, "order_customer", now)
+	}
+	return nil
 }
 
 // Create snapshots a custom request or immediately creates an unpaid package contract.

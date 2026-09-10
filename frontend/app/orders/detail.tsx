@@ -16,6 +16,7 @@ import {
   type Reorder,
 } from "./model";
 import { useResource } from "./resource";
+import { OrderSupport } from "../support/new";
 import QuoteEditor from "./quote-editor";
 
 export function Agreement({ data }: { data: Commercial }) {
@@ -412,6 +413,11 @@ export default function OrderDetail({ admin = false }: { admin?: boolean }) {
             {detail.order.game_name} · {stateLabel(detail.order.state)}
           </h2>
           <p className="order-id">Order {detail.order.id}</p>
+          <OrderSupport
+            id={detail.order.id}
+            name={detail.order.game_name}
+            admin={admin}
+          />
           {detail.contract ? (
             <section aria-label="Accepted agreement">
               <h2>Accepted agreement</h2>

@@ -23,11 +23,15 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/coupon"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponclaim"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
@@ -60,6 +64,12 @@ type Client struct {
 	AuthSession *AuthSessionClient
 	// CatalogRelease is the client for interacting with the CatalogRelease builders.
 	CatalogRelease *CatalogReleaseClient
+	// Conversation is the client for interacting with the Conversation builders.
+	Conversation *ConversationClient
+	// ConversationMessage is the client for interacting with the ConversationMessage builders.
+	ConversationMessage *ConversationMessageClient
+	// ConversationRead is the client for interacting with the ConversationRead builders.
+	ConversationRead *ConversationReadClient
 	// Coupon is the client for interacting with the Coupon builders.
 	Coupon *CouponClient
 	// CouponClaim is the client for interacting with the CouponClaim builders.
@@ -70,6 +80,8 @@ type Client struct {
 	Favorite *FavoriteClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
+	// Notification is the client for interacting with the Notification builders.
+	Notification *NotificationClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
 	// OrderContract is the client for interacting with the OrderContract builders.
@@ -100,11 +112,15 @@ func (c *Client) init() {
 	c.AuthRecovery = NewAuthRecoveryClient(c.config)
 	c.AuthSession = NewAuthSessionClient(c.config)
 	c.CatalogRelease = NewCatalogReleaseClient(c.config)
+	c.Conversation = NewConversationClient(c.config)
+	c.ConversationMessage = NewConversationMessageClient(c.config)
+	c.ConversationRead = NewConversationReadClient(c.config)
 	c.Coupon = NewCouponClient(c.config)
 	c.CouponClaim = NewCouponClaimClient(c.config)
 	c.CouponRevision = NewCouponRevisionClient(c.config)
 	c.Favorite = NewFavoriteClient(c.config)
 	c.Game = NewGameClient(c.config)
+	c.Notification = NewNotificationClient(c.config)
 	c.Order = NewOrderClient(c.config)
 	c.OrderContract = NewOrderContractClient(c.config)
 	c.OrderEvent = NewOrderEventClient(c.config)
@@ -200,27 +216,31 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:            ctx,
-		config:         cfg,
-		AuthAudit:      NewAuthAuditClient(cfg),
-		AuthChallenge:  NewAuthChallengeClient(cfg),
-		AuthFlow:       NewAuthFlowClient(cfg),
-		AuthIdentity:   NewAuthIdentityClient(cfg),
-		AuthMessage:    NewAuthMessageClient(cfg),
-		AuthRate:       NewAuthRateClient(cfg),
-		AuthRecovery:   NewAuthRecoveryClient(cfg),
-		AuthSession:    NewAuthSessionClient(cfg),
-		CatalogRelease: NewCatalogReleaseClient(cfg),
-		Coupon:         NewCouponClient(cfg),
-		CouponClaim:    NewCouponClaimClient(cfg),
-		CouponRevision: NewCouponRevisionClient(cfg),
-		Favorite:       NewFavoriteClient(cfg),
-		Game:           NewGameClient(cfg),
-		Order:          NewOrderClient(cfg),
-		OrderContract:  NewOrderContractClient(cfg),
-		OrderEvent:     NewOrderEventClient(cfg),
-		OrderQuote:     NewOrderQuoteClient(cfg),
-		User:           NewUserClient(cfg),
+		ctx:                 ctx,
+		config:              cfg,
+		AuthAudit:           NewAuthAuditClient(cfg),
+		AuthChallenge:       NewAuthChallengeClient(cfg),
+		AuthFlow:            NewAuthFlowClient(cfg),
+		AuthIdentity:        NewAuthIdentityClient(cfg),
+		AuthMessage:         NewAuthMessageClient(cfg),
+		AuthRate:            NewAuthRateClient(cfg),
+		AuthRecovery:        NewAuthRecoveryClient(cfg),
+		AuthSession:         NewAuthSessionClient(cfg),
+		CatalogRelease:      NewCatalogReleaseClient(cfg),
+		Conversation:        NewConversationClient(cfg),
+		ConversationMessage: NewConversationMessageClient(cfg),
+		ConversationRead:    NewConversationReadClient(cfg),
+		Coupon:              NewCouponClient(cfg),
+		CouponClaim:         NewCouponClaimClient(cfg),
+		CouponRevision:      NewCouponRevisionClient(cfg),
+		Favorite:            NewFavoriteClient(cfg),
+		Game:                NewGameClient(cfg),
+		Notification:        NewNotificationClient(cfg),
+		Order:               NewOrderClient(cfg),
+		OrderContract:       NewOrderContractClient(cfg),
+		OrderEvent:          NewOrderEventClient(cfg),
+		OrderQuote:          NewOrderQuoteClient(cfg),
+		User:                NewUserClient(cfg),
 	}, nil
 }
 
@@ -238,27 +258,31 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:            ctx,
-		config:         cfg,
-		AuthAudit:      NewAuthAuditClient(cfg),
-		AuthChallenge:  NewAuthChallengeClient(cfg),
-		AuthFlow:       NewAuthFlowClient(cfg),
-		AuthIdentity:   NewAuthIdentityClient(cfg),
-		AuthMessage:    NewAuthMessageClient(cfg),
-		AuthRate:       NewAuthRateClient(cfg),
-		AuthRecovery:   NewAuthRecoveryClient(cfg),
-		AuthSession:    NewAuthSessionClient(cfg),
-		CatalogRelease: NewCatalogReleaseClient(cfg),
-		Coupon:         NewCouponClient(cfg),
-		CouponClaim:    NewCouponClaimClient(cfg),
-		CouponRevision: NewCouponRevisionClient(cfg),
-		Favorite:       NewFavoriteClient(cfg),
-		Game:           NewGameClient(cfg),
-		Order:          NewOrderClient(cfg),
-		OrderContract:  NewOrderContractClient(cfg),
-		OrderEvent:     NewOrderEventClient(cfg),
-		OrderQuote:     NewOrderQuoteClient(cfg),
-		User:           NewUserClient(cfg),
+		ctx:                 ctx,
+		config:              cfg,
+		AuthAudit:           NewAuthAuditClient(cfg),
+		AuthChallenge:       NewAuthChallengeClient(cfg),
+		AuthFlow:            NewAuthFlowClient(cfg),
+		AuthIdentity:        NewAuthIdentityClient(cfg),
+		AuthMessage:         NewAuthMessageClient(cfg),
+		AuthRate:            NewAuthRateClient(cfg),
+		AuthRecovery:        NewAuthRecoveryClient(cfg),
+		AuthSession:         NewAuthSessionClient(cfg),
+		CatalogRelease:      NewCatalogReleaseClient(cfg),
+		Conversation:        NewConversationClient(cfg),
+		ConversationMessage: NewConversationMessageClient(cfg),
+		ConversationRead:    NewConversationReadClient(cfg),
+		Coupon:              NewCouponClient(cfg),
+		CouponClaim:         NewCouponClaimClient(cfg),
+		CouponRevision:      NewCouponRevisionClient(cfg),
+		Favorite:            NewFavoriteClient(cfg),
+		Game:                NewGameClient(cfg),
+		Notification:        NewNotificationClient(cfg),
+		Order:               NewOrderClient(cfg),
+		OrderContract:       NewOrderContractClient(cfg),
+		OrderEvent:          NewOrderEventClient(cfg),
+		OrderQuote:          NewOrderQuoteClient(cfg),
+		User:                NewUserClient(cfg),
 	}, nil
 }
 
@@ -289,8 +313,9 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
-		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Coupon,
-		c.CouponClaim, c.CouponRevision, c.Favorite, c.Game, c.Order, c.OrderContract,
+		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Conversation,
+		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
+		c.CouponRevision, c.Favorite, c.Game, c.Notification, c.Order, c.OrderContract,
 		c.OrderEvent, c.OrderQuote, c.User,
 	} {
 		n.Use(hooks...)
@@ -302,8 +327,9 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
-		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Coupon,
-		c.CouponClaim, c.CouponRevision, c.Favorite, c.Game, c.Order, c.OrderContract,
+		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Conversation,
+		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
+		c.CouponRevision, c.Favorite, c.Game, c.Notification, c.Order, c.OrderContract,
 		c.OrderEvent, c.OrderQuote, c.User,
 	} {
 		n.Intercept(interceptors...)
@@ -331,6 +357,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AuthSession.mutate(ctx, m)
 	case *CatalogReleaseMutation:
 		return c.CatalogRelease.mutate(ctx, m)
+	case *ConversationMutation:
+		return c.Conversation.mutate(ctx, m)
+	case *ConversationMessageMutation:
+		return c.ConversationMessage.mutate(ctx, m)
+	case *ConversationReadMutation:
+		return c.ConversationRead.mutate(ctx, m)
 	case *CouponMutation:
 		return c.Coupon.mutate(ctx, m)
 	case *CouponClaimMutation:
@@ -341,6 +373,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Favorite.mutate(ctx, m)
 	case *GameMutation:
 		return c.Game.mutate(ctx, m)
+	case *NotificationMutation:
+		return c.Notification.mutate(ctx, m)
 	case *OrderMutation:
 		return c.Order.mutate(ctx, m)
 	case *OrderContractMutation:
@@ -1553,6 +1587,405 @@ func (c *CatalogReleaseClient) mutate(ctx context.Context, m *CatalogReleaseMuta
 	}
 }
 
+// ConversationClient is a client for the Conversation schema.
+type ConversationClient struct {
+	config
+}
+
+// NewConversationClient returns a client for the Conversation from the given config.
+func NewConversationClient(c config) *ConversationClient {
+	return &ConversationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `conversation.Hooks(f(g(h())))`.
+func (c *ConversationClient) Use(hooks ...Hook) {
+	c.hooks.Conversation = append(c.hooks.Conversation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `conversation.Intercept(f(g(h())))`.
+func (c *ConversationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Conversation = append(c.inters.Conversation, interceptors...)
+}
+
+// Create returns a builder for creating a Conversation entity.
+func (c *ConversationClient) Create() *ConversationCreate {
+	mutation := newConversationMutation(c.config, OpCreate)
+	return &ConversationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Conversation entities.
+func (c *ConversationClient) CreateBulk(builders ...*ConversationCreate) *ConversationCreateBulk {
+	return &ConversationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ConversationClient) MapCreateBulk(slice any, setFunc func(*ConversationCreate, int)) *ConversationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ConversationCreateBulk{err: fmt.Errorf("calling to ConversationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ConversationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ConversationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Conversation.
+func (c *ConversationClient) Update() *ConversationUpdate {
+	mutation := newConversationMutation(c.config, OpUpdate)
+	return &ConversationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ConversationClient) UpdateOne(_m *Conversation) *ConversationUpdateOne {
+	mutation := newConversationMutation(c.config, OpUpdateOne, withConversation(_m))
+	return &ConversationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ConversationClient) UpdateOneID(id string) *ConversationUpdateOne {
+	mutation := newConversationMutation(c.config, OpUpdateOne, withConversationID(id))
+	return &ConversationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Conversation.
+func (c *ConversationClient) Delete() *ConversationDelete {
+	mutation := newConversationMutation(c.config, OpDelete)
+	return &ConversationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ConversationClient) DeleteOne(_m *Conversation) *ConversationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ConversationClient) DeleteOneID(id string) *ConversationDeleteOne {
+	builder := c.Delete().Where(conversation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ConversationDeleteOne{builder}
+}
+
+// Query returns a query builder for Conversation.
+func (c *ConversationClient) Query() *ConversationQuery {
+	return &ConversationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeConversation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Conversation entity by its id.
+func (c *ConversationClient) Get(ctx context.Context, id string) (*Conversation, error) {
+	return c.Query().Where(conversation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ConversationClient) GetX(ctx context.Context, id string) *Conversation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ConversationClient) Hooks() []Hook {
+	return c.hooks.Conversation
+}
+
+// Interceptors returns the client interceptors.
+func (c *ConversationClient) Interceptors() []Interceptor {
+	return c.inters.Conversation
+}
+
+func (c *ConversationClient) mutate(ctx context.Context, m *ConversationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ConversationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ConversationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ConversationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ConversationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Conversation mutation op: %q", m.Op())
+	}
+}
+
+// ConversationMessageClient is a client for the ConversationMessage schema.
+type ConversationMessageClient struct {
+	config
+}
+
+// NewConversationMessageClient returns a client for the ConversationMessage from the given config.
+func NewConversationMessageClient(c config) *ConversationMessageClient {
+	return &ConversationMessageClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `conversationmessage.Hooks(f(g(h())))`.
+func (c *ConversationMessageClient) Use(hooks ...Hook) {
+	c.hooks.ConversationMessage = append(c.hooks.ConversationMessage, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `conversationmessage.Intercept(f(g(h())))`.
+func (c *ConversationMessageClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ConversationMessage = append(c.inters.ConversationMessage, interceptors...)
+}
+
+// Create returns a builder for creating a ConversationMessage entity.
+func (c *ConversationMessageClient) Create() *ConversationMessageCreate {
+	mutation := newConversationMessageMutation(c.config, OpCreate)
+	return &ConversationMessageCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ConversationMessage entities.
+func (c *ConversationMessageClient) CreateBulk(builders ...*ConversationMessageCreate) *ConversationMessageCreateBulk {
+	return &ConversationMessageCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ConversationMessageClient) MapCreateBulk(slice any, setFunc func(*ConversationMessageCreate, int)) *ConversationMessageCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ConversationMessageCreateBulk{err: fmt.Errorf("calling to ConversationMessageClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ConversationMessageCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ConversationMessageCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ConversationMessage.
+func (c *ConversationMessageClient) Update() *ConversationMessageUpdate {
+	mutation := newConversationMessageMutation(c.config, OpUpdate)
+	return &ConversationMessageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ConversationMessageClient) UpdateOne(_m *ConversationMessage) *ConversationMessageUpdateOne {
+	mutation := newConversationMessageMutation(c.config, OpUpdateOne, withConversationMessage(_m))
+	return &ConversationMessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ConversationMessageClient) UpdateOneID(id string) *ConversationMessageUpdateOne {
+	mutation := newConversationMessageMutation(c.config, OpUpdateOne, withConversationMessageID(id))
+	return &ConversationMessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ConversationMessage.
+func (c *ConversationMessageClient) Delete() *ConversationMessageDelete {
+	mutation := newConversationMessageMutation(c.config, OpDelete)
+	return &ConversationMessageDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ConversationMessageClient) DeleteOne(_m *ConversationMessage) *ConversationMessageDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ConversationMessageClient) DeleteOneID(id string) *ConversationMessageDeleteOne {
+	builder := c.Delete().Where(conversationmessage.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ConversationMessageDeleteOne{builder}
+}
+
+// Query returns a query builder for ConversationMessage.
+func (c *ConversationMessageClient) Query() *ConversationMessageQuery {
+	return &ConversationMessageQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeConversationMessage},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ConversationMessage entity by its id.
+func (c *ConversationMessageClient) Get(ctx context.Context, id string) (*ConversationMessage, error) {
+	return c.Query().Where(conversationmessage.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ConversationMessageClient) GetX(ctx context.Context, id string) *ConversationMessage {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ConversationMessageClient) Hooks() []Hook {
+	return c.hooks.ConversationMessage
+}
+
+// Interceptors returns the client interceptors.
+func (c *ConversationMessageClient) Interceptors() []Interceptor {
+	return c.inters.ConversationMessage
+}
+
+func (c *ConversationMessageClient) mutate(ctx context.Context, m *ConversationMessageMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ConversationMessageCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ConversationMessageUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ConversationMessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ConversationMessageDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ConversationMessage mutation op: %q", m.Op())
+	}
+}
+
+// ConversationReadClient is a client for the ConversationRead schema.
+type ConversationReadClient struct {
+	config
+}
+
+// NewConversationReadClient returns a client for the ConversationRead from the given config.
+func NewConversationReadClient(c config) *ConversationReadClient {
+	return &ConversationReadClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `conversationread.Hooks(f(g(h())))`.
+func (c *ConversationReadClient) Use(hooks ...Hook) {
+	c.hooks.ConversationRead = append(c.hooks.ConversationRead, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `conversationread.Intercept(f(g(h())))`.
+func (c *ConversationReadClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ConversationRead = append(c.inters.ConversationRead, interceptors...)
+}
+
+// Create returns a builder for creating a ConversationRead entity.
+func (c *ConversationReadClient) Create() *ConversationReadCreate {
+	mutation := newConversationReadMutation(c.config, OpCreate)
+	return &ConversationReadCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ConversationRead entities.
+func (c *ConversationReadClient) CreateBulk(builders ...*ConversationReadCreate) *ConversationReadCreateBulk {
+	return &ConversationReadCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ConversationReadClient) MapCreateBulk(slice any, setFunc func(*ConversationReadCreate, int)) *ConversationReadCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ConversationReadCreateBulk{err: fmt.Errorf("calling to ConversationReadClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ConversationReadCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ConversationReadCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ConversationRead.
+func (c *ConversationReadClient) Update() *ConversationReadUpdate {
+	mutation := newConversationReadMutation(c.config, OpUpdate)
+	return &ConversationReadUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ConversationReadClient) UpdateOne(_m *ConversationRead) *ConversationReadUpdateOne {
+	mutation := newConversationReadMutation(c.config, OpUpdateOne, withConversationRead(_m))
+	return &ConversationReadUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ConversationReadClient) UpdateOneID(id string) *ConversationReadUpdateOne {
+	mutation := newConversationReadMutation(c.config, OpUpdateOne, withConversationReadID(id))
+	return &ConversationReadUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ConversationRead.
+func (c *ConversationReadClient) Delete() *ConversationReadDelete {
+	mutation := newConversationReadMutation(c.config, OpDelete)
+	return &ConversationReadDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ConversationReadClient) DeleteOne(_m *ConversationRead) *ConversationReadDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ConversationReadClient) DeleteOneID(id string) *ConversationReadDeleteOne {
+	builder := c.Delete().Where(conversationread.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ConversationReadDeleteOne{builder}
+}
+
+// Query returns a query builder for ConversationRead.
+func (c *ConversationReadClient) Query() *ConversationReadQuery {
+	return &ConversationReadQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeConversationRead},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ConversationRead entity by its id.
+func (c *ConversationReadClient) Get(ctx context.Context, id string) (*ConversationRead, error) {
+	return c.Query().Where(conversationread.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ConversationReadClient) GetX(ctx context.Context, id string) *ConversationRead {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ConversationReadClient) Hooks() []Hook {
+	return c.hooks.ConversationRead
+}
+
+// Interceptors returns the client interceptors.
+func (c *ConversationReadClient) Interceptors() []Interceptor {
+	return c.inters.ConversationRead
+}
+
+func (c *ConversationReadClient) mutate(ctx context.Context, m *ConversationReadMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ConversationReadCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ConversationReadUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ConversationReadUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ConversationReadDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ConversationRead mutation op: %q", m.Op())
+	}
+}
+
 // CouponClient is a client for the Coupon schema.
 type CouponClient struct {
 	config
@@ -2215,6 +2648,139 @@ func (c *GameClient) mutate(ctx context.Context, m *GameMutation) (Value, error)
 		return (&GameDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Game mutation op: %q", m.Op())
+	}
+}
+
+// NotificationClient is a client for the Notification schema.
+type NotificationClient struct {
+	config
+}
+
+// NewNotificationClient returns a client for the Notification from the given config.
+func NewNotificationClient(c config) *NotificationClient {
+	return &NotificationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `notification.Hooks(f(g(h())))`.
+func (c *NotificationClient) Use(hooks ...Hook) {
+	c.hooks.Notification = append(c.hooks.Notification, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `notification.Intercept(f(g(h())))`.
+func (c *NotificationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Notification = append(c.inters.Notification, interceptors...)
+}
+
+// Create returns a builder for creating a Notification entity.
+func (c *NotificationClient) Create() *NotificationCreate {
+	mutation := newNotificationMutation(c.config, OpCreate)
+	return &NotificationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Notification entities.
+func (c *NotificationClient) CreateBulk(builders ...*NotificationCreate) *NotificationCreateBulk {
+	return &NotificationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *NotificationClient) MapCreateBulk(slice any, setFunc func(*NotificationCreate, int)) *NotificationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &NotificationCreateBulk{err: fmt.Errorf("calling to NotificationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*NotificationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &NotificationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Notification.
+func (c *NotificationClient) Update() *NotificationUpdate {
+	mutation := newNotificationMutation(c.config, OpUpdate)
+	return &NotificationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *NotificationClient) UpdateOne(_m *Notification) *NotificationUpdateOne {
+	mutation := newNotificationMutation(c.config, OpUpdateOne, withNotification(_m))
+	return &NotificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *NotificationClient) UpdateOneID(id string) *NotificationUpdateOne {
+	mutation := newNotificationMutation(c.config, OpUpdateOne, withNotificationID(id))
+	return &NotificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Notification.
+func (c *NotificationClient) Delete() *NotificationDelete {
+	mutation := newNotificationMutation(c.config, OpDelete)
+	return &NotificationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *NotificationClient) DeleteOne(_m *Notification) *NotificationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *NotificationClient) DeleteOneID(id string) *NotificationDeleteOne {
+	builder := c.Delete().Where(notification.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &NotificationDeleteOne{builder}
+}
+
+// Query returns a query builder for Notification.
+func (c *NotificationClient) Query() *NotificationQuery {
+	return &NotificationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeNotification},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Notification entity by its id.
+func (c *NotificationClient) Get(ctx context.Context, id string) (*Notification, error) {
+	return c.Query().Where(notification.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *NotificationClient) GetX(ctx context.Context, id string) *Notification {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *NotificationClient) Hooks() []Hook {
+	return c.hooks.Notification
+}
+
+// Interceptors returns the client interceptors.
+func (c *NotificationClient) Interceptors() []Interceptor {
+	return c.inters.Notification
+}
+
+func (c *NotificationClient) mutate(ctx context.Context, m *NotificationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&NotificationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&NotificationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&NotificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&NotificationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Notification mutation op: %q", m.Op())
 	}
 }
 
@@ -2887,13 +3453,15 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 type (
 	hooks struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, CatalogRelease, Coupon, CouponClaim, CouponRevision,
-		Favorite, Game, Order, OrderContract, OrderEvent, OrderQuote, User []ent.Hook
+		AuthRecovery, AuthSession, CatalogRelease, Conversation, ConversationMessage,
+		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Game,
+		Notification, Order, OrderContract, OrderEvent, OrderQuote, User []ent.Hook
 	}
 	inters struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, CatalogRelease, Coupon, CouponClaim, CouponRevision,
-		Favorite, Game, Order, OrderContract, OrderEvent, OrderQuote,
+		AuthRecovery, AuthSession, CatalogRelease, Conversation, ConversationMessage,
+		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Game,
+		Notification, Order, OrderContract, OrderEvent, OrderQuote,
 		User []ent.Interceptor
 	}
 )

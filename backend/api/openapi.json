@@ -4579,6 +4579,1608 @@
           }
         ]
       }
+    },
+    "/api/v1/conversations": {
+      "get": {
+        "operationId": "customerConversations",
+        "summary": "customerConversations",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationListing"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assigned",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "customerCreateConversation",
+        "summary": "Create authenticated pre-sales support or an order’s single private thread. Idempotent, limited to 20 attempts/hour per address and account.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{id}": {
+      "get": {
+        "operationId": "customerConversation",
+        "summary": "customerConversation",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/conversations/{id}/messages": {
+      "get": {
+        "operationId": "customerConversationMessages",
+        "summary": "Forward backfill with after, or latest/earlier window with before (0 means latest). Mutually exclusive cursors; up to 50 visible messages. Customer sequences exclude internal notes.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationMessages"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "customerSendConversationMessage",
+        "summary": "Immutable, idempotent send with transactional notices and audit. Internal visibility requires the staff endpoint. Limited to 60 attempts/minute per address and account.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationMessage"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationSend"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{id}/read": {
+      "post": {
+        "operationId": "customerReadConversation",
+        "summary": "customerReadConversation",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful private response"
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationRead"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{id}/stream": {
+      "get": {
+        "operationId": "customerConversationStream",
+        "summary": "Eight-second SSE stream, reconnectable using Last-Event-ID. Sends change cursor hints and heartbeats only, rechecks live session authority, and excludes internal activity from customer cursors. Polling/backfill remains authoritative.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Private server-sent change cursor hints.",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Last-Event-ID",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/conversations": {
+      "get": {
+        "operationId": "staffConversations",
+        "summary": "staffConversations",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationListing"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assigned",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "staffCreateConversation",
+        "summary": "Create authenticated pre-sales support or an order’s single private thread. Idempotent, limited to 20 attempts/hour per address and account.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/conversations/{id}": {
+      "get": {
+        "operationId": "staffConversation",
+        "summary": "staffConversation",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/conversations/{id}/messages": {
+      "get": {
+        "operationId": "staffConversationMessages",
+        "summary": "Forward backfill with after, or latest/earlier window with before (0 means latest). Mutually exclusive cursors; up to 50 visible messages. Customer sequences exclude internal notes.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationMessages"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "staffSendConversationMessage",
+        "summary": "Immutable, idempotent send with transactional notices and audit. Internal visibility requires the staff endpoint. Limited to 60 attempts/minute per address and account.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationMessage"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationSend"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/conversations/{id}/read": {
+      "post": {
+        "operationId": "staffReadConversation",
+        "summary": "staffReadConversation",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful private response"
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationRead"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/conversations/{id}/stream": {
+      "get": {
+        "operationId": "staffConversationStream",
+        "summary": "Eight-second SSE stream, reconnectable using Last-Event-ID. Sends change cursor hints and heartbeats only, rechecks live session authority, and excludes internal activity from customer cursors. Polling/backfill remains authoritative.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Private server-sent change cursor hints.",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Last-Event-ID",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/conversations/{id}/state": {
+      "post": {
+        "operationId": "staffStateConversation",
+        "summary": "staffStateConversation",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/conversations/{id}/assign": {
+      "post": {
+        "operationId": "staffAssignConversation",
+        "summary": "staffAssignConversation",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/conversations/{id}/link": {
+      "post": {
+        "operationId": "staffLinkConversation",
+        "summary": "staffLinkConversation",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/notifications": {
+      "get": {
+        "operationId": "listActivityNotices",
+        "summary": "listActivityNotices",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityNotices"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/me/notifications/{id}/read": {
+      "post": {
+        "operationId": "readActivityNotice",
+        "summary": "readActivityNotice",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful private response"
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/notifications/deliveries": {
+      "get": {
+        "operationId": "activityEmailDeliveries",
+        "summary": "activityEmailDeliveries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityDeliveries"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/notifications/deliveries/{id}/retry": {
+      "post": {
+        "operationId": "retryActivityEmail",
+        "summary": "Requires recent staff primary and authenticator verification; restarts only failed activity jobs with audit. Running/completed jobs cannot be restarted.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful private response"
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -6924,6 +8526,331 @@
           },
           "next": {
             "type": "string"
+          }
+        }
+      },
+      "ConversationProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["conversation_invalid", "conversation_conflict"]
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogIssue"
+            }
+          }
+        }
+      },
+      "Conversation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "order_id",
+          "linked_order_id",
+          "subject",
+          "slug",
+          "kind",
+          "state",
+          "version",
+          "sequence",
+          "unread",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "linked_order_id": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "assigned_to": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["order", "presales"]
+          },
+          "state": {
+            "type": "string",
+            "enum": ["open", "waiting", "resolved"]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "unread": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ConversationCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["request_key", "kind", "order_id", "subject", "slug"],
+        "properties": {
+          "request_key": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["order", "presales"]
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 80
+          }
+        }
+      },
+      "ConversationSend": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["request_key", "body", "visibility"],
+        "properties": {
+          "request_key": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "visibility": {
+            "type": "string",
+            "enum": ["public", "internal"]
+          }
+        }
+      },
+      "ConversationChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "state", "assigned_to", "order_id"],
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "state": {
+            "type": "string"
+          },
+          "assigned_to": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          }
+        }
+      },
+      "ConversationRead": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sequence"],
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          }
+        }
+      },
+      "ConversationMessage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "sender_label",
+          "sender_role",
+          "body",
+          "sequence",
+          "visibility",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sender_label": {
+            "type": "string"
+          },
+          "sender_role": {
+            "type": "string"
+          },
+          "sender_id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "visibility": {
+            "type": "string",
+            "enum": ["public", "internal"]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ConversationMessages": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["messages", "next", "latest"],
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversationMessage"
+            }
+          },
+          "next": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "latest": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          }
+        }
+      },
+      "ConversationListing": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["conversations", "next"],
+        "properties": {
+          "conversations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conversation"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        }
+      },
+      "ActivityNotice": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "href", "read", "created_at"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ActivityNotices": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["notifications", "next"],
+        "properties": {
+          "notifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActivityNotice"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        }
+      },
+      "ActivityDelivery": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "state", "attempts", "last_error", "created_at"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          },
+          "last_error": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ActivityDeliveries": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["deliveries"],
+        "properties": {
+          "deliveries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActivityDelivery"
+            }
           }
         }
       }

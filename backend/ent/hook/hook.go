@@ -117,6 +117,42 @@ func (f CatalogReleaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CatalogReleaseMutation", m)
 }
 
+// The ConversationFunc type is an adapter to allow the use of ordinary
+// function as Conversation mutator.
+type ConversationFunc func(context.Context, *ent.ConversationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ConversationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ConversationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConversationMutation", m)
+}
+
+// The ConversationMessageFunc type is an adapter to allow the use of ordinary
+// function as ConversationMessage mutator.
+type ConversationMessageFunc func(context.Context, *ent.ConversationMessageMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ConversationMessageFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ConversationMessageMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConversationMessageMutation", m)
+}
+
+// The ConversationReadFunc type is an adapter to allow the use of ordinary
+// function as ConversationRead mutator.
+type ConversationReadFunc func(context.Context, *ent.ConversationReadMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ConversationReadFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ConversationReadMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConversationReadMutation", m)
+}
+
 // The CouponFunc type is an adapter to allow the use of ordinary
 // function as Coupon mutator.
 type CouponFunc func(context.Context, *ent.CouponMutation) (ent.Value, error)
@@ -175,6 +211,18 @@ func (f GameFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GameMutation", m)
+}
+
+// The NotificationFunc type is an adapter to allow the use of ordinary
+// function as Notification mutator.
+type NotificationFunc func(context.Context, *ent.NotificationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f NotificationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.NotificationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NotificationMutation", m)
 }
 
 // The OrderFunc type is an adapter to allow the use of ordinary

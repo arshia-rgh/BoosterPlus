@@ -16,9 +16,11 @@ import (
 	"time"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/conversations"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/httpapi"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
 )
 
@@ -54,13 +56,13 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	fixtures := map[string]string{}
 	for _, project := range []string{"desktop", "mobile"} {
-		for _, role := range []string{"customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother"} {
+		for _, role := range []string{"customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother"} {
 			email := strings.ToLower(role + "-" + project + "-" + rand.Text() + "@example.test")
 			account, createErr := f.client.User.Create().SetEmail(email).SetEmailVerifiedAt(time.Now()).SetTermsVersion("test-v1").SetTermsAcceptedAt(time.Now()).SetRole(func() string {
-				if role == "catalog" || role == "orderadmin" {
+				if role == "catalog" || role == "orderadmin" || role == "supportadmin" {
 					return "administrator"
 				}
-				if role == "target" || role == "orders" || role == "orderother" {
+				if role == "target" || role == "orders" || role == "orderother" || role == "supportbuyer" || role == "supportother" {
 					return "customer"
 				}
 				return role
@@ -72,13 +74,17 @@ func TestBrowserEnvironment(t *testing.T) {
 			fixtures[project+"_"+role+"_id"] = account.ID
 		}
 	}
-	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register))
+	notices, noticeErr := notifications.New(f.client, service, f.cfg.PublicOrigin)
+	if noticeErr != nil {
+		t.Fatal(noticeErr)
+	}
+	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register))
 	defer server.Close()
 	work, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	done := make(chan error, 1)
 	go func() {
-		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"identity.email": service.EmailHandler(sender)}, slog.New(slog.DiscardHandler))
+		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"identity.email": service.EmailHandler(sender), "activity.email": notices.EmailHandler(sender)}, slog.New(slog.DiscardHandler))
 	}()
 	defer func() {
 		cancel()

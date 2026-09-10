@@ -72,6 +72,7 @@ app.use("/api", (req, res) => {
     "origin",
     "sec-fetch-site",
     "x-csrf-token",
+    "last-event-id",
   ]) {
     if (req.headers[name]) headers[name] = req.headers[name];
   }
@@ -115,7 +116,9 @@ app.use("/api", (req, res) => {
     bytes += chunk.length;
     if (
       bytes >
-      (req.path.startsWith("/v1/orders") ||
+      (req.path.startsWith("/v1/conversations") ||
+      req.path.startsWith("/v1/admin/conversations") ||
+      req.path.startsWith("/v1/orders") ||
       req.path.startsWith("/v1/admin/orders") ||
       req.path.startsWith("/v1/admin/catalog/") ||
       req.path.startsWith("/v1/catalog/")

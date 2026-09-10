@@ -32,6 +32,12 @@ type Tx struct {
 	AuthSession *AuthSessionClient
 	// CatalogRelease is the client for interacting with the CatalogRelease builders.
 	CatalogRelease *CatalogReleaseClient
+	// Conversation is the client for interacting with the Conversation builders.
+	Conversation *ConversationClient
+	// ConversationMessage is the client for interacting with the ConversationMessage builders.
+	ConversationMessage *ConversationMessageClient
+	// ConversationRead is the client for interacting with the ConversationRead builders.
+	ConversationRead *ConversationReadClient
 	// Coupon is the client for interacting with the Coupon builders.
 	Coupon *CouponClient
 	// CouponClaim is the client for interacting with the CouponClaim builders.
@@ -42,6 +48,8 @@ type Tx struct {
 	Favorite *FavoriteClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
+	// Notification is the client for interacting with the Notification builders.
+	Notification *NotificationClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
 	// OrderContract is the client for interacting with the OrderContract builders.
@@ -192,11 +200,15 @@ func (tx *Tx) init() {
 	tx.AuthRecovery = NewAuthRecoveryClient(tx.config)
 	tx.AuthSession = NewAuthSessionClient(tx.config)
 	tx.CatalogRelease = NewCatalogReleaseClient(tx.config)
+	tx.Conversation = NewConversationClient(tx.config)
+	tx.ConversationMessage = NewConversationMessageClient(tx.config)
+	tx.ConversationRead = NewConversationReadClient(tx.config)
 	tx.Coupon = NewCouponClient(tx.config)
 	tx.CouponClaim = NewCouponClaimClient(tx.config)
 	tx.CouponRevision = NewCouponRevisionClient(tx.config)
 	tx.Favorite = NewFavoriteClient(tx.config)
 	tx.Game = NewGameClient(tx.config)
+	tx.Notification = NewNotificationClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
 	tx.OrderContract = NewOrderContractClient(tx.config)
 	tx.OrderEvent = NewOrderEventClient(tx.config)

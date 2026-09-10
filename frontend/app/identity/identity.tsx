@@ -836,12 +836,15 @@ export default function Identity({
                 <Link to="/account">Profile and security</Link>
                 <Link to="/orders">My orders</Link>
                 <Link to="/favorites">Favorites</Link>
+                <Link to="/support">Support</Link>
+                <Link to="/notifications">Activity</Link>
                 {session.capabilities.includes("admin") && (
                   <>
                     <Link to="/admin">Administration</Link>
                     <Link to="/admin/catalog">Catalog editor</Link>
                     <Link to="/admin/coupons">Coupons</Link>
                     <Link to="/admin/orders">Order queue</Link>
+                    <Link to="/admin/support">Support inbox</Link>
                   </>
                 )}
                 {session.capabilities.includes("booster") && (

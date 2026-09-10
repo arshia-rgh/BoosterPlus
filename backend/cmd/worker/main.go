@@ -17,6 +17,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 )
 
 func main() { os.Exit(run()) }
@@ -45,7 +46,8 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 	if err := database.Ready(ctx, db); err != nil {
 		return err
 	}
-	auth, authErr := identity.New(ent.NewClient(ent.Driver(entsql.OpenDB(dialect.MySQL, db))), cfg.Identity, nil, nil)
+	client := ent.NewClient(ent.Driver(entsql.OpenDB(dialect.MySQL, db)))
+	auth, authErr := identity.New(client, cfg.Identity, nil, nil)
 	if authErr != nil {
 		return authErr
 	}
@@ -64,5 +66,10 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 		return nil
 	}}
 	handlers["identity.email"] = auth.EmailHandler(sender)
+	notices, noticeErr := notifications.New(client, auth, cfg.Identity.PublicOrigin)
+	if noticeErr != nil {
+		return noticeErr
+	}
+	handlers["activity.email"] = notices.EmailHandler(sender)
 	return jobs.Run(ctx, jobs.New(db), handlers, logger)
 }
