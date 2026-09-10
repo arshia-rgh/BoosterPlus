@@ -35,8 +35,9 @@ export function useResource<T>(path: string, schema: z.ZodType<T>) {
   }, []);
   const failed = failure?.path === path && failure.revision === revision;
   return {
-    data: value?.path === path ? value.data : null,
-    error: failed ? failure.cause : null,
+    data: value?.path === path && failure?.path !== path ? value.data : null,
+    // A retry must not briefly expose cached private data after an access failure.
+    error: failure?.path === path ? failure.cause : null,
     loading: !(value?.path === path && value.revision === revision) && !failed,
     reload,
   };

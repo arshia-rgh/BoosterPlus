@@ -32,6 +32,20 @@ func (_c *ConversationCreate) SetKind(v conversation.Kind) *ConversationCreate {
 	return _c
 }
 
+// SetSubmissionID sets the "submission_id" field.
+func (_c *ConversationCreate) SetSubmissionID(v string) *ConversationCreate {
+	_c.mutation.SetSubmissionID(v)
+	return _c
+}
+
+// SetNillableSubmissionID sets the "submission_id" field if the given value is not nil.
+func (_c *ConversationCreate) SetNillableSubmissionID(v *string) *ConversationCreate {
+	if v != nil {
+		_c.SetSubmissionID(*v)
+	}
+	return _c
+}
+
 // SetOrderID sets the "order_id" field.
 func (_c *ConversationCreate) SetOrderID(v string) *ConversationCreate {
 	_c.mutation.SetOrderID(v)
@@ -369,6 +383,11 @@ func (_c *ConversationCreate) check() error {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Conversation.kind": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.SubmissionID(); ok {
+		if err := conversation.SubmissionIDValidator(v); err != nil {
+			return &ValidationError{Name: "submission_id", err: fmt.Errorf(`ent: validator failed for field "Conversation.submission_id": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.OrderID(); ok {
 		if err := conversation.OrderIDValidator(v); err != nil {
 			return &ValidationError{Name: "order_id", err: fmt.Errorf(`ent: validator failed for field "Conversation.order_id": %w`, err)}
@@ -511,6 +530,10 @@ func (_c *ConversationCreate) createSpec() (*Conversation, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.Kind(); ok {
 		_spec.SetField(conversation.FieldKind, field.TypeEnum, value)
 		_node.Kind = value
+	}
+	if value, ok := _c.mutation.SubmissionID(); ok {
+		_spec.SetField(conversation.FieldSubmissionID, field.TypeString, value)
+		_node.SubmissionID = &value
 	}
 	if value, ok := _c.mutation.OrderID(); ok {
 		_spec.SetField(conversation.FieldOrderID, field.TypeString, value)

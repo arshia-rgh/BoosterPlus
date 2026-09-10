@@ -17,7 +17,8 @@ func (Conversation) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").MaxLen(36).DefaultFunc(uuid.NewString).Immutable(),
 		field.String("user_id").MaxLen(36).Immutable(),
-		field.Enum("kind").Values("order", "presales", "fulfillment").Immutable(),
+		field.Enum("kind").Values("order", "presales", "fulfillment", "submission").Immutable(),
+		field.String("submission_id").MaxLen(36).Optional().Nillable().Immutable(),
 		field.String("order_id").MaxLen(36).Optional().Nillable().Immutable(),
 		field.String("fulfillment_order_id").MaxLen(36).Optional().Nillable().Immutable(),
 		field.Bool("booster_shared").Default(false),
@@ -42,6 +43,7 @@ func (Conversation) Fields() []ent.Field {
 // Indexes mirrors SQL constraints.
 func (Conversation) Indexes() []ent.Index {
 	return []ent.Index{
+		index.Fields("submission_id").Unique().StorageKey("conversation_submission"),
 		index.Fields("fulfillment_order_id").Unique().StorageKey("conversation_fulfillment"),
 		index.Fields("order_id").Unique().StorageKey("conversation_order"),
 		index.Fields("created_by", "request_key").Unique().StorageKey("conversation_request"),

@@ -61,6 +61,14 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "submission_invalid",
+    "Review the account fields and ownership information before continuing.",
+  ],
+  [
+    "submission_conflict",
+    "This submission or intake form changed or is unavailable. Refresh before retrying. If draft creation was interrupted, check your submission history first.",
+  ],
+  [
     "fulfillment_invalid",
     "Review the fulfillment fields and limits before continuing.",
   ],

@@ -266,6 +266,9 @@ func (_u *ConversationUpdate) sqlSave(ctx context.Context) (_node int, err error
 			}
 		}
 	}
+	if _u.mutation.SubmissionIDCleared() {
+		_spec.ClearField(conversation.FieldSubmissionID, field.TypeString)
+	}
 	if _u.mutation.OrderIDCleared() {
 		_spec.ClearField(conversation.FieldOrderID, field.TypeString)
 	}
@@ -604,6 +607,9 @@ func (_u *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversati
 				ps[i](selector)
 			}
 		}
+	}
+	if _u.mutation.SubmissionIDCleared() {
+		_spec.ClearField(conversation.FieldSubmissionID, field.TypeString)
 	}
 	if _u.mutation.OrderIDCleared() {
 		_spec.ClearField(conversation.FieldOrderID, field.TypeString)

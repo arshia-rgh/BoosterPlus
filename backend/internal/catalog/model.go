@@ -16,6 +16,7 @@ type Configuration struct {
 	Services      []ServiceDefinition `json:"services"`
 	Packages      []Package           `json:"packages"`
 	FAQs          []FAQ               `json:"faqs"`
+	Intake        *IntakeForm         `json:"intake,omitempty"`
 }
 
 // Reference contains stable option keys in display/progression order.

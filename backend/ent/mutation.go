@@ -11,6 +11,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountsubmission"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
@@ -41,6 +42,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/predicate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
@@ -53,6 +55,7 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeAccountSubmission   = "AccountSubmission"
 	TypeAuthAudit           = "AuthAudit"
 	TypeAuthChallenge       = "AuthChallenge"
 	TypeAuthFlow            = "AuthFlow"
@@ -82,8 +85,1187 @@ const (
 	TypeOrderQuote          = "OrderQuote"
 	TypeSecretBundle        = "SecretBundle"
 	TypeStaffProfile        = "StaffProfile"
+	TypeSubmissionEvent     = "SubmissionEvent"
 	TypeUser                = "User"
 )
+
+// AccountSubmissionMutation represents an operation that mutates the AccountSubmission nodes in the graph.
+type AccountSubmissionMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *string
+	user_id            *string
+	game_id            *string
+	game_name          *string
+	slug               *string
+	version            *int
+	addversion         *int
+	state              *accountsubmission.State
+	title              *string
+	answers            *map[string]interface{}
+	snapshot           *map[string]interface{}
+	ownership_notes    *string
+	ownership_declared *bool
+	current_note       *string
+	request_key        *string
+	request_hash       *string
+	created_at         *time.Time
+	updated_at         *time.Time
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*AccountSubmission, error)
+	predicates         []predicate.AccountSubmission
+}
+
+var _ ent.Mutation = (*AccountSubmissionMutation)(nil)
+
+// accountsubmissionOption allows management of the mutation configuration using functional options.
+type accountsubmissionOption func(*AccountSubmissionMutation)
+
+// newAccountSubmissionMutation creates new mutation for the AccountSubmission entity.
+func newAccountSubmissionMutation(c config, op Op, opts ...accountsubmissionOption) *AccountSubmissionMutation {
+	m := &AccountSubmissionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAccountSubmission,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAccountSubmissionID sets the ID field of the mutation.
+func withAccountSubmissionID(id string) accountsubmissionOption {
+	return func(m *AccountSubmissionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *AccountSubmission
+		)
+		m.oldValue = func(ctx context.Context) (*AccountSubmission, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().AccountSubmission.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAccountSubmission sets the old AccountSubmission of the mutation.
+func withAccountSubmission(node *AccountSubmission) accountsubmissionOption {
+	return func(m *AccountSubmissionMutation) {
+		m.oldValue = func(context.Context) (*AccountSubmission, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AccountSubmissionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AccountSubmissionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of AccountSubmission entities.
+func (m *AccountSubmissionMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AccountSubmissionMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AccountSubmissionMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().AccountSubmission.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetUserID sets the "user_id" field.
+func (m *AccountSubmissionMutation) SetUserID(s string) {
+	m.user_id = &s
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *AccountSubmissionMutation) UserID() (r string, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *AccountSubmissionMutation) ResetUserID() {
+	m.user_id = nil
+}
+
+// SetGameID sets the "game_id" field.
+func (m *AccountSubmissionMutation) SetGameID(s string) {
+	m.game_id = &s
+}
+
+// GameID returns the value of the "game_id" field in the mutation.
+func (m *AccountSubmissionMutation) GameID() (r string, exists bool) {
+	v := m.game_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGameID returns the old "game_id" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldGameID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGameID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGameID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGameID: %w", err)
+	}
+	return oldValue.GameID, nil
+}
+
+// ResetGameID resets all changes to the "game_id" field.
+func (m *AccountSubmissionMutation) ResetGameID() {
+	m.game_id = nil
+}
+
+// SetGameName sets the "game_name" field.
+func (m *AccountSubmissionMutation) SetGameName(s string) {
+	m.game_name = &s
+}
+
+// GameName returns the value of the "game_name" field in the mutation.
+func (m *AccountSubmissionMutation) GameName() (r string, exists bool) {
+	v := m.game_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGameName returns the old "game_name" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldGameName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGameName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGameName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGameName: %w", err)
+	}
+	return oldValue.GameName, nil
+}
+
+// ResetGameName resets all changes to the "game_name" field.
+func (m *AccountSubmissionMutation) ResetGameName() {
+	m.game_name = nil
+}
+
+// SetSlug sets the "slug" field.
+func (m *AccountSubmissionMutation) SetSlug(s string) {
+	m.slug = &s
+}
+
+// Slug returns the value of the "slug" field in the mutation.
+func (m *AccountSubmissionMutation) Slug() (r string, exists bool) {
+	v := m.slug
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSlug returns the old "slug" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldSlug(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSlug is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSlug requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSlug: %w", err)
+	}
+	return oldValue.Slug, nil
+}
+
+// ResetSlug resets all changes to the "slug" field.
+func (m *AccountSubmissionMutation) ResetSlug() {
+	m.slug = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *AccountSubmissionMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *AccountSubmissionMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *AccountSubmissionMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *AccountSubmissionMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *AccountSubmissionMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetState sets the "state" field.
+func (m *AccountSubmissionMutation) SetState(a accountsubmission.State) {
+	m.state = &a
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *AccountSubmissionMutation) State() (r accountsubmission.State, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldState(ctx context.Context) (v accountsubmission.State, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *AccountSubmissionMutation) ResetState() {
+	m.state = nil
+}
+
+// SetTitle sets the "title" field.
+func (m *AccountSubmissionMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *AccountSubmissionMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *AccountSubmissionMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetAnswers sets the "answers" field.
+func (m *AccountSubmissionMutation) SetAnswers(value map[string]interface{}) {
+	m.answers = &value
+}
+
+// Answers returns the value of the "answers" field in the mutation.
+func (m *AccountSubmissionMutation) Answers() (r map[string]interface{}, exists bool) {
+	v := m.answers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAnswers returns the old "answers" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldAnswers(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAnswers is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAnswers requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAnswers: %w", err)
+	}
+	return oldValue.Answers, nil
+}
+
+// ResetAnswers resets all changes to the "answers" field.
+func (m *AccountSubmissionMutation) ResetAnswers() {
+	m.answers = nil
+}
+
+// SetSnapshot sets the "snapshot" field.
+func (m *AccountSubmissionMutation) SetSnapshot(value map[string]interface{}) {
+	m.snapshot = &value
+}
+
+// Snapshot returns the value of the "snapshot" field in the mutation.
+func (m *AccountSubmissionMutation) Snapshot() (r map[string]interface{}, exists bool) {
+	v := m.snapshot
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapshot returns the old "snapshot" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldSnapshot(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapshot is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapshot requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapshot: %w", err)
+	}
+	return oldValue.Snapshot, nil
+}
+
+// ResetSnapshot resets all changes to the "snapshot" field.
+func (m *AccountSubmissionMutation) ResetSnapshot() {
+	m.snapshot = nil
+}
+
+// SetOwnershipNotes sets the "ownership_notes" field.
+func (m *AccountSubmissionMutation) SetOwnershipNotes(s string) {
+	m.ownership_notes = &s
+}
+
+// OwnershipNotes returns the value of the "ownership_notes" field in the mutation.
+func (m *AccountSubmissionMutation) OwnershipNotes() (r string, exists bool) {
+	v := m.ownership_notes
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOwnershipNotes returns the old "ownership_notes" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldOwnershipNotes(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOwnershipNotes is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOwnershipNotes requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOwnershipNotes: %w", err)
+	}
+	return oldValue.OwnershipNotes, nil
+}
+
+// ResetOwnershipNotes resets all changes to the "ownership_notes" field.
+func (m *AccountSubmissionMutation) ResetOwnershipNotes() {
+	m.ownership_notes = nil
+}
+
+// SetOwnershipDeclared sets the "ownership_declared" field.
+func (m *AccountSubmissionMutation) SetOwnershipDeclared(b bool) {
+	m.ownership_declared = &b
+}
+
+// OwnershipDeclared returns the value of the "ownership_declared" field in the mutation.
+func (m *AccountSubmissionMutation) OwnershipDeclared() (r bool, exists bool) {
+	v := m.ownership_declared
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOwnershipDeclared returns the old "ownership_declared" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldOwnershipDeclared(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOwnershipDeclared is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOwnershipDeclared requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOwnershipDeclared: %w", err)
+	}
+	return oldValue.OwnershipDeclared, nil
+}
+
+// ResetOwnershipDeclared resets all changes to the "ownership_declared" field.
+func (m *AccountSubmissionMutation) ResetOwnershipDeclared() {
+	m.ownership_declared = nil
+}
+
+// SetCurrentNote sets the "current_note" field.
+func (m *AccountSubmissionMutation) SetCurrentNote(s string) {
+	m.current_note = &s
+}
+
+// CurrentNote returns the value of the "current_note" field in the mutation.
+func (m *AccountSubmissionMutation) CurrentNote() (r string, exists bool) {
+	v := m.current_note
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurrentNote returns the old "current_note" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldCurrentNote(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurrentNote is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurrentNote requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurrentNote: %w", err)
+	}
+	return oldValue.CurrentNote, nil
+}
+
+// ResetCurrentNote resets all changes to the "current_note" field.
+func (m *AccountSubmissionMutation) ResetCurrentNote() {
+	m.current_note = nil
+}
+
+// SetRequestKey sets the "request_key" field.
+func (m *AccountSubmissionMutation) SetRequestKey(s string) {
+	m.request_key = &s
+}
+
+// RequestKey returns the value of the "request_key" field in the mutation.
+func (m *AccountSubmissionMutation) RequestKey() (r string, exists bool) {
+	v := m.request_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestKey returns the old "request_key" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldRequestKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestKey: %w", err)
+	}
+	return oldValue.RequestKey, nil
+}
+
+// ResetRequestKey resets all changes to the "request_key" field.
+func (m *AccountSubmissionMutation) ResetRequestKey() {
+	m.request_key = nil
+}
+
+// SetRequestHash sets the "request_hash" field.
+func (m *AccountSubmissionMutation) SetRequestHash(s string) {
+	m.request_hash = &s
+}
+
+// RequestHash returns the value of the "request_hash" field in the mutation.
+func (m *AccountSubmissionMutation) RequestHash() (r string, exists bool) {
+	v := m.request_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestHash returns the old "request_hash" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldRequestHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestHash: %w", err)
+	}
+	return oldValue.RequestHash, nil
+}
+
+// ResetRequestHash resets all changes to the "request_hash" field.
+func (m *AccountSubmissionMutation) ResetRequestHash() {
+	m.request_hash = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *AccountSubmissionMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *AccountSubmissionMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *AccountSubmissionMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *AccountSubmissionMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *AccountSubmissionMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the AccountSubmission entity.
+// If the AccountSubmission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSubmissionMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *AccountSubmissionMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the AccountSubmissionMutation builder.
+func (m *AccountSubmissionMutation) Where(ps ...predicate.AccountSubmission) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AccountSubmissionMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AccountSubmissionMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.AccountSubmission, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AccountSubmissionMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AccountSubmissionMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (AccountSubmission).
+func (m *AccountSubmissionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AccountSubmissionMutation) Fields() []string {
+	fields := make([]string, 0, 16)
+	if m.user_id != nil {
+		fields = append(fields, accountsubmission.FieldUserID)
+	}
+	if m.game_id != nil {
+		fields = append(fields, accountsubmission.FieldGameID)
+	}
+	if m.game_name != nil {
+		fields = append(fields, accountsubmission.FieldGameName)
+	}
+	if m.slug != nil {
+		fields = append(fields, accountsubmission.FieldSlug)
+	}
+	if m.version != nil {
+		fields = append(fields, accountsubmission.FieldVersion)
+	}
+	if m.state != nil {
+		fields = append(fields, accountsubmission.FieldState)
+	}
+	if m.title != nil {
+		fields = append(fields, accountsubmission.FieldTitle)
+	}
+	if m.answers != nil {
+		fields = append(fields, accountsubmission.FieldAnswers)
+	}
+	if m.snapshot != nil {
+		fields = append(fields, accountsubmission.FieldSnapshot)
+	}
+	if m.ownership_notes != nil {
+		fields = append(fields, accountsubmission.FieldOwnershipNotes)
+	}
+	if m.ownership_declared != nil {
+		fields = append(fields, accountsubmission.FieldOwnershipDeclared)
+	}
+	if m.current_note != nil {
+		fields = append(fields, accountsubmission.FieldCurrentNote)
+	}
+	if m.request_key != nil {
+		fields = append(fields, accountsubmission.FieldRequestKey)
+	}
+	if m.request_hash != nil {
+		fields = append(fields, accountsubmission.FieldRequestHash)
+	}
+	if m.created_at != nil {
+		fields = append(fields, accountsubmission.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, accountsubmission.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AccountSubmissionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case accountsubmission.FieldUserID:
+		return m.UserID()
+	case accountsubmission.FieldGameID:
+		return m.GameID()
+	case accountsubmission.FieldGameName:
+		return m.GameName()
+	case accountsubmission.FieldSlug:
+		return m.Slug()
+	case accountsubmission.FieldVersion:
+		return m.Version()
+	case accountsubmission.FieldState:
+		return m.State()
+	case accountsubmission.FieldTitle:
+		return m.Title()
+	case accountsubmission.FieldAnswers:
+		return m.Answers()
+	case accountsubmission.FieldSnapshot:
+		return m.Snapshot()
+	case accountsubmission.FieldOwnershipNotes:
+		return m.OwnershipNotes()
+	case accountsubmission.FieldOwnershipDeclared:
+		return m.OwnershipDeclared()
+	case accountsubmission.FieldCurrentNote:
+		return m.CurrentNote()
+	case accountsubmission.FieldRequestKey:
+		return m.RequestKey()
+	case accountsubmission.FieldRequestHash:
+		return m.RequestHash()
+	case accountsubmission.FieldCreatedAt:
+		return m.CreatedAt()
+	case accountsubmission.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AccountSubmissionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case accountsubmission.FieldUserID:
+		return m.OldUserID(ctx)
+	case accountsubmission.FieldGameID:
+		return m.OldGameID(ctx)
+	case accountsubmission.FieldGameName:
+		return m.OldGameName(ctx)
+	case accountsubmission.FieldSlug:
+		return m.OldSlug(ctx)
+	case accountsubmission.FieldVersion:
+		return m.OldVersion(ctx)
+	case accountsubmission.FieldState:
+		return m.OldState(ctx)
+	case accountsubmission.FieldTitle:
+		return m.OldTitle(ctx)
+	case accountsubmission.FieldAnswers:
+		return m.OldAnswers(ctx)
+	case accountsubmission.FieldSnapshot:
+		return m.OldSnapshot(ctx)
+	case accountsubmission.FieldOwnershipNotes:
+		return m.OldOwnershipNotes(ctx)
+	case accountsubmission.FieldOwnershipDeclared:
+		return m.OldOwnershipDeclared(ctx)
+	case accountsubmission.FieldCurrentNote:
+		return m.OldCurrentNote(ctx)
+	case accountsubmission.FieldRequestKey:
+		return m.OldRequestKey(ctx)
+	case accountsubmission.FieldRequestHash:
+		return m.OldRequestHash(ctx)
+	case accountsubmission.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case accountsubmission.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown AccountSubmission field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AccountSubmissionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case accountsubmission.FieldUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case accountsubmission.FieldGameID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGameID(v)
+		return nil
+	case accountsubmission.FieldGameName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGameName(v)
+		return nil
+	case accountsubmission.FieldSlug:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSlug(v)
+		return nil
+	case accountsubmission.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case accountsubmission.FieldState:
+		v, ok := value.(accountsubmission.State)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case accountsubmission.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case accountsubmission.FieldAnswers:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAnswers(v)
+		return nil
+	case accountsubmission.FieldSnapshot:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapshot(v)
+		return nil
+	case accountsubmission.FieldOwnershipNotes:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOwnershipNotes(v)
+		return nil
+	case accountsubmission.FieldOwnershipDeclared:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOwnershipDeclared(v)
+		return nil
+	case accountsubmission.FieldCurrentNote:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurrentNote(v)
+		return nil
+	case accountsubmission.FieldRequestKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestKey(v)
+		return nil
+	case accountsubmission.FieldRequestHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestHash(v)
+		return nil
+	case accountsubmission.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case accountsubmission.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AccountSubmission field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AccountSubmissionMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, accountsubmission.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AccountSubmissionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case accountsubmission.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AccountSubmissionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case accountsubmission.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AccountSubmission numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AccountSubmissionMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AccountSubmissionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AccountSubmissionMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown AccountSubmission nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AccountSubmissionMutation) ResetField(name string) error {
+	switch name {
+	case accountsubmission.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case accountsubmission.FieldGameID:
+		m.ResetGameID()
+		return nil
+	case accountsubmission.FieldGameName:
+		m.ResetGameName()
+		return nil
+	case accountsubmission.FieldSlug:
+		m.ResetSlug()
+		return nil
+	case accountsubmission.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case accountsubmission.FieldState:
+		m.ResetState()
+		return nil
+	case accountsubmission.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case accountsubmission.FieldAnswers:
+		m.ResetAnswers()
+		return nil
+	case accountsubmission.FieldSnapshot:
+		m.ResetSnapshot()
+		return nil
+	case accountsubmission.FieldOwnershipNotes:
+		m.ResetOwnershipNotes()
+		return nil
+	case accountsubmission.FieldOwnershipDeclared:
+		m.ResetOwnershipDeclared()
+		return nil
+	case accountsubmission.FieldCurrentNote:
+		m.ResetCurrentNote()
+		return nil
+	case accountsubmission.FieldRequestKey:
+		m.ResetRequestKey()
+		return nil
+	case accountsubmission.FieldRequestHash:
+		m.ResetRequestHash()
+		return nil
+	case accountsubmission.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case accountsubmission.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown AccountSubmission field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AccountSubmissionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AccountSubmissionMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AccountSubmissionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AccountSubmissionMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AccountSubmissionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AccountSubmissionMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AccountSubmissionMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown AccountSubmission unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AccountSubmissionMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown AccountSubmission edge %s", name)
+}
 
 // AuthAuditMutation represents an operation that mutates the AuthAudit nodes in the graph.
 type AuthAuditMutation struct {
@@ -8515,6 +9697,7 @@ type ConversationMutation struct {
 	id                   *string
 	user_id              *string
 	kind                 *conversation.Kind
+	submission_id        *string
 	order_id             *string
 	fulfillment_order_id *string
 	booster_shared       *bool
@@ -8717,6 +9900,55 @@ func (m *ConversationMutation) OldKind(ctx context.Context) (v conversation.Kind
 // ResetKind resets all changes to the "kind" field.
 func (m *ConversationMutation) ResetKind() {
 	m.kind = nil
+}
+
+// SetSubmissionID sets the "submission_id" field.
+func (m *ConversationMutation) SetSubmissionID(s string) {
+	m.submission_id = &s
+}
+
+// SubmissionID returns the value of the "submission_id" field in the mutation.
+func (m *ConversationMutation) SubmissionID() (r string, exists bool) {
+	v := m.submission_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubmissionID returns the old "submission_id" field's value of the Conversation entity.
+// If the Conversation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConversationMutation) OldSubmissionID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubmissionID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubmissionID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubmissionID: %w", err)
+	}
+	return oldValue.SubmissionID, nil
+}
+
+// ClearSubmissionID clears the value of the "submission_id" field.
+func (m *ConversationMutation) ClearSubmissionID() {
+	m.submission_id = nil
+	m.clearedFields[conversation.FieldSubmissionID] = struct{}{}
+}
+
+// SubmissionIDCleared returns if the "submission_id" field was cleared in this mutation.
+func (m *ConversationMutation) SubmissionIDCleared() bool {
+	_, ok := m.clearedFields[conversation.FieldSubmissionID]
+	return ok
+}
+
+// ResetSubmissionID resets all changes to the "submission_id" field.
+func (m *ConversationMutation) ResetSubmissionID() {
+	m.submission_id = nil
+	delete(m.clearedFields, conversation.FieldSubmissionID)
 }
 
 // SetOrderID sets the "order_id" field.
@@ -9520,12 +10752,15 @@ func (m *ConversationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConversationMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 21)
 	if m.user_id != nil {
 		fields = append(fields, conversation.FieldUserID)
 	}
 	if m.kind != nil {
 		fields = append(fields, conversation.FieldKind)
+	}
+	if m.submission_id != nil {
+		fields = append(fields, conversation.FieldSubmissionID)
 	}
 	if m.order_id != nil {
 		fields = append(fields, conversation.FieldOrderID)
@@ -9593,6 +10828,8 @@ func (m *ConversationMutation) Field(name string) (ent.Value, bool) {
 		return m.UserID()
 	case conversation.FieldKind:
 		return m.Kind()
+	case conversation.FieldSubmissionID:
+		return m.SubmissionID()
 	case conversation.FieldOrderID:
 		return m.OrderID()
 	case conversation.FieldFulfillmentOrderID:
@@ -9642,6 +10879,8 @@ func (m *ConversationMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldUserID(ctx)
 	case conversation.FieldKind:
 		return m.OldKind(ctx)
+	case conversation.FieldSubmissionID:
+		return m.OldSubmissionID(ctx)
 	case conversation.FieldOrderID:
 		return m.OldOrderID(ctx)
 	case conversation.FieldFulfillmentOrderID:
@@ -9700,6 +10939,13 @@ func (m *ConversationMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetKind(v)
+		return nil
+	case conversation.FieldSubmissionID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubmissionID(v)
 		return nil
 	case conversation.FieldOrderID:
 		v, ok := value.(string)
@@ -9908,6 +11154,9 @@ func (m *ConversationMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *ConversationMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(conversation.FieldSubmissionID) {
+		fields = append(fields, conversation.FieldSubmissionID)
+	}
 	if m.FieldCleared(conversation.FieldOrderID) {
 		fields = append(fields, conversation.FieldOrderID)
 	}
@@ -9931,6 +11180,9 @@ func (m *ConversationMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *ConversationMutation) ClearField(name string) error {
 	switch name {
+	case conversation.FieldSubmissionID:
+		m.ClearSubmissionID()
+		return nil
 	case conversation.FieldOrderID:
 		m.ClearOrderID()
 		return nil
@@ -9953,6 +11205,9 @@ func (m *ConversationMutation) ResetField(name string) error {
 		return nil
 	case conversation.FieldKind:
 		m.ResetKind()
+		return nil
+	case conversation.FieldSubmissionID:
+		m.ResetSubmissionID()
 		return nil
 	case conversation.FieldOrderID:
 		m.ResetOrderID()
@@ -23643,6 +24898,698 @@ func (m *StaffProfileMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *StaffProfileMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown StaffProfile edge %s", name)
+}
+
+// SubmissionEventMutation represents an operation that mutates the SubmissionEvent nodes in the graph.
+type SubmissionEventMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	submission_id *string
+	version       *int
+	addversion    *int
+	action        *string
+	state         *string
+	message       *string
+	actor_role    *string
+	created_at    *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*SubmissionEvent, error)
+	predicates    []predicate.SubmissionEvent
+}
+
+var _ ent.Mutation = (*SubmissionEventMutation)(nil)
+
+// submissioneventOption allows management of the mutation configuration using functional options.
+type submissioneventOption func(*SubmissionEventMutation)
+
+// newSubmissionEventMutation creates new mutation for the SubmissionEvent entity.
+func newSubmissionEventMutation(c config, op Op, opts ...submissioneventOption) *SubmissionEventMutation {
+	m := &SubmissionEventMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSubmissionEvent,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSubmissionEventID sets the ID field of the mutation.
+func withSubmissionEventID(id string) submissioneventOption {
+	return func(m *SubmissionEventMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SubmissionEvent
+		)
+		m.oldValue = func(ctx context.Context) (*SubmissionEvent, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SubmissionEvent.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSubmissionEvent sets the old SubmissionEvent of the mutation.
+func withSubmissionEvent(node *SubmissionEvent) submissioneventOption {
+	return func(m *SubmissionEventMutation) {
+		m.oldValue = func(context.Context) (*SubmissionEvent, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SubmissionEventMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SubmissionEventMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of SubmissionEvent entities.
+func (m *SubmissionEventMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SubmissionEventMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SubmissionEventMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SubmissionEvent.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetSubmissionID sets the "submission_id" field.
+func (m *SubmissionEventMutation) SetSubmissionID(s string) {
+	m.submission_id = &s
+}
+
+// SubmissionID returns the value of the "submission_id" field in the mutation.
+func (m *SubmissionEventMutation) SubmissionID() (r string, exists bool) {
+	v := m.submission_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubmissionID returns the old "submission_id" field's value of the SubmissionEvent entity.
+// If the SubmissionEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubmissionEventMutation) OldSubmissionID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubmissionID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubmissionID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubmissionID: %w", err)
+	}
+	return oldValue.SubmissionID, nil
+}
+
+// ResetSubmissionID resets all changes to the "submission_id" field.
+func (m *SubmissionEventMutation) ResetSubmissionID() {
+	m.submission_id = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *SubmissionEventMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *SubmissionEventMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the SubmissionEvent entity.
+// If the SubmissionEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubmissionEventMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *SubmissionEventMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *SubmissionEventMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *SubmissionEventMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetAction sets the "action" field.
+func (m *SubmissionEventMutation) SetAction(s string) {
+	m.action = &s
+}
+
+// Action returns the value of the "action" field in the mutation.
+func (m *SubmissionEventMutation) Action() (r string, exists bool) {
+	v := m.action
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAction returns the old "action" field's value of the SubmissionEvent entity.
+// If the SubmissionEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubmissionEventMutation) OldAction(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAction is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAction requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAction: %w", err)
+	}
+	return oldValue.Action, nil
+}
+
+// ResetAction resets all changes to the "action" field.
+func (m *SubmissionEventMutation) ResetAction() {
+	m.action = nil
+}
+
+// SetState sets the "state" field.
+func (m *SubmissionEventMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *SubmissionEventMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the SubmissionEvent entity.
+// If the SubmissionEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubmissionEventMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *SubmissionEventMutation) ResetState() {
+	m.state = nil
+}
+
+// SetMessage sets the "message" field.
+func (m *SubmissionEventMutation) SetMessage(s string) {
+	m.message = &s
+}
+
+// Message returns the value of the "message" field in the mutation.
+func (m *SubmissionEventMutation) Message() (r string, exists bool) {
+	v := m.message
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMessage returns the old "message" field's value of the SubmissionEvent entity.
+// If the SubmissionEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubmissionEventMutation) OldMessage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMessage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMessage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMessage: %w", err)
+	}
+	return oldValue.Message, nil
+}
+
+// ResetMessage resets all changes to the "message" field.
+func (m *SubmissionEventMutation) ResetMessage() {
+	m.message = nil
+}
+
+// SetActorRole sets the "actor_role" field.
+func (m *SubmissionEventMutation) SetActorRole(s string) {
+	m.actor_role = &s
+}
+
+// ActorRole returns the value of the "actor_role" field in the mutation.
+func (m *SubmissionEventMutation) ActorRole() (r string, exists bool) {
+	v := m.actor_role
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActorRole returns the old "actor_role" field's value of the SubmissionEvent entity.
+// If the SubmissionEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubmissionEventMutation) OldActorRole(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActorRole is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActorRole requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActorRole: %w", err)
+	}
+	return oldValue.ActorRole, nil
+}
+
+// ResetActorRole resets all changes to the "actor_role" field.
+func (m *SubmissionEventMutation) ResetActorRole() {
+	m.actor_role = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *SubmissionEventMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *SubmissionEventMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the SubmissionEvent entity.
+// If the SubmissionEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubmissionEventMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *SubmissionEventMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the SubmissionEventMutation builder.
+func (m *SubmissionEventMutation) Where(ps ...predicate.SubmissionEvent) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the SubmissionEventMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *SubmissionEventMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SubmissionEvent, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *SubmissionEventMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *SubmissionEventMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (SubmissionEvent).
+func (m *SubmissionEventMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SubmissionEventMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.submission_id != nil {
+		fields = append(fields, submissionevent.FieldSubmissionID)
+	}
+	if m.version != nil {
+		fields = append(fields, submissionevent.FieldVersion)
+	}
+	if m.action != nil {
+		fields = append(fields, submissionevent.FieldAction)
+	}
+	if m.state != nil {
+		fields = append(fields, submissionevent.FieldState)
+	}
+	if m.message != nil {
+		fields = append(fields, submissionevent.FieldMessage)
+	}
+	if m.actor_role != nil {
+		fields = append(fields, submissionevent.FieldActorRole)
+	}
+	if m.created_at != nil {
+		fields = append(fields, submissionevent.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SubmissionEventMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case submissionevent.FieldSubmissionID:
+		return m.SubmissionID()
+	case submissionevent.FieldVersion:
+		return m.Version()
+	case submissionevent.FieldAction:
+		return m.Action()
+	case submissionevent.FieldState:
+		return m.State()
+	case submissionevent.FieldMessage:
+		return m.Message()
+	case submissionevent.FieldActorRole:
+		return m.ActorRole()
+	case submissionevent.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SubmissionEventMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case submissionevent.FieldSubmissionID:
+		return m.OldSubmissionID(ctx)
+	case submissionevent.FieldVersion:
+		return m.OldVersion(ctx)
+	case submissionevent.FieldAction:
+		return m.OldAction(ctx)
+	case submissionevent.FieldState:
+		return m.OldState(ctx)
+	case submissionevent.FieldMessage:
+		return m.OldMessage(ctx)
+	case submissionevent.FieldActorRole:
+		return m.OldActorRole(ctx)
+	case submissionevent.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown SubmissionEvent field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SubmissionEventMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case submissionevent.FieldSubmissionID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubmissionID(v)
+		return nil
+	case submissionevent.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case submissionevent.FieldAction:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAction(v)
+		return nil
+	case submissionevent.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case submissionevent.FieldMessage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMessage(v)
+		return nil
+	case submissionevent.FieldActorRole:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActorRole(v)
+		return nil
+	case submissionevent.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SubmissionEvent field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SubmissionEventMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, submissionevent.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SubmissionEventMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case submissionevent.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SubmissionEventMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case submissionevent.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SubmissionEvent numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SubmissionEventMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SubmissionEventMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SubmissionEventMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown SubmissionEvent nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SubmissionEventMutation) ResetField(name string) error {
+	switch name {
+	case submissionevent.FieldSubmissionID:
+		m.ResetSubmissionID()
+		return nil
+	case submissionevent.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case submissionevent.FieldAction:
+		m.ResetAction()
+		return nil
+	case submissionevent.FieldState:
+		m.ResetState()
+		return nil
+	case submissionevent.FieldMessage:
+		m.ResetMessage()
+		return nil
+	case submissionevent.FieldActorRole:
+		m.ResetActorRole()
+		return nil
+	case submissionevent.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown SubmissionEvent field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SubmissionEventMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SubmissionEventMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SubmissionEventMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SubmissionEventMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SubmissionEventMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SubmissionEventMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SubmissionEventMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown SubmissionEvent unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SubmissionEventMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown SubmissionEvent edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.

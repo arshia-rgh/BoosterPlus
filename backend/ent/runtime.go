@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountsubmission"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
@@ -35,6 +36,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/schema"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
@@ -42,6 +44,58 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	accountsubmissionFields := schema.AccountSubmission{}.Fields()
+	_ = accountsubmissionFields
+	// accountsubmissionDescUserID is the schema descriptor for user_id field.
+	accountsubmissionDescUserID := accountsubmissionFields[1].Descriptor()
+	// accountsubmission.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	accountsubmission.UserIDValidator = accountsubmissionDescUserID.Validators[0].(func(string) error)
+	// accountsubmissionDescGameID is the schema descriptor for game_id field.
+	accountsubmissionDescGameID := accountsubmissionFields[2].Descriptor()
+	// accountsubmission.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
+	accountsubmission.GameIDValidator = accountsubmissionDescGameID.Validators[0].(func(string) error)
+	// accountsubmissionDescGameName is the schema descriptor for game_name field.
+	accountsubmissionDescGameName := accountsubmissionFields[3].Descriptor()
+	// accountsubmission.GameNameValidator is a validator for the "game_name" field. It is called by the builders before save.
+	accountsubmission.GameNameValidator = accountsubmissionDescGameName.Validators[0].(func(string) error)
+	// accountsubmissionDescSlug is the schema descriptor for slug field.
+	accountsubmissionDescSlug := accountsubmissionFields[4].Descriptor()
+	// accountsubmission.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	accountsubmission.SlugValidator = accountsubmissionDescSlug.Validators[0].(func(string) error)
+	// accountsubmissionDescVersion is the schema descriptor for version field.
+	accountsubmissionDescVersion := accountsubmissionFields[5].Descriptor()
+	// accountsubmission.DefaultVersion holds the default value on creation for the version field.
+	accountsubmission.DefaultVersion = accountsubmissionDescVersion.Default.(int)
+	// accountsubmissionDescTitle is the schema descriptor for title field.
+	accountsubmissionDescTitle := accountsubmissionFields[7].Descriptor()
+	// accountsubmission.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	accountsubmission.TitleValidator = accountsubmissionDescTitle.Validators[0].(func(string) error)
+	// accountsubmissionDescOwnershipDeclared is the schema descriptor for ownership_declared field.
+	accountsubmissionDescOwnershipDeclared := accountsubmissionFields[11].Descriptor()
+	// accountsubmission.DefaultOwnershipDeclared holds the default value on creation for the ownership_declared field.
+	accountsubmission.DefaultOwnershipDeclared = accountsubmissionDescOwnershipDeclared.Default.(bool)
+	// accountsubmissionDescRequestKey is the schema descriptor for request_key field.
+	accountsubmissionDescRequestKey := accountsubmissionFields[13].Descriptor()
+	// accountsubmission.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
+	accountsubmission.RequestKeyValidator = accountsubmissionDescRequestKey.Validators[0].(func(string) error)
+	// accountsubmissionDescRequestHash is the schema descriptor for request_hash field.
+	accountsubmissionDescRequestHash := accountsubmissionFields[14].Descriptor()
+	// accountsubmission.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	accountsubmission.RequestHashValidator = accountsubmissionDescRequestHash.Validators[0].(func(string) error)
+	// accountsubmissionDescCreatedAt is the schema descriptor for created_at field.
+	accountsubmissionDescCreatedAt := accountsubmissionFields[15].Descriptor()
+	// accountsubmission.DefaultCreatedAt holds the default value on creation for the created_at field.
+	accountsubmission.DefaultCreatedAt = accountsubmissionDescCreatedAt.Default.(func() time.Time)
+	// accountsubmissionDescUpdatedAt is the schema descriptor for updated_at field.
+	accountsubmissionDescUpdatedAt := accountsubmissionFields[16].Descriptor()
+	// accountsubmission.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	accountsubmission.DefaultUpdatedAt = accountsubmissionDescUpdatedAt.Default.(func() time.Time)
+	// accountsubmissionDescID is the schema descriptor for id field.
+	accountsubmissionDescID := accountsubmissionFields[0].Descriptor()
+	// accountsubmission.DefaultID holds the default value on creation for the id field.
+	accountsubmission.DefaultID = accountsubmissionDescID.Default.(func() string)
+	// accountsubmission.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	accountsubmission.IDValidator = accountsubmissionDescID.Validators[0].(func(string) error)
 	authauditFields := schema.AuthAudit{}.Fields()
 	_ = authauditFields
 	// authauditDescActorID is the schema descriptor for actor_id field.
@@ -390,76 +444,80 @@ func init() {
 	conversationDescUserID := conversationFields[1].Descriptor()
 	// conversation.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	conversation.UserIDValidator = conversationDescUserID.Validators[0].(func(string) error)
+	// conversationDescSubmissionID is the schema descriptor for submission_id field.
+	conversationDescSubmissionID := conversationFields[3].Descriptor()
+	// conversation.SubmissionIDValidator is a validator for the "submission_id" field. It is called by the builders before save.
+	conversation.SubmissionIDValidator = conversationDescSubmissionID.Validators[0].(func(string) error)
 	// conversationDescOrderID is the schema descriptor for order_id field.
-	conversationDescOrderID := conversationFields[3].Descriptor()
+	conversationDescOrderID := conversationFields[4].Descriptor()
 	// conversation.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
 	conversation.OrderIDValidator = conversationDescOrderID.Validators[0].(func(string) error)
 	// conversationDescFulfillmentOrderID is the schema descriptor for fulfillment_order_id field.
-	conversationDescFulfillmentOrderID := conversationFields[4].Descriptor()
+	conversationDescFulfillmentOrderID := conversationFields[5].Descriptor()
 	// conversation.FulfillmentOrderIDValidator is a validator for the "fulfillment_order_id" field. It is called by the builders before save.
 	conversation.FulfillmentOrderIDValidator = conversationDescFulfillmentOrderID.Validators[0].(func(string) error)
 	// conversationDescBoosterShared is the schema descriptor for booster_shared field.
-	conversationDescBoosterShared := conversationFields[5].Descriptor()
+	conversationDescBoosterShared := conversationFields[6].Descriptor()
 	// conversation.DefaultBoosterShared holds the default value on creation for the booster_shared field.
 	conversation.DefaultBoosterShared = conversationDescBoosterShared.Default.(bool)
 	// conversationDescLinkedOrderID is the schema descriptor for linked_order_id field.
-	conversationDescLinkedOrderID := conversationFields[6].Descriptor()
+	conversationDescLinkedOrderID := conversationFields[7].Descriptor()
 	// conversation.LinkedOrderIDValidator is a validator for the "linked_order_id" field. It is called by the builders before save.
 	conversation.LinkedOrderIDValidator = conversationDescLinkedOrderID.Validators[0].(func(string) error)
 	// conversationDescSubject is the schema descriptor for subject field.
-	conversationDescSubject := conversationFields[7].Descriptor()
+	conversationDescSubject := conversationFields[8].Descriptor()
 	// conversation.SubjectValidator is a validator for the "subject" field. It is called by the builders before save.
 	conversation.SubjectValidator = conversationDescSubject.Validators[0].(func(string) error)
 	// conversationDescSlug is the schema descriptor for slug field.
-	conversationDescSlug := conversationFields[8].Descriptor()
+	conversationDescSlug := conversationFields[9].Descriptor()
 	// conversation.DefaultSlug holds the default value on creation for the slug field.
 	conversation.DefaultSlug = conversationDescSlug.Default.(string)
 	// conversation.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
 	conversation.SlugValidator = conversationDescSlug.Validators[0].(func(string) error)
 	// conversationDescRequestKey is the schema descriptor for request_key field.
-	conversationDescRequestKey := conversationFields[9].Descriptor()
+	conversationDescRequestKey := conversationFields[10].Descriptor()
 	// conversation.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
 	conversation.RequestKeyValidator = conversationDescRequestKey.Validators[0].(func(string) error)
 	// conversationDescRequestHash is the schema descriptor for request_hash field.
-	conversationDescRequestHash := conversationFields[10].Descriptor()
+	conversationDescRequestHash := conversationFields[11].Descriptor()
 	// conversation.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
 	conversation.RequestHashValidator = conversationDescRequestHash.Validators[0].(func(string) error)
 	// conversationDescCreatedBy is the schema descriptor for created_by field.
-	conversationDescCreatedBy := conversationFields[11].Descriptor()
+	conversationDescCreatedBy := conversationFields[12].Descriptor()
 	// conversation.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
 	conversation.CreatedByValidator = conversationDescCreatedBy.Validators[0].(func(string) error)
 	// conversationDescAssignedTo is the schema descriptor for assigned_to field.
-	conversationDescAssignedTo := conversationFields[13].Descriptor()
+	conversationDescAssignedTo := conversationFields[14].Descriptor()
 	// conversation.DefaultAssignedTo holds the default value on creation for the assigned_to field.
 	conversation.DefaultAssignedTo = conversationDescAssignedTo.Default.(string)
 	// conversation.AssignedToValidator is a validator for the "assigned_to" field. It is called by the builders before save.
 	conversation.AssignedToValidator = conversationDescAssignedTo.Validators[0].(func(string) error)
 	// conversationDescVersion is the schema descriptor for version field.
-	conversationDescVersion := conversationFields[14].Descriptor()
+	conversationDescVersion := conversationFields[15].Descriptor()
 	// conversation.DefaultVersion holds the default value on creation for the version field.
 	conversation.DefaultVersion = conversationDescVersion.Default.(int)
 	// conversationDescPublicVersion is the schema descriptor for public_version field.
-	conversationDescPublicVersion := conversationFields[15].Descriptor()
+	conversationDescPublicVersion := conversationFields[16].Descriptor()
 	// conversation.DefaultPublicVersion holds the default value on creation for the public_version field.
 	conversation.DefaultPublicVersion = conversationDescPublicVersion.Default.(int)
 	// conversationDescSequence is the schema descriptor for sequence field.
-	conversationDescSequence := conversationFields[16].Descriptor()
+	conversationDescSequence := conversationFields[17].Descriptor()
 	// conversation.DefaultSequence holds the default value on creation for the sequence field.
 	conversation.DefaultSequence = conversationDescSequence.Default.(int)
 	// conversationDescPublicSequence is the schema descriptor for public_sequence field.
-	conversationDescPublicSequence := conversationFields[17].Descriptor()
+	conversationDescPublicSequence := conversationFields[18].Descriptor()
 	// conversation.DefaultPublicSequence holds the default value on creation for the public_sequence field.
 	conversation.DefaultPublicSequence = conversationDescPublicSequence.Default.(int)
 	// conversationDescUpdatedAt is the schema descriptor for updated_at field.
-	conversationDescUpdatedAt := conversationFields[18].Descriptor()
+	conversationDescUpdatedAt := conversationFields[19].Descriptor()
 	// conversation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	conversation.DefaultUpdatedAt = conversationDescUpdatedAt.Default.(func() time.Time)
 	// conversationDescPublicUpdatedAt is the schema descriptor for public_updated_at field.
-	conversationDescPublicUpdatedAt := conversationFields[19].Descriptor()
+	conversationDescPublicUpdatedAt := conversationFields[20].Descriptor()
 	// conversation.DefaultPublicUpdatedAt holds the default value on creation for the public_updated_at field.
 	conversation.DefaultPublicUpdatedAt = conversationDescPublicUpdatedAt.Default.(func() time.Time)
 	// conversationDescCreatedAt is the schema descriptor for created_at field.
-	conversationDescCreatedAt := conversationFields[20].Descriptor()
+	conversationDescCreatedAt := conversationFields[21].Descriptor()
 	// conversation.DefaultCreatedAt holds the default value on creation for the created_at field.
 	conversation.DefaultCreatedAt = conversationDescCreatedAt.Default.(func() time.Time)
 	// conversationDescID is the schema descriptor for id field.
@@ -1088,6 +1146,34 @@ func init() {
 	staffprofileDescID := staffprofileFields[0].Descriptor()
 	// staffprofile.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	staffprofile.IDValidator = staffprofileDescID.Validators[0].(func(string) error)
+	submissioneventFields := schema.SubmissionEvent{}.Fields()
+	_ = submissioneventFields
+	// submissioneventDescSubmissionID is the schema descriptor for submission_id field.
+	submissioneventDescSubmissionID := submissioneventFields[1].Descriptor()
+	// submissionevent.SubmissionIDValidator is a validator for the "submission_id" field. It is called by the builders before save.
+	submissionevent.SubmissionIDValidator = submissioneventDescSubmissionID.Validators[0].(func(string) error)
+	// submissioneventDescAction is the schema descriptor for action field.
+	submissioneventDescAction := submissioneventFields[3].Descriptor()
+	// submissionevent.ActionValidator is a validator for the "action" field. It is called by the builders before save.
+	submissionevent.ActionValidator = submissioneventDescAction.Validators[0].(func(string) error)
+	// submissioneventDescState is the schema descriptor for state field.
+	submissioneventDescState := submissioneventFields[4].Descriptor()
+	// submissionevent.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	submissionevent.StateValidator = submissioneventDescState.Validators[0].(func(string) error)
+	// submissioneventDescActorRole is the schema descriptor for actor_role field.
+	submissioneventDescActorRole := submissioneventFields[6].Descriptor()
+	// submissionevent.ActorRoleValidator is a validator for the "actor_role" field. It is called by the builders before save.
+	submissionevent.ActorRoleValidator = submissioneventDescActorRole.Validators[0].(func(string) error)
+	// submissioneventDescCreatedAt is the schema descriptor for created_at field.
+	submissioneventDescCreatedAt := submissioneventFields[7].Descriptor()
+	// submissionevent.DefaultCreatedAt holds the default value on creation for the created_at field.
+	submissionevent.DefaultCreatedAt = submissioneventDescCreatedAt.Default.(func() time.Time)
+	// submissioneventDescID is the schema descriptor for id field.
+	submissioneventDescID := submissioneventFields[0].Descriptor()
+	// submissionevent.DefaultID holds the default value on creation for the id field.
+	submissionevent.DefaultID = submissioneventDescID.Default.(func() string)
+	// submissionevent.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	submissionevent.IDValidator = submissioneventDescID.Validators[0].(func(string) error)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescEmail is the schema descriptor for email field.

@@ -63,6 +63,9 @@ func owned(ctx context.Context, client *ent.Client, p *identity.Principal, id st
 }
 func visible(ctx context.Context, client *ent.Client, p *identity.Principal, row *ent.Conversation, admin bool) (View, error) {
 	result := View{BoosterShared: row.BoosterShared, ID: row.ID, Kind: string(row.Kind), Subject: row.Subject, Slug: row.Slug, State: string(row.State), Version: row.PublicVersion, Sequence: row.PublicSequence, UpdatedAt: row.PublicUpdatedAt, CreatedAt: row.CreatedAt}
+	if row.SubmissionID != nil {
+		result.SubmissionID = *row.SubmissionID
+	}
 	if row.FulfillmentOrderID != nil {
 		result.OrderID = *row.FulfillmentOrderID
 	}

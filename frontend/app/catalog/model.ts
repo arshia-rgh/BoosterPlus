@@ -171,7 +171,20 @@ export const referenceSchema = z.object({
   kind: z.string(),
   options: list(optionSchema),
 });
+export const intakeSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  fields: list(fieldSchema),
+  rules: list(ruleSchema),
+});
+export type IntakeForm = z.infer<typeof intakeSchema>;
+export const intakeService = (form: IntakeForm): Service => ({
+  ...form,
+  key: "account_intake",
+  evaluator: "manual-review-v1",
+});
 export const configurationSchema = z.object({
+  intake: intakeSchema.optional(),
   schema_version: z.literal(1),
   name: z.string(),
   description: z.string(),
@@ -204,6 +217,7 @@ export const releaseSchema = z.object({
   configuration: configurationSchema,
 });
 export const summarySchema = z.object({
+  intake_enabled: z.boolean().optional(),
   id: z.string(),
   slug: z.string(),
   name: z.string(),

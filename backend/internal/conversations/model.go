@@ -53,6 +53,7 @@ type Change struct {
 
 // View has a separate public sequence/revision/time for customer privacy.
 type View struct {
+	SubmissionID  string    `json:"submission_id,omitempty"`
 	BoosterShared bool      `json:"booster_shared"`
 	ID            string    `json:"id"`
 	Kind          string    `json:"kind"`

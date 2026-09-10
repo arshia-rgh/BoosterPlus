@@ -2,7 +2,8 @@ import { z } from "zod";
 export const conversationSchema = z.object({
   id: z.string(),
   booster_shared: z.boolean(),
-  kind: z.enum(["order", "presales", "fulfillment"]),
+  kind: z.enum(["order", "presales", "fulfillment", "submission"]),
+  submission_id: z.string().optional(),
   order_id: z.string(),
   linked_order_id: z.string(),
   subject: z.string(),

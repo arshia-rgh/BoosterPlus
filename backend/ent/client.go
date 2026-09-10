@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountsubmission"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
@@ -43,6 +44,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 
 	stdsql "database/sql"
@@ -53,6 +55,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// AccountSubmission is the client for interacting with the AccountSubmission builders.
+	AccountSubmission *AccountSubmissionClient
 	// AuthAudit is the client for interacting with the AuthAudit builders.
 	AuthAudit *AuthAuditClient
 	// AuthChallenge is the client for interacting with the AuthChallenge builders.
@@ -111,6 +115,8 @@ type Client struct {
 	SecretBundle *SecretBundleClient
 	// StaffProfile is the client for interacting with the StaffProfile builders.
 	StaffProfile *StaffProfileClient
+	// SubmissionEvent is the client for interacting with the SubmissionEvent builders.
+	SubmissionEvent *SubmissionEventClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -124,6 +130,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.AccountSubmission = NewAccountSubmissionClient(c.config)
 	c.AuthAudit = NewAuthAuditClient(c.config)
 	c.AuthChallenge = NewAuthChallengeClient(c.config)
 	c.AuthFlow = NewAuthFlowClient(c.config)
@@ -153,6 +160,7 @@ func (c *Client) init() {
 	c.OrderQuote = NewOrderQuoteClient(c.config)
 	c.SecretBundle = NewSecretBundleClient(c.config)
 	c.StaffProfile = NewStaffProfileClient(c.config)
+	c.SubmissionEvent = NewSubmissionEventClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -246,6 +254,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:                 ctx,
 		config:              cfg,
+		AccountSubmission:   NewAccountSubmissionClient(cfg),
 		AuthAudit:           NewAuthAuditClient(cfg),
 		AuthChallenge:       NewAuthChallengeClient(cfg),
 		AuthFlow:            NewAuthFlowClient(cfg),
@@ -275,6 +284,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		OrderQuote:          NewOrderQuoteClient(cfg),
 		SecretBundle:        NewSecretBundleClient(cfg),
 		StaffProfile:        NewStaffProfileClient(cfg),
+		SubmissionEvent:     NewSubmissionEventClient(cfg),
 		User:                NewUserClient(cfg),
 	}, nil
 }
@@ -295,6 +305,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:                 ctx,
 		config:              cfg,
+		AccountSubmission:   NewAccountSubmissionClient(cfg),
 		AuthAudit:           NewAuthAuditClient(cfg),
 		AuthChallenge:       NewAuthChallengeClient(cfg),
 		AuthFlow:            NewAuthFlowClient(cfg),
@@ -324,6 +335,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		OrderQuote:          NewOrderQuoteClient(cfg),
 		SecretBundle:        NewSecretBundleClient(cfg),
 		StaffProfile:        NewStaffProfileClient(cfg),
+		SubmissionEvent:     NewSubmissionEventClient(cfg),
 		User:                NewUserClient(cfg),
 	}, nil
 }
@@ -331,7 +343,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		AuthAudit.
+//		AccountSubmission.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -354,12 +366,13 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
-		c.AuthRate, c.AuthRecovery, c.AuthSession, c.AvailabilityWindow, c.Booking,
-		c.BookingEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
-		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
-		c.Fulfillment, c.Game, c.MediaFile, c.Notification, c.Order, c.OrderContract,
-		c.OrderEvent, c.OrderQuote, c.SecretBundle, c.StaffProfile, c.User,
+		c.AccountSubmission, c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity,
+		c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession, c.AvailabilityWindow,
+		c.Booking, c.BookingEvent, c.CatalogRelease, c.Conversation,
+		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
+		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.MediaFile,
+		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
+		c.SecretBundle, c.StaffProfile, c.SubmissionEvent, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -369,12 +382,13 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
-		c.AuthRate, c.AuthRecovery, c.AuthSession, c.AvailabilityWindow, c.Booking,
-		c.BookingEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
-		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
-		c.Fulfillment, c.Game, c.MediaFile, c.Notification, c.Order, c.OrderContract,
-		c.OrderEvent, c.OrderQuote, c.SecretBundle, c.StaffProfile, c.User,
+		c.AccountSubmission, c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity,
+		c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession, c.AvailabilityWindow,
+		c.Booking, c.BookingEvent, c.CatalogRelease, c.Conversation,
+		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
+		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.MediaFile,
+		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
+		c.SecretBundle, c.StaffProfile, c.SubmissionEvent, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -383,6 +397,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AccountSubmissionMutation:
+		return c.AccountSubmission.mutate(ctx, m)
 	case *AuthAuditMutation:
 		return c.AuthAudit.mutate(ctx, m)
 	case *AuthChallengeMutation:
@@ -441,10 +457,145 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.SecretBundle.mutate(ctx, m)
 	case *StaffProfileMutation:
 		return c.StaffProfile.mutate(ctx, m)
+	case *SubmissionEventMutation:
+		return c.SubmissionEvent.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AccountSubmissionClient is a client for the AccountSubmission schema.
+type AccountSubmissionClient struct {
+	config
+}
+
+// NewAccountSubmissionClient returns a client for the AccountSubmission from the given config.
+func NewAccountSubmissionClient(c config) *AccountSubmissionClient {
+	return &AccountSubmissionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `accountsubmission.Hooks(f(g(h())))`.
+func (c *AccountSubmissionClient) Use(hooks ...Hook) {
+	c.hooks.AccountSubmission = append(c.hooks.AccountSubmission, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `accountsubmission.Intercept(f(g(h())))`.
+func (c *AccountSubmissionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AccountSubmission = append(c.inters.AccountSubmission, interceptors...)
+}
+
+// Create returns a builder for creating a AccountSubmission entity.
+func (c *AccountSubmissionClient) Create() *AccountSubmissionCreate {
+	mutation := newAccountSubmissionMutation(c.config, OpCreate)
+	return &AccountSubmissionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AccountSubmission entities.
+func (c *AccountSubmissionClient) CreateBulk(builders ...*AccountSubmissionCreate) *AccountSubmissionCreateBulk {
+	return &AccountSubmissionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AccountSubmissionClient) MapCreateBulk(slice any, setFunc func(*AccountSubmissionCreate, int)) *AccountSubmissionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AccountSubmissionCreateBulk{err: fmt.Errorf("calling to AccountSubmissionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AccountSubmissionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AccountSubmissionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AccountSubmission.
+func (c *AccountSubmissionClient) Update() *AccountSubmissionUpdate {
+	mutation := newAccountSubmissionMutation(c.config, OpUpdate)
+	return &AccountSubmissionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AccountSubmissionClient) UpdateOne(_m *AccountSubmission) *AccountSubmissionUpdateOne {
+	mutation := newAccountSubmissionMutation(c.config, OpUpdateOne, withAccountSubmission(_m))
+	return &AccountSubmissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AccountSubmissionClient) UpdateOneID(id string) *AccountSubmissionUpdateOne {
+	mutation := newAccountSubmissionMutation(c.config, OpUpdateOne, withAccountSubmissionID(id))
+	return &AccountSubmissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AccountSubmission.
+func (c *AccountSubmissionClient) Delete() *AccountSubmissionDelete {
+	mutation := newAccountSubmissionMutation(c.config, OpDelete)
+	return &AccountSubmissionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AccountSubmissionClient) DeleteOne(_m *AccountSubmission) *AccountSubmissionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AccountSubmissionClient) DeleteOneID(id string) *AccountSubmissionDeleteOne {
+	builder := c.Delete().Where(accountsubmission.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AccountSubmissionDeleteOne{builder}
+}
+
+// Query returns a query builder for AccountSubmission.
+func (c *AccountSubmissionClient) Query() *AccountSubmissionQuery {
+	return &AccountSubmissionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAccountSubmission},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AccountSubmission entity by its id.
+func (c *AccountSubmissionClient) Get(ctx context.Context, id string) (*AccountSubmission, error) {
+	return c.Query().Where(accountsubmission.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AccountSubmissionClient) GetX(ctx context.Context, id string) *AccountSubmission {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AccountSubmissionClient) Hooks() []Hook {
+	return c.hooks.AccountSubmission
+}
+
+// Interceptors returns the client interceptors.
+func (c *AccountSubmissionClient) Interceptors() []Interceptor {
+	return c.inters.AccountSubmission
+}
+
+func (c *AccountSubmissionClient) mutate(ctx context.Context, m *AccountSubmissionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AccountSubmissionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AccountSubmissionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AccountSubmissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AccountSubmissionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AccountSubmission mutation op: %q", m.Op())
 	}
 }
 
@@ -4305,6 +4456,139 @@ func (c *StaffProfileClient) mutate(ctx context.Context, m *StaffProfileMutation
 	}
 }
 
+// SubmissionEventClient is a client for the SubmissionEvent schema.
+type SubmissionEventClient struct {
+	config
+}
+
+// NewSubmissionEventClient returns a client for the SubmissionEvent from the given config.
+func NewSubmissionEventClient(c config) *SubmissionEventClient {
+	return &SubmissionEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `submissionevent.Hooks(f(g(h())))`.
+func (c *SubmissionEventClient) Use(hooks ...Hook) {
+	c.hooks.SubmissionEvent = append(c.hooks.SubmissionEvent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `submissionevent.Intercept(f(g(h())))`.
+func (c *SubmissionEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SubmissionEvent = append(c.inters.SubmissionEvent, interceptors...)
+}
+
+// Create returns a builder for creating a SubmissionEvent entity.
+func (c *SubmissionEventClient) Create() *SubmissionEventCreate {
+	mutation := newSubmissionEventMutation(c.config, OpCreate)
+	return &SubmissionEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SubmissionEvent entities.
+func (c *SubmissionEventClient) CreateBulk(builders ...*SubmissionEventCreate) *SubmissionEventCreateBulk {
+	return &SubmissionEventCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SubmissionEventClient) MapCreateBulk(slice any, setFunc func(*SubmissionEventCreate, int)) *SubmissionEventCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SubmissionEventCreateBulk{err: fmt.Errorf("calling to SubmissionEventClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SubmissionEventCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SubmissionEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SubmissionEvent.
+func (c *SubmissionEventClient) Update() *SubmissionEventUpdate {
+	mutation := newSubmissionEventMutation(c.config, OpUpdate)
+	return &SubmissionEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SubmissionEventClient) UpdateOne(_m *SubmissionEvent) *SubmissionEventUpdateOne {
+	mutation := newSubmissionEventMutation(c.config, OpUpdateOne, withSubmissionEvent(_m))
+	return &SubmissionEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SubmissionEventClient) UpdateOneID(id string) *SubmissionEventUpdateOne {
+	mutation := newSubmissionEventMutation(c.config, OpUpdateOne, withSubmissionEventID(id))
+	return &SubmissionEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SubmissionEvent.
+func (c *SubmissionEventClient) Delete() *SubmissionEventDelete {
+	mutation := newSubmissionEventMutation(c.config, OpDelete)
+	return &SubmissionEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SubmissionEventClient) DeleteOne(_m *SubmissionEvent) *SubmissionEventDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SubmissionEventClient) DeleteOneID(id string) *SubmissionEventDeleteOne {
+	builder := c.Delete().Where(submissionevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SubmissionEventDeleteOne{builder}
+}
+
+// Query returns a query builder for SubmissionEvent.
+func (c *SubmissionEventClient) Query() *SubmissionEventQuery {
+	return &SubmissionEventQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSubmissionEvent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SubmissionEvent entity by its id.
+func (c *SubmissionEventClient) Get(ctx context.Context, id string) (*SubmissionEvent, error) {
+	return c.Query().Where(submissionevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SubmissionEventClient) GetX(ctx context.Context, id string) *SubmissionEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SubmissionEventClient) Hooks() []Hook {
+	return c.hooks.SubmissionEvent
+}
+
+// Interceptors returns the client interceptors.
+func (c *SubmissionEventClient) Interceptors() []Interceptor {
+	return c.inters.SubmissionEvent
+}
+
+func (c *SubmissionEventClient) mutate(ctx context.Context, m *SubmissionEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SubmissionEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SubmissionEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SubmissionEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SubmissionEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SubmissionEvent mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -4441,20 +4725,20 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, AvailabilityWindow, Booking, BookingEvent,
-		CatalogRelease, Conversation, ConversationMessage, ConversationRead, Coupon,
-		CouponClaim, CouponRevision, Favorite, Fulfillment, Game, MediaFile,
-		Notification, Order, OrderContract, OrderEvent, OrderQuote, SecretBundle,
-		StaffProfile, User []ent.Hook
+		AccountSubmission, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity,
+		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityWindow, Booking,
+		BookingEvent, CatalogRelease, Conversation, ConversationMessage,
+		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
+		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
+		SecretBundle, StaffProfile, SubmissionEvent, User []ent.Hook
 	}
 	inters struct {
-		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, AvailabilityWindow, Booking, BookingEvent,
-		CatalogRelease, Conversation, ConversationMessage, ConversationRead, Coupon,
-		CouponClaim, CouponRevision, Favorite, Fulfillment, Game, MediaFile,
-		Notification, Order, OrderContract, OrderEvent, OrderQuote, SecretBundle,
-		StaffProfile, User []ent.Interceptor
+		AccountSubmission, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity,
+		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityWindow, Booking,
+		BookingEvent, CatalogRelease, Conversation, ConversationMessage,
+		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
+		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
+		SecretBundle, StaffProfile, SubmissionEvent, User []ent.Interceptor
 	}
 )
 

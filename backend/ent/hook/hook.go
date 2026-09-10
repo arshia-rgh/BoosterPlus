@@ -9,6 +9,18 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 )
 
+// The AccountSubmissionFunc type is an adapter to allow the use of ordinary
+// function as AccountSubmission mutator.
+type AccountSubmissionFunc func(context.Context, *ent.AccountSubmissionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AccountSubmissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AccountSubmissionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountSubmissionMutation", m)
+}
+
 // The AuthAuditFunc type is an adapter to allow the use of ordinary
 // function as AuthAudit mutator.
 type AuthAuditFunc func(context.Context, *ent.AuthAuditMutation) (ent.Value, error)
@@ -355,6 +367,18 @@ func (f StaffProfileFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StaffProfileMutation", m)
+}
+
+// The SubmissionEventFunc type is an adapter to allow the use of ordinary
+// function as SubmissionEvent mutator.
+type SubmissionEventFunc func(context.Context, *ent.SubmissionEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SubmissionEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SubmissionEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SubmissionEventMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary

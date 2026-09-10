@@ -422,6 +422,19 @@ export default function Thread({
     base = (admin ? "/admin" : "") + "/conversations/" + encodeURIComponent(id),
     resource = useResource(base, conversationSchema),
     thread = resource.error ? null : resource.data;
+  const retry = resource.reload;
+  useEffect(() => {
+    if (!resource.error || resource.loading) return;
+    // Keep recovery outside Messages, which unmounts to conceal private data on failure.
+    const poll = setInterval(() => {
+      if (document.visibilityState === "visible") retry();
+    }, 10000);
+    window.addEventListener("online", retry);
+    return () => {
+      clearInterval(poll);
+      window.removeEventListener("online", retry);
+    };
+  }, [resource.error, resource.loading, retry]);
   return (
     <section>
       <Link
@@ -430,6 +443,11 @@ export default function Thread({
         ← {booster ? "Assigned work" : "Conversations"}
       </Link>
       <ErrorNotice error={resource.error} />
+      {!!resource.error && (
+        <Action disabled={resource.loading} onClick={retry}>
+          Retry conversation access
+        </Action>
+      )}
       {!thread ? (
         <p role="status">
           {resource.error
@@ -444,9 +462,21 @@ export default function Thread({
               ? "Shared boosting coordination"
               : thread.kind === "presales"
                 ? "Pre-sales support"
-                : "Order support"}{" "}
+                : thread.kind === "submission"
+                  ? "Private seller review"
+                  : "Order support"}{" "}
             · {thread.state} · {thread.unread} unread
           </p>
+          {thread.submission_id && (
+            <Link
+              to={
+                (admin ? "/admin/submissions/" : "/sell/") +
+                thread.submission_id
+              }
+            >
+              View account submission
+            </Link>
+          )}
           {(thread.order_id || thread.linked_order_id) && (
             <Link
               to={

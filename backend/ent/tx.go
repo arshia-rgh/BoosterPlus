@@ -14,6 +14,8 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// AccountSubmission is the client for interacting with the AccountSubmission builders.
+	AccountSubmission *AccountSubmissionClient
 	// AuthAudit is the client for interacting with the AuthAudit builders.
 	AuthAudit *AuthAuditClient
 	// AuthChallenge is the client for interacting with the AuthChallenge builders.
@@ -72,6 +74,8 @@ type Tx struct {
 	SecretBundle *SecretBundleClient
 	// StaffProfile is the client for interacting with the StaffProfile builders.
 	StaffProfile *StaffProfileClient
+	// SubmissionEvent is the client for interacting with the SubmissionEvent builders.
+	SubmissionEvent *SubmissionEventClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -205,6 +209,7 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.AccountSubmission = NewAccountSubmissionClient(tx.config)
 	tx.AuthAudit = NewAuthAuditClient(tx.config)
 	tx.AuthChallenge = NewAuthChallengeClient(tx.config)
 	tx.AuthFlow = NewAuthFlowClient(tx.config)
@@ -234,6 +239,7 @@ func (tx *Tx) init() {
 	tx.OrderQuote = NewOrderQuoteClient(tx.config)
 	tx.SecretBundle = NewSecretBundleClient(tx.config)
 	tx.StaffProfile = NewStaffProfileClient(tx.config)
+	tx.SubmissionEvent = NewSubmissionEventClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 
@@ -244,7 +250,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: AuthAudit.QueryXXX(), the query will be executed
+// applies a query, for example: AccountSubmission.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

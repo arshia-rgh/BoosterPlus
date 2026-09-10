@@ -18,6 +18,7 @@ import {
   ServicesEditor,
 } from "./editor-parts";
 import DynamicForm from "./dynamic-form";
+import IntakeEditor from "./intake-editor";
 import {
   draftSchema,
   emptyConfiguration,
@@ -351,6 +352,12 @@ function Editor({
               value={draft.configuration.references}
               change={(references) => {
                 update({ references });
+              }}
+            />
+            <IntakeEditor
+              config={draft.configuration}
+              change={(intake) => {
+                update({ intake });
               }}
             />
             <ServicesEditor

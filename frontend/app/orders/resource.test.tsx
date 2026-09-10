@@ -39,3 +39,40 @@ it("marks refresh immediately pending and ignores responses for a previous priva
   expect(hook.result.current.loading).toBe(false);
   hook.unmount();
 });
+it("retains an access error throughout retry until a new authorized response arrives", async () => {
+  vi.mocked(get).mockReset();
+  let finish: (value: { label: string }) => void = () => {};
+  const denied = new Error("Access denied");
+  vi.mocked(get)
+    .mockResolvedValueOnce({ label: "private data" })
+    .mockRejectedValueOnce(denied)
+    .mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+  const hook = renderHook(() => useResource("/private", schema));
+  await waitFor(() => {
+    expect(hook.result.current.data?.label).toBe("private data");
+  });
+  act(() => {
+    hook.result.current.reload();
+  });
+  await waitFor(() => {
+    expect(hook.result.current.error).toBe(denied);
+  });
+  act(() => {
+    hook.result.current.reload();
+  });
+  expect(hook.result.current.loading).toBe(true);
+  expect(hook.result.current.error).toBe(denied);
+  expect(hook.result.current.data).toBeNull();
+  await act(async () => {
+    finish({ label: "authorized again" });
+    await Promise.resolve();
+  });
+  expect(hook.result.current.error).toBeNull();
+  expect(hook.result.current.data?.label).toBe("authorized again");
+  hook.unmount();
+});

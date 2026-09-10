@@ -61,7 +61,7 @@ func ValidateConfiguration(c Configuration, publish bool) []Issue {
 		add("configuration", "Catalog limits exceeded.")
 		return issues
 	}
-	if publish && (!c.Reviewed || len(c.Services)+len(c.Packages) == 0) {
+	if publish && (!c.Reviewed || len(c.Services)+len(c.Packages) == 0 && c.Intake == nil) {
 		add("reviewed", "Review actual catalog data, availability, prices and customer promises before publication.")
 	}
 	refs := map[string]Reference{}
@@ -74,6 +74,7 @@ func ValidateConfiguration(c Configuration, publish bool) []Issue {
 		validateOptions(ref.Options, path, publish, add)
 	}
 	services := map[string]ServiceDefinition{}
+	validateIntake(c.Intake, refs, publish, add)
 	for i, service := range c.Services {
 		path := fmt.Sprintf("services.%d", i)
 		if _, exists := services[service.Key]; exists || !keyPattern.MatchString(service.Key) || !validText(service.Name, 1, 120) || !validText(service.Description, 0, 4000) {

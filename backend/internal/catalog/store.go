@@ -51,16 +51,17 @@ type Listing struct {
 
 // Summary deliberately takes the public name/description from a release, not a draft.
 type Summary struct {
-	ID          string `json:"id"`
-	Slug        string `json:"slug"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Asset       string `json:"asset"`
-	AssetAlt    string `json:"asset_alt"`
-	Paused      bool   `json:"paused"`
-	Published   bool   `json:"published"`
-	Archived    bool   `json:"archived"`
-	Revision    int    `json:"revision"`
+	IntakeEnabled bool   `json:"intake_enabled,omitempty"`
+	ID            string `json:"id"`
+	Slug          string `json:"slug"`
+	Name          string `json:"name"`
+	Description   string `json:"description"`
+	Asset         string `json:"asset"`
+	AssetAlt      string `json:"asset_alt"`
+	Paused        bool   `json:"paused"`
+	Published     bool   `json:"published"`
+	Archived      bool   `json:"archived"`
+	Revision      int    `json:"revision"`
 }
 
 // Release is customer-safe, excludes actor identity and always pins all components.
@@ -137,7 +138,7 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, aft
 		if err != nil {
 			return result, err
 		}
-		result.Games = append(result.Games, Summary{g.ID, g.Slug, c.Name, c.Description, c.Asset, c.AssetAlt, g.Paused, g.Published, g.Archived, g.Version})
+		result.Games = append(result.Games, Summary{c.Intake != nil, g.ID, g.Slug, c.Name, c.Description, c.Asset, c.AssetAlt, g.Paused, g.Published, g.Archived, g.Version})
 	}
 	return result, nil
 }

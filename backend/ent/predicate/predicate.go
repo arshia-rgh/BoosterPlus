@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// AccountSubmission is the predicate function for accountsubmission builders.
+type AccountSubmission func(*sql.Selector)
+
 // AuthAudit is the predicate function for authaudit builders.
 type AuthAudit func(*sql.Selector)
 
@@ -92,6 +95,9 @@ type SecretBundle func(*sql.Selector)
 
 // StaffProfile is the predicate function for staffprofile builders.
 type StaffProfile func(*sql.Selector)
+
+// SubmissionEvent is the predicate function for submissionevent builders.
+type SubmissionEvent func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

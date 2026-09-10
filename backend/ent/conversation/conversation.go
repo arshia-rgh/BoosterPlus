@@ -18,6 +18,8 @@ const (
 	FieldUserID = "user_id"
 	// FieldKind holds the string denoting the kind field in the database.
 	FieldKind = "kind"
+	// FieldSubmissionID holds the string denoting the submission_id field in the database.
+	FieldSubmissionID = "submission_id"
 	// FieldOrderID holds the string denoting the order_id field in the database.
 	FieldOrderID = "order_id"
 	// FieldFulfillmentOrderID holds the string denoting the fulfillment_order_id field in the database.
@@ -63,6 +65,7 @@ var Columns = []string{
 	FieldID,
 	FieldUserID,
 	FieldKind,
+	FieldSubmissionID,
 	FieldOrderID,
 	FieldFulfillmentOrderID,
 	FieldBoosterShared,
@@ -96,6 +99,8 @@ func ValidColumn(column string) bool {
 var (
 	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	UserIDValidator func(string) error
+	// SubmissionIDValidator is a validator for the "submission_id" field. It is called by the builders before save.
+	SubmissionIDValidator func(string) error
 	// OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
 	OrderIDValidator func(string) error
 	// FulfillmentOrderIDValidator is a validator for the "fulfillment_order_id" field. It is called by the builders before save.
@@ -148,6 +153,7 @@ const (
 	KindOrder       Kind = "order"
 	KindPresales    Kind = "presales"
 	KindFulfillment Kind = "fulfillment"
+	KindSubmission  Kind = "submission"
 )
 
 func (k Kind) String() string {
@@ -157,7 +163,7 @@ func (k Kind) String() string {
 // KindValidator is a validator for the "kind" field enum values. It is called by the builders before save.
 func KindValidator(k Kind) error {
 	switch k {
-	case KindOrder, KindPresales, KindFulfillment:
+	case KindOrder, KindPresales, KindFulfillment, KindSubmission:
 		return nil
 	default:
 		return fmt.Errorf("conversation: invalid enum value for kind field: %q", k)
@@ -207,6 +213,11 @@ func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 // ByKind orders the results by the kind field.
 func ByKind(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldKind, opts...).ToFunc()
+}
+
+// BySubmissionID orders the results by the submission_id field.
+func BySubmissionID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubmissionID, opts...).ToFunc()
 }
 
 // ByOrderID orders the results by the order_id field.

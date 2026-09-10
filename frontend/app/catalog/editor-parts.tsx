@@ -178,13 +178,15 @@ function DefaultEditor({
     </fieldset>
   );
 }
-function FieldEditor({
+export function FieldEditor({
   field,
   change,
   service,
   config,
+  intake = false,
 }: {
   field: Field;
+  intake?: boolean;
   change: (patch: Partial<Field>) => void;
   service: Service;
   config: Configuration;
@@ -248,7 +250,9 @@ function FieldEditor({
             "short_text",
             "long_text",
             "attachment",
-          ].map((type) => [type, type])}
+          ]
+            .filter((type) => !intake || type !== "attachment")
+            .map((type) => [type, type])}
         />
         <Select
           label="Collection stage"
@@ -261,11 +265,15 @@ function FieldEditor({
             )
               change({ stage });
           }}
-          options={[
-            ["estimate", "Estimate"],
-            ["order", "Order submission"],
-            ["fulfillment", "After payment"],
-          ]}
+          options={
+            intake
+              ? [["order", "Account submission"]]
+              : [
+                  ["estimate", "Estimate"],
+                  ["order", "Order submission"],
+                  ["fulfillment", "After payment"],
+                ]
+          }
         />
       </div>
       <Text
@@ -401,7 +409,7 @@ function FieldEditor({
     </>
   );
 }
-function RuleEditor({
+export function RuleEditor({
   rule,
   change,
   fields,

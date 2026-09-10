@@ -9,6 +9,49 @@ import (
 )
 
 var (
+	// AccountSubmissionsColumns holds the columns for the "account_submissions" table.
+	AccountSubmissionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "game_id", Type: field.TypeString, Size: 36},
+		{Name: "game_name", Type: field.TypeString, Size: 120},
+		{Name: "slug", Type: field.TypeString, Size: 80},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"draft", "submitted", "needs_information", "approved_pending_terms", "rejected", "withdrawn"}, Default: "draft"},
+		{Name: "title", Type: field.TypeString, Size: 120},
+		{Name: "answers", Type: field.TypeJSON},
+		{Name: "snapshot", Type: field.TypeJSON},
+		{Name: "ownership_notes", Type: field.TypeString},
+		{Name: "ownership_declared", Type: field.TypeBool, Default: false},
+		{Name: "current_note", Type: field.TypeString},
+		{Name: "request_key", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// AccountSubmissionsTable holds the schema information for the "account_submissions" table.
+	AccountSubmissionsTable = &schema.Table{
+		Name:       "account_submissions",
+		Columns:    AccountSubmissionsColumns,
+		PrimaryKey: []*schema.Column{AccountSubmissionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "submission_request",
+				Unique:  true,
+				Columns: []*schema.Column{AccountSubmissionsColumns[1], AccountSubmissionsColumns[13]},
+			},
+			{
+				Name:    "submission_customer",
+				Unique:  false,
+				Columns: []*schema.Column{AccountSubmissionsColumns[1], AccountSubmissionsColumns[15], AccountSubmissionsColumns[0]},
+			},
+			{
+				Name:    "submission_queue",
+				Unique:  false,
+				Columns: []*schema.Column{AccountSubmissionsColumns[6], AccountSubmissionsColumns[15], AccountSubmissionsColumns[0]},
+			},
+		},
+	}
 	// AuthAuditsColumns holds the columns for the "auth_audits" table.
 	AuthAuditsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 64},
@@ -345,7 +388,8 @@ var (
 	ConversationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
 		{Name: "user_id", Type: field.TypeString, Size: 36},
-		{Name: "kind", Type: field.TypeEnum, Enums: []string{"order", "presales", "fulfillment"}},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"order", "presales", "fulfillment", "submission"}},
+		{Name: "submission_id", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "order_id", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "fulfillment_order_id", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "booster_shared", Type: field.TypeBool, Default: false},
@@ -372,29 +416,34 @@ var (
 		PrimaryKey: []*schema.Column{ConversationsColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "conversation_fulfillment",
-				Unique:  true,
-				Columns: []*schema.Column{ConversationsColumns[4]},
-			},
-			{
-				Name:    "conversation_order",
+				Name:    "conversation_submission",
 				Unique:  true,
 				Columns: []*schema.Column{ConversationsColumns[3]},
 			},
 			{
+				Name:    "conversation_fulfillment",
+				Unique:  true,
+				Columns: []*schema.Column{ConversationsColumns[5]},
+			},
+			{
+				Name:    "conversation_order",
+				Unique:  true,
+				Columns: []*schema.Column{ConversationsColumns[4]},
+			},
+			{
 				Name:    "conversation_request",
 				Unique:  true,
-				Columns: []*schema.Column{ConversationsColumns[11], ConversationsColumns[9]},
+				Columns: []*schema.Column{ConversationsColumns[12], ConversationsColumns[10]},
 			},
 			{
 				Name:    "conversation_customer",
 				Unique:  false,
-				Columns: []*schema.Column{ConversationsColumns[1], ConversationsColumns[19], ConversationsColumns[0]},
+				Columns: []*schema.Column{ConversationsColumns[1], ConversationsColumns[20], ConversationsColumns[0]},
 			},
 			{
 				Name:    "conversation_inbox",
 				Unique:  false,
-				Columns: []*schema.Column{ConversationsColumns[12], ConversationsColumns[18], ConversationsColumns[0]},
+				Columns: []*schema.Column{ConversationsColumns[13], ConversationsColumns[19], ConversationsColumns[0]},
 			},
 		},
 	}
@@ -873,6 +922,30 @@ var (
 		Columns:    StaffProfilesColumns,
 		PrimaryKey: []*schema.Column{StaffProfilesColumns[0]},
 	}
+	// SubmissionEventsColumns holds the columns for the "submission_events" table.
+	SubmissionEventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "submission_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "action", Type: field.TypeString, Size: 32},
+		{Name: "state", Type: field.TypeString, Size: 32},
+		{Name: "message", Type: field.TypeString},
+		{Name: "actor_role", Type: field.TypeString, Size: 24},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// SubmissionEventsTable holds the schema information for the "submission_events" table.
+	SubmissionEventsTable = &schema.Table{
+		Name:       "submission_events",
+		Columns:    SubmissionEventsColumns,
+		PrimaryKey: []*schema.Column{SubmissionEventsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "submission_event_version",
+				Unique:  true,
+				Columns: []*schema.Column{SubmissionEventsColumns[1], SubmissionEventsColumns[2]},
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -902,6 +975,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AccountSubmissionsTable,
 		AuthAuditsTable,
 		AuthChallengesTable,
 		AuthFlowsTable,
@@ -931,6 +1005,7 @@ var (
 		OrderQuotesTable,
 		SecretBundlesTable,
 		StaffProfilesTable,
+		SubmissionEventsTable,
 		UsersTable,
 	}
 )

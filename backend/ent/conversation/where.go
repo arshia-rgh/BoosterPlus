@@ -69,6 +69,11 @@ func UserID(v string) predicate.Conversation {
 	return predicate.Conversation(sql.FieldEQ(FieldUserID, v))
 }
 
+// SubmissionID applies equality check predicate on the "submission_id" field. It's identical to SubmissionIDEQ.
+func SubmissionID(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldEQ(FieldSubmissionID, v))
+}
+
 // OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
 func OrderID(v string) predicate.Conversation {
 	return predicate.Conversation(sql.FieldEQ(FieldOrderID, v))
@@ -237,6 +242,81 @@ func KindIn(vs ...Kind) predicate.Conversation {
 // KindNotIn applies the NotIn predicate on the "kind" field.
 func KindNotIn(vs ...Kind) predicate.Conversation {
 	return predicate.Conversation(sql.FieldNotIn(FieldKind, vs...))
+}
+
+// SubmissionIDEQ applies the EQ predicate on the "submission_id" field.
+func SubmissionIDEQ(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldEQ(FieldSubmissionID, v))
+}
+
+// SubmissionIDNEQ applies the NEQ predicate on the "submission_id" field.
+func SubmissionIDNEQ(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldNEQ(FieldSubmissionID, v))
+}
+
+// SubmissionIDIn applies the In predicate on the "submission_id" field.
+func SubmissionIDIn(vs ...string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldIn(FieldSubmissionID, vs...))
+}
+
+// SubmissionIDNotIn applies the NotIn predicate on the "submission_id" field.
+func SubmissionIDNotIn(vs ...string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldNotIn(FieldSubmissionID, vs...))
+}
+
+// SubmissionIDGT applies the GT predicate on the "submission_id" field.
+func SubmissionIDGT(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldGT(FieldSubmissionID, v))
+}
+
+// SubmissionIDGTE applies the GTE predicate on the "submission_id" field.
+func SubmissionIDGTE(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldGTE(FieldSubmissionID, v))
+}
+
+// SubmissionIDLT applies the LT predicate on the "submission_id" field.
+func SubmissionIDLT(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldLT(FieldSubmissionID, v))
+}
+
+// SubmissionIDLTE applies the LTE predicate on the "submission_id" field.
+func SubmissionIDLTE(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldLTE(FieldSubmissionID, v))
+}
+
+// SubmissionIDContains applies the Contains predicate on the "submission_id" field.
+func SubmissionIDContains(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldContains(FieldSubmissionID, v))
+}
+
+// SubmissionIDHasPrefix applies the HasPrefix predicate on the "submission_id" field.
+func SubmissionIDHasPrefix(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldHasPrefix(FieldSubmissionID, v))
+}
+
+// SubmissionIDHasSuffix applies the HasSuffix predicate on the "submission_id" field.
+func SubmissionIDHasSuffix(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldHasSuffix(FieldSubmissionID, v))
+}
+
+// SubmissionIDIsNil applies the IsNil predicate on the "submission_id" field.
+func SubmissionIDIsNil() predicate.Conversation {
+	return predicate.Conversation(sql.FieldIsNull(FieldSubmissionID))
+}
+
+// SubmissionIDNotNil applies the NotNil predicate on the "submission_id" field.
+func SubmissionIDNotNil() predicate.Conversation {
+	return predicate.Conversation(sql.FieldNotNull(FieldSubmissionID))
+}
+
+// SubmissionIDEqualFold applies the EqualFold predicate on the "submission_id" field.
+func SubmissionIDEqualFold(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldEqualFold(FieldSubmissionID, v))
+}
+
+// SubmissionIDContainsFold applies the ContainsFold predicate on the "submission_id" field.
+func SubmissionIDContainsFold(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldContainsFold(FieldSubmissionID, v))
 }
 
 // OrderIDEQ applies the EQ predicate on the "order_id" field.

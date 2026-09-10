@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountsubmission"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
@@ -41,6 +42,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
@@ -102,6 +104,7 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			accountsubmission.Table:   accountsubmission.ValidColumn,
 			authaudit.Table:           authaudit.ValidColumn,
 			authchallenge.Table:       authchallenge.ValidColumn,
 			authflow.Table:            authflow.ValidColumn,
@@ -131,6 +134,7 @@ func checkColumn(t, c string) error {
 			orderquote.Table:          orderquote.ValidColumn,
 			secretbundle.Table:        secretbundle.ValidColumn,
 			staffprofile.Table:        staffprofile.ValidColumn,
+			submissionevent.Table:     submissionevent.ValidColumn,
 			user.Table:                user.ValidColumn,
 		})
 	})

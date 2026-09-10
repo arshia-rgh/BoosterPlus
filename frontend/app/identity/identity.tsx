@@ -835,6 +835,7 @@ export default function Identity({
               <nav className="account-nav" aria-label="Account navigation">
                 <Link to="/account">Profile and security</Link>
                 <Link to="/orders">My orders</Link>
+                <Link to="/sell">Sell an account</Link>
                 <Link to="/favorites">Favorites</Link>
                 <Link to="/support">Support</Link>
                 <Link to="/notifications">Activity</Link>
@@ -844,6 +845,7 @@ export default function Identity({
                     <Link to="/admin/catalog">Catalog editor</Link>
                     <Link to="/admin/coupons">Coupons</Link>
                     <Link to="/admin/orders">Order queue</Link>
+                    <Link to="/admin/submissions">Account submissions</Link>
                     <Link to="/admin/calendar">Staff calendars</Link>
                     <Link to="/admin/support">Support inbox</Link>
                   </>

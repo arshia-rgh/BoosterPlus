@@ -21,6 +21,8 @@ type Conversation struct {
 	UserID string `json:"user_id,omitempty"`
 	// Kind holds the value of the "kind" field.
 	Kind conversation.Kind `json:"kind,omitempty"`
+	// SubmissionID holds the value of the "submission_id" field.
+	SubmissionID *string `json:"submission_id,omitempty"`
 	// OrderID holds the value of the "order_id" field.
 	OrderID *string `json:"order_id,omitempty"`
 	// FulfillmentOrderID holds the value of the "fulfillment_order_id" field.
@@ -69,7 +71,7 @@ func (*Conversation) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case conversation.FieldVersion, conversation.FieldPublicVersion, conversation.FieldSequence, conversation.FieldPublicSequence:
 			values[i] = new(sql.NullInt64)
-		case conversation.FieldID, conversation.FieldUserID, conversation.FieldKind, conversation.FieldOrderID, conversation.FieldFulfillmentOrderID, conversation.FieldLinkedOrderID, conversation.FieldSubject, conversation.FieldSlug, conversation.FieldRequestKey, conversation.FieldRequestHash, conversation.FieldCreatedBy, conversation.FieldState, conversation.FieldAssignedTo:
+		case conversation.FieldID, conversation.FieldUserID, conversation.FieldKind, conversation.FieldSubmissionID, conversation.FieldOrderID, conversation.FieldFulfillmentOrderID, conversation.FieldLinkedOrderID, conversation.FieldSubject, conversation.FieldSlug, conversation.FieldRequestKey, conversation.FieldRequestHash, conversation.FieldCreatedBy, conversation.FieldState, conversation.FieldAssignedTo:
 			values[i] = new(sql.NullString)
 		case conversation.FieldUpdatedAt, conversation.FieldPublicUpdatedAt, conversation.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -105,6 +107,13 @@ func (_m *Conversation) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field kind", values[i])
 			} else if value.Valid {
 				_m.Kind = conversation.Kind(value.String)
+			}
+		case conversation.FieldSubmissionID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field submission_id", values[i])
+			} else if value.Valid {
+				_m.SubmissionID = new(string)
+				*_m.SubmissionID = value.String
 			}
 		case conversation.FieldOrderID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -258,6 +267,11 @@ func (_m *Conversation) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("kind=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Kind))
+	builder.WriteString(", ")
+	if v := _m.SubmissionID; v != nil {
+		builder.WriteString("submission_id=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	if v := _m.OrderID; v != nil {
 		builder.WriteString("order_id=")
