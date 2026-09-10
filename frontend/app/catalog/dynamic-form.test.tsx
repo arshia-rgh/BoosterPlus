@@ -212,6 +212,7 @@ it("checks a coupon against selections without accepting a client price", async 
         coupon_id: "id",
         version: 1,
         code: "SAVE50",
+        stage: "estimate",
         amount_minor: "51",
         indicative: true,
       },
@@ -238,6 +239,7 @@ it("checks a coupon against selections without accepting a client price", async 
       service: "boost",
       answers: { one: false },
       code: "SAVE50",
+      stage: "estimate",
       package: "",
       variant: "",
     },
@@ -248,5 +250,32 @@ it("checks a coupon against selections without accepting a client price", async 
   });
   expect(
     screen.queryByRole("heading", { name: /Estimated price/ }),
+  ).not.toBeInTheDocument();
+});
+
+it("preserves choices but invalidates prior validation when changing to order information", async () => {
+  vi.mocked(post)
+    .mockResolvedValueOnce({ answers: { one: false }, issues: [] })
+    .mockResolvedValueOnce({
+      outcome: "manual_review",
+      currency: "",
+      amount_minor: "",
+      lines: [],
+      issues: [],
+      answers: { one: false },
+      expires_at: "2026-09-10T00:15:00Z",
+    });
+  const props = { config, service, slug: "test", releaseID: "release" };
+  const view = render(<DynamicForm {...props} stage="estimate" />);
+  fireEvent.change(screen.getByLabelText("One hero"), {
+    target: { value: "false" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Check selections" }));
+  await screen.findByText(/Selections are valid/);
+  view.rerender(<DynamicForm {...props} stage="order" />);
+  expect(screen.getByLabelText("One hero")).toHaveValue("false");
+  expect(screen.queryByText(/Selections are valid/)).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("region", { name: "Submit order" }),
   ).not.toBeInTheDocument();
 });

@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 7
+const SchemaVersion = 8
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -44,6 +44,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"orders.id": "varchar", "orders.user_id": "varchar", "orders.version": "bigint", "orders.request_hash": "char", "orders.answers": "json", "orders.snapshot": "json", "orders.state": "varchar", "order_quotes.data": "json", "order_contracts.data": "json", "order_contracts.payment_state": "varchar", "order_contracts.active_order_id": "varchar", "order_contracts.capacity_held": "tinyint", "order_events.version": "bigint", "favorites.user_id": "varchar", "favorites.target": "varchar",
 		"coupons.id": "varchar", "coupons.code": "varchar", "coupons.version": "bigint", "coupons.definition": "json", "coupon_revisions.definition": "json", "coupon_revisions.version": "bigint", "coupon_claims.coupon_id": "varchar", "coupon_claims.contract_id": "varchar", "coupon_claims.user_id": "varchar", "coupon_claims.state": "varchar",
 		"users.email_verified_at": "datetime", "users.role": "varchar", "users.suspended": "tinyint", "users.auth_version": "bigint", "users.mfa_secret": "blob", "users.mfa_enabled": "tinyint",
 		"auth_sessions.token_hash": "char", "auth_sessions.auth_version": "bigint", "auth_sessions.mfa_verified_at": "datetime", "auth_challenges.code_digest": "char", "auth_challenges.browser_hash": "char", "auth_challenges.attempts": "int", "auth_challenges.consumed": "tinyint", "auth_messages.encrypted_payload": "blob", "auth_identities.subject": "varchar", "auth_flows.verifier": "blob", "auth_rates.count": "int", "auth_audits.metadata": "json", "auth_recoveries.new_email": "varchar", "auth_controls.version": "bigint",
@@ -52,7 +53,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 		"games.id": "varchar", "games.slug": "varchar", "games.name": "varchar", "games.configuration": "json", "games.version": "bigint", "games.published": "tinyint", "games.created_at": "datetime",
 		"jobs.id": "varchar", "jobs.kind": "varchar", "jobs.idempotency_key": "varchar", "jobs.payload": "json", "jobs.request_hash": "char", "jobs.state": "varchar", "jobs.attempts": "int", "jobs.max_attempts": "int", "jobs.available_at": "datetime", "jobs.lease_until": "datetime", "jobs.owner": "varchar", "jobs.last_error": "varchar", "jobs.created_at": "datetime",
 	}
-	rows, err := db.QueryContext(ctx, "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name IN ('coupons','coupon_revisions','coupon_claims','catalog_releases','users','games','jobs','auth_sessions','auth_challenges','auth_messages','auth_identities','auth_flows','auth_rates','auth_audits','auth_recoveries','auth_controls')")
+	rows, err := db.QueryContext(ctx, "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name IN ('orders','order_quotes','order_contracts','order_events','favorites','coupons','coupon_revisions','coupon_claims','catalog_releases','users','games','jobs','auth_sessions','auth_challenges','auth_messages','auth_identities','auth_flows','auth_rates','auth_audits','auth_recoveries','auth_controls')")
 	if err != nil {
 		return err
 	}
@@ -80,7 +81,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 }
 
 func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
-	expected := map[string]string{"coupons.PRIMARY": "id", "coupons.coupon_code": "code", "coupon_revisions.coupon_revision": "coupon_id,version", "coupon_claims.coupon_contract": "contract_id", "catalog_releases.PRIMARY": "id", "catalog_releases.catalog_release_revision": "game_id,version", "auth_identities.auth_identity_subject": "provider,subject", "auth_sessions.auth_session_token": "token_hash", "auth_rates.PRIMARY": "id", "auth_controls.PRIMARY": "id",
+	expected := map[string]string{"orders.PRIMARY": "id", "orders.order_request": "user_id,request_key", "order_quotes.order_quote_revision": "order_id,revision", "order_contracts.order_active_contract": "active_order_id", "order_events.order_event_revision": "order_id,version", "favorites.favorite_target": "user_id,target", "coupons.PRIMARY": "id", "coupons.coupon_code": "code", "coupon_revisions.coupon_revision": "coupon_id,version", "coupon_claims.coupon_contract": "contract_id", "catalog_releases.PRIMARY": "id", "catalog_releases.catalog_release_revision": "game_id,version", "auth_identities.auth_identity_subject": "provider,subject", "auth_sessions.auth_session_token": "token_hash", "auth_rates.PRIMARY": "id", "auth_controls.PRIMARY": "id",
 		"users.PRIMARY": "id", "users.users_email_key": "email", "games.PRIMARY": "id", "games.games_slug_key": "slug", "jobs.PRIMARY": "id", "jobs.jobs_idempotency_key": "idempotency_key"}
 	rows, err := db.QueryContext(ctx, "SELECT table_name,index_name,GROUP_CONCAT(column_name ORDER BY seq_in_index) FROM information_schema.statistics WHERE table_schema=DATABASE() AND non_unique=0 GROUP BY table_name,index_name")
 	if err != nil {

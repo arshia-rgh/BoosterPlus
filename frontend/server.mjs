@@ -115,7 +115,9 @@ app.use("/api", (req, res) => {
     bytes += chunk.length;
     if (
       bytes >
-      (req.path.startsWith("/v1/admin/catalog/") ||
+      (req.path.startsWith("/v1/orders") ||
+      req.path.startsWith("/v1/admin/orders") ||
+      req.path.startsWith("/v1/admin/catalog/") ||
       req.path.startsWith("/v1/catalog/")
         ? 262144
         : 16384)

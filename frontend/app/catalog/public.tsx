@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLoaderData, useParams } from "react-router";
+import { FavoriteButton } from "../orders/favorites";
 import DynamicForm from "./dynamic-form";
 import { Select } from "./controls";
 import { price, type Listing, type Release, type Package } from "./model";
@@ -54,7 +55,8 @@ export function GameCatalog() {
         </Link>
       )}
       <p className="quiet">
-        Orders and crypto checkout will open in a later release.
+        Submit a custom request or choose a fixed package. Crypto checkout is
+        being prepared.
       </p>
     </main>
   );
@@ -77,6 +79,7 @@ export function GamePage() {
     <main id="main" className="page catalog-page">
       <Link to="/games">← All games</Link>
       <Intro release={release} />
+      <FavoriteButton kind="game" slug={release.slug} />
       <Offerings release={release} />
     </main>
   );
@@ -157,6 +160,11 @@ export function ServicePage() {
     <main id="main" className="page catalog-page">
       <Link to={`/games/${release.slug}`}>← {release.configuration.name}</Link>
       <h1>{service.name}</h1>
+      <FavoriteButton
+        kind="service"
+        slug={release.slug}
+        service={service.key}
+      />
       <p>{service.description}</p>
       <p>
         Custom pricing requires an administrator’s final quote. Select your
@@ -172,7 +180,7 @@ export function ServicePage() {
         ]}
       />
       <DynamicForm
-        key={release.id + service.key + stage}
+        key={release.id + service.key}
         config={release.configuration}
         service={service}
         slug={release.slug}
@@ -198,6 +206,7 @@ function PackageDetails({
   return (
     <>
       <h1>{pack.name}</h1>
+      <FavoriteButton kind="package" slug={release.slug} pack={pack.key} />
       <p>{pack.description}</p>
       <Select
         label="Package variant"

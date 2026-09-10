@@ -153,6 +153,18 @@ func (f CouponRevisionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CouponRevisionMutation", m)
 }
 
+// The FavoriteFunc type is an adapter to allow the use of ordinary
+// function as Favorite mutator.
+type FavoriteFunc func(context.Context, *ent.FavoriteMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FavoriteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FavoriteMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FavoriteMutation", m)
+}
+
 // The GameFunc type is an adapter to allow the use of ordinary
 // function as Game mutator.
 type GameFunc func(context.Context, *ent.GameMutation) (ent.Value, error)
@@ -163,6 +175,54 @@ func (f GameFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GameMutation", m)
+}
+
+// The OrderFunc type is an adapter to allow the use of ordinary
+// function as Order mutator.
+type OrderFunc func(context.Context, *ent.OrderMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrderFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OrderMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderMutation", m)
+}
+
+// The OrderContractFunc type is an adapter to allow the use of ordinary
+// function as OrderContract mutator.
+type OrderContractFunc func(context.Context, *ent.OrderContractMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrderContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OrderContractMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderContractMutation", m)
+}
+
+// The OrderEventFunc type is an adapter to allow the use of ordinary
+// function as OrderEvent mutator.
+type OrderEventFunc func(context.Context, *ent.OrderEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrderEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OrderEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderEventMutation", m)
+}
+
+// The OrderQuoteFunc type is an adapter to allow the use of ordinary
+// function as OrderQuote mutator.
+type OrderQuoteFunc func(context.Context, *ent.OrderQuoteMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrderQuoteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OrderQuoteMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderQuoteMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary

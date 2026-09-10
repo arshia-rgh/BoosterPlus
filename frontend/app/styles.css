@@ -521,3 +521,44 @@ button:disabled {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+.order-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+.order-list li {
+  border: 1px solid var(--line, #3b414c);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.order-list a {
+  display: grid;
+  gap: 0.45rem;
+  overflow-wrap: anywhere;
+}
+.order-list time,
+.order-list small {
+  color: var(--muted, #b5becd);
+  font-size: 0.8rem;
+}
+.order-agreement p,
+.order-id,
+.catalog-section dd {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.catalog-section dt {
+  font-weight: 600;
+  margin-top: 1rem;
+}
+.catalog-section dd {
+  margin-left: 0;
+  margin-top: 0.25rem;
+}

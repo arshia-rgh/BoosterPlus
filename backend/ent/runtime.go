@@ -17,7 +17,12 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/coupon"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponclaim"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/schema"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
@@ -320,6 +325,46 @@ func init() {
 	couponrevision.DefaultID = couponrevisionDescID.Default.(func() string)
 	// couponrevision.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	couponrevision.IDValidator = couponrevisionDescID.Validators[0].(func(string) error)
+	favoriteFields := schema.Favorite{}.Fields()
+	_ = favoriteFields
+	// favoriteDescUserID is the schema descriptor for user_id field.
+	favoriteDescUserID := favoriteFields[1].Descriptor()
+	// favorite.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	favorite.UserIDValidator = favoriteDescUserID.Validators[0].(func(string) error)
+	// favoriteDescTarget is the schema descriptor for target field.
+	favoriteDescTarget := favoriteFields[2].Descriptor()
+	// favorite.TargetValidator is a validator for the "target" field. It is called by the builders before save.
+	favorite.TargetValidator = favoriteDescTarget.Validators[0].(func(string) error)
+	// favoriteDescSlug is the schema descriptor for slug field.
+	favoriteDescSlug := favoriteFields[3].Descriptor()
+	// favorite.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	favorite.SlugValidator = favoriteDescSlug.Validators[0].(func(string) error)
+	// favoriteDescService is the schema descriptor for service field.
+	favoriteDescService := favoriteFields[4].Descriptor()
+	// favorite.DefaultService holds the default value on creation for the service field.
+	favorite.DefaultService = favoriteDescService.Default.(string)
+	// favorite.ServiceValidator is a validator for the "service" field. It is called by the builders before save.
+	favorite.ServiceValidator = favoriteDescService.Validators[0].(func(string) error)
+	// favoriteDescPackageKey is the schema descriptor for package_key field.
+	favoriteDescPackageKey := favoriteFields[5].Descriptor()
+	// favorite.DefaultPackageKey holds the default value on creation for the package_key field.
+	favorite.DefaultPackageKey = favoriteDescPackageKey.Default.(string)
+	// favorite.PackageKeyValidator is a validator for the "package_key" field. It is called by the builders before save.
+	favorite.PackageKeyValidator = favoriteDescPackageKey.Validators[0].(func(string) error)
+	// favoriteDescName is the schema descriptor for name field.
+	favoriteDescName := favoriteFields[7].Descriptor()
+	// favorite.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	favorite.NameValidator = favoriteDescName.Validators[0].(func(string) error)
+	// favoriteDescCreatedAt is the schema descriptor for created_at field.
+	favoriteDescCreatedAt := favoriteFields[8].Descriptor()
+	// favorite.DefaultCreatedAt holds the default value on creation for the created_at field.
+	favorite.DefaultCreatedAt = favoriteDescCreatedAt.Default.(func() time.Time)
+	// favoriteDescID is the schema descriptor for id field.
+	favoriteDescID := favoriteFields[0].Descriptor()
+	// favorite.DefaultID holds the default value on creation for the id field.
+	favorite.DefaultID = favoriteDescID.Default.(func() string)
+	// favorite.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	favorite.IDValidator = favoriteDescID.Validators[0].(func(string) error)
 	gameFields := schema.Game{}.Fields()
 	_ = gameFields
 	// gameDescSlug is the schema descriptor for slug field.
@@ -392,6 +437,190 @@ func init() {
 	game.DefaultID = gameDescID.Default.(func() string)
 	// game.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	game.IDValidator = gameDescID.Validators[0].(func(string) error)
+	orderFields := schema.Order{}.Fields()
+	_ = orderFields
+	// orderDescUserID is the schema descriptor for user_id field.
+	orderDescUserID := orderFields[1].Descriptor()
+	// order.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	order.UserIDValidator = orderDescUserID.Validators[0].(func(string) error)
+	// orderDescGameID is the schema descriptor for game_id field.
+	orderDescGameID := orderFields[2].Descriptor()
+	// order.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
+	order.GameIDValidator = orderDescGameID.Validators[0].(func(string) error)
+	// orderDescGameName is the schema descriptor for game_name field.
+	orderDescGameName := orderFields[3].Descriptor()
+	// order.GameNameValidator is a validator for the "game_name" field. It is called by the builders before save.
+	order.GameNameValidator = orderDescGameName.Validators[0].(func(string) error)
+	// orderDescSlug is the schema descriptor for slug field.
+	orderDescSlug := orderFields[4].Descriptor()
+	// order.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	order.SlugValidator = orderDescSlug.Validators[0].(func(string) error)
+	// orderDescService is the schema descriptor for service field.
+	orderDescService := orderFields[5].Descriptor()
+	// order.ServiceValidator is a validator for the "service" field. It is called by the builders before save.
+	order.ServiceValidator = orderDescService.Validators[0].(func(string) error)
+	// orderDescPackageKey is the schema descriptor for package_key field.
+	orderDescPackageKey := orderFields[6].Descriptor()
+	// order.DefaultPackageKey holds the default value on creation for the package_key field.
+	order.DefaultPackageKey = orderDescPackageKey.Default.(string)
+	// order.PackageKeyValidator is a validator for the "package_key" field. It is called by the builders before save.
+	order.PackageKeyValidator = orderDescPackageKey.Validators[0].(func(string) error)
+	// orderDescVariantKey is the schema descriptor for variant_key field.
+	orderDescVariantKey := orderFields[7].Descriptor()
+	// order.DefaultVariantKey holds the default value on creation for the variant_key field.
+	order.DefaultVariantKey = orderDescVariantKey.Default.(string)
+	// order.VariantKeyValidator is a validator for the "variant_key" field. It is called by the builders before save.
+	order.VariantKeyValidator = orderDescVariantKey.Validators[0].(func(string) error)
+	// orderDescRequestKey is the schema descriptor for request_key field.
+	orderDescRequestKey := orderFields[9].Descriptor()
+	// order.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
+	order.RequestKeyValidator = orderDescRequestKey.Validators[0].(func(string) error)
+	// orderDescRequestHash is the schema descriptor for request_hash field.
+	orderDescRequestHash := orderFields[10].Descriptor()
+	// order.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	order.RequestHashValidator = orderDescRequestHash.Validators[0].(func(string) error)
+	// orderDescVersion is the schema descriptor for version field.
+	orderDescVersion := orderFields[11].Descriptor()
+	// order.DefaultVersion holds the default value on creation for the version field.
+	order.DefaultVersion = orderDescVersion.Default.(int)
+	// orderDescCouponCode is the schema descriptor for coupon_code field.
+	orderDescCouponCode := orderFields[16].Descriptor()
+	// order.DefaultCouponCode holds the default value on creation for the coupon_code field.
+	order.DefaultCouponCode = orderDescCouponCode.Default.(string)
+	// order.CouponCodeValidator is a validator for the "coupon_code" field. It is called by the builders before save.
+	order.CouponCodeValidator = orderDescCouponCode.Validators[0].(func(string) error)
+	// orderDescTermsVersion is the schema descriptor for terms_version field.
+	orderDescTermsVersion := orderFields[17].Descriptor()
+	// order.TermsVersionValidator is a validator for the "terms_version" field. It is called by the builders before save.
+	order.TermsVersionValidator = orderDescTermsVersion.Validators[0].(func(string) error)
+	// orderDescQuoteCount is the schema descriptor for quote_count field.
+	orderDescQuoteCount := orderFields[18].Descriptor()
+	// order.DefaultQuoteCount holds the default value on creation for the quote_count field.
+	order.DefaultQuoteCount = orderDescQuoteCount.Default.(int)
+	// orderDescCurrentQuote is the schema descriptor for current_quote field.
+	orderDescCurrentQuote := orderFields[19].Descriptor()
+	// order.DefaultCurrentQuote holds the default value on creation for the current_quote field.
+	order.DefaultCurrentQuote = orderDescCurrentQuote.Default.(string)
+	// order.CurrentQuoteValidator is a validator for the "current_quote" field. It is called by the builders before save.
+	order.CurrentQuoteValidator = orderDescCurrentQuote.Validators[0].(func(string) error)
+	// orderDescCurrentContract is the schema descriptor for current_contract field.
+	orderDescCurrentContract := orderFields[20].Descriptor()
+	// order.DefaultCurrentContract holds the default value on creation for the current_contract field.
+	order.DefaultCurrentContract = orderDescCurrentContract.Default.(string)
+	// order.CurrentContractValidator is a validator for the "current_contract" field. It is called by the builders before save.
+	order.CurrentContractValidator = orderDescCurrentContract.Validators[0].(func(string) error)
+	// orderDescCreatedAt is the schema descriptor for created_at field.
+	orderDescCreatedAt := orderFields[21].Descriptor()
+	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
+	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() time.Time)
+	// orderDescUpdatedAt is the schema descriptor for updated_at field.
+	orderDescUpdatedAt := orderFields[22].Descriptor()
+	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() time.Time)
+	// orderDescID is the schema descriptor for id field.
+	orderDescID := orderFields[0].Descriptor()
+	// order.DefaultID holds the default value on creation for the id field.
+	order.DefaultID = orderDescID.Default.(func() string)
+	// order.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	order.IDValidator = orderDescID.Validators[0].(func(string) error)
+	ordercontractFields := schema.OrderContract{}.Fields()
+	_ = ordercontractFields
+	// ordercontractDescOrderID is the schema descriptor for order_id field.
+	ordercontractDescOrderID := ordercontractFields[1].Descriptor()
+	// ordercontract.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	ordercontract.OrderIDValidator = ordercontractDescOrderID.Validators[0].(func(string) error)
+	// ordercontractDescActiveOrderID is the schema descriptor for active_order_id field.
+	ordercontractDescActiveOrderID := ordercontractFields[2].Descriptor()
+	// ordercontract.ActiveOrderIDValidator is a validator for the "active_order_id" field. It is called by the builders before save.
+	ordercontract.ActiveOrderIDValidator = ordercontractDescActiveOrderID.Validators[0].(func(string) error)
+	// ordercontractDescUserID is the schema descriptor for user_id field.
+	ordercontractDescUserID := ordercontractFields[3].Descriptor()
+	// ordercontract.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	ordercontract.UserIDValidator = ordercontractDescUserID.Validators[0].(func(string) error)
+	// ordercontractDescGameID is the schema descriptor for game_id field.
+	ordercontractDescGameID := ordercontractFields[4].Descriptor()
+	// ordercontract.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
+	ordercontract.GameIDValidator = ordercontractDescGameID.Validators[0].(func(string) error)
+	// ordercontractDescPackageKey is the schema descriptor for package_key field.
+	ordercontractDescPackageKey := ordercontractFields[5].Descriptor()
+	// ordercontract.DefaultPackageKey holds the default value on creation for the package_key field.
+	ordercontract.DefaultPackageKey = ordercontractDescPackageKey.Default.(string)
+	// ordercontract.PackageKeyValidator is a validator for the "package_key" field. It is called by the builders before save.
+	ordercontract.PackageKeyValidator = ordercontractDescPackageKey.Validators[0].(func(string) error)
+	// ordercontractDescVariantKey is the schema descriptor for variant_key field.
+	ordercontractDescVariantKey := ordercontractFields[6].Descriptor()
+	// ordercontract.DefaultVariantKey holds the default value on creation for the variant_key field.
+	ordercontract.DefaultVariantKey = ordercontractDescVariantKey.Default.(string)
+	// ordercontract.VariantKeyValidator is a validator for the "variant_key" field. It is called by the builders before save.
+	ordercontract.VariantKeyValidator = ordercontractDescVariantKey.Validators[0].(func(string) error)
+	// ordercontractDescCapacityHeld is the schema descriptor for capacity_held field.
+	ordercontractDescCapacityHeld := ordercontractFields[7].Descriptor()
+	// ordercontract.DefaultCapacityHeld holds the default value on creation for the capacity_held field.
+	ordercontract.DefaultCapacityHeld = ordercontractDescCapacityHeld.Default.(bool)
+	// ordercontractDescCreatedAt is the schema descriptor for created_at field.
+	ordercontractDescCreatedAt := ordercontractFields[10].Descriptor()
+	// ordercontract.DefaultCreatedAt holds the default value on creation for the created_at field.
+	ordercontract.DefaultCreatedAt = ordercontractDescCreatedAt.Default.(func() time.Time)
+	// ordercontractDescID is the schema descriptor for id field.
+	ordercontractDescID := ordercontractFields[0].Descriptor()
+	// ordercontract.DefaultID holds the default value on creation for the id field.
+	ordercontract.DefaultID = ordercontractDescID.Default.(func() string)
+	// ordercontract.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	ordercontract.IDValidator = ordercontractDescID.Validators[0].(func(string) error)
+	ordereventFields := schema.OrderEvent{}.Fields()
+	_ = ordereventFields
+	// ordereventDescOrderID is the schema descriptor for order_id field.
+	ordereventDescOrderID := ordereventFields[1].Descriptor()
+	// orderevent.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	orderevent.OrderIDValidator = ordereventDescOrderID.Validators[0].(func(string) error)
+	// ordereventDescAction is the schema descriptor for action field.
+	ordereventDescAction := ordereventFields[3].Descriptor()
+	// orderevent.ActionValidator is a validator for the "action" field. It is called by the builders before save.
+	orderevent.ActionValidator = ordereventDescAction.Validators[0].(func(string) error)
+	// ordereventDescMessage is the schema descriptor for message field.
+	ordereventDescMessage := ordereventFields[4].Descriptor()
+	// orderevent.DefaultMessage holds the default value on creation for the message field.
+	orderevent.DefaultMessage = ordereventDescMessage.Default.(string)
+	// orderevent.MessageValidator is a validator for the "message" field. It is called by the builders before save.
+	orderevent.MessageValidator = ordereventDescMessage.Validators[0].(func(string) error)
+	// ordereventDescActorID is the schema descriptor for actor_id field.
+	ordereventDescActorID := ordereventFields[5].Descriptor()
+	// orderevent.ActorIDValidator is a validator for the "actor_id" field. It is called by the builders before save.
+	orderevent.ActorIDValidator = ordereventDescActorID.Validators[0].(func(string) error)
+	// ordereventDescActorRole is the schema descriptor for actor_role field.
+	ordereventDescActorRole := ordereventFields[6].Descriptor()
+	// orderevent.ActorRoleValidator is a validator for the "actor_role" field. It is called by the builders before save.
+	orderevent.ActorRoleValidator = ordereventDescActorRole.Validators[0].(func(string) error)
+	// ordereventDescCreatedAt is the schema descriptor for created_at field.
+	ordereventDescCreatedAt := ordereventFields[7].Descriptor()
+	// orderevent.DefaultCreatedAt holds the default value on creation for the created_at field.
+	orderevent.DefaultCreatedAt = ordereventDescCreatedAt.Default.(func() time.Time)
+	// ordereventDescID is the schema descriptor for id field.
+	ordereventDescID := ordereventFields[0].Descriptor()
+	// orderevent.DefaultID holds the default value on creation for the id field.
+	orderevent.DefaultID = ordereventDescID.Default.(func() string)
+	// orderevent.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	orderevent.IDValidator = ordereventDescID.Validators[0].(func(string) error)
+	orderquoteFields := schema.OrderQuote{}.Fields()
+	_ = orderquoteFields
+	// orderquoteDescOrderID is the schema descriptor for order_id field.
+	orderquoteDescOrderID := orderquoteFields[1].Descriptor()
+	// orderquote.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	orderquote.OrderIDValidator = orderquoteDescOrderID.Validators[0].(func(string) error)
+	// orderquoteDescCreatedBy is the schema descriptor for created_by field.
+	orderquoteDescCreatedBy := orderquoteFields[5].Descriptor()
+	// orderquote.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	orderquote.CreatedByValidator = orderquoteDescCreatedBy.Validators[0].(func(string) error)
+	// orderquoteDescCreatedAt is the schema descriptor for created_at field.
+	orderquoteDescCreatedAt := orderquoteFields[6].Descriptor()
+	// orderquote.DefaultCreatedAt holds the default value on creation for the created_at field.
+	orderquote.DefaultCreatedAt = orderquoteDescCreatedAt.Default.(func() time.Time)
+	// orderquoteDescID is the schema descriptor for id field.
+	orderquoteDescID := orderquoteFields[0].Descriptor()
+	// orderquote.DefaultID holds the default value on creation for the id field.
+	orderquote.DefaultID = orderquoteDescID.Default.(func() string)
+	// orderquote.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	orderquote.IDValidator = orderquoteDescID.Validators[0].(func(string) error)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescEmail is the schema descriptor for email field.

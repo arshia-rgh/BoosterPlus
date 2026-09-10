@@ -305,6 +305,31 @@ var (
 			},
 		},
 	}
+	// FavoritesColumns holds the columns for the "favorites" table.
+	FavoritesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "target", Type: field.TypeString, Size: 200},
+		{Name: "slug", Type: field.TypeString, Size: 80},
+		{Name: "service", Type: field.TypeString, Size: 48, Default: ""},
+		{Name: "package_key", Type: field.TypeString, Size: 48, Default: ""},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"game", "service", "package"}},
+		{Name: "name", Type: field.TypeString, Size: 300},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// FavoritesTable holds the schema information for the "favorites" table.
+	FavoritesTable = &schema.Table{
+		Name:       "favorites",
+		Columns:    FavoritesColumns,
+		PrimaryKey: []*schema.Column{FavoritesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "favorite_target",
+				Unique:  true,
+				Columns: []*schema.Column{FavoritesColumns[1], FavoritesColumns[2]},
+			},
+		},
+	}
 	// GamesColumns holds the columns for the "games" table.
 	GamesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -323,6 +348,139 @@ var (
 		Name:       "games",
 		Columns:    GamesColumns,
 		PrimaryKey: []*schema.Column{GamesColumns[0]},
+	}
+	// OrdersColumns holds the columns for the "orders" table.
+	OrdersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "game_id", Type: field.TypeString, Size: 36},
+		{Name: "game_name", Type: field.TypeString, Size: 120},
+		{Name: "slug", Type: field.TypeString, Size: 80},
+		{Name: "service", Type: field.TypeString, Size: 48},
+		{Name: "package_key", Type: field.TypeString, Size: 48, Default: ""},
+		{Name: "variant_key", Type: field.TypeString, Size: 48, Default: ""},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"custom", "package"}},
+		{Name: "request_key", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"submitted", "needs_information", "quoted", "awaiting_payment", "queued", "in_progress", "on_hold", "completed", "rejected", "cancelled", "expired"}},
+		{Name: "answers", Type: field.TypeJSON},
+		{Name: "snapshot", Type: field.TypeJSON},
+		{Name: "estimate", Type: field.TypeJSON},
+		{Name: "coupon_code", Type: field.TypeString, Size: 40, Default: ""},
+		{Name: "terms_version", Type: field.TypeString, Size: 80},
+		{Name: "quote_count", Type: field.TypeInt, Default: 0},
+		{Name: "current_quote", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "current_contract", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// OrdersTable holds the schema information for the "orders" table.
+	OrdersTable = &schema.Table{
+		Name:       "orders",
+		Columns:    OrdersColumns,
+		PrimaryKey: []*schema.Column{OrdersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "order_request",
+				Unique:  true,
+				Columns: []*schema.Column{OrdersColumns[1], OrdersColumns[9]},
+			},
+			{
+				Name:    "order_customer_history",
+				Unique:  false,
+				Columns: []*schema.Column{OrdersColumns[1], OrdersColumns[21], OrdersColumns[0]},
+			},
+			{
+				Name:    "order_admin_queue",
+				Unique:  false,
+				Columns: []*schema.Column{OrdersColumns[12], OrdersColumns[21], OrdersColumns[0]},
+			},
+		},
+	}
+	// OrderContractsColumns holds the columns for the "order_contracts" table.
+	OrderContractsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "active_order_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "game_id", Type: field.TypeString, Size: 36},
+		{Name: "package_key", Type: field.TypeString, Size: 48, Default: ""},
+		{Name: "variant_key", Type: field.TypeString, Size: 48, Default: ""},
+		{Name: "capacity_held", Type: field.TypeBool, Default: false},
+		{Name: "payment_state", Type: field.TypeEnum, Enums: []string{"unissued", "invoice_pending", "awaiting_payment", "funds_detected", "settled", "retired"}},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// OrderContractsTable holds the schema information for the "order_contracts" table.
+	OrderContractsTable = &schema.Table{
+		Name:       "order_contracts",
+		Columns:    OrderContractsColumns,
+		PrimaryKey: []*schema.Column{OrderContractsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "order_active_contract",
+				Unique:  true,
+				Columns: []*schema.Column{OrderContractsColumns[2]},
+			},
+			{
+				Name:    "order_contract_history",
+				Unique:  false,
+				Columns: []*schema.Column{OrderContractsColumns[1]},
+			},
+			{
+				Name:    "package_capacity",
+				Unique:  false,
+				Columns: []*schema.Column{OrderContractsColumns[4], OrderContractsColumns[5], OrderContractsColumns[6], OrderContractsColumns[7]},
+			},
+		},
+	}
+	// OrderEventsColumns holds the columns for the "order_events" table.
+	OrderEventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "action", Type: field.TypeString, Size: 48},
+		{Name: "message", Type: field.TypeString, Size: 2000, Default: ""},
+		{Name: "actor_id", Type: field.TypeString, Size: 36},
+		{Name: "actor_role", Type: field.TypeString, Size: 32},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// OrderEventsTable holds the schema information for the "order_events" table.
+	OrderEventsTable = &schema.Table{
+		Name:       "order_events",
+		Columns:    OrderEventsColumns,
+		PrimaryKey: []*schema.Column{OrderEventsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "order_event_revision",
+				Unique:  true,
+				Columns: []*schema.Column{OrderEventsColumns[1], OrderEventsColumns[2]},
+			},
+		},
+	}
+	// OrderQuotesColumns holds the columns for the "order_quotes" table.
+	OrderQuotesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "revision", Type: field.TypeInt},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"issued", "accepted", "superseded", "declined"}},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "created_by", Type: field.TypeString, Size: 36},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// OrderQuotesTable holds the schema information for the "order_quotes" table.
+	OrderQuotesTable = &schema.Table{
+		Name:       "order_quotes",
+		Columns:    OrderQuotesColumns,
+		PrimaryKey: []*schema.Column{OrderQuotesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "order_quote_revision",
+				Unique:  true,
+				Columns: []*schema.Column{OrderQuotesColumns[1], OrderQuotesColumns[2]},
+			},
+		},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
@@ -365,7 +523,12 @@ var (
 		CouponsTable,
 		CouponClaimsTable,
 		CouponRevisionsTable,
+		FavoritesTable,
 		GamesTable,
+		OrdersTable,
+		OrderContractsTable,
+		OrderEventsTable,
+		OrderQuotesTable,
 		UsersTable,
 	}
 )

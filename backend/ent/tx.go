@@ -38,8 +38,18 @@ type Tx struct {
 	CouponClaim *CouponClaimClient
 	// CouponRevision is the client for interacting with the CouponRevision builders.
 	CouponRevision *CouponRevisionClient
+	// Favorite is the client for interacting with the Favorite builders.
+	Favorite *FavoriteClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
+	// Order is the client for interacting with the Order builders.
+	Order *OrderClient
+	// OrderContract is the client for interacting with the OrderContract builders.
+	OrderContract *OrderContractClient
+	// OrderEvent is the client for interacting with the OrderEvent builders.
+	OrderEvent *OrderEventClient
+	// OrderQuote is the client for interacting with the OrderQuote builders.
+	OrderQuote *OrderQuoteClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -185,7 +195,12 @@ func (tx *Tx) init() {
 	tx.Coupon = NewCouponClient(tx.config)
 	tx.CouponClaim = NewCouponClaimClient(tx.config)
 	tx.CouponRevision = NewCouponRevisionClient(tx.config)
+	tx.Favorite = NewFavoriteClient(tx.config)
 	tx.Game = NewGameClient(tx.config)
+	tx.Order = NewOrderClient(tx.config)
+	tx.OrderContract = NewOrderContractClient(tx.config)
+	tx.OrderEvent = NewOrderEventClient(tx.config)
+	tx.OrderQuote = NewOrderQuoteClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

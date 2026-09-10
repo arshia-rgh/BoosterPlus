@@ -24,7 +24,13 @@ func (s *Service) Protect(capability string, next func(http.ResponseWriter, *htt
 // StaffTransaction fences catalog mutations against role/suspension changes and
 // rechecks the live session inside the same READ COMMITTED transaction.
 func (s *Service) StaffTransaction(ctx context.Context, p *Principal, sensitive bool, fn func(*ent.Tx, *Principal) error) error {
-	if err := Require(p, "admin"); err != nil {
+	return s.AuthorizedTransaction(ctx, p, "admin", sensitive, fn)
+}
+
+// AuthorizedTransaction fences short business mutations against concurrent role,
+// suspension and session changes. All effects must remain inside the transaction.
+func (s *Service) AuthorizedTransaction(ctx context.Context, p *Principal, capability string, sensitive bool, fn func(*ent.Tx, *Principal) error) error {
+	if err := Require(p, capability); err != nil {
 		return err
 	}
 	return s.transaction(ctx, func(tx *ent.Tx) error {
@@ -35,7 +41,7 @@ func (s *Service) StaffTransaction(ctx context.Context, p *Principal, sensitive 
 		if err != nil {
 			return err
 		}
-		if err = Require(current, "admin"); err != nil {
+		if err = Require(current, capability); err != nil {
 			return err
 		}
 		if sensitive {
@@ -45,6 +51,15 @@ func (s *Service) StaffTransaction(ctx context.Context, p *Principal, sensitive 
 		}
 		return fn(tx, current)
 	})
+}
+
+// TermsVersion identifies the configured agreement; it is public bootstrap data.
+func (s *Service) TermsVersion() string { return s.config.TermsVersion }
+
+// RequestDigest hashes canonical request data with domain separation for private
+// idempotency comparison. Neither raw request data nor the digest belongs in logs.
+func (s *Service) RequestDigest(scope string, data []byte) string {
+	return s.digest("business-request", scope, string(data))
 }
 
 // ProtectRate applies shared per-address and per-account limits after the usual

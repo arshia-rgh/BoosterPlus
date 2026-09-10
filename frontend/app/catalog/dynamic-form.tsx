@@ -1,4 +1,6 @@
 import { useId, useState, type SubmitEvent } from "react";
+import SubmitOrder from "../orders/submit";
+import { Action } from "./controls";
 import { post } from "../identity/api";
 import { ErrorNotice, Issues } from "./controls";
 import {
@@ -201,6 +203,10 @@ export default function DynamicForm({
   variant,
   paused = false,
   previewPath,
+  validationPath,
+  initialAnswers = {},
+  initialCoupon = "",
+  onCommit,
 }: {
   config: Configuration;
   service: Service;
@@ -208,17 +214,29 @@ export default function DynamicForm({
   slug: string;
   stage?: string;
   pack?: string;
-  variant?: Variant;
+  variant?: Variant | undefined;
   paused?: boolean;
   previewPath?: string;
+  validationPath?: string;
+  initialAnswers?: Answers;
+  initialCoupon?: string;
+  onCommit?: (answers: Answers, coupon: string) => Promise<void>;
 }) {
-  const [raw, setRaw] = useState<Answers>({}),
+  const [raw, setRaw] = useState<Answers>(initialAnswers),
     [issues, setIssues] = useState<Issue[]>([]),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
     [valid, setValid] = useState(false),
     [estimate, setEstimate] = useState<Estimate | null>(null),
-    [coupon, setCoupon] = useState("");
+    [coupon, setCoupon] = useState(initialCoupon);
+  const [lastStage, setLastStage] = useState(stage);
+  if (lastStage !== stage) {
+    setLastStage(stage);
+    setValid(false);
+    setEstimate(null);
+    setIssues([]);
+    setError(null);
+  }
   const couponID = useId();
   const values = visibleAnswers(service, raw, stage);
   const unavailable = paused || variant?.capacity === 0;
@@ -231,7 +249,9 @@ export default function DynamicForm({
     setEstimate(null);
     try {
       const result = await post(
-        previewPath ?? `/catalog/games/${encodeURIComponent(slug)}/validate`,
+        validationPath ??
+          previewPath ??
+          `/catalog/games/${encodeURIComponent(slug)}/validate`,
         {
           release_id: releaseID,
           service: service.key,
@@ -246,7 +266,10 @@ export default function DynamicForm({
       setRaw(result.answers);
       if (
         result.issues.length === 0 &&
-        (coupon.trim() !== "" || (!variant && stage === "estimate"))
+        !onCommit &&
+        ((coupon.trim() !== "" &&
+          (stage === "estimate" || variant || service.pricing)) ||
+          (!variant && stage === "estimate"))
       ) {
         const price = await post(
           coupon.trim() !== ""
@@ -261,6 +284,7 @@ export default function DynamicForm({
             ...(coupon.trim() !== ""
               ? {
                   code: coupon.trim(),
+                  stage,
                   package: pack,
                   variant: variant?.key ?? "",
                 }
@@ -320,7 +344,7 @@ export default function DynamicForm({
               error={issues.find((issue) => issue.path === field.key)?.message}
             />
           ))}
-        {!previewPath && (stage === "estimate" || variant) && (
+        {!previewPath && (stage === "estimate" || stage === "order") && (
           <div className="catalog-input">
             <label htmlFor={couponID}>Coupon code (optional)</label>
             <input
@@ -390,12 +414,45 @@ export default function DynamicForm({
           ) : null}
         </section>
       )}
+      {valid &&
+        stage === "order" &&
+        !previewPath &&
+        !unavailable &&
+        (onCommit ? (
+          <Action
+            disabled={busy}
+            onClick={() => {
+              setBusy(true);
+              setError(null);
+              void onCommit(values, coupon)
+                .catch((cause: unknown) => {
+                  setError(cause);
+                })
+                .finally(() => {
+                  setBusy(false);
+                });
+            }}
+          >
+            Save revised request
+          </Action>
+        ) : (
+          <SubmitOrder
+            slug={slug}
+            service={service.key}
+            releaseID={releaseID}
+            pack={pack}
+            variant={variant}
+            answers={values}
+            coupon={coupon}
+            estimate={estimate}
+            setBusy={setBusy}
+          />
+        ))}
       {unavailable && (
         <p role="status">This offering is currently unavailable.</p>
       )}
       <p className="quiet">
-        Orders and payments are not open yet. Do not enter game passwords or
-        recovery codes in this form.
+        Do not enter game passwords or recovery codes in this form.
       </p>
     </form>
   );

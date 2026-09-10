@@ -170,6 +170,7 @@ type CouponCheck struct {
 	Variant   string  `json:"variant"`
 	Answers   Answers `json:"answers"`
 	Code      string  `json:"code"`
+	Stage     string  `json:"stage,omitempty"`
 }
 
 // CheckCoupon returns an indicative discount using current authoritative prices.
@@ -195,7 +196,40 @@ func (s *Store) CheckCoupon(ctx context.Context, p *identity.Principal, slug str
 		return Estimate{}, ErrConflict
 	}
 	now := time.Now().UTC()
+	stage := input.Stage
+	if stage == "" {
+		stage = "estimate"
+	}
+	if stage != "estimate" && stage != "order" {
+		return Estimate{}, &Invalid{[]Issue{{"stage", "Choose estimate or order information."}}}
+	}
 	result := Calculate(release, input.Service, input.Answers, now)
+	if stage == "order" && input.Package == "" && input.Variant == "" {
+		validated := ValidateAnswers(release.Configuration, input.Service, stage, input.Answers, nil)
+		estimateAnswers := Answers{}
+		for _, service := range release.Configuration.Services {
+			if service.Key == input.Service {
+				for _, field := range service.Fields {
+					if field.Stage == "estimate" {
+						if value, ok := validated.Answers[field.Key]; ok {
+							estimateAnswers[field.Key] = value
+						}
+					}
+				}
+			}
+		}
+		result = Calculate(release, input.Service, estimateAnswers, now)
+		result.Answers = validated.Answers
+		if len(validated.Issues) > 0 {
+			result.Issues = validated.Issues
+			result.Outcome = "invalid"
+			result.AmountMinor = ""
+			result.Currency = ""
+			result.Lines = []PriceLine{}
+			result.exactSubtotal = nil
+			return result, nil
+		}
+	}
 	if input.Package != "" || input.Variant != "" {
 		i := slices.IndexFunc(release.Configuration.Packages, func(pack Package) bool { return pack.Key == input.Package && pack.Service == input.Service })
 		if i < 0 {

@@ -61,6 +61,11 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "order_conflict",
+    "This order, quote, or availability changed. Reload before continuing.",
+  ],
+  ["order_invalid", "Review the highlighted order issues."],
+  [
     "catalog_conflict",
     "This catalog changed or is unavailable. Reload it before continuing.",
   ],

@@ -19,6 +19,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/httpapi"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
 )
 
 // Server opens the runtime database without DDL privileges and serves HTTP.
@@ -46,7 +47,7 @@ func Server(ctx context.Context, cfg config.Config, logger *slog.Logger) (result
 		return fmt.Errorf("listen: %w", err)
 	}
 	logger.InfoContext(ctx, "API listening", "address", listener.Addr().String())
-	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, catalog.New(client, auth).Register))
+	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register))
 }
 
 // Serve applies transport timeouts and drains in-flight work on cancellation.

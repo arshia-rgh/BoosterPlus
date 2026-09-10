@@ -834,11 +834,14 @@ export default function Identity({
             <>
               <nav className="account-nav" aria-label="Account navigation">
                 <Link to="/account">Profile and security</Link>
+                <Link to="/orders">My orders</Link>
+                <Link to="/favorites">Favorites</Link>
                 {session.capabilities.includes("admin") && (
                   <>
                     <Link to="/admin">Administration</Link>
                     <Link to="/admin/catalog">Catalog editor</Link>
                     <Link to="/admin/coupons">Coupons</Link>
+                    <Link to="/admin/orders">Order queue</Link>
                   </>
                 )}
                 {session.capabilities.includes("booster") && (

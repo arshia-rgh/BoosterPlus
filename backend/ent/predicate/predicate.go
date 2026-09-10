@@ -42,8 +42,23 @@ type CouponClaim func(*sql.Selector)
 // CouponRevision is the predicate function for couponrevision builders.
 type CouponRevision func(*sql.Selector)
 
+// Favorite is the predicate function for favorite builders.
+type Favorite func(*sql.Selector)
+
 // Game is the predicate function for game builders.
 type Game func(*sql.Selector)
+
+// Order is the predicate function for order builders.
+type Order func(*sql.Selector)
+
+// OrderContract is the predicate function for ordercontract builders.
+type OrderContract func(*sql.Selector)
+
+// OrderEvent is the predicate function for orderevent builders.
+type OrderEvent func(*sql.Selector)
+
+// OrderQuote is the predicate function for orderquote builders.
+type OrderQuote func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
