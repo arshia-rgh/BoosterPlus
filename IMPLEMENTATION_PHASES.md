@@ -225,7 +225,9 @@ Completion evidence:
 - Browser redirects, screenshots, and manually entered transaction hashes cannot independently mark payments/refunds confirmed.
 - Payment and refund sandbox journeys pass. A controlled live smoke test occurs in P12 before public sales.
 
-**Decision gate:** payment approach/provider, operating country/regions, assets/networks, currency, fees, and refund policy must be settled for this integration. Direct-address handling requires a revised chain-monitoring/key-custody work package before P07 can be considered complete.
+**Implementation update:** NOWPayments is selected for the first hosted crypto adapter after the owner requested minimal-onboarding third-party processing. [Provider decision](docs/crypto-provider-decision.md) records the evidence and limitations. Transport implementation does not enable checkout or complete P07.
+
+**Decision gate:** live merchant eligibility/settings, assets/networks, settlement currency, fees, and refund policy must be settled before live activation. Booster Plus does not add a country/document form solely for this adapter; provider-required checks remain provider-controlled. Direct-address handling requires a revised chain-monitoring/key-custody work package before P07 can be considered complete.
 
 ## 12. P08 — Booster portal, scheduling, and fulfillment
 

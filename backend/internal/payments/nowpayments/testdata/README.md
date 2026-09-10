@@ -1,0 +1,7 @@
+# IPN canonicalization vectors
+
+The four synthetic vectors were generated independently with Node.js v26.0.0 using built-in `JSON.parse`, recursively sorted object keys, `JSON.stringify`, and `crypto.createHmac('sha512', 'ipn-test-'.repeat(4))`. This matches the [official provider reference algorithm](https://github.com/NowPaymentsIO/nowpayments-sdk-nodejs/blob/08e14f901804a08914ff88f4f1da7f1820bf2e08/src/ipn.js). They contain no real payment, account or credential.
+
+They qualify exponent thresholds, negative zero, a precision-sensitive decimal, nested objects/arrays, integer-index keys, UTF-16 property ordering, HTML characters, Unicode separators, controls and literal backslash sequences. The fixture preserves the original body, expected canonical bytes and independent HMAC. The Go tests do not regenerate expected signatures with the implementation under test or require a JavaScript runtime.
+
+The signature algorithm uses JavaScript number semantics solely to authenticate a notification. Provider money is parsed separately as exact decimal tokens from the authenticated payment-status API. Numeric payment IDs outside JavaScript's safe integer range are rejected; larger string IDs remain exact. JavaScript prototype-related property names are deliberately rejected. Invalid UTF-8, duplicate keys, multiple JSON values, excessive nesting and unsupported numeric representations fail closed. Real provider sandbox fixtures and end-to-end callbacks remain required before live activation.

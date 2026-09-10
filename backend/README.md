@@ -82,3 +82,7 @@ The operator reference is an auditable identifier, never a password or free-form
 ## Catalog and SQL publication storage
 
 SQL migrations 5–6 add `catalog_releases`, a current-release pointer on `games`, guarded upgrade/rollback visibility, and an unverified Mobile Legends draft. Ent maps queries; it never owns migration execution. P03 routes expose admin drafts/preview/publication/history and public catalog/selection validation. Staff mutations share the identity authorization transaction and publication requires recent verification of both factors. See [catalog operations](../docs/catalog.md) for configuration limits, exact-decimal answers, immutable revisions and remaining launch inputs.
+
+## Crypto provider transport
+
+The initial NOWPayments adapter is in `internal/payments/nowpayments`. It supports bounded hosted-invoice creation, exact-decimal payment observations and signed callback references. It is not enabled in the server or worker until the durable payment workflow is implemented and qualified. See [provider decision and integration boundaries](../docs/crypto-provider-decision.md). No live keys belong in Git or chat.

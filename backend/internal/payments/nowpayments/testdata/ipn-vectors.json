@@ -1,0 +1,22 @@
+[
+  {
+    "body": "{\"payment_status\":\"finished\",\"payment_id\":123456,\"price_amount\":123.45,\"actually_paid\":0.00000001}",
+    "canonical": "{\"actually_paid\":1e-8,\"payment_id\":123456,\"payment_status\":\"finished\",\"price_amount\":123.45}",
+    "signature": "2c8be511b164ba94df3eea8a67fcc92cf8113d6157064cd89a6eb1d2940327a9709613335467be733d4864b10d448d617a7ebec05944ae8722c9cc439a5a3471"
+  },
+  {
+    "body": "{\"payment_id\":\"12345678901234567890\",\"fee\":{\"service\":1.23,\"network\":0,\"nested\":[true,null,{\"z\":2,\"a\":\"test\"}]},\"message\":\"<tag>& \\u2028 \\u2029 \\n \\u0001 emoji 😀\"}",
+    "canonical": "{\"fee\":{\"nested\":[true,null,{\"a\":\"test\",\"z\":2}],\"network\":0,\"service\":1.23},\"message\":\"<tag>&     \\n \\u0001 emoji 😀\",\"payment_id\":\"12345678901234567890\"}",
+    "signature": "4c82e85728dfb546e29f33170085e2282e592b0b0fe6a255cd3cc9835db1de7515a97ffeff5ad13fdd0679f4e329bc6ba7391b67695662a6655acac20534523b"
+  },
+  {
+    "body": "{\"payment_id\":123,\"numbers\":[1e-7,1e-6,1e20,1e21,-0,-1.2345,0.123456789012345678],\"keys\":{\"10\":\"ten\",\"2\":\"two\",\"01\":\"leading\",\"𐀀\":\"astral\",\"\":\"bmp\"}}",
+    "canonical": "{\"keys\":{\"2\":\"two\",\"10\":\"ten\",\"01\":\"leading\",\"𐀀\":\"astral\",\"\":\"bmp\"},\"numbers\":[1e-7,0.000001,100000000000000000000,1e+21,0,-1.2345,0.12345678901234568],\"payment_id\":123}",
+    "signature": "dbfb9189a336389ed68b2884ffe7ebdd375f87c109d96a4dc95664fe14c21fb8b3324ca85d336b213f37cfb31089039ed0b9dbc6ea2534c68e394e03dadfd868"
+  },
+  {
+    "body": "{\"payment_id\":123,\"escaped\":\"literal \\\\u2028 slash / backslash \\\\ quote \\\"\"}",
+    "canonical": "{\"escaped\":\"literal \\\\u2028 slash / backslash \\\\ quote \\\"\",\"payment_id\":123}",
+    "signature": "f7b694f59a3977b604f392c4fefc6438e1d3d61da0d177ee03e38879844a5a8377497e717b63b99b0d0a5887a866427ed2e74cb1e9834eb7b2422795dc4d444e"
+  }
+]

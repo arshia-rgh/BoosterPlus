@@ -770,7 +770,7 @@ No phase may substitute mock payment success or hard-coded Mobile Legends-only f
 | ID | Question | Proposed/default treatment | Needed before |
 | --- | --- | --- | --- |
 | D01 | When is the seller paid: after resale with agreed proceeds/commission, or when Booster Plus buys the account before resale? | Customer submissions and admin review/resale are confirmed; settlement timing is open. | Seller settlement implementation. |
-| D02 | Crypto provider or direct addresses? Operating country, customer regions, assets/networks, and settlement preference? | Provider adapter; no specific provider or chain selected. | Payment integration. |
+| D02 | Crypto provider or direct addresses? Operating country, customer regions, assets/networks, and settlement preference? | NOWPayments hosted checkout selected for implementation after provider research; live settlement assets/networks and merchant settings remain unselected. See [provider decision](docs/crypto-provider-decision.md). | Live payment activation; unrelated implementation continues. |
 | D03 | Catalog currency and who pays provider/network fees? | USD reference prices; disclose all fees before acceptance. | Pricing publication/checkout. |
 | D04 | English, Persian, or other languages and regions? | English with localization-ready architecture. | Final UX/content. |
 | D05 — resolved | Play on customer accounts, play together, or both? | Both confirmed by the owner on 8 September 2026; configure eligibility and data collection by mode. | Included in launch scope. |
