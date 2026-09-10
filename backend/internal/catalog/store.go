@@ -300,7 +300,14 @@ func (s *Store) Published(ctx context.Context, slug string) (Release, error) {
 	if err != nil {
 		return Release{}, err
 	}
-	return releaseView(g, r)
+	view, err := releaseView(g, r)
+	// Saved test selections are staff workspace data, not storefront content.
+	for i := range view.Configuration.Services {
+		if plan := view.Configuration.Services[i].Pricing; plan != nil {
+			plan.Cases = nil
+		}
+	}
+	return view, err
 }
 func releaseView(g *ent.Game, r *ent.CatalogRelease) (Release, error) {
 	c, err := configuration(r.Configuration)

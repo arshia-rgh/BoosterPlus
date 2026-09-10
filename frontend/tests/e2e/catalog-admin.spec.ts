@@ -162,6 +162,43 @@ test("staff builds, previews, publishes and archives another game through the ge
   await page.getByLabel(/I verified the actual/).check();
   await page.getByRole("button", { name: "Save draft", exact: true }).click();
   await expect(page.getByText("Changes saved.", { exact: true })).toBeVisible();
+  await service.getByLabel("Price evaluator").selectOption("pricing-v1");
+  await service.getByLabel("Estimate currency").selectOption("USD");
+  await service
+    .getByLabel("Base amount in minor units", { exact: true })
+    .fill("100.25");
+  await service.getByLabel("Maximum estimate in minor units").fill("999999");
+  await service
+    .getByRole("button", { name: "Add price operation", exact: true })
+    .click();
+  const priceRule = service.locator('[data-price-rule="0"]');
+  await priceRule.locator("summary").click();
+  await priceRule
+    .getByLabel("Price operation", { exact: true })
+    .selectOption("per_unit");
+  await priceRule.getByLabel("Operation value").fill("100.25");
+  await priceRule.getByLabel("Quantity field").selectOption("matches");
+  await service
+    .getByRole("button", { name: "Add price example", exact: true })
+    .click();
+  const priceCase = service.locator('[data-price-case="0"]');
+  await priceCase.locator("summary").click();
+  await priceCase.getByLabel("Play mode (required)").selectOption("solo");
+  await priceCase.getByLabel("Matches (required)").fill("2");
+  await priceCase.getByLabel("Expected amount in minor units").fill("300");
+  await page.getByLabel(/I verified the actual/).check();
+  await page.getByRole("button", { name: "Save draft", exact: true }).click();
+  await expect(page.getByText("Changes saved.", { exact: true })).toBeVisible();
+  await page
+    .getByRole("button", { name: "Publish catalog", exact: true })
+    .click();
+  await expect(
+    page.getByText("Expected result differs from the current pricing rules."),
+  ).toBeVisible();
+  await priceCase.getByLabel("Expected amount in minor units").fill("301");
+  await page.getByLabel(/I verified the actual/).check();
+  await page.getByRole("button", { name: "Save draft", exact: true }).click();
+  await expect(page.getByText("Changes saved.", { exact: true })).toBeVisible();
   await page
     .getByRole("button", { name: "Preview saved draft", exact: true })
     .click();
@@ -224,6 +261,16 @@ test("staff builds, previews, publishes and archives another game through the ge
     expect(
       (await new AxeBuilder({ page: customer }).analyze()).violations,
     ).toEqual([]);
+    await expect(
+      customer.getByRole("heading", {
+        name: "Estimated price: USD 3.01",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await customer.screenshot({
+      path: `.cache/pricing-${info.project.name}.png`,
+      fullPage: true,
+    });
     await customer.goto(`http://127.0.0.1:4173/games/${slug}/packages/starter`);
     await expect(customer.locator(".package-price")).toHaveText("USD 12.34");
     await customer.getByLabel("Play mode (required)").selectOption("duo");

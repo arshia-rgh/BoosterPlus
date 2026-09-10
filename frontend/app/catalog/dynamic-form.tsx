@@ -6,6 +6,8 @@ import {
   optionsFor,
   stageIndex,
   validationSchema,
+  estimateSchema,
+  type Estimate,
   visibleAnswers,
   type Answers,
   type Configuration,
@@ -15,7 +17,7 @@ import {
   type Variant,
 } from "./model";
 
-function Input({
+export function Input({
   field,
   config,
   value,
@@ -214,7 +216,8 @@ export default function DynamicForm({
     [issues, setIssues] = useState<Issue[]>([]),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
-    [valid, setValid] = useState(false);
+    [valid, setValid] = useState(false),
+    [estimate, setEstimate] = useState<Estimate | null>(null);
   const values = visibleAnswers(service, raw, stage);
   const unavailable = paused || variant?.capacity === 0;
   async function submit(event: SubmitEvent<HTMLFormElement>) {
@@ -223,6 +226,7 @@ export default function DynamicForm({
     setError(null);
     setIssues([]);
     setValid(false);
+    setEstimate(null);
     try {
       const result = await post(
         previewPath ?? `/catalog/games/${encodeURIComponent(slug)}/validate`,
@@ -238,8 +242,26 @@ export default function DynamicForm({
       );
       setIssues(result.issues);
       setRaw(result.answers);
-      setValid(result.issues.length === 0);
+      if (result.issues.length === 0 && !variant && stage === "estimate") {
+        const price = await post(
+          previewPath
+            ? previewPath.replace("validate-preview", "estimate-preview")
+            : `/catalog/games/${encodeURIComponent(slug)}/estimate`,
+          {
+            release_id: releaseID,
+            service: service.key,
+            answers: result.answers,
+          },
+          estimateSchema,
+        );
+        setEstimate(price);
+        setIssues(price.issues);
+        setValid(price.issues.length === 0);
+      } else {
+        setValid(result.issues.length === 0);
+      }
     } catch (cause) {
+      setValid(false);
       setError(cause);
     } finally {
       setBusy(false);
@@ -279,6 +301,7 @@ export default function DynamicForm({
                 setRaw(visibleAnswers(service, next, stage));
                 setIssues([]);
                 setValid(false);
+                setEstimate(null);
               }}
               error={issues.find((issue) => issue.path === field.key)?.message}
             />
@@ -297,6 +320,32 @@ export default function DynamicForm({
             : "A custom order will require an administrator’s final quote."}
         </p>
       )}
+      {estimate && (
+        <section aria-label="Price estimate" aria-live="polite">
+          {estimate.outcome === "estimated" ? (
+            <>
+              <h2>
+                Estimated price: {estimate.currency}{" "}
+                {minorDisplay(estimate.amount_minor)}
+              </h2>
+              <ul>
+                {estimate.lines.map((line) => (
+                  <li key={line.key}>
+                    {line.label}: {estimate.currency}{" "}
+                    {minorDisplay(line.amount_minor)}
+                  </li>
+                ))}
+              </ul>
+              <p>
+                Final price requires an administrator’s quote. This estimate
+                expires {new Date(estimate.expires_at).toLocaleTimeString()}.
+              </p>
+            </>
+          ) : estimate.outcome === "manual_review" ? (
+            <p>Your selections need a manual price review.</p>
+          ) : null}
+        </section>
+      )}
       {unavailable && (
         <p role="status">This offering is currently unavailable.</p>
       )}
@@ -306,4 +355,11 @@ export default function DynamicForm({
       </p>
     </form>
   );
+}
+
+export function minorDisplay(value: string): string {
+  const amount = BigInt(value),
+    negative = amount < 0n,
+    absolute = negative ? -amount : amount;
+  return `${negative ? "−" : ""}${String(absolute / 100n)}.${String(absolute % 100n).padStart(2, "0")}`;
 }

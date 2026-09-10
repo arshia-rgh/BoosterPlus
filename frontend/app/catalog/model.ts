@@ -73,6 +73,36 @@ export const ruleSchema = z.object({
   from_units: z.string(),
   to_units: z.string(),
 });
+export const priceRuleSchema = z.object({
+  key: z.string(),
+  label: z.string(),
+  kind: z.string(),
+  value: z.string(),
+  field: z.string(),
+  from: z.string(),
+  to: z.string(),
+  from_units: z.string(),
+  to_units: z.string(),
+  intervals: list(z.object({ rank: z.string(), amount_minor: z.string() })),
+  when: conditionSchema.optional(),
+});
+export const priceCaseSchema = z.object({
+  key: z.string(),
+  answers: answersSchema,
+  outcome: z.string(),
+  amount_minor: z.string(),
+});
+export const pricePlanSchema = z.object({
+  currency: z.string(),
+  base_minor: z.string(),
+  minimum_minor: z.string(),
+  maximum_minor: z.string(),
+  rules: list(priceRuleSchema),
+  cases: list(priceCaseSchema),
+});
+export type PricePlan = z.infer<typeof pricePlanSchema>;
+export type PriceRule = z.infer<typeof priceRuleSchema>;
+export type PriceCase = z.infer<typeof priceCaseSchema>;
 export const serviceSchema = z.object({
   key: z.string(),
   name: z.string(),
@@ -80,6 +110,7 @@ export const serviceSchema = z.object({
   evaluator: z.string(),
   fields: list(fieldSchema),
   rules: list(ruleSchema),
+  pricing: pricePlanSchema.optional(),
 });
 export const variantSchema = z.object({
   key: z.string(),
@@ -335,3 +366,19 @@ export function price(variant: Variant): string {
   const amount = BigInt(variant.amount_minor);
   return `${variant.currency} ${String(amount / 100n)}.${(amount % 100n).toString().padStart(2, "0")}`;
 }
+
+export const estimateSchema = z.object({
+  release_id: z.string(),
+  version: z.number().int(),
+  evaluator: z.string(),
+  expires_at: z.string(),
+  outcome: z.enum(["estimated", "manual_review", "invalid"]),
+  currency: z.string(),
+  amount_minor: z.string(),
+  answers: answersSchema,
+  lines: list(
+    z.object({ key: z.string(), label: z.string(), amount_minor: z.string() }),
+  ),
+  issues: list(issueSchema),
+});
+export type Estimate = z.infer<typeof estimateSchema>;

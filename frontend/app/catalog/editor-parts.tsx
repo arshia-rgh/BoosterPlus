@@ -1,3 +1,4 @@
+import { PricingEditor } from "./pricing-editor";
 import {
   Action,
   Check,
@@ -542,10 +543,13 @@ export function ServicesEditor({
               update(i, { description });
             }}
           />
-          <p className="quiet">
-            Custom services require a final admin quote. Automated estimates
-            arrive in P04.
-          </p>
+          <PricingEditor
+            service={service}
+            config={config}
+            change={(patch) => {
+              update(i, patch);
+            }}
+          />
           <h3>Form fields</h3>
           {service.fields.map((field, j) => (
             <details data-catalog-field={j} key={j} className="catalog-section">

@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
@@ -18,6 +19,8 @@ func (s *Store) Register(mux *http.ServeMux) {
 		capability string
 		endpoint   func(http.ResponseWriter, *http.Request, *identity.Principal) error
 	}{
+		"POST /api/v1/catalog/games/{slug}/estimate":             {"", s.estimate(false)},
+		"POST /api/v1/admin/catalog/games/{id}/estimate-preview": {"admin", s.estimate(true)},
 		"GET /api/v1/catalog/games":                              {"", s.list(false)},
 		"GET /api/v1/catalog/games/{slug}":                       {"", s.published},
 		"POST /api/v1/catalog/games/{slug}/validate":             {"", s.validate},
@@ -202,8 +205,54 @@ func (s *Store) validatePreview(w http.ResponseWriter, r *http.Request, p *ident
 	}
 	c := draft.Configuration
 	c.Reviewed = true
-	if issues := ValidateConfiguration(c, true); len(issues) > 0 {
+	if issues := previewIssues(c); len(issues) > 0 {
 		return &Invalid{issues}
 	}
 	return write(w, http.StatusOK, ValidateAnswers(c, input.Service, input.Stage, input.Answers, nil))
+}
+
+func (s *Store) estimate(preview bool) func(http.ResponseWriter, *http.Request, *identity.Principal) error {
+	return func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+		var input struct {
+			ReleaseID string  `json:"release_id"`
+			Service   string  `json:"service"`
+			Answers   Answers `json:"answers"`
+		}
+		if err := read(r, &input); err != nil {
+			return err
+		}
+		var release Release
+		if preview {
+			draft, err := s.Draft(r.Context(), p, r.PathValue("id"))
+			if err != nil {
+				return err
+			}
+			if input.ReleaseID != strconv.Itoa(draft.Revision) {
+				return ErrConflict
+			}
+			release = Release{ID: input.ReleaseID, Version: draft.Revision, Configuration: draft.Configuration}
+			c := release.Configuration
+			c.Reviewed = true
+			// Saved expectations may be unfinished during preview; all other publication
+			// constraints still apply before evaluating an administrator's working copy.
+			issues := previewIssues(c)
+			if len(issues) > 0 {
+				return &Invalid{issues}
+			}
+		} else {
+			var err error
+			release, err = s.Published(r.Context(), r.PathValue("slug"))
+			if err != nil {
+				return err
+			}
+			if release.ID != input.ReleaseID || release.Paused {
+				return ErrConflict
+			}
+		}
+		return write(w, http.StatusOK, Calculate(release, input.Service, input.Answers, time.Now()))
+	}
+}
+
+func previewIssues(c Configuration) []Issue {
+	return slices.DeleteFunc(ValidateConfiguration(c, true), func(i Issue) bool { return strings.Contains(i.Path, ".pricing.cases") })
 }

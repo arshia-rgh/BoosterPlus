@@ -159,8 +159,8 @@ export function ServicePage() {
       <h1>{service.name}</h1>
       <p>{service.description}</p>
       <p>
-        Custom pricing requires an administrator’s final quote. Automated
-        estimates are being prepared.
+        Custom pricing requires an administrator’s final quote. Select your
+        options to check availability and request a provisional estimate.
       </p>
       <Select
         label="Information to preview"

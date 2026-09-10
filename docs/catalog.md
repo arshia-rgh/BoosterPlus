@@ -20,7 +20,7 @@ Pausing disables new selection validation without hiding the catalog. Archiving 
 
 ## Form and publication contract
 
-- One release pins the complete game, references, service forms, package variants and evaluator identifier. P03 uses `manual-review-v1`; it does not calculate an automated estimate or create a quote. P04 introduces versioned pricing rules.
+- One release pins the complete game, references, service forms, package variants and evaluator identifier. Services can use `manual-review-v1` or the P04 `pricing-v1` evaluator. See [Versioned pricing](pricing.md) for rules, saved examples and provisional estimates. Neither evaluator creates a payable quote.
 - Stable keys use lowercase letters, digits and underscores, start with a letter, and contain at most 48 characters. Display order is the array order. Changing a key means introducing a different field/option for future releases; prefer editing the label when its meaning is unchanged.
 - Supported inputs: select, radio, multiselect, boolean, integer, decimal, short/long text, rank, and an optional attachment descriptor. Numbers travel as exact decimal strings with at most 12 integer digits and 6 fractional digits; no exponent syntax or floating-point money. Numeric steps are relative to the configured minimum.
 - Stages are `estimate`, `order` and `fulfillment`. A dependency may refer only to its own or an earlier stage. Public catalog validation accepts estimate/order input; authenticated draft preview can also exercise ordinary fulfillment fields. Neither endpoint stores the submitted answers or creates an order.

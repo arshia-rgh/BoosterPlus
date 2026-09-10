@@ -80,10 +80,11 @@ func ValidateConfiguration(c Configuration, publish bool) []Issue {
 			add(path, "Use a unique service key, name and bounded description.")
 		}
 		services[service.Key] = service
-		if service.Evaluator != "manual-review-v1" {
-			add(path+".evaluator", "Only the versioned manual-review evaluator is available before P04.")
+		if service.Evaluator != "manual-review-v1" && service.Evaluator != "pricing-v1" {
+			add(path+".evaluator", "Choose a supported versioned evaluator.")
 		}
 		validateForm(service, refs, path, publish, add)
+		validatePricing(service, refs, path+".pricing", publish, add)
 	}
 	packageKeys := map[string]bool{}
 	for i, pack := range c.Packages {
@@ -136,6 +137,9 @@ func ValidateConfiguration(c Configuration, publish bool) []Issue {
 		if !validText(faq.Question, 1, 200) || !validText(faq.Answer, 1, 4000) {
 			add(fmt.Sprintf("faqs.%d", i), "Use a question of 1–200 characters and answer of 1–4,000 characters.")
 		}
+	}
+	if publish && len(issues) == 0 {
+		validatePriceCases(c, add)
 	}
 	return issues
 }

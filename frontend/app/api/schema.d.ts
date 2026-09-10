@@ -714,6 +714,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/catalog/games/{slug}/estimate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Calculate a versioned, provisional estimate. Never authorizes checkout. */
+    post: operations["estimateCatalogPrice"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/catalog/games/{id}/estimate-preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Calculate a versioned, provisional estimate. Never authorizes checkout. */
+    post: operations["previewCatalogPrice"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -890,6 +924,7 @@ export interface components {
       evaluator: string;
       fields: components["schemas"]["CatalogField"][] | null;
       rules: components["schemas"]["CatalogRule"][] | null;
+      pricing?: components["schemas"]["CatalogPricePlan"];
     };
     CatalogField: {
       key: string;
@@ -1046,6 +1081,65 @@ export interface components {
       stage: "estimate" | "order" | "fulfillment";
       package?: string;
       variant?: string;
+      answers: {
+        [key: string]: string | boolean | string[];
+      };
+    };
+    CatalogRankPrice: {
+      rank: string;
+      amount_minor: string;
+    };
+    CatalogPriceRule: {
+      key: string;
+      label: string;
+      kind: string;
+      value: string;
+      field: string;
+      from: string;
+      to: string;
+      from_units: string;
+      to_units: string;
+      intervals: components["schemas"]["CatalogRankPrice"][] | null;
+      when?: components["schemas"]["CatalogCondition"];
+    };
+    CatalogPriceCase: {
+      key: string;
+      answers: {
+        [key: string]: string | boolean | string[];
+      };
+      outcome: string;
+      amount_minor: string;
+    };
+    CatalogPricePlan: {
+      currency: string;
+      base_minor: string;
+      minimum_minor: string;
+      maximum_minor: string;
+      rules: components["schemas"]["CatalogPriceRule"][] | null;
+      cases: components["schemas"]["CatalogPriceCase"][] | null;
+    };
+    CatalogPriceLine: {
+      key: string;
+      label: string;
+      amount_minor: string;
+    };
+    CatalogEstimate: {
+      release_id: string;
+      evaluator: string;
+      expires_at: string;
+      outcome: string;
+      currency: string;
+      amount_minor: string;
+      version: number;
+      answers: {
+        [key: string]: string | boolean | string[];
+      };
+      lines: components["schemas"]["CatalogPriceLine"][] | null;
+      issues: components["schemas"]["CatalogIssue"][] | null;
+    };
+    CatalogEstimateInput: {
+      release_id: string;
+      service: string;
       answers: {
         [key: string]: string | boolean | string[];
       };
@@ -2706,6 +2800,116 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["CatalogValidation"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  estimateCatalogPrice: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogEstimateInput"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogEstimate"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  previewCatalogPrice: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CatalogEstimateInput"];
+      };
+    };
+    responses: {
+      /** @description Successful catalog response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogEstimate"];
         };
       };
       /** @description Revision changed or availability conflicts; reload the current catalog. */
