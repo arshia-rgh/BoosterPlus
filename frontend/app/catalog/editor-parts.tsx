@@ -1,4 +1,5 @@
 import FulfillmentEditor from "./fulfillment-editor";
+import DeliveryEditor from "./delivery-editor";
 import { PricingEditor } from "./pricing-editor";
 import {
   Action,
@@ -558,6 +559,12 @@ export function ServicesEditor({
             }}
           />
           <h3>Form fields</h3>
+          <DeliveryEditor
+            service={service}
+            change={(patch) => {
+              update(i, patch);
+            }}
+          />
           {service.fields.map((field, j) => (
             <details data-catalog-field={j} key={j} className="catalog-section">
               <summary>

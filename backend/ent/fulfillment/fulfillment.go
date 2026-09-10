@@ -34,6 +34,8 @@ const (
 	FieldEstimatedStart = "estimated_start"
 	// FieldEstimatedFinish holds the string denoting the estimated_finish field in the database.
 	FieldEstimatedFinish = "estimated_finish"
+	// FieldForecast holds the string denoting the forecast field in the database.
+	FieldForecast = "forecast"
 	// FieldAnswers holds the string denoting the answers field in the database.
 	FieldAnswers = "answers"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -57,6 +59,7 @@ var Columns = []string{
 	FieldCurrentNote,
 	FieldEstimatedStart,
 	FieldEstimatedFinish,
+	FieldForecast,
 	FieldAnswers,
 	FieldCreatedAt,
 	FieldUpdatedAt,

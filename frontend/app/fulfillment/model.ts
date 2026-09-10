@@ -1,5 +1,21 @@
 import { z } from "zod";
 import { answerSchema, answersSchema } from "../catalog/model";
+export const forecastSchema = z.object({
+  calculated_at: z.string(),
+  rule: z.string(),
+  zone: z.string(),
+  start_earliest: z.string(),
+  start_latest: z.string(),
+  finish_earliest: z.string(),
+  finish_latest: z.string(),
+});
+export const forecastPreviewSchema = z.object({
+  status: z.enum(["ready", "needs_review"]),
+  reason: z.string(),
+  basis: z.string(),
+  forecast: forecastSchema.nullable(),
+});
+export type Forecast = z.infer<typeof forecastSchema>;
 export const workSchema = z.object({
   coordination_id: z.string(),
   coordination_shared: z.boolean(),
@@ -19,6 +35,8 @@ export const workSchema = z.object({
   note: z.string(),
   estimated_start: z.string().nullable(),
   estimated_finish: z.string().nullable(),
+  forecast: forecastSchema.optional(),
+  forecast_review: z.boolean(),
   handoff: answersSchema.optional(),
   shared: z.array(
     z.object({ key: z.string(), label: z.string(), value: answerSchema }),

@@ -86,6 +86,7 @@ func ValidateConfiguration(c Configuration, publish bool) []Issue {
 		validateForm(service, refs, path, publish, add)
 		validatePricing(service, refs, path+".pricing", publish, add)
 		validateFulfillment(service, refs, path, add)
+		validateDelivery(service, refs, path+".delivery", add)
 	}
 	packageKeys := map[string]bool{}
 	for i, pack := range c.Packages {

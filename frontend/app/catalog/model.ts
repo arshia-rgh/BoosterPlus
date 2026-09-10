@@ -111,6 +111,31 @@ export const fulfillmentPolicySchema = z.object({
   secret_hours: z.number().int(),
   share_fields: list(z.string()),
 });
+export const deliveryRuleSchema = z.object({
+  key: z.string(),
+  mode: z.enum(["account", "together"]),
+  when: conditionSchema.optional(),
+  min_minutes: z.number().int(),
+  max_minutes: z.number().int(),
+  wait_min_minutes: z.number().int(),
+  wait_max_minutes: z.number().int(),
+  workload_minutes: z.number().int(),
+});
+export const deliveryPolicySchema = z.object({
+  calendar: z.object({
+    zone: z.string(),
+    windows: list(
+      z.object({
+        weekday: z.number().int(),
+        start: z.string(),
+        end: z.string(),
+      }),
+    ),
+    closures: list(z.string()),
+  }),
+  rules: list(deliveryRuleSchema),
+});
+export type DeliveryRule = z.infer<typeof deliveryRuleSchema>;
 export const serviceSchema = z.object({
   key: z.string(),
   name: z.string(),
@@ -120,6 +145,7 @@ export const serviceSchema = z.object({
   rules: list(ruleSchema),
   pricing: pricePlanSchema.optional(),
   fulfillment: fulfillmentPolicySchema.optional(),
+  delivery: deliveryPolicySchema.optional(),
 });
 export const variantSchema = z.object({
   key: z.string(),

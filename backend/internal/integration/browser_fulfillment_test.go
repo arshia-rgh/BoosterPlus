@@ -37,6 +37,7 @@ func seedBrowserFulfillment(t *testing.T, f *authFixture, fixtures map[string]st
 	for _, project := range []string{"desktop", "mobile"} {
 		c := catalogConfig()
 		c.Name = "Fulfillment journey game"
+		c.Services[0].Delivery = syntheticDelivery()
 		c.Services[0].Fulfillment = &catalog.FulfillmentPolicy{Mode: "selection", Field: "mode", AccountValue: "solo", TogetherValue: "duo", SecretHours: 24, ShareFields: []string{"mode", "player"}}
 		c.Services[0].Fields = append(c.Services[0].Fields, catalog.Field{Key: "player", Label: "Player identifier", Type: "short_text", Stage: "fulfillment", Required: true, MinLength: 1, MaxLength: 80})
 		c.Packages[0].Variants[0].Eligibility = nil

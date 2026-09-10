@@ -31,6 +31,7 @@ it("disables booster edits until the refreshed work revision is ready", async ()
     note: "Assigned",
     estimated_start: null,
     estimated_finish: null,
+    forecast_review: false,
     shared: [],
     updated_at: "2026-09-10T00:00:00Z",
   };

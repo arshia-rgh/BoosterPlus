@@ -173,6 +173,18 @@ func (_u *FulfillmentUpdate) ClearEstimatedFinish() *FulfillmentUpdate {
 	return _u
 }
 
+// SetForecast sets the "forecast" field.
+func (_u *FulfillmentUpdate) SetForecast(v map[string]interface{}) *FulfillmentUpdate {
+	_u.mutation.SetForecast(v)
+	return _u
+}
+
+// ClearForecast clears the value of the "forecast" field.
+func (_u *FulfillmentUpdate) ClearForecast() *FulfillmentUpdate {
+	_u.mutation.ClearForecast()
+	return _u
+}
+
 // SetAnswers sets the "answers" field.
 func (_u *FulfillmentUpdate) SetAnswers(v map[string]interface{}) *FulfillmentUpdate {
 	_u.mutation.SetAnswers(v)
@@ -285,6 +297,12 @@ func (_u *FulfillmentUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	}
 	if _u.mutation.EstimatedFinishCleared() {
 		_spec.ClearField(fulfillment.FieldEstimatedFinish, field.TypeTime)
+	}
+	if value, ok := _u.mutation.Forecast(); ok {
+		_spec.SetField(fulfillment.FieldForecast, field.TypeJSON, value)
+	}
+	if _u.mutation.ForecastCleared() {
+		_spec.ClearField(fulfillment.FieldForecast, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.Answers(); ok {
 		_spec.SetField(fulfillment.FieldAnswers, field.TypeJSON, value)
@@ -457,6 +475,18 @@ func (_u *FulfillmentUpdateOne) ClearEstimatedFinish() *FulfillmentUpdateOne {
 	return _u
 }
 
+// SetForecast sets the "forecast" field.
+func (_u *FulfillmentUpdateOne) SetForecast(v map[string]interface{}) *FulfillmentUpdateOne {
+	_u.mutation.SetForecast(v)
+	return _u
+}
+
+// ClearForecast clears the value of the "forecast" field.
+func (_u *FulfillmentUpdateOne) ClearForecast() *FulfillmentUpdateOne {
+	_u.mutation.ClearForecast()
+	return _u
+}
+
 // SetAnswers sets the "answers" field.
 func (_u *FulfillmentUpdateOne) SetAnswers(v map[string]interface{}) *FulfillmentUpdateOne {
 	_u.mutation.SetAnswers(v)
@@ -599,6 +629,12 @@ func (_u *FulfillmentUpdateOne) sqlSave(ctx context.Context) (_node *Fulfillment
 	}
 	if _u.mutation.EstimatedFinishCleared() {
 		_spec.ClearField(fulfillment.FieldEstimatedFinish, field.TypeTime)
+	}
+	if value, ok := _u.mutation.Forecast(); ok {
+		_spec.SetField(fulfillment.FieldForecast, field.TypeJSON, value)
+	}
+	if _u.mutation.ForecastCleared() {
+		_spec.ClearField(fulfillment.FieldForecast, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.Answers(); ok {
 		_spec.SetField(fulfillment.FieldAnswers, field.TypeJSON, value)

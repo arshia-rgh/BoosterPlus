@@ -43,6 +43,7 @@ type ServiceDefinition struct {
 	Rules       []Rule             `json:"rules"`
 	Pricing     *PricePlan         `json:"pricing,omitempty"`
 	Fulfillment *FulfillmentPolicy `json:"fulfillment,omitempty"`
+	Delivery    *DeliveryPolicy    `json:"delivery,omitempty"`
 }
 
 // Field is declarative. Numeric answers and bounds use exact decimal strings.

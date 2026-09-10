@@ -157,6 +157,28 @@ func (s *Store) Register(mux *http.ServeMux) {
 			})
 		}
 		if audience == "admin" {
+			register("POST "+prefix+"/{id}/forecast/preview", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+				var input struct{}
+				if err := read(r, &input); err != nil {
+					return err
+				}
+				value, err := s.PreviewForecast(r.Context(), p, r.PathValue("id"))
+				if err != nil {
+					return err
+				}
+				return write(w, value)
+			})
+			register("POST "+prefix+"/{id}/forecast/apply", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+				var input ForecastApply
+				if err := read(r, &input); err != nil {
+					return err
+				}
+				value, err := s.ApplyForecast(r.Context(), p, r.PathValue("id"), input)
+				if err != nil {
+					return err
+				}
+				return write(w, value)
+			})
 			register("GET "+prefix+"/staff", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 				value, err := s.Directory(r.Context(), p)
 				if err != nil {

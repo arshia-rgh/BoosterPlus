@@ -568,6 +568,7 @@ var (
 		{Name: "current_note", Type: field.TypeString},
 		{Name: "estimated_start", Type: field.TypeTime, Nullable: true},
 		{Name: "estimated_finish", Type: field.TypeTime, Nullable: true},
+		{Name: "forecast", Type: field.TypeJSON, Nullable: true},
 		{Name: "answers", Type: field.TypeJSON},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -586,7 +587,7 @@ var (
 			{
 				Name:    "fulfillment_assignee",
 				Unique:  false,
-				Columns: []*schema.Column{FulfillmentsColumns[4], FulfillmentsColumns[13], FulfillmentsColumns[0]},
+				Columns: []*schema.Column{FulfillmentsColumns[4], FulfillmentsColumns[14], FulfillmentsColumns[0]},
 			},
 		},
 	}

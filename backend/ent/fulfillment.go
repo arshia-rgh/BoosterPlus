@@ -38,6 +38,8 @@ type Fulfillment struct {
 	EstimatedStart *time.Time `json:"estimated_start,omitempty"`
 	// EstimatedFinish holds the value of the "estimated_finish" field.
 	EstimatedFinish *time.Time `json:"estimated_finish,omitempty"`
+	// Forecast holds the value of the "forecast" field.
+	Forecast map[string]interface{} `json:"forecast,omitempty"`
 	// Answers holds the value of the "answers" field.
 	Answers map[string]interface{} `json:"answers,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -52,7 +54,7 @@ func (*Fulfillment) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case fulfillment.FieldAnswers:
+		case fulfillment.FieldForecast, fulfillment.FieldAnswers:
 			values[i] = new([]byte)
 		case fulfillment.FieldCompletionPending:
 			values[i] = new(sql.NullBool)
@@ -145,6 +147,14 @@ func (_m *Fulfillment) assignValues(columns []string, values []any) error {
 				_m.EstimatedFinish = new(time.Time)
 				*_m.EstimatedFinish = value.Time
 			}
+		case fulfillment.FieldForecast:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field forecast", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Forecast); err != nil {
+					return fmt.Errorf("unmarshal field forecast: %w", err)
+				}
+			}
 		case fulfillment.FieldAnswers:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field answers", values[i])
@@ -234,6 +244,9 @@ func (_m *Fulfillment) String() string {
 		builder.WriteString("estimated_finish=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("forecast=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Forecast))
 	builder.WriteString(", ")
 	builder.WriteString("answers=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Answers))

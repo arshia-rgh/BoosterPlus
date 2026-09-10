@@ -156,7 +156,7 @@ func (s *Store) Transition(ctx context.Context, p *identity.Principal, id, audie
 			if input.EstimatedStart == nil || input.EstimatedFinish == nil || input.EstimatedStart.Before(now) || input.EstimatedFinish.Before(*input.EstimatedStart) || input.EstimatedFinish.After(now.Add(366*24*time.Hour)) {
 				return ErrInvalid
 			}
-			change.SetEstimatedStart(*input.EstimatedStart).SetEstimatedFinish(*input.EstimatedFinish)
+			change.SetEstimatedStart(*input.EstimatedStart).SetEstimatedFinish(*input.EstimatedFinish).ClearForecast()
 		default:
 			return ErrInvalid
 		}

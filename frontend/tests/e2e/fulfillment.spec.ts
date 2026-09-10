@@ -71,6 +71,12 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       ).toHaveValue("synthetic-player");
     }
     await assign(accountID);
+    await page
+      .getByRole("button", { name: "Calculate delivery forecast", exact: true })
+      .click();
+    await expect(
+      page.getByText(/Needs review. Required fulfillment/),
+    ).toBeVisible();
     await handoff(accountID);
     await buyer
       .getByLabel("Temporary game login instructions", { exact: true })
@@ -88,6 +94,43 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     await page
       .getByRole("button", { name: "Refresh fulfillment", exact: true })
       .click();
+    await page
+      .getByRole("button", { name: "Calculate delivery forecast", exact: true })
+      .click();
+    await expect(page.getByText(/Ready for review/)).toBeVisible();
+    await page
+      .getByLabel("Delivery estimate reason")
+      .fill("Reviewed synthetic calendar and queue");
+    await accessible(page);
+    const appliedForecast = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname ===
+          `/api/v1/admin/fulfillment/${accountID}/forecast/apply` &&
+        response.request().method() === "POST",
+    );
+    await page
+      .getByRole("button", { name: "Apply delivery forecast", exact: true })
+      .click();
+    expect((await appliedForecast).status()).toBe(200);
+    await expect(
+      page.getByRole("button", {
+        name: "Apply delivery forecast",
+        exact: true,
+      }),
+    ).toHaveCount(0);
+    await expect(page.getByText(/Estimated finish window:/)).toHaveCount(1);
+    await buyer
+      .getByRole("button", { name: "Refresh fulfillment", exact: true })
+      .click();
+    await expect(buyer.getByText(/Estimated finish window:/)).toBeVisible();
+    await expect(
+      buyer.getByRole("button", { name: "Apply delivery forecast" }),
+    ).toHaveCount(0);
+    await accessible(buyer);
+    await buyer.screenshot({
+      path: `test-results/delivery-${info.project.name}.png`,
+      fullPage: true,
+    });
     await page
       .getByRole("button", { name: "Enable shared coordination", exact: true })
       .click();

@@ -26,6 +26,7 @@ func (Fulfillment) Fields() []ent.Field {
 		field.String("current_note"),
 		field.Time("estimated_start").Optional().Nillable(),
 		field.Time("estimated_finish").Optional().Nillable(),
+		field.JSON("forecast", map[string]any{}).Optional(),
 		field.JSON("answers", map[string]any{}),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("updated_at").Default(time.Now),

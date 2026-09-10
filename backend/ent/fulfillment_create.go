@@ -128,6 +128,12 @@ func (_c *FulfillmentCreate) SetNillableEstimatedFinish(v *time.Time) *Fulfillme
 	return _c
 }
 
+// SetForecast sets the "forecast" field.
+func (_c *FulfillmentCreate) SetForecast(v map[string]interface{}) *FulfillmentCreate {
+	_c.mutation.SetForecast(v)
+	return _c
+}
+
 // SetAnswers sets the "answers" field.
 func (_c *FulfillmentCreate) SetAnswers(v map[string]interface{}) *FulfillmentCreate {
 	_c.mutation.SetAnswers(v)
@@ -370,6 +376,10 @@ func (_c *FulfillmentCreate) createSpec() (*Fulfillment, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.EstimatedFinish(); ok {
 		_spec.SetField(fulfillment.FieldEstimatedFinish, field.TypeTime, value)
 		_node.EstimatedFinish = &value
+	}
+	if value, ok := _c.mutation.Forecast(); ok {
+		_spec.SetField(fulfillment.FieldForecast, field.TypeJSON, value)
+		_node.Forecast = value
 	}
 	if value, ok := _c.mutation.Answers(); ok {
 		_spec.SetField(fulfillment.FieldAnswers, field.TypeJSON, value)

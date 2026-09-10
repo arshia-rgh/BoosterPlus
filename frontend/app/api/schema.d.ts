@@ -2544,6 +2544,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/fulfillment/{id}/forecast/preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Review operational delivery range */
+    post: operations["adminDeliveryForecastPreview"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/fulfillment/{id}/forecast/apply": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Apply unchanged reviewed range with recent primary and authenticator verification */
+    post: operations["adminDeliveryForecastApply"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2722,6 +2756,7 @@ export interface components {
       rules: components["schemas"]["CatalogRule"][] | null;
       pricing?: components["schemas"]["CatalogPricePlan"];
       fulfillment?: components["schemas"]["FulfillmentPolicy"];
+      delivery?: components["schemas"]["DeliveryPolicy"];
     };
     CatalogField: {
       key: string;
@@ -3353,6 +3388,8 @@ export interface components {
       access_version: number;
       coordination_id: string;
       coordination_shared: boolean;
+      forecast?: components["schemas"]["DeliveryForecast"];
+      forecast_review: boolean;
     };
     FulfillmentListing: {
       items: components["schemas"]["FulfillmentView"][];
@@ -3501,6 +3538,61 @@ export interface components {
         timezone: string;
       }[];
       next: string;
+    };
+    DeliveryCalendar: {
+      zone: string;
+      windows:
+        | {
+            weekday: number;
+            start: string;
+            end: string;
+          }[]
+        | null;
+      closures: string[] | null;
+    };
+    DeliveryRule: {
+      key: string;
+      /** @enum {string} */
+      mode: "account" | "together";
+      when?: components["schemas"]["CatalogCondition"];
+      min_minutes: number;
+      max_minutes: number;
+      wait_min_minutes: number;
+      wait_max_minutes: number;
+      workload_minutes: number;
+    };
+    DeliveryPolicy: {
+      calendar: components["schemas"]["DeliveryCalendar"];
+      rules: components["schemas"]["DeliveryRule"][] | null;
+    };
+    DeliveryForecast: {
+      /** Format: date-time */
+      calculated_at: string;
+      rule: string;
+      zone: string;
+      /** Format: date-time */
+      start_earliest: string;
+      /** Format: date-time */
+      start_latest: string;
+      /** Format: date-time */
+      finish_earliest: string;
+      /** Format: date-time */
+      finish_latest: string;
+    };
+    DeliveryForecastPreview: {
+      /** @enum {string} */
+      status: "ready" | "needs_review";
+      reason: string;
+      basis: string;
+      forecast: components["schemas"]["DeliveryForecast"] | null;
+    };
+    DeliveryForecastApply: {
+      version: number;
+      order_version: number;
+      /** Format: date-time */
+      calculated_at: string;
+      basis: string;
+      note: string;
     };
   };
   responses: never;
@@ -11449,6 +11541,118 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ConversationProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  adminDeliveryForecastPreview: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": Record<string, never>;
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DeliveryForecastPreview"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  adminDeliveryForecastApply: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DeliveryForecastApply"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentView"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
         };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */

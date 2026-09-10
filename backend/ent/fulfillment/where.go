@@ -564,6 +564,16 @@ func EstimatedFinishNotNil() predicate.Fulfillment {
 	return predicate.Fulfillment(sql.FieldNotNull(FieldEstimatedFinish))
 }
 
+// ForecastIsNil applies the IsNil predicate on the "forecast" field.
+func ForecastIsNil() predicate.Fulfillment {
+	return predicate.Fulfillment(sql.FieldIsNull(FieldForecast))
+}
+
+// ForecastNotNil applies the NotNil predicate on the "forecast" field.
+func ForecastNotNil() predicate.Fulfillment {
+	return predicate.Fulfillment(sql.FieldNotNull(FieldForecast))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Fulfillment {
 	return predicate.Fulfillment(sql.FieldEQ(FieldCreatedAt, v))

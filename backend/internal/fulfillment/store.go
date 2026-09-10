@@ -59,6 +59,18 @@ func view(ctx context.Context, c *ent.Client, row *ent.Order, work *ent.Fulfillm
 		alias = "Boosting team"
 	}
 	result := View{OrderID: row.ID, OrderVersion: row.Version, Version: work.Version, AccessVersion: work.AccessVersion, Game: row.GameName, Service: service.Name, State: string(row.State), Mode: string(work.Mode), SecretHours: service.Fulfillment.SecretHours, Alias: alias, Progress: work.Progress, CompletionPending: work.CompletionPending, Note: work.CurrentNote, EstimatedStart: work.EstimatedStart, EstimatedFinish: work.EstimatedFinish, Shared: []SharedField{}, UpdatedAt: work.UpdatedAt}
+	if len(work.Forecast) > 0 {
+		saved, e := decode[savedForecast](work.Forecast)
+		if e != nil {
+			return View{}, e
+		}
+		count, e := forecastWorkload(ctx, c, work)
+		if e != nil {
+			return View{}, e
+		}
+		result.Forecast = &saved.Forecast
+		result.ForecastReview = work.Version != saved.Version || count != saved.Workload || target.Suspended || !target.MfaEnabled || !slices.Contains([]string{"booster", "administrator", "owner"}, target.Role)
+	}
 	thread, threadErr := c.Conversation.Query().Where(conversation.FulfillmentOrderIDEQ(row.ID)).Only(ctx)
 	if threadErr != nil && !ent.IsNotFound(threadErr) {
 		return View{}, threadErr

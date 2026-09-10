@@ -669,11 +669,11 @@ func init() {
 	// fulfillment.DefaultCompletionPending holds the default value on creation for the completion_pending field.
 	fulfillment.DefaultCompletionPending = fulfillmentDescCompletionPending.Default.(bool)
 	// fulfillmentDescCreatedAt is the schema descriptor for created_at field.
-	fulfillmentDescCreatedAt := fulfillmentFields[12].Descriptor()
+	fulfillmentDescCreatedAt := fulfillmentFields[13].Descriptor()
 	// fulfillment.DefaultCreatedAt holds the default value on creation for the created_at field.
 	fulfillment.DefaultCreatedAt = fulfillmentDescCreatedAt.Default.(func() time.Time)
 	// fulfillmentDescUpdatedAt is the schema descriptor for updated_at field.
-	fulfillmentDescUpdatedAt := fulfillmentFields[13].Descriptor()
+	fulfillmentDescUpdatedAt := fulfillmentFields[14].Descriptor()
 	// fulfillment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	fulfillment.DefaultUpdatedAt = fulfillmentDescUpdatedAt.Default.(func() time.Time)
 	// fulfillmentDescID is the schema descriptor for id field.

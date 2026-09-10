@@ -11750,6 +11750,187 @@
           }
         }
       }
+    },
+    "/api/v1/admin/fulfillment/{id}/forecast/preview": {
+      "post": {
+        "operationId": "adminDeliveryForecastPreview",
+        "summary": "Review operational delivery range",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeliveryForecastPreview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {},
+                "required": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/fulfillment/{id}/forecast/apply": {
+      "post": {
+        "operationId": "adminDeliveryForecastApply",
+        "summary": "Apply unchanged reviewed range with recent primary and authenticator verification",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeliveryForecastApply"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -12367,6 +12548,9 @@
           },
           "fulfillment": {
             "$ref": "#/components/schemas/FulfillmentPolicy"
+          },
+          "delivery": {
+            "$ref": "#/components/schemas/DeliveryPolicy"
           }
         },
         "required": [
@@ -14615,7 +14799,8 @@
           "shared",
           "access_version",
           "coordination_id",
-          "coordination_shared"
+          "coordination_shared",
+          "forecast_review"
         ],
         "properties": {
           "order_id": {
@@ -14728,6 +14913,12 @@
             "type": "string"
           },
           "coordination_shared": {
+            "type": "boolean"
+          },
+          "forecast": {
+            "$ref": "#/components/schemas/DeliveryForecast"
+          },
+          "forecast_review": {
             "type": "boolean"
           }
         }
@@ -15264,6 +15455,194 @@
             "type": "string"
           }
         }
+      },
+      "DeliveryCalendar": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "zone": {
+            "type": "string"
+          },
+          "windows": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "weekday": {
+                  "type": "integer"
+                },
+                "start": {
+                  "type": "string"
+                },
+                "end": {
+                  "type": "string"
+                }
+              },
+              "required": ["weekday", "start", "end"]
+            }
+          },
+          "closures": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["zone", "windows", "closures"]
+      },
+      "DeliveryRule": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["account", "together"]
+          },
+          "when": {
+            "$ref": "#/components/schemas/CatalogCondition"
+          },
+          "min_minutes": {
+            "type": "integer"
+          },
+          "max_minutes": {
+            "type": "integer"
+          },
+          "wait_min_minutes": {
+            "type": "integer"
+          },
+          "wait_max_minutes": {
+            "type": "integer"
+          },
+          "workload_minutes": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "key",
+          "mode",
+          "min_minutes",
+          "max_minutes",
+          "wait_min_minutes",
+          "wait_max_minutes",
+          "workload_minutes"
+        ]
+      },
+      "DeliveryPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "calendar": {
+            "$ref": "#/components/schemas/DeliveryCalendar"
+          },
+          "rules": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/DeliveryRule"
+            }
+          }
+        },
+        "required": ["calendar", "rules"]
+      },
+      "DeliveryForecast": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "calculated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "rule": {
+            "type": "string"
+          },
+          "zone": {
+            "type": "string"
+          },
+          "start_earliest": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "start_latest": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finish_earliest": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finish_latest": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "calculated_at",
+          "rule",
+          "zone",
+          "start_earliest",
+          "start_latest",
+          "finish_earliest",
+          "finish_latest"
+        ]
+      },
+      "DeliveryForecastPreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["ready", "needs_review"]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "basis": {
+            "type": "string"
+          },
+          "forecast": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DeliveryForecast"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["status", "reason", "basis", "forecast"]
+      },
+      "DeliveryForecastApply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "order_version": {
+            "type": "integer"
+          },
+          "calculated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "basis": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "order_version",
+          "calculated_at",
+          "basis",
+          "note"
+        ]
       }
     },
     "securitySchemes": {

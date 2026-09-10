@@ -1,5 +1,6 @@
 import Bookings from "./bookings";
 import Coordination from "./coordination";
+import ForecastControls, { ForecastRange } from "./forecast";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router";
 import { Action, ErrorNotice } from "../catalog/controls";
@@ -25,7 +26,18 @@ function Summary({ work }: { work: Work }) {
       {work.completion_pending && (
         <p>Completion submitted for administrator review.</p>
       )}
-      {work.estimated_start && work.estimated_finish && (
+      {work.forecast && (
+        <>
+          <ForecastRange forecast={work.forecast} />
+          {work.forecast_review && (
+            <p role="status">
+              Delivery forecast needs review: execution or assigned capacity
+              changed. The previous range is retained for reference.
+            </p>
+          )}
+        </>
+      )}
+      {!work.forecast && work.estimated_start && work.estimated_finish && (
         <p>
           Current delivery estimate:{" "}
           {new Date(work.estimated_start).toLocaleString()} –{" "}
@@ -96,6 +108,13 @@ export default function FulfillmentPanel({
             )}
             {admin ? (
               <>
+                {active(work) && (
+                  <ForecastControls
+                    key={`forecast-${String(work.version)}`}
+                    work={work}
+                    reload={refresh}
+                  />
+                )}
                 <StaffSecret
                   key={`secret-${String(work.access_version)}`}
                   work={work}

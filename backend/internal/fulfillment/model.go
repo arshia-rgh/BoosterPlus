@@ -127,6 +127,8 @@ type View struct {
 	Note               string          `json:"note"`
 	EstimatedStart     *time.Time      `json:"estimated_start"`
 	EstimatedFinish    *time.Time      `json:"estimated_finish"`
+	Forecast           *Forecast       `json:"forecast,omitempty"`
+	ForecastReview     bool            `json:"forecast_review"`
 	Handoff            catalog.Answers `json:"handoff,omitempty"`
 	Shared             []SharedField   `json:"shared"`
 	UpdatedAt          time.Time       `json:"updated_at"`

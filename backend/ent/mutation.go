@@ -14179,6 +14179,7 @@ type FulfillmentMutation struct {
 	current_note       *string
 	estimated_start    *time.Time
 	estimated_finish   *time.Time
+	forecast           *map[string]interface{}
 	answers            *map[string]interface{}
 	created_at         *time.Time
 	updated_at         *time.Time
@@ -14738,6 +14739,55 @@ func (m *FulfillmentMutation) ResetEstimatedFinish() {
 	delete(m.clearedFields, fulfillment.FieldEstimatedFinish)
 }
 
+// SetForecast sets the "forecast" field.
+func (m *FulfillmentMutation) SetForecast(value map[string]interface{}) {
+	m.forecast = &value
+}
+
+// Forecast returns the value of the "forecast" field in the mutation.
+func (m *FulfillmentMutation) Forecast() (r map[string]interface{}, exists bool) {
+	v := m.forecast
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldForecast returns the old "forecast" field's value of the Fulfillment entity.
+// If the Fulfillment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FulfillmentMutation) OldForecast(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldForecast is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldForecast requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldForecast: %w", err)
+	}
+	return oldValue.Forecast, nil
+}
+
+// ClearForecast clears the value of the "forecast" field.
+func (m *FulfillmentMutation) ClearForecast() {
+	m.forecast = nil
+	m.clearedFields[fulfillment.FieldForecast] = struct{}{}
+}
+
+// ForecastCleared returns if the "forecast" field was cleared in this mutation.
+func (m *FulfillmentMutation) ForecastCleared() bool {
+	_, ok := m.clearedFields[fulfillment.FieldForecast]
+	return ok
+}
+
+// ResetForecast resets all changes to the "forecast" field.
+func (m *FulfillmentMutation) ResetForecast() {
+	m.forecast = nil
+	delete(m.clearedFields, fulfillment.FieldForecast)
+}
+
 // SetAnswers sets the "answers" field.
 func (m *FulfillmentMutation) SetAnswers(value map[string]interface{}) {
 	m.answers = &value
@@ -14880,7 +14930,7 @@ func (m *FulfillmentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FulfillmentMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.order_id != nil {
 		fields = append(fields, fulfillment.FieldOrderID)
 	}
@@ -14910,6 +14960,9 @@ func (m *FulfillmentMutation) Fields() []string {
 	}
 	if m.estimated_finish != nil {
 		fields = append(fields, fulfillment.FieldEstimatedFinish)
+	}
+	if m.forecast != nil {
+		fields = append(fields, fulfillment.FieldForecast)
 	}
 	if m.answers != nil {
 		fields = append(fields, fulfillment.FieldAnswers)
@@ -14948,6 +15001,8 @@ func (m *FulfillmentMutation) Field(name string) (ent.Value, bool) {
 		return m.EstimatedStart()
 	case fulfillment.FieldEstimatedFinish:
 		return m.EstimatedFinish()
+	case fulfillment.FieldForecast:
+		return m.Forecast()
 	case fulfillment.FieldAnswers:
 		return m.Answers()
 	case fulfillment.FieldCreatedAt:
@@ -14983,6 +15038,8 @@ func (m *FulfillmentMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldEstimatedStart(ctx)
 	case fulfillment.FieldEstimatedFinish:
 		return m.OldEstimatedFinish(ctx)
+	case fulfillment.FieldForecast:
+		return m.OldForecast(ctx)
 	case fulfillment.FieldAnswers:
 		return m.OldAnswers(ctx)
 	case fulfillment.FieldCreatedAt:
@@ -15067,6 +15124,13 @@ func (m *FulfillmentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEstimatedFinish(v)
+		return nil
+	case fulfillment.FieldForecast:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetForecast(v)
 		return nil
 	case fulfillment.FieldAnswers:
 		v, ok := value.(map[string]interface{})
@@ -15164,6 +15228,9 @@ func (m *FulfillmentMutation) ClearedFields() []string {
 	if m.FieldCleared(fulfillment.FieldEstimatedFinish) {
 		fields = append(fields, fulfillment.FieldEstimatedFinish)
 	}
+	if m.FieldCleared(fulfillment.FieldForecast) {
+		fields = append(fields, fulfillment.FieldForecast)
+	}
 	return fields
 }
 
@@ -15183,6 +15250,9 @@ func (m *FulfillmentMutation) ClearField(name string) error {
 		return nil
 	case fulfillment.FieldEstimatedFinish:
 		m.ClearEstimatedFinish()
+		return nil
+	case fulfillment.FieldForecast:
+		m.ClearForecast()
 		return nil
 	}
 	return fmt.Errorf("unknown Fulfillment nullable field %s", name)
@@ -15221,6 +15291,9 @@ func (m *FulfillmentMutation) ResetField(name string) error {
 		return nil
 	case fulfillment.FieldEstimatedFinish:
 		m.ResetEstimatedFinish()
+		return nil
+	case fulfillment.FieldForecast:
+		m.ResetForecast()
 		return nil
 	case fulfillment.FieldAnswers:
 		m.ResetAnswers()
