@@ -5,16 +5,17 @@ import sys
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
-images = {"boosterplus-backend:local": "backend", "boosterplus-frontend:local": "frontend"}
+scanner = "boosterplus-scanner:local"
+images = {"boosterplus-backend:local": "backend", "boosterplus-frontend:local": "frontend", scanner: "backend"}
 image = sys.argv[1]
 project = images[image]
-report = root / project / ".cache" / "image-vulnerabilities.json"
+report = root / project / ".cache" / ("scanner-vulnerabilities.json" if image == scanner else "image-vulnerabilities.json")
 report.parent.mkdir(exist_ok=True)
 report.unlink(missing_ok=True)
 result = subprocess.run([
     str(root / ".tools" / "trivy"), "image", "--quiet", "--format", "json",
     "--output", str(report), "--scanners", "vuln", "--severity", "HIGH,CRITICAL",
-    "--ignore-unfixed", "--exit-code", "1", image,
+    "--ignore-unfixed", "--exit-code", "1", *(["--platform", "linux/amd64"] if image == scanner else []), image,
 ], check=False)
 if report.exists():
     data = json.loads(report.read_text())

@@ -32,6 +32,8 @@ const (
 	FieldRequestKey = "request_key"
 	// FieldRequestHash holds the string denoting the request_hash field in the database.
 	FieldRequestHash = "request_hash"
+	// FieldAttachments holds the string denoting the attachments field in the database.
+	FieldAttachments = "attachments"
 	// FieldBody holds the string denoting the body field in the database.
 	FieldBody = "body"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -52,6 +54,7 @@ var Columns = []string{
 	FieldPublicSequence,
 	FieldRequestKey,
 	FieldRequestHash,
+	FieldAttachments,
 	FieldBody,
 	FieldCreatedAt,
 }

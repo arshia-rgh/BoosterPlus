@@ -16,6 +16,7 @@ type Config struct {
 	HTTPAddress string
 	DatabaseDSN string
 	Identity    identity.Config
+	Media       Media
 }
 
 // Load rejects unknown environments and malformed listener addresses.
@@ -40,5 +41,10 @@ func Load(getenv func(string) string) (Config, error) {
 		return Config{}, authErr
 	}
 	cfg.Identity = auth
+	media, mediaErr := PrivateMedia(getenv, cfg.Environment)
+	if mediaErr != nil {
+		return Config{}, mediaErr
+	}
+	cfg.Media = media
 	return cfg, nil
 }

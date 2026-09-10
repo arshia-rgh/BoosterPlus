@@ -296,6 +296,7 @@ var (
 		{Name: "public_sequence", Type: field.TypeInt, Nullable: true},
 		{Name: "request_key", Type: field.TypeString, Size: 36},
 		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "attachments", Type: field.TypeJSON, Nullable: true},
 		{Name: "body", Type: field.TypeString, Size: 4000},
 		{Name: "created_at", Type: field.TypeTime},
 	}
@@ -457,6 +458,55 @@ var (
 		Name:       "games",
 		Columns:    GamesColumns,
 		PrimaryKey: []*schema.Column{GamesColumns[0]},
+	}
+	// MediaFilesColumns holds the columns for the "media_files" table.
+	MediaFilesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "conversation_id", Type: field.TypeString, Size: 36},
+		{Name: "visibility", Type: field.TypeEnum, Enums: []string{"public", "internal"}},
+		{Name: "request_key", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "checksum", Type: field.TypeString, Size: 64},
+		{Name: "size", Type: field.TypeInt64},
+		{Name: "content_type", Type: field.TypeString, Size: 32},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"pending", "uploaded", "queued", "ready", "rejected", "deleted"}, Default: "pending"},
+		{Name: "message_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "clean_content_type", Type: field.TypeString, Size: 32, Default: ""},
+		{Name: "clean_checksum", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "clean_size", Type: field.TypeInt64, Default: 0},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "purged_at", Type: field.TypeTime, Nullable: true},
+	}
+	// MediaFilesTable holds the schema information for the "media_files" table.
+	MediaFilesTable = &schema.Table{
+		Name:       "media_files",
+		Columns:    MediaFilesColumns,
+		PrimaryKey: []*schema.Column{MediaFilesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "media_request",
+				Unique:  true,
+				Columns: []*schema.Column{MediaFilesColumns[1], MediaFilesColumns[4]},
+			},
+			{
+				Name:    "media_owner",
+				Unique:  false,
+				Columns: []*schema.Column{MediaFilesColumns[1], MediaFilesColumns[9]},
+			},
+			{
+				Name:    "media_expiry",
+				Unique:  false,
+				Columns: []*schema.Column{MediaFilesColumns[10], MediaFilesColumns[14]},
+			},
+			{
+				Name:    "media_message",
+				Unique:  false,
+				Columns: []*schema.Column{MediaFilesColumns[10]},
+			},
+		},
 	}
 	// NotificationsColumns holds the columns for the "notifications" table.
 	NotificationsColumns = []*schema.Column{
@@ -662,6 +712,7 @@ var (
 		CouponRevisionsTable,
 		FavoritesTable,
 		GamesTable,
+		MediaFilesTable,
 		NotificationsTable,
 		OrdersTable,
 		OrderContractsTable,

@@ -22,6 +22,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
@@ -358,11 +359,11 @@ func init() {
 	// conversationmessage.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
 	conversationmessage.RequestHashValidator = conversationmessageDescRequestHash.Validators[0].(func(string) error)
 	// conversationmessageDescBody is the schema descriptor for body field.
-	conversationmessageDescBody := conversationmessageFields[10].Descriptor()
+	conversationmessageDescBody := conversationmessageFields[11].Descriptor()
 	// conversationmessage.BodyValidator is a validator for the "body" field. It is called by the builders before save.
 	conversationmessage.BodyValidator = conversationmessageDescBody.Validators[0].(func(string) error)
 	// conversationmessageDescCreatedAt is the schema descriptor for created_at field.
-	conversationmessageDescCreatedAt := conversationmessageFields[11].Descriptor()
+	conversationmessageDescCreatedAt := conversationmessageFields[12].Descriptor()
 	// conversationmessage.DefaultCreatedAt holds the default value on creation for the created_at field.
 	conversationmessage.DefaultCreatedAt = conversationmessageDescCreatedAt.Default.(func() time.Time)
 	// conversationmessageDescID is the schema descriptor for id field.
@@ -577,6 +578,66 @@ func init() {
 	game.DefaultID = gameDescID.Default.(func() string)
 	// game.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	game.IDValidator = gameDescID.Validators[0].(func(string) error)
+	mediafileFields := schema.MediaFile{}.Fields()
+	_ = mediafileFields
+	// mediafileDescUserID is the schema descriptor for user_id field.
+	mediafileDescUserID := mediafileFields[1].Descriptor()
+	// mediafile.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	mediafile.UserIDValidator = mediafileDescUserID.Validators[0].(func(string) error)
+	// mediafileDescConversationID is the schema descriptor for conversation_id field.
+	mediafileDescConversationID := mediafileFields[2].Descriptor()
+	// mediafile.ConversationIDValidator is a validator for the "conversation_id" field. It is called by the builders before save.
+	mediafile.ConversationIDValidator = mediafileDescConversationID.Validators[0].(func(string) error)
+	// mediafileDescRequestKey is the schema descriptor for request_key field.
+	mediafileDescRequestKey := mediafileFields[4].Descriptor()
+	// mediafile.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
+	mediafile.RequestKeyValidator = mediafileDescRequestKey.Validators[0].(func(string) error)
+	// mediafileDescRequestHash is the schema descriptor for request_hash field.
+	mediafileDescRequestHash := mediafileFields[5].Descriptor()
+	// mediafile.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	mediafile.RequestHashValidator = mediafileDescRequestHash.Validators[0].(func(string) error)
+	// mediafileDescChecksum is the schema descriptor for checksum field.
+	mediafileDescChecksum := mediafileFields[6].Descriptor()
+	// mediafile.ChecksumValidator is a validator for the "checksum" field. It is called by the builders before save.
+	mediafile.ChecksumValidator = mediafileDescChecksum.Validators[0].(func(string) error)
+	// mediafileDescContentType is the schema descriptor for content_type field.
+	mediafileDescContentType := mediafileFields[8].Descriptor()
+	// mediafile.ContentTypeValidator is a validator for the "content_type" field. It is called by the builders before save.
+	mediafile.ContentTypeValidator = mediafileDescContentType.Validators[0].(func(string) error)
+	// mediafileDescMessageID is the schema descriptor for message_id field.
+	mediafileDescMessageID := mediafileFields[10].Descriptor()
+	// mediafile.MessageIDValidator is a validator for the "message_id" field. It is called by the builders before save.
+	mediafile.MessageIDValidator = mediafileDescMessageID.Validators[0].(func(string) error)
+	// mediafileDescCleanContentType is the schema descriptor for clean_content_type field.
+	mediafileDescCleanContentType := mediafileFields[11].Descriptor()
+	// mediafile.DefaultCleanContentType holds the default value on creation for the clean_content_type field.
+	mediafile.DefaultCleanContentType = mediafileDescCleanContentType.Default.(string)
+	// mediafile.CleanContentTypeValidator is a validator for the "clean_content_type" field. It is called by the builders before save.
+	mediafile.CleanContentTypeValidator = mediafileDescCleanContentType.Validators[0].(func(string) error)
+	// mediafileDescCleanChecksum is the schema descriptor for clean_checksum field.
+	mediafileDescCleanChecksum := mediafileFields[12].Descriptor()
+	// mediafile.DefaultCleanChecksum holds the default value on creation for the clean_checksum field.
+	mediafile.DefaultCleanChecksum = mediafileDescCleanChecksum.Default.(string)
+	// mediafile.CleanChecksumValidator is a validator for the "clean_checksum" field. It is called by the builders before save.
+	mediafile.CleanChecksumValidator = mediafileDescCleanChecksum.Validators[0].(func(string) error)
+	// mediafileDescCleanSize is the schema descriptor for clean_size field.
+	mediafileDescCleanSize := mediafileFields[13].Descriptor()
+	// mediafile.DefaultCleanSize holds the default value on creation for the clean_size field.
+	mediafile.DefaultCleanSize = mediafileDescCleanSize.Default.(int64)
+	// mediafileDescCreatedAt is the schema descriptor for created_at field.
+	mediafileDescCreatedAt := mediafileFields[15].Descriptor()
+	// mediafile.DefaultCreatedAt holds the default value on creation for the created_at field.
+	mediafile.DefaultCreatedAt = mediafileDescCreatedAt.Default.(func() time.Time)
+	// mediafileDescUpdatedAt is the schema descriptor for updated_at field.
+	mediafileDescUpdatedAt := mediafileFields[16].Descriptor()
+	// mediafile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	mediafile.DefaultUpdatedAt = mediafileDescUpdatedAt.Default.(func() time.Time)
+	// mediafileDescID is the schema descriptor for id field.
+	mediafileDescID := mediafileFields[0].Descriptor()
+	// mediafile.DefaultID holds the default value on creation for the id field.
+	mediafile.DefaultID = mediafileDescID.Default.(func() string)
+	// mediafile.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	mediafile.IDValidator = mediafileDescID.Validators[0].(func(string) error)
 	notificationFields := schema.Notification{}.Fields()
 	_ = notificationFields
 	// notificationDescUserID is the schema descriptor for user_id field.

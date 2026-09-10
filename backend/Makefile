@@ -30,7 +30,7 @@ security: gosec vuln
 test test-race:
 	go test -race -count=1 ./...
 test-integration:
-	go test -race -count=1 -tags=integration ./internal/integration/...
+	python3 ../scripts/integration-tests.py
 test-coverage:
 	go test -race -count=1 -coverprofile=coverage.out ./internal/...
 generate:
@@ -74,11 +74,12 @@ compose-check:
 	DEV_S3_SECRET_KEY=configuration-validation-only docker compose config --quiet
 docker-build:
 	docker build -t boosterplus-backend:local .
+	docker build --platform linux/amd64 -f deploy/scanner.Dockerfile -t boosterplus-scanner:local .
 dev-up: setup-env docker-build compose-up
 	python3 scripts/wait-tidb.py
 	docker compose run --rm bootstrap
 	docker compose run --rm migrate
-	docker compose --profile storage up -d api worker storage
+	docker compose --profile storage up -d api worker storage scanner
 	python3 scripts/smoke.py
 dev-smoke:
 	python3 scripts/smoke.py
@@ -92,3 +93,4 @@ config-validate:
 .PHONY: image-security
 image-security:
 	python3 ../scripts/scan-image.py boosterplus-backend:local
+	python3 ../scripts/scan-image.py boosterplus-scanner:local

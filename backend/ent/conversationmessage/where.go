@@ -614,6 +614,16 @@ func RequestHashContainsFold(v string) predicate.ConversationMessage {
 	return predicate.ConversationMessage(sql.FieldContainsFold(FieldRequestHash, v))
 }
 
+// AttachmentsIsNil applies the IsNil predicate on the "attachments" field.
+func AttachmentsIsNil() predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldIsNull(FieldAttachments))
+}
+
+// AttachmentsNotNil applies the NotNil predicate on the "attachments" field.
+func AttachmentsNotNil() predicate.ConversationMessage {
+	return predicate.ConversationMessage(sql.FieldNotNull(FieldAttachments))
+}
+
 // BodyEQ applies the EQ predicate on the "body" field.
 func BodyEQ(v string) predicate.ConversationMessage {
 	return predicate.ConversationMessage(sql.FieldEQ(FieldBody, v))

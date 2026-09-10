@@ -44,6 +44,33 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
     await buyer
       .getByLabel("Message", { exact: true })
       .fill("Can you help me choose a service?");
+    const webp = await buyer.evaluate(() => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 8;
+      canvas.height = 8;
+      return canvas.toDataURL("image/webp").split(",")[1] ?? "";
+    });
+    await buyer.getByLabel("Choose image").setInputFiles({
+      name: "proof.webp",
+      mimeType: "image/webp",
+      buffer: Buffer.from(webp, "base64"),
+    });
+    await expect(
+      buyer.getByRole("button", { name: "Send message", exact: true }),
+    ).toBeDisabled();
+    await buyer.route("**/api/v1/media/*/bytes", (route) => route.abort(), {
+      times: 1,
+    });
+    await buyer
+      .getByRole("button", { name: "Upload image", exact: true })
+      .click();
+    await expect(buyer.getByText(/Image upload failed/)).toBeVisible();
+    await buyer
+      .getByRole("button", { name: "Upload image", exact: true })
+      .click();
+    await expect(
+      buyer.getByText("Image checked and ready to send."),
+    ).toBeVisible({ timeout: 30000 });
     await buyer
       .getByRole("button", { name: "Send message", exact: true })
       .click();
@@ -58,6 +85,15 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
       .getByLabel("Internal note", { exact: true })
       .fill("Private staff-only evaluation");
     await page
+      .getByLabel("Choose image")
+      .setInputFiles("tests/fixtures/proof.png");
+    await page
+      .getByRole("button", { name: "Upload image", exact: true })
+      .click();
+    await expect(
+      page.getByText("Image checked and ready to send."),
+    ).toBeVisible({ timeout: 30000 });
+    await page
       .getByRole("button", { name: "Save internal note", exact: true })
       .click();
     await expect(page.locator(".internal-note")).toContainText(
@@ -70,6 +106,35 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
     );
     expect(publicMessages.messages).toHaveLength(1);
     expect(publicMessages.latest).toBe(1);
+    const fileID = publicMessages.messages[0]?.attachments?.[0];
+    expect(fileID).toBeTruthy();
+    await buyer
+      .getByRole("button", { name: "Get image download", exact: true })
+      .click();
+    const downloadURL = await buyer
+      .getByRole("link", { name: "Download image", exact: true })
+      .getAttribute("href");
+    if (!downloadURL) throw new Error("Private download grant missing");
+    const downloaded = await buyer.request.get(downloadURL);
+    expect(downloaded.status()).toBe(200);
+    expect(downloaded.headers()["content-type"]).toBe("image/png");
+    expect(downloaded.headers()["content-disposition"]).toContain(
+      "attachment;",
+    );
+    expect(downloaded.headers()["cache-control"]).toBe("no-store");
+    await page
+      .locator(".internal-note")
+      .getByRole("button", { name: "Get image download" })
+      .click();
+    const internalURL = await page
+      .locator(".internal-note")
+      .getByRole("link", { name: "Download image" })
+      .getAttribute("href");
+    if (!internalURL) throw new Error("Internal download missing");
+    const internalID = internalURL.split("/").at(-2);
+    expect(
+      (await buyer.request.get("/api/v1/media/" + String(internalID))).status(),
+    ).toBe(404);
     expect(
       publicMessages.messages.every(
         (message) =>
@@ -173,6 +238,10 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
           await other.request.get(`/api/v1/conversations/${id}/stream`)
         ).status(),
       ).toBe(404);
+      expect(
+        (await other.request.get("/api/v1/media/" + String(fileID))).status(),
+      ).toBe(404);
+      expect((await other.request.get(downloadURL)).status()).toBe(403);
       expect(
         (await other.request.get(`/api/v1/admin/conversations/${id}`)).status(),
       ).toBe(403);

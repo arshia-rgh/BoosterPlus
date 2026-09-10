@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -35,6 +36,8 @@ type ConversationMessage struct {
 	RequestKey string `json:"request_key,omitempty"`
 	// RequestHash holds the value of the "request_hash" field.
 	RequestHash string `json:"request_hash,omitempty"`
+	// Attachments holds the value of the "attachments" field.
+	Attachments []string `json:"attachments,omitempty"`
 	// Body holds the value of the "body" field.
 	Body string `json:"body,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -47,6 +50,8 @@ func (*ConversationMessage) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case conversationmessage.FieldAttachments:
+			values[i] = new([]byte)
 		case conversationmessage.FieldSequence, conversationmessage.FieldPublicSequence:
 			values[i] = new(sql.NullInt64)
 		case conversationmessage.FieldID, conversationmessage.FieldConversationID, conversationmessage.FieldSenderID, conversationmessage.FieldSenderRole, conversationmessage.FieldSenderLabel, conversationmessage.FieldVisibility, conversationmessage.FieldRequestKey, conversationmessage.FieldRequestHash, conversationmessage.FieldBody:
@@ -129,6 +134,14 @@ func (_m *ConversationMessage) assignValues(columns []string, values []any) erro
 			} else if value.Valid {
 				_m.RequestHash = value.String
 			}
+		case conversationmessage.FieldAttachments:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field attachments", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Attachments); err != nil {
+					return fmt.Errorf("unmarshal field attachments: %w", err)
+				}
+			}
 		case conversationmessage.FieldBody:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field body", values[i])
@@ -205,6 +218,9 @@ func (_m *ConversationMessage) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("request_hash=")
 	builder.WriteString(_m.RequestHash)
+	builder.WriteString(", ")
+	builder.WriteString("attachments=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Attachments))
 	builder.WriteString(", ")
 	builder.WriteString("body=")
 	builder.WriteString(_m.Body)

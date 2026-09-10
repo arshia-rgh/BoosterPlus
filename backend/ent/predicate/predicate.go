@@ -57,6 +57,9 @@ type Favorite func(*sql.Selector)
 // Game is the predicate function for game builders.
 type Game func(*sql.Selector)
 
+// MediaFile is the predicate function for mediafile builders.
+type MediaFile func(*sql.Selector)
+
 // Notification is the predicate function for notification builders.
 type Notification func(*sql.Selector)
 

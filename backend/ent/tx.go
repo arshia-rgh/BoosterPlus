@@ -48,6 +48,8 @@ type Tx struct {
 	Favorite *FavoriteClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
+	// MediaFile is the client for interacting with the MediaFile builders.
+	MediaFile *MediaFileClient
 	// Notification is the client for interacting with the Notification builders.
 	Notification *NotificationClient
 	// Order is the client for interacting with the Order builders.
@@ -208,6 +210,7 @@ func (tx *Tx) init() {
 	tx.CouponRevision = NewCouponRevisionClient(tx.config)
 	tx.Favorite = NewFavoriteClient(tx.config)
 	tx.Game = NewGameClient(tx.config)
+	tx.MediaFile = NewMediaFileClient(tx.config)
 	tx.Notification = NewNotificationClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
 	tx.OrderContract = NewOrderContractClient(tx.config)

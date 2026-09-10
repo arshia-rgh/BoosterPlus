@@ -1,5 +1,7 @@
 """Exercise the local stack without printing credentials, payloads, or private data."""
 import json
+import socket
+from datetime import datetime, timezone
 import subprocess
 import time
 import urllib.error
@@ -36,4 +38,20 @@ for attempt in range(60):
         time.sleep(1)
 else:
     raise SystemExit("Storage did not become reachable")
-print("Local API, worker, email catcher and anonymous storage denial passed")
+deadline = time.monotonic() + 240
+while time.monotonic() < deadline:
+    try:
+        with socket.create_connection(("127.0.0.1", 13310), timeout=3) as scanner:
+            scanner.sendall(b"zVERSION\0")
+            with scanner.makefile("rb") as stream:
+                value = stream.read(512).rstrip(b"\0").decode("ascii").split("/")
+        updated = datetime.strptime(value[2], "%a %b %d %H:%M:%S %Y").replace(tzinfo=timezone.utc)
+        age = (datetime.now(timezone.utc) - updated).total_seconds()
+        if len(value) == 3 and value[0].startswith("ClamAV ") and -3600 <= age <= 72 * 3600:
+            break
+    except (OSError, ValueError, IndexError):
+        pass
+    time.sleep(2)
+else:
+    raise SystemExit("Scanner readiness or signature freshness timed out")
+print("Local API, worker, email catcher, private storage and fresh scanner passed")

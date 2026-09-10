@@ -1,4 +1,4 @@
-import { useEffect, useState, type SubmitEvent } from "react";
+import { useCallback, useEffect, useState, type SubmitEvent } from "react";
 import { Link, useParams } from "react-router";
 import { z } from "zod";
 import { command, post, userSchema } from "../identity/api";
@@ -10,6 +10,7 @@ import {
   messagesSchema,
   type Conversation,
 } from "./model";
+import { UploadImage, DownloadImage } from "../media/attachment";
 const staffSchema = z.object({ users: z.array(userSchema) });
 function StaffControls({
   thread,
@@ -126,6 +127,14 @@ function Compose({
     [key, setKey] = useState(() => crypto.randomUUID()),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
+  const [attachment, setAttachment] = useState("");
+  const [uploadPending, setUploadPending] = useState(false);
+  const [uploadVersion, setUploadVersion] = useState(0);
+  const changeAttachment = useCallback((id: string, pending: boolean) => {
+    setAttachment(id);
+    setUploadPending(pending);
+    setKey(crypto.randomUUID());
+  }, []);
   async function send(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
@@ -133,10 +142,18 @@ function Compose({
     try {
       await post(
         base + "/messages",
-        { request_key: key, body, visibility },
+        {
+          request_key: key,
+          body,
+          visibility,
+          attachments: attachment ? [attachment] : [],
+        },
         messageSchema,
       );
       setBody("");
+      setAttachment("");
+      setUploadPending(false);
+      setUploadVersion((v) => v + 1);
       setKey(crypto.randomUUID());
       done();
     } catch (cause) {
@@ -161,6 +178,8 @@ function Compose({
             value={visibility}
             change={(value) => {
               setVisibility(value);
+              setAttachment("");
+              setUploadPending(false);
               setKey(crypto.randomUUID());
             }}
             options={[
@@ -178,11 +197,19 @@ function Compose({
           }}
           multiline
         />
-        <p className="quiet">
-          Up to 4,000 characters. File attachments will be available after
-          private upload processing is verified.
-        </p>
-        <button className="button" type="submit" disabled={!body.trim()}>
+        <p className="quiet">Up to 4,000 characters.</p>
+        <UploadImage
+          key={visibility + String(uploadVersion)}
+          conversation={base.split("/").at(-1) ?? ""}
+          admin={admin}
+          visibility={visibility}
+          change={changeAttachment}
+        />
+        <button
+          className="button"
+          type="submit"
+          disabled={!body.trim() || uploadPending}
+        >
           {busy
             ? "Sending…"
             : visibility === "internal"
@@ -323,6 +350,9 @@ function Messages({
                     </time>
                   </div>
                   <p>{message.body}</p>
+                  {message.attachments?.map((id) => (
+                    <DownloadImage key={id} id={id} admin={admin} />
+                  ))}
                 </li>
               ))}
             </ol>

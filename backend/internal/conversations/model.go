@@ -35,9 +35,10 @@ type CreateInput struct {
 
 // SendInput cannot name a sender, alias, sequence or customer.
 type SendInput struct {
-	RequestKey string `json:"request_key"`
-	Body       string `json:"body"`
-	Visibility string `json:"visibility"`
+	Attachments []string `json:"attachments,omitempty"`
+	RequestKey  string   `json:"request_key"`
+	Body        string   `json:"body"`
+	Visibility  string   `json:"visibility"`
 }
 
 // Change requires a staff-observed revision for state, assignment and order linking.
@@ -67,6 +68,7 @@ type View struct {
 
 // Message never exposes a private sender ID to the customer API.
 type Message struct {
+	Attachments []string  `json:"attachments,omitempty"`
 	ID          string    `json:"id"`
 	Sequence    int       `json:"sequence"`
 	SenderLabel string    `json:"sender_label"`

@@ -82,6 +82,12 @@ func (_c *ConversationMessageCreate) SetRequestHash(v string) *ConversationMessa
 	return _c
 }
 
+// SetAttachments sets the "attachments" field.
+func (_c *ConversationMessageCreate) SetAttachments(v []string) *ConversationMessageCreate {
+	_c.mutation.SetAttachments(v)
+	return _c
+}
+
 // SetBody sets the "body" field.
 func (_c *ConversationMessageCreate) SetBody(v string) *ConversationMessageCreate {
 	_c.mutation.SetBody(v)
@@ -308,6 +314,10 @@ func (_c *ConversationMessageCreate) createSpec() (*ConversationMessage, *sqlgra
 	if value, ok := _c.mutation.RequestHash(); ok {
 		_spec.SetField(conversationmessage.FieldRequestHash, field.TypeString, value)
 		_node.RequestHash = value
+	}
+	if value, ok := _c.mutation.Attachments(); ok {
+		_spec.SetField(conversationmessage.FieldAttachments, field.TypeJSON, value)
+		_node.Attachments = value
 	}
 	if value, ok := _c.mutation.Body(); ok {
 		_spec.SetField(conversationmessage.FieldBody, field.TypeString, value)

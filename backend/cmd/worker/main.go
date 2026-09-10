@@ -17,6 +17,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 )
 
@@ -55,8 +56,12 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 	if senderErr != nil {
 		return senderErr
 	}
+	files := media.New(client, auth, media.NewS3(cfg.Media.Endpoint, cfg.Media.Region, cfg.Media.Bucket, cfg.Media.Access, cfg.Media.Secret, "media/"), media.Clamd{Network: cfg.Media.ScannerNetwork, Address: cfg.Media.ScannerAddress})
 	maintenance, stopMaintenance := context.WithCancel(ctx)
 	defer stopMaintenance()
+	mediaDone := make(chan struct{})
+	go func() { defer close(mediaDone); files.RunCleanup(maintenance, logger) }()
+	defer func() { stopMaintenance(); <-mediaDone }()
 	done := make(chan struct{})
 	go func() { defer close(done); auth.RunCleanup(maintenance, logger) }()
 	defer func() { stopMaintenance(); <-done }()
@@ -71,5 +76,6 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 		return noticeErr
 	}
 	handlers["activity.email"] = notices.EmailHandler(sender)
+	handlers["media.scan"] = files.ScanHandler()
 	return jobs.Run(ctx, jobs.New(db), handlers, logger)
 }

@@ -93,6 +93,7 @@ app.use("/api", (req, res) => {
       res.status(response.statusCode ?? 502);
       for (const name of [
         "content-type",
+        "content-disposition",
         "set-cookie",
         "location",
         "retry-after",
@@ -116,14 +117,22 @@ app.use("/api", (req, res) => {
     bytes += chunk.length;
     if (
       bytes >
-      (req.path.startsWith("/v1/conversations") ||
-      req.path.startsWith("/v1/admin/conversations") ||
-      req.path.startsWith("/v1/orders") ||
-      req.path.startsWith("/v1/admin/orders") ||
-      req.path.startsWith("/v1/admin/catalog/") ||
-      req.path.startsWith("/v1/catalog/")
-        ? 262144
-        : 16384)
+      (req.method === "PUT" &&
+      (req.path.startsWith("/v1/media/") ||
+        req.path.startsWith("/v1/admin/media/")) &&
+      req.path.endsWith("/bytes")
+        ? 4194304
+        : req.path.startsWith("/v1/media") ||
+            req.path.startsWith("/v1/admin/media")
+          ? 16384
+          : req.path.startsWith("/v1/conversations") ||
+              req.path.startsWith("/v1/admin/conversations") ||
+              req.path.startsWith("/v1/orders") ||
+              req.path.startsWith("/v1/admin/orders") ||
+              req.path.startsWith("/v1/admin/catalog/") ||
+              req.path.startsWith("/v1/catalog/")
+            ? 262144
+            : 16384)
     ) {
       upstream.destroy();
       if (!res.headersSent) res.status(413).end();

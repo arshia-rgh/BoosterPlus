@@ -106,3 +106,23 @@ func (s *Service) Recheck(ctx context.Context, p *Principal, capability string) 
 	})
 	return current, err
 }
+
+// ProtectUpload keeps a larger binary-body allowance limited to authenticated
+// upload routes; all session, proxy, Origin, CSRF and shared rate checks still run.
+func (s *Service) ProtectUpload(capability string, next func(http.ResponseWriter, *http.Request, *Principal) error) http.HandlerFunc {
+	return s.handleLimit(func(w http.ResponseWriter, r *http.Request, state requestState) error {
+		if err := Require(state.principal, capability); err != nil {
+			return err
+		}
+		for _, key := range []string{"ip:" + state.ip, "user:" + state.principal.User.ID} {
+			allowed, err := s.Throttle(r.Context(), "media-bytes", key, 40, time.Hour)
+			if err != nil {
+				return err
+			}
+			if !allowed {
+				return ErrLimited
+			}
+		}
+		return next(w, r, state.principal)
+	}, 4<<20)
+}

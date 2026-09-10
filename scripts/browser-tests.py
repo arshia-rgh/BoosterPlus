@@ -1,15 +1,15 @@
 """Run browser tests against a freshly migrated TiDB schema and real local SMTP."""
 import json
-import os
 from pathlib import Path
 import subprocess
 import tempfile
 import time
+from test_services import environment as service_environment
 
 root = Path(__file__).resolve().parents[1]
 with tempfile.TemporaryDirectory(prefix="boosterplus-browser-") as temporary:
     directory = Path(temporary)
-    environment = dict(os.environ, GOSUMDB="sum.golang.org", BROWSER_TEST_DIRECTORY=temporary)
+    environment = dict(service_environment(root), BROWSER_TEST_DIRECTORY=temporary)
     environment.setdefault("TEST_DATABASE_DSN", "root@tcp(127.0.0.1:14000)/mysql")
     with (directory / "backend.log").open("w+") as output:
         backend = subprocess.Popen(["go", "test", "-race", "-tags=integration,browsertest", "-count=1", "-timeout=12m", "./internal/integration", "-run", "^TestBrowserEnvironment$"], cwd=root / "backend", env=environment, stdout=output, stderr=subprocess.STDOUT)

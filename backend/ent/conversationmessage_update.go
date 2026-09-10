@@ -71,6 +71,9 @@ func (_u *ConversationMessageUpdate) sqlSave(ctx context.Context) (_node int, er
 	if _u.mutation.PublicSequenceCleared() {
 		_spec.ClearField(conversationmessage.FieldPublicSequence, field.TypeInt)
 	}
+	if _u.mutation.AttachmentsCleared() {
+		_spec.ClearField(conversationmessage.FieldAttachments, field.TypeJSON)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{conversationmessage.Label}
@@ -164,6 +167,9 @@ func (_u *ConversationMessageUpdateOne) sqlSave(ctx context.Context) (_node *Con
 	}
 	if _u.mutation.PublicSequenceCleared() {
 		_spec.ClearField(conversationmessage.FieldPublicSequence, field.TypeInt)
+	}
+	if _u.mutation.AttachmentsCleared() {
+		_spec.ClearField(conversationmessage.FieldAttachments, field.TypeJSON)
 	}
 	_node = &ConversationMessage{config: _u.config}
 	_spec.Assign = _node.assignValues

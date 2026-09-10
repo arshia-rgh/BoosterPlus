@@ -31,6 +31,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/couponrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
@@ -80,6 +81,8 @@ type Client struct {
 	Favorite *FavoriteClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
+	// MediaFile is the client for interacting with the MediaFile builders.
+	MediaFile *MediaFileClient
 	// Notification is the client for interacting with the Notification builders.
 	Notification *NotificationClient
 	// Order is the client for interacting with the Order builders.
@@ -120,6 +123,7 @@ func (c *Client) init() {
 	c.CouponRevision = NewCouponRevisionClient(c.config)
 	c.Favorite = NewFavoriteClient(c.config)
 	c.Game = NewGameClient(c.config)
+	c.MediaFile = NewMediaFileClient(c.config)
 	c.Notification = NewNotificationClient(c.config)
 	c.Order = NewOrderClient(c.config)
 	c.OrderContract = NewOrderContractClient(c.config)
@@ -235,6 +239,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CouponRevision:      NewCouponRevisionClient(cfg),
 		Favorite:            NewFavoriteClient(cfg),
 		Game:                NewGameClient(cfg),
+		MediaFile:           NewMediaFileClient(cfg),
 		Notification:        NewNotificationClient(cfg),
 		Order:               NewOrderClient(cfg),
 		OrderContract:       NewOrderContractClient(cfg),
@@ -277,6 +282,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CouponRevision:      NewCouponRevisionClient(cfg),
 		Favorite:            NewFavoriteClient(cfg),
 		Game:                NewGameClient(cfg),
+		MediaFile:           NewMediaFileClient(cfg),
 		Notification:        NewNotificationClient(cfg),
 		Order:               NewOrderClient(cfg),
 		OrderContract:       NewOrderContractClient(cfg),
@@ -315,8 +321,8 @@ func (c *Client) Use(hooks ...Hook) {
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
 		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Conversation,
 		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
-		c.CouponRevision, c.Favorite, c.Game, c.Notification, c.Order, c.OrderContract,
-		c.OrderEvent, c.OrderQuote, c.User,
+		c.CouponRevision, c.Favorite, c.Game, c.MediaFile, c.Notification, c.Order,
+		c.OrderContract, c.OrderEvent, c.OrderQuote, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -329,8 +335,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
 		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Conversation,
 		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
-		c.CouponRevision, c.Favorite, c.Game, c.Notification, c.Order, c.OrderContract,
-		c.OrderEvent, c.OrderQuote, c.User,
+		c.CouponRevision, c.Favorite, c.Game, c.MediaFile, c.Notification, c.Order,
+		c.OrderContract, c.OrderEvent, c.OrderQuote, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -373,6 +379,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Favorite.mutate(ctx, m)
 	case *GameMutation:
 		return c.Game.mutate(ctx, m)
+	case *MediaFileMutation:
+		return c.MediaFile.mutate(ctx, m)
 	case *NotificationMutation:
 		return c.Notification.mutate(ctx, m)
 	case *OrderMutation:
@@ -2651,6 +2659,139 @@ func (c *GameClient) mutate(ctx context.Context, m *GameMutation) (Value, error)
 	}
 }
 
+// MediaFileClient is a client for the MediaFile schema.
+type MediaFileClient struct {
+	config
+}
+
+// NewMediaFileClient returns a client for the MediaFile from the given config.
+func NewMediaFileClient(c config) *MediaFileClient {
+	return &MediaFileClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `mediafile.Hooks(f(g(h())))`.
+func (c *MediaFileClient) Use(hooks ...Hook) {
+	c.hooks.MediaFile = append(c.hooks.MediaFile, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `mediafile.Intercept(f(g(h())))`.
+func (c *MediaFileClient) Intercept(interceptors ...Interceptor) {
+	c.inters.MediaFile = append(c.inters.MediaFile, interceptors...)
+}
+
+// Create returns a builder for creating a MediaFile entity.
+func (c *MediaFileClient) Create() *MediaFileCreate {
+	mutation := newMediaFileMutation(c.config, OpCreate)
+	return &MediaFileCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of MediaFile entities.
+func (c *MediaFileClient) CreateBulk(builders ...*MediaFileCreate) *MediaFileCreateBulk {
+	return &MediaFileCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MediaFileClient) MapCreateBulk(slice any, setFunc func(*MediaFileCreate, int)) *MediaFileCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MediaFileCreateBulk{err: fmt.Errorf("calling to MediaFileClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MediaFileCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MediaFileCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for MediaFile.
+func (c *MediaFileClient) Update() *MediaFileUpdate {
+	mutation := newMediaFileMutation(c.config, OpUpdate)
+	return &MediaFileUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MediaFileClient) UpdateOne(_m *MediaFile) *MediaFileUpdateOne {
+	mutation := newMediaFileMutation(c.config, OpUpdateOne, withMediaFile(_m))
+	return &MediaFileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MediaFileClient) UpdateOneID(id string) *MediaFileUpdateOne {
+	mutation := newMediaFileMutation(c.config, OpUpdateOne, withMediaFileID(id))
+	return &MediaFileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for MediaFile.
+func (c *MediaFileClient) Delete() *MediaFileDelete {
+	mutation := newMediaFileMutation(c.config, OpDelete)
+	return &MediaFileDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MediaFileClient) DeleteOne(_m *MediaFile) *MediaFileDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MediaFileClient) DeleteOneID(id string) *MediaFileDeleteOne {
+	builder := c.Delete().Where(mediafile.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MediaFileDeleteOne{builder}
+}
+
+// Query returns a query builder for MediaFile.
+func (c *MediaFileClient) Query() *MediaFileQuery {
+	return &MediaFileQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMediaFile},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a MediaFile entity by its id.
+func (c *MediaFileClient) Get(ctx context.Context, id string) (*MediaFile, error) {
+	return c.Query().Where(mediafile.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MediaFileClient) GetX(ctx context.Context, id string) *MediaFile {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *MediaFileClient) Hooks() []Hook {
+	return c.hooks.MediaFile
+}
+
+// Interceptors returns the client interceptors.
+func (c *MediaFileClient) Interceptors() []Interceptor {
+	return c.inters.MediaFile
+}
+
+func (c *MediaFileClient) mutate(ctx context.Context, m *MediaFileMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MediaFileCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MediaFileUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MediaFileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MediaFileDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown MediaFile mutation op: %q", m.Op())
+	}
+}
+
 // NotificationClient is a client for the Notification schema.
 type NotificationClient struct {
 	config
@@ -3455,13 +3596,14 @@ type (
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
 		AuthRecovery, AuthSession, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Game,
-		Notification, Order, OrderContract, OrderEvent, OrderQuote, User []ent.Hook
+		MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
+		User []ent.Hook
 	}
 	inters struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
 		AuthRecovery, AuthSession, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Game,
-		Notification, Order, OrderContract, OrderEvent, OrderQuote,
+		MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
 		User []ent.Interceptor
 	}
 )

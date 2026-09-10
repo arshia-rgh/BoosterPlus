@@ -22,6 +22,7 @@ export const messageSchema = z.object({
   sender_id: z.string().optional(),
   visibility: z.enum(["public", "internal"]),
   body: z.string(),
+  attachments: z.array(z.string()).optional(),
   created_at: z.string(),
 });
 export const messagesSchema = z.object({

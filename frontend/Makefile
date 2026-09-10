@@ -24,7 +24,7 @@ test test-coverage:
 	npm run test
 test-watch:
 	npm run test:watch
-test-e2e test-a11y:
+test-e2e test-a11y: build
 	npm run test:e2e
 security:
 	npm run security

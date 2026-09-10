@@ -20,6 +20,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/httpapi"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
 )
@@ -78,13 +79,14 @@ func TestBrowserEnvironment(t *testing.T) {
 	if noticeErr != nil {
 		t.Fatal(noticeErr)
 	}
-	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register))
+	files := media.New(f.client, service, mediaObjects(t, f.client), media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
+	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register))
 	defer server.Close()
 	work, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	done := make(chan error, 1)
 	go func() {
-		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"identity.email": service.EmailHandler(sender), "activity.email": notices.EmailHandler(sender)}, slog.New(slog.DiscardHandler))
+		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"identity.email": service.EmailHandler(sender), "activity.email": notices.EmailHandler(sender), "media.scan": files.ScanHandler()}, slog.New(slog.DiscardHandler))
 	}()
 	defer func() {
 		cancel()

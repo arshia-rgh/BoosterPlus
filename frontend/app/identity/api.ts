@@ -61,6 +61,14 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "media_invalid",
+    "Choose a valid JPEG, PNG, or WebP matching the upload requirements.",
+  ],
+  [
+    "media_conflict",
+    "This image is not ready or has changed. Refresh its status before continuing.",
+  ],
+  [
     "conversation_conflict",
     "This conversation changed. Refresh it before trying again.",
   ],

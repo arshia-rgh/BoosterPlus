@@ -22,6 +22,13 @@ x-runtime-env: &runtime-env
   SMTP_TLS: disabled
   GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
   GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  MEDIA_S3_ENDPOINT: http://storage:8333
+  MEDIA_S3_REGION: us-east-1
+  MEDIA_S3_BUCKET: boosterplus-private
+  MEDIA_S3_ACCESS_KEY: boosterplus-local
+  MEDIA_S3_SECRET_KEY: ${DEV_S3_SECRET_KEY:-}
+  MEDIA_SCANNER_NETWORK: tcp
+  MEDIA_SCANNER_ADDRESS: scanner:3310
   DATABASE_DSN: boosterplus_runtime:${DEV_DATABASE_PASSWORD:-}@tcp(tidb:4000)/boosterplus
 services:
   tidb:
@@ -72,6 +79,31 @@ services:
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     mem_limit: 256m
+  scanner:
+    image: boosterplus-scanner:local
+    build:
+      context: .
+      dockerfile: deploy/scanner.Dockerfile
+    platform: linux/amd64
+    profiles: [storage]
+    ports: ["127.0.0.1:13310:3310"]
+    environment:
+      TZ: UTC
+      FRESHCLAM_CHECKS: 12
+      CLAMD_CONF_AlertExceedsMax: "yes"
+      CLAMD_CONF_StreamMaxLength: 4M
+      CLAMD_CONF_MaxFileSize: 4M
+      CLAMD_CONF_MaxScanSize: 16M
+      CLAMD_CONF_MaxScanTime: 10000
+      CLAMD_CONF_MaxRecursion: 4
+      CLAMD_CONF_MaxFiles: 20
+      CLAMD_CONF_MaxThreads: 2
+      CLAMD_CONF_ConcurrentDatabaseReload: "no"
+    volumes: [scanner-data:/var/lib/clamav]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 1536m
+    cpus: 1
+    restart: unless-stopped
   storage:
     image: chrislusf/seaweedfs:4.46@sha256:08d516132314207d10c8e37cbffc1f32b147d870169688734cc61c6231625b62
     profiles: [storage]
@@ -88,3 +120,4 @@ services:
 volumes:
   tidb-data:
   storage-data:
+  scanner-data:

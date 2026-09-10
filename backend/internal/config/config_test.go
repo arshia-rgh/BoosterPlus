@@ -23,6 +23,13 @@ func TestConfiguration(t *testing.T) {
 			t.Fatal(err)
 		}
 		values := map[string]string{"AUTH_KEY": hex.EncodeToString(key), "PROXY_SHARED_KEY": hex.EncodeToString(proxy), "PUBLIC_ORIGIN": "https://boosterplus.example.test", "TERMS_VERSION": "test-v1", "SMTP_HOST": "smtp.example.test", "SMTP_PORT": "587", "SMTP_FROM": "no-reply@example.test", "SMTP_TLS": "required", "APP_ENV": scenario.environment, "HTTP_ADDR": scenario.address, "DATABASE_DSN": scenario.dsn}
+		values["MEDIA_S3_ENDPOINT"] = "https://objects.example.test"
+		values["MEDIA_S3_REGION"] = "us-east-1"
+		values["MEDIA_S3_BUCKET"] = "private-test"
+		values["MEDIA_S3_ACCESS_KEY"] = "test-access"
+		values["MEDIA_S3_SECRET_KEY"] = hex.EncodeToString(key)
+		values["MEDIA_SCANNER_NETWORK"] = "unix"
+		values["MEDIA_SCANNER_ADDRESS"] = "/run/clamav/clamd.sock"
 		cfg, err := config.Load(func(key string) string { return values[key] })
 		if (err == nil) != scenario.valid {
 			t.Errorf("unexpected validation %v", err)

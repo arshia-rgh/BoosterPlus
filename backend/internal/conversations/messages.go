@@ -3,6 +3,7 @@ package conversations
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"slices"
 	"strings"
 	"time"
@@ -14,11 +15,12 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 )
 
 func messageView(row *ent.ConversationMessage, admin bool) Message {
-	result := Message{ID: row.ID, Sequence: row.Sequence, SenderLabel: row.SenderLabel, SenderRole: row.SenderRole, Visibility: string(row.Visibility), Body: row.Body, CreatedAt: row.CreatedAt}
+	result := Message{Attachments: row.Attachments, ID: row.ID, Sequence: row.Sequence, SenderLabel: row.SenderLabel, SenderRole: row.SenderRole, Visibility: string(row.Visibility), Body: row.Body, CreatedAt: row.CreatedAt}
 	if admin {
 		result.SenderID = row.SenderID
 	} else if row.PublicSequence != nil {
@@ -113,7 +115,7 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 			}
 			role = current.User.Role
 		}
-		create := tx.ConversationMessage.Create().SetConversationID(id).SetSenderID(current.User.ID).SetSenderRole(role).SetSenderLabel(label).SetVisibility(conversationmessage.Visibility(input.Visibility)).SetSequence(row.Sequence + 1).SetRequestKey(input.RequestKey).SetRequestHash(digest).SetBody(input.Body).SetCreatedAt(now)
+		create := tx.ConversationMessage.Create().SetConversationID(id).SetSenderID(current.User.ID).SetSenderRole(role).SetSenderLabel(label).SetVisibility(conversationmessage.Visibility(input.Visibility)).SetSequence(row.Sequence + 1).SetRequestKey(input.RequestKey).SetRequestHash(digest).SetBody(input.Body).SetAttachments(input.Attachments).SetCreatedAt(now)
 		update := tx.Conversation.Update().Where(conversation.IDEQ(id), conversation.VersionEQ(row.Version)).AddVersion(1).AddSequence(1).SetUpdatedAt(now)
 		if input.Visibility == "public" {
 			create.SetPublicSequence(row.PublicSequence + 1)
@@ -126,6 +128,12 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 		}
 		message, e := create.Save(ctx)
 		if e != nil {
+			return e
+		}
+		if e = media.Bind(ctx, tx, current, id, input.Visibility, message.ID, input.Attachments); e != nil {
+			if errors.Is(e, media.ErrInvalid) || errors.Is(e, media.ErrConflict) {
+				return invalid("attachments", "Choose ready images uploaded for this conversation and audience.")
+			}
 			return e
 		}
 		count, e := update.Save(ctx)
