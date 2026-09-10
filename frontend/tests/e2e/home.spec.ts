@@ -1,0 +1,282 @@
+import { expect, test, type Page } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { writeFile } from "node:fs/promises";
+
+async function seek(page: Page, progress: number) {
+  await page.locator("#rank-journey").evaluate((scene, value) => {
+    const rect = scene.getBoundingClientRect();
+    window.scrollTo(
+      0,
+      rect.top + window.scrollY + (rect.height - window.innerHeight) * value,
+    );
+  }, progress);
+  await expect(page.locator("#rank-journey")).toHaveAttribute(
+    "data-progress",
+    String(Math.round(progress * 100)),
+  );
+}
+async function opacity(page: Page, selector: string) {
+  return page
+    .locator(selector)
+    .evaluate((element) => Number(getComputedStyle(element).opacity));
+}
+
+test("rank journey scrubs smoothly forward/backward and survives resize and navigation", async ({
+  page,
+}, info) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => {
+    errors.push(error.message);
+  });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await expect(page.locator("#rank-journey")).toHaveAttribute(
+    "data-enhanced",
+    "true",
+  );
+  await expect(page.locator(".hero-content")).toHaveCSS(
+    "transform",
+    "matrix(1, 0, 0, 1, 0, 0)",
+  );
+  await page.screenshot({
+    path: `.cache/home-${info.project.name}.png`,
+    fullPage: false,
+  });
+  for (const progress of [0, 0.25, 0.5, 0.75, 1]) {
+    await seek(page, progress);
+    await expect(
+      page.getByRole("heading", { name: "Same player. Different league." }),
+    ).toBeInViewport();
+    await page.screenshot({
+      path: `.cache/rank-${info.project.name}-${String(progress * 100)}.png`,
+    });
+  }
+  expect(await opacity(page, ".rank-finish")).toBe(1);
+  expect(await opacity(page, ".rank-start")).toBe(0);
+  await page.mouse.wheel(0, -275);
+  await expect
+    .poll(async () =>
+      Number(await page.locator("#rank-journey").getAttribute("data-progress")),
+    )
+    .toBeLessThan(100);
+  await seek(page, 0.5);
+  expect(await opacity(page, ".rank-finish")).toBeGreaterThan(0);
+  expect(await opacity(page, ".rank-finish")).toBeLessThan(1);
+  await seek(page, 0.25);
+  expect(await opacity(page, ".rank-start")).toBe(1);
+  const viewport = page.viewportSize();
+  if (!viewport) throw new Error("A viewport is required");
+  await page.setViewportSize({ width: viewport.height, height: 500 });
+  await expect(page.locator(".journey-sticky")).toHaveCSS(
+    "position",
+    "relative",
+  );
+  expect(await opacity(page, ".rank-finish")).toBe(1);
+  await page.setViewportSize(viewport);
+  await seek(page, 0.75);
+  await page.getByRole("link", { name: /find your boost/i }).click();
+  await expect(page).toHaveURL(/\/games$/);
+  await page.goBack();
+  await expect(page.locator("#rank-journey")).toHaveAttribute(
+    "data-enhanced",
+    "true",
+  );
+  await seek(page, 0.25);
+  expect(await opacity(page, ".rank-start")).toBe(1);
+  await page.goto("/#rank-journey");
+  await expect(
+    page.getByRole("heading", { name: "Same player. Different league." }),
+  ).toBeInViewport();
+  expect(errors).toEqual([]);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test("motion preference persists, OS changes are respected and FAQs work with keyboard", async ({
+  page,
+}, info) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Reduced", exact: true }).click();
+  await expect(page.locator("#rank-journey")).not.toHaveAttribute(
+    "data-enhanced",
+  );
+  await expect(page.locator(".journey-sticky")).toHaveCSS("position", "static");
+  expect(await opacity(page, ".rank-start")).toBe(1);
+  expect(await opacity(page, ".rank-finish")).toBe(1);
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Reduced", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.getByRole("button", { name: "System", exact: true }).click();
+  await expect(page.getByRole("main")).toHaveAttribute(
+    "data-motion",
+    "reduced",
+  );
+  await expect(page.locator("#rank-journey")).not.toHaveAttribute(
+    "data-enhanced",
+  );
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  const question = page
+    .locator("summary")
+    .filter({ hasText: "How does custom boosting work?" });
+  await question.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("details[open]")).toContainText("final quote");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("details[open]")).toHaveCount(0);
+  await expect(page.locator(".hero-content")).toHaveCSS("transform", "none");
+  await page.screenshot({
+    path: `.cache/home-static-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(page.locator("#rank-journey")).toHaveAttribute(
+    "data-enhanced",
+    "true",
+  );
+});
+
+test("no-JS and failed artwork retain readable content, navigation and static rank cards", async ({
+  browser,
+}, info) => {
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    viewport: info.project.use.viewport ?? { width: 1280, height: 720 },
+  });
+  try {
+    const page = await context.newPage();
+    await page.route("**/artwork/**", (route) => route.abort());
+    await page.goto("http://127.0.0.1:4173/");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(
+      "YOUR NEXT",
+    );
+    await expect(page.locator("#rank-journey")).not.toHaveAttribute(
+      "data-enhanced",
+    );
+    await expect(page.locator(".rank-start")).toBeVisible();
+    await expect(page.locator(".rank-finish")).toBeVisible();
+    await page
+      .locator("summary")
+      .filter({ hasText: "What is different about fixed packages?" })
+      .click();
+    await expect(page.locator("details[open]")).toContainText(
+      "no payment is taken",
+    );
+    await page.getByRole("link", { name: /explore games/i }).click();
+    await expect(page).toHaveURL(/\/games$/);
+  } finally {
+    await context.close();
+  }
+});
+
+test("homepage respects transfer and layout-shift budgets under production CSP", async ({
+  page,
+}, info) => {
+  await page.addInitScript(() => {
+    const result = { cls: 0, lcp: 0, violations: [] as string[] };
+    Object.defineProperty(window, "homeLabMetrics", { value: result });
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        const shift = entry as PerformanceEntry & {
+          hadRecentInput: boolean;
+          value: number;
+        };
+        if (!shift.hadRecentInput) result.cls += shift.value;
+      }
+    }).observe({ type: "layout-shift", buffered: true });
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) result.lcp = entry.startTime;
+    }).observe({ type: "largest-contentful-paint", buffered: true });
+    document.addEventListener("securitypolicyviolation", (event) => {
+      result.violations.push(event.violatedDirective);
+    });
+  });
+  const response = await page.goto("/");
+  expect(response?.headers()["content-security-policy"]).toContain(
+    "style-src 'self'",
+  );
+  await expect(page.locator(".hero-content")).toHaveCSS("opacity", "1");
+  await expect
+    .poll(() =>
+      page
+        .locator(".hero-art img")
+        .evaluate((image) => (image as HTMLImageElement).naturalWidth),
+    )
+    .toBeGreaterThan(0);
+  await expect(page.locator("#rank-journey")).toHaveAttribute(
+    "data-enhanced",
+    "true",
+  );
+  await seek(page, 0.5);
+  await seek(page, 1);
+  const frameIntervals = await page
+    .locator("#rank-journey")
+    .evaluate(async (scene) => {
+      const rect = scene.getBoundingClientRect();
+      const top = rect.top + window.scrollY;
+      const travel = rect.height - window.innerHeight;
+      return new Promise<number[]>((resolve) => {
+        const samples: number[] = [];
+        let previous = 0;
+        let frame = 0;
+        const tick = (now: number) => {
+          if (previous) samples.push(now - previous);
+          previous = now;
+          window.scrollTo(0, top + travel * (0.25 + frame / 40));
+          frame += 1;
+          if (frame < 25) requestAnimationFrame(tick);
+          else resolve(samples);
+        };
+        requestAnimationFrame(tick);
+      });
+    });
+  const report = await page.evaluate(() => {
+    const metrics = (
+      window as unknown as Window & {
+        homeLabMetrics: { cls: number; lcp: number; violations: string[] };
+      }
+    ).homeLabMetrics;
+    const resources = performance.getEntriesByType(
+      "resource",
+    ) as PerformanceResourceTiming[];
+    return {
+      ...metrics,
+      viewport: [innerWidth, innerHeight],
+      bytes: resources.reduce((sum, item) => sum + item.encodedBodySize, 0),
+      remoteResources: resources.filter(
+        (item) => new URL(item.name).origin !== location.origin,
+      ).length,
+      image: resources
+        .filter((item) => item.name.includes("/artwork/"))
+        .map((item) => ({
+          path: new URL(item.name).pathname,
+          bytes: item.encodedBodySize,
+        })),
+    };
+  });
+  expect(report.cls).toBeLessThanOrEqual(0.1);
+  expect(report.bytes).toBeLessThan(1024 * 1024);
+  expect(report.remoteResources).toBe(0);
+  expect(report.violations).toEqual([]);
+  expect(report.image).toHaveLength(1);
+  const evidence = JSON.stringify(
+    {
+      profile:
+        "Local production SSR, unthrottled Chromium; not field Web Vitals",
+      ...report,
+      frameIntervals,
+    },
+    null,
+    2,
+  );
+  await writeFile(`.cache/home-lab-${info.project.name}.json`, evidence);
+  await info.attach(`homepage-lab-${info.project.name}`, {
+    body: evidence,
+    contentType: "application/json",
+  });
+});

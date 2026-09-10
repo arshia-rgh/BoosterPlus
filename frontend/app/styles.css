@@ -692,3 +692,38 @@ button:disabled {
   color-scheme: dark;
   font: inherit;
 }
+
+/* R01 public chrome; account/admin content retains its existing layout. */
+.site-header {
+  background: #0c1511;
+  border-color: #304237;
+  padding-block: 1.4rem;
+}
+.site-header .brand {
+  color: #eeece2;
+  letter-spacing: -0.065em;
+}
+.site-header .brand span {
+  color: #b4e8cb;
+}
+.site-header nav {
+  font-size: 0.8rem;
+  color: #c8d5cb;
+}
+.site-header nav > a:last-child {
+  border: 1px solid #50624f;
+  padding: 0.6rem 1rem;
+  border-radius: 3px;
+}
+.site-header nav > a:hover {
+  color: #e4c68d;
+}
+footer {
+  background: #0c1511;
+  border-color: #304237;
+}
+@media (max-width: 700px) {
+  .desktop-nav-link {
+    display: none;
+  }
+}

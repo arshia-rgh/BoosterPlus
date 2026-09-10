@@ -1,8 +1,19 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import Home, { meta as homeMeta } from "./home";
 import Games, { meta as gamesMeta } from "./games";
+
+beforeEach(() => {
+  vi.stubGlobal("matchMedia", () => ({
+    matches: false,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }));
+});
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe("prelaunch catalog", () => {
   it("provides a real game navigation link without offering unavailable checkout", () => {
@@ -14,7 +25,9 @@ describe("prelaunch catalog", () => {
     expect(
       screen.getByRole("link", { name: /explore games/i }),
     ).toHaveAttribute("href", "/games");
-    expect(screen.getByText(/orders aren’t open yet/i)).toBeVisible();
+    expect(
+      screen.getByText(/launch preview · live checkout is being prepared/i),
+    ).toBeVisible();
     expect(
       screen.queryByRole("button", { name: /buy|pay/i }),
     ).not.toBeInTheDocument();

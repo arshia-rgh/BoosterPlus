@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "react-router dev --host 127.0.0.1",
-    "build": "react-router build",
+    "build": "react-router build && npm run budget:home",
     "start": "node --env-file-if-exists=.env server.mjs",
     "typecheck": "react-router typegen && tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
@@ -21,7 +21,8 @@
     "pre-commit": "npm run contract:check && npm run format:check && npm run typecheck && npm run lint && npm run test && npm run security && npm run build && npm run test:server && npm run test:e2e",
     "contract:generate": "node scripts/contract.mjs --write",
     "contract:check": "node scripts/contract.mjs",
-    "test:server": "node --test tests/server.test.mjs"
+    "test:server": "node --test tests/server.test.mjs",
+    "budget:home": "node scripts/check-home-budget.mjs"
   },
   "dependencies": {
     "@react-router/express": "8.3.1",

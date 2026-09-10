@@ -1,14 +1,18 @@
 # Booster Plus — visual redesign, complete product, and production roadmap
 
-Updated: 10 September 2026. Status: planning baseline; the work below has not been implemented merely by being listed here.
+Updated: 10 September 2026. Status: R00 delivered; R01 visual foundation implemented and undergoing its final stage gate. R02–R11 remain outstanding. Listing a requirement is not evidence of completion.
 
 This is the execution roadmap for the work remaining after commit `f20abed6cb4f1909ffde9fe8fa789b7f74fea2de`, including the owner's new visual and deployment requirements. It takes priority over the earlier phase order. [The specification](BOOSTER_PLUS_SPEC.md) continues to define business/security requirements, and [the original phases](IMPLEMENTATION_PHASES.md) remain the detailed P00–P12 reference. This roadmap carries forward every unfinished requirement and all seven approved additions. Delivered foundations are extended and redesigned, not treated as missing or discarded.
 
 **The immediate implementation priority is a polished animated storefront and a dedicated admin frontend.** The homepage must include the requested scroll-driven Mobile Legends profile transformation. Production delivery must include an operational stack under the existing root `production/` directory, including its owner-created `deploy/` subdirectory. Writing this document does not start feature implementation or deploy any service.
 
-## 1. What exists now, and why the site looks basic
+## Current implementation update
 
-The current homepage is a deliberately small prelaunch page. Functional customer and staff screens exist, but share a simple account layout and mostly utilitarian forms. This does not meet the requested finished visual experience.
+R01 now provides the cinematic homepage, scoped visual system, responsive artwork, continuous MLBB profile transformation, smaller section reveals, accessible motion preferences and enforced asset budgets. See [visual implementation](docs/visual-design.md) and [verification evidence](docs/progress.md). The homepage is visibly upgraded; existing account/admin screens still await R02/R03. Admin-managed homepage content and real featured offering/review feeds remain in their later stages, without fabricated launch data. The following baseline inventory describes the starting point before R01.
+
+## 1. What existed at the baseline, and why the site looked basic
+
+At the roadmap baseline, the homepage was a deliberately small prelaunch page. Functional customer and staff screens exist, but share a simple account layout and mostly utilitarian forms. This does not meet the requested finished visual experience.
 
 | Area | Existing implementation | Work still required |
 | --- | --- | --- |

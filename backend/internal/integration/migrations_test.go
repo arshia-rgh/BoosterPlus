@@ -27,6 +27,31 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/migration"
 )
 
+// Keep an exact allowlist: 14001 is the disposable local test instance, separate
+// from the long-lived development service on 14000. Never accept arbitrary DSNs.
+func allowedTestDatabaseAddress(address string) bool {
+	switch address {
+	case "127.0.0.1:14000", "127.0.0.1:14001", "tidb:4000":
+		return true
+	default:
+		return false
+	}
+}
+
+func TestDatabaseEndpointAllowlist(t *testing.T) {
+	t.Parallel()
+	for _, address := range []string{"127.0.0.1:14000", "127.0.0.1:14001", "tidb:4000"} {
+		if !allowedTestDatabaseAddress(address) {
+			t.Errorf("dedicated test endpoint rejected: %s", address)
+		}
+	}
+	for _, address := range []string{"", "production.example:4000", "127.0.0.1:4000", "localhost:14001", "127.0.0.1:14002", "tidb:4001", "127.0.0.1:14001.evil.example", "[::1]:14001"} {
+		if allowedTestDatabaseAddress(address) {
+			t.Errorf("unapproved endpoint accepted: %s", address)
+		}
+	}
+}
+
 func testDB(t *testing.T) *sql.DB {
 	t.Helper()
 	dsn := os.Getenv("TEST_DATABASE_DSN")
@@ -37,7 +62,7 @@ func testDB(t *testing.T) *sql.DB {
 	if parseErr != nil {
 		t.Fatal("invalid test database DSN")
 	}
-	if cfg.Addr != "127.0.0.1:14000" && cfg.Addr != "tidb:4000" {
+	if !allowedTestDatabaseAddress(cfg.Addr) {
 		t.Fatal("integration database must use the isolated local/CI TiDB endpoint")
 	}
 	admin, openErr := database.Open(t.Context(), dsn, "test")

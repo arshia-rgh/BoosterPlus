@@ -3,7 +3,7 @@ SHELL := /bin/sh
 .PHONY: help install dev build start preview typecheck lint fmt fmt-check test test-watch test-coverage test-e2e test-a11y security pre-commit ci clean docker-build docker-run
 
 help:
-	@printf '%s\n' 'install dev build start typecheck lint fmt fmt-check test test-e2e security pre-commit docker-build'
+	@printf '%s\n' 'install dev build start typecheck lint fmt fmt-check test test-e2e test-home budget-home security pre-commit docker-build'
 install:
 	npm ci --include=dev
 dev: setup-env
@@ -59,3 +59,9 @@ setup-env:
 .PHONY: test-server
 test-server: build
 	npm run test:server
+
+.PHONY: test-home budget-home
+test-home: build
+	npx playwright test tests/e2e/home.spec.ts
+budget-home:
+	npm run budget:home

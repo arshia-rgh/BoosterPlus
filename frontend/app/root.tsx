@@ -39,6 +39,9 @@ export function Layout({ children }: { children: ReactNode }) {
           </Link>
           <nav aria-label="Main navigation">
             <Link to="/games">Games</Link>
+            <Link className="desktop-nav-link" to="/#how-it-works">
+              How it works
+            </Link>
             <Link to="/account">Account</Link>
           </nav>
         </header>
@@ -46,6 +49,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <footer>
           <span>Booster Plus</span>
           <span>Game boosting. Account trading.</span>
+          <Link to="/admin">Staff access ↗</Link>
         </footer>
         <ScrollRestoration nonce={data?.nonce} />
         <Scripts nonce={data?.nonce} />

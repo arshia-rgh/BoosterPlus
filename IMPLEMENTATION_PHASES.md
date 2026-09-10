@@ -12,6 +12,8 @@ The specification remains the detailed product and architecture reference. This 
 
 [REMAINING_ROADMAP.md](REMAINING_ROADMAP.md) now owns the order of remaining work after the owner's visual/admin/production request. It prioritizes the animated storefront and dedicated admin frontend, details the required MLBB rank transformation, and specifies the stack under `production/`, preserving the existing `production/deploy/` directory. This document remains the P00–P12 requirements reference; no unfinished feature or approved addition is removed.
 
+R01 now implements the animated homepage and MLBB rank scene, with visual/accessibility/performance evidence recorded in `docs/progress.md`. R02 dedicated administration and R03 remaining route redesign are next; the product phase completion criteria remain unchanged.
+
 ## 1. Working rules
 
 - Maintain independent `backend/` and `frontend/` projects with separate builds, Dockerfiles, Makefiles, configuration examples, and setup documentation. Backend owns development Docker Compose. Root `production/` contains deployment orchestration and configuration only; application code, including the admin frontend, stays in the two projects.
