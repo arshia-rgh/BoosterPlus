@@ -4,6 +4,8 @@ Game boosting and game-account commerce, starting with Mobile Legends.
 
 Planning documents:
 
+- [Remaining roadmap](REMAINING_ROADMAP.md): current execution order, animated storefront/MLBB rank transformation, dedicated admin frontend, all unfinished features, and the root production deployment stack.
+
 - [Product and technical specification](BOOSTER_PLUS_SPEC.md): accepted baseline requirements, business rules, architecture, and open decisions.
 - [Implementation phases](IMPLEMENTATION_PHASES.md): thirteen phases with dependencies, deliverables, and completion criteria, including all seven approved additional features.
 

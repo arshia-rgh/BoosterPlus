@@ -809,3 +809,14 @@ Maintain this specification as the shared product contract. Record decisions as 
 Use immutable catalog/quote versions and additive API/database changes so future work preserves existing orders. Gate incomplete features through configuration. Keep an architecture decision log for payment provider, TiDB compatibility, migration runner, frontend rendering, deployment, and seller payout arrangement.
 
 **Next implementation milestone:** establish the two independent project foundations and validate Go + Ent + TiDB + the SQL-only Cobra migration workflow, then build identity and the configurable catalog. The commercial decisions above are resolved alongside that work.
+
+
+## 22. Visual experience and production delivery update — 10 September 2026
+
+The owner requires a substantially richer, animated storefront and a complete dedicated admin frontend. The homepage must show a low-rank MLBB profile appearing as the user scrolls, then smoothly transforming into a high-rank version with further scrolling. The required storyboard, additional effects, mobile/reduced-motion behavior, visual acceptance criteria and complete remaining feature inventory are defined in [the current remaining roadmap](REMAINING_ROADMAP.md).
+
+The deployment package belongs in the existing root `production/` directory, preserving `production/deploy/`, and must include production Compose, a gateway, storefront and admin services, API/worker/migration orchestration, private dependency configuration, secrets handling, monitoring, release/rollback, backups/restore and launch qualification. The proposed implementation keeps independent `backend/` and `frontend/` projects, with distinct storefront/admin build targets inside the frontend project. No development database or simple container startup is presented as production qualification.
+
+The owner explicitly clarified that `production/` is deployment-only: Compose, gateway/service configuration, operational scripts and related runbooks. All application code, including the admin frontend, remains in `backend/` and `frontend/`; the deployment folder orchestrates their release images.
+
+The new roadmap takes precedence for the order and expanded visual/deployment scope of remaining work. All existing security, passwordless identity, mandatory staff MFA, no-wallet, configurable-game, immutable-contract and explicit SQL migration requirements remain in effect. This update records requirements only; it does not claim that the redesign or production stack already exists.
