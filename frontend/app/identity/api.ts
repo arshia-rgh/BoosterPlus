@@ -61,6 +61,14 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "report_invalid",
+    "Check the report filters, UTC date range, and export reason.",
+  ],
+  [
+    "report_conflict",
+    "The records changed after preview. Refresh the report before downloading.",
+  ],
+  [
     "availability_invalid",
     "Check the offering and explicitly accept availability emails.",
   ],

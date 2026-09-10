@@ -34,4 +34,15 @@ export default tseslint.config(
       ...security.configs.recommended.rules,
     },
   },
+  {
+    files: ["app/reports/pages.tsx"],
+    rules: {
+      // This named overflow region needs keyboard focus for horizontal table scrolling.
+      // Browser tests verify focus and arrow-key scrolling; other noninteractive elements stay restricted.
+      "jsx-a11y/no-noninteractive-tabindex": [
+        "error",
+        { roles: ["tabpanel", "region"] },
+      ],
+    },
+  },
 );

@@ -745,6 +745,13 @@ var (
 		Name:       "games",
 		Columns:    GamesColumns,
 		PrimaryKey: []*schema.Column{GamesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "games_report_created",
+				Unique:  false,
+				Columns: []*schema.Column{GamesColumns[9], GamesColumns[0]},
+			},
+		},
 	}
 	// MediaFilesColumns holds the columns for the "media_files" table.
 	MediaFilesColumns = []*schema.Column{
@@ -852,6 +859,11 @@ var (
 		Columns:    OrdersColumns,
 		PrimaryKey: []*schema.Column{OrdersColumns[0]},
 		Indexes: []*schema.Index{
+			{
+				Name:    "orders_report_created",
+				Unique:  false,
+				Columns: []*schema.Column{OrdersColumns[21], OrdersColumns[0]},
+			},
 			{
 				Name:    "order_request",
 				Unique:  true,
@@ -1149,6 +1161,13 @@ var (
 		Name:       "users",
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "users_report_created",
+				Unique:  false,
+				Columns: []*schema.Column{UsersColumns[17], UsersColumns[0]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{

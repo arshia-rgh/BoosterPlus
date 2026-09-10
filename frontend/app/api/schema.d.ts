@@ -3125,6 +3125,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/reports/preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Preview bounded operational metadata or download the exact reviewed page with recent staff factors and a committed audit */
+    post: operations["previewOperationalReport"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reports/export": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Preview bounded operational metadata or download the exact reviewed page with recent staff factors and a committed audit */
+    post: operations["exportOperationalReport"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4450,6 +4484,47 @@ export interface components {
     AvailabilityProblem: {
       /** @enum {string} */
       code: "availability_invalid" | "availability_conflict";
+      issues?: components["schemas"]["CatalogIssue"][];
+    };
+    ReportQuery: {
+      /** @enum {string} */
+      kind: "orders" | "catalog" | "staff" | "audits";
+      /** Format: date-time */
+      from: string;
+      /** Format: date-time */
+      to: string;
+      state: string;
+      search: string;
+      after: string;
+    };
+    ReportColumn: {
+      key: string;
+      label: string;
+    };
+    OperationalReport: {
+      kind: string;
+      basis: string;
+      /** Format: date-time */
+      observed_at: string;
+      query: components["schemas"]["ReportQuery"];
+      columns: components["schemas"]["ReportColumn"][];
+      rows: string[][];
+      next: string;
+      count: number;
+      digest: string;
+    };
+    ReportExportInput: {
+      query: components["schemas"]["ReportQuery"];
+      digest: string;
+      reason: string;
+    };
+    ReportExport: {
+      report: components["schemas"]["OperationalReport"];
+      audit_id: string;
+    };
+    ReportProblem: {
+      /** @enum {string} */
+      code: "report_invalid" | "report_conflict";
       issues?: components["schemas"]["CatalogIssue"][];
     };
   };
@@ -14372,6 +14447,116 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  previewOperationalReport: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReportQuery"];
+      };
+    };
+    responses: {
+      /** @description Private bounded report; audits require owner; no financial recognition or secrets */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OperationalReport"];
+        };
+      };
+      /** @description Refresh changed preview or correct bounded query/reason */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReportProblem"];
+        };
+      };
+      /** @description Refresh changed preview or correct bounded query/reason */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReportProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  exportOperationalReport: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReportExportInput"];
+      };
+    };
+    responses: {
+      /** @description Private bounded report; audits require owner; no financial recognition or secrets */
+      200: {
+        headers: {
+          /** @description Fixed report attachment filename */
+          "Content-Disposition"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReportExport"];
+        };
+      };
+      /** @description Refresh changed preview or correct bounded query/reason */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReportProblem"];
+        };
+      };
+      /** @description Refresh changed preview or correct bounded query/reason */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReportProblem"];
         };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */

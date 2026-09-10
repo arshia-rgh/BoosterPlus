@@ -6,6 +6,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"github.com/google/uuid"
 )
 
@@ -26,4 +27,9 @@ func (Game) Fields() []ent.Field {
 		field.String("current_release").MaxLen(36).Default(""),
 		field.Time("created_at").Default(time.Now).Immutable(),
 	}
+}
+
+// Indexes maps the operational report creation-order index.
+func (Game) Indexes() []ent.Index {
+	return []ent.Index{index.Fields("created_at", "id").StorageKey("games_report_created")}
 }

@@ -14649,6 +14649,176 @@
           }
         }
       }
+    },
+    "/api/v1/admin/reports/preview": {
+      "post": {
+        "operationId": "previewOperationalReport",
+        "summary": "Preview bounded operational metadata or download the exact reviewed page with recent staff factors and a committed audit",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private bounded report; audits require owner; no financial recognition or secrets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalReport"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed preview or correct bounded query/reason",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed preview or correct bounded query/reason",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportQuery"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reports/export": {
+      "post": {
+        "operationId": "exportOperationalReport",
+        "summary": "Preview bounded operational metadata or download the exact reviewed page with recent staff factors and a committed audit",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private bounded report; audits require owner; no financial recognition or secrets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportExport"
+                }
+              }
+            },
+            "headers": {
+              "Content-Disposition": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Fixed report attachment filename"
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed preview or correct bounded query/reason",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed preview or correct bounded query/reason",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportExportInput"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -19513,6 +19683,157 @@
           "code": {
             "type": "string",
             "enum": ["availability_invalid", "availability_conflict"]
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogIssue"
+            }
+          }
+        }
+      },
+      "ReportQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["orders", "catalog", "staff", "audits"]
+          },
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "search": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "after": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": ["kind", "from", "to", "state", "search", "after"]
+      },
+      "ReportColumn": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": ["key", "label"]
+      },
+      "OperationalReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "basis": {
+            "type": "string"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "query": {
+            "$ref": "#/components/schemas/ReportQuery"
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportColumn"
+            }
+          },
+          "rows": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "next": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "kind",
+          "basis",
+          "observed_at",
+          "query",
+          "columns",
+          "rows",
+          "next",
+          "count",
+          "digest"
+        ]
+      },
+      "ReportExportInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "$ref": "#/components/schemas/ReportQuery"
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "required": ["query", "digest", "reason"]
+      },
+      "ReportExport": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "report": {
+            "$ref": "#/components/schemas/OperationalReport"
+          },
+          "audit_id": {
+            "type": "string"
+          }
+        },
+        "required": ["report", "audit_id"]
+      },
+      "ReportProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["report_invalid", "report_conflict"]
           },
           "issues": {
             "type": "array",

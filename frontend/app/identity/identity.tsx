@@ -7,7 +7,7 @@ import {
   type ReactNode,
   type SubmitEvent,
 } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, NavLink, useSearchParams } from "react-router";
 import { z } from "zod";
 import {
   get,
@@ -30,11 +30,13 @@ function Form({
   children,
   submit,
   label = title,
+  compact = false,
 }: {
   title: string;
   children?: ReactNode;
   submit: (data: FormData) => Promise<void>;
   label?: string;
+  compact?: boolean;
 }) {
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
@@ -53,8 +55,11 @@ function Form({
     }
   }
   return (
-    <form className="identity-card" onSubmit={(event) => void send(event)}>
-      <h2>{title}</h2>
+    <form
+      className={compact ? "identity-session-action" : "identity-card"}
+      onSubmit={(event) => void send(event)}
+    >
+      {!compact && <h2>{title}</h2>}
       <fieldset disabled={busy}>
         {children}
         <button className="button" type="submit">
@@ -832,35 +837,77 @@ export default function Identity({
           ) : (
             <>
               <nav className="account-nav" aria-label="Account navigation">
-                <Link to="/account">Profile and security</Link>
-                <Link to="/orders">My orders</Link>
-                <Link to="/sell">Sell an account</Link>
-                <Link to="/reviews">My reviews</Link>
-                <Link to="/favorites">Favorites</Link>
-                <Link to="/availability">Package alerts</Link>
-                <Link to="/support">Support</Link>
-                <Link to="/notifications">Activity</Link>
+                <NavLink end to="/account">
+                  Profile and security
+                </NavLink>
+                <NavLink end to="/orders">
+                  My orders
+                </NavLink>
+                <NavLink end to="/sell">
+                  Sell an account
+                </NavLink>
+                <NavLink end to="/reviews">
+                  My reviews
+                </NavLink>
+                <NavLink end to="/favorites">
+                  Favorites
+                </NavLink>
+                <NavLink end to="/availability">
+                  Package alerts
+                </NavLink>
+                <NavLink end to="/support">
+                  Support
+                </NavLink>
+                <NavLink end to="/notifications">
+                  Activity
+                </NavLink>
                 {session.capabilities.includes("admin") && (
                   <>
-                    <Link to="/admin">Administration</Link>
-                    <Link to="/admin/catalog">Catalog editor</Link>
-                    <Link to="/admin/coupons">Coupons</Link>
-                    <Link to="/admin/orders">Order queue</Link>
-                    <Link to="/admin/submissions">Account submissions</Link>
-                    <Link to="/admin/reviews">Review moderation</Link>
-                    <Link to="/admin/jobs">Background tasks</Link>
-                    <Link to="/admin/calendar">Staff calendars</Link>
-                    <Link to="/admin/support">Support inbox</Link>
+                    <NavLink end to="/admin">
+                      Administration
+                    </NavLink>
+                    <NavLink end to="/admin/catalog">
+                      Catalog editor
+                    </NavLink>
+                    <NavLink end to="/admin/coupons">
+                      Coupons
+                    </NavLink>
+                    <NavLink end to="/admin/orders">
+                      Order queue
+                    </NavLink>
+                    <NavLink end to="/admin/submissions">
+                      Account submissions
+                    </NavLink>
+                    <NavLink end to="/admin/reviews">
+                      Review moderation
+                    </NavLink>
+                    <NavLink end to="/admin/jobs">
+                      Background tasks
+                    </NavLink>
+                    <NavLink end to="/admin/reports">
+                      Reports
+                    </NavLink>
+                    <NavLink end to="/admin/calendar">
+                      Staff calendars
+                    </NavLink>
+                    <NavLink end to="/admin/support">
+                      Support inbox
+                    </NavLink>
                   </>
                 )}
                 {session.capabilities.includes("booster") && (
                   <>
-                    <Link to="/booster/orders">Assigned work</Link>{" "}
-                    <Link to="/booster/calendar">My calendar</Link>
+                    <NavLink end to="/booster/orders">
+                      Assigned work
+                    </NavLink>{" "}
+                    <NavLink end to="/booster/calendar">
+                      My calendar
+                    </NavLink>
                   </>
                 )}
               </nav>
               <Form
+                compact
                 title="Sign out"
                 submit={async () => {
                   await command("/auth/logout");

@@ -617,3 +617,78 @@ button:disabled {
 .wrap-anywhere {
   overflow-wrap: anywhere;
 }
+
+/* Keep account actions compact so the selected workflow is visible on small screens. */
+.identity-session-action {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+}
+.identity-session-action fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.identity-session-action .button {
+  padding: 0.6rem 1rem;
+}
+.identity-session-action p:empty {
+  display: none;
+}
+.account-nav a[aria-current="page"] {
+  color: var(--accent, #c8ff62);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.35em;
+}
+.report-scroll {
+  max-width: 100%;
+  overflow: auto;
+  margin: 1.5rem 0;
+  border: 1px solid #394150;
+  border-radius: 0.75rem;
+}
+.report-scroll table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 42rem;
+}
+.report-scroll caption {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 700;
+}
+.report-scroll th,
+.report-scroll td {
+  padding: 0.75rem;
+  border-top: 1px solid #394150;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  min-width: 8rem;
+}
+
+.report-form > fieldset {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid #394150;
+  border-radius: 0.75rem;
+}
+.report-form label {
+  display: grid;
+  gap: 0.5rem;
+}
+.report-form input[type="date"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.75rem;
+  border: 1px solid #526073;
+  border-radius: 0.5rem;
+  color: inherit;
+  background: #181d25;
+  color-scheme: dark;
+  font: inherit;
+}

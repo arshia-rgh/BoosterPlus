@@ -1,6 +1,7 @@
 import { index, route, type RouteConfig } from "@react-router/dev/routes";
 
 export default [
+  route("admin/reports", "routes/reports-admin.tsx"),
   route("availability", "routes/availability.tsx"),
   route("availability/unsubscribe", "routes/availability-unsubscribe.tsx"),
   route("admin/jobs", "routes/jobs-admin.tsx"),

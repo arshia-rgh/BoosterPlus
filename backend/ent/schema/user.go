@@ -5,6 +5,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"github.com/google/uuid"
 )
 
@@ -33,4 +34,9 @@ func (User) Fields() []ent.Field {
 		field.JSON("mfa_recovery_hashes", []string{}).Optional(),
 		field.Time("created_at").Default(time.Now).Immutable(),
 	}
+}
+
+// Indexes maps the operational report creation-order index.
+func (User) Indexes() []ent.Index {
+	return []ent.Index{index.Fields("created_at", "id").StorageKey("users_report_created")}
 }

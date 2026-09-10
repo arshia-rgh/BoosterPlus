@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 19
+const SchemaVersion = 20
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -33,6 +33,9 @@ func Ready(ctx context.Context, db *sql.DB) error {
 		return err
 	}
 	if err := checkIndexes(ctx, db); err != nil {
+		return err
+	}
+	if err := checkReportIndexes(ctx, db); err != nil {
 		return err
 	}
 	var controls int
@@ -115,6 +118,35 @@ func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 	}
 	if len(expected) != 0 {
 		return errors.New("required unique indexes are missing")
+	}
+	return nil
+}
+
+func checkReportIndexes(ctx context.Context, db *sql.DB) (result error) {
+	expected := map[string]string{"orders.orders_report_created": "created_at,id", "games.games_report_created": "created_at,id", "users.users_report_created": "created_at,id"}
+	rows, err := db.QueryContext(ctx, "SELECT table_name,index_name,GROUP_CONCAT(column_name ORDER BY seq_in_index) FROM information_schema.statistics WHERE table_schema=DATABASE() AND non_unique=1 GROUP BY table_name,index_name")
+	if err != nil {
+		return err
+	}
+	defer func() { result = errors.Join(result, rows.Close()) }()
+	for rows.Next() {
+		var table, name, columns string
+		if scanErr := rows.Scan(&table, &name, &columns); scanErr != nil {
+			return scanErr
+		}
+		key := table + "." + name
+		if wanted, ok := expected[key]; ok {
+			if columns != wanted {
+				return fmt.Errorf("incompatible report index: %s", key)
+			}
+			delete(expected, key)
+		}
+	}
+	if rowErr := rows.Err(); rowErr != nil {
+		return rowErr
+	}
+	if len(expected) != 0 {
+		return errors.New("required report indexes are missing")
 	}
 	return nil
 }
