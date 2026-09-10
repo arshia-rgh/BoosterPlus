@@ -81,6 +81,9 @@ export function GamePage() {
       <Intro release={release} />
       <FavoriteButton kind="game" slug={release.slug} />
       <Offerings release={release} />
+      <Link to={`/games/${release.slug}/reviews`}>
+        Read verified customer reviews
+      </Link>
     </main>
   );
 }

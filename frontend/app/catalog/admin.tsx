@@ -19,6 +19,7 @@ import {
 } from "./editor-parts";
 import DynamicForm from "./dynamic-form";
 import IntakeEditor from "./intake-editor";
+import ReviewPolicyEditor from "./review-policy-editor";
 import {
   draftSchema,
   emptyConfiguration,
@@ -358,6 +359,12 @@ function Editor({
               config={draft.configuration}
               change={(intake) => {
                 update({ intake });
+              }}
+            />
+            <ReviewPolicyEditor
+              config={draft.configuration}
+              change={(review_policy) => {
+                update({ review_policy });
               }}
             />
             <ServicesEditor

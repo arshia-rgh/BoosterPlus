@@ -183,7 +183,22 @@ export const intakeService = (form: IntakeForm): Service => ({
   key: "account_intake",
   evaluator: "manual-review-v1",
 });
+export const reviewPolicySchema = z.object({
+  content: z.string(),
+  fields: list(fieldSchema),
+  rules: list(ruleSchema),
+});
+export type ReviewPolicy = z.infer<typeof reviewPolicySchema>;
+export function reviewService(policy: ReviewPolicy): Service {
+  return intakeService({
+    name: "Purchase feedback",
+    description: policy.content,
+    fields: policy.fields,
+    rules: policy.rules,
+  });
+}
 export const configurationSchema = z.object({
+  review_policy: reviewPolicySchema.optional(),
   intake: intakeSchema.optional(),
   schema_version: z.literal(1),
   name: z.string(),

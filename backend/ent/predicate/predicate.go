@@ -90,6 +90,12 @@ type OrderEvent func(*sql.Selector)
 // OrderQuote is the predicate function for orderquote builders.
 type OrderQuote func(*sql.Selector)
 
+// Review is the predicate function for review builders.
+type Review func(*sql.Selector)
+
+// ReviewRevision is the predicate function for reviewrevision builders.
+type ReviewRevision func(*sql.Selector)
+
 // SecretBundle is the predicate function for secretbundle builders.
 type SecretBundle func(*sql.Selector)
 

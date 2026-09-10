@@ -866,6 +866,96 @@ var (
 			},
 		},
 	}
+	// ReviewsColumns holds the columns for the "reviews" table.
+	ReviewsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "contract_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "game_id", Type: field.TypeString, Size: 36},
+		{Name: "game_name", Type: field.TypeString, Size: 120},
+		{Name: "slug", Type: field.TypeString, Size: 80},
+		{Name: "service", Type: field.TypeString, Size: 48},
+		{Name: "package_key", Type: field.TypeString, Size: 48},
+		{Name: "request_key", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"pending", "published", "hidden", "rejected", "withdrawn"}, Default: "pending"},
+		{Name: "rating", Type: field.TypeInt8},
+		{Name: "body", Type: field.TypeString},
+		{Name: "answers", Type: field.TypeJSON},
+		{Name: "policy", Type: field.TypeJSON},
+		{Name: "policy_release_id", Type: field.TypeString, Size: 36},
+		{Name: "response", Type: field.TypeString},
+		{Name: "reason_code", Type: field.TypeString, Size: 32},
+		{Name: "internal_reason", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "published_at", Type: field.TypeTime, Nullable: true},
+	}
+	// ReviewsTable holds the schema information for the "reviews" table.
+	ReviewsTable = &schema.Table{
+		Name:       "reviews",
+		Columns:    ReviewsColumns,
+		PrimaryKey: []*schema.Column{ReviewsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "review_order",
+				Unique:  true,
+				Columns: []*schema.Column{ReviewsColumns[1]},
+			},
+			{
+				Name:    "review_request",
+				Unique:  true,
+				Columns: []*schema.Column{ReviewsColumns[3], ReviewsColumns[9]},
+			},
+			{
+				Name:    "review_customer",
+				Unique:  false,
+				Columns: []*schema.Column{ReviewsColumns[3], ReviewsColumns[21], ReviewsColumns[0]},
+			},
+			{
+				Name:    "review_queue",
+				Unique:  false,
+				Columns: []*schema.Column{ReviewsColumns[12], ReviewsColumns[22], ReviewsColumns[0]},
+			},
+			{
+				Name:    "review_public",
+				Unique:  false,
+				Columns: []*schema.Column{ReviewsColumns[4], ReviewsColumns[12], ReviewsColumns[13], ReviewsColumns[0]},
+			},
+		},
+	}
+	// ReviewRevisionsColumns holds the columns for the "review_revisions" table.
+	ReviewRevisionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "review_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "action", Type: field.TypeString, Size: 32},
+		{Name: "state", Type: field.TypeString, Size: 24},
+		{Name: "rating", Type: field.TypeInt8},
+		{Name: "body", Type: field.TypeString},
+		{Name: "answers", Type: field.TypeJSON},
+		{Name: "policy", Type: field.TypeJSON},
+		{Name: "response", Type: field.TypeString},
+		{Name: "reason_code", Type: field.TypeString, Size: 32},
+		{Name: "internal_reason", Type: field.TypeString},
+		{Name: "actor_role", Type: field.TypeString, Size: 24},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ReviewRevisionsTable holds the schema information for the "review_revisions" table.
+	ReviewRevisionsTable = &schema.Table{
+		Name:       "review_revisions",
+		Columns:    ReviewRevisionsColumns,
+		PrimaryKey: []*schema.Column{ReviewRevisionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "review_revision",
+				Unique:  true,
+				Columns: []*schema.Column{ReviewRevisionsColumns[1], ReviewRevisionsColumns[2]},
+			},
+		},
+	}
 	// SecretBundlesColumns holds the columns for the "secret_bundles" table.
 	SecretBundlesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -1003,6 +1093,8 @@ var (
 		OrderContractsTable,
 		OrderEventsTable,
 		OrderQuotesTable,
+		ReviewsTable,
+		ReviewRevisionsTable,
 		SecretBundlesTable,
 		StaffProfilesTable,
 		SubmissionEventsTable,

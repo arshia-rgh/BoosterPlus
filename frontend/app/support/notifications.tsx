@@ -45,11 +45,13 @@ export default function Notifications() {
             {resource.data.notifications.map((notice) => (
               <li key={notice.id}>
                 <Link to={notice.href}>
-                  {notice.kind === "submission_seller"
-                    ? "Account submission updated"
-                    : notice.kind === "order_customer"
-                      ? "Order updated"
-                      : "New support reply"}{" "}
+                  {notice.kind === "review_customer"
+                    ? "Purchase review updated"
+                    : notice.kind === "submission_seller"
+                      ? "Account submission updated"
+                      : notice.kind === "order_customer"
+                        ? "Order updated"
+                        : "New support reply"}{" "}
                   · {notice.read ? "Read" : "Unread"}
                 </Link>
                 <time dateTime={notice.created_at}>

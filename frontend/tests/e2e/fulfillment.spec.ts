@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { reviewJourney } from "./review-journey";
 import AxeBuilder from "@axe-core/playwright";
 import { signIn, enroll, fixture } from "./identity-fixtures";
 async function accessible(page: Page) {
@@ -322,6 +323,13 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       path: `test-results/fulfillment-${info.project.name}.png`,
       fullPage: true,
     });
+    await reviewJourney(
+      page,
+      buyer,
+      accountID,
+      fixture(info.project.name, "work_slug"),
+      info.project.name,
+    );
     await staff.goto("/booster/calendar");
     await staff.getByLabel("Accept new session bookings").check();
     await staff

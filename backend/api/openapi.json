@@ -12966,6 +12966,1085 @@
           }
         }
       }
+    },
+    "/api/v1/orders/{id}/review": {
+      "get": {
+        "operationId": "reviewgetApiV1OrdersIdReview",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderReview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "reviewpostApiV1OrdersIdReview",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurchaseReview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewWrite"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{id}/review/withdraw": {
+      "post": {
+        "operationId": "reviewpostApiV1OrdersIdReviewWithdraw",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurchaseReview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewWithdraw"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reviews": {
+      "get": {
+        "operationId": "reviewgetApiV1Reviews",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewListing"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/reviews/{id}": {
+      "get": {
+        "operationId": "reviewgetApiV1ReviewsId",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurchaseReview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/reviews/{id}/history": {
+      "get": {
+        "operationId": "reviewgetApiV1ReviewsIdHistory",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewHistory"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/reviews": {
+      "get": {
+        "operationId": "reviewgetApiV1AdminReviews",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewListing"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/reviews/{id}": {
+      "get": {
+        "operationId": "reviewgetApiV1AdminReviewsId",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurchaseReview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/reviews/{id}/history": {
+      "get": {
+        "operationId": "reviewgetApiV1AdminReviewsIdHistory",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewHistory"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/reviews/{id}/publish": {
+      "post": {
+        "operationId": "reviewpostApiV1AdminReviewsIdPublish",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurchaseReview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reviews/{id}/hide": {
+      "post": {
+        "operationId": "reviewpostApiV1AdminReviewsIdHide",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurchaseReview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reviews/{id}/reject": {
+      "post": {
+        "operationId": "reviewpostApiV1AdminReviewsIdReject",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurchaseReview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reviews/{id}/respond": {
+      "post": {
+        "operationId": "reviewpostApiV1AdminReviewsIdRespond",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurchaseReview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/public/reviews/{slug}": {
+      "get": {
+        "operationId": "reviewgetApiV1ReviewsGamesSlug",
+        "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Validated review response; public representations omit private identities and moderation notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewFeed"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh changed review or correct input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "service",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "package",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -13500,6 +14579,9 @@
           },
           "intake": {
             "$ref": "#/components/schemas/CatalogIntakeForm"
+          },
+          "review_policy": {
+            "$ref": "#/components/schemas/CatalogReviewPolicy"
           }
         },
         "required": [
@@ -16962,6 +18044,514 @@
           "code": {
             "type": "string",
             "enum": ["submission_invalid", "submission_conflict"]
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogIssue"
+            }
+          }
+        }
+      },
+      "CatalogReviewPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "fields": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogField"
+            }
+          },
+          "rules": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/CatalogRule"
+            }
+          }
+        },
+        "required": ["content", "fields", "rules"]
+      },
+      "ReviewPolicySnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "release_id": {
+            "type": "string"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/CatalogReviewPolicy"
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogReference"
+            }
+          }
+        },
+        "required": ["release_id", "policy", "references"]
+      },
+      "PurchaseReviewSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "game": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["pending", "published", "hidden", "rejected", "withdrawn"]
+          },
+          "rating": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "order_id",
+          "version",
+          "game",
+          "slug",
+          "state",
+          "rating",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "PurchaseReview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "review": {
+            "$ref": "#/components/schemas/PurchaseReviewSummary"
+          },
+          "body": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          },
+          "policy": {
+            "$ref": "#/components/schemas/ReviewPolicySnapshot"
+          },
+          "response": {
+            "type": "string"
+          },
+          "reason_code": {
+            "type": "string"
+          },
+          "internal_reason": {
+            "type": "string"
+          }
+        },
+        "required": ["review", "body", "answers", "policy", "response"]
+      },
+      "OrderReview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "policy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReviewPolicySnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "review": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PurchaseReview"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["order_id", "eligible", "policy", "review"]
+      },
+      "ReviewWrite": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "request_key": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "policy_release_id": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer"
+          },
+          "body": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          },
+          "accept_policy": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "request_key",
+          "version",
+          "policy_release_id",
+          "rating",
+          "body",
+          "answers",
+          "accept_policy"
+        ]
+      },
+      "ReviewAction": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "policy_checked": {
+            "type": "boolean"
+          },
+          "reason_code": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "response": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "policy_checked",
+          "reason_code",
+          "note",
+          "response"
+        ]
+      },
+      "ReviewWithdraw": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer"
+          }
+        },
+        "required": ["version"]
+      },
+      "ReviewRevision": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "action": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["pending", "published", "hidden", "rejected", "withdrawn"]
+          },
+          "rating": {
+            "type": "integer"
+          },
+          "body": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          },
+          "policy": {
+            "$ref": "#/components/schemas/ReviewPolicySnapshot"
+          },
+          "response": {
+            "type": "string"
+          },
+          "actor_role": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason_code": {
+            "type": "string"
+          },
+          "internal_reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "action",
+          "state",
+          "rating",
+          "body",
+          "answers",
+          "policy",
+          "response",
+          "actor_role",
+          "created_at"
+        ]
+      },
+      "ReviewHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewRevision"
+            }
+          }
+        },
+        "required": ["revisions"]
+      },
+      "ReviewListing": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PurchaseReviewSummary"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        },
+        "required": ["items", "next"]
+      },
+      "ReviewFeedbackAttribute": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          }
+        },
+        "required": ["label", "value"]
+      },
+      "PublicPurchaseReview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "body": {
+            "type": "string"
+          },
+          "feedback": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewFeedbackAttribute"
+            }
+          },
+          "response": {
+            "type": "string"
+          },
+          "policy_content": {
+            "type": "string"
+          },
+          "purchase_status": {
+            "type": "string",
+            "enum": [
+              "verified_purchase",
+              "purchase_status_updated",
+              "fulfillment_status_updated"
+            ]
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "rating",
+          "body",
+          "feedback",
+          "response",
+          "policy_content",
+          "purchase_status",
+          "published_at",
+          "updated_at"
+        ]
+      },
+      "ReviewRatingCount": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "rating": {
+            "type": "integer"
+          },
+          "count": {
+            "type": "integer"
+          }
+        },
+        "required": ["rating", "count"]
+      },
+      "ReviewFeed": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "game": {
+            "$ref": "#/components/schemas/CatalogRelease"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicPurchaseReview"
+            }
+          },
+          "next": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "rating_sum": {
+            "type": "integer"
+          },
+          "histogram": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewRatingCount"
+            }
+          }
+        },
+        "required": [
+          "game",
+          "items",
+          "next",
+          "count",
+          "rating_sum",
+          "histogram"
+        ]
+      },
+      "ReviewProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["review_invalid", "review_conflict"]
           },
           "issues": {
             "type": "array",

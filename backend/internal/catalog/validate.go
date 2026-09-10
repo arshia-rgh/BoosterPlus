@@ -75,6 +75,7 @@ func ValidateConfiguration(c Configuration, publish bool) []Issue {
 	}
 	services := map[string]ServiceDefinition{}
 	validateIntake(c.Intake, refs, publish, add)
+	validateReviewPolicy(c.ReviewPolicy, refs, publish, add)
 	for i, service := range c.Services {
 		path := fmt.Sprintf("services.%d", i)
 		if _, exists := services[service.Key]; exists || !keyPattern.MatchString(service.Key) || !validText(service.Name, 1, 120) || !validText(service.Description, 0, 4000) {

@@ -2783,6 +2783,228 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/orders/{id}/review": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    get: operations["reviewgetApiV1OrdersIdReview"];
+    put?: never;
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    post: operations["reviewpostApiV1OrdersIdReview"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/orders/{id}/review/withdraw": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    post: operations["reviewpostApiV1OrdersIdReviewWithdraw"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/reviews": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    get: operations["reviewgetApiV1Reviews"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/reviews/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    get: operations["reviewgetApiV1ReviewsId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/reviews/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    get: operations["reviewgetApiV1ReviewsIdHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reviews": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    get: operations["reviewgetApiV1AdminReviews"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reviews/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    get: operations["reviewgetApiV1AdminReviewsId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reviews/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    get: operations["reviewgetApiV1AdminReviewsIdHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reviews/{id}/publish": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    post: operations["reviewpostApiV1AdminReviewsIdPublish"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reviews/{id}/hide": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    post: operations["reviewpostApiV1AdminReviewsIdHide"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reviews/{id}/reject": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    post: operations["reviewpostApiV1AdminReviewsIdReject"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/reviews/{id}/respond": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    post: operations["reviewpostApiV1AdminReviewsIdRespond"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/public/reviews/{slug}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Verified purchase feedback with explicit publication policy and private moderation history */
+    get: operations["reviewgetApiV1ReviewsGamesSlug"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2941,6 +3163,7 @@ export interface components {
       packages: components["schemas"]["CatalogPackage"][] | null;
       faqs: components["schemas"]["CatalogFAQ"][] | null;
       intake?: components["schemas"]["CatalogIntakeForm"];
+      review_policy?: components["schemas"]["CatalogReviewPolicy"];
     };
     CatalogReference: {
       key: string;
@@ -3881,6 +4104,131 @@ export interface components {
     SubmissionProblem: {
       /** @enum {string} */
       code: "submission_invalid" | "submission_conflict";
+      issues?: components["schemas"]["CatalogIssue"][];
+    };
+    CatalogReviewPolicy: {
+      content: string;
+      fields: components["schemas"]["CatalogField"][] | null;
+      rules: components["schemas"]["CatalogRule"][] | null;
+    };
+    ReviewPolicySnapshot: {
+      release_id: string;
+      policy: components["schemas"]["CatalogReviewPolicy"];
+      references: components["schemas"]["CatalogReference"][];
+    };
+    PurchaseReviewSummary: {
+      id: string;
+      order_id: string;
+      version: number;
+      game: string;
+      slug: string;
+      /** @enum {string} */
+      state: "pending" | "published" | "hidden" | "rejected" | "withdrawn";
+      rating: number;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    PurchaseReview: {
+      review: components["schemas"]["PurchaseReviewSummary"];
+      body: string;
+      answers: {
+        [key: string]: string | boolean | string[];
+      };
+      policy: components["schemas"]["ReviewPolicySnapshot"];
+      response: string;
+      reason_code?: string;
+      internal_reason?: string;
+    };
+    OrderReview: {
+      order_id: string;
+      eligible: boolean;
+      policy: components["schemas"]["ReviewPolicySnapshot"] | null;
+      review: components["schemas"]["PurchaseReview"] | null;
+    };
+    ReviewWrite: {
+      request_key: string;
+      version: number;
+      policy_release_id: string;
+      rating: number;
+      body: string;
+      answers: {
+        [key: string]: string | boolean | string[];
+      };
+      accept_policy: boolean;
+    };
+    ReviewAction: {
+      version: number;
+      policy_checked: boolean;
+      reason_code: string;
+      note: string;
+      response: string;
+    };
+    ReviewWithdraw: {
+      version: number;
+    };
+    ReviewRevision: {
+      version: number;
+      action: string;
+      /** @enum {string} */
+      state: "pending" | "published" | "hidden" | "rejected" | "withdrawn";
+      rating: number;
+      body: string;
+      answers: {
+        [key: string]: string | boolean | string[];
+      };
+      policy: components["schemas"]["ReviewPolicySnapshot"];
+      response: string;
+      actor_role: string;
+      /** Format: date-time */
+      created_at: string;
+      reason_code?: string;
+      internal_reason?: string;
+    };
+    ReviewHistory: {
+      revisions: components["schemas"]["ReviewRevision"][];
+    };
+    ReviewListing: {
+      items: components["schemas"]["PurchaseReviewSummary"][];
+      next: string;
+    };
+    ReviewFeedbackAttribute: {
+      label: string;
+      value: string | boolean | string[];
+    };
+    PublicPurchaseReview: {
+      id: string;
+      rating: number;
+      body: string;
+      feedback: components["schemas"]["ReviewFeedbackAttribute"][];
+      response: string;
+      policy_content: string;
+      /** @enum {string} */
+      purchase_status:
+        | "verified_purchase"
+        | "purchase_status_updated"
+        | "fulfillment_status_updated";
+      /** Format: date-time */
+      published_at: string;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    ReviewRatingCount: {
+      rating: number;
+      count: number;
+    };
+    ReviewFeed: {
+      game: components["schemas"]["CatalogRelease"];
+      items: components["schemas"]["PublicPurchaseReview"][];
+      next: string;
+      count: number;
+      rating_sum: number;
+      histogram: components["schemas"]["ReviewRatingCount"][];
+    };
+    ReviewProblem: {
+      /** @enum {string} */
+      code: "review_invalid" | "review_conflict";
       issues?: components["schemas"]["CatalogIssue"][];
     };
   };
@@ -12644,6 +12992,744 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["SubmissionProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewgetApiV1OrdersIdReview: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OrderReview"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewpostApiV1OrdersIdReview: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReviewWrite"];
+      };
+    };
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PurchaseReview"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewpostApiV1OrdersIdReviewWithdraw: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReviewWithdraw"];
+      };
+    };
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PurchaseReview"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewgetApiV1Reviews: {
+    parameters: {
+      query?: {
+        after?: string;
+        state?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewListing"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewgetApiV1ReviewsId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PurchaseReview"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewgetApiV1ReviewsIdHistory: {
+    parameters: {
+      query?: {
+        after?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewHistory"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewgetApiV1AdminReviews: {
+    parameters: {
+      query?: {
+        after?: string;
+        state?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewListing"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewgetApiV1AdminReviewsId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PurchaseReview"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewgetApiV1AdminReviewsIdHistory: {
+    parameters: {
+      query?: {
+        after?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewHistory"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewpostApiV1AdminReviewsIdPublish: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReviewAction"];
+      };
+    };
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PurchaseReview"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewpostApiV1AdminReviewsIdHide: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReviewAction"];
+      };
+    };
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PurchaseReview"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewpostApiV1AdminReviewsIdReject: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReviewAction"];
+      };
+    };
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PurchaseReview"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewpostApiV1AdminReviewsIdRespond: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReviewAction"];
+      };
+    };
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PurchaseReview"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  reviewgetApiV1ReviewsGamesSlug: {
+    parameters: {
+      query?: {
+        service?: string;
+        package?: string;
+        after?: string;
+      };
+      header?: never;
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewFeed"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
         };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */

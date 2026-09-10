@@ -61,6 +61,14 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "review_invalid",
+    "Check your rating, feedback and publication-policy confirmation.",
+  ],
+  [
+    "review_conflict",
+    "This review, publication policy or purchase eligibility changed. Refresh before continuing.",
+  ],
+  [
     "submission_invalid",
     "Review the account fields and ownership information before continuing.",
   ],

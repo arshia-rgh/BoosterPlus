@@ -37,6 +37,7 @@ func seedBrowserFulfillment(t *testing.T, f *authFixture, fixtures map[string]st
 	for _, project := range []string{"desktop", "mobile"} {
 		c := catalogConfig()
 		c.Name = "Fulfillment journey game"
+		c.ReviewPolicy = &catalog.ReviewPolicy{Content: "Synthetic review policy: no private data, spam, abuse or unrelated content. Low ratings are allowed.", Fields: []catalog.Field{}, Rules: []catalog.Rule{}}
 		c.Services[0].Delivery = syntheticDelivery()
 		c.Services[0].Fulfillment = &catalog.FulfillmentPolicy{Mode: "selection", Field: "mode", AccountValue: "solo", TogetherValue: "duo", SecretHours: 24, ShareFields: []string{"mode", "player"}}
 		c.Services[0].Fields = append(c.Services[0].Fields, catalog.Field{Key: "player", Label: "Player identifier", Type: "short_text", Stage: "fulfillment", Required: true, MinLength: 1, MaxLength: 80})
@@ -46,6 +47,13 @@ func seedBrowserFulfillment(t *testing.T, f *authFixture, fixtures map[string]st
 			t.Fatal(err)
 		}
 		release := catalog.Release{ID: uuid.NewString(), GameID: game.ID, Slug: game.Slug, Version: 1, CreatedAt: now, Configuration: c}
+		if _, err = f.client.CatalogRelease.Create().SetID(release.ID).SetGameID(game.ID).SetVersion(1).SetConfiguration(fixtureDocument(t, c)).SetCreatedBy(fixtures[project+"_workadmin_id"]).SetCreatedAt(now).Save(ctx); err != nil {
+			t.Fatal(err)
+		}
+		if _, err = f.client.Game.UpdateOneID(game.ID).SetCurrentRelease(release.ID).SetPublished(true).Save(ctx); err != nil {
+			t.Fatal(err)
+		}
+		fixtures[project+"_work_slug"] = game.Slug
 		for _, mode := range []string{"solo", "duo"} {
 			answers := catalog.Answers{"mode": json.RawMessage(`"` + mode + `"`)}
 			row, createErr := f.client.Order.Create().SetUserID(fixtures[project+"_workbuyer_id"]).SetGameID(game.ID).SetGameName(c.Name).SetSlug(game.Slug).SetService("boost").SetPackageKey("pack").SetVariantKey("basic").SetKind(order.KindPackage).SetRequestKey(uuid.NewString()).SetRequestHash(f.service.RequestDigest("fixture", []byte(uuid.NewString()))).SetState(order.StateQueued).SetAnswers(fixtureDocument(t, answers)).SetSnapshot(fixtureDocument(t, release)).SetEstimate(fixtureDocument(t, catalog.Calculate(release, "boost", answers, now))).SetTermsVersion("test-v1").Save(ctx)

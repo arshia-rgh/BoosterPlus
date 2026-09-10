@@ -345,6 +345,30 @@ func (f OrderQuoteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderQuoteMutation", m)
 }
 
+// The ReviewFunc type is an adapter to allow the use of ordinary
+// function as Review mutator.
+type ReviewFunc func(context.Context, *ent.ReviewMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ReviewFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ReviewMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReviewMutation", m)
+}
+
+// The ReviewRevisionFunc type is an adapter to allow the use of ordinary
+// function as ReviewRevision mutator.
+type ReviewRevisionFunc func(context.Context, *ent.ReviewRevisionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ReviewRevisionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ReviewRevisionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReviewRevisionMutation", m)
+}
+
 // The SecretBundleFunc type is an adapter to allow the use of ordinary
 // function as SecretBundle mutator.
 type SecretBundleFunc func(context.Context, *ent.SecretBundleMutation) (ent.Value, error)

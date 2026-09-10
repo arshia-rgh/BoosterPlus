@@ -1,3 +1,4 @@
+import PurchaseReview from "../reviews/form";
 import FulfillmentPanel from "../fulfillment/panel";
 import { useState } from "react";
 import { Link, useParams } from "react-router";
@@ -476,6 +477,12 @@ export default function OrderDetail({ admin = false }: { admin?: boolean }) {
                 done={resource.reload}
               />
             )}
+          {!admin && (
+            <PurchaseReview
+              orderID={detail.order.id}
+              completed={detail.order.state === "completed"}
+            />
+          )}
           <History base={base} revision={detail.order.version} />
         </>
       )}

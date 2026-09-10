@@ -65,6 +65,8 @@ func Enqueue(ctx context.Context, tx *ent.Tx, userID, resourceID, eventID, kind 
 }
 func path(kind, id string) (string, bool) {
 	switch kind {
+	case "review_customer":
+		return "/orders/" + url.PathEscape(id) + "#purchase-review", true
 	case "submission_seller":
 		return "/sell/" + url.PathEscape(id), true
 	case "coordination_booster":
@@ -163,6 +165,13 @@ func (s *Store) EmailHandler(sender identity.Sender) jobs.Handler {
 		state := notification.EmailStateSuppressed
 		if account != nil && !account.Suspended && account.NotifyUpdates && row.ReadAt == nil && row.CreatedAt.After(time.Now().Add(-7*24*time.Hour)) {
 			allowed := row.Kind != "conversation_staff" || account.Role == identity.RoleAdmin || account.Role == identity.RoleOwner
+			if row.Kind == "review_customer" {
+				purchase, readErr := s.client.Order.Get(ctx, row.ResourceID)
+				if readErr != nil && !ent.IsNotFound(readErr) {
+					return readErr
+				}
+				allowed = purchase != nil && purchase.UserID == account.ID
+			}
 			if row.Kind == "submission_seller" {
 				submission, readErr := s.client.AccountSubmission.Get(ctx, row.ResourceID)
 				if readErr != nil && !ent.IsNotFound(readErr) {

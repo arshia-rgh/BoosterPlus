@@ -40,6 +40,8 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
@@ -132,6 +134,8 @@ func checkColumn(t, c string) error {
 			ordercontract.Table:       ordercontract.ValidColumn,
 			orderevent.Table:          orderevent.ValidColumn,
 			orderquote.Table:          orderquote.ValidColumn,
+			review.Table:              review.ValidColumn,
+			reviewrevision.Table:      reviewrevision.ValidColumn,
 			secretbundle.Table:        secretbundle.ValidColumn,
 			staffprofile.Table:        staffprofile.ValidColumn,
 			submissionevent.Table:     submissionevent.ValidColumn,

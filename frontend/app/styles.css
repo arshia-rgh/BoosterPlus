@@ -603,3 +603,8 @@ button:disabled {
 .catalog-section > fieldset {
   min-inline-size: 0;
 }
+
+.preserve-lines {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

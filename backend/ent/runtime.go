@@ -33,6 +33,8 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/schema"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
@@ -1084,6 +1086,106 @@ func init() {
 	orderquote.DefaultID = orderquoteDescID.Default.(func() string)
 	// orderquote.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	orderquote.IDValidator = orderquoteDescID.Validators[0].(func(string) error)
+	reviewFields := schema.Review{}.Fields()
+	_ = reviewFields
+	// reviewDescOrderID is the schema descriptor for order_id field.
+	reviewDescOrderID := reviewFields[1].Descriptor()
+	// review.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	review.OrderIDValidator = reviewDescOrderID.Validators[0].(func(string) error)
+	// reviewDescContractID is the schema descriptor for contract_id field.
+	reviewDescContractID := reviewFields[2].Descriptor()
+	// review.ContractIDValidator is a validator for the "contract_id" field. It is called by the builders before save.
+	review.ContractIDValidator = reviewDescContractID.Validators[0].(func(string) error)
+	// reviewDescUserID is the schema descriptor for user_id field.
+	reviewDescUserID := reviewFields[3].Descriptor()
+	// review.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	review.UserIDValidator = reviewDescUserID.Validators[0].(func(string) error)
+	// reviewDescGameID is the schema descriptor for game_id field.
+	reviewDescGameID := reviewFields[4].Descriptor()
+	// review.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
+	review.GameIDValidator = reviewDescGameID.Validators[0].(func(string) error)
+	// reviewDescGameName is the schema descriptor for game_name field.
+	reviewDescGameName := reviewFields[5].Descriptor()
+	// review.GameNameValidator is a validator for the "game_name" field. It is called by the builders before save.
+	review.GameNameValidator = reviewDescGameName.Validators[0].(func(string) error)
+	// reviewDescSlug is the schema descriptor for slug field.
+	reviewDescSlug := reviewFields[6].Descriptor()
+	// review.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	review.SlugValidator = reviewDescSlug.Validators[0].(func(string) error)
+	// reviewDescService is the schema descriptor for service field.
+	reviewDescService := reviewFields[7].Descriptor()
+	// review.ServiceValidator is a validator for the "service" field. It is called by the builders before save.
+	review.ServiceValidator = reviewDescService.Validators[0].(func(string) error)
+	// reviewDescPackageKey is the schema descriptor for package_key field.
+	reviewDescPackageKey := reviewFields[8].Descriptor()
+	// review.PackageKeyValidator is a validator for the "package_key" field. It is called by the builders before save.
+	review.PackageKeyValidator = reviewDescPackageKey.Validators[0].(func(string) error)
+	// reviewDescRequestKey is the schema descriptor for request_key field.
+	reviewDescRequestKey := reviewFields[9].Descriptor()
+	// review.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
+	review.RequestKeyValidator = reviewDescRequestKey.Validators[0].(func(string) error)
+	// reviewDescRequestHash is the schema descriptor for request_hash field.
+	reviewDescRequestHash := reviewFields[10].Descriptor()
+	// review.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	review.RequestHashValidator = reviewDescRequestHash.Validators[0].(func(string) error)
+	// reviewDescVersion is the schema descriptor for version field.
+	reviewDescVersion := reviewFields[11].Descriptor()
+	// review.DefaultVersion holds the default value on creation for the version field.
+	review.DefaultVersion = reviewDescVersion.Default.(int)
+	// reviewDescPolicyReleaseID is the schema descriptor for policy_release_id field.
+	reviewDescPolicyReleaseID := reviewFields[17].Descriptor()
+	// review.PolicyReleaseIDValidator is a validator for the "policy_release_id" field. It is called by the builders before save.
+	review.PolicyReleaseIDValidator = reviewDescPolicyReleaseID.Validators[0].(func(string) error)
+	// reviewDescReasonCode is the schema descriptor for reason_code field.
+	reviewDescReasonCode := reviewFields[19].Descriptor()
+	// review.ReasonCodeValidator is a validator for the "reason_code" field. It is called by the builders before save.
+	review.ReasonCodeValidator = reviewDescReasonCode.Validators[0].(func(string) error)
+	// reviewDescCreatedAt is the schema descriptor for created_at field.
+	reviewDescCreatedAt := reviewFields[21].Descriptor()
+	// review.DefaultCreatedAt holds the default value on creation for the created_at field.
+	review.DefaultCreatedAt = reviewDescCreatedAt.Default.(func() time.Time)
+	// reviewDescUpdatedAt is the schema descriptor for updated_at field.
+	reviewDescUpdatedAt := reviewFields[22].Descriptor()
+	// review.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	review.DefaultUpdatedAt = reviewDescUpdatedAt.Default.(func() time.Time)
+	// reviewDescID is the schema descriptor for id field.
+	reviewDescID := reviewFields[0].Descriptor()
+	// review.DefaultID holds the default value on creation for the id field.
+	review.DefaultID = reviewDescID.Default.(func() string)
+	// review.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	review.IDValidator = reviewDescID.Validators[0].(func(string) error)
+	reviewrevisionFields := schema.ReviewRevision{}.Fields()
+	_ = reviewrevisionFields
+	// reviewrevisionDescReviewID is the schema descriptor for review_id field.
+	reviewrevisionDescReviewID := reviewrevisionFields[1].Descriptor()
+	// reviewrevision.ReviewIDValidator is a validator for the "review_id" field. It is called by the builders before save.
+	reviewrevision.ReviewIDValidator = reviewrevisionDescReviewID.Validators[0].(func(string) error)
+	// reviewrevisionDescAction is the schema descriptor for action field.
+	reviewrevisionDescAction := reviewrevisionFields[3].Descriptor()
+	// reviewrevision.ActionValidator is a validator for the "action" field. It is called by the builders before save.
+	reviewrevision.ActionValidator = reviewrevisionDescAction.Validators[0].(func(string) error)
+	// reviewrevisionDescState is the schema descriptor for state field.
+	reviewrevisionDescState := reviewrevisionFields[4].Descriptor()
+	// reviewrevision.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	reviewrevision.StateValidator = reviewrevisionDescState.Validators[0].(func(string) error)
+	// reviewrevisionDescReasonCode is the schema descriptor for reason_code field.
+	reviewrevisionDescReasonCode := reviewrevisionFields[10].Descriptor()
+	// reviewrevision.ReasonCodeValidator is a validator for the "reason_code" field. It is called by the builders before save.
+	reviewrevision.ReasonCodeValidator = reviewrevisionDescReasonCode.Validators[0].(func(string) error)
+	// reviewrevisionDescActorRole is the schema descriptor for actor_role field.
+	reviewrevisionDescActorRole := reviewrevisionFields[12].Descriptor()
+	// reviewrevision.ActorRoleValidator is a validator for the "actor_role" field. It is called by the builders before save.
+	reviewrevision.ActorRoleValidator = reviewrevisionDescActorRole.Validators[0].(func(string) error)
+	// reviewrevisionDescCreatedAt is the schema descriptor for created_at field.
+	reviewrevisionDescCreatedAt := reviewrevisionFields[13].Descriptor()
+	// reviewrevision.DefaultCreatedAt holds the default value on creation for the created_at field.
+	reviewrevision.DefaultCreatedAt = reviewrevisionDescCreatedAt.Default.(func() time.Time)
+	// reviewrevisionDescID is the schema descriptor for id field.
+	reviewrevisionDescID := reviewrevisionFields[0].Descriptor()
+	// reviewrevision.DefaultID holds the default value on creation for the id field.
+	reviewrevision.DefaultID = reviewrevisionDescID.Default.(func() string)
+	// reviewrevision.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	reviewrevision.IDValidator = reviewrevisionDescID.Validators[0].(func(string) error)
 	secretbundleFields := schema.SecretBundle{}.Fields()
 	_ = secretbundleFields
 	// secretbundleDescResourceID is the schema descriptor for resource_id field.

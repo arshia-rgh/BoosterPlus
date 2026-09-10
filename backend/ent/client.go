@@ -42,6 +42,8 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
@@ -111,6 +113,10 @@ type Client struct {
 	OrderEvent *OrderEventClient
 	// OrderQuote is the client for interacting with the OrderQuote builders.
 	OrderQuote *OrderQuoteClient
+	// Review is the client for interacting with the Review builders.
+	Review *ReviewClient
+	// ReviewRevision is the client for interacting with the ReviewRevision builders.
+	ReviewRevision *ReviewRevisionClient
 	// SecretBundle is the client for interacting with the SecretBundle builders.
 	SecretBundle *SecretBundleClient
 	// StaffProfile is the client for interacting with the StaffProfile builders.
@@ -158,6 +164,8 @@ func (c *Client) init() {
 	c.OrderContract = NewOrderContractClient(c.config)
 	c.OrderEvent = NewOrderEventClient(c.config)
 	c.OrderQuote = NewOrderQuoteClient(c.config)
+	c.Review = NewReviewClient(c.config)
+	c.ReviewRevision = NewReviewRevisionClient(c.config)
 	c.SecretBundle = NewSecretBundleClient(c.config)
 	c.StaffProfile = NewStaffProfileClient(c.config)
 	c.SubmissionEvent = NewSubmissionEventClient(c.config)
@@ -282,6 +290,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		OrderContract:       NewOrderContractClient(cfg),
 		OrderEvent:          NewOrderEventClient(cfg),
 		OrderQuote:          NewOrderQuoteClient(cfg),
+		Review:              NewReviewClient(cfg),
+		ReviewRevision:      NewReviewRevisionClient(cfg),
 		SecretBundle:        NewSecretBundleClient(cfg),
 		StaffProfile:        NewStaffProfileClient(cfg),
 		SubmissionEvent:     NewSubmissionEventClient(cfg),
@@ -333,6 +343,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		OrderContract:       NewOrderContractClient(cfg),
 		OrderEvent:          NewOrderEventClient(cfg),
 		OrderQuote:          NewOrderQuoteClient(cfg),
+		Review:              NewReviewClient(cfg),
+		ReviewRevision:      NewReviewRevisionClient(cfg),
 		SecretBundle:        NewSecretBundleClient(cfg),
 		StaffProfile:        NewStaffProfileClient(cfg),
 		SubmissionEvent:     NewSubmissionEventClient(cfg),
@@ -371,8 +383,8 @@ func (c *Client) Use(hooks ...Hook) {
 		c.Booking, c.BookingEvent, c.CatalogRelease, c.Conversation,
 		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
 		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.MediaFile,
-		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
-		c.SecretBundle, c.StaffProfile, c.SubmissionEvent, c.User,
+		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote, c.Review,
+		c.ReviewRevision, c.SecretBundle, c.StaffProfile, c.SubmissionEvent, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -387,8 +399,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.Booking, c.BookingEvent, c.CatalogRelease, c.Conversation,
 		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
 		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.MediaFile,
-		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
-		c.SecretBundle, c.StaffProfile, c.SubmissionEvent, c.User,
+		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote, c.Review,
+		c.ReviewRevision, c.SecretBundle, c.StaffProfile, c.SubmissionEvent, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -453,6 +465,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.OrderEvent.mutate(ctx, m)
 	case *OrderQuoteMutation:
 		return c.OrderQuote.mutate(ctx, m)
+	case *ReviewMutation:
+		return c.Review.mutate(ctx, m)
+	case *ReviewRevisionMutation:
+		return c.ReviewRevision.mutate(ctx, m)
 	case *SecretBundleMutation:
 		return c.SecretBundle.mutate(ctx, m)
 	case *StaffProfileMutation:
@@ -4190,6 +4206,272 @@ func (c *OrderQuoteClient) mutate(ctx context.Context, m *OrderQuoteMutation) (V
 	}
 }
 
+// ReviewClient is a client for the Review schema.
+type ReviewClient struct {
+	config
+}
+
+// NewReviewClient returns a client for the Review from the given config.
+func NewReviewClient(c config) *ReviewClient {
+	return &ReviewClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `review.Hooks(f(g(h())))`.
+func (c *ReviewClient) Use(hooks ...Hook) {
+	c.hooks.Review = append(c.hooks.Review, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `review.Intercept(f(g(h())))`.
+func (c *ReviewClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Review = append(c.inters.Review, interceptors...)
+}
+
+// Create returns a builder for creating a Review entity.
+func (c *ReviewClient) Create() *ReviewCreate {
+	mutation := newReviewMutation(c.config, OpCreate)
+	return &ReviewCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Review entities.
+func (c *ReviewClient) CreateBulk(builders ...*ReviewCreate) *ReviewCreateBulk {
+	return &ReviewCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ReviewClient) MapCreateBulk(slice any, setFunc func(*ReviewCreate, int)) *ReviewCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ReviewCreateBulk{err: fmt.Errorf("calling to ReviewClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ReviewCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ReviewCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Review.
+func (c *ReviewClient) Update() *ReviewUpdate {
+	mutation := newReviewMutation(c.config, OpUpdate)
+	return &ReviewUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ReviewClient) UpdateOne(_m *Review) *ReviewUpdateOne {
+	mutation := newReviewMutation(c.config, OpUpdateOne, withReview(_m))
+	return &ReviewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ReviewClient) UpdateOneID(id string) *ReviewUpdateOne {
+	mutation := newReviewMutation(c.config, OpUpdateOne, withReviewID(id))
+	return &ReviewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Review.
+func (c *ReviewClient) Delete() *ReviewDelete {
+	mutation := newReviewMutation(c.config, OpDelete)
+	return &ReviewDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ReviewClient) DeleteOne(_m *Review) *ReviewDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ReviewClient) DeleteOneID(id string) *ReviewDeleteOne {
+	builder := c.Delete().Where(review.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ReviewDeleteOne{builder}
+}
+
+// Query returns a query builder for Review.
+func (c *ReviewClient) Query() *ReviewQuery {
+	return &ReviewQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeReview},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Review entity by its id.
+func (c *ReviewClient) Get(ctx context.Context, id string) (*Review, error) {
+	return c.Query().Where(review.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ReviewClient) GetX(ctx context.Context, id string) *Review {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ReviewClient) Hooks() []Hook {
+	return c.hooks.Review
+}
+
+// Interceptors returns the client interceptors.
+func (c *ReviewClient) Interceptors() []Interceptor {
+	return c.inters.Review
+}
+
+func (c *ReviewClient) mutate(ctx context.Context, m *ReviewMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ReviewCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ReviewUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ReviewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ReviewDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Review mutation op: %q", m.Op())
+	}
+}
+
+// ReviewRevisionClient is a client for the ReviewRevision schema.
+type ReviewRevisionClient struct {
+	config
+}
+
+// NewReviewRevisionClient returns a client for the ReviewRevision from the given config.
+func NewReviewRevisionClient(c config) *ReviewRevisionClient {
+	return &ReviewRevisionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `reviewrevision.Hooks(f(g(h())))`.
+func (c *ReviewRevisionClient) Use(hooks ...Hook) {
+	c.hooks.ReviewRevision = append(c.hooks.ReviewRevision, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `reviewrevision.Intercept(f(g(h())))`.
+func (c *ReviewRevisionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ReviewRevision = append(c.inters.ReviewRevision, interceptors...)
+}
+
+// Create returns a builder for creating a ReviewRevision entity.
+func (c *ReviewRevisionClient) Create() *ReviewRevisionCreate {
+	mutation := newReviewRevisionMutation(c.config, OpCreate)
+	return &ReviewRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ReviewRevision entities.
+func (c *ReviewRevisionClient) CreateBulk(builders ...*ReviewRevisionCreate) *ReviewRevisionCreateBulk {
+	return &ReviewRevisionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ReviewRevisionClient) MapCreateBulk(slice any, setFunc func(*ReviewRevisionCreate, int)) *ReviewRevisionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ReviewRevisionCreateBulk{err: fmt.Errorf("calling to ReviewRevisionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ReviewRevisionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ReviewRevisionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ReviewRevision.
+func (c *ReviewRevisionClient) Update() *ReviewRevisionUpdate {
+	mutation := newReviewRevisionMutation(c.config, OpUpdate)
+	return &ReviewRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ReviewRevisionClient) UpdateOne(_m *ReviewRevision) *ReviewRevisionUpdateOne {
+	mutation := newReviewRevisionMutation(c.config, OpUpdateOne, withReviewRevision(_m))
+	return &ReviewRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ReviewRevisionClient) UpdateOneID(id string) *ReviewRevisionUpdateOne {
+	mutation := newReviewRevisionMutation(c.config, OpUpdateOne, withReviewRevisionID(id))
+	return &ReviewRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ReviewRevision.
+func (c *ReviewRevisionClient) Delete() *ReviewRevisionDelete {
+	mutation := newReviewRevisionMutation(c.config, OpDelete)
+	return &ReviewRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ReviewRevisionClient) DeleteOne(_m *ReviewRevision) *ReviewRevisionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ReviewRevisionClient) DeleteOneID(id string) *ReviewRevisionDeleteOne {
+	builder := c.Delete().Where(reviewrevision.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ReviewRevisionDeleteOne{builder}
+}
+
+// Query returns a query builder for ReviewRevision.
+func (c *ReviewRevisionClient) Query() *ReviewRevisionQuery {
+	return &ReviewRevisionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeReviewRevision},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ReviewRevision entity by its id.
+func (c *ReviewRevisionClient) Get(ctx context.Context, id string) (*ReviewRevision, error) {
+	return c.Query().Where(reviewrevision.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ReviewRevisionClient) GetX(ctx context.Context, id string) *ReviewRevision {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ReviewRevisionClient) Hooks() []Hook {
+	return c.hooks.ReviewRevision
+}
+
+// Interceptors returns the client interceptors.
+func (c *ReviewRevisionClient) Interceptors() []Interceptor {
+	return c.inters.ReviewRevision
+}
+
+func (c *ReviewRevisionClient) mutate(ctx context.Context, m *ReviewRevisionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ReviewRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ReviewRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ReviewRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ReviewRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ReviewRevision mutation op: %q", m.Op())
+	}
+}
+
 // SecretBundleClient is a client for the SecretBundle schema.
 type SecretBundleClient struct {
 	config
@@ -4730,7 +5012,8 @@ type (
 		BookingEvent, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
 		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
-		SecretBundle, StaffProfile, SubmissionEvent, User []ent.Hook
+		Review, ReviewRevision, SecretBundle, StaffProfile, SubmissionEvent,
+		User []ent.Hook
 	}
 	inters struct {
 		AccountSubmission, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity,
@@ -4738,7 +5021,8 @@ type (
 		BookingEvent, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
 		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
-		SecretBundle, StaffProfile, SubmissionEvent, User []ent.Interceptor
+		Review, ReviewRevision, SecretBundle, StaffProfile, SubmissionEvent,
+		User []ent.Interceptor
 	}
 )
 
