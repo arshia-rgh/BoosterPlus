@@ -37,6 +37,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 
 	stdsql "database/sql"
@@ -93,6 +94,8 @@ type Client struct {
 	OrderEvent *OrderEventClient
 	// OrderQuote is the client for interacting with the OrderQuote builders.
 	OrderQuote *OrderQuoteClient
+	// SecretBundle is the client for interacting with the SecretBundle builders.
+	SecretBundle *SecretBundleClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -129,6 +132,7 @@ func (c *Client) init() {
 	c.OrderContract = NewOrderContractClient(c.config)
 	c.OrderEvent = NewOrderEventClient(c.config)
 	c.OrderQuote = NewOrderQuoteClient(c.config)
+	c.SecretBundle = NewSecretBundleClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -245,6 +249,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		OrderContract:       NewOrderContractClient(cfg),
 		OrderEvent:          NewOrderEventClient(cfg),
 		OrderQuote:          NewOrderQuoteClient(cfg),
+		SecretBundle:        NewSecretBundleClient(cfg),
 		User:                NewUserClient(cfg),
 	}, nil
 }
@@ -288,6 +293,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		OrderContract:       NewOrderContractClient(cfg),
 		OrderEvent:          NewOrderEventClient(cfg),
 		OrderQuote:          NewOrderQuoteClient(cfg),
+		SecretBundle:        NewSecretBundleClient(cfg),
 		User:                NewUserClient(cfg),
 	}, nil
 }
@@ -322,7 +328,7 @@ func (c *Client) Use(hooks ...Hook) {
 		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Conversation,
 		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
 		c.CouponRevision, c.Favorite, c.Game, c.MediaFile, c.Notification, c.Order,
-		c.OrderContract, c.OrderEvent, c.OrderQuote, c.User,
+		c.OrderContract, c.OrderEvent, c.OrderQuote, c.SecretBundle, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -336,7 +342,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Conversation,
 		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
 		c.CouponRevision, c.Favorite, c.Game, c.MediaFile, c.Notification, c.Order,
-		c.OrderContract, c.OrderEvent, c.OrderQuote, c.User,
+		c.OrderContract, c.OrderEvent, c.OrderQuote, c.SecretBundle, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -391,6 +397,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.OrderEvent.mutate(ctx, m)
 	case *OrderQuoteMutation:
 		return c.OrderQuote.mutate(ctx, m)
+	case *SecretBundleMutation:
+		return c.SecretBundle.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
@@ -3457,6 +3465,139 @@ func (c *OrderQuoteClient) mutate(ctx context.Context, m *OrderQuoteMutation) (V
 	}
 }
 
+// SecretBundleClient is a client for the SecretBundle schema.
+type SecretBundleClient struct {
+	config
+}
+
+// NewSecretBundleClient returns a client for the SecretBundle from the given config.
+func NewSecretBundleClient(c config) *SecretBundleClient {
+	return &SecretBundleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `secretbundle.Hooks(f(g(h())))`.
+func (c *SecretBundleClient) Use(hooks ...Hook) {
+	c.hooks.SecretBundle = append(c.hooks.SecretBundle, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `secretbundle.Intercept(f(g(h())))`.
+func (c *SecretBundleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SecretBundle = append(c.inters.SecretBundle, interceptors...)
+}
+
+// Create returns a builder for creating a SecretBundle entity.
+func (c *SecretBundleClient) Create() *SecretBundleCreate {
+	mutation := newSecretBundleMutation(c.config, OpCreate)
+	return &SecretBundleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SecretBundle entities.
+func (c *SecretBundleClient) CreateBulk(builders ...*SecretBundleCreate) *SecretBundleCreateBulk {
+	return &SecretBundleCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SecretBundleClient) MapCreateBulk(slice any, setFunc func(*SecretBundleCreate, int)) *SecretBundleCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SecretBundleCreateBulk{err: fmt.Errorf("calling to SecretBundleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SecretBundleCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SecretBundleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SecretBundle.
+func (c *SecretBundleClient) Update() *SecretBundleUpdate {
+	mutation := newSecretBundleMutation(c.config, OpUpdate)
+	return &SecretBundleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SecretBundleClient) UpdateOne(_m *SecretBundle) *SecretBundleUpdateOne {
+	mutation := newSecretBundleMutation(c.config, OpUpdateOne, withSecretBundle(_m))
+	return &SecretBundleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SecretBundleClient) UpdateOneID(id string) *SecretBundleUpdateOne {
+	mutation := newSecretBundleMutation(c.config, OpUpdateOne, withSecretBundleID(id))
+	return &SecretBundleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SecretBundle.
+func (c *SecretBundleClient) Delete() *SecretBundleDelete {
+	mutation := newSecretBundleMutation(c.config, OpDelete)
+	return &SecretBundleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SecretBundleClient) DeleteOne(_m *SecretBundle) *SecretBundleDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SecretBundleClient) DeleteOneID(id string) *SecretBundleDeleteOne {
+	builder := c.Delete().Where(secretbundle.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SecretBundleDeleteOne{builder}
+}
+
+// Query returns a query builder for SecretBundle.
+func (c *SecretBundleClient) Query() *SecretBundleQuery {
+	return &SecretBundleQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSecretBundle},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SecretBundle entity by its id.
+func (c *SecretBundleClient) Get(ctx context.Context, id string) (*SecretBundle, error) {
+	return c.Query().Where(secretbundle.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SecretBundleClient) GetX(ctx context.Context, id string) *SecretBundle {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SecretBundleClient) Hooks() []Hook {
+	return c.hooks.SecretBundle
+}
+
+// Interceptors returns the client interceptors.
+func (c *SecretBundleClient) Interceptors() []Interceptor {
+	return c.inters.SecretBundle
+}
+
+func (c *SecretBundleClient) mutate(ctx context.Context, m *SecretBundleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SecretBundleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SecretBundleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SecretBundleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SecretBundleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SecretBundle mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -3597,14 +3738,14 @@ type (
 		AuthRecovery, AuthSession, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Game,
 		MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
-		User []ent.Hook
+		SecretBundle, User []ent.Hook
 	}
 	inters struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
 		AuthRecovery, AuthSession, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Game,
 		MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
-		User []ent.Interceptor
+		SecretBundle, User []ent.Interceptor
 	}
 )
 

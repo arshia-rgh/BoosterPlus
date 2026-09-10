@@ -285,6 +285,18 @@ func (f OrderQuoteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderQuoteMutation", m)
 }
 
+// The SecretBundleFunc type is an adapter to allow the use of ordinary
+// function as SecretBundle mutator.
+type SecretBundleFunc func(context.Context, *ent.SecretBundleMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SecretBundleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SecretBundleMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SecretBundleMutation", m)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)

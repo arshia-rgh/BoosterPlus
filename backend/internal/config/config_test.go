@@ -30,6 +30,12 @@ func TestConfiguration(t *testing.T) {
 		values["MEDIA_S3_SECRET_KEY"] = hex.EncodeToString(key)
 		values["MEDIA_SCANNER_NETWORK"] = "unix"
 		values["MEDIA_SCANNER_ADDRESS"] = "/run/clamav/clamd.sock"
+		vaultKey := make([]byte, 32)
+		if _, err := rand.Read(vaultKey); err != nil {
+			t.Fatal(err)
+		}
+		values["VAULT_ACTIVE_KEY"] = "v1"
+		values["VAULT_KEYS"] = "v1:" + hex.EncodeToString(vaultKey)
 		cfg, err := config.Load(func(key string) string { return values[key] })
 		if (err == nil) != scenario.valid {
 			t.Errorf("unexpected validation %v", err)

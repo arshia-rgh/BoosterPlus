@@ -29,6 +29,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/schema"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
@@ -850,6 +851,46 @@ func init() {
 	orderquote.DefaultID = orderquoteDescID.Default.(func() string)
 	// orderquote.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	orderquote.IDValidator = orderquoteDescID.Validators[0].(func(string) error)
+	secretbundleFields := schema.SecretBundle{}.Fields()
+	_ = secretbundleFields
+	// secretbundleDescResourceID is the schema descriptor for resource_id field.
+	secretbundleDescResourceID := secretbundleFields[2].Descriptor()
+	// secretbundle.ResourceIDValidator is a validator for the "resource_id" field. It is called by the builders before save.
+	secretbundle.ResourceIDValidator = secretbundleDescResourceID.Validators[0].(func(string) error)
+	// secretbundleDescOwnerID is the schema descriptor for owner_id field.
+	secretbundleDescOwnerID := secretbundleFields[3].Descriptor()
+	// secretbundle.OwnerIDValidator is a validator for the "owner_id" field. It is called by the builders before save.
+	secretbundle.OwnerIDValidator = secretbundleDescOwnerID.Validators[0].(func(string) error)
+	// secretbundleDescVersion is the schema descriptor for version field.
+	secretbundleDescVersion := secretbundleFields[4].Descriptor()
+	// secretbundle.DefaultVersion holds the default value on creation for the version field.
+	secretbundle.DefaultVersion = secretbundleDescVersion.Default.(int)
+	// secretbundleDescKeyVersion is the schema descriptor for key_version field.
+	secretbundleDescKeyVersion := secretbundleFields[5].Descriptor()
+	// secretbundle.KeyVersionValidator is a validator for the "key_version" field. It is called by the builders before save.
+	secretbundle.KeyVersionValidator = secretbundleDescKeyVersion.Validators[0].(func(string) error)
+	// secretbundleDescRequestKey is the schema descriptor for request_key field.
+	secretbundleDescRequestKey := secretbundleFields[9].Descriptor()
+	// secretbundle.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
+	secretbundle.RequestKeyValidator = secretbundleDescRequestKey.Validators[0].(func(string) error)
+	// secretbundleDescRequestHash is the schema descriptor for request_hash field.
+	secretbundleDescRequestHash := secretbundleFields[10].Descriptor()
+	// secretbundle.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	secretbundle.RequestHashValidator = secretbundleDescRequestHash.Validators[0].(func(string) error)
+	// secretbundleDescCreatedAt is the schema descriptor for created_at field.
+	secretbundleDescCreatedAt := secretbundleFields[12].Descriptor()
+	// secretbundle.DefaultCreatedAt holds the default value on creation for the created_at field.
+	secretbundle.DefaultCreatedAt = secretbundleDescCreatedAt.Default.(func() time.Time)
+	// secretbundleDescUpdatedAt is the schema descriptor for updated_at field.
+	secretbundleDescUpdatedAt := secretbundleFields[13].Descriptor()
+	// secretbundle.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	secretbundle.DefaultUpdatedAt = secretbundleDescUpdatedAt.Default.(func() time.Time)
+	// secretbundleDescID is the schema descriptor for id field.
+	secretbundleDescID := secretbundleFields[0].Descriptor()
+	// secretbundle.DefaultID holds the default value on creation for the id field.
+	secretbundle.DefaultID = secretbundleDescID.Default.(func() string)
+	// secretbundle.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	secretbundle.IDValidator = secretbundleDescID.Validators[0].(func(string) error)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescEmail is the schema descriptor for email field.

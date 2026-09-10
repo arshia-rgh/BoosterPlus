@@ -35,6 +35,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/predicate"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
@@ -70,6 +71,7 @@ const (
 	TypeOrderContract       = "OrderContract"
 	TypeOrderEvent          = "OrderEvent"
 	TypeOrderQuote          = "OrderQuote"
+	TypeSecretBundle        = "SecretBundle"
 	TypeUser                = "User"
 )
 
@@ -17911,6 +17913,1063 @@ func (m *OrderQuoteMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *OrderQuoteMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown OrderQuote edge %s", name)
+}
+
+// SecretBundleMutation represents an operation that mutates the SecretBundle nodes in the graph.
+type SecretBundleMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *string
+	purpose           *secretbundle.Purpose
+	resource_id       *string
+	owner_id          *string
+	version           *int
+	addversion        *int
+	key_version       *string
+	wrapped_key       *[]byte
+	encrypted_payload *[]byte
+	state             *secretbundle.State
+	request_key       *string
+	request_hash      *string
+	expires_at        *time.Time
+	created_at        *time.Time
+	updated_at        *time.Time
+	clearedFields     map[string]struct{}
+	done              bool
+	oldValue          func(context.Context) (*SecretBundle, error)
+	predicates        []predicate.SecretBundle
+}
+
+var _ ent.Mutation = (*SecretBundleMutation)(nil)
+
+// secretbundleOption allows management of the mutation configuration using functional options.
+type secretbundleOption func(*SecretBundleMutation)
+
+// newSecretBundleMutation creates new mutation for the SecretBundle entity.
+func newSecretBundleMutation(c config, op Op, opts ...secretbundleOption) *SecretBundleMutation {
+	m := &SecretBundleMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSecretBundle,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSecretBundleID sets the ID field of the mutation.
+func withSecretBundleID(id string) secretbundleOption {
+	return func(m *SecretBundleMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SecretBundle
+		)
+		m.oldValue = func(ctx context.Context) (*SecretBundle, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SecretBundle.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSecretBundle sets the old SecretBundle of the mutation.
+func withSecretBundle(node *SecretBundle) secretbundleOption {
+	return func(m *SecretBundleMutation) {
+		m.oldValue = func(context.Context) (*SecretBundle, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SecretBundleMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SecretBundleMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of SecretBundle entities.
+func (m *SecretBundleMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SecretBundleMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SecretBundleMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SecretBundle.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetPurpose sets the "purpose" field.
+func (m *SecretBundleMutation) SetPurpose(s secretbundle.Purpose) {
+	m.purpose = &s
+}
+
+// Purpose returns the value of the "purpose" field in the mutation.
+func (m *SecretBundleMutation) Purpose() (r secretbundle.Purpose, exists bool) {
+	v := m.purpose
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPurpose returns the old "purpose" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldPurpose(ctx context.Context) (v secretbundle.Purpose, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPurpose is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPurpose requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPurpose: %w", err)
+	}
+	return oldValue.Purpose, nil
+}
+
+// ResetPurpose resets all changes to the "purpose" field.
+func (m *SecretBundleMutation) ResetPurpose() {
+	m.purpose = nil
+}
+
+// SetResourceID sets the "resource_id" field.
+func (m *SecretBundleMutation) SetResourceID(s string) {
+	m.resource_id = &s
+}
+
+// ResourceID returns the value of the "resource_id" field in the mutation.
+func (m *SecretBundleMutation) ResourceID() (r string, exists bool) {
+	v := m.resource_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResourceID returns the old "resource_id" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldResourceID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResourceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResourceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResourceID: %w", err)
+	}
+	return oldValue.ResourceID, nil
+}
+
+// ResetResourceID resets all changes to the "resource_id" field.
+func (m *SecretBundleMutation) ResetResourceID() {
+	m.resource_id = nil
+}
+
+// SetOwnerID sets the "owner_id" field.
+func (m *SecretBundleMutation) SetOwnerID(s string) {
+	m.owner_id = &s
+}
+
+// OwnerID returns the value of the "owner_id" field in the mutation.
+func (m *SecretBundleMutation) OwnerID() (r string, exists bool) {
+	v := m.owner_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOwnerID returns the old "owner_id" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldOwnerID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOwnerID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOwnerID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOwnerID: %w", err)
+	}
+	return oldValue.OwnerID, nil
+}
+
+// ResetOwnerID resets all changes to the "owner_id" field.
+func (m *SecretBundleMutation) ResetOwnerID() {
+	m.owner_id = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *SecretBundleMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *SecretBundleMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *SecretBundleMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *SecretBundleMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *SecretBundleMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetKeyVersion sets the "key_version" field.
+func (m *SecretBundleMutation) SetKeyVersion(s string) {
+	m.key_version = &s
+}
+
+// KeyVersion returns the value of the "key_version" field in the mutation.
+func (m *SecretBundleMutation) KeyVersion() (r string, exists bool) {
+	v := m.key_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKeyVersion returns the old "key_version" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldKeyVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKeyVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKeyVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKeyVersion: %w", err)
+	}
+	return oldValue.KeyVersion, nil
+}
+
+// ResetKeyVersion resets all changes to the "key_version" field.
+func (m *SecretBundleMutation) ResetKeyVersion() {
+	m.key_version = nil
+}
+
+// SetWrappedKey sets the "wrapped_key" field.
+func (m *SecretBundleMutation) SetWrappedKey(b []byte) {
+	m.wrapped_key = &b
+}
+
+// WrappedKey returns the value of the "wrapped_key" field in the mutation.
+func (m *SecretBundleMutation) WrappedKey() (r []byte, exists bool) {
+	v := m.wrapped_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWrappedKey returns the old "wrapped_key" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldWrappedKey(ctx context.Context) (v []byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWrappedKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWrappedKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWrappedKey: %w", err)
+	}
+	return oldValue.WrappedKey, nil
+}
+
+// ClearWrappedKey clears the value of the "wrapped_key" field.
+func (m *SecretBundleMutation) ClearWrappedKey() {
+	m.wrapped_key = nil
+	m.clearedFields[secretbundle.FieldWrappedKey] = struct{}{}
+}
+
+// WrappedKeyCleared returns if the "wrapped_key" field was cleared in this mutation.
+func (m *SecretBundleMutation) WrappedKeyCleared() bool {
+	_, ok := m.clearedFields[secretbundle.FieldWrappedKey]
+	return ok
+}
+
+// ResetWrappedKey resets all changes to the "wrapped_key" field.
+func (m *SecretBundleMutation) ResetWrappedKey() {
+	m.wrapped_key = nil
+	delete(m.clearedFields, secretbundle.FieldWrappedKey)
+}
+
+// SetEncryptedPayload sets the "encrypted_payload" field.
+func (m *SecretBundleMutation) SetEncryptedPayload(b []byte) {
+	m.encrypted_payload = &b
+}
+
+// EncryptedPayload returns the value of the "encrypted_payload" field in the mutation.
+func (m *SecretBundleMutation) EncryptedPayload() (r []byte, exists bool) {
+	v := m.encrypted_payload
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEncryptedPayload returns the old "encrypted_payload" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldEncryptedPayload(ctx context.Context) (v []byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEncryptedPayload is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEncryptedPayload requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEncryptedPayload: %w", err)
+	}
+	return oldValue.EncryptedPayload, nil
+}
+
+// ClearEncryptedPayload clears the value of the "encrypted_payload" field.
+func (m *SecretBundleMutation) ClearEncryptedPayload() {
+	m.encrypted_payload = nil
+	m.clearedFields[secretbundle.FieldEncryptedPayload] = struct{}{}
+}
+
+// EncryptedPayloadCleared returns if the "encrypted_payload" field was cleared in this mutation.
+func (m *SecretBundleMutation) EncryptedPayloadCleared() bool {
+	_, ok := m.clearedFields[secretbundle.FieldEncryptedPayload]
+	return ok
+}
+
+// ResetEncryptedPayload resets all changes to the "encrypted_payload" field.
+func (m *SecretBundleMutation) ResetEncryptedPayload() {
+	m.encrypted_payload = nil
+	delete(m.clearedFields, secretbundle.FieldEncryptedPayload)
+}
+
+// SetState sets the "state" field.
+func (m *SecretBundleMutation) SetState(s secretbundle.State) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *SecretBundleMutation) State() (r secretbundle.State, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldState(ctx context.Context) (v secretbundle.State, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *SecretBundleMutation) ResetState() {
+	m.state = nil
+}
+
+// SetRequestKey sets the "request_key" field.
+func (m *SecretBundleMutation) SetRequestKey(s string) {
+	m.request_key = &s
+}
+
+// RequestKey returns the value of the "request_key" field in the mutation.
+func (m *SecretBundleMutation) RequestKey() (r string, exists bool) {
+	v := m.request_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestKey returns the old "request_key" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldRequestKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestKey: %w", err)
+	}
+	return oldValue.RequestKey, nil
+}
+
+// ResetRequestKey resets all changes to the "request_key" field.
+func (m *SecretBundleMutation) ResetRequestKey() {
+	m.request_key = nil
+}
+
+// SetRequestHash sets the "request_hash" field.
+func (m *SecretBundleMutation) SetRequestHash(s string) {
+	m.request_hash = &s
+}
+
+// RequestHash returns the value of the "request_hash" field in the mutation.
+func (m *SecretBundleMutation) RequestHash() (r string, exists bool) {
+	v := m.request_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestHash returns the old "request_hash" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldRequestHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestHash: %w", err)
+	}
+	return oldValue.RequestHash, nil
+}
+
+// ResetRequestHash resets all changes to the "request_hash" field.
+func (m *SecretBundleMutation) ResetRequestHash() {
+	m.request_hash = nil
+}
+
+// SetExpiresAt sets the "expires_at" field.
+func (m *SecretBundleMutation) SetExpiresAt(t time.Time) {
+	m.expires_at = &t
+}
+
+// ExpiresAt returns the value of the "expires_at" field in the mutation.
+func (m *SecretBundleMutation) ExpiresAt() (r time.Time, exists bool) {
+	v := m.expires_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExpiresAt returns the old "expires_at" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldExpiresAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExpiresAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExpiresAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExpiresAt: %w", err)
+	}
+	return oldValue.ExpiresAt, nil
+}
+
+// ResetExpiresAt resets all changes to the "expires_at" field.
+func (m *SecretBundleMutation) ResetExpiresAt() {
+	m.expires_at = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *SecretBundleMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *SecretBundleMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *SecretBundleMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *SecretBundleMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *SecretBundleMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *SecretBundleMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the SecretBundleMutation builder.
+func (m *SecretBundleMutation) Where(ps ...predicate.SecretBundle) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the SecretBundleMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *SecretBundleMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SecretBundle, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *SecretBundleMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *SecretBundleMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (SecretBundle).
+func (m *SecretBundleMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SecretBundleMutation) Fields() []string {
+	fields := make([]string, 0, 13)
+	if m.purpose != nil {
+		fields = append(fields, secretbundle.FieldPurpose)
+	}
+	if m.resource_id != nil {
+		fields = append(fields, secretbundle.FieldResourceID)
+	}
+	if m.owner_id != nil {
+		fields = append(fields, secretbundle.FieldOwnerID)
+	}
+	if m.version != nil {
+		fields = append(fields, secretbundle.FieldVersion)
+	}
+	if m.key_version != nil {
+		fields = append(fields, secretbundle.FieldKeyVersion)
+	}
+	if m.wrapped_key != nil {
+		fields = append(fields, secretbundle.FieldWrappedKey)
+	}
+	if m.encrypted_payload != nil {
+		fields = append(fields, secretbundle.FieldEncryptedPayload)
+	}
+	if m.state != nil {
+		fields = append(fields, secretbundle.FieldState)
+	}
+	if m.request_key != nil {
+		fields = append(fields, secretbundle.FieldRequestKey)
+	}
+	if m.request_hash != nil {
+		fields = append(fields, secretbundle.FieldRequestHash)
+	}
+	if m.expires_at != nil {
+		fields = append(fields, secretbundle.FieldExpiresAt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, secretbundle.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, secretbundle.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SecretBundleMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case secretbundle.FieldPurpose:
+		return m.Purpose()
+	case secretbundle.FieldResourceID:
+		return m.ResourceID()
+	case secretbundle.FieldOwnerID:
+		return m.OwnerID()
+	case secretbundle.FieldVersion:
+		return m.Version()
+	case secretbundle.FieldKeyVersion:
+		return m.KeyVersion()
+	case secretbundle.FieldWrappedKey:
+		return m.WrappedKey()
+	case secretbundle.FieldEncryptedPayload:
+		return m.EncryptedPayload()
+	case secretbundle.FieldState:
+		return m.State()
+	case secretbundle.FieldRequestKey:
+		return m.RequestKey()
+	case secretbundle.FieldRequestHash:
+		return m.RequestHash()
+	case secretbundle.FieldExpiresAt:
+		return m.ExpiresAt()
+	case secretbundle.FieldCreatedAt:
+		return m.CreatedAt()
+	case secretbundle.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SecretBundleMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case secretbundle.FieldPurpose:
+		return m.OldPurpose(ctx)
+	case secretbundle.FieldResourceID:
+		return m.OldResourceID(ctx)
+	case secretbundle.FieldOwnerID:
+		return m.OldOwnerID(ctx)
+	case secretbundle.FieldVersion:
+		return m.OldVersion(ctx)
+	case secretbundle.FieldKeyVersion:
+		return m.OldKeyVersion(ctx)
+	case secretbundle.FieldWrappedKey:
+		return m.OldWrappedKey(ctx)
+	case secretbundle.FieldEncryptedPayload:
+		return m.OldEncryptedPayload(ctx)
+	case secretbundle.FieldState:
+		return m.OldState(ctx)
+	case secretbundle.FieldRequestKey:
+		return m.OldRequestKey(ctx)
+	case secretbundle.FieldRequestHash:
+		return m.OldRequestHash(ctx)
+	case secretbundle.FieldExpiresAt:
+		return m.OldExpiresAt(ctx)
+	case secretbundle.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case secretbundle.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown SecretBundle field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SecretBundleMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case secretbundle.FieldPurpose:
+		v, ok := value.(secretbundle.Purpose)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPurpose(v)
+		return nil
+	case secretbundle.FieldResourceID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResourceID(v)
+		return nil
+	case secretbundle.FieldOwnerID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOwnerID(v)
+		return nil
+	case secretbundle.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case secretbundle.FieldKeyVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKeyVersion(v)
+		return nil
+	case secretbundle.FieldWrappedKey:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWrappedKey(v)
+		return nil
+	case secretbundle.FieldEncryptedPayload:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEncryptedPayload(v)
+		return nil
+	case secretbundle.FieldState:
+		v, ok := value.(secretbundle.State)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case secretbundle.FieldRequestKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestKey(v)
+		return nil
+	case secretbundle.FieldRequestHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestHash(v)
+		return nil
+	case secretbundle.FieldExpiresAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExpiresAt(v)
+		return nil
+	case secretbundle.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case secretbundle.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SecretBundle field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SecretBundleMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, secretbundle.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SecretBundleMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case secretbundle.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SecretBundleMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case secretbundle.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SecretBundle numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SecretBundleMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(secretbundle.FieldWrappedKey) {
+		fields = append(fields, secretbundle.FieldWrappedKey)
+	}
+	if m.FieldCleared(secretbundle.FieldEncryptedPayload) {
+		fields = append(fields, secretbundle.FieldEncryptedPayload)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SecretBundleMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SecretBundleMutation) ClearField(name string) error {
+	switch name {
+	case secretbundle.FieldWrappedKey:
+		m.ClearWrappedKey()
+		return nil
+	case secretbundle.FieldEncryptedPayload:
+		m.ClearEncryptedPayload()
+		return nil
+	}
+	return fmt.Errorf("unknown SecretBundle nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SecretBundleMutation) ResetField(name string) error {
+	switch name {
+	case secretbundle.FieldPurpose:
+		m.ResetPurpose()
+		return nil
+	case secretbundle.FieldResourceID:
+		m.ResetResourceID()
+		return nil
+	case secretbundle.FieldOwnerID:
+		m.ResetOwnerID()
+		return nil
+	case secretbundle.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case secretbundle.FieldKeyVersion:
+		m.ResetKeyVersion()
+		return nil
+	case secretbundle.FieldWrappedKey:
+		m.ResetWrappedKey()
+		return nil
+	case secretbundle.FieldEncryptedPayload:
+		m.ResetEncryptedPayload()
+		return nil
+	case secretbundle.FieldState:
+		m.ResetState()
+		return nil
+	case secretbundle.FieldRequestKey:
+		m.ResetRequestKey()
+		return nil
+	case secretbundle.FieldRequestHash:
+		m.ResetRequestHash()
+		return nil
+	case secretbundle.FieldExpiresAt:
+		m.ResetExpiresAt()
+		return nil
+	case secretbundle.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case secretbundle.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown SecretBundle field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SecretBundleMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SecretBundleMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SecretBundleMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SecretBundleMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SecretBundleMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SecretBundleMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SecretBundleMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown SecretBundle unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SecretBundleMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown SecretBundle edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.

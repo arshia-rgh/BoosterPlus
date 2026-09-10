@@ -8,6 +8,7 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
 )
 
 // Config contains process configuration. Never log the whole value.
@@ -17,6 +18,7 @@ type Config struct {
 	DatabaseDSN string
 	Identity    identity.Config
 	Media       Media
+	Vault       *vault.Keyring
 }
 
 // Load rejects unknown environments and malformed listener addresses.
@@ -46,5 +48,10 @@ func Load(getenv func(string) string) (Config, error) {
 		return Config{}, mediaErr
 	}
 	cfg.Media = media
+	keys, keyErr := CredentialKeys(getenv)
+	if keyErr != nil {
+		return Config{}, keyErr
+	}
+	cfg.Vault = keys
 	return cfg, nil
 }

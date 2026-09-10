@@ -27,3 +27,16 @@ if additions:
     with output.open("a") as handle:
         handle.write(additions)
     print("Added missing identity secrets; existing credentials preserved.")
+
+# Vault keys are independent of authentication/proxy keys and remain outside SQL.
+existing = output.read_text()
+values = dict(line.split("=", 1) for line in existing.splitlines() if "=" in line and not line.startswith("#"))
+additions = ""
+if "VAULT_ACTIVE_KEY" not in values:
+    additions += "VAULT_ACTIVE_KEY=v1\n"
+if "VAULT_KEYS" not in values:
+    additions += "VAULT_KEYS=" + values.get("VAULT_ACTIVE_KEY", "v1") + ":" + secrets.token_hex(32) + "\n"
+if additions:
+    with output.open("a") as handle:
+        handle.write(additions)
+    print("Added missing vault key configuration; existing keys preserved.")

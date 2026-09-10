@@ -666,6 +666,46 @@ var (
 			},
 		},
 	}
+	// SecretBundlesColumns holds the columns for the "secret_bundles" table.
+	SecretBundlesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "purpose", Type: field.TypeEnum, Enums: []string{"game_access", "account_transfer"}},
+		{Name: "resource_id", Type: field.TypeString, Size: 36},
+		{Name: "owner_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "key_version", Type: field.TypeString, Size: 32},
+		{Name: "wrapped_key", Type: field.TypeBytes, Nullable: true},
+		{Name: "encrypted_payload", Type: field.TypeBytes, Nullable: true},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"active", "deleted"}, Default: "active"},
+		{Name: "request_key", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// SecretBundlesTable holds the schema information for the "secret_bundles" table.
+	SecretBundlesTable = &schema.Table{
+		Name:       "secret_bundles",
+		Columns:    SecretBundlesColumns,
+		PrimaryKey: []*schema.Column{SecretBundlesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "secret_scope",
+				Unique:  true,
+				Columns: []*schema.Column{SecretBundlesColumns[1], SecretBundlesColumns[2], SecretBundlesColumns[3]},
+			},
+			{
+				Name:    "secret_expiry",
+				Unique:  false,
+				Columns: []*schema.Column{SecretBundlesColumns[8], SecretBundlesColumns[11]},
+			},
+			{
+				Name:    "secret_key_version",
+				Unique:  false,
+				Columns: []*schema.Column{SecretBundlesColumns[5], SecretBundlesColumns[8]},
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -718,6 +758,7 @@ var (
 		OrderContractsTable,
 		OrderEventsTable,
 		OrderQuotesTable,
+		SecretBundlesTable,
 		UsersTable,
 	}
 )

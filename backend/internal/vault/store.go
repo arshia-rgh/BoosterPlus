@@ -1,0 +1,233 @@
+package vault
+
+import (
+	"context"
+	"crypto/subtle"
+	"encoding/json"
+	"errors"
+	"time"
+
+	"github.com/google/uuid"
+
+	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+)
+
+// Operation distinguishes resource-policy decisions; role alone never grants a secret.
+type Operation string
+
+// Operations are explicit inputs to each resource authorization policy.
+const (
+	Write   Operation = "write"
+	Inspect Operation = "inspect"
+	Reveal  Operation = "reveal"
+	Revoke  Operation = "revoke"
+	Rotate  Operation = "rotate"
+)
+
+// Policy must check the resource inside the caller's transaction. It must not
+// contact external services. New rejects nil; unregistered resource kinds deny.
+type Policy func(context.Context, *ent.Tx, *identity.Principal, Scope, Operation) error
+
+// ErrConflict requires a fresh version; accepted secrets are never silently replaced.
+var ErrConflict = errors.New("protected secret changed")
+
+// Store has no generic public HTTP routes. Fulfillment/resale register their own
+// paid-order, assignment and handoff policies before exposing any submission/reveal.
+type Store struct {
+	client *ent.Client
+	auth   *identity.Service
+	keys   *Keyring
+	policy Policy
+	now    func() time.Time
+}
+
+// New requires an explicit resource policy and a distinct validated keyring.
+func New(client *ent.Client, auth *identity.Service, keys *Keyring, policy Policy, clock func() time.Time) (*Store, error) {
+	if client == nil || auth == nil || keys == nil || policy == nil {
+		return nil, ErrInvalid
+	}
+	if clock == nil {
+		clock = time.Now
+	}
+	return &Store{client, auth, keys, policy, clock}, nil
+}
+
+// View deliberately exposes neither ciphertext, keys nor stored plaintext.
+type View struct {
+	ID        string
+	Version   int
+	State     string
+	ExpiresAt time.Time
+}
+
+func metadata(row *ent.SecretBundle) View {
+	return View{row.ID, row.Version, string(row.State), row.ExpiresAt}
+}
+func record(ctx context.Context, client *ent.Client, scope Scope) (*ent.SecretBundle, error) {
+	return client.SecretBundle.Query().Where(secretbundle.PurposeEQ(secretbundle.Purpose(scope.Purpose)), secretbundle.ResourceIDEQ(scope.ResourceID), secretbundle.OwnerIDEQ(scope.OwnerID)).Only(ctx)
+}
+func envelope(row *ent.SecretBundle) Envelope {
+	return Envelope{row.KeyVersion, row.WrappedKey, row.EncryptedPayload}
+}
+func audit(ctx context.Context, tx *ent.Tx, p *identity.Principal, id, action string, now time.Time) error {
+	_, err := tx.AuthAudit.Create().SetID(uuid.NewString()).SetActorID(p.User.ID).SetAction(action).SetTargetID(id).SetMetadata(map[string]string{}).SetCreatedAt(now).Save(ctx)
+	return err
+}
+
+// Put accepts a policy-approved secret with explicit expiry, optimistic version
+// and a private idempotency digest. Customers cannot choose another scope owner.
+func (s *Store) Put(ctx context.Context, p *identity.Principal, scope Scope, version int, requestKey string, expires time.Time, plaintext []byte) (View, error) {
+	if _, err := scope.aad(uuid.NewString()); err != nil {
+		return View{}, err
+	}
+	key, err := uuid.Parse(requestKey)
+	if err != nil || key.String() != requestKey || len(plaintext) == 0 || len(plaintext) > MaxBytes || version < 0 || version >= 2147483646 {
+		return View{}, ErrInvalid
+	}
+	raw, err := json.Marshal(struct {
+		Scope  Scope
+		Key    string
+		Expiry time.Time
+		Data   []byte
+	}{scope, requestKey, expires.UTC(), plaintext})
+	if err != nil {
+		return View{}, ErrInvalid
+	}
+	digest := s.auth.RequestDigest("vault-write", raw)
+	clear(raw)
+	var result View
+	err = s.auth.AuthorizedTransaction(ctx, p, "account", false, func(tx *ent.Tx, current *identity.Principal) error {
+		if current.User.ID != scope.OwnerID {
+			return identity.ErrForbidden
+		}
+		if e := s.policy(ctx, tx, current, scope, Write); e != nil {
+			return e
+		}
+		row, e := record(ctx, tx.Client(), scope)
+		if e != nil && !ent.IsNotFound(e) {
+			return e
+		}
+		if e == nil && row.RequestKey == requestKey {
+			if subtle.ConstantTimeCompare([]byte(row.RequestHash), []byte(digest)) != 1 {
+				return ErrConflict
+			}
+			result = metadata(row)
+			return nil
+		}
+		now := s.now().UTC()
+		if !expires.After(now) || expires.After(now.Add(30*24*time.Hour)) {
+			return ErrInvalid
+		}
+		id := uuid.NewString()
+		if row != nil {
+			if row.Version != version {
+				return ErrConflict
+			}
+			id = row.ID
+		} else if version != 0 {
+			return ErrConflict
+		}
+		encrypted, e := s.keys.Seal(id, scope, plaintext)
+		if e != nil {
+			return e
+		}
+		if row == nil {
+			row, e = tx.SecretBundle.Create().SetID(id).SetPurpose(secretbundle.Purpose(scope.Purpose)).SetResourceID(scope.ResourceID).SetOwnerID(scope.OwnerID).SetVersion(1).SetKeyVersion(encrypted.KeyID).SetWrappedKey(encrypted.WrappedKey).SetEncryptedPayload(encrypted.Payload).SetState(secretbundle.StateActive).SetRequestKey(requestKey).SetRequestHash(digest).SetExpiresAt(expires).SetCreatedAt(now).SetUpdatedAt(now).Save(ctx)
+		} else {
+			row, e = tx.SecretBundle.UpdateOneID(id).Where(secretbundle.VersionEQ(version)).AddVersion(1).SetKeyVersion(encrypted.KeyID).SetWrappedKey(encrypted.WrappedKey).SetEncryptedPayload(encrypted.Payload).SetState(secretbundle.StateActive).SetRequestKey(requestKey).SetRequestHash(digest).SetExpiresAt(expires).SetUpdatedAt(now).Save(ctx)
+		}
+		if ent.IsNotFound(e) {
+			return ErrConflict
+		}
+		if e != nil {
+			return e
+		}
+		if e = audit(ctx, tx, current, id, "vault_written", now); e != nil {
+			return e
+		}
+		result = metadata(row)
+		return nil
+	})
+	return result, err
+}
+
+// RevealForStaff commits live authorization and its audit before returning bytes.
+func (s *Store) RevealForStaff(ctx context.Context, p *identity.Principal, scope Scope) ([]byte, error) {
+	var result []byte
+	err := s.auth.AuthorizedTransaction(ctx, p, "booster", true, func(tx *ent.Tx, current *identity.Principal) error {
+		clear(result)
+		result = nil
+		if e := s.policy(ctx, tx, current, scope, Reveal); e != nil {
+			return e
+		}
+		row, e := record(ctx, tx.Client(), scope)
+		if e != nil {
+			return e
+		}
+		if row.State != secretbundle.StateActive || !row.ExpiresAt.After(s.now()) {
+			return ErrUnavailable
+		}
+		raw, e := s.keys.Open(row.ID, scope, envelope(row))
+		if ent.IsNotFound(e) {
+			return ErrConflict
+		}
+		if e != nil {
+			return e
+		}
+		if e = audit(ctx, tx, current, row.ID, "vault_revealed", s.now()); e != nil {
+			clear(raw)
+			return e
+		}
+		result = raw
+		return nil
+	})
+	if err != nil {
+		clear(result)
+		return nil, err
+	}
+	return result, nil
+}
+
+// Revoke clears live encrypted data in the same transaction as its audit.
+func (s *Store) Revoke(ctx context.Context, p *identity.Principal, scope Scope, version int) error {
+	return s.revoke(ctx, p, scope, version, false)
+}
+
+// RevokeForStaff requires recent primary and authenticator verification.
+func (s *Store) RevokeForStaff(ctx context.Context, p *identity.Principal, scope Scope, version int) error {
+	return s.revoke(ctx, p, scope, version, true)
+}
+func (s *Store) revoke(ctx context.Context, p *identity.Principal, scope Scope, version int, staff bool) error {
+	capability := "account"
+	if staff {
+		capability = "booster"
+	}
+	return s.auth.AuthorizedTransaction(ctx, p, capability, staff, func(tx *ent.Tx, current *identity.Principal) error {
+		if !staff && current.User.ID != scope.OwnerID {
+			return identity.ErrForbidden
+		}
+		if e := s.policy(ctx, tx, current, scope, Revoke); e != nil {
+			return e
+		}
+		row, e := record(ctx, tx.Client(), scope)
+		if e != nil {
+			return e
+		}
+		if row.Version != version || version >= 2147483646 {
+			return ErrConflict
+		}
+		if row.State == secretbundle.StateDeleted {
+			return nil
+		}
+		_, e = tx.SecretBundle.UpdateOneID(row.ID).Where(secretbundle.VersionEQ(version)).AddVersion(1).SetState(secretbundle.StateDeleted).ClearWrappedKey().ClearEncryptedPayload().SetKeyVersion("").SetUpdatedAt(s.now()).Save(ctx)
+		if ent.IsNotFound(e) {
+			return ErrConflict
+		}
+		if e != nil {
+			return e
+		}
+		return audit(ctx, tx, current, row.ID, "vault_revoked", s.now())
+	})
+}

@@ -35,6 +35,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
@@ -119,6 +120,7 @@ func checkColumn(t, c string) error {
 			ordercontract.Table:       ordercontract.ValidColumn,
 			orderevent.Table:          orderevent.ValidColumn,
 			orderquote.Table:          orderquote.ValidColumn,
+			secretbundle.Table:        secretbundle.ValidColumn,
 			user.Table:                user.ValidColumn,
 		})
 	})

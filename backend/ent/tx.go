@@ -60,6 +60,8 @@ type Tx struct {
 	OrderEvent *OrderEventClient
 	// OrderQuote is the client for interacting with the OrderQuote builders.
 	OrderQuote *OrderQuoteClient
+	// SecretBundle is the client for interacting with the SecretBundle builders.
+	SecretBundle *SecretBundleClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -216,6 +218,7 @@ func (tx *Tx) init() {
 	tx.OrderContract = NewOrderContractClient(tx.config)
 	tx.OrderEvent = NewOrderEventClient(tx.config)
 	tx.OrderQuote = NewOrderQuoteClient(tx.config)
+	tx.SecretBundle = NewSecretBundleClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

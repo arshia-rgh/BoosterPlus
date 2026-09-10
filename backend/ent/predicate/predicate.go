@@ -75,5 +75,8 @@ type OrderEvent func(*sql.Selector)
 // OrderQuote is the predicate function for orderquote builders.
 type OrderQuote func(*sql.Selector)
 
+// SecretBundle is the predicate function for secretbundle builders.
+type SecretBundle func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

@@ -19,6 +19,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
 )
 
 func main() { os.Exit(run()) }
@@ -57,8 +58,15 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 		return senderErr
 	}
 	files := media.New(client, auth, media.NewS3(cfg.Media.Endpoint, cfg.Media.Region, cfg.Media.Bucket, cfg.Media.Access, cfg.Media.Secret, "media/"), media.Clamd{Network: cfg.Media.ScannerNetwork, Address: cfg.Media.ScannerAddress})
+	secrets, secretErr := vault.New(client, auth, cfg.Vault, vault.DenyAll, nil)
+	if secretErr != nil {
+		return secretErr
+	}
 	maintenance, stopMaintenance := context.WithCancel(ctx)
 	defer stopMaintenance()
+	vaultDone := make(chan struct{})
+	go func() { defer close(vaultDone); secrets.RunCleanup(maintenance, logger) }()
+	defer func() { stopMaintenance(); <-vaultDone }()
 	mediaDone := make(chan struct{})
 	go func() { defer close(mediaDone); files.RunCleanup(maintenance, logger) }()
 	defer func() { stopMaintenance(); <-mediaDone }()
