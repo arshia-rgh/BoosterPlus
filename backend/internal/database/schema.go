@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 18
+const SchemaVersion = 19
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -44,7 +44,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
-		"jobs.retry_generation": "bigint", "reviews.body": "text", "reviews.rating": "tinyint", "reviews.policy": "json", "review_revisions.internal_reason": "text",
+		"availability_targets.cycle": "bigint", "availability_subscriptions.email_fingerprint": "varchar", "availability_deliveries.state": "varchar", "jobs.retry_generation": "bigint", "reviews.body": "text", "reviews.rating": "tinyint", "reviews.policy": "json", "review_revisions.internal_reason": "text",
 		"account_submissions.answers": "json", "account_submissions.snapshot": "json", "account_submissions.ownership_declared": "tinyint", "account_submissions.version": "bigint", "submission_events.message": "text", "conversations.submission_id": "varchar",
 		"fulfillments.forecast":              "json",
 		"conversations.fulfillment_order_id": "varchar", "conversations.booster_shared": "tinyint", "conversation_messages.purpose": "varchar",
@@ -62,7 +62,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 		"games.id": "varchar", "games.slug": "varchar", "games.name": "varchar", "games.configuration": "json", "games.version": "bigint", "games.published": "tinyint", "games.created_at": "datetime",
 		"jobs.id": "varchar", "jobs.kind": "varchar", "jobs.idempotency_key": "varchar", "jobs.payload": "json", "jobs.request_hash": "char", "jobs.state": "varchar", "jobs.attempts": "int", "jobs.max_attempts": "int", "jobs.available_at": "datetime", "jobs.lease_until": "datetime", "jobs.owner": "varchar", "jobs.last_error": "varchar", "jobs.created_at": "datetime",
 	}
-	rows, err := db.QueryContext(ctx, "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name IN ('reviews','review_revisions','account_submissions','submission_events','staff_profiles','availability_windows','bookings','booking_events','fulfillments','secret_bundles','media_files','conversations','conversation_messages','conversation_reads','notifications','orders','order_quotes','order_contracts','order_events','favorites','coupons','coupon_revisions','coupon_claims','catalog_releases','users','games','jobs','auth_sessions','auth_challenges','auth_messages','auth_identities','auth_flows','auth_rates','auth_audits','auth_recoveries','auth_controls')")
+	rows, err := db.QueryContext(ctx, "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name IN ('availability_targets','availability_subscriptions','availability_deliveries','reviews','review_revisions','account_submissions','submission_events','staff_profiles','availability_windows','bookings','booking_events','fulfillments','secret_bundles','media_files','conversations','conversation_messages','conversation_reads','notifications','orders','order_quotes','order_contracts','order_events','favorites','coupons','coupon_revisions','coupon_claims','catalog_releases','users','games','jobs','auth_sessions','auth_challenges','auth_messages','auth_identities','auth_flows','auth_rates','auth_audits','auth_recoveries','auth_controls')")
 	if err != nil {
 		return err
 	}

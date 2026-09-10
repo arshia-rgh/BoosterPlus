@@ -20,6 +20,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitydelivery"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitysubscription"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitytarget"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/bookingevent"
@@ -57,40 +60,43 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAccountSubmission   = "AccountSubmission"
-	TypeAuthAudit           = "AuthAudit"
-	TypeAuthChallenge       = "AuthChallenge"
-	TypeAuthFlow            = "AuthFlow"
-	TypeAuthIdentity        = "AuthIdentity"
-	TypeAuthMessage         = "AuthMessage"
-	TypeAuthRate            = "AuthRate"
-	TypeAuthRecovery        = "AuthRecovery"
-	TypeAuthSession         = "AuthSession"
-	TypeAvailabilityWindow  = "AvailabilityWindow"
-	TypeBooking             = "Booking"
-	TypeBookingEvent        = "BookingEvent"
-	TypeCatalogRelease      = "CatalogRelease"
-	TypeConversation        = "Conversation"
-	TypeConversationMessage = "ConversationMessage"
-	TypeConversationRead    = "ConversationRead"
-	TypeCoupon              = "Coupon"
-	TypeCouponClaim         = "CouponClaim"
-	TypeCouponRevision      = "CouponRevision"
-	TypeFavorite            = "Favorite"
-	TypeFulfillment         = "Fulfillment"
-	TypeGame                = "Game"
-	TypeMediaFile           = "MediaFile"
-	TypeNotification        = "Notification"
-	TypeOrder               = "Order"
-	TypeOrderContract       = "OrderContract"
-	TypeOrderEvent          = "OrderEvent"
-	TypeOrderQuote          = "OrderQuote"
-	TypeReview              = "Review"
-	TypeReviewRevision      = "ReviewRevision"
-	TypeSecretBundle        = "SecretBundle"
-	TypeStaffProfile        = "StaffProfile"
-	TypeSubmissionEvent     = "SubmissionEvent"
-	TypeUser                = "User"
+	TypeAccountSubmission        = "AccountSubmission"
+	TypeAuthAudit                = "AuthAudit"
+	TypeAuthChallenge            = "AuthChallenge"
+	TypeAuthFlow                 = "AuthFlow"
+	TypeAuthIdentity             = "AuthIdentity"
+	TypeAuthMessage              = "AuthMessage"
+	TypeAuthRate                 = "AuthRate"
+	TypeAuthRecovery             = "AuthRecovery"
+	TypeAuthSession              = "AuthSession"
+	TypeAvailabilityDelivery     = "AvailabilityDelivery"
+	TypeAvailabilitySubscription = "AvailabilitySubscription"
+	TypeAvailabilityTarget       = "AvailabilityTarget"
+	TypeAvailabilityWindow       = "AvailabilityWindow"
+	TypeBooking                  = "Booking"
+	TypeBookingEvent             = "BookingEvent"
+	TypeCatalogRelease           = "CatalogRelease"
+	TypeConversation             = "Conversation"
+	TypeConversationMessage      = "ConversationMessage"
+	TypeConversationRead         = "ConversationRead"
+	TypeCoupon                   = "Coupon"
+	TypeCouponClaim              = "CouponClaim"
+	TypeCouponRevision           = "CouponRevision"
+	TypeFavorite                 = "Favorite"
+	TypeFulfillment              = "Fulfillment"
+	TypeGame                     = "Game"
+	TypeMediaFile                = "MediaFile"
+	TypeNotification             = "Notification"
+	TypeOrder                    = "Order"
+	TypeOrderContract            = "OrderContract"
+	TypeOrderEvent               = "OrderEvent"
+	TypeOrderQuote               = "OrderQuote"
+	TypeReview                   = "Review"
+	TypeReviewRevision           = "ReviewRevision"
+	TypeSecretBundle             = "SecretBundle"
+	TypeStaffProfile             = "StaffProfile"
+	TypeSubmissionEvent          = "SubmissionEvent"
+	TypeUser                     = "User"
 )
 
 // AccountSubmissionMutation represents an operation that mutates the AccountSubmission nodes in the graph.
@@ -6491,6 +6497,2440 @@ func (m *AuthSessionMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *AuthSessionMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown AuthSession edge %s", name)
+}
+
+// AvailabilityDeliveryMutation represents an operation that mutates the AvailabilityDelivery nodes in the graph.
+type AvailabilityDeliveryMutation struct {
+	config
+	op                      Op
+	typ                     string
+	id                      *string
+	subscription_id         *string
+	target_id               *string
+	subscription_version    *int
+	addsubscription_version *int
+	cycle                   *int
+	addcycle                *int
+	email_fingerprint       *string
+	state                   *string
+	created_at              *time.Time
+	sent_at                 *time.Time
+	clearedFields           map[string]struct{}
+	done                    bool
+	oldValue                func(context.Context) (*AvailabilityDelivery, error)
+	predicates              []predicate.AvailabilityDelivery
+}
+
+var _ ent.Mutation = (*AvailabilityDeliveryMutation)(nil)
+
+// availabilitydeliveryOption allows management of the mutation configuration using functional options.
+type availabilitydeliveryOption func(*AvailabilityDeliveryMutation)
+
+// newAvailabilityDeliveryMutation creates new mutation for the AvailabilityDelivery entity.
+func newAvailabilityDeliveryMutation(c config, op Op, opts ...availabilitydeliveryOption) *AvailabilityDeliveryMutation {
+	m := &AvailabilityDeliveryMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAvailabilityDelivery,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAvailabilityDeliveryID sets the ID field of the mutation.
+func withAvailabilityDeliveryID(id string) availabilitydeliveryOption {
+	return func(m *AvailabilityDeliveryMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *AvailabilityDelivery
+		)
+		m.oldValue = func(ctx context.Context) (*AvailabilityDelivery, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().AvailabilityDelivery.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAvailabilityDelivery sets the old AvailabilityDelivery of the mutation.
+func withAvailabilityDelivery(node *AvailabilityDelivery) availabilitydeliveryOption {
+	return func(m *AvailabilityDeliveryMutation) {
+		m.oldValue = func(context.Context) (*AvailabilityDelivery, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AvailabilityDeliveryMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AvailabilityDeliveryMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of AvailabilityDelivery entities.
+func (m *AvailabilityDeliveryMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AvailabilityDeliveryMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AvailabilityDeliveryMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().AvailabilityDelivery.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetSubscriptionID sets the "subscription_id" field.
+func (m *AvailabilityDeliveryMutation) SetSubscriptionID(s string) {
+	m.subscription_id = &s
+}
+
+// SubscriptionID returns the value of the "subscription_id" field in the mutation.
+func (m *AvailabilityDeliveryMutation) SubscriptionID() (r string, exists bool) {
+	v := m.subscription_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscriptionID returns the old "subscription_id" field's value of the AvailabilityDelivery entity.
+// If the AvailabilityDelivery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityDeliveryMutation) OldSubscriptionID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscriptionID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscriptionID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscriptionID: %w", err)
+	}
+	return oldValue.SubscriptionID, nil
+}
+
+// ResetSubscriptionID resets all changes to the "subscription_id" field.
+func (m *AvailabilityDeliveryMutation) ResetSubscriptionID() {
+	m.subscription_id = nil
+}
+
+// SetTargetID sets the "target_id" field.
+func (m *AvailabilityDeliveryMutation) SetTargetID(s string) {
+	m.target_id = &s
+}
+
+// TargetID returns the value of the "target_id" field in the mutation.
+func (m *AvailabilityDeliveryMutation) TargetID() (r string, exists bool) {
+	v := m.target_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTargetID returns the old "target_id" field's value of the AvailabilityDelivery entity.
+// If the AvailabilityDelivery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityDeliveryMutation) OldTargetID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTargetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTargetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTargetID: %w", err)
+	}
+	return oldValue.TargetID, nil
+}
+
+// ResetTargetID resets all changes to the "target_id" field.
+func (m *AvailabilityDeliveryMutation) ResetTargetID() {
+	m.target_id = nil
+}
+
+// SetSubscriptionVersion sets the "subscription_version" field.
+func (m *AvailabilityDeliveryMutation) SetSubscriptionVersion(i int) {
+	m.subscription_version = &i
+	m.addsubscription_version = nil
+}
+
+// SubscriptionVersion returns the value of the "subscription_version" field in the mutation.
+func (m *AvailabilityDeliveryMutation) SubscriptionVersion() (r int, exists bool) {
+	v := m.subscription_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscriptionVersion returns the old "subscription_version" field's value of the AvailabilityDelivery entity.
+// If the AvailabilityDelivery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityDeliveryMutation) OldSubscriptionVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscriptionVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscriptionVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscriptionVersion: %w", err)
+	}
+	return oldValue.SubscriptionVersion, nil
+}
+
+// AddSubscriptionVersion adds i to the "subscription_version" field.
+func (m *AvailabilityDeliveryMutation) AddSubscriptionVersion(i int) {
+	if m.addsubscription_version != nil {
+		*m.addsubscription_version += i
+	} else {
+		m.addsubscription_version = &i
+	}
+}
+
+// AddedSubscriptionVersion returns the value that was added to the "subscription_version" field in this mutation.
+func (m *AvailabilityDeliveryMutation) AddedSubscriptionVersion() (r int, exists bool) {
+	v := m.addsubscription_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSubscriptionVersion resets all changes to the "subscription_version" field.
+func (m *AvailabilityDeliveryMutation) ResetSubscriptionVersion() {
+	m.subscription_version = nil
+	m.addsubscription_version = nil
+}
+
+// SetCycle sets the "cycle" field.
+func (m *AvailabilityDeliveryMutation) SetCycle(i int) {
+	m.cycle = &i
+	m.addcycle = nil
+}
+
+// Cycle returns the value of the "cycle" field in the mutation.
+func (m *AvailabilityDeliveryMutation) Cycle() (r int, exists bool) {
+	v := m.cycle
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCycle returns the old "cycle" field's value of the AvailabilityDelivery entity.
+// If the AvailabilityDelivery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityDeliveryMutation) OldCycle(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCycle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCycle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCycle: %w", err)
+	}
+	return oldValue.Cycle, nil
+}
+
+// AddCycle adds i to the "cycle" field.
+func (m *AvailabilityDeliveryMutation) AddCycle(i int) {
+	if m.addcycle != nil {
+		*m.addcycle += i
+	} else {
+		m.addcycle = &i
+	}
+}
+
+// AddedCycle returns the value that was added to the "cycle" field in this mutation.
+func (m *AvailabilityDeliveryMutation) AddedCycle() (r int, exists bool) {
+	v := m.addcycle
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCycle resets all changes to the "cycle" field.
+func (m *AvailabilityDeliveryMutation) ResetCycle() {
+	m.cycle = nil
+	m.addcycle = nil
+}
+
+// SetEmailFingerprint sets the "email_fingerprint" field.
+func (m *AvailabilityDeliveryMutation) SetEmailFingerprint(s string) {
+	m.email_fingerprint = &s
+}
+
+// EmailFingerprint returns the value of the "email_fingerprint" field in the mutation.
+func (m *AvailabilityDeliveryMutation) EmailFingerprint() (r string, exists bool) {
+	v := m.email_fingerprint
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmailFingerprint returns the old "email_fingerprint" field's value of the AvailabilityDelivery entity.
+// If the AvailabilityDelivery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityDeliveryMutation) OldEmailFingerprint(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmailFingerprint is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmailFingerprint requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmailFingerprint: %w", err)
+	}
+	return oldValue.EmailFingerprint, nil
+}
+
+// ResetEmailFingerprint resets all changes to the "email_fingerprint" field.
+func (m *AvailabilityDeliveryMutation) ResetEmailFingerprint() {
+	m.email_fingerprint = nil
+}
+
+// SetState sets the "state" field.
+func (m *AvailabilityDeliveryMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *AvailabilityDeliveryMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the AvailabilityDelivery entity.
+// If the AvailabilityDelivery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityDeliveryMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *AvailabilityDeliveryMutation) ResetState() {
+	m.state = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *AvailabilityDeliveryMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *AvailabilityDeliveryMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the AvailabilityDelivery entity.
+// If the AvailabilityDelivery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityDeliveryMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *AvailabilityDeliveryMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetSentAt sets the "sent_at" field.
+func (m *AvailabilityDeliveryMutation) SetSentAt(t time.Time) {
+	m.sent_at = &t
+}
+
+// SentAt returns the value of the "sent_at" field in the mutation.
+func (m *AvailabilityDeliveryMutation) SentAt() (r time.Time, exists bool) {
+	v := m.sent_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSentAt returns the old "sent_at" field's value of the AvailabilityDelivery entity.
+// If the AvailabilityDelivery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityDeliveryMutation) OldSentAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSentAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSentAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSentAt: %w", err)
+	}
+	return oldValue.SentAt, nil
+}
+
+// ClearSentAt clears the value of the "sent_at" field.
+func (m *AvailabilityDeliveryMutation) ClearSentAt() {
+	m.sent_at = nil
+	m.clearedFields[availabilitydelivery.FieldSentAt] = struct{}{}
+}
+
+// SentAtCleared returns if the "sent_at" field was cleared in this mutation.
+func (m *AvailabilityDeliveryMutation) SentAtCleared() bool {
+	_, ok := m.clearedFields[availabilitydelivery.FieldSentAt]
+	return ok
+}
+
+// ResetSentAt resets all changes to the "sent_at" field.
+func (m *AvailabilityDeliveryMutation) ResetSentAt() {
+	m.sent_at = nil
+	delete(m.clearedFields, availabilitydelivery.FieldSentAt)
+}
+
+// Where appends a list predicates to the AvailabilityDeliveryMutation builder.
+func (m *AvailabilityDeliveryMutation) Where(ps ...predicate.AvailabilityDelivery) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AvailabilityDeliveryMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AvailabilityDeliveryMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.AvailabilityDelivery, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AvailabilityDeliveryMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AvailabilityDeliveryMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (AvailabilityDelivery).
+func (m *AvailabilityDeliveryMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AvailabilityDeliveryMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.subscription_id != nil {
+		fields = append(fields, availabilitydelivery.FieldSubscriptionID)
+	}
+	if m.target_id != nil {
+		fields = append(fields, availabilitydelivery.FieldTargetID)
+	}
+	if m.subscription_version != nil {
+		fields = append(fields, availabilitydelivery.FieldSubscriptionVersion)
+	}
+	if m.cycle != nil {
+		fields = append(fields, availabilitydelivery.FieldCycle)
+	}
+	if m.email_fingerprint != nil {
+		fields = append(fields, availabilitydelivery.FieldEmailFingerprint)
+	}
+	if m.state != nil {
+		fields = append(fields, availabilitydelivery.FieldState)
+	}
+	if m.created_at != nil {
+		fields = append(fields, availabilitydelivery.FieldCreatedAt)
+	}
+	if m.sent_at != nil {
+		fields = append(fields, availabilitydelivery.FieldSentAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AvailabilityDeliveryMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case availabilitydelivery.FieldSubscriptionID:
+		return m.SubscriptionID()
+	case availabilitydelivery.FieldTargetID:
+		return m.TargetID()
+	case availabilitydelivery.FieldSubscriptionVersion:
+		return m.SubscriptionVersion()
+	case availabilitydelivery.FieldCycle:
+		return m.Cycle()
+	case availabilitydelivery.FieldEmailFingerprint:
+		return m.EmailFingerprint()
+	case availabilitydelivery.FieldState:
+		return m.State()
+	case availabilitydelivery.FieldCreatedAt:
+		return m.CreatedAt()
+	case availabilitydelivery.FieldSentAt:
+		return m.SentAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AvailabilityDeliveryMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case availabilitydelivery.FieldSubscriptionID:
+		return m.OldSubscriptionID(ctx)
+	case availabilitydelivery.FieldTargetID:
+		return m.OldTargetID(ctx)
+	case availabilitydelivery.FieldSubscriptionVersion:
+		return m.OldSubscriptionVersion(ctx)
+	case availabilitydelivery.FieldCycle:
+		return m.OldCycle(ctx)
+	case availabilitydelivery.FieldEmailFingerprint:
+		return m.OldEmailFingerprint(ctx)
+	case availabilitydelivery.FieldState:
+		return m.OldState(ctx)
+	case availabilitydelivery.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case availabilitydelivery.FieldSentAt:
+		return m.OldSentAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown AvailabilityDelivery field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AvailabilityDeliveryMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case availabilitydelivery.FieldSubscriptionID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscriptionID(v)
+		return nil
+	case availabilitydelivery.FieldTargetID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTargetID(v)
+		return nil
+	case availabilitydelivery.FieldSubscriptionVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscriptionVersion(v)
+		return nil
+	case availabilitydelivery.FieldCycle:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCycle(v)
+		return nil
+	case availabilitydelivery.FieldEmailFingerprint:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmailFingerprint(v)
+		return nil
+	case availabilitydelivery.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case availabilitydelivery.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case availabilitydelivery.FieldSentAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSentAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AvailabilityDelivery field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AvailabilityDeliveryMutation) AddedFields() []string {
+	var fields []string
+	if m.addsubscription_version != nil {
+		fields = append(fields, availabilitydelivery.FieldSubscriptionVersion)
+	}
+	if m.addcycle != nil {
+		fields = append(fields, availabilitydelivery.FieldCycle)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AvailabilityDeliveryMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case availabilitydelivery.FieldSubscriptionVersion:
+		return m.AddedSubscriptionVersion()
+	case availabilitydelivery.FieldCycle:
+		return m.AddedCycle()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AvailabilityDeliveryMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case availabilitydelivery.FieldSubscriptionVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSubscriptionVersion(v)
+		return nil
+	case availabilitydelivery.FieldCycle:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCycle(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AvailabilityDelivery numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AvailabilityDeliveryMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(availabilitydelivery.FieldSentAt) {
+		fields = append(fields, availabilitydelivery.FieldSentAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AvailabilityDeliveryMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AvailabilityDeliveryMutation) ClearField(name string) error {
+	switch name {
+	case availabilitydelivery.FieldSentAt:
+		m.ClearSentAt()
+		return nil
+	}
+	return fmt.Errorf("unknown AvailabilityDelivery nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AvailabilityDeliveryMutation) ResetField(name string) error {
+	switch name {
+	case availabilitydelivery.FieldSubscriptionID:
+		m.ResetSubscriptionID()
+		return nil
+	case availabilitydelivery.FieldTargetID:
+		m.ResetTargetID()
+		return nil
+	case availabilitydelivery.FieldSubscriptionVersion:
+		m.ResetSubscriptionVersion()
+		return nil
+	case availabilitydelivery.FieldCycle:
+		m.ResetCycle()
+		return nil
+	case availabilitydelivery.FieldEmailFingerprint:
+		m.ResetEmailFingerprint()
+		return nil
+	case availabilitydelivery.FieldState:
+		m.ResetState()
+		return nil
+	case availabilitydelivery.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case availabilitydelivery.FieldSentAt:
+		m.ResetSentAt()
+		return nil
+	}
+	return fmt.Errorf("unknown AvailabilityDelivery field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AvailabilityDeliveryMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AvailabilityDeliveryMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AvailabilityDeliveryMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AvailabilityDeliveryMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AvailabilityDeliveryMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AvailabilityDeliveryMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AvailabilityDeliveryMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown AvailabilityDelivery unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AvailabilityDeliveryMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown AvailabilityDelivery edge %s", name)
+}
+
+// AvailabilitySubscriptionMutation represents an operation that mutates the AvailabilitySubscription nodes in the graph.
+type AvailabilitySubscriptionMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *string
+	user_id            *string
+	target_id          *string
+	version            *int
+	addversion         *int
+	state              *string
+	email_fingerprint  *string
+	last_cycle         *int
+	addlast_cycle      *int
+	consent_version    *string
+	suppression_reason *string
+	created_at         *time.Time
+	updated_at         *time.Time
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*AvailabilitySubscription, error)
+	predicates         []predicate.AvailabilitySubscription
+}
+
+var _ ent.Mutation = (*AvailabilitySubscriptionMutation)(nil)
+
+// availabilitysubscriptionOption allows management of the mutation configuration using functional options.
+type availabilitysubscriptionOption func(*AvailabilitySubscriptionMutation)
+
+// newAvailabilitySubscriptionMutation creates new mutation for the AvailabilitySubscription entity.
+func newAvailabilitySubscriptionMutation(c config, op Op, opts ...availabilitysubscriptionOption) *AvailabilitySubscriptionMutation {
+	m := &AvailabilitySubscriptionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAvailabilitySubscription,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAvailabilitySubscriptionID sets the ID field of the mutation.
+func withAvailabilitySubscriptionID(id string) availabilitysubscriptionOption {
+	return func(m *AvailabilitySubscriptionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *AvailabilitySubscription
+		)
+		m.oldValue = func(ctx context.Context) (*AvailabilitySubscription, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().AvailabilitySubscription.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAvailabilitySubscription sets the old AvailabilitySubscription of the mutation.
+func withAvailabilitySubscription(node *AvailabilitySubscription) availabilitysubscriptionOption {
+	return func(m *AvailabilitySubscriptionMutation) {
+		m.oldValue = func(context.Context) (*AvailabilitySubscription, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AvailabilitySubscriptionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AvailabilitySubscriptionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of AvailabilitySubscription entities.
+func (m *AvailabilitySubscriptionMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AvailabilitySubscriptionMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AvailabilitySubscriptionMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().AvailabilitySubscription.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetUserID sets the "user_id" field.
+func (m *AvailabilitySubscriptionMutation) SetUserID(s string) {
+	m.user_id = &s
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *AvailabilitySubscriptionMutation) UserID() (r string, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the AvailabilitySubscription entity.
+// If the AvailabilitySubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilitySubscriptionMutation) OldUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *AvailabilitySubscriptionMutation) ResetUserID() {
+	m.user_id = nil
+}
+
+// SetTargetID sets the "target_id" field.
+func (m *AvailabilitySubscriptionMutation) SetTargetID(s string) {
+	m.target_id = &s
+}
+
+// TargetID returns the value of the "target_id" field in the mutation.
+func (m *AvailabilitySubscriptionMutation) TargetID() (r string, exists bool) {
+	v := m.target_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTargetID returns the old "target_id" field's value of the AvailabilitySubscription entity.
+// If the AvailabilitySubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilitySubscriptionMutation) OldTargetID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTargetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTargetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTargetID: %w", err)
+	}
+	return oldValue.TargetID, nil
+}
+
+// ResetTargetID resets all changes to the "target_id" field.
+func (m *AvailabilitySubscriptionMutation) ResetTargetID() {
+	m.target_id = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *AvailabilitySubscriptionMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *AvailabilitySubscriptionMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the AvailabilitySubscription entity.
+// If the AvailabilitySubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilitySubscriptionMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *AvailabilitySubscriptionMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *AvailabilitySubscriptionMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *AvailabilitySubscriptionMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetState sets the "state" field.
+func (m *AvailabilitySubscriptionMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *AvailabilitySubscriptionMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the AvailabilitySubscription entity.
+// If the AvailabilitySubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilitySubscriptionMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *AvailabilitySubscriptionMutation) ResetState() {
+	m.state = nil
+}
+
+// SetEmailFingerprint sets the "email_fingerprint" field.
+func (m *AvailabilitySubscriptionMutation) SetEmailFingerprint(s string) {
+	m.email_fingerprint = &s
+}
+
+// EmailFingerprint returns the value of the "email_fingerprint" field in the mutation.
+func (m *AvailabilitySubscriptionMutation) EmailFingerprint() (r string, exists bool) {
+	v := m.email_fingerprint
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmailFingerprint returns the old "email_fingerprint" field's value of the AvailabilitySubscription entity.
+// If the AvailabilitySubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilitySubscriptionMutation) OldEmailFingerprint(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmailFingerprint is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmailFingerprint requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmailFingerprint: %w", err)
+	}
+	return oldValue.EmailFingerprint, nil
+}
+
+// ResetEmailFingerprint resets all changes to the "email_fingerprint" field.
+func (m *AvailabilitySubscriptionMutation) ResetEmailFingerprint() {
+	m.email_fingerprint = nil
+}
+
+// SetLastCycle sets the "last_cycle" field.
+func (m *AvailabilitySubscriptionMutation) SetLastCycle(i int) {
+	m.last_cycle = &i
+	m.addlast_cycle = nil
+}
+
+// LastCycle returns the value of the "last_cycle" field in the mutation.
+func (m *AvailabilitySubscriptionMutation) LastCycle() (r int, exists bool) {
+	v := m.last_cycle
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastCycle returns the old "last_cycle" field's value of the AvailabilitySubscription entity.
+// If the AvailabilitySubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilitySubscriptionMutation) OldLastCycle(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastCycle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastCycle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastCycle: %w", err)
+	}
+	return oldValue.LastCycle, nil
+}
+
+// AddLastCycle adds i to the "last_cycle" field.
+func (m *AvailabilitySubscriptionMutation) AddLastCycle(i int) {
+	if m.addlast_cycle != nil {
+		*m.addlast_cycle += i
+	} else {
+		m.addlast_cycle = &i
+	}
+}
+
+// AddedLastCycle returns the value that was added to the "last_cycle" field in this mutation.
+func (m *AvailabilitySubscriptionMutation) AddedLastCycle() (r int, exists bool) {
+	v := m.addlast_cycle
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLastCycle resets all changes to the "last_cycle" field.
+func (m *AvailabilitySubscriptionMutation) ResetLastCycle() {
+	m.last_cycle = nil
+	m.addlast_cycle = nil
+}
+
+// SetConsentVersion sets the "consent_version" field.
+func (m *AvailabilitySubscriptionMutation) SetConsentVersion(s string) {
+	m.consent_version = &s
+}
+
+// ConsentVersion returns the value of the "consent_version" field in the mutation.
+func (m *AvailabilitySubscriptionMutation) ConsentVersion() (r string, exists bool) {
+	v := m.consent_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConsentVersion returns the old "consent_version" field's value of the AvailabilitySubscription entity.
+// If the AvailabilitySubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilitySubscriptionMutation) OldConsentVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConsentVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConsentVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConsentVersion: %w", err)
+	}
+	return oldValue.ConsentVersion, nil
+}
+
+// ResetConsentVersion resets all changes to the "consent_version" field.
+func (m *AvailabilitySubscriptionMutation) ResetConsentVersion() {
+	m.consent_version = nil
+}
+
+// SetSuppressionReason sets the "suppression_reason" field.
+func (m *AvailabilitySubscriptionMutation) SetSuppressionReason(s string) {
+	m.suppression_reason = &s
+}
+
+// SuppressionReason returns the value of the "suppression_reason" field in the mutation.
+func (m *AvailabilitySubscriptionMutation) SuppressionReason() (r string, exists bool) {
+	v := m.suppression_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuppressionReason returns the old "suppression_reason" field's value of the AvailabilitySubscription entity.
+// If the AvailabilitySubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilitySubscriptionMutation) OldSuppressionReason(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuppressionReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuppressionReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuppressionReason: %w", err)
+	}
+	return oldValue.SuppressionReason, nil
+}
+
+// ResetSuppressionReason resets all changes to the "suppression_reason" field.
+func (m *AvailabilitySubscriptionMutation) ResetSuppressionReason() {
+	m.suppression_reason = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *AvailabilitySubscriptionMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *AvailabilitySubscriptionMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the AvailabilitySubscription entity.
+// If the AvailabilitySubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilitySubscriptionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *AvailabilitySubscriptionMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *AvailabilitySubscriptionMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *AvailabilitySubscriptionMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the AvailabilitySubscription entity.
+// If the AvailabilitySubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilitySubscriptionMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *AvailabilitySubscriptionMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the AvailabilitySubscriptionMutation builder.
+func (m *AvailabilitySubscriptionMutation) Where(ps ...predicate.AvailabilitySubscription) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AvailabilitySubscriptionMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AvailabilitySubscriptionMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.AvailabilitySubscription, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AvailabilitySubscriptionMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AvailabilitySubscriptionMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (AvailabilitySubscription).
+func (m *AvailabilitySubscriptionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AvailabilitySubscriptionMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.user_id != nil {
+		fields = append(fields, availabilitysubscription.FieldUserID)
+	}
+	if m.target_id != nil {
+		fields = append(fields, availabilitysubscription.FieldTargetID)
+	}
+	if m.version != nil {
+		fields = append(fields, availabilitysubscription.FieldVersion)
+	}
+	if m.state != nil {
+		fields = append(fields, availabilitysubscription.FieldState)
+	}
+	if m.email_fingerprint != nil {
+		fields = append(fields, availabilitysubscription.FieldEmailFingerprint)
+	}
+	if m.last_cycle != nil {
+		fields = append(fields, availabilitysubscription.FieldLastCycle)
+	}
+	if m.consent_version != nil {
+		fields = append(fields, availabilitysubscription.FieldConsentVersion)
+	}
+	if m.suppression_reason != nil {
+		fields = append(fields, availabilitysubscription.FieldSuppressionReason)
+	}
+	if m.created_at != nil {
+		fields = append(fields, availabilitysubscription.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, availabilitysubscription.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AvailabilitySubscriptionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case availabilitysubscription.FieldUserID:
+		return m.UserID()
+	case availabilitysubscription.FieldTargetID:
+		return m.TargetID()
+	case availabilitysubscription.FieldVersion:
+		return m.Version()
+	case availabilitysubscription.FieldState:
+		return m.State()
+	case availabilitysubscription.FieldEmailFingerprint:
+		return m.EmailFingerprint()
+	case availabilitysubscription.FieldLastCycle:
+		return m.LastCycle()
+	case availabilitysubscription.FieldConsentVersion:
+		return m.ConsentVersion()
+	case availabilitysubscription.FieldSuppressionReason:
+		return m.SuppressionReason()
+	case availabilitysubscription.FieldCreatedAt:
+		return m.CreatedAt()
+	case availabilitysubscription.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AvailabilitySubscriptionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case availabilitysubscription.FieldUserID:
+		return m.OldUserID(ctx)
+	case availabilitysubscription.FieldTargetID:
+		return m.OldTargetID(ctx)
+	case availabilitysubscription.FieldVersion:
+		return m.OldVersion(ctx)
+	case availabilitysubscription.FieldState:
+		return m.OldState(ctx)
+	case availabilitysubscription.FieldEmailFingerprint:
+		return m.OldEmailFingerprint(ctx)
+	case availabilitysubscription.FieldLastCycle:
+		return m.OldLastCycle(ctx)
+	case availabilitysubscription.FieldConsentVersion:
+		return m.OldConsentVersion(ctx)
+	case availabilitysubscription.FieldSuppressionReason:
+		return m.OldSuppressionReason(ctx)
+	case availabilitysubscription.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case availabilitysubscription.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown AvailabilitySubscription field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AvailabilitySubscriptionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case availabilitysubscription.FieldUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case availabilitysubscription.FieldTargetID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTargetID(v)
+		return nil
+	case availabilitysubscription.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case availabilitysubscription.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case availabilitysubscription.FieldEmailFingerprint:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmailFingerprint(v)
+		return nil
+	case availabilitysubscription.FieldLastCycle:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastCycle(v)
+		return nil
+	case availabilitysubscription.FieldConsentVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConsentVersion(v)
+		return nil
+	case availabilitysubscription.FieldSuppressionReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuppressionReason(v)
+		return nil
+	case availabilitysubscription.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case availabilitysubscription.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AvailabilitySubscription field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AvailabilitySubscriptionMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, availabilitysubscription.FieldVersion)
+	}
+	if m.addlast_cycle != nil {
+		fields = append(fields, availabilitysubscription.FieldLastCycle)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AvailabilitySubscriptionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case availabilitysubscription.FieldVersion:
+		return m.AddedVersion()
+	case availabilitysubscription.FieldLastCycle:
+		return m.AddedLastCycle()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AvailabilitySubscriptionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case availabilitysubscription.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	case availabilitysubscription.FieldLastCycle:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLastCycle(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AvailabilitySubscription numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AvailabilitySubscriptionMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AvailabilitySubscriptionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AvailabilitySubscriptionMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown AvailabilitySubscription nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AvailabilitySubscriptionMutation) ResetField(name string) error {
+	switch name {
+	case availabilitysubscription.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case availabilitysubscription.FieldTargetID:
+		m.ResetTargetID()
+		return nil
+	case availabilitysubscription.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case availabilitysubscription.FieldState:
+		m.ResetState()
+		return nil
+	case availabilitysubscription.FieldEmailFingerprint:
+		m.ResetEmailFingerprint()
+		return nil
+	case availabilitysubscription.FieldLastCycle:
+		m.ResetLastCycle()
+		return nil
+	case availabilitysubscription.FieldConsentVersion:
+		m.ResetConsentVersion()
+		return nil
+	case availabilitysubscription.FieldSuppressionReason:
+		m.ResetSuppressionReason()
+		return nil
+	case availabilitysubscription.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case availabilitysubscription.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown AvailabilitySubscription field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AvailabilitySubscriptionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AvailabilitySubscriptionMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AvailabilitySubscriptionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AvailabilitySubscriptionMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AvailabilitySubscriptionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AvailabilitySubscriptionMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AvailabilitySubscriptionMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown AvailabilitySubscription unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AvailabilitySubscriptionMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown AvailabilitySubscription edge %s", name)
+}
+
+// AvailabilityTargetMutation represents an operation that mutates the AvailabilityTarget nodes in the graph.
+type AvailabilityTargetMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	game_id       *string
+	slug          *string
+	package_key   *string
+	variant_key   *string
+	available     *bool
+	cycle         *int
+	addcycle      *int
+	checked_at    *time.Time
+	created_at    *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*AvailabilityTarget, error)
+	predicates    []predicate.AvailabilityTarget
+}
+
+var _ ent.Mutation = (*AvailabilityTargetMutation)(nil)
+
+// availabilitytargetOption allows management of the mutation configuration using functional options.
+type availabilitytargetOption func(*AvailabilityTargetMutation)
+
+// newAvailabilityTargetMutation creates new mutation for the AvailabilityTarget entity.
+func newAvailabilityTargetMutation(c config, op Op, opts ...availabilitytargetOption) *AvailabilityTargetMutation {
+	m := &AvailabilityTargetMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAvailabilityTarget,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAvailabilityTargetID sets the ID field of the mutation.
+func withAvailabilityTargetID(id string) availabilitytargetOption {
+	return func(m *AvailabilityTargetMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *AvailabilityTarget
+		)
+		m.oldValue = func(ctx context.Context) (*AvailabilityTarget, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().AvailabilityTarget.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAvailabilityTarget sets the old AvailabilityTarget of the mutation.
+func withAvailabilityTarget(node *AvailabilityTarget) availabilitytargetOption {
+	return func(m *AvailabilityTargetMutation) {
+		m.oldValue = func(context.Context) (*AvailabilityTarget, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AvailabilityTargetMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AvailabilityTargetMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of AvailabilityTarget entities.
+func (m *AvailabilityTargetMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AvailabilityTargetMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AvailabilityTargetMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().AvailabilityTarget.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetGameID sets the "game_id" field.
+func (m *AvailabilityTargetMutation) SetGameID(s string) {
+	m.game_id = &s
+}
+
+// GameID returns the value of the "game_id" field in the mutation.
+func (m *AvailabilityTargetMutation) GameID() (r string, exists bool) {
+	v := m.game_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGameID returns the old "game_id" field's value of the AvailabilityTarget entity.
+// If the AvailabilityTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityTargetMutation) OldGameID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGameID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGameID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGameID: %w", err)
+	}
+	return oldValue.GameID, nil
+}
+
+// ResetGameID resets all changes to the "game_id" field.
+func (m *AvailabilityTargetMutation) ResetGameID() {
+	m.game_id = nil
+}
+
+// SetSlug sets the "slug" field.
+func (m *AvailabilityTargetMutation) SetSlug(s string) {
+	m.slug = &s
+}
+
+// Slug returns the value of the "slug" field in the mutation.
+func (m *AvailabilityTargetMutation) Slug() (r string, exists bool) {
+	v := m.slug
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSlug returns the old "slug" field's value of the AvailabilityTarget entity.
+// If the AvailabilityTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityTargetMutation) OldSlug(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSlug is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSlug requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSlug: %w", err)
+	}
+	return oldValue.Slug, nil
+}
+
+// ResetSlug resets all changes to the "slug" field.
+func (m *AvailabilityTargetMutation) ResetSlug() {
+	m.slug = nil
+}
+
+// SetPackageKey sets the "package_key" field.
+func (m *AvailabilityTargetMutation) SetPackageKey(s string) {
+	m.package_key = &s
+}
+
+// PackageKey returns the value of the "package_key" field in the mutation.
+func (m *AvailabilityTargetMutation) PackageKey() (r string, exists bool) {
+	v := m.package_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPackageKey returns the old "package_key" field's value of the AvailabilityTarget entity.
+// If the AvailabilityTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityTargetMutation) OldPackageKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPackageKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPackageKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPackageKey: %w", err)
+	}
+	return oldValue.PackageKey, nil
+}
+
+// ResetPackageKey resets all changes to the "package_key" field.
+func (m *AvailabilityTargetMutation) ResetPackageKey() {
+	m.package_key = nil
+}
+
+// SetVariantKey sets the "variant_key" field.
+func (m *AvailabilityTargetMutation) SetVariantKey(s string) {
+	m.variant_key = &s
+}
+
+// VariantKey returns the value of the "variant_key" field in the mutation.
+func (m *AvailabilityTargetMutation) VariantKey() (r string, exists bool) {
+	v := m.variant_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVariantKey returns the old "variant_key" field's value of the AvailabilityTarget entity.
+// If the AvailabilityTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityTargetMutation) OldVariantKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVariantKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVariantKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVariantKey: %w", err)
+	}
+	return oldValue.VariantKey, nil
+}
+
+// ResetVariantKey resets all changes to the "variant_key" field.
+func (m *AvailabilityTargetMutation) ResetVariantKey() {
+	m.variant_key = nil
+}
+
+// SetAvailable sets the "available" field.
+func (m *AvailabilityTargetMutation) SetAvailable(b bool) {
+	m.available = &b
+}
+
+// Available returns the value of the "available" field in the mutation.
+func (m *AvailabilityTargetMutation) Available() (r bool, exists bool) {
+	v := m.available
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAvailable returns the old "available" field's value of the AvailabilityTarget entity.
+// If the AvailabilityTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityTargetMutation) OldAvailable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAvailable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAvailable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAvailable: %w", err)
+	}
+	return oldValue.Available, nil
+}
+
+// ResetAvailable resets all changes to the "available" field.
+func (m *AvailabilityTargetMutation) ResetAvailable() {
+	m.available = nil
+}
+
+// SetCycle sets the "cycle" field.
+func (m *AvailabilityTargetMutation) SetCycle(i int) {
+	m.cycle = &i
+	m.addcycle = nil
+}
+
+// Cycle returns the value of the "cycle" field in the mutation.
+func (m *AvailabilityTargetMutation) Cycle() (r int, exists bool) {
+	v := m.cycle
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCycle returns the old "cycle" field's value of the AvailabilityTarget entity.
+// If the AvailabilityTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityTargetMutation) OldCycle(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCycle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCycle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCycle: %w", err)
+	}
+	return oldValue.Cycle, nil
+}
+
+// AddCycle adds i to the "cycle" field.
+func (m *AvailabilityTargetMutation) AddCycle(i int) {
+	if m.addcycle != nil {
+		*m.addcycle += i
+	} else {
+		m.addcycle = &i
+	}
+}
+
+// AddedCycle returns the value that was added to the "cycle" field in this mutation.
+func (m *AvailabilityTargetMutation) AddedCycle() (r int, exists bool) {
+	v := m.addcycle
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCycle resets all changes to the "cycle" field.
+func (m *AvailabilityTargetMutation) ResetCycle() {
+	m.cycle = nil
+	m.addcycle = nil
+}
+
+// SetCheckedAt sets the "checked_at" field.
+func (m *AvailabilityTargetMutation) SetCheckedAt(t time.Time) {
+	m.checked_at = &t
+}
+
+// CheckedAt returns the value of the "checked_at" field in the mutation.
+func (m *AvailabilityTargetMutation) CheckedAt() (r time.Time, exists bool) {
+	v := m.checked_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCheckedAt returns the old "checked_at" field's value of the AvailabilityTarget entity.
+// If the AvailabilityTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityTargetMutation) OldCheckedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCheckedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCheckedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCheckedAt: %w", err)
+	}
+	return oldValue.CheckedAt, nil
+}
+
+// ResetCheckedAt resets all changes to the "checked_at" field.
+func (m *AvailabilityTargetMutation) ResetCheckedAt() {
+	m.checked_at = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *AvailabilityTargetMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *AvailabilityTargetMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the AvailabilityTarget entity.
+// If the AvailabilityTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityTargetMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *AvailabilityTargetMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the AvailabilityTargetMutation builder.
+func (m *AvailabilityTargetMutation) Where(ps ...predicate.AvailabilityTarget) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AvailabilityTargetMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AvailabilityTargetMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.AvailabilityTarget, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AvailabilityTargetMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AvailabilityTargetMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (AvailabilityTarget).
+func (m *AvailabilityTargetMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AvailabilityTargetMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.game_id != nil {
+		fields = append(fields, availabilitytarget.FieldGameID)
+	}
+	if m.slug != nil {
+		fields = append(fields, availabilitytarget.FieldSlug)
+	}
+	if m.package_key != nil {
+		fields = append(fields, availabilitytarget.FieldPackageKey)
+	}
+	if m.variant_key != nil {
+		fields = append(fields, availabilitytarget.FieldVariantKey)
+	}
+	if m.available != nil {
+		fields = append(fields, availabilitytarget.FieldAvailable)
+	}
+	if m.cycle != nil {
+		fields = append(fields, availabilitytarget.FieldCycle)
+	}
+	if m.checked_at != nil {
+		fields = append(fields, availabilitytarget.FieldCheckedAt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, availabilitytarget.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AvailabilityTargetMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case availabilitytarget.FieldGameID:
+		return m.GameID()
+	case availabilitytarget.FieldSlug:
+		return m.Slug()
+	case availabilitytarget.FieldPackageKey:
+		return m.PackageKey()
+	case availabilitytarget.FieldVariantKey:
+		return m.VariantKey()
+	case availabilitytarget.FieldAvailable:
+		return m.Available()
+	case availabilitytarget.FieldCycle:
+		return m.Cycle()
+	case availabilitytarget.FieldCheckedAt:
+		return m.CheckedAt()
+	case availabilitytarget.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AvailabilityTargetMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case availabilitytarget.FieldGameID:
+		return m.OldGameID(ctx)
+	case availabilitytarget.FieldSlug:
+		return m.OldSlug(ctx)
+	case availabilitytarget.FieldPackageKey:
+		return m.OldPackageKey(ctx)
+	case availabilitytarget.FieldVariantKey:
+		return m.OldVariantKey(ctx)
+	case availabilitytarget.FieldAvailable:
+		return m.OldAvailable(ctx)
+	case availabilitytarget.FieldCycle:
+		return m.OldCycle(ctx)
+	case availabilitytarget.FieldCheckedAt:
+		return m.OldCheckedAt(ctx)
+	case availabilitytarget.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown AvailabilityTarget field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AvailabilityTargetMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case availabilitytarget.FieldGameID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGameID(v)
+		return nil
+	case availabilitytarget.FieldSlug:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSlug(v)
+		return nil
+	case availabilitytarget.FieldPackageKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPackageKey(v)
+		return nil
+	case availabilitytarget.FieldVariantKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVariantKey(v)
+		return nil
+	case availabilitytarget.FieldAvailable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAvailable(v)
+		return nil
+	case availabilitytarget.FieldCycle:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCycle(v)
+		return nil
+	case availabilitytarget.FieldCheckedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCheckedAt(v)
+		return nil
+	case availabilitytarget.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AvailabilityTarget field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AvailabilityTargetMutation) AddedFields() []string {
+	var fields []string
+	if m.addcycle != nil {
+		fields = append(fields, availabilitytarget.FieldCycle)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AvailabilityTargetMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case availabilitytarget.FieldCycle:
+		return m.AddedCycle()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AvailabilityTargetMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case availabilitytarget.FieldCycle:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCycle(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AvailabilityTarget numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AvailabilityTargetMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AvailabilityTargetMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AvailabilityTargetMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown AvailabilityTarget nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AvailabilityTargetMutation) ResetField(name string) error {
+	switch name {
+	case availabilitytarget.FieldGameID:
+		m.ResetGameID()
+		return nil
+	case availabilitytarget.FieldSlug:
+		m.ResetSlug()
+		return nil
+	case availabilitytarget.FieldPackageKey:
+		m.ResetPackageKey()
+		return nil
+	case availabilitytarget.FieldVariantKey:
+		m.ResetVariantKey()
+		return nil
+	case availabilitytarget.FieldAvailable:
+		m.ResetAvailable()
+		return nil
+	case availabilitytarget.FieldCycle:
+		m.ResetCycle()
+		return nil
+	case availabilitytarget.FieldCheckedAt:
+		m.ResetCheckedAt()
+		return nil
+	case availabilitytarget.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown AvailabilityTarget field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AvailabilityTargetMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AvailabilityTargetMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AvailabilityTargetMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AvailabilityTargetMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AvailabilityTargetMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AvailabilityTargetMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AvailabilityTargetMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown AvailabilityTarget unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AvailabilityTargetMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown AvailabilityTarget edge %s", name)
 }
 
 // AvailabilityWindowMutation represents an operation that mutates the AvailabilityWindow nodes in the graph.

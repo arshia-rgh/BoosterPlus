@@ -14264,6 +14264,391 @@
           }
         }
       }
+    },
+    "/api/v1/availability": {
+      "get": {
+        "operationId": "listAvailabilitySubscriptions",
+        "summary": "Manage explicit package availability consent; link POSTs require Origin/CSRF but no sign-in",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current consent result without recipient address or token disclosure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityListing"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Invalid input or stale consent/offering; reload before retrying",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input or stale consent/offering; reload before retrying",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "subscribeAvailability",
+        "summary": "Manage explicit package availability consent; link POSTs require Origin/CSRF but no sign-in",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current consent result without recipient address or token disclosure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilitySubscription"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Invalid input or stale consent/offering; reload before retrying",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input or stale consent/offering; reload before retrying",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilitySubscribe"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/availability/{id}": {
+      "post": {
+        "operationId": "changeAvailabilitySubscription",
+        "summary": "Manage explicit package availability consent; link POSTs require Origin/CSRF but no sign-in",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current consent result without recipient address or token disclosure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilitySubscription"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Invalid input or stale consent/offering; reload before retrying",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input or stale consent/offering; reload before retrying",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilityChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/availability-link/inspect": {
+      "post": {
+        "operationId": "inspectAvailabilityLink",
+        "summary": "Manage explicit package availability consent; link POSTs require Origin/CSRF but no sign-in",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Current consent result without recipient address or token disclosure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityLinkView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Invalid input or stale consent/offering; reload before retrying",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input or stale consent/offering; reload before retrying",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilityLink"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/availability-link/confirm": {
+      "post": {
+        "operationId": "confirmAvailabilityUnsubscribe",
+        "summary": "Manage explicit package availability consent; link POSTs require Origin/CSRF but no sign-in",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Current consent result without recipient address or token disclosure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityLinkView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Invalid input or stale consent/offering; reload before retrying",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input or stale consent/offering; reload before retrying",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilityLink"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -18966,6 +19351,168 @@
           "code": {
             "type": "string",
             "enum": ["operations_invalid", "operations_conflict"]
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogIssue"
+            }
+          }
+        }
+      },
+      "AvailabilitySubscription": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483645
+          },
+          "state": {
+            "type": "string",
+            "enum": ["active", "unsubscribed", "suppressed"]
+          },
+          "slug": {
+            "type": "string"
+          },
+          "package": {
+            "type": "string"
+          },
+          "variant": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "state",
+          "slug",
+          "package",
+          "variant",
+          "label",
+          "available",
+          "updated_at"
+        ]
+      },
+      "AvailabilityListing": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailabilitySubscription"
+            },
+            "maxItems": 50
+          },
+          "next": {
+            "type": "string"
+          }
+        },
+        "required": ["subscriptions", "next"]
+      },
+      "AvailabilitySubscribe": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "slug": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "package": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48
+          },
+          "variant": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48
+          },
+          "consent_version": {
+            "const": "availability-v1"
+          },
+          "accept": {
+            "const": true
+          }
+        },
+        "required": ["slug", "package", "variant", "consent_version", "accept"]
+      },
+      "AvailabilityChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483645
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "consent_version": {
+            "type": "string"
+          },
+          "accept": {
+            "type": "boolean"
+          }
+        },
+        "required": ["version", "active", "consent_version", "accept"]
+      },
+      "AvailabilityLink": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483645
+          },
+          "token": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": ["id", "version", "token"]
+      },
+      "AvailabilityLinkView": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "current": {
+            "type": "boolean"
+          }
+        },
+        "required": ["current"]
+      },
+      "AvailabilityProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["availability_invalid", "availability_conflict"]
           },
           "issues": {
             "type": "array",

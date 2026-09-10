@@ -11,6 +11,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/availabilityevents"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -279,6 +280,11 @@ func (s *Store) Mutate(ctx context.Context, p *identity.Principal, id, action st
 		output, getErr = draft(updated)
 		if getErr != nil {
 			return getErr
+		}
+		if action != "save" {
+			if err := availabilityevents.Changed(ctx, tx, id); err != nil {
+				return err
+			}
 		}
 		return record(ctx, tx, current, "catalog."+action, id, updated.Version)
 	})

@@ -16,6 +16,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/availabilityevents"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
@@ -341,6 +342,11 @@ func createContract(ctx context.Context, tx *ent.Tx, row *ent.Order, data Commer
 	if err = catalog.ClaimCoupon(ctx, tx, row.UserID, contract.ID, data.Discount); err != nil {
 		return "", err
 	}
+	if variant != nil {
+		if err = availabilityevents.Changed(ctx, tx, row.GameID); err != nil {
+			return "", err
+		}
+	}
 	return contract.ID, nil
 }
 
@@ -375,5 +381,8 @@ func retireUnissued(ctx context.Context, tx *ent.Tx, row *ent.Order) error {
 		return ErrConflict
 	}
 	_, err = tx.CouponClaim.Update().Where(couponclaim.ContractIDEQ(row.CurrentContract), couponclaim.StateEQ(couponclaim.StateHeld)).SetState(couponclaim.StateReleased).Save(ctx)
-	return err
+	if err != nil {
+		return err
+	}
+	return availabilityevents.Changed(ctx, tx, row.GameID)
 }

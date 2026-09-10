@@ -14,6 +14,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitydelivery"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitysubscription"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitytarget"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/bookingevent"
@@ -294,6 +297,106 @@ func init() {
 	authsessionDescID := authsessionFields[0].Descriptor()
 	// authsession.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	authsession.IDValidator = authsessionDescID.Validators[0].(func(string) error)
+	availabilitydeliveryFields := schema.AvailabilityDelivery{}.Fields()
+	_ = availabilitydeliveryFields
+	// availabilitydeliveryDescSubscriptionID is the schema descriptor for subscription_id field.
+	availabilitydeliveryDescSubscriptionID := availabilitydeliveryFields[1].Descriptor()
+	// availabilitydelivery.SubscriptionIDValidator is a validator for the "subscription_id" field. It is called by the builders before save.
+	availabilitydelivery.SubscriptionIDValidator = availabilitydeliveryDescSubscriptionID.Validators[0].(func(string) error)
+	// availabilitydeliveryDescTargetID is the schema descriptor for target_id field.
+	availabilitydeliveryDescTargetID := availabilitydeliveryFields[2].Descriptor()
+	// availabilitydelivery.TargetIDValidator is a validator for the "target_id" field. It is called by the builders before save.
+	availabilitydelivery.TargetIDValidator = availabilitydeliveryDescTargetID.Validators[0].(func(string) error)
+	// availabilitydeliveryDescEmailFingerprint is the schema descriptor for email_fingerprint field.
+	availabilitydeliveryDescEmailFingerprint := availabilitydeliveryFields[5].Descriptor()
+	// availabilitydelivery.EmailFingerprintValidator is a validator for the "email_fingerprint" field. It is called by the builders before save.
+	availabilitydelivery.EmailFingerprintValidator = availabilitydeliveryDescEmailFingerprint.Validators[0].(func(string) error)
+	// availabilitydeliveryDescState is the schema descriptor for state field.
+	availabilitydeliveryDescState := availabilitydeliveryFields[6].Descriptor()
+	// availabilitydelivery.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	availabilitydelivery.StateValidator = availabilitydeliveryDescState.Validators[0].(func(string) error)
+	// availabilitydeliveryDescCreatedAt is the schema descriptor for created_at field.
+	availabilitydeliveryDescCreatedAt := availabilitydeliveryFields[7].Descriptor()
+	// availabilitydelivery.DefaultCreatedAt holds the default value on creation for the created_at field.
+	availabilitydelivery.DefaultCreatedAt = availabilitydeliveryDescCreatedAt.Default.(func() time.Time)
+	// availabilitydeliveryDescID is the schema descriptor for id field.
+	availabilitydeliveryDescID := availabilitydeliveryFields[0].Descriptor()
+	// availabilitydelivery.DefaultID holds the default value on creation for the id field.
+	availabilitydelivery.DefaultID = availabilitydeliveryDescID.Default.(func() string)
+	// availabilitydelivery.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	availabilitydelivery.IDValidator = availabilitydeliveryDescID.Validators[0].(func(string) error)
+	availabilitysubscriptionFields := schema.AvailabilitySubscription{}.Fields()
+	_ = availabilitysubscriptionFields
+	// availabilitysubscriptionDescUserID is the schema descriptor for user_id field.
+	availabilitysubscriptionDescUserID := availabilitysubscriptionFields[1].Descriptor()
+	// availabilitysubscription.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	availabilitysubscription.UserIDValidator = availabilitysubscriptionDescUserID.Validators[0].(func(string) error)
+	// availabilitysubscriptionDescTargetID is the schema descriptor for target_id field.
+	availabilitysubscriptionDescTargetID := availabilitysubscriptionFields[2].Descriptor()
+	// availabilitysubscription.TargetIDValidator is a validator for the "target_id" field. It is called by the builders before save.
+	availabilitysubscription.TargetIDValidator = availabilitysubscriptionDescTargetID.Validators[0].(func(string) error)
+	// availabilitysubscriptionDescState is the schema descriptor for state field.
+	availabilitysubscriptionDescState := availabilitysubscriptionFields[4].Descriptor()
+	// availabilitysubscription.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	availabilitysubscription.StateValidator = availabilitysubscriptionDescState.Validators[0].(func(string) error)
+	// availabilitysubscriptionDescEmailFingerprint is the schema descriptor for email_fingerprint field.
+	availabilitysubscriptionDescEmailFingerprint := availabilitysubscriptionFields[5].Descriptor()
+	// availabilitysubscription.EmailFingerprintValidator is a validator for the "email_fingerprint" field. It is called by the builders before save.
+	availabilitysubscription.EmailFingerprintValidator = availabilitysubscriptionDescEmailFingerprint.Validators[0].(func(string) error)
+	// availabilitysubscriptionDescConsentVersion is the schema descriptor for consent_version field.
+	availabilitysubscriptionDescConsentVersion := availabilitysubscriptionFields[7].Descriptor()
+	// availabilitysubscription.ConsentVersionValidator is a validator for the "consent_version" field. It is called by the builders before save.
+	availabilitysubscription.ConsentVersionValidator = availabilitysubscriptionDescConsentVersion.Validators[0].(func(string) error)
+	// availabilitysubscriptionDescSuppressionReason is the schema descriptor for suppression_reason field.
+	availabilitysubscriptionDescSuppressionReason := availabilitysubscriptionFields[8].Descriptor()
+	// availabilitysubscription.SuppressionReasonValidator is a validator for the "suppression_reason" field. It is called by the builders before save.
+	availabilitysubscription.SuppressionReasonValidator = availabilitysubscriptionDescSuppressionReason.Validators[0].(func(string) error)
+	// availabilitysubscriptionDescCreatedAt is the schema descriptor for created_at field.
+	availabilitysubscriptionDescCreatedAt := availabilitysubscriptionFields[9].Descriptor()
+	// availabilitysubscription.DefaultCreatedAt holds the default value on creation for the created_at field.
+	availabilitysubscription.DefaultCreatedAt = availabilitysubscriptionDescCreatedAt.Default.(func() time.Time)
+	// availabilitysubscriptionDescUpdatedAt is the schema descriptor for updated_at field.
+	availabilitysubscriptionDescUpdatedAt := availabilitysubscriptionFields[10].Descriptor()
+	// availabilitysubscription.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	availabilitysubscription.DefaultUpdatedAt = availabilitysubscriptionDescUpdatedAt.Default.(func() time.Time)
+	// availabilitysubscriptionDescID is the schema descriptor for id field.
+	availabilitysubscriptionDescID := availabilitysubscriptionFields[0].Descriptor()
+	// availabilitysubscription.DefaultID holds the default value on creation for the id field.
+	availabilitysubscription.DefaultID = availabilitysubscriptionDescID.Default.(func() string)
+	// availabilitysubscription.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	availabilitysubscription.IDValidator = availabilitysubscriptionDescID.Validators[0].(func(string) error)
+	availabilitytargetFields := schema.AvailabilityTarget{}.Fields()
+	_ = availabilitytargetFields
+	// availabilitytargetDescGameID is the schema descriptor for game_id field.
+	availabilitytargetDescGameID := availabilitytargetFields[1].Descriptor()
+	// availabilitytarget.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
+	availabilitytarget.GameIDValidator = availabilitytargetDescGameID.Validators[0].(func(string) error)
+	// availabilitytargetDescSlug is the schema descriptor for slug field.
+	availabilitytargetDescSlug := availabilitytargetFields[2].Descriptor()
+	// availabilitytarget.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	availabilitytarget.SlugValidator = availabilitytargetDescSlug.Validators[0].(func(string) error)
+	// availabilitytargetDescPackageKey is the schema descriptor for package_key field.
+	availabilitytargetDescPackageKey := availabilitytargetFields[3].Descriptor()
+	// availabilitytarget.PackageKeyValidator is a validator for the "package_key" field. It is called by the builders before save.
+	availabilitytarget.PackageKeyValidator = availabilitytargetDescPackageKey.Validators[0].(func(string) error)
+	// availabilitytargetDescVariantKey is the schema descriptor for variant_key field.
+	availabilitytargetDescVariantKey := availabilitytargetFields[4].Descriptor()
+	// availabilitytarget.VariantKeyValidator is a validator for the "variant_key" field. It is called by the builders before save.
+	availabilitytarget.VariantKeyValidator = availabilitytargetDescVariantKey.Validators[0].(func(string) error)
+	// availabilitytargetDescCheckedAt is the schema descriptor for checked_at field.
+	availabilitytargetDescCheckedAt := availabilitytargetFields[7].Descriptor()
+	// availabilitytarget.DefaultCheckedAt holds the default value on creation for the checked_at field.
+	availabilitytarget.DefaultCheckedAt = availabilitytargetDescCheckedAt.Default.(func() time.Time)
+	// availabilitytargetDescCreatedAt is the schema descriptor for created_at field.
+	availabilitytargetDescCreatedAt := availabilitytargetFields[8].Descriptor()
+	// availabilitytarget.DefaultCreatedAt holds the default value on creation for the created_at field.
+	availabilitytarget.DefaultCreatedAt = availabilitytargetDescCreatedAt.Default.(func() time.Time)
+	// availabilitytargetDescID is the schema descriptor for id field.
+	availabilitytargetDescID := availabilitytargetFields[0].Descriptor()
+	// availabilitytarget.DefaultID holds the default value on creation for the id field.
+	availabilitytarget.DefaultID = availabilitytargetDescID.Default.(func() string)
+	// availabilitytarget.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	availabilitytarget.IDValidator = availabilitytargetDescID.Validators[0].(func(string) error)
 	availabilitywindowFields := schema.AvailabilityWindow{}.Fields()
 	_ = availabilitywindowFields
 	// availabilitywindowDescUserID is the schema descriptor for user_id field.

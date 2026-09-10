@@ -32,6 +32,12 @@ type Tx struct {
 	AuthRecovery *AuthRecoveryClient
 	// AuthSession is the client for interacting with the AuthSession builders.
 	AuthSession *AuthSessionClient
+	// AvailabilityDelivery is the client for interacting with the AvailabilityDelivery builders.
+	AvailabilityDelivery *AvailabilityDeliveryClient
+	// AvailabilitySubscription is the client for interacting with the AvailabilitySubscription builders.
+	AvailabilitySubscription *AvailabilitySubscriptionClient
+	// AvailabilityTarget is the client for interacting with the AvailabilityTarget builders.
+	AvailabilityTarget *AvailabilityTargetClient
 	// AvailabilityWindow is the client for interacting with the AvailabilityWindow builders.
 	AvailabilityWindow *AvailabilityWindowClient
 	// Booking is the client for interacting with the Booking builders.
@@ -222,6 +228,9 @@ func (tx *Tx) init() {
 	tx.AuthRate = NewAuthRateClient(tx.config)
 	tx.AuthRecovery = NewAuthRecoveryClient(tx.config)
 	tx.AuthSession = NewAuthSessionClient(tx.config)
+	tx.AvailabilityDelivery = NewAvailabilityDeliveryClient(tx.config)
+	tx.AvailabilitySubscription = NewAvailabilitySubscriptionClient(tx.config)
+	tx.AvailabilityTarget = NewAvailabilityTargetClient(tx.config)
 	tx.AvailabilityWindow = NewAvailabilityWindowClient(tx.config)
 	tx.Booking = NewBookingClient(tx.config)
 	tx.BookingEvent = NewBookingEventClient(tx.config)

@@ -3056,6 +3056,75 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/availability": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Manage explicit package availability consent; link POSTs require Origin/CSRF but no sign-in */
+    get: operations["listAvailabilitySubscriptions"];
+    put?: never;
+    /** Manage explicit package availability consent; link POSTs require Origin/CSRF but no sign-in */
+    post: operations["subscribeAvailability"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/availability/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Manage explicit package availability consent; link POSTs require Origin/CSRF but no sign-in */
+    post: operations["changeAvailabilitySubscription"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/availability-link/inspect": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Manage explicit package availability consent; link POSTs require Origin/CSRF but no sign-in */
+    post: operations["inspectAvailabilityLink"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/availability-link/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Manage explicit package availability consent; link POSTs require Origin/CSRF but no sign-in */
+    post: operations["confirmAvailabilityUnsubscribe"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4334,6 +4403,53 @@ export interface components {
     OperationalProblem: {
       /** @enum {string} */
       code: "operations_invalid" | "operations_conflict";
+      issues?: components["schemas"]["CatalogIssue"][];
+    };
+    AvailabilitySubscription: {
+      /** Format: uuid */
+      id: string;
+      version: number;
+      /** @enum {string} */
+      state: "active" | "unsubscribed" | "suppressed";
+      slug: string;
+      package: string;
+      variant: string;
+      label: string;
+      available: boolean;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    AvailabilityListing: {
+      subscriptions: components["schemas"]["AvailabilitySubscription"][];
+      next: string;
+    };
+    AvailabilitySubscribe: {
+      slug: string;
+      package: string;
+      variant: string;
+      /** @constant */
+      consent_version: "availability-v1";
+      /** @constant */
+      accept: true;
+    };
+    AvailabilityChange: {
+      version: number;
+      active: boolean;
+      consent_version: string;
+      accept: boolean;
+    };
+    AvailabilityLink: {
+      /** Format: uuid */
+      id: string;
+      version: number;
+      token: string;
+    };
+    AvailabilityLinkView: {
+      current: boolean;
+    };
+    AvailabilityProblem: {
+      /** @enum {string} */
+      code: "availability_invalid" | "availability_conflict";
       issues?: components["schemas"]["CatalogIssue"][];
     };
   };
@@ -13989,6 +14105,273 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["OperationalProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  listAvailabilitySubscriptions: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Current consent result without recipient address or token disclosure */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityListing"];
+        };
+      };
+      /** @description Invalid input or stale consent/offering; reload before retrying */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Invalid input or stale consent/offering; reload before retrying */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  subscribeAvailability: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AvailabilitySubscribe"];
+      };
+    };
+    responses: {
+      /** @description Current consent result without recipient address or token disclosure */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilitySubscription"];
+        };
+      };
+      /** @description Invalid input or stale consent/offering; reload before retrying */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Invalid input or stale consent/offering; reload before retrying */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  changeAvailabilitySubscription: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AvailabilityChange"];
+      };
+    };
+    responses: {
+      /** @description Current consent result without recipient address or token disclosure */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilitySubscription"];
+        };
+      };
+      /** @description Invalid input or stale consent/offering; reload before retrying */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Invalid input or stale consent/offering; reload before retrying */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  inspectAvailabilityLink: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AvailabilityLink"];
+      };
+    };
+    responses: {
+      /** @description Current consent result without recipient address or token disclosure */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityLinkView"];
+        };
+      };
+      /** @description Invalid input or stale consent/offering; reload before retrying */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Invalid input or stale consent/offering; reload before retrying */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  confirmAvailabilityUnsubscribe: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AvailabilityLink"];
+      };
+    };
+    responses: {
+      /** @description Current consent result without recipient address or token disclosure */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityLinkView"];
+        };
+      };
+      /** @description Invalid input or stale consent/offering; reload before retrying */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Invalid input or stale consent/offering; reload before retrying */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
         };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */

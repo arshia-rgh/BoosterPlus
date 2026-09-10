@@ -255,6 +255,93 @@ var (
 			},
 		},
 	}
+	// AvailabilityDeliveriesColumns holds the columns for the "availability_deliveries" table.
+	AvailabilityDeliveriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "subscription_id", Type: field.TypeString, Size: 36},
+		{Name: "target_id", Type: field.TypeString, Size: 36},
+		{Name: "subscription_version", Type: field.TypeInt},
+		{Name: "cycle", Type: field.TypeInt},
+		{Name: "email_fingerprint", Type: field.TypeString, Size: 64},
+		{Name: "state", Type: field.TypeString, Size: 16},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "sent_at", Type: field.TypeTime, Nullable: true},
+	}
+	// AvailabilityDeliveriesTable holds the schema information for the "availability_deliveries" table.
+	AvailabilityDeliveriesTable = &schema.Table{
+		Name:       "availability_deliveries",
+		Columns:    AvailabilityDeliveriesColumns,
+		PrimaryKey: []*schema.Column{AvailabilityDeliveriesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "availability_delivery",
+				Unique:  true,
+				Columns: []*schema.Column{AvailabilityDeliveriesColumns[1], AvailabilityDeliveriesColumns[4]},
+			},
+		},
+	}
+	// AvailabilitySubscriptionsColumns holds the columns for the "availability_subscriptions" table.
+	AvailabilitySubscriptionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "target_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "state", Type: field.TypeString, Size: 16},
+		{Name: "email_fingerprint", Type: field.TypeString, Size: 64},
+		{Name: "last_cycle", Type: field.TypeInt},
+		{Name: "consent_version", Type: field.TypeString, Size: 32},
+		{Name: "suppression_reason", Type: field.TypeString, Size: 32},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// AvailabilitySubscriptionsTable holds the schema information for the "availability_subscriptions" table.
+	AvailabilitySubscriptionsTable = &schema.Table{
+		Name:       "availability_subscriptions",
+		Columns:    AvailabilitySubscriptionsColumns,
+		PrimaryKey: []*schema.Column{AvailabilitySubscriptionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "availability_subscription",
+				Unique:  true,
+				Columns: []*schema.Column{AvailabilitySubscriptionsColumns[1], AvailabilitySubscriptionsColumns[2]},
+			},
+			{
+				Name:    "availability_fanout",
+				Unique:  false,
+				Columns: []*schema.Column{AvailabilitySubscriptionsColumns[2], AvailabilitySubscriptionsColumns[4], AvailabilitySubscriptionsColumns[6], AvailabilitySubscriptionsColumns[0]},
+			},
+			{
+				Name:    "availability_owner",
+				Unique:  false,
+				Columns: []*schema.Column{AvailabilitySubscriptionsColumns[1], AvailabilitySubscriptionsColumns[0]},
+			},
+		},
+	}
+	// AvailabilityTargetsColumns holds the columns for the "availability_targets" table.
+	AvailabilityTargetsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "game_id", Type: field.TypeString, Size: 36},
+		{Name: "slug", Type: field.TypeString, Size: 80},
+		{Name: "package_key", Type: field.TypeString, Size: 48},
+		{Name: "variant_key", Type: field.TypeString, Size: 48},
+		{Name: "available", Type: field.TypeBool},
+		{Name: "cycle", Type: field.TypeInt},
+		{Name: "checked_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// AvailabilityTargetsTable holds the schema information for the "availability_targets" table.
+	AvailabilityTargetsTable = &schema.Table{
+		Name:       "availability_targets",
+		Columns:    AvailabilityTargetsColumns,
+		PrimaryKey: []*schema.Column{AvailabilityTargetsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "availability_target",
+				Unique:  true,
+				Columns: []*schema.Column{AvailabilityTargetsColumns[1], AvailabilityTargetsColumns[3], AvailabilityTargetsColumns[4]},
+			},
+		},
+	}
 	// AvailabilityWindowsColumns holds the columns for the "availability_windows" table.
 	AvailabilityWindowsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -1074,6 +1161,9 @@ var (
 		AuthRatesTable,
 		AuthRecoveriesTable,
 		AuthSessionsTable,
+		AvailabilityDeliveriesTable,
+		AvailabilitySubscriptionsTable,
+		AvailabilityTargetsTable,
 		AvailabilityWindowsTable,
 		BookingsTable,
 		BookingEventsTable,

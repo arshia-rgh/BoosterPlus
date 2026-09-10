@@ -111,6 +111,9 @@ export default function BackgroundJobs() {
             "identity.email",
             "activity.email",
             "media.scan",
+            "availability.changed",
+            "availability.fanout",
+            "availability.email",
           ].map((value) => [value, kindLabel(value)] as const),
         ]}
       />

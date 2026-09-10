@@ -61,6 +61,14 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "availability_invalid",
+    "Check the offering and explicitly accept availability emails.",
+  ],
+  [
+    "availability_conflict",
+    "The offering or your subscription changed. Open Package alerts, refresh, and review the current details.",
+  ],
+  [
     "operations_invalid",
     "Check the task filters and provide a reason for retry.",
   ],

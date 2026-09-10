@@ -13,6 +13,7 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/availability"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/config"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/fulfillment"
@@ -67,8 +68,15 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 	if executionErr != nil {
 		return executionErr
 	}
+	alerts, alertErr := availability.New(client, auth, cfg.Identity.PublicOrigin, nil)
+	if alertErr != nil {
+		return alertErr
+	}
 	maintenance, stopMaintenance := context.WithCancel(ctx)
 	defer stopMaintenance()
+	alertsDone := make(chan struct{})
+	go func() { defer close(alertsDone); alerts.RunReconciliation(maintenance, logger) }()
+	defer func() { stopMaintenance(); <-alertsDone }()
 	remindersDone := make(chan struct{})
 	go func() { defer close(remindersDone); execution.RunReminders(maintenance, logger) }()
 	defer func() { stopMaintenance(); <-remindersDone }()
@@ -93,5 +101,8 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 	}
 	handlers["activity.email"] = notices.EmailHandler(sender)
 	handlers["media.scan"] = files.ScanHandler()
+	handlers["availability.changed"] = alerts.ChangedHandler()
+	handlers["availability.fanout"] = alerts.FanoutHandler()
+	handlers["availability.email"] = alerts.EmailHandler(sender)
 	return jobs.Run(ctx, jobs.New(db), handlers, logger)
 }

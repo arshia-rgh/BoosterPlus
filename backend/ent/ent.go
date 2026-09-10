@@ -21,6 +21,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitydelivery"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitysubscription"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitytarget"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/bookingevent"
@@ -106,40 +109,43 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			accountsubmission.Table:   accountsubmission.ValidColumn,
-			authaudit.Table:           authaudit.ValidColumn,
-			authchallenge.Table:       authchallenge.ValidColumn,
-			authflow.Table:            authflow.ValidColumn,
-			authidentity.Table:        authidentity.ValidColumn,
-			authmessage.Table:         authmessage.ValidColumn,
-			authrate.Table:            authrate.ValidColumn,
-			authrecovery.Table:        authrecovery.ValidColumn,
-			authsession.Table:         authsession.ValidColumn,
-			availabilitywindow.Table:  availabilitywindow.ValidColumn,
-			booking.Table:             booking.ValidColumn,
-			bookingevent.Table:        bookingevent.ValidColumn,
-			catalogrelease.Table:      catalogrelease.ValidColumn,
-			conversation.Table:        conversation.ValidColumn,
-			conversationmessage.Table: conversationmessage.ValidColumn,
-			conversationread.Table:    conversationread.ValidColumn,
-			coupon.Table:              coupon.ValidColumn,
-			couponclaim.Table:         couponclaim.ValidColumn,
-			couponrevision.Table:      couponrevision.ValidColumn,
-			favorite.Table:            favorite.ValidColumn,
-			fulfillment.Table:         fulfillment.ValidColumn,
-			game.Table:                game.ValidColumn,
-			mediafile.Table:           mediafile.ValidColumn,
-			notification.Table:        notification.ValidColumn,
-			order.Table:               order.ValidColumn,
-			ordercontract.Table:       ordercontract.ValidColumn,
-			orderevent.Table:          orderevent.ValidColumn,
-			orderquote.Table:          orderquote.ValidColumn,
-			review.Table:              review.ValidColumn,
-			reviewrevision.Table:      reviewrevision.ValidColumn,
-			secretbundle.Table:        secretbundle.ValidColumn,
-			staffprofile.Table:        staffprofile.ValidColumn,
-			submissionevent.Table:     submissionevent.ValidColumn,
-			user.Table:                user.ValidColumn,
+			accountsubmission.Table:        accountsubmission.ValidColumn,
+			authaudit.Table:                authaudit.ValidColumn,
+			authchallenge.Table:            authchallenge.ValidColumn,
+			authflow.Table:                 authflow.ValidColumn,
+			authidentity.Table:             authidentity.ValidColumn,
+			authmessage.Table:              authmessage.ValidColumn,
+			authrate.Table:                 authrate.ValidColumn,
+			authrecovery.Table:             authrecovery.ValidColumn,
+			authsession.Table:              authsession.ValidColumn,
+			availabilitydelivery.Table:     availabilitydelivery.ValidColumn,
+			availabilitysubscription.Table: availabilitysubscription.ValidColumn,
+			availabilitytarget.Table:       availabilitytarget.ValidColumn,
+			availabilitywindow.Table:       availabilitywindow.ValidColumn,
+			booking.Table:                  booking.ValidColumn,
+			bookingevent.Table:             bookingevent.ValidColumn,
+			catalogrelease.Table:           catalogrelease.ValidColumn,
+			conversation.Table:             conversation.ValidColumn,
+			conversationmessage.Table:      conversationmessage.ValidColumn,
+			conversationread.Table:         conversationread.ValidColumn,
+			coupon.Table:                   coupon.ValidColumn,
+			couponclaim.Table:              couponclaim.ValidColumn,
+			couponrevision.Table:           couponrevision.ValidColumn,
+			favorite.Table:                 favorite.ValidColumn,
+			fulfillment.Table:              fulfillment.ValidColumn,
+			game.Table:                     game.ValidColumn,
+			mediafile.Table:                mediafile.ValidColumn,
+			notification.Table:             notification.ValidColumn,
+			order.Table:                    order.ValidColumn,
+			ordercontract.Table:            ordercontract.ValidColumn,
+			orderevent.Table:               orderevent.ValidColumn,
+			orderquote.Table:               orderquote.ValidColumn,
+			review.Table:                   review.ValidColumn,
+			reviewrevision.Table:           reviewrevision.ValidColumn,
+			secretbundle.Table:             secretbundle.ValidColumn,
+			staffprofile.Table:             staffprofile.ValidColumn,
+			submissionevent.Table:          submissionevent.ValidColumn,
+			user.Table:                     user.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

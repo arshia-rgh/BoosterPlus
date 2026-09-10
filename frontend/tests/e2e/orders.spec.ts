@@ -1,3 +1,4 @@
+import { availabilityJourney } from "./availability-journey";
 import { randomUUID } from "node:crypto";
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -301,6 +302,15 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       })
       .click();
     await expect(buyer.getByText(/No saved offers yet/)).toBeVisible();
+    await availabilityJourney(
+      page,
+      buyer,
+      browser,
+      request,
+      published,
+      fixture(info.project.name, "orders"),
+      info.project.name,
+    );
     const strangerContext = await browser.newContext({
       baseURL: "http://127.0.0.1:4173",
     });

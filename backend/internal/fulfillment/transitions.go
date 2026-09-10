@@ -8,6 +8,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/availabilityevents"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
@@ -139,6 +140,9 @@ func (s *Store) Transition(ctx context.Context, p *identity.Principal, id, audie
 				return e
 			}
 			if _, e = tx.OrderContract.UpdateOneID(row.CurrentContract).SetCapacityHeld(false).Save(ctx); e != nil {
+				return e
+			}
+			if e = availabilityevents.Changed(ctx, tx, row.GameID); e != nil {
 				return e
 			}
 		case "return_completion":

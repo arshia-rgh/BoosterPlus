@@ -14,6 +14,7 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/availability"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/config"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/conversations"
@@ -63,7 +64,11 @@ func Server(ctx context.Context, cfg config.Config, logger *slog.Logger) (result
 	if workErr != nil {
 		return workErr
 	}
-	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.New(client, auth, nil).Register, notices.Register, files.Register, work.Register, submissions.New(client, auth, nil).Register, reviews.New(client, auth, nil).Register, operations.New(client, auth, nil).Register))
+	alerts, alertErr := availability.New(client, auth, cfg.Identity.PublicOrigin, nil)
+	if alertErr != nil {
+		return alertErr
+	}
+	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.New(client, auth, nil).Register, notices.Register, files.Register, work.Register, submissions.New(client, auth, nil).Register, reviews.New(client, auth, nil).Register, operations.New(client, auth, nil).Register, alerts.Register))
 }
 
 // Serve applies transport timeouts and drains in-flight work on cancellation.

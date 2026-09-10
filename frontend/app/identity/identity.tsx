@@ -837,6 +837,7 @@ export default function Identity({
                 <Link to="/sell">Sell an account</Link>
                 <Link to="/reviews">My reviews</Link>
                 <Link to="/favorites">Favorites</Link>
+                <Link to="/availability">Package alerts</Link>
                 <Link to="/support">Support</Link>
                 <Link to="/notifications">Activity</Link>
                 {session.capabilities.includes("admin") && (

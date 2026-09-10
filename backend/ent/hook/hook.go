@@ -117,6 +117,42 @@ func (f AuthSessionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthSessionMutation", m)
 }
 
+// The AvailabilityDeliveryFunc type is an adapter to allow the use of ordinary
+// function as AvailabilityDelivery mutator.
+type AvailabilityDeliveryFunc func(context.Context, *ent.AvailabilityDeliveryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AvailabilityDeliveryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AvailabilityDeliveryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AvailabilityDeliveryMutation", m)
+}
+
+// The AvailabilitySubscriptionFunc type is an adapter to allow the use of ordinary
+// function as AvailabilitySubscription mutator.
+type AvailabilitySubscriptionFunc func(context.Context, *ent.AvailabilitySubscriptionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AvailabilitySubscriptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AvailabilitySubscriptionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AvailabilitySubscriptionMutation", m)
+}
+
+// The AvailabilityTargetFunc type is an adapter to allow the use of ordinary
+// function as AvailabilityTarget mutator.
+type AvailabilityTargetFunc func(context.Context, *ent.AvailabilityTargetMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AvailabilityTargetFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AvailabilityTargetMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AvailabilityTargetMutation", m)
+}
+
 // The AvailabilityWindowFunc type is an adapter to allow the use of ordinary
 // function as AvailabilityWindow mutator.
 type AvailabilityWindowFunc func(context.Context, *ent.AvailabilityWindowMutation) (ent.Value, error)

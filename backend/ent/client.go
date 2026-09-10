@@ -23,6 +23,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitydelivery"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitysubscription"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitytarget"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/bookingevent"
@@ -75,6 +78,12 @@ type Client struct {
 	AuthRecovery *AuthRecoveryClient
 	// AuthSession is the client for interacting with the AuthSession builders.
 	AuthSession *AuthSessionClient
+	// AvailabilityDelivery is the client for interacting with the AvailabilityDelivery builders.
+	AvailabilityDelivery *AvailabilityDeliveryClient
+	// AvailabilitySubscription is the client for interacting with the AvailabilitySubscription builders.
+	AvailabilitySubscription *AvailabilitySubscriptionClient
+	// AvailabilityTarget is the client for interacting with the AvailabilityTarget builders.
+	AvailabilityTarget *AvailabilityTargetClient
 	// AvailabilityWindow is the client for interacting with the AvailabilityWindow builders.
 	AvailabilityWindow *AvailabilityWindowClient
 	// Booking is the client for interacting with the Booking builders.
@@ -145,6 +154,9 @@ func (c *Client) init() {
 	c.AuthRate = NewAuthRateClient(c.config)
 	c.AuthRecovery = NewAuthRecoveryClient(c.config)
 	c.AuthSession = NewAuthSessionClient(c.config)
+	c.AvailabilityDelivery = NewAvailabilityDeliveryClient(c.config)
+	c.AvailabilitySubscription = NewAvailabilitySubscriptionClient(c.config)
+	c.AvailabilityTarget = NewAvailabilityTargetClient(c.config)
 	c.AvailabilityWindow = NewAvailabilityWindowClient(c.config)
 	c.Booking = NewBookingClient(c.config)
 	c.BookingEvent = NewBookingEventClient(c.config)
@@ -260,42 +272,45 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                 ctx,
-		config:              cfg,
-		AccountSubmission:   NewAccountSubmissionClient(cfg),
-		AuthAudit:           NewAuthAuditClient(cfg),
-		AuthChallenge:       NewAuthChallengeClient(cfg),
-		AuthFlow:            NewAuthFlowClient(cfg),
-		AuthIdentity:        NewAuthIdentityClient(cfg),
-		AuthMessage:         NewAuthMessageClient(cfg),
-		AuthRate:            NewAuthRateClient(cfg),
-		AuthRecovery:        NewAuthRecoveryClient(cfg),
-		AuthSession:         NewAuthSessionClient(cfg),
-		AvailabilityWindow:  NewAvailabilityWindowClient(cfg),
-		Booking:             NewBookingClient(cfg),
-		BookingEvent:        NewBookingEventClient(cfg),
-		CatalogRelease:      NewCatalogReleaseClient(cfg),
-		Conversation:        NewConversationClient(cfg),
-		ConversationMessage: NewConversationMessageClient(cfg),
-		ConversationRead:    NewConversationReadClient(cfg),
-		Coupon:              NewCouponClient(cfg),
-		CouponClaim:         NewCouponClaimClient(cfg),
-		CouponRevision:      NewCouponRevisionClient(cfg),
-		Favorite:            NewFavoriteClient(cfg),
-		Fulfillment:         NewFulfillmentClient(cfg),
-		Game:                NewGameClient(cfg),
-		MediaFile:           NewMediaFileClient(cfg),
-		Notification:        NewNotificationClient(cfg),
-		Order:               NewOrderClient(cfg),
-		OrderContract:       NewOrderContractClient(cfg),
-		OrderEvent:          NewOrderEventClient(cfg),
-		OrderQuote:          NewOrderQuoteClient(cfg),
-		Review:              NewReviewClient(cfg),
-		ReviewRevision:      NewReviewRevisionClient(cfg),
-		SecretBundle:        NewSecretBundleClient(cfg),
-		StaffProfile:        NewStaffProfileClient(cfg),
-		SubmissionEvent:     NewSubmissionEventClient(cfg),
-		User:                NewUserClient(cfg),
+		ctx:                      ctx,
+		config:                   cfg,
+		AccountSubmission:        NewAccountSubmissionClient(cfg),
+		AuthAudit:                NewAuthAuditClient(cfg),
+		AuthChallenge:            NewAuthChallengeClient(cfg),
+		AuthFlow:                 NewAuthFlowClient(cfg),
+		AuthIdentity:             NewAuthIdentityClient(cfg),
+		AuthMessage:              NewAuthMessageClient(cfg),
+		AuthRate:                 NewAuthRateClient(cfg),
+		AuthRecovery:             NewAuthRecoveryClient(cfg),
+		AuthSession:              NewAuthSessionClient(cfg),
+		AvailabilityDelivery:     NewAvailabilityDeliveryClient(cfg),
+		AvailabilitySubscription: NewAvailabilitySubscriptionClient(cfg),
+		AvailabilityTarget:       NewAvailabilityTargetClient(cfg),
+		AvailabilityWindow:       NewAvailabilityWindowClient(cfg),
+		Booking:                  NewBookingClient(cfg),
+		BookingEvent:             NewBookingEventClient(cfg),
+		CatalogRelease:           NewCatalogReleaseClient(cfg),
+		Conversation:             NewConversationClient(cfg),
+		ConversationMessage:      NewConversationMessageClient(cfg),
+		ConversationRead:         NewConversationReadClient(cfg),
+		Coupon:                   NewCouponClient(cfg),
+		CouponClaim:              NewCouponClaimClient(cfg),
+		CouponRevision:           NewCouponRevisionClient(cfg),
+		Favorite:                 NewFavoriteClient(cfg),
+		Fulfillment:              NewFulfillmentClient(cfg),
+		Game:                     NewGameClient(cfg),
+		MediaFile:                NewMediaFileClient(cfg),
+		Notification:             NewNotificationClient(cfg),
+		Order:                    NewOrderClient(cfg),
+		OrderContract:            NewOrderContractClient(cfg),
+		OrderEvent:               NewOrderEventClient(cfg),
+		OrderQuote:               NewOrderQuoteClient(cfg),
+		Review:                   NewReviewClient(cfg),
+		ReviewRevision:           NewReviewRevisionClient(cfg),
+		SecretBundle:             NewSecretBundleClient(cfg),
+		StaffProfile:             NewStaffProfileClient(cfg),
+		SubmissionEvent:          NewSubmissionEventClient(cfg),
+		User:                     NewUserClient(cfg),
 	}, nil
 }
 
@@ -313,42 +328,45 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                 ctx,
-		config:              cfg,
-		AccountSubmission:   NewAccountSubmissionClient(cfg),
-		AuthAudit:           NewAuthAuditClient(cfg),
-		AuthChallenge:       NewAuthChallengeClient(cfg),
-		AuthFlow:            NewAuthFlowClient(cfg),
-		AuthIdentity:        NewAuthIdentityClient(cfg),
-		AuthMessage:         NewAuthMessageClient(cfg),
-		AuthRate:            NewAuthRateClient(cfg),
-		AuthRecovery:        NewAuthRecoveryClient(cfg),
-		AuthSession:         NewAuthSessionClient(cfg),
-		AvailabilityWindow:  NewAvailabilityWindowClient(cfg),
-		Booking:             NewBookingClient(cfg),
-		BookingEvent:        NewBookingEventClient(cfg),
-		CatalogRelease:      NewCatalogReleaseClient(cfg),
-		Conversation:        NewConversationClient(cfg),
-		ConversationMessage: NewConversationMessageClient(cfg),
-		ConversationRead:    NewConversationReadClient(cfg),
-		Coupon:              NewCouponClient(cfg),
-		CouponClaim:         NewCouponClaimClient(cfg),
-		CouponRevision:      NewCouponRevisionClient(cfg),
-		Favorite:            NewFavoriteClient(cfg),
-		Fulfillment:         NewFulfillmentClient(cfg),
-		Game:                NewGameClient(cfg),
-		MediaFile:           NewMediaFileClient(cfg),
-		Notification:        NewNotificationClient(cfg),
-		Order:               NewOrderClient(cfg),
-		OrderContract:       NewOrderContractClient(cfg),
-		OrderEvent:          NewOrderEventClient(cfg),
-		OrderQuote:          NewOrderQuoteClient(cfg),
-		Review:              NewReviewClient(cfg),
-		ReviewRevision:      NewReviewRevisionClient(cfg),
-		SecretBundle:        NewSecretBundleClient(cfg),
-		StaffProfile:        NewStaffProfileClient(cfg),
-		SubmissionEvent:     NewSubmissionEventClient(cfg),
-		User:                NewUserClient(cfg),
+		ctx:                      ctx,
+		config:                   cfg,
+		AccountSubmission:        NewAccountSubmissionClient(cfg),
+		AuthAudit:                NewAuthAuditClient(cfg),
+		AuthChallenge:            NewAuthChallengeClient(cfg),
+		AuthFlow:                 NewAuthFlowClient(cfg),
+		AuthIdentity:             NewAuthIdentityClient(cfg),
+		AuthMessage:              NewAuthMessageClient(cfg),
+		AuthRate:                 NewAuthRateClient(cfg),
+		AuthRecovery:             NewAuthRecoveryClient(cfg),
+		AuthSession:              NewAuthSessionClient(cfg),
+		AvailabilityDelivery:     NewAvailabilityDeliveryClient(cfg),
+		AvailabilitySubscription: NewAvailabilitySubscriptionClient(cfg),
+		AvailabilityTarget:       NewAvailabilityTargetClient(cfg),
+		AvailabilityWindow:       NewAvailabilityWindowClient(cfg),
+		Booking:                  NewBookingClient(cfg),
+		BookingEvent:             NewBookingEventClient(cfg),
+		CatalogRelease:           NewCatalogReleaseClient(cfg),
+		Conversation:             NewConversationClient(cfg),
+		ConversationMessage:      NewConversationMessageClient(cfg),
+		ConversationRead:         NewConversationReadClient(cfg),
+		Coupon:                   NewCouponClient(cfg),
+		CouponClaim:              NewCouponClaimClient(cfg),
+		CouponRevision:           NewCouponRevisionClient(cfg),
+		Favorite:                 NewFavoriteClient(cfg),
+		Fulfillment:              NewFulfillmentClient(cfg),
+		Game:                     NewGameClient(cfg),
+		MediaFile:                NewMediaFileClient(cfg),
+		Notification:             NewNotificationClient(cfg),
+		Order:                    NewOrderClient(cfg),
+		OrderContract:            NewOrderContractClient(cfg),
+		OrderEvent:               NewOrderEventClient(cfg),
+		OrderQuote:               NewOrderQuoteClient(cfg),
+		Review:                   NewReviewClient(cfg),
+		ReviewRevision:           NewReviewRevisionClient(cfg),
+		SecretBundle:             NewSecretBundleClient(cfg),
+		StaffProfile:             NewStaffProfileClient(cfg),
+		SubmissionEvent:          NewSubmissionEventClient(cfg),
+		User:                     NewUserClient(cfg),
 	}, nil
 }
 
@@ -379,12 +397,14 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountSubmission, c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity,
-		c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession, c.AvailabilityWindow,
-		c.Booking, c.BookingEvent, c.CatalogRelease, c.Conversation,
-		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
-		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.MediaFile,
-		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote, c.Review,
-		c.ReviewRevision, c.SecretBundle, c.StaffProfile, c.SubmissionEvent, c.User,
+		c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession,
+		c.AvailabilityDelivery, c.AvailabilitySubscription, c.AvailabilityTarget,
+		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CatalogRelease,
+		c.Conversation, c.ConversationMessage, c.ConversationRead, c.Coupon,
+		c.CouponClaim, c.CouponRevision, c.Favorite, c.Fulfillment, c.Game,
+		c.MediaFile, c.Notification, c.Order, c.OrderContract, c.OrderEvent,
+		c.OrderQuote, c.Review, c.ReviewRevision, c.SecretBundle, c.StaffProfile,
+		c.SubmissionEvent, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -395,12 +415,14 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountSubmission, c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity,
-		c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession, c.AvailabilityWindow,
-		c.Booking, c.BookingEvent, c.CatalogRelease, c.Conversation,
-		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
-		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.MediaFile,
-		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote, c.Review,
-		c.ReviewRevision, c.SecretBundle, c.StaffProfile, c.SubmissionEvent, c.User,
+		c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession,
+		c.AvailabilityDelivery, c.AvailabilitySubscription, c.AvailabilityTarget,
+		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CatalogRelease,
+		c.Conversation, c.ConversationMessage, c.ConversationRead, c.Coupon,
+		c.CouponClaim, c.CouponRevision, c.Favorite, c.Fulfillment, c.Game,
+		c.MediaFile, c.Notification, c.Order, c.OrderContract, c.OrderEvent,
+		c.OrderQuote, c.Review, c.ReviewRevision, c.SecretBundle, c.StaffProfile,
+		c.SubmissionEvent, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -427,6 +449,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AuthRecovery.mutate(ctx, m)
 	case *AuthSessionMutation:
 		return c.AuthSession.mutate(ctx, m)
+	case *AvailabilityDeliveryMutation:
+		return c.AvailabilityDelivery.mutate(ctx, m)
+	case *AvailabilitySubscriptionMutation:
+		return c.AvailabilitySubscription.mutate(ctx, m)
+	case *AvailabilityTargetMutation:
+		return c.AvailabilityTarget.mutate(ctx, m)
 	case *AvailabilityWindowMutation:
 		return c.AvailabilityWindow.mutate(ctx, m)
 	case *BookingMutation:
@@ -1676,6 +1704,405 @@ func (c *AuthSessionClient) mutate(ctx context.Context, m *AuthSessionMutation) 
 		return (&AuthSessionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AuthSession mutation op: %q", m.Op())
+	}
+}
+
+// AvailabilityDeliveryClient is a client for the AvailabilityDelivery schema.
+type AvailabilityDeliveryClient struct {
+	config
+}
+
+// NewAvailabilityDeliveryClient returns a client for the AvailabilityDelivery from the given config.
+func NewAvailabilityDeliveryClient(c config) *AvailabilityDeliveryClient {
+	return &AvailabilityDeliveryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `availabilitydelivery.Hooks(f(g(h())))`.
+func (c *AvailabilityDeliveryClient) Use(hooks ...Hook) {
+	c.hooks.AvailabilityDelivery = append(c.hooks.AvailabilityDelivery, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `availabilitydelivery.Intercept(f(g(h())))`.
+func (c *AvailabilityDeliveryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AvailabilityDelivery = append(c.inters.AvailabilityDelivery, interceptors...)
+}
+
+// Create returns a builder for creating a AvailabilityDelivery entity.
+func (c *AvailabilityDeliveryClient) Create() *AvailabilityDeliveryCreate {
+	mutation := newAvailabilityDeliveryMutation(c.config, OpCreate)
+	return &AvailabilityDeliveryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AvailabilityDelivery entities.
+func (c *AvailabilityDeliveryClient) CreateBulk(builders ...*AvailabilityDeliveryCreate) *AvailabilityDeliveryCreateBulk {
+	return &AvailabilityDeliveryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AvailabilityDeliveryClient) MapCreateBulk(slice any, setFunc func(*AvailabilityDeliveryCreate, int)) *AvailabilityDeliveryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AvailabilityDeliveryCreateBulk{err: fmt.Errorf("calling to AvailabilityDeliveryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AvailabilityDeliveryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AvailabilityDeliveryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AvailabilityDelivery.
+func (c *AvailabilityDeliveryClient) Update() *AvailabilityDeliveryUpdate {
+	mutation := newAvailabilityDeliveryMutation(c.config, OpUpdate)
+	return &AvailabilityDeliveryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AvailabilityDeliveryClient) UpdateOne(_m *AvailabilityDelivery) *AvailabilityDeliveryUpdateOne {
+	mutation := newAvailabilityDeliveryMutation(c.config, OpUpdateOne, withAvailabilityDelivery(_m))
+	return &AvailabilityDeliveryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AvailabilityDeliveryClient) UpdateOneID(id string) *AvailabilityDeliveryUpdateOne {
+	mutation := newAvailabilityDeliveryMutation(c.config, OpUpdateOne, withAvailabilityDeliveryID(id))
+	return &AvailabilityDeliveryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AvailabilityDelivery.
+func (c *AvailabilityDeliveryClient) Delete() *AvailabilityDeliveryDelete {
+	mutation := newAvailabilityDeliveryMutation(c.config, OpDelete)
+	return &AvailabilityDeliveryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AvailabilityDeliveryClient) DeleteOne(_m *AvailabilityDelivery) *AvailabilityDeliveryDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AvailabilityDeliveryClient) DeleteOneID(id string) *AvailabilityDeliveryDeleteOne {
+	builder := c.Delete().Where(availabilitydelivery.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AvailabilityDeliveryDeleteOne{builder}
+}
+
+// Query returns a query builder for AvailabilityDelivery.
+func (c *AvailabilityDeliveryClient) Query() *AvailabilityDeliveryQuery {
+	return &AvailabilityDeliveryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAvailabilityDelivery},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AvailabilityDelivery entity by its id.
+func (c *AvailabilityDeliveryClient) Get(ctx context.Context, id string) (*AvailabilityDelivery, error) {
+	return c.Query().Where(availabilitydelivery.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AvailabilityDeliveryClient) GetX(ctx context.Context, id string) *AvailabilityDelivery {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AvailabilityDeliveryClient) Hooks() []Hook {
+	return c.hooks.AvailabilityDelivery
+}
+
+// Interceptors returns the client interceptors.
+func (c *AvailabilityDeliveryClient) Interceptors() []Interceptor {
+	return c.inters.AvailabilityDelivery
+}
+
+func (c *AvailabilityDeliveryClient) mutate(ctx context.Context, m *AvailabilityDeliveryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AvailabilityDeliveryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AvailabilityDeliveryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AvailabilityDeliveryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AvailabilityDeliveryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AvailabilityDelivery mutation op: %q", m.Op())
+	}
+}
+
+// AvailabilitySubscriptionClient is a client for the AvailabilitySubscription schema.
+type AvailabilitySubscriptionClient struct {
+	config
+}
+
+// NewAvailabilitySubscriptionClient returns a client for the AvailabilitySubscription from the given config.
+func NewAvailabilitySubscriptionClient(c config) *AvailabilitySubscriptionClient {
+	return &AvailabilitySubscriptionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `availabilitysubscription.Hooks(f(g(h())))`.
+func (c *AvailabilitySubscriptionClient) Use(hooks ...Hook) {
+	c.hooks.AvailabilitySubscription = append(c.hooks.AvailabilitySubscription, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `availabilitysubscription.Intercept(f(g(h())))`.
+func (c *AvailabilitySubscriptionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AvailabilitySubscription = append(c.inters.AvailabilitySubscription, interceptors...)
+}
+
+// Create returns a builder for creating a AvailabilitySubscription entity.
+func (c *AvailabilitySubscriptionClient) Create() *AvailabilitySubscriptionCreate {
+	mutation := newAvailabilitySubscriptionMutation(c.config, OpCreate)
+	return &AvailabilitySubscriptionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AvailabilitySubscription entities.
+func (c *AvailabilitySubscriptionClient) CreateBulk(builders ...*AvailabilitySubscriptionCreate) *AvailabilitySubscriptionCreateBulk {
+	return &AvailabilitySubscriptionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AvailabilitySubscriptionClient) MapCreateBulk(slice any, setFunc func(*AvailabilitySubscriptionCreate, int)) *AvailabilitySubscriptionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AvailabilitySubscriptionCreateBulk{err: fmt.Errorf("calling to AvailabilitySubscriptionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AvailabilitySubscriptionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AvailabilitySubscriptionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AvailabilitySubscription.
+func (c *AvailabilitySubscriptionClient) Update() *AvailabilitySubscriptionUpdate {
+	mutation := newAvailabilitySubscriptionMutation(c.config, OpUpdate)
+	return &AvailabilitySubscriptionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AvailabilitySubscriptionClient) UpdateOne(_m *AvailabilitySubscription) *AvailabilitySubscriptionUpdateOne {
+	mutation := newAvailabilitySubscriptionMutation(c.config, OpUpdateOne, withAvailabilitySubscription(_m))
+	return &AvailabilitySubscriptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AvailabilitySubscriptionClient) UpdateOneID(id string) *AvailabilitySubscriptionUpdateOne {
+	mutation := newAvailabilitySubscriptionMutation(c.config, OpUpdateOne, withAvailabilitySubscriptionID(id))
+	return &AvailabilitySubscriptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AvailabilitySubscription.
+func (c *AvailabilitySubscriptionClient) Delete() *AvailabilitySubscriptionDelete {
+	mutation := newAvailabilitySubscriptionMutation(c.config, OpDelete)
+	return &AvailabilitySubscriptionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AvailabilitySubscriptionClient) DeleteOne(_m *AvailabilitySubscription) *AvailabilitySubscriptionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AvailabilitySubscriptionClient) DeleteOneID(id string) *AvailabilitySubscriptionDeleteOne {
+	builder := c.Delete().Where(availabilitysubscription.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AvailabilitySubscriptionDeleteOne{builder}
+}
+
+// Query returns a query builder for AvailabilitySubscription.
+func (c *AvailabilitySubscriptionClient) Query() *AvailabilitySubscriptionQuery {
+	return &AvailabilitySubscriptionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAvailabilitySubscription},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AvailabilitySubscription entity by its id.
+func (c *AvailabilitySubscriptionClient) Get(ctx context.Context, id string) (*AvailabilitySubscription, error) {
+	return c.Query().Where(availabilitysubscription.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AvailabilitySubscriptionClient) GetX(ctx context.Context, id string) *AvailabilitySubscription {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AvailabilitySubscriptionClient) Hooks() []Hook {
+	return c.hooks.AvailabilitySubscription
+}
+
+// Interceptors returns the client interceptors.
+func (c *AvailabilitySubscriptionClient) Interceptors() []Interceptor {
+	return c.inters.AvailabilitySubscription
+}
+
+func (c *AvailabilitySubscriptionClient) mutate(ctx context.Context, m *AvailabilitySubscriptionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AvailabilitySubscriptionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AvailabilitySubscriptionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AvailabilitySubscriptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AvailabilitySubscriptionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AvailabilitySubscription mutation op: %q", m.Op())
+	}
+}
+
+// AvailabilityTargetClient is a client for the AvailabilityTarget schema.
+type AvailabilityTargetClient struct {
+	config
+}
+
+// NewAvailabilityTargetClient returns a client for the AvailabilityTarget from the given config.
+func NewAvailabilityTargetClient(c config) *AvailabilityTargetClient {
+	return &AvailabilityTargetClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `availabilitytarget.Hooks(f(g(h())))`.
+func (c *AvailabilityTargetClient) Use(hooks ...Hook) {
+	c.hooks.AvailabilityTarget = append(c.hooks.AvailabilityTarget, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `availabilitytarget.Intercept(f(g(h())))`.
+func (c *AvailabilityTargetClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AvailabilityTarget = append(c.inters.AvailabilityTarget, interceptors...)
+}
+
+// Create returns a builder for creating a AvailabilityTarget entity.
+func (c *AvailabilityTargetClient) Create() *AvailabilityTargetCreate {
+	mutation := newAvailabilityTargetMutation(c.config, OpCreate)
+	return &AvailabilityTargetCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AvailabilityTarget entities.
+func (c *AvailabilityTargetClient) CreateBulk(builders ...*AvailabilityTargetCreate) *AvailabilityTargetCreateBulk {
+	return &AvailabilityTargetCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AvailabilityTargetClient) MapCreateBulk(slice any, setFunc func(*AvailabilityTargetCreate, int)) *AvailabilityTargetCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AvailabilityTargetCreateBulk{err: fmt.Errorf("calling to AvailabilityTargetClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AvailabilityTargetCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AvailabilityTargetCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AvailabilityTarget.
+func (c *AvailabilityTargetClient) Update() *AvailabilityTargetUpdate {
+	mutation := newAvailabilityTargetMutation(c.config, OpUpdate)
+	return &AvailabilityTargetUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AvailabilityTargetClient) UpdateOne(_m *AvailabilityTarget) *AvailabilityTargetUpdateOne {
+	mutation := newAvailabilityTargetMutation(c.config, OpUpdateOne, withAvailabilityTarget(_m))
+	return &AvailabilityTargetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AvailabilityTargetClient) UpdateOneID(id string) *AvailabilityTargetUpdateOne {
+	mutation := newAvailabilityTargetMutation(c.config, OpUpdateOne, withAvailabilityTargetID(id))
+	return &AvailabilityTargetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AvailabilityTarget.
+func (c *AvailabilityTargetClient) Delete() *AvailabilityTargetDelete {
+	mutation := newAvailabilityTargetMutation(c.config, OpDelete)
+	return &AvailabilityTargetDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AvailabilityTargetClient) DeleteOne(_m *AvailabilityTarget) *AvailabilityTargetDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AvailabilityTargetClient) DeleteOneID(id string) *AvailabilityTargetDeleteOne {
+	builder := c.Delete().Where(availabilitytarget.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AvailabilityTargetDeleteOne{builder}
+}
+
+// Query returns a query builder for AvailabilityTarget.
+func (c *AvailabilityTargetClient) Query() *AvailabilityTargetQuery {
+	return &AvailabilityTargetQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAvailabilityTarget},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AvailabilityTarget entity by its id.
+func (c *AvailabilityTargetClient) Get(ctx context.Context, id string) (*AvailabilityTarget, error) {
+	return c.Query().Where(availabilitytarget.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AvailabilityTargetClient) GetX(ctx context.Context, id string) *AvailabilityTarget {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AvailabilityTargetClient) Hooks() []Hook {
+	return c.hooks.AvailabilityTarget
+}
+
+// Interceptors returns the client interceptors.
+func (c *AvailabilityTargetClient) Interceptors() []Interceptor {
+	return c.inters.AvailabilityTarget
+}
+
+func (c *AvailabilityTargetClient) mutate(ctx context.Context, m *AvailabilityTargetMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AvailabilityTargetCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AvailabilityTargetUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AvailabilityTargetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AvailabilityTargetDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AvailabilityTarget mutation op: %q", m.Op())
 	}
 }
 
@@ -5008,7 +5435,8 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 type (
 	hooks struct {
 		AccountSubmission, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity,
-		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityWindow, Booking,
+		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
+		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
 		BookingEvent, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
 		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
@@ -5017,7 +5445,8 @@ type (
 	}
 	inters struct {
 		AccountSubmission, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity,
-		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityWindow, Booking,
+		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
+		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
 		BookingEvent, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
 		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,

@@ -1,5 +1,6 @@
+import { Subscribe } from "../availability/pages";
 import { useState } from "react";
-import { Link, useLoaderData, useParams } from "react-router";
+import { Link, useLoaderData, useParams, useSearchParams } from "react-router";
 import { FavoriteButton } from "../orders/favorites";
 import DynamicForm from "./dynamic-form";
 import { Select } from "./controls";
@@ -201,7 +202,13 @@ function PackageDetails({
   release: Release;
   pack: Package;
 }) {
-  const [key, setKey] = useState(pack.variants[0]?.key ?? "");
+  const [params] = useSearchParams();
+  const selected = params.get("variant");
+  const [key, setKey] = useState(
+    pack.variants.find((v) => v.key === selected)?.key ??
+      pack.variants[0]?.key ??
+      "",
+  );
   const variant = pack.variants.find((v) => v.key === key),
     service = release.configuration.services.find(
       (s) => s.key === pack.service,
@@ -227,13 +234,21 @@ function PackageDetails({
           <p>
             {variant.capacity === undefined
               ? "No configured capacity limit."
-              : `${String(variant.capacity)} configured places available.`}{" "}
+              : `Configured capacity: ${String(variant.capacity)} places. Held reservations may reduce availability.`}{" "}
             Availability is not a reservation.
           </p>
           <p>
             Fixed packages do not require an individual quote approval. Direct
             crypto checkout is being prepared.
           </p>
+          {variant.capacity !== undefined && (
+            <Subscribe
+              key={variant.key}
+              slug={release.slug}
+              pack={pack.key}
+              variant={variant.key}
+            />
+          )}
           {service && (
             <DynamicForm
               key={release.id + pack.key + variant.key}

@@ -33,6 +33,15 @@ type AuthRecovery func(*sql.Selector)
 // AuthSession is the predicate function for authsession builders.
 type AuthSession func(*sql.Selector)
 
+// AvailabilityDelivery is the predicate function for availabilitydelivery builders.
+type AvailabilityDelivery func(*sql.Selector)
+
+// AvailabilitySubscription is the predicate function for availabilitysubscription builders.
+type AvailabilitySubscription func(*sql.Selector)
+
+// AvailabilityTarget is the predicate function for availabilitytarget builders.
+type AvailabilityTarget func(*sql.Selector)
+
 // AvailabilityWindow is the predicate function for availabilitywindow builders.
 type AvailabilityWindow func(*sql.Selector)
 
