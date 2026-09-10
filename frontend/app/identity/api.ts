@@ -61,6 +61,14 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "operations_invalid",
+    "Check the task filters and provide a reason for retry.",
+  ],
+  [
+    "operations_conflict",
+    "This task changed or cannot be retried. Refresh before continuing.",
+  ],
+  [
     "review_invalid",
     "Check your rating, feedback and publication-policy confirmation.",
   ],

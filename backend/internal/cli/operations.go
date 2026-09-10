@@ -77,7 +77,7 @@ func addOperations(root *cobra.Command, getenv func(string) string) {
 				_, writeErr := fmt.Fprintln(cmd.OutOrStdout(), id)
 				return writeErr
 			case "retry":
-				updated, updateErr := db.ExecContext(ctx, "UPDATE jobs SET state='pending',attempts=0,last_error=NULL,available_at=UTC_TIMESTAMP(6) WHERE id=? AND state='failed'", args[0])
+				updated, updateErr := db.ExecContext(ctx, "UPDATE jobs SET state='pending',attempts=0,owner=NULL,lease_until=NULL,last_error=NULL,available_at=UTC_TIMESTAMP(6),retry_generation=retry_generation+1 WHERE id=? AND state='failed' AND retry_generation<2147483646", args[0])
 				if updateErr != nil {
 					return updateErr
 				}

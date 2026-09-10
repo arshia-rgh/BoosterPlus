@@ -14,4 +14,4 @@ docker compose exec api /app/boosterplus jobs failed
 docker compose exec api /app/boosterplus jobs retry JOB_ID
 ```
 
-`failed` prints at most 100 failed job IDs, kinds, attempts and safe error codes, without payloads. Retrying requires direct operator access to the CLI and its database credentials; retry only after checking the job's business effects. Staff-facing retry authorization and audit trails are added with administration, before any commercial handler is enabled. There is no public queue management API.
+`failed` prints at most 100 failed job IDs, kinds, attempts and safe error codes, without payloads. Retrying requires direct operator access to the CLI and its database credentials; retry only after checking the job's business effects. The authenticated admin task page now provides recent-factor, generation-checked retry with an atomic audit trail; see [operational administration](operations-design.md). CLI retries also advance the manual retry generation so stale browser requests cannot repeat them. There is no unauthenticated queue management API.

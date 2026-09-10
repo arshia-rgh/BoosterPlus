@@ -23,6 +23,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/operations"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/reviews"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/submissions"
@@ -83,6 +84,7 @@ func TestBrowserEnvironment(t *testing.T) {
 		}
 	}
 	seedBrowserFulfillment(t, f, fixtures)
+	seedBrowserOperations(t, f, fixtures)
 	ring, ringErr := vault.NewKeyring("v1", map[string][]byte{"v1": vaultKey(t)})
 	if ringErr != nil {
 		t.Fatal(ringErr)
@@ -96,13 +98,13 @@ func TestBrowserEnvironment(t *testing.T) {
 		t.Fatal(noticeErr)
 	}
 	files := media.New(f.client, service, mediaObjects(t, f.client), media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
-	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, execution.Register, submissions.New(f.client, service, nil).Register, reviews.New(f.client, service, nil).Register))
+	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, execution.Register, submissions.New(f.client, service, nil).Register, reviews.New(f.client, service, nil).Register, operations.New(f.client, service, nil).Register))
 	defer server.Close()
 	work, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	done := make(chan error, 1)
 	go func() {
-		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"identity.email": service.EmailHandler(sender), "activity.email": notices.EmailHandler(sender), "media.scan": files.ScanHandler()}, slog.New(slog.DiscardHandler))
+		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"system.ping": func(context.Context, jobs.Job) error { return nil }, "identity.email": service.EmailHandler(sender), "activity.email": notices.EmailHandler(sender), "media.scan": files.ScanHandler()}, slog.New(slog.DiscardHandler))
 	}()
 	defer func() {
 		cancel()

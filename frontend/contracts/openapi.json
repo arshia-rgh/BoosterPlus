@@ -14045,6 +14045,225 @@
           }
         ]
       }
+    },
+    "/api/v1/admin/operations": {
+      "get": {
+        "operationId": "getAdminOperations",
+        "summary": "Inspect operational metadata or request an audited retry under current staff authority",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Narrow authenticated operational result; job payloads and secrets are excluded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalOverview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh observed state or correct the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh observed state or correct the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/api/v1/admin/jobs": {
+      "get": {
+        "operationId": "listAdminJobs",
+        "summary": "Inspect operational metadata or request an audited retry under current staff authority",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Narrow authenticated operational result; job payloads and secrets are excluded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalJobs"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh observed state or correct the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh observed state or correct the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/jobs/{id}/retry": {
+      "post": {
+        "operationId": "retryAdminJob",
+        "summary": "Inspect operational metadata or request an audited retry under current staff authority",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Narrow authenticated operational result; job payloads and secrets are excluded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalJob"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh observed state or correct the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh observed state or correct the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OperationalJobRetry"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -18552,6 +18771,201 @@
           "code": {
             "type": "string",
             "enum": ["review_invalid", "review_conflict"]
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogIssue"
+            }
+          }
+        }
+      },
+      "OperationalJob": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["pending", "running", "failed", "complete"]
+          },
+          "attempts": {
+            "type": "integer"
+          },
+          "max_attempts": {
+            "type": "integer"
+          },
+          "retry_generation": {
+            "type": "integer"
+          },
+          "error_code": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "available_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lease_until": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "state",
+          "attempts",
+          "max_attempts",
+          "retry_generation",
+          "error_code",
+          "created_at",
+          "available_at",
+          "lease_until",
+          "retryable"
+        ]
+      },
+      "OperationalJobs": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationalJob"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        },
+        "required": ["items", "next"]
+      },
+      "OperationalJobRetry": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "required": ["generation", "reason"]
+      },
+      "OperationalCard": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "detail": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          }
+        },
+        "required": ["key", "label", "count", "detail", "href"]
+      },
+      "OperationalItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["label", "state", "href", "at"]
+      },
+      "OperationalOverview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationalCard"
+            }
+          },
+          "requests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationalItem"
+            }
+          },
+          "sessions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationalItem"
+            }
+          },
+          "jobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationalJob"
+            }
+          },
+          "oldest_runnable_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "observed_at",
+          "cards",
+          "requests",
+          "sessions",
+          "jobs",
+          "oldest_runnable_at"
+        ]
+      },
+      "OperationalProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["operations_invalid", "operations_conflict"]
           },
           "issues": {
             "type": "array",

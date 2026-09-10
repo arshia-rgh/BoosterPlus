@@ -1,3 +1,4 @@
+import { operationsJourney } from "./operations-journey";
 import { randomUUID } from "node:crypto";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -72,6 +73,7 @@ for (const role of ["booster", "administrator", "owner"] as const) {
       ),
     ).toBeVisible();
     expect((await page.request.get("/api/v1/admin/users")).status()).toBe(403);
+    expect((await page.request.get("/api/v1/admin/jobs")).status()).toBe(403);
     expect((await page.request.get("/api/v1/me/sessions")).status()).toBe(403);
     await enroll(page);
     expect((await page.request.get("/api/v1/admin/users")).status()).toBe(
@@ -108,6 +110,12 @@ for (const role of ["booster", "administrator", "owner"] as const) {
         ).toBeVisible();
       }
     }
+    if (role === "administrator")
+      await operationsJourney(
+        page,
+        fixture(info.project.name, "failed_job"),
+        info.project.name,
+      );
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
     expect(
       await page.evaluate(

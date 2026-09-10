@@ -608,3 +608,12 @@ button:disabled {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+.operation-count {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-block: 0.5rem;
+}
+.wrap-anywhere {
+  overflow-wrap: anywhere;
+}

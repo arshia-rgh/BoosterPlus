@@ -1,3 +1,4 @@
+import OperationsOverview from "../operations/overview";
 import {
   useEffect,
   useState,
@@ -595,10 +596,8 @@ function Administration({
   }
   return (
     <section>
-      <p>
-        Identity administration is ready. Order management arrives with the
-        order phase.
-      </p>
+      <OperationsOverview />
+      <h2>Account and staff administration</h2>
       <p>
         For sensitive changes, first verify your identity in{" "}
         <Link to="/account">account security</Link>.
@@ -848,6 +847,7 @@ export default function Identity({
                     <Link to="/admin/orders">Order queue</Link>
                     <Link to="/admin/submissions">Account submissions</Link>
                     <Link to="/admin/reviews">Review moderation</Link>
+                    <Link to="/admin/jobs">Background tasks</Link>
                     <Link to="/admin/calendar">Staff calendars</Link>
                     <Link to="/admin/support">Support inbox</Link>
                   </>
@@ -894,8 +894,10 @@ export default function Identity({
                 <Administration session={session} refresh={refresh} />
               ) : capability === "booster" ? (
                 <p>
-                  Your assigned-order workspace will be available when order
-                  fulfillment launches.
+                  Open your{" "}
+                  <Link to="/booster/orders">assigned-order workspace</Link> or
+                  manage your{" "}
+                  <Link to="/booster/calendar">availability calendar</Link>.
                 </p>
               ) : (
                 <Account
