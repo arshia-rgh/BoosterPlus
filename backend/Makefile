@@ -4,7 +4,7 @@ TOOLS := $(abspath ../.tools)
 export GOSUMDB := sum.golang.org
 export TEST_DATABASE_DSN ?= root@tcp(127.0.0.1:14000)/mysql
 
-.PHONY: help bootstrap fmt fmt-check vet lint gosec vuln security test test-race test-integration test-coverage generate generate-check build build-cli migrate-validate migrate-status migrate-plan migrate-up migrate-down migrate-verify compose-up compose-down compose-logs pre-commit ci clean
+.PHONY: test-scripts help bootstrap fmt fmt-check vet lint gosec vuln security test test-race test-integration test-coverage generate generate-check build build-cli migrate-validate migrate-status migrate-plan migrate-up migrate-down migrate-verify compose-up compose-down compose-logs pre-commit ci clean
 
 help:
 	@printf '%s\n' 'bootstrap fmt lint test test-integration security pre-commit build-cli migrate-up compose-up'
@@ -29,6 +29,8 @@ security: gosec vuln
 	go mod verify
 test test-race:
 	go test -race -count=1 ./...
+test-scripts:
+	python3 scripts/test-wait-tidb.py
 test-integration:
 	python3 ../scripts/integration-tests.py
 test-coverage:
@@ -63,7 +65,7 @@ compose-logs:
 pre-commit ci:
 	$(MAKE) fmt-check
 	go mod tidy -diff
-	$(MAKE) generate-check vet lint security test-race test-integration migrate-validate build compose-check docker-build image-security
+	$(MAKE) test-scripts generate-check vet lint security test-race test-integration migrate-validate build compose-check docker-build image-security
 clean:
 	rm -rf bin coverage.out
 

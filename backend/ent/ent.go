@@ -20,6 +20,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/bookingevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
@@ -37,6 +40,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
@@ -106,6 +110,9 @@ func checkColumn(t, c string) error {
 			authrate.Table:            authrate.ValidColumn,
 			authrecovery.Table:        authrecovery.ValidColumn,
 			authsession.Table:         authsession.ValidColumn,
+			availabilitywindow.Table:  availabilitywindow.ValidColumn,
+			booking.Table:             booking.ValidColumn,
+			bookingevent.Table:        bookingevent.ValidColumn,
 			catalogrelease.Table:      catalogrelease.ValidColumn,
 			conversation.Table:        conversation.ValidColumn,
 			conversationmessage.Table: conversationmessage.ValidColumn,
@@ -123,6 +130,7 @@ func checkColumn(t, c string) error {
 			orderevent.Table:          orderevent.ValidColumn,
 			orderquote.Table:          orderquote.ValidColumn,
 			secretbundle.Table:        secretbundle.ValidColumn,
+			staffprofile.Table:        staffprofile.ValidColumn,
 			user.Table:                user.ValidColumn,
 		})
 	})

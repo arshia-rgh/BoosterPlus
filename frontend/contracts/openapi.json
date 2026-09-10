@@ -9525,6 +9525,2053 @@
           }
         }
       }
+    },
+    "/api/v1/booster/calendar": {
+      "get": {
+        "operationId": "getSchedulingbooster_calendar",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCalendar"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "postSchedulingbooster_calendar",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCalendarProfile"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffCalendarProfile"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booster/calendar/windows": {
+      "post": {
+        "operationId": "postSchedulingbooster_calendar_windows",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityWindow"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilityInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booster/calendar/windows/{window}/remove": {
+      "post": {
+        "operationId": "postSchedulingbooster_calendar_windows_window_remove",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Availability removed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "window",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FulfillmentSecretRevoke"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{staff}/calendar": {
+      "get": {
+        "operationId": "getSchedulingadmin_staff_staff_calendar",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCalendar"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "staff",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "postSchedulingadmin_staff_staff_calendar",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffCalendarProfile"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "staff",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffCalendarProfile"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{staff}/calendar/windows": {
+      "post": {
+        "operationId": "postSchedulingadmin_staff_staff_calendar_windows",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityWindow"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "staff",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilityInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{staff}/calendar/windows/{window}/remove": {
+      "post": {
+        "operationId": "postSchedulingadmin_staff_staff_calendar_windows_window_remove",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Availability removed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "staff",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "window",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FulfillmentSecretRevoke"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/fulfillment/{id}/bookings": {
+      "get": {
+        "operationId": "getSchedulingfulfillment_id_bookings",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingListing"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "postSchedulingfulfillment_id_bookings",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/fulfillment/{id}/slots": {
+      "get": {
+        "operationId": "getSchedulingfulfillment_id_slots",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingSlots"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "week",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/fulfillment/{id}/bookings/{booking}/cancel": {
+      "post": {
+        "operationId": "postSchedulingfulfillment_id_bookings_booking_cancel",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "booking",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/fulfillment/{id}/bookings": {
+      "get": {
+        "operationId": "getSchedulingadmin_fulfillment_id_bookings",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingListing"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/fulfillment/{id}/slots": {
+      "get": {
+        "operationId": "getSchedulingadmin_fulfillment_id_slots",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingSlots"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "week",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/fulfillment/{id}/bookings/{booking}/cancel": {
+      "post": {
+        "operationId": "postSchedulingadmin_fulfillment_id_bookings_booking_cancel",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "booking",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/fulfillment/{id}/bookings/{booking}/confirm": {
+      "post": {
+        "operationId": "postSchedulingadmin_fulfillment_id_bookings_booking_confirm",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "booking",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/fulfillment/{id}/bookings/{booking}/attended": {
+      "post": {
+        "operationId": "postSchedulingadmin_fulfillment_id_bookings_booking_attended",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "booking",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/fulfillment/{id}/bookings/{booking}/no_show": {
+      "post": {
+        "operationId": "postSchedulingadmin_fulfillment_id_bookings_booking_no_show",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "booking",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booster/fulfillment/{id}/bookings": {
+      "get": {
+        "operationId": "getSchedulingbooster_fulfillment_id_bookings",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingListing"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/booster/fulfillment/{id}/slots": {
+      "get": {
+        "operationId": "getSchedulingbooster_fulfillment_id_slots",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingSlots"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "week",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/booster/fulfillment/{id}/bookings/{booking}/cancel": {
+      "post": {
+        "operationId": "postSchedulingbooster_fulfillment_id_bookings_booking_cancel",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "booking",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booster/fulfillment/{id}/bookings/{booking}/confirm": {
+      "post": {
+        "operationId": "postSchedulingbooster_fulfillment_id_bookings_booking_confirm",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "booking",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booster/fulfillment/{id}/bookings/{booking}/attended": {
+      "post": {
+        "operationId": "postSchedulingbooster_fulfillment_id_bookings_booking_attended",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "booking",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingAction"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booster/fulfillment/{id}/bookings/{booking}/no_show": {
+      "post": {
+        "operationId": "postSchedulingbooster_fulfillment_id_bookings_booking_no_show",
+        "summary": "Private scheduling with live assignment and overlap checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "booking",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingAction"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -12703,6 +14750,315 @@
             "items": {
               "$ref": "#/components/schemas/CatalogIssue"
             }
+          }
+        }
+      },
+      "CalendarLocalTime": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["local", "zone", "occurrence"],
+        "properties": {
+          "local": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$"
+          },
+          "zone": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "occurrence": {
+            "type": "string",
+            "enum": ["", "first", "second"]
+          }
+        }
+      },
+      "StaffCalendarProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "timezone",
+          "enabled",
+          "game_tags",
+          "region_tags"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "game_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 12
+          },
+          "region_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 12
+          }
+        }
+      },
+      "AvailabilityWindow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "version",
+          "starts_at",
+          "ends_at",
+          "timezone",
+          "active"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "StaffCalendar": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["profile", "windows", "next"],
+        "properties": {
+          "profile": {
+            "$ref": "#/components/schemas/StaffCalendarProfile"
+          },
+          "windows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityWindow"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        }
+      },
+      "AvailabilityInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["request_key", "start", "end"],
+        "properties": {
+          "request_key": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "start": {
+            "$ref": "#/components/schemas/CalendarLocalTime"
+          },
+          "end": {
+            "$ref": "#/components/schemas/CalendarLocalTime"
+          }
+        }
+      },
+      "BookingHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "state", "note", "actor_role", "created_at"],
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "actor_role": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BookingView": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "order_id",
+          "version",
+          "previous_id",
+          "starts_at",
+          "ends_at",
+          "timezone",
+          "state",
+          "history"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "previous_id": {
+            "type": "string"
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookingHistory"
+            }
+          }
+        }
+      },
+      "BookingListing": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items", "next"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookingView"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        }
+      },
+      "BookingInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "work_version",
+          "request_key",
+          "availability_id",
+          "start",
+          "end",
+          "previous_id",
+          "previous_version",
+          "note"
+        ],
+        "properties": {
+          "work_version": {
+            "type": "integer"
+          },
+          "request_key": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "availability_id": {
+            "type": "string"
+          },
+          "start": {
+            "$ref": "#/components/schemas/CalendarLocalTime"
+          },
+          "end": {
+            "$ref": "#/components/schemas/CalendarLocalTime"
+          },
+          "previous_id": {
+            "type": "string"
+          },
+          "previous_version": {
+            "type": "integer"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "BookingAction": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "note"],
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "BookingSlots": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items", "next"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "availability_id",
+                "starts_at",
+                "ends_at",
+                "timezone"
+              ],
+              "properties": {
+                "availability_id": {
+                  "type": "string"
+                },
+                "starts_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "ends_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "timezone": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "next": {
+            "type": "string"
           }
         }
       }

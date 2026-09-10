@@ -39,7 +39,8 @@ services:
     ports: ["127.0.0.1:14000:4000"]
     volumes: [tidb-data:/data]
     security_opt: [no-new-privileges:true]
-    mem_limit: 2g
+    # Repeated full-schema qualification exceeds 2 GiB with the local unistore engine.
+    mem_limit: 3g
     cpus: 2
     restart: unless-stopped
   bootstrap:

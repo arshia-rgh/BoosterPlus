@@ -13,6 +13,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/bookingevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
@@ -31,6 +34,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/schema"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
@@ -234,6 +238,128 @@ func init() {
 	authsessionDescID := authsessionFields[0].Descriptor()
 	// authsession.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	authsession.IDValidator = authsessionDescID.Validators[0].(func(string) error)
+	availabilitywindowFields := schema.AvailabilityWindow{}.Fields()
+	_ = availabilitywindowFields
+	// availabilitywindowDescUserID is the schema descriptor for user_id field.
+	availabilitywindowDescUserID := availabilitywindowFields[1].Descriptor()
+	// availabilitywindow.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	availabilitywindow.UserIDValidator = availabilitywindowDescUserID.Validators[0].(func(string) error)
+	// availabilitywindowDescVersion is the schema descriptor for version field.
+	availabilitywindowDescVersion := availabilitywindowFields[2].Descriptor()
+	// availabilitywindow.DefaultVersion holds the default value on creation for the version field.
+	availabilitywindow.DefaultVersion = availabilitywindowDescVersion.Default.(int)
+	// availabilitywindowDescRequestKey is the schema descriptor for request_key field.
+	availabilitywindowDescRequestKey := availabilitywindowFields[3].Descriptor()
+	// availabilitywindow.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
+	availabilitywindow.RequestKeyValidator = availabilitywindowDescRequestKey.Validators[0].(func(string) error)
+	// availabilitywindowDescRequestHash is the schema descriptor for request_hash field.
+	availabilitywindowDescRequestHash := availabilitywindowFields[4].Descriptor()
+	// availabilitywindow.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	availabilitywindow.RequestHashValidator = availabilitywindowDescRequestHash.Validators[0].(func(string) error)
+	// availabilitywindowDescTimezone is the schema descriptor for timezone field.
+	availabilitywindowDescTimezone := availabilitywindowFields[7].Descriptor()
+	// availabilitywindow.TimezoneValidator is a validator for the "timezone" field. It is called by the builders before save.
+	availabilitywindow.TimezoneValidator = availabilitywindowDescTimezone.Validators[0].(func(string) error)
+	// availabilitywindowDescActive is the schema descriptor for active field.
+	availabilitywindowDescActive := availabilitywindowFields[8].Descriptor()
+	// availabilitywindow.DefaultActive holds the default value on creation for the active field.
+	availabilitywindow.DefaultActive = availabilitywindowDescActive.Default.(bool)
+	// availabilitywindowDescCreatedAt is the schema descriptor for created_at field.
+	availabilitywindowDescCreatedAt := availabilitywindowFields[9].Descriptor()
+	// availabilitywindow.DefaultCreatedAt holds the default value on creation for the created_at field.
+	availabilitywindow.DefaultCreatedAt = availabilitywindowDescCreatedAt.Default.(func() time.Time)
+	// availabilitywindowDescUpdatedAt is the schema descriptor for updated_at field.
+	availabilitywindowDescUpdatedAt := availabilitywindowFields[10].Descriptor()
+	// availabilitywindow.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	availabilitywindow.DefaultUpdatedAt = availabilitywindowDescUpdatedAt.Default.(func() time.Time)
+	// availabilitywindowDescID is the schema descriptor for id field.
+	availabilitywindowDescID := availabilitywindowFields[0].Descriptor()
+	// availabilitywindow.DefaultID holds the default value on creation for the id field.
+	availabilitywindow.DefaultID = availabilitywindowDescID.Default.(func() string)
+	// availabilitywindow.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	availabilitywindow.IDValidator = availabilitywindowDescID.Validators[0].(func(string) error)
+	bookingFields := schema.Booking{}.Fields()
+	_ = bookingFields
+	// bookingDescOrderID is the schema descriptor for order_id field.
+	bookingDescOrderID := bookingFields[1].Descriptor()
+	// booking.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	booking.OrderIDValidator = bookingDescOrderID.Validators[0].(func(string) error)
+	// bookingDescUserID is the schema descriptor for user_id field.
+	bookingDescUserID := bookingFields[2].Descriptor()
+	// booking.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	booking.UserIDValidator = bookingDescUserID.Validators[0].(func(string) error)
+	// bookingDescAssignedID is the schema descriptor for assigned_id field.
+	bookingDescAssignedID := bookingFields[3].Descriptor()
+	// booking.AssignedIDValidator is a validator for the "assigned_id" field. It is called by the builders before save.
+	booking.AssignedIDValidator = bookingDescAssignedID.Validators[0].(func(string) error)
+	// bookingDescAvailabilityID is the schema descriptor for availability_id field.
+	bookingDescAvailabilityID := bookingFields[4].Descriptor()
+	// booking.AvailabilityIDValidator is a validator for the "availability_id" field. It is called by the builders before save.
+	booking.AvailabilityIDValidator = bookingDescAvailabilityID.Validators[0].(func(string) error)
+	// bookingDescVersion is the schema descriptor for version field.
+	bookingDescVersion := bookingFields[5].Descriptor()
+	// booking.DefaultVersion holds the default value on creation for the version field.
+	booking.DefaultVersion = bookingDescVersion.Default.(int)
+	// bookingDescRequestKey is the schema descriptor for request_key field.
+	bookingDescRequestKey := bookingFields[6].Descriptor()
+	// booking.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
+	booking.RequestKeyValidator = bookingDescRequestKey.Validators[0].(func(string) error)
+	// bookingDescRequestHash is the schema descriptor for request_hash field.
+	bookingDescRequestHash := bookingFields[7].Descriptor()
+	// booking.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	booking.RequestHashValidator = bookingDescRequestHash.Validators[0].(func(string) error)
+	// bookingDescPreviousID is the schema descriptor for previous_id field.
+	bookingDescPreviousID := bookingFields[8].Descriptor()
+	// booking.DefaultPreviousID holds the default value on creation for the previous_id field.
+	booking.DefaultPreviousID = bookingDescPreviousID.Default.(string)
+	// booking.PreviousIDValidator is a validator for the "previous_id" field. It is called by the builders before save.
+	booking.PreviousIDValidator = bookingDescPreviousID.Validators[0].(func(string) error)
+	// bookingDescTimezone is the schema descriptor for timezone field.
+	bookingDescTimezone := bookingFields[11].Descriptor()
+	// booking.TimezoneValidator is a validator for the "timezone" field. It is called by the builders before save.
+	booking.TimezoneValidator = bookingDescTimezone.Validators[0].(func(string) error)
+	// bookingDescReminded is the schema descriptor for reminded field.
+	bookingDescReminded := bookingFields[13].Descriptor()
+	// booking.DefaultReminded holds the default value on creation for the reminded field.
+	booking.DefaultReminded = bookingDescReminded.Default.(bool)
+	// bookingDescCreatedAt is the schema descriptor for created_at field.
+	bookingDescCreatedAt := bookingFields[14].Descriptor()
+	// booking.DefaultCreatedAt holds the default value on creation for the created_at field.
+	booking.DefaultCreatedAt = bookingDescCreatedAt.Default.(func() time.Time)
+	// bookingDescUpdatedAt is the schema descriptor for updated_at field.
+	bookingDescUpdatedAt := bookingFields[15].Descriptor()
+	// booking.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	booking.DefaultUpdatedAt = bookingDescUpdatedAt.Default.(func() time.Time)
+	// bookingDescID is the schema descriptor for id field.
+	bookingDescID := bookingFields[0].Descriptor()
+	// booking.DefaultID holds the default value on creation for the id field.
+	booking.DefaultID = bookingDescID.Default.(func() string)
+	// booking.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	booking.IDValidator = bookingDescID.Validators[0].(func(string) error)
+	bookingeventFields := schema.BookingEvent{}.Fields()
+	_ = bookingeventFields
+	// bookingeventDescBookingID is the schema descriptor for booking_id field.
+	bookingeventDescBookingID := bookingeventFields[1].Descriptor()
+	// bookingevent.BookingIDValidator is a validator for the "booking_id" field. It is called by the builders before save.
+	bookingevent.BookingIDValidator = bookingeventDescBookingID.Validators[0].(func(string) error)
+	// bookingeventDescState is the schema descriptor for state field.
+	bookingeventDescState := bookingeventFields[3].Descriptor()
+	// bookingevent.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	bookingevent.StateValidator = bookingeventDescState.Validators[0].(func(string) error)
+	// bookingeventDescActorRole is the schema descriptor for actor_role field.
+	bookingeventDescActorRole := bookingeventFields[5].Descriptor()
+	// bookingevent.ActorRoleValidator is a validator for the "actor_role" field. It is called by the builders before save.
+	bookingevent.ActorRoleValidator = bookingeventDescActorRole.Validators[0].(func(string) error)
+	// bookingeventDescCreatedAt is the schema descriptor for created_at field.
+	bookingeventDescCreatedAt := bookingeventFields[6].Descriptor()
+	// bookingevent.DefaultCreatedAt holds the default value on creation for the created_at field.
+	bookingevent.DefaultCreatedAt = bookingeventDescCreatedAt.Default.(func() time.Time)
+	// bookingeventDescID is the schema descriptor for id field.
+	bookingeventDescID := bookingeventFields[0].Descriptor()
+	// bookingevent.DefaultID holds the default value on creation for the id field.
+	bookingevent.DefaultID = bookingeventDescID.Default.(func() string)
+	// bookingevent.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	bookingevent.IDValidator = bookingeventDescID.Validators[0].(func(string) error)
 	catalogreleaseFields := schema.CatalogRelease{}.Fields()
 	_ = catalogreleaseFields
 	// catalogreleaseDescGameID is the schema descriptor for game_id field.
@@ -932,6 +1058,28 @@ func init() {
 	secretbundle.DefaultID = secretbundleDescID.Default.(func() string)
 	// secretbundle.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	secretbundle.IDValidator = secretbundleDescID.Validators[0].(func(string) error)
+	staffprofileFields := schema.StaffProfile{}.Fields()
+	_ = staffprofileFields
+	// staffprofileDescVersion is the schema descriptor for version field.
+	staffprofileDescVersion := staffprofileFields[1].Descriptor()
+	// staffprofile.DefaultVersion holds the default value on creation for the version field.
+	staffprofile.DefaultVersion = staffprofileDescVersion.Default.(int)
+	// staffprofileDescTimezone is the schema descriptor for timezone field.
+	staffprofileDescTimezone := staffprofileFields[2].Descriptor()
+	// staffprofile.TimezoneValidator is a validator for the "timezone" field. It is called by the builders before save.
+	staffprofile.TimezoneValidator = staffprofileDescTimezone.Validators[0].(func(string) error)
+	// staffprofileDescEnabled is the schema descriptor for enabled field.
+	staffprofileDescEnabled := staffprofileFields[3].Descriptor()
+	// staffprofile.DefaultEnabled holds the default value on creation for the enabled field.
+	staffprofile.DefaultEnabled = staffprofileDescEnabled.Default.(bool)
+	// staffprofileDescUpdatedAt is the schema descriptor for updated_at field.
+	staffprofileDescUpdatedAt := staffprofileFields[6].Descriptor()
+	// staffprofile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	staffprofile.DefaultUpdatedAt = staffprofileDescUpdatedAt.Default.(func() time.Time)
+	// staffprofileDescID is the schema descriptor for id field.
+	staffprofileDescID := staffprofileFields[0].Descriptor()
+	// staffprofile.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	staffprofile.IDValidator = staffprofileDescID.Validators[0].(func(string) error)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescEmail is the schema descriptor for email field.

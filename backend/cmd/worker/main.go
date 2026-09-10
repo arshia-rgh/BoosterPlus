@@ -15,6 +15,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/config"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
@@ -62,8 +63,15 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 	if secretErr != nil {
 		return secretErr
 	}
+	execution, executionErr := fulfillment.New(client, auth, cfg.Vault, nil)
+	if executionErr != nil {
+		return executionErr
+	}
 	maintenance, stopMaintenance := context.WithCancel(ctx)
 	defer stopMaintenance()
+	remindersDone := make(chan struct{})
+	go func() { defer close(remindersDone); execution.RunReminders(maintenance, logger) }()
+	defer func() { stopMaintenance(); <-remindersDone }()
 	vaultDone := make(chan struct{})
 	go func() { defer close(vaultDone); secrets.RunCleanup(maintenance, logger) }()
 	defer func() { stopMaintenance(); <-vaultDone }()

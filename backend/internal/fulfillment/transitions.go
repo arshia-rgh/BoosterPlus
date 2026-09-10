@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
@@ -45,6 +46,15 @@ func (s *Store) canStart(ctx context.Context, tx *ent.Tx, row *ent.Order, work *
 	}
 	if work.Mode == "account" {
 		ok, e := tx.SecretBundle.Query().Where(secretbundle.PurposeEQ(secretbundle.PurposeGameAccess), secretbundle.ResourceIDEQ(row.ID), secretbundle.OwnerIDEQ(row.UserID), secretbundle.StateEQ(secretbundle.StateActive), secretbundle.ExpiresAtGT(s.now())).Exist(ctx)
+		if e != nil {
+			return e
+		}
+		if !ok {
+			return ErrConflict
+		}
+	}
+	if work.Mode == "together" {
+		ok, e := tx.Booking.Query().Where(booking.OrderIDEQ(row.ID), booking.AssignedIDEQ(work.AssignedID), booking.StateEQ(booking.StateConfirmed), booking.EndsAtGT(s.now())).Exist(ctx)
 		if e != nil {
 			return e
 		}
@@ -119,6 +129,9 @@ func (s *Store) Transition(ctx context.Context, p *identity.Principal, id, audie
 			}
 			if row.State != order.StateInProgress || !work.CompletionPending {
 				return ErrConflict
+			}
+			if e = s.cancelBookingsInTx(ctx, tx, current, row.ID, "Order completed; future sessions closed."); e != nil {
+				return e
 			}
 			next = order.StateCompleted
 			change.SetProgress(100).SetCompletionPending(false).AddAccessVersion(1)

@@ -22,6 +22,8 @@ export default [
   route("notifications", "routes/notifications.tsx"),
   route("account", "routes/portal.tsx", { id: "account" }),
   route("admin", "routes/portal.tsx", { id: "admin" }),
+  route("booster/calendar", "routes/booster-calendar.tsx"),
+  route("admin/calendar", "routes/admin-calendar.tsx"),
   route("booster/orders", "routes/booster-orders.tsx"),
   route("booster/orders/:id", "routes/booster-order.tsx"),
   route("booster", "routes/portal.tsx", { id: "booster" }),

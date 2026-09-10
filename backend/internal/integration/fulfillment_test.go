@@ -192,6 +192,7 @@ func TestFulfillmentPaidAuthorizationAndBothModes(t *testing.T) {
 	if _, err = f.work.SubmitSecret(ctx, f.buyer, v.OrderID, secret); err == nil {
 		t.Fatal("together collected game credential")
 	}
+	v = f.book(t, v)
 	v, err = f.work.Transition(ctx, f.booster, v.OrderID, "booster", "start", updateWork(v))
 	if err != nil || v.Mode != "together" {
 		t.Fatal(err)

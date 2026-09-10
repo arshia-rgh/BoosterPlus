@@ -2150,6 +2150,366 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/booster/calendar": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Private scheduling with live assignment and overlap checks */
+    get: operations["getSchedulingbooster_calendar"];
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingbooster_calendar"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/booster/calendar/windows": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingbooster_calendar_windows"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/booster/calendar/windows/{window}/remove": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingbooster_calendar_windows_window_remove"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/staff/{staff}/calendar": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Private scheduling with live assignment and overlap checks */
+    get: operations["getSchedulingadmin_staff_staff_calendar"];
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingadmin_staff_staff_calendar"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/staff/{staff}/calendar/windows": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingadmin_staff_staff_calendar_windows"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/staff/{staff}/calendar/windows/{window}/remove": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingadmin_staff_staff_calendar_windows_window_remove"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/fulfillment/{id}/bookings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Private scheduling with live assignment and overlap checks */
+    get: operations["getSchedulingfulfillment_id_bookings"];
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingfulfillment_id_bookings"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/fulfillment/{id}/slots": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Private scheduling with live assignment and overlap checks */
+    get: operations["getSchedulingfulfillment_id_slots"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/fulfillment/{id}/bookings/{booking}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingfulfillment_id_bookings_booking_cancel"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/fulfillment/{id}/bookings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Private scheduling with live assignment and overlap checks */
+    get: operations["getSchedulingadmin_fulfillment_id_bookings"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/fulfillment/{id}/slots": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Private scheduling with live assignment and overlap checks */
+    get: operations["getSchedulingadmin_fulfillment_id_slots"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/fulfillment/{id}/bookings/{booking}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingadmin_fulfillment_id_bookings_booking_cancel"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/fulfillment/{id}/bookings/{booking}/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingadmin_fulfillment_id_bookings_booking_confirm"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/fulfillment/{id}/bookings/{booking}/attended": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingadmin_fulfillment_id_bookings_booking_attended"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/fulfillment/{id}/bookings/{booking}/no_show": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingadmin_fulfillment_id_bookings_booking_no_show"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/booster/fulfillment/{id}/bookings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Private scheduling with live assignment and overlap checks */
+    get: operations["getSchedulingbooster_fulfillment_id_bookings"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/booster/fulfillment/{id}/slots": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Private scheduling with live assignment and overlap checks */
+    get: operations["getSchedulingbooster_fulfillment_id_slots"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/booster/fulfillment/{id}/bookings/{booking}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingbooster_fulfillment_id_bookings_booking_cancel"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/booster/fulfillment/{id}/bookings/{booking}/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingbooster_fulfillment_id_bookings_booking_confirm"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/booster/fulfillment/{id}/bookings/{booking}/attended": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingbooster_fulfillment_id_bookings_booking_attended"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/booster/fulfillment/{id}/bookings/{booking}/no_show": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Private scheduling with live assignment and overlap checks */
+    post: operations["postSchedulingbooster_fulfillment_id_bookings_booking_no_show"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3011,6 +3371,91 @@ export interface components {
       /** @enum {string} */
       code: "fulfillment_conflict" | "fulfillment_invalid";
       issues?: components["schemas"]["CatalogIssue"][];
+    };
+    CalendarLocalTime: {
+      local: string;
+      zone: string;
+      /** @enum {string} */
+      occurrence: "" | "first" | "second";
+    };
+    StaffCalendarProfile: {
+      version: number;
+      timezone: string;
+      enabled: boolean;
+      game_tags: string[];
+      region_tags: string[];
+    };
+    AvailabilityWindow: {
+      id: string;
+      version: number;
+      /** Format: date-time */
+      starts_at: string;
+      /** Format: date-time */
+      ends_at: string;
+      timezone: string;
+      active: boolean;
+    };
+    StaffCalendar: {
+      profile: components["schemas"]["StaffCalendarProfile"];
+      windows: components["schemas"]["AvailabilityWindow"][];
+      next: string;
+    };
+    AvailabilityInput: {
+      /** Format: uuid */
+      request_key: string;
+      start: components["schemas"]["CalendarLocalTime"];
+      end: components["schemas"]["CalendarLocalTime"];
+    };
+    BookingHistory: {
+      version: number;
+      state: string;
+      note: string;
+      actor_role: string;
+      /** Format: date-time */
+      created_at: string;
+    };
+    BookingView: {
+      id: string;
+      order_id: string;
+      version: number;
+      previous_id: string;
+      /** Format: date-time */
+      starts_at: string;
+      /** Format: date-time */
+      ends_at: string;
+      timezone: string;
+      state: string;
+      history: components["schemas"]["BookingHistory"][];
+    };
+    BookingListing: {
+      items: components["schemas"]["BookingView"][];
+      next: string;
+    };
+    BookingInput: {
+      work_version: number;
+      /** Format: uuid */
+      request_key: string;
+      availability_id: string;
+      start: components["schemas"]["CalendarLocalTime"];
+      end: components["schemas"]["CalendarLocalTime"];
+      previous_id: string;
+      previous_version: number;
+      note: string;
+    };
+    BookingAction: {
+      version: number;
+      note: string;
+    };
+    BookingSlots: {
+      items: {
+        availability_id: string;
+        /** Format: date-time */
+        starts_at: string;
+        /** Format: date-time */
+        ends_at: string;
+        timezone: string;
+      }[];
+      next: string;
     };
   };
   responses: never;
@@ -9522,6 +9967,1313 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["FulfillmentView"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getSchedulingbooster_calendar: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StaffCalendar"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingbooster_calendar: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StaffCalendarProfile"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StaffCalendarProfile"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingbooster_calendar_windows: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AvailabilityInput"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityWindow"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingbooster_calendar_windows_window_remove: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        window: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FulfillmentSecretRevoke"];
+      };
+    };
+    responses: {
+      /** @description Availability removed */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getSchedulingadmin_staff_staff_calendar: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path: {
+        staff: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StaffCalendar"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingadmin_staff_staff_calendar: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        staff: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StaffCalendarProfile"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StaffCalendarProfile"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingadmin_staff_staff_calendar_windows: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        staff: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AvailabilityInput"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityWindow"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingadmin_staff_staff_calendar_windows_window_remove: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        staff: string;
+        window: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FulfillmentSecretRevoke"];
+      };
+    };
+    responses: {
+      /** @description Availability removed */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getSchedulingfulfillment_id_bookings: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingListing"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingfulfillment_id_bookings: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BookingInput"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingView"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getSchedulingfulfillment_id_slots: {
+    parameters: {
+      query?: {
+        after?: string;
+        week?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingSlots"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingfulfillment_id_bookings_booking_cancel: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+        booking: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BookingAction"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingView"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getSchedulingadmin_fulfillment_id_bookings: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingListing"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getSchedulingadmin_fulfillment_id_slots: {
+    parameters: {
+      query?: {
+        after?: string;
+        week?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingSlots"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingadmin_fulfillment_id_bookings_booking_cancel: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+        booking: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BookingAction"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingView"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingadmin_fulfillment_id_bookings_booking_confirm: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+        booking: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BookingAction"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingView"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingadmin_fulfillment_id_bookings_booking_attended: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+        booking: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BookingAction"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingView"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingadmin_fulfillment_id_bookings_booking_no_show: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+        booking: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BookingAction"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingView"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getSchedulingbooster_fulfillment_id_bookings: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingListing"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getSchedulingbooster_fulfillment_id_slots: {
+    parameters: {
+      query?: {
+        after?: string;
+        week?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingSlots"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingbooster_fulfillment_id_bookings_booking_cancel: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+        booking: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BookingAction"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingView"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingbooster_fulfillment_id_bookings_booking_confirm: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+        booking: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BookingAction"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingView"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingbooster_fulfillment_id_bookings_booking_attended: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+        booking: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BookingAction"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingView"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  postSchedulingbooster_fulfillment_id_bookings_booking_no_show: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+        booking: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BookingAction"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BookingView"];
         };
       };
       /** @description Reload changed state or correct validation issues. */

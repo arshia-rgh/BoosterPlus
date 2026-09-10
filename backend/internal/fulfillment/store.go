@@ -104,7 +104,18 @@ func audit(ctx context.Context, tx *ent.Tx, p *identity.Principal, row *ent.Orde
 		return err
 	}
 	if p.User.ID != row.UserID {
-		return notifications.Enqueue(ctx, tx, row.UserID, row.ID, event.ID, "order_customer", now)
+		if err = notifications.Enqueue(ctx, tx, row.UserID, row.ID, event.ID, "order_customer", now); err != nil {
+			return err
+		}
+	}
+	if action == "assigned" || p.User.ID == row.UserID {
+		work, readErr := record(ctx, tx.Client(), row.ID)
+		if readErr != nil {
+			return readErr
+		}
+		if work.AssignedID != p.User.ID && work.AssignedID != row.UserID {
+			return notifications.Enqueue(ctx, tx, work.AssignedID, row.ID, event.ID, "order_staff", now)
+		}
 	}
 	return nil
 }
@@ -155,6 +166,9 @@ func (s *Store) Assign(ctx context.Context, p *identity.Principal, id string, in
 			accessVersion := work.AccessVersion
 			if work.AssignedID != target.ID {
 				accessVersion++
+				if e = s.cancelBookingsInTx(ctx, tx, current, row.ID, "Staff assignment changed; propose a new session."); e != nil {
+					return e
+				}
 				if e = s.revokeInTx(ctx, tx, current, row, "reassigned"); e != nil {
 					return e
 				}

@@ -105,6 +105,42 @@ func (f AuthSessionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthSessionMutation", m)
 }
 
+// The AvailabilityWindowFunc type is an adapter to allow the use of ordinary
+// function as AvailabilityWindow mutator.
+type AvailabilityWindowFunc func(context.Context, *ent.AvailabilityWindowMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AvailabilityWindowFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AvailabilityWindowMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AvailabilityWindowMutation", m)
+}
+
+// The BookingFunc type is an adapter to allow the use of ordinary
+// function as Booking mutator.
+type BookingFunc func(context.Context, *ent.BookingMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BookingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.BookingMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BookingMutation", m)
+}
+
+// The BookingEventFunc type is an adapter to allow the use of ordinary
+// function as BookingEvent mutator.
+type BookingEventFunc func(context.Context, *ent.BookingEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BookingEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.BookingEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BookingEventMutation", m)
+}
+
 // The CatalogReleaseFunc type is an adapter to allow the use of ordinary
 // function as CatalogRelease mutator.
 type CatalogReleaseFunc func(context.Context, *ent.CatalogReleaseMutation) (ent.Value, error)
@@ -307,6 +343,18 @@ func (f SecretBundleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SecretBundleMutation", m)
+}
+
+// The StaffProfileFunc type is an adapter to allow the use of ordinary
+// function as StaffProfile mutator.
+type StaffProfileFunc func(context.Context, *ent.StaffProfileMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f StaffProfileFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.StaffProfileMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StaffProfileMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary

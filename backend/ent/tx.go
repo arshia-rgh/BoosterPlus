@@ -30,6 +30,12 @@ type Tx struct {
 	AuthRecovery *AuthRecoveryClient
 	// AuthSession is the client for interacting with the AuthSession builders.
 	AuthSession *AuthSessionClient
+	// AvailabilityWindow is the client for interacting with the AvailabilityWindow builders.
+	AvailabilityWindow *AvailabilityWindowClient
+	// Booking is the client for interacting with the Booking builders.
+	Booking *BookingClient
+	// BookingEvent is the client for interacting with the BookingEvent builders.
+	BookingEvent *BookingEventClient
 	// CatalogRelease is the client for interacting with the CatalogRelease builders.
 	CatalogRelease *CatalogReleaseClient
 	// Conversation is the client for interacting with the Conversation builders.
@@ -64,6 +70,8 @@ type Tx struct {
 	OrderQuote *OrderQuoteClient
 	// SecretBundle is the client for interacting with the SecretBundle builders.
 	SecretBundle *SecretBundleClient
+	// StaffProfile is the client for interacting with the StaffProfile builders.
+	StaffProfile *StaffProfileClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -205,6 +213,9 @@ func (tx *Tx) init() {
 	tx.AuthRate = NewAuthRateClient(tx.config)
 	tx.AuthRecovery = NewAuthRecoveryClient(tx.config)
 	tx.AuthSession = NewAuthSessionClient(tx.config)
+	tx.AvailabilityWindow = NewAvailabilityWindowClient(tx.config)
+	tx.Booking = NewBookingClient(tx.config)
+	tx.BookingEvent = NewBookingEventClient(tx.config)
 	tx.CatalogRelease = NewCatalogReleaseClient(tx.config)
 	tx.Conversation = NewConversationClient(tx.config)
 	tx.ConversationMessage = NewConversationMessageClient(tx.config)
@@ -222,6 +233,7 @@ func (tx *Tx) init() {
 	tx.OrderEvent = NewOrderEventClient(tx.config)
 	tx.OrderQuote = NewOrderQuoteClient(tx.config)
 	tx.SecretBundle = NewSecretBundleClient(tx.config)
+	tx.StaffProfile = NewStaffProfileClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

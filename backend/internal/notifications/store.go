@@ -69,7 +69,9 @@ func path(kind, id string) (string, bool) {
 		return "/support/" + url.PathEscape(id), true
 	case "conversation_staff":
 		return "/admin/support/" + url.PathEscape(id), true
-	case "order_customer":
+	case "booking_staff", "order_staff":
+		return "/booster/orders/" + url.PathEscape(id), true
+	case "order_customer", "booking_customer":
 		return "/orders/" + url.PathEscape(id), true
 	default:
 		return "", false
@@ -157,6 +159,18 @@ func (s *Store) EmailHandler(sender identity.Sender) jobs.Handler {
 		state := notification.EmailStateSuppressed
 		if account != nil && !account.Suspended && account.NotifyUpdates && row.ReadAt == nil && row.CreatedAt.After(time.Now().Add(-7*24*time.Hour)) {
 			allowed := row.Kind != "conversation_staff" || account.Role == identity.RoleAdmin || account.Role == identity.RoleOwner
+			if row.Kind == "booking_customer" || row.Kind == "booking_staff" {
+				allowed, err = s.bookingAllowed(ctx, row, account)
+				if err != nil {
+					return err
+				}
+			}
+			if row.Kind == "order_staff" {
+				allowed, err = s.staffOrderAllowed(ctx, row, account)
+				if err != nil {
+					return err
+				}
+			}
 			href, ok := path(row.Kind, row.ResourceID)
 			if !ok {
 				return errors.New("activity kind invalid")

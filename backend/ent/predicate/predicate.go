@@ -30,6 +30,15 @@ type AuthRecovery func(*sql.Selector)
 // AuthSession is the predicate function for authsession builders.
 type AuthSession func(*sql.Selector)
 
+// AvailabilityWindow is the predicate function for availabilitywindow builders.
+type AvailabilityWindow func(*sql.Selector)
+
+// Booking is the predicate function for booking builders.
+type Booking func(*sql.Selector)
+
+// BookingEvent is the predicate function for bookingevent builders.
+type BookingEvent func(*sql.Selector)
+
 // CatalogRelease is the predicate function for catalogrelease builders.
 type CatalogRelease func(*sql.Selector)
 
@@ -80,6 +89,9 @@ type OrderQuote func(*sql.Selector)
 
 // SecretBundle is the predicate function for secretbundle builders.
 type SecretBundle func(*sql.Selector)
+
+// StaffProfile is the predicate function for staffprofile builders.
+type StaffProfile func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

@@ -22,6 +22,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrecovery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/bookingevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
@@ -39,6 +42,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 
 	stdsql "database/sql"
@@ -65,6 +69,12 @@ type Client struct {
 	AuthRecovery *AuthRecoveryClient
 	// AuthSession is the client for interacting with the AuthSession builders.
 	AuthSession *AuthSessionClient
+	// AvailabilityWindow is the client for interacting with the AvailabilityWindow builders.
+	AvailabilityWindow *AvailabilityWindowClient
+	// Booking is the client for interacting with the Booking builders.
+	Booking *BookingClient
+	// BookingEvent is the client for interacting with the BookingEvent builders.
+	BookingEvent *BookingEventClient
 	// CatalogRelease is the client for interacting with the CatalogRelease builders.
 	CatalogRelease *CatalogReleaseClient
 	// Conversation is the client for interacting with the Conversation builders.
@@ -99,6 +109,8 @@ type Client struct {
 	OrderQuote *OrderQuoteClient
 	// SecretBundle is the client for interacting with the SecretBundle builders.
 	SecretBundle *SecretBundleClient
+	// StaffProfile is the client for interacting with the StaffProfile builders.
+	StaffProfile *StaffProfileClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -120,6 +132,9 @@ func (c *Client) init() {
 	c.AuthRate = NewAuthRateClient(c.config)
 	c.AuthRecovery = NewAuthRecoveryClient(c.config)
 	c.AuthSession = NewAuthSessionClient(c.config)
+	c.AvailabilityWindow = NewAvailabilityWindowClient(c.config)
+	c.Booking = NewBookingClient(c.config)
+	c.BookingEvent = NewBookingEventClient(c.config)
 	c.CatalogRelease = NewCatalogReleaseClient(c.config)
 	c.Conversation = NewConversationClient(c.config)
 	c.ConversationMessage = NewConversationMessageClient(c.config)
@@ -137,6 +152,7 @@ func (c *Client) init() {
 	c.OrderEvent = NewOrderEventClient(c.config)
 	c.OrderQuote = NewOrderQuoteClient(c.config)
 	c.SecretBundle = NewSecretBundleClient(c.config)
+	c.StaffProfile = NewStaffProfileClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -238,6 +254,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AuthRate:            NewAuthRateClient(cfg),
 		AuthRecovery:        NewAuthRecoveryClient(cfg),
 		AuthSession:         NewAuthSessionClient(cfg),
+		AvailabilityWindow:  NewAvailabilityWindowClient(cfg),
+		Booking:             NewBookingClient(cfg),
+		BookingEvent:        NewBookingEventClient(cfg),
 		CatalogRelease:      NewCatalogReleaseClient(cfg),
 		Conversation:        NewConversationClient(cfg),
 		ConversationMessage: NewConversationMessageClient(cfg),
@@ -255,6 +274,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		OrderEvent:          NewOrderEventClient(cfg),
 		OrderQuote:          NewOrderQuoteClient(cfg),
 		SecretBundle:        NewSecretBundleClient(cfg),
+		StaffProfile:        NewStaffProfileClient(cfg),
 		User:                NewUserClient(cfg),
 	}, nil
 }
@@ -283,6 +303,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AuthRate:            NewAuthRateClient(cfg),
 		AuthRecovery:        NewAuthRecoveryClient(cfg),
 		AuthSession:         NewAuthSessionClient(cfg),
+		AvailabilityWindow:  NewAvailabilityWindowClient(cfg),
+		Booking:             NewBookingClient(cfg),
+		BookingEvent:        NewBookingEventClient(cfg),
 		CatalogRelease:      NewCatalogReleaseClient(cfg),
 		Conversation:        NewConversationClient(cfg),
 		ConversationMessage: NewConversationMessageClient(cfg),
@@ -300,6 +323,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		OrderEvent:          NewOrderEventClient(cfg),
 		OrderQuote:          NewOrderQuoteClient(cfg),
 		SecretBundle:        NewSecretBundleClient(cfg),
+		StaffProfile:        NewStaffProfileClient(cfg),
 		User:                NewUserClient(cfg),
 	}, nil
 }
@@ -331,11 +355,11 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
-		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Conversation,
-		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
-		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.MediaFile,
-		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
-		c.SecretBundle, c.User,
+		c.AuthRate, c.AuthRecovery, c.AuthSession, c.AvailabilityWindow, c.Booking,
+		c.BookingEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
+		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
+		c.Fulfillment, c.Game, c.MediaFile, c.Notification, c.Order, c.OrderContract,
+		c.OrderEvent, c.OrderQuote, c.SecretBundle, c.StaffProfile, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -346,11 +370,11 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity, c.AuthMessage,
-		c.AuthRate, c.AuthRecovery, c.AuthSession, c.CatalogRelease, c.Conversation,
-		c.ConversationMessage, c.ConversationRead, c.Coupon, c.CouponClaim,
-		c.CouponRevision, c.Favorite, c.Fulfillment, c.Game, c.MediaFile,
-		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
-		c.SecretBundle, c.User,
+		c.AuthRate, c.AuthRecovery, c.AuthSession, c.AvailabilityWindow, c.Booking,
+		c.BookingEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
+		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
+		c.Fulfillment, c.Game, c.MediaFile, c.Notification, c.Order, c.OrderContract,
+		c.OrderEvent, c.OrderQuote, c.SecretBundle, c.StaffProfile, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -375,6 +399,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AuthRecovery.mutate(ctx, m)
 	case *AuthSessionMutation:
 		return c.AuthSession.mutate(ctx, m)
+	case *AvailabilityWindowMutation:
+		return c.AvailabilityWindow.mutate(ctx, m)
+	case *BookingMutation:
+		return c.Booking.mutate(ctx, m)
+	case *BookingEventMutation:
+		return c.BookingEvent.mutate(ctx, m)
 	case *CatalogReleaseMutation:
 		return c.CatalogRelease.mutate(ctx, m)
 	case *ConversationMutation:
@@ -409,6 +439,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.OrderQuote.mutate(ctx, m)
 	case *SecretBundleMutation:
 		return c.SecretBundle.mutate(ctx, m)
+	case *StaffProfileMutation:
+		return c.StaffProfile.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
@@ -1477,6 +1509,405 @@ func (c *AuthSessionClient) mutate(ctx context.Context, m *AuthSessionMutation) 
 		return (&AuthSessionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AuthSession mutation op: %q", m.Op())
+	}
+}
+
+// AvailabilityWindowClient is a client for the AvailabilityWindow schema.
+type AvailabilityWindowClient struct {
+	config
+}
+
+// NewAvailabilityWindowClient returns a client for the AvailabilityWindow from the given config.
+func NewAvailabilityWindowClient(c config) *AvailabilityWindowClient {
+	return &AvailabilityWindowClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `availabilitywindow.Hooks(f(g(h())))`.
+func (c *AvailabilityWindowClient) Use(hooks ...Hook) {
+	c.hooks.AvailabilityWindow = append(c.hooks.AvailabilityWindow, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `availabilitywindow.Intercept(f(g(h())))`.
+func (c *AvailabilityWindowClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AvailabilityWindow = append(c.inters.AvailabilityWindow, interceptors...)
+}
+
+// Create returns a builder for creating a AvailabilityWindow entity.
+func (c *AvailabilityWindowClient) Create() *AvailabilityWindowCreate {
+	mutation := newAvailabilityWindowMutation(c.config, OpCreate)
+	return &AvailabilityWindowCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AvailabilityWindow entities.
+func (c *AvailabilityWindowClient) CreateBulk(builders ...*AvailabilityWindowCreate) *AvailabilityWindowCreateBulk {
+	return &AvailabilityWindowCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AvailabilityWindowClient) MapCreateBulk(slice any, setFunc func(*AvailabilityWindowCreate, int)) *AvailabilityWindowCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AvailabilityWindowCreateBulk{err: fmt.Errorf("calling to AvailabilityWindowClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AvailabilityWindowCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AvailabilityWindowCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AvailabilityWindow.
+func (c *AvailabilityWindowClient) Update() *AvailabilityWindowUpdate {
+	mutation := newAvailabilityWindowMutation(c.config, OpUpdate)
+	return &AvailabilityWindowUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AvailabilityWindowClient) UpdateOne(_m *AvailabilityWindow) *AvailabilityWindowUpdateOne {
+	mutation := newAvailabilityWindowMutation(c.config, OpUpdateOne, withAvailabilityWindow(_m))
+	return &AvailabilityWindowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AvailabilityWindowClient) UpdateOneID(id string) *AvailabilityWindowUpdateOne {
+	mutation := newAvailabilityWindowMutation(c.config, OpUpdateOne, withAvailabilityWindowID(id))
+	return &AvailabilityWindowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AvailabilityWindow.
+func (c *AvailabilityWindowClient) Delete() *AvailabilityWindowDelete {
+	mutation := newAvailabilityWindowMutation(c.config, OpDelete)
+	return &AvailabilityWindowDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AvailabilityWindowClient) DeleteOne(_m *AvailabilityWindow) *AvailabilityWindowDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AvailabilityWindowClient) DeleteOneID(id string) *AvailabilityWindowDeleteOne {
+	builder := c.Delete().Where(availabilitywindow.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AvailabilityWindowDeleteOne{builder}
+}
+
+// Query returns a query builder for AvailabilityWindow.
+func (c *AvailabilityWindowClient) Query() *AvailabilityWindowQuery {
+	return &AvailabilityWindowQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAvailabilityWindow},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AvailabilityWindow entity by its id.
+func (c *AvailabilityWindowClient) Get(ctx context.Context, id string) (*AvailabilityWindow, error) {
+	return c.Query().Where(availabilitywindow.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AvailabilityWindowClient) GetX(ctx context.Context, id string) *AvailabilityWindow {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AvailabilityWindowClient) Hooks() []Hook {
+	return c.hooks.AvailabilityWindow
+}
+
+// Interceptors returns the client interceptors.
+func (c *AvailabilityWindowClient) Interceptors() []Interceptor {
+	return c.inters.AvailabilityWindow
+}
+
+func (c *AvailabilityWindowClient) mutate(ctx context.Context, m *AvailabilityWindowMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AvailabilityWindowCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AvailabilityWindowUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AvailabilityWindowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AvailabilityWindowDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AvailabilityWindow mutation op: %q", m.Op())
+	}
+}
+
+// BookingClient is a client for the Booking schema.
+type BookingClient struct {
+	config
+}
+
+// NewBookingClient returns a client for the Booking from the given config.
+func NewBookingClient(c config) *BookingClient {
+	return &BookingClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `booking.Hooks(f(g(h())))`.
+func (c *BookingClient) Use(hooks ...Hook) {
+	c.hooks.Booking = append(c.hooks.Booking, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `booking.Intercept(f(g(h())))`.
+func (c *BookingClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Booking = append(c.inters.Booking, interceptors...)
+}
+
+// Create returns a builder for creating a Booking entity.
+func (c *BookingClient) Create() *BookingCreate {
+	mutation := newBookingMutation(c.config, OpCreate)
+	return &BookingCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Booking entities.
+func (c *BookingClient) CreateBulk(builders ...*BookingCreate) *BookingCreateBulk {
+	return &BookingCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *BookingClient) MapCreateBulk(slice any, setFunc func(*BookingCreate, int)) *BookingCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &BookingCreateBulk{err: fmt.Errorf("calling to BookingClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*BookingCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &BookingCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Booking.
+func (c *BookingClient) Update() *BookingUpdate {
+	mutation := newBookingMutation(c.config, OpUpdate)
+	return &BookingUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BookingClient) UpdateOne(_m *Booking) *BookingUpdateOne {
+	mutation := newBookingMutation(c.config, OpUpdateOne, withBooking(_m))
+	return &BookingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BookingClient) UpdateOneID(id string) *BookingUpdateOne {
+	mutation := newBookingMutation(c.config, OpUpdateOne, withBookingID(id))
+	return &BookingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Booking.
+func (c *BookingClient) Delete() *BookingDelete {
+	mutation := newBookingMutation(c.config, OpDelete)
+	return &BookingDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BookingClient) DeleteOne(_m *Booking) *BookingDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *BookingClient) DeleteOneID(id string) *BookingDeleteOne {
+	builder := c.Delete().Where(booking.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BookingDeleteOne{builder}
+}
+
+// Query returns a query builder for Booking.
+func (c *BookingClient) Query() *BookingQuery {
+	return &BookingQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeBooking},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Booking entity by its id.
+func (c *BookingClient) Get(ctx context.Context, id string) (*Booking, error) {
+	return c.Query().Where(booking.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BookingClient) GetX(ctx context.Context, id string) *Booking {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *BookingClient) Hooks() []Hook {
+	return c.hooks.Booking
+}
+
+// Interceptors returns the client interceptors.
+func (c *BookingClient) Interceptors() []Interceptor {
+	return c.inters.Booking
+}
+
+func (c *BookingClient) mutate(ctx context.Context, m *BookingMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BookingCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BookingUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BookingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BookingDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Booking mutation op: %q", m.Op())
+	}
+}
+
+// BookingEventClient is a client for the BookingEvent schema.
+type BookingEventClient struct {
+	config
+}
+
+// NewBookingEventClient returns a client for the BookingEvent from the given config.
+func NewBookingEventClient(c config) *BookingEventClient {
+	return &BookingEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `bookingevent.Hooks(f(g(h())))`.
+func (c *BookingEventClient) Use(hooks ...Hook) {
+	c.hooks.BookingEvent = append(c.hooks.BookingEvent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `bookingevent.Intercept(f(g(h())))`.
+func (c *BookingEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.BookingEvent = append(c.inters.BookingEvent, interceptors...)
+}
+
+// Create returns a builder for creating a BookingEvent entity.
+func (c *BookingEventClient) Create() *BookingEventCreate {
+	mutation := newBookingEventMutation(c.config, OpCreate)
+	return &BookingEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of BookingEvent entities.
+func (c *BookingEventClient) CreateBulk(builders ...*BookingEventCreate) *BookingEventCreateBulk {
+	return &BookingEventCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *BookingEventClient) MapCreateBulk(slice any, setFunc func(*BookingEventCreate, int)) *BookingEventCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &BookingEventCreateBulk{err: fmt.Errorf("calling to BookingEventClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*BookingEventCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &BookingEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for BookingEvent.
+func (c *BookingEventClient) Update() *BookingEventUpdate {
+	mutation := newBookingEventMutation(c.config, OpUpdate)
+	return &BookingEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BookingEventClient) UpdateOne(_m *BookingEvent) *BookingEventUpdateOne {
+	mutation := newBookingEventMutation(c.config, OpUpdateOne, withBookingEvent(_m))
+	return &BookingEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BookingEventClient) UpdateOneID(id string) *BookingEventUpdateOne {
+	mutation := newBookingEventMutation(c.config, OpUpdateOne, withBookingEventID(id))
+	return &BookingEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for BookingEvent.
+func (c *BookingEventClient) Delete() *BookingEventDelete {
+	mutation := newBookingEventMutation(c.config, OpDelete)
+	return &BookingEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BookingEventClient) DeleteOne(_m *BookingEvent) *BookingEventDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *BookingEventClient) DeleteOneID(id string) *BookingEventDeleteOne {
+	builder := c.Delete().Where(bookingevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BookingEventDeleteOne{builder}
+}
+
+// Query returns a query builder for BookingEvent.
+func (c *BookingEventClient) Query() *BookingEventQuery {
+	return &BookingEventQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeBookingEvent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a BookingEvent entity by its id.
+func (c *BookingEventClient) Get(ctx context.Context, id string) (*BookingEvent, error) {
+	return c.Query().Where(bookingevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BookingEventClient) GetX(ctx context.Context, id string) *BookingEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *BookingEventClient) Hooks() []Hook {
+	return c.hooks.BookingEvent
+}
+
+// Interceptors returns the client interceptors.
+func (c *BookingEventClient) Interceptors() []Interceptor {
+	return c.inters.BookingEvent
+}
+
+func (c *BookingEventClient) mutate(ctx context.Context, m *BookingEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BookingEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BookingEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BookingEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BookingEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown BookingEvent mutation op: %q", m.Op())
 	}
 }
 
@@ -3741,6 +4172,139 @@ func (c *SecretBundleClient) mutate(ctx context.Context, m *SecretBundleMutation
 	}
 }
 
+// StaffProfileClient is a client for the StaffProfile schema.
+type StaffProfileClient struct {
+	config
+}
+
+// NewStaffProfileClient returns a client for the StaffProfile from the given config.
+func NewStaffProfileClient(c config) *StaffProfileClient {
+	return &StaffProfileClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `staffprofile.Hooks(f(g(h())))`.
+func (c *StaffProfileClient) Use(hooks ...Hook) {
+	c.hooks.StaffProfile = append(c.hooks.StaffProfile, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `staffprofile.Intercept(f(g(h())))`.
+func (c *StaffProfileClient) Intercept(interceptors ...Interceptor) {
+	c.inters.StaffProfile = append(c.inters.StaffProfile, interceptors...)
+}
+
+// Create returns a builder for creating a StaffProfile entity.
+func (c *StaffProfileClient) Create() *StaffProfileCreate {
+	mutation := newStaffProfileMutation(c.config, OpCreate)
+	return &StaffProfileCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of StaffProfile entities.
+func (c *StaffProfileClient) CreateBulk(builders ...*StaffProfileCreate) *StaffProfileCreateBulk {
+	return &StaffProfileCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *StaffProfileClient) MapCreateBulk(slice any, setFunc func(*StaffProfileCreate, int)) *StaffProfileCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &StaffProfileCreateBulk{err: fmt.Errorf("calling to StaffProfileClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*StaffProfileCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &StaffProfileCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for StaffProfile.
+func (c *StaffProfileClient) Update() *StaffProfileUpdate {
+	mutation := newStaffProfileMutation(c.config, OpUpdate)
+	return &StaffProfileUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *StaffProfileClient) UpdateOne(_m *StaffProfile) *StaffProfileUpdateOne {
+	mutation := newStaffProfileMutation(c.config, OpUpdateOne, withStaffProfile(_m))
+	return &StaffProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *StaffProfileClient) UpdateOneID(id string) *StaffProfileUpdateOne {
+	mutation := newStaffProfileMutation(c.config, OpUpdateOne, withStaffProfileID(id))
+	return &StaffProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for StaffProfile.
+func (c *StaffProfileClient) Delete() *StaffProfileDelete {
+	mutation := newStaffProfileMutation(c.config, OpDelete)
+	return &StaffProfileDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *StaffProfileClient) DeleteOne(_m *StaffProfile) *StaffProfileDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *StaffProfileClient) DeleteOneID(id string) *StaffProfileDeleteOne {
+	builder := c.Delete().Where(staffprofile.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &StaffProfileDeleteOne{builder}
+}
+
+// Query returns a query builder for StaffProfile.
+func (c *StaffProfileClient) Query() *StaffProfileQuery {
+	return &StaffProfileQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeStaffProfile},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a StaffProfile entity by its id.
+func (c *StaffProfileClient) Get(ctx context.Context, id string) (*StaffProfile, error) {
+	return c.Query().Where(staffprofile.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *StaffProfileClient) GetX(ctx context.Context, id string) *StaffProfile {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *StaffProfileClient) Hooks() []Hook {
+	return c.hooks.StaffProfile
+}
+
+// Interceptors returns the client interceptors.
+func (c *StaffProfileClient) Interceptors() []Interceptor {
+	return c.inters.StaffProfile
+}
+
+func (c *StaffProfileClient) mutate(ctx context.Context, m *StaffProfileMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&StaffProfileCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&StaffProfileUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&StaffProfileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&StaffProfileDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown StaffProfile mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -3878,17 +4442,19 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 type (
 	hooks struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, CatalogRelease, Conversation, ConversationMessage,
-		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
-		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
-		SecretBundle, User []ent.Hook
+		AuthRecovery, AuthSession, AvailabilityWindow, Booking, BookingEvent,
+		CatalogRelease, Conversation, ConversationMessage, ConversationRead, Coupon,
+		CouponClaim, CouponRevision, Favorite, Fulfillment, Game, MediaFile,
+		Notification, Order, OrderContract, OrderEvent, OrderQuote, SecretBundle,
+		StaffProfile, User []ent.Hook
 	}
 	inters struct {
 		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, CatalogRelease, Conversation, ConversationMessage,
-		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
-		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
-		SecretBundle, User []ent.Interceptor
+		AuthRecovery, AuthSession, AvailabilityWindow, Booking, BookingEvent,
+		CatalogRelease, Conversation, ConversationMessage, ConversationRead, Coupon,
+		CouponClaim, CouponRevision, Favorite, Fulfillment, Game, MediaFile,
+		Notification, Order, OrderContract, OrderEvent, OrderQuote, SecretBundle,
+		StaffProfile, User []ent.Interceptor
 	}
 )
 

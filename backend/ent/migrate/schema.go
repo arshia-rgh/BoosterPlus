@@ -212,6 +212,113 @@ var (
 			},
 		},
 	}
+	// AvailabilityWindowsColumns holds the columns for the "availability_windows" table.
+	AvailabilityWindowsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "request_key", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "starts_at", Type: field.TypeTime},
+		{Name: "ends_at", Type: field.TypeTime},
+		{Name: "timezone", Type: field.TypeString, Size: 64},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// AvailabilityWindowsTable holds the schema information for the "availability_windows" table.
+	AvailabilityWindowsTable = &schema.Table{
+		Name:       "availability_windows",
+		Columns:    AvailabilityWindowsColumns,
+		PrimaryKey: []*schema.Column{AvailabilityWindowsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "availability_request",
+				Unique:  true,
+				Columns: []*schema.Column{AvailabilityWindowsColumns[1], AvailabilityWindowsColumns[3]},
+			},
+			{
+				Name:    "availability_staff_time",
+				Unique:  false,
+				Columns: []*schema.Column{AvailabilityWindowsColumns[1], AvailabilityWindowsColumns[8], AvailabilityWindowsColumns[5], AvailabilityWindowsColumns[0]},
+			},
+		},
+	}
+	// BookingsColumns holds the columns for the "bookings" table.
+	BookingsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "assigned_id", Type: field.TypeString, Size: 36},
+		{Name: "availability_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "request_key", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "previous_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "starts_at", Type: field.TypeTime},
+		{Name: "ends_at", Type: field.TypeTime},
+		{Name: "timezone", Type: field.TypeString, Size: 64},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"proposed", "confirmed", "cancelled", "completed", "no_show"}, Default: "proposed"},
+		{Name: "reminded", Type: field.TypeBool, Default: false},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// BookingsTable holds the schema information for the "bookings" table.
+	BookingsTable = &schema.Table{
+		Name:       "bookings",
+		Columns:    BookingsColumns,
+		PrimaryKey: []*schema.Column{BookingsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "booking_request",
+				Unique:  true,
+				Columns: []*schema.Column{BookingsColumns[2], BookingsColumns[6]},
+			},
+			{
+				Name:    "booking_order",
+				Unique:  false,
+				Columns: []*schema.Column{BookingsColumns[1], BookingsColumns[14], BookingsColumns[0]},
+			},
+			{
+				Name:    "booking_staff_time",
+				Unique:  false,
+				Columns: []*schema.Column{BookingsColumns[3], BookingsColumns[12], BookingsColumns[9], BookingsColumns[10]},
+			},
+			{
+				Name:    "booking_customer_time",
+				Unique:  false,
+				Columns: []*schema.Column{BookingsColumns[2], BookingsColumns[12], BookingsColumns[9], BookingsColumns[10]},
+			},
+			{
+				Name:    "booking_reminder",
+				Unique:  false,
+				Columns: []*schema.Column{BookingsColumns[12], BookingsColumns[13], BookingsColumns[9], BookingsColumns[0]},
+			},
+		},
+	}
+	// BookingEventsColumns holds the columns for the "booking_events" table.
+	BookingEventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "booking_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "state", Type: field.TypeString, Size: 16},
+		{Name: "note", Type: field.TypeString},
+		{Name: "actor_role", Type: field.TypeString, Size: 32},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// BookingEventsTable holds the schema information for the "booking_events" table.
+	BookingEventsTable = &schema.Table{
+		Name:       "booking_events",
+		Columns:    BookingEventsColumns,
+		PrimaryKey: []*schema.Column{BookingEventsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "booking_event_version",
+				Unique:  true,
+				Columns: []*schema.Column{BookingEventsColumns[1], BookingEventsColumns[2]},
+			},
+		},
+	}
 	// CatalogReleasesColumns holds the columns for the "catalog_releases" table.
 	CatalogReleasesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -741,6 +848,22 @@ var (
 			},
 		},
 	}
+	// StaffProfilesColumns holds the columns for the "staff_profiles" table.
+	StaffProfilesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "timezone", Type: field.TypeString, Size: 64},
+		{Name: "enabled", Type: field.TypeBool, Default: false},
+		{Name: "game_tags", Type: field.TypeJSON},
+		{Name: "region_tags", Type: field.TypeJSON},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// StaffProfilesTable holds the schema information for the "staff_profiles" table.
+	StaffProfilesTable = &schema.Table{
+		Name:       "staff_profiles",
+		Columns:    StaffProfilesColumns,
+		PrimaryKey: []*schema.Column{StaffProfilesColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -778,6 +901,9 @@ var (
 		AuthRatesTable,
 		AuthRecoveriesTable,
 		AuthSessionsTable,
+		AvailabilityWindowsTable,
+		BookingsTable,
+		BookingEventsTable,
 		CatalogReleasesTable,
 		ConversationsTable,
 		ConversationMessagesTable,
@@ -795,6 +921,7 @@ var (
 		OrderEventsTable,
 		OrderQuotesTable,
 		SecretBundlesTable,
+		StaffProfilesTable,
 		UsersTable,
 	}
 )

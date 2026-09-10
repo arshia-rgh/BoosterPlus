@@ -1,3 +1,4 @@
+import Bookings from "./bookings";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router";
 import { Action, ErrorNotice } from "../catalog/controls";
@@ -80,6 +81,13 @@ export default function FulfillmentPanel({
         {work ? (
           <>
             <Summary work={work} />
+            {work.mode === "together" && (
+              <Bookings
+                work={work}
+                audience={admin ? "admin" : "account"}
+                reload={refresh}
+              />
+            )}
             {admin ? (
               <>
                 <StaffSecret
@@ -208,11 +216,15 @@ export function BoosterOrder() {
       <Action onClick={resource.reload}>Refresh fulfillment</Action>
       <ErrorNotice error={resource.error} />
       {work && (
-        <>
+        <fieldset disabled={resource.loading}>
+          <legend>Assigned work controls</legend>
           <h2>
             {work.game} · {work.service}
           </h2>
           <Summary work={work} />
+          {work.mode === "together" && (
+            <Bookings work={work} audience="booster" reload={resource.reload} />
+          )}
           <StaffSecret
             key={`secret-${String(work.access_version)}`}
             work={work}
@@ -224,7 +236,7 @@ export function BoosterOrder() {
             admin={false}
             reload={resource.reload}
           />
-        </>
+        </fieldset>
       )}
     </section>
   );

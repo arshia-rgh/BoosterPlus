@@ -844,11 +844,15 @@ export default function Identity({
                     <Link to="/admin/catalog">Catalog editor</Link>
                     <Link to="/admin/coupons">Coupons</Link>
                     <Link to="/admin/orders">Order queue</Link>
+                    <Link to="/admin/calendar">Staff calendars</Link>
                     <Link to="/admin/support">Support inbox</Link>
                   </>
                 )}
                 {session.capabilities.includes("booster") && (
-                  <Link to="/booster/orders">Assigned work</Link>
+                  <>
+                    <Link to="/booster/orders">Assigned work</Link>{" "}
+                    <Link to="/booster/calendar">My calendar</Link>
+                  </>
                 )}
               </nav>
               <Form

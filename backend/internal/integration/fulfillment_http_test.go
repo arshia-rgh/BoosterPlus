@@ -9,6 +9,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
+
+	"github.com/google/uuid"
+
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/fulfillment"
 
 	"github.com/santhosh-tekuri/jsonschema/v6"
 
@@ -102,4 +107,46 @@ func TestFulfillmentHTTPAndResponseContract(t *testing.T) {
 	if out = call(http.MethodPost, path+"/handoff", "application/json", "http://localhost", body); out.Code != http.StatusConflict {
 		t.Fatal("stale handoff", out.Code)
 	}
+	window, start := f.availability(t)
+	current, err := f.work.Get(ctx, f.buyer, v.OrderID, "account")
+	if err != nil {
+		t.Fatal(err)
+	}
+	proposalBody, err := json.Marshal(fulfillment.BookingInput{WorkVersion: current.Version, RequestKey: uuid.NewString(), AvailabilityID: window.ID, Start: localInstant(start), End: localInstant(start.Add(time.Hour)), Note: "HTTP session proposal"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, suffix := range []string{"/bookings", "/slots"} {
+		if out = call(http.MethodGet, path+suffix, "", "", nil); out.Code != http.StatusOK {
+			t.Fatal("calendar read", suffix, out.Code)
+		}
+	}
+	if out = call(http.MethodGet, path+"/slots?week=13", "", "", nil); out.Code != http.StatusUnprocessableEntity {
+		t.Fatal("invalid week", out.Code)
+	}
+	if out = call(http.MethodGet, "/api/v1/booster/calendar", "", "", nil); out.Code != http.StatusForbidden {
+		t.Fatal("customer calendar access", out.Code)
+	}
+	if out = call(http.MethodPost, path+"/bookings", "application/json", "https://evil.test", proposalBody); out.Code != http.StatusForbidden {
+		t.Fatal("booking CSRF", out.Code)
+	}
+	for _, invalid := range [][]byte{[]byte(`{"unexpected":true}`), bytes.Repeat([]byte("x"), 262145)} {
+		if out = call(http.MethodPost, path+"/bookings", "application/json", "http://localhost", invalid); out.Code != http.StatusUnprocessableEntity {
+			t.Fatal("invalid booking body", out.Code)
+		}
+	}
+	if out = call(http.MethodPost, path+"/bookings", "application/json", "http://localhost", proposalBody); out.Code != http.StatusOK {
+		t.Fatal("booking HTTP", out.Code)
+	}
+	bookingSchema, err := compiler.Compile("contract.json#/components/schemas/BookingView")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = json.Unmarshal(out.Body.Bytes(), &view); err != nil {
+		t.Fatal(err)
+	}
+	if err = bookingSchema.Validate(view); err != nil {
+		t.Fatal(err)
+	}
+
 }

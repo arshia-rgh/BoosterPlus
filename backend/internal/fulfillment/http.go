@@ -10,6 +10,7 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/scheduling"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
 )
 
@@ -33,6 +34,9 @@ func write(w http.ResponseWriter, value any) error {
 	return json.NewEncoder(w).Encode(value)
 }
 func handleError(w http.ResponseWriter, err error) error {
+	if errors.Is(err, scheduling.ErrTime) {
+		err = &catalog.Invalid{Issues: []catalog.Issue{{Path: "time", Message: "Use a valid IANA time zone and local date/time. A skipped clock hour is unavailable; for a repeated hour choose its first or second occurrence."}}}
+	}
 	var invalid *catalog.Invalid
 	if errors.As(err, &invalid) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
@@ -51,6 +55,7 @@ func handleError(w http.ResponseWriter, err error) error {
 
 // Register attaches separate customer, assigned-booster and administrative routes.
 func (s *Store) Register(mux *http.ServeMux) {
+	s.registerCalendar(mux)
 	for _, audience := range []string{"account", "booster", "admin"} {
 		prefix := "/api/v1/fulfillment"
 		if audience != "account" {

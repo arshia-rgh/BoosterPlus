@@ -161,12 +161,67 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       path: `test-results/fulfillment-${info.project.name}.png`,
       fullPage: true,
     });
+    await staff.goto("/booster/calendar");
+    await staff.getByLabel("Accept new session bookings").check();
+    await staff
+      .getByLabel("Game capabilities (comma separated)")
+      .fill("mobile-legends");
+    await staff
+      .getByRole("button", { name: "Save calendar profile", exact: true })
+      .click();
+    await expect(staff.getByLabel("Window start (local time)")).toBeVisible();
+    const start = new Date(Date.now() + 2 * 3600_000),
+      end = new Date(start.getTime() + 2 * 3600_000);
+    await staff
+      .getByLabel("Window start (local time)")
+      .fill(start.toISOString().slice(0, 16));
+    await staff
+      .getByLabel("Window end (local time)")
+      .fill(end.toISOString().slice(0, 16));
+    await staff
+      .getByRole("button", { name: "Publish availability", exact: true })
+      .click();
+    await expect(
+      staff.getByRole("button", { name: "Remove window", exact: true }),
+    ).toBeVisible();
+    await accessible(staff);
+    await page.goto("/admin/calendar");
+    await page
+      .getByLabel("Staff calendar to manage")
+      .selectOption(fixture(info.project.name, "workbooster_id"));
+    await expect(
+      page.getByRole("button", { name: "Remove window", exact: true }),
+    ).toBeVisible();
+    await accessible(page);
     await assign(togetherID);
     await handoff(togetherID);
     await expect(
       buyer.getByLabel("Temporary game login instructions"),
     ).toHaveCount(0);
+    await expect(
+      buyer.getByLabel("Available window").locator("option"),
+    ).toHaveCount(2);
+    await buyer.getByLabel("Available window").selectOption({ index: 1 });
+    await buyer
+      .getByLabel("Session note", { exact: true })
+      .fill("Ready for this play-together session");
+    await buyer
+      .getByRole("button", { name: "Submit session proposal", exact: true })
+      .click();
+    await expect(
+      buyer.getByRole("heading", { name: "proposed", exact: true }),
+    ).toBeVisible();
+    await accessible(buyer);
     await staff.goto(`/booster/orders/${togetherID}`);
+    await staff
+      .getByLabel("Session action reason", { exact: true })
+      .fill("Availability confirmed with customer");
+    await staff
+      .getByRole("button", { name: "Confirm session", exact: true })
+      .click();
+    await expect(
+      staff.getByRole("heading", { name: "confirmed", exact: true }),
+    ).toBeVisible();
     await expect(
       staff.getByRole("button", { name: "Reveal game access", exact: true }),
     ).toHaveCount(0);
@@ -178,6 +233,10 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       .click();
     await expect(staff.getByLabel("Progress percent (0–99)")).toBeVisible();
     await accessible(staff);
+    await staff.screenshot({
+      path: `test-results/scheduling-${info.project.name}.png`,
+      fullPage: true,
+    });
   } finally {
     await buyerContext.close();
     await staffContext.close();
