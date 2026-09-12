@@ -114,6 +114,7 @@ it("surfaces authoritative field errors and stale releases without a success cla
       "true",
     ),
   );
+  expect(screen.getByLabelText("One hero")).toHaveFocus();
   fireEvent.click(screen.getByRole("button", { name: "Check selections" }));
   expect(await screen.findByText("Catalog changed. Reload.")).toBeVisible();
   expect(screen.queryByText(/Selections are valid/)).not.toBeInTheDocument();

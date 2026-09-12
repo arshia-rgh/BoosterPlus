@@ -143,9 +143,14 @@ export function Subscriptions() {
         package or guarantee its price, eligibility or delivery time. Changing
         your account email requires fresh consent for future alerts.
       </p>
+      <Action onClick={resource.reload}>Refresh alerts</Action>
       <ErrorNotice error={resource.error} />
       {!resource.data ? (
-        <p role="status">Loading package alerts…</p>
+        <p role="status">
+          {resource.loading
+            ? "Loading package alerts…"
+            : "Could not load package alerts. Use Refresh alerts to try again."}
+        </p>
       ) : (
         <>
           <ul className="order-list">

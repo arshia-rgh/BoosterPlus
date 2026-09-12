@@ -21,6 +21,55 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
   return (
     <section>
       <h2>{admin ? "Requests and active work" : "Your orders"}</h2>
+      {!admin && (
+        <>
+          <p>
+            Review requests, follow your progress, and keep in touch with your
+            team.
+          </p>
+          {resource.data && (
+            <section aria-label="Orders on this page">
+              <div className="account-summary">
+                <div>
+                  <strong>
+                    {
+                      resource.data.orders.filter((order) =>
+                        ["needs_information", "quoted"].includes(order.state),
+                      ).length
+                    }
+                  </strong>
+                  <span>Need your review</span>
+                </div>
+                <div>
+                  <strong>
+                    {
+                      resource.data.orders.filter((order) =>
+                        ["queued", "in_progress", "on_hold"].includes(
+                          order.state,
+                        ),
+                      ).length
+                    }
+                  </strong>
+                  <span>In fulfillment</span>
+                </div>
+                <div>
+                  <strong>
+                    {
+                      resource.data.orders.filter(
+                        (order) => order.state === "completed",
+                      ).length
+                    }
+                  </strong>
+                  <span>Completed</span>
+                </div>
+              </div>
+              <p className="quiet">
+                Counts reflect this page and its current filters.
+              </p>
+            </section>
+          )}
+        </>
+      )}
       <form
         onSubmit={filter}
         className={admin ? "catalog-grid order-filters" : "catalog-grid"}
@@ -46,7 +95,11 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
       <Action onClick={resource.reload}>Refresh orders</Action>
       <ErrorNotice error={resource.error} />
       {!resource.data ? (
-        <p role="status">Loading orders…</p>
+        <p role="status">
+          {resource.loading
+            ? "Loading orders…"
+            : "Orders could not be loaded. Use Refresh orders to try again."}
+        </p>
       ) : (
         <>
           {resource.data.orders.length === 0 && (

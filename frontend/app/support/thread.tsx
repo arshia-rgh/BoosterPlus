@@ -375,6 +375,7 @@ function Messages({
               {resource.data.messages.map((message) => (
                 <li
                   key={message.id}
+                  data-sender={message.sender_role}
                   className={
                     message.visibility === "internal"
                       ? "message internal-note"
@@ -412,11 +413,20 @@ function Messages({
     </>
   );
 }
-function ConversationRail({ current }: { current: string }) {
-  const resource = useResource("/admin/conversations", conversationsSchema);
+function ConversationRail({
+  current,
+  admin,
+}: {
+  current: string;
+  admin: boolean;
+}) {
+  const prefix = admin ? "/admin" : "";
+  const resource = useResource(prefix + "/conversations", conversationsSchema);
   return (
     <aside
-      className="admin-conversation-rail"
+      className={
+        admin ? "admin-conversation-rail" : "customer-conversation-rail"
+      }
       aria-label="Conversation switcher"
     >
       <details open>
@@ -428,7 +438,7 @@ function ConversationRail({ current }: { current: string }) {
             {resource.data.conversations.map((thread) => (
               <Link
                 key={thread.id}
-                to={`/admin/support/${thread.id}`}
+                to={`${prefix}/support/${thread.id}`}
                 aria-current={current === thread.id ? "page" : undefined}
               >
                 <strong>{thread.subject}</strong>
@@ -439,7 +449,8 @@ function ConversationRail({ current }: { current: string }) {
             ))}
           </nav>
         )}
-        <Link to="/admin/support">All conversations and filters →</Link>
+        <Action onClick={resource.reload}>Refresh recent conversations</Action>
+        <Link to={prefix + "/support"}>All conversations and filters →</Link>
       </details>
     </aside>
   );
@@ -469,8 +480,16 @@ export default function Thread({
     };
   }, [resource.error, resource.loading, retry]);
   return (
-    <div className={admin ? "admin-conversation-workspace" : undefined}>
-      {admin && <ConversationRail current={id} />}
+    <div
+      className={
+        admin
+          ? "admin-conversation-workspace"
+          : !booster
+            ? "customer-conversation-workspace"
+            : undefined
+      }
+    >
+      {!booster && <ConversationRail current={id} admin={admin} />}
       <section>
         <Link
           to={

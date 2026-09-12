@@ -316,14 +316,48 @@ func TestAvailabilityBoundedFanoutReconciliationAndSafeReferences(t *testing.T) 
 			t.Fatal("private event data")
 		}
 	}
-	if _, e = f.auth.client.User.UpdateOneID(f.buyer.User.ID).SetEmail("different@example.test").Save(ctx); e != nil {
+	// Choose the final subscriber so suppression must cross the 50-row boundary.
+	// Random UUID ordering previously put the buyer on either page, while the
+	// assertion incorrectly assumed a single bounded sweep processed all 55 rows.
+	changed, e := f.auth.client.AvailabilitySubscription.Query().Where(sub.TargetIDEQ(first.TargetID)).Order(ent.Desc(sub.FieldID)).First(ctx)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if _, e = f.auth.client.User.UpdateOneID(changed.UserID).SetEmail("different@example.test").Save(ctx); e != nil {
 		t.Fatal(e)
 	}
 	f.capacity(t, 0)
 	f.capacity(t, 1)
-	row, e := f.auth.client.AvailabilitySubscription.Get(ctx, v.ID)
-	if e != nil || row.State != "suppressed" {
-		t.Fatal("email change did not suppress consent", e)
+	if n, countErr := f.auth.client.AvailabilityDelivery.Query().Where(d.CycleEQ(2)).Count(ctx); countErr != nil || n != 50 {
+		t.Fatal("second opening exceeded bounded fanout", n, countErr)
+	}
+	row, e := f.auth.client.AvailabilitySubscription.Get(ctx, changed.ID)
+	if e != nil || row.State != "active" || row.LastCycle != 1 {
+		t.Fatal("last subscriber should still await the next page", e)
+	}
+	// Even before the next sweep persists suppression, an old queued delivery
+	// must recheck the changed address and refuse to send.
+	queued, e := f.auth.client.AvailabilityDelivery.Query().Where(d.SubscriptionIDEQ(changed.ID), d.CycleEQ(1)).Only(ctx)
+	if e != nil {
+		t.Fatal(e)
+	}
+	raw, e := json.Marshal(map[string]string{"delivery_id": queued.ID})
+	if e != nil {
+		t.Fatal(e)
+	}
+	sender := &recordingSender{}
+	if e = f.alerts.EmailHandler(sender)(ctx, jobs.Job{Kind: "availability.email", Payload: raw}); e != nil || len(sender.messages) != 0 {
+		t.Fatal("changed email received a queued alert before reconciliation", e)
+	}
+	if e = f.alerts.Reconcile(ctx); e != nil {
+		t.Fatal(e)
+	}
+	row, e = f.auth.client.AvailabilitySubscription.Get(ctx, changed.ID)
+	if e != nil || row.State != "suppressed" || row.SuppressionReason != "identity_changed" {
+		t.Fatal("email change did not suppress consent on the next page", e)
+	}
+	if n, countErr := f.auth.client.AvailabilityDelivery.Query().Where(d.CycleEQ(2)).Count(ctx); countErr != nil || n != 54 {
+		t.Fatal("changed email was not excluded from the second opening", n, countErr)
 	}
 	list, e := f.alerts.List(ctx, f.other, "")
 	if e != nil || len(list.Subscriptions) != 0 {

@@ -49,4 +49,8 @@ Browser tests require local TiDB and Mailpit and launch a disposable database th
 
 ## Catalog editor
 
-Administrators and owners can open `/admin/catalog` after both sign-in factors. The UI manages game drafts, reference catalogs, typed forms, conditions, package variants, preview/publication, availability and historical releases. See [catalog operations and limits](../docs/catalog.md). Numeric answers and monetary minor units remain exact strings. Public media lives under `public/catalog-assets/`; private uploads and secure credential handoff belong to later phases.
+Administrators and owners can open `/admin/catalog` after both sign-in factors. The UI manages game drafts, reference catalogs, typed forms, conditions, package variants, preview/publication, availability and historical releases. See [catalog operations and limits](../docs/catalog.md). Numeric answers and monetary minor units remain exact strings. Public catalog artwork lives under `public/catalog-assets/`; private uploads and credential handoff use the existing dedicated, access-controlled flows. Generic pre-order attachment fields are still unavailable.
+
+## Customer and booster experience
+
+R03 applies the storefront design to the catalog, live selection summary, order guidance, customer conversations, account tools and booster workspace. See [routes, behavior and verification](../docs/customer-experience.md). `make test-experience` runs the complete real-service browser suite; `make budget-experience` checks the incremental route assets. Both remain included in the required `pre-commit` gate.

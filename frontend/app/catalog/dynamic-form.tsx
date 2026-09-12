@@ -1,4 +1,5 @@
-import { useId, useState, type SubmitEvent } from "react";
+import SelectionSummary from "../experience/selection-summary";
+import { useEffect, useId, useRef, useState, type SubmitEvent } from "react";
 import SubmitOrder from "../orders/submit";
 import { Action } from "./controls";
 import { post } from "../identity/api";
@@ -61,6 +62,8 @@ export function Input({
             <input
               type={field.type === "radio" ? "radio" : "checkbox"}
               name={id}
+              aria-invalid={error ? true : undefined}
+              aria-describedby={description || undefined}
               value={option.key}
               checked={
                 field.type === "radio"
@@ -237,6 +240,14 @@ export default function DynamicForm({
     setIssues([]);
     setError(null);
   }
+  const form = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (!busy && issues.length > 0) {
+      form.current
+        ?.querySelector<HTMLElement>('[aria-invalid="true"]')
+        ?.focus();
+    }
+  }, [issues, busy]);
   const couponID = useId();
   const values = visibleAnswers(service, raw, stage);
   const unavailable = paused || variant?.capacity === 0;
@@ -308,6 +319,7 @@ export default function DynamicForm({
   return (
     <form
       className="dynamic-form"
+      ref={form}
       onSubmit={(event) => void submit(event)}
       noValidate
     >
@@ -381,6 +393,15 @@ export default function DynamicForm({
           {busy ? "Checking…" : "Check selections"}
         </button>
       </fieldset>
+      {!previewPath && !onCommit && (
+        <SelectionSummary
+          config={config}
+          service={service}
+          values={values}
+          stage={stage}
+          fixed={!!variant}
+        />
+      )}
       <Issues issues={issues} />
       <ErrorNotice error={error} />
       {valid && (

@@ -10,8 +10,32 @@ export function GameCatalog() {
   const listing = useLoaderData<Listing>();
   return (
     <main id="main" className="page catalog-page">
-      <p className="eyebrow">THE LINEUP</p>
-      <h1>Choose your game.</h1>
+      <div className="catalog-introduction">
+        <div>
+          <p className="eyebrow">THE LINEUP</p>
+          <h1>
+            Choose your game.
+            <br />
+            Shape your climb.
+          </h1>
+        </div>
+        <p>
+          A boost built around your goals. Explore custom requests and fixed
+          packages, with a clear scope and a conversation with our team.
+        </p>
+      </div>
+      <ol className="catalog-route-map">
+        <li>
+          <strong>01 · Find your game</strong>Explore the published lineup.
+        </li>
+        <li>
+          <strong>02 · Choose your path</strong>A custom request or a fixed
+          package.
+        </li>
+        <li>
+          <strong>03 · Stay in the loop</strong>Private updates, chat and proof.
+        </li>
+      </ol>
       {listing.games.length === 0 ? (
         <section className="game-card">
           <span className="status">Coming soon</span>
@@ -25,12 +49,19 @@ export function GameCatalog() {
         <div className="catalog-cards">
           {listing.games.map((game) => (
             <article className="game-card" key={game.id}>
+              {!game.asset && (
+                <span className="game-letter" aria-hidden="true">
+                  {game.name.slice(0, 1)}
+                </span>
+              )}
               {game.asset && (
                 <img
                   src={game.asset}
                   alt={game.asset_alt}
                   width="640"
                   height="360"
+                  loading="lazy"
+                  decoding="async"
                 />
               )}
               <span className="status">
@@ -65,7 +96,7 @@ export function GameCatalog() {
 function Intro({ release }: { release: Release }) {
   return (
     <>
-      <p className="eyebrow">Game catalog · release {release.version}</p>
+      <p className="eyebrow">GAME BOOSTING</p>
       <h1>{release.configuration.name}</h1>
       <p className="intro">{release.configuration.description}</p>
       {release.paused && (
@@ -79,7 +110,23 @@ export function GamePage() {
   return (
     <main id="main" className="page catalog-page">
       <Link to="/games">← All games</Link>
-      <Intro release={release} />
+      <div className="game-hero">
+        <div>
+          <Intro release={release} />
+        </div>
+        {release.configuration.asset ? (
+          <img
+            src={release.configuration.asset}
+            alt={release.configuration.asset_alt}
+            width="640"
+            height="400"
+          />
+        ) : (
+          <div className="game-hero-art" aria-hidden="true">
+            <span>{release.configuration.name.slice(0, 1)}</span>
+          </div>
+        )}
+      </div>
       <FavoriteButton kind="game" slug={release.slug} />
       <Offerings release={release} />
       <Link to={`/games/${release.slug}/reviews`}>
@@ -97,6 +144,7 @@ export function Offerings({ release }: { release: Release }) {
         <div className="catalog-cards">
           {config.services.map((service) => (
             <article className="game-card" key={service.key}>
+              <span className="status">Built around you</span>
               <h3>{service.name}</h3>
               <p>{service.description}</p>
               <p className="quiet">Final price follows administrator review.</p>
@@ -118,6 +166,7 @@ export function Offerings({ release }: { release: Release }) {
         <div className="catalog-cards">
           {config.packages.map((pack) => (
             <article className="game-card" key={pack.key}>
+              <span className="status">Fixed scope · fixed price</span>
               <h3>{pack.name}</h3>
               <p>{pack.description}</p>
               <ul>
@@ -163,6 +212,7 @@ export function ServicePage() {
   return (
     <main id="main" className="page catalog-page">
       <Link to={`/games/${release.slug}`}>← {release.configuration.name}</Link>
+      <p className="eyebrow">CUSTOM BOOSTING</p>
       <h1>{service.name}</h1>
       <FavoriteButton
         kind="service"
@@ -192,6 +242,17 @@ export function ServicePage() {
         stage={stage}
         paused={release.paused}
       />
+      {stage === "estimate" && (
+        <button
+          className="button"
+          type="button"
+          onClick={() => {
+            setStage("order");
+          }}
+        >
+          Continue to order information →
+        </button>
+      )}
     </main>
   );
 }
@@ -215,6 +276,7 @@ function PackageDetails({
     );
   return (
     <>
+      <p className="eyebrow">FIXED PACKAGE</p>
       <h1>{pack.name}</h1>
       <FavoriteButton kind="package" slug={release.slug} pack={pack.key} />
       <p>{pack.description}</p>
@@ -226,21 +288,24 @@ function PackageDetails({
       />
       {variant && (
         <section className="package-summary">
-          <p className="package-price">{price(variant)}</p>
-          <p>
-            Delivery estimate: {variant.delivery_min_hours}–
-            {variant.delivery_max_hours} hours after fulfillment can start.
-          </p>
-          <p>
-            {variant.capacity === undefined
-              ? "No configured capacity limit."
-              : `Configured capacity: ${String(variant.capacity)} places. Held reservations may reduce availability.`}{" "}
-            Availability is not a reservation.
-          </p>
-          <p>
-            Fixed packages do not require an individual quote approval. Direct
-            crypto checkout is being prepared.
-          </p>
+          <div className="package-overview">
+            <span className="status">{variant.name}</span>
+            <p className="package-price">{price(variant)}</p>
+            <p>
+              Delivery estimate: {variant.delivery_min_hours}–
+              {variant.delivery_max_hours} hours after fulfillment can start.
+            </p>
+            <p>
+              {variant.capacity === undefined
+                ? "No configured capacity limit."
+                : `Configured capacity: ${String(variant.capacity)} places. Held reservations may reduce availability.`}{" "}
+              Availability is not a reservation.
+            </p>
+            <p>
+              Fixed packages do not require an individual quote approval. Direct
+              crypto checkout is being prepared.
+            </p>
+          </div>
           {variant.capacity !== undefined && (
             <Subscribe
               key={variant.key}

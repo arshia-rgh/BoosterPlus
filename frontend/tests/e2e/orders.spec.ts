@@ -125,17 +125,61 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
   });
   const buyer = await context.newPage();
   try {
-    await signIn(buyer, request, fixture(info.project.name, "orders"));
+    await buyer.goto(`/games/${slug}/services/boost`);
+    await buyer.getByLabel("Play mode (required)").selectOption("duo");
+    await buyer
+      .getByRole("button", { name: "Continue to order information →" })
+      .click();
+    await buyer
+      .getByRole("button", { name: "Check selections", exact: true })
+      .click();
+    const signInTab = buyer.waitForEvent("popup");
+    await buyer
+      .getByRole("link", { name: "Sign in and complete verification" })
+      .click();
+    const login = await signInTab;
+    await signIn(login, request, fixture(info.project.name, "orders"));
     await expect(
-      buyer.getByRole("heading", { name: "Profile", exact: true }),
+      login.getByRole("heading", { name: "Profile", exact: true }),
     ).toBeVisible();
+    await login.close();
+    await buyer.bringToFront();
+    await buyer.evaluate(() => window.dispatchEvent(new Event("focus")));
+    await expect(
+      buyer.getByLabel("I accept the terms and request a final quote"),
+    ).toBeVisible();
+    await expect(buyer.getByLabel("Play mode (required)")).toHaveValue("duo");
+    await expect(
+      buyer.getByRole("button", { name: "Submit quote request", exact: true }),
+    ).toBeDisabled();
     await buyer.goto(`/games/${slug}/services/boost`);
     await buyer.getByLabel("Play mode (required)").selectOption("solo");
-    await buyer.getByLabel("Information to preview").selectOption("order");
+    await expect(
+      buyer.getByRole("complementary", { name: "Selection summary" }),
+    ).toContainText("Solo");
+    await accessible(buyer);
+    await buyer.getByRole("button", { name: "Reduced", exact: true }).click();
+    await expect(buyer.locator(".experience")).toHaveAttribute(
+      "data-motion",
+      "reduced",
+    );
+    await buyer
+      .getByRole("button", { name: "Continue to order information →" })
+      .click();
     await expect(buyer.getByLabel("Play mode (required)")).toHaveValue("solo");
     await buyer
       .getByLabel("Ordinary instructions")
       .fill("Keep this ordinary note on the original order only");
+    await expect(
+      buyer.getByRole("complementary", { name: "Selection summary" }),
+    ).not.toContainText("Keep this ordinary note");
+    await buyer.evaluate(() => {
+      window.scrollTo(0, 0);
+    });
+    await buyer.screenshot({
+      path: `.cache/r03-estimator-${info.project.name}.png`,
+      fullPage: true,
+    });
     await buyer
       .getByRole("button", { name: "Save to favorites", exact: true })
       .click();
@@ -160,6 +204,17 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
         exact: true,
       }),
     ).toBeVisible();
+    await expect(
+      buyer.locator('.order-steps [aria-current="step"]'),
+    ).toHaveText("Request received");
+    await expect(buyer.locator(".experience")).toHaveAttribute(
+      "data-motion",
+      "reduced",
+    );
+    await buyer.screenshot({
+      path: `.cache/r03-order-${info.project.name}.png`,
+      fullPage: true,
+    });
     await accessible(buyer);
     await page.goto("/admin/orders");
     await page.getByLabel("Search game or full order ID").fill(orderID);
@@ -290,6 +345,13 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     ).toContainText("USD 12.34");
     await buyer.goto("/orders");
     await expect(buyer.locator(".order-list li")).toHaveCount(2);
+    await expect(
+      buyer.getByRole("region", { name: "Orders on this page" }),
+    ).toContainText("Counts reflect this page");
+    await buyer.screenshot({
+      path: `.cache/r03-orders-${info.project.name}.png`,
+      fullPage: true,
+    });
     await accessible(buyer);
     await buyer.goto("/favorites");
     await expect(

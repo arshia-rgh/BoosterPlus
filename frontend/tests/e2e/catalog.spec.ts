@@ -13,7 +13,7 @@ test("home and game catalog are accessible and navigate correctly", async ({
   await page.getByRole("link", { name: /explore games/i }).click();
   await expect(page).toHaveURL(/\/games$/);
   await expect(
-    page.getByRole("heading", { name: "Choose your game." }),
+    page.getByRole("heading", { name: "Choose your game. Shape your climb." }),
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   expect(

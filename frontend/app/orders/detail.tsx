@@ -1,3 +1,4 @@
+import OrderProgress from "../experience/order-progress";
 import PurchaseReview from "../reviews/form";
 import FulfillmentPanel from "../fulfillment/panel";
 import { useState } from "react";
@@ -77,7 +78,7 @@ function History({ base, revision }: { base: string; revision: number }) {
       <section className="catalog-section">
         <h2>Order timeline</h2>
         <ErrorNotice error={timeline.error} />
-        <ol>
+        <ol className="order-history">
           {timeline.data?.events.map((event) => (
             <li key={event.id}>
               <strong>{stateLabel(event.action)}</strong> · {event.actor_role} ·{" "}
@@ -417,6 +418,7 @@ export default function OrderDetail({ admin = false }: { admin?: boolean }) {
             {detail.order.game_name} · {stateLabel(detail.order.state)}
           </h2>
           <p className="order-id">Order {detail.order.id}</p>
+          {!admin && <OrderProgress detail={detail} />}
           {detail.contract?.payment_state === "settled" && (
             <FulfillmentPanel
               detail={detail}

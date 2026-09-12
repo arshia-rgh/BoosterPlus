@@ -736,12 +736,39 @@ export default function Identity({
                     {children}
                   </AuthorizedIdentity>
                 ) : capability === "booster" ? (
-                  <p>
-                    Open your{" "}
-                    <Link to="/booster/orders">assigned-order workspace</Link>{" "}
-                    or manage your{" "}
-                    <Link to="/booster/calendar">availability calendar</Link>.
-                  </p>
+                  <section
+                    className="booster-start"
+                    aria-label="Booster workspace shortcuts"
+                  >
+                    <h2>Your work, in focus.</h2>
+                    <p>
+                      Open your{" "}
+                      <Link to="/booster/orders">assigned-order workspace</Link>{" "}
+                      or your{" "}
+                      <Link to="/booster/calendar">availability calendar</Link>.
+                    </p>
+                    <div className="catalog-cards">
+                      <Link className="workspace-shortcut" to="/booster/orders">
+                        <span className="eyebrow">01 · ASSIGNED WORK</span>
+                        <h3>Pick up where you left off ↗</h3>
+                        <p>
+                          Review the agreed scope, update progress and
+                          coordinate in the fulfillment conversation.
+                        </p>
+                      </Link>
+                      <Link
+                        className="workspace-shortcut"
+                        to="/booster/calendar"
+                      >
+                        <span className="eyebrow">02 · YOUR SCHEDULE</span>
+                        <h3>Make room for good work ↗</h3>
+                        <p>
+                          Manage availability and proposed sessions with an
+                          explicit time zone.
+                        </p>
+                      </Link>
+                    </div>
+                  </section>
                 ) : (
                   <Account
                     session={session}

@@ -51,7 +51,11 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
       </div>
       <ErrorNotice error={resource.error} />
       {!resource.data ? (
-        <p role="status">Loading conversations…</p>
+        <p role="status">
+          {resource.loading
+            ? "Loading conversations…"
+            : "Conversations could not be loaded. Use Refresh inbox to try again."}
+        </p>
       ) : (
         <>
           {resource.data.conversations.length === 0 && (

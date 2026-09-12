@@ -188,6 +188,12 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
       fullPage: true,
     });
     await accessible(page);
+    await expect(
+      buyer.getByRole("navigation", { name: "Recent conversations" }),
+    ).toBeVisible();
+    await buyer.evaluate(() => {
+      window.scrollTo(0, 0);
+    });
     await buyer.screenshot({
       path: `.cache/support-${info.project.name}.png`,
       fullPage: true,

@@ -21,7 +21,10 @@ export default function PublicReviews() {
         <p>Sales are paused. Published review history remains available.</p>
       )}
       {feed.count > 0 ? (
-        <section aria-label="Published review ratings">
+        <section
+          className="review-ratings catalog-section"
+          aria-label="Published review ratings"
+        >
           <h2>{(feed.rating_sum / feed.count).toFixed(1)} / 5</h2>
           <p>
             {feed.count} published {feed.count === 1 ? "review" : "reviews"}
@@ -31,6 +34,11 @@ export default function PublicReviews() {
               <div key={bucket.rating}>
                 <dt>{bucket.rating} / 5</dt>
                 <dd>
+                  <progress
+                    aria-label={`${String(bucket.rating)} star reviews`}
+                    value={bucket.count}
+                    max={feed.count}
+                  />
                   {bucket.count} {bucket.count === 1 ? "review" : "reviews"}
                 </dd>
               </div>

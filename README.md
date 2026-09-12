@@ -10,7 +10,8 @@ Planning documents:
 - [Implementation phases](IMPLEMENTATION_PHASES.md): thirteen phases with dependencies, deliverables, and completion criteria, including all seven approved additional features.
 
 - [Backend](backend/README.md): Go/Ent/TiDB project; explicit SQL migration CLI, API/worker processes, a durable queue, containers and compatibility/security tests. Business features follow the roadmap.
-- [Frontend](frontend/README.md): React/TypeScript prelaunch shell with type, lint, security, component, browser, and accessibility checks.
+- [Frontend](frontend/README.md): separate React storefront/admin applications with type, lint, security, component, browser, and accessibility checks.
+- [Customer experience](docs/customer-experience.md): R03 catalog, estimator, account, conversations and booster workspace.
 
 Implementation has started. See [progress](docs/progress.md) for verified stage status and [repository rules](AGENTS.md) for the required workflow.
 

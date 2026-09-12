@@ -22,6 +22,12 @@ function Summary({ work }: { work: Work }) {
       <p>
         Status: {work.state} · Progress {work.progress}%
       </p>
+      <progress
+        className="work-progress"
+        value={work.progress}
+        max={100}
+        aria-label="Reported fulfillment progress"
+      />
       <p>{work.note}</p>
       {work.completion_pending && (
         <p>Completion submitted for administrator review.</p>
@@ -184,17 +190,32 @@ export function BoosterQueue() {
   return (
     <section>
       <h2>Your assigned orders</h2>
+      <p>
+        Only work currently assigned to you appears here. Open an order for its
+        shared instructions, coordination, schedule and permitted actions.
+      </p>
+      <Link className="button" to="/booster/calendar">
+        Plan your availability
+      </Link>
       <Action onClick={resource.reload}>Refresh queue</Action>
+      {resource.loading && <p role="status">Loading assigned work…</p>}
       <ErrorNotice error={resource.error} />
       {!resource.error && resource.data && (
         <>
-          <ul>
+          <ul className="order-list">
             {resource.data.items.map((work) => (
-              <li key={work.order_id}>
+              <li key={work.order_id} className="booster-work-card">
                 <Link to={`/booster/orders/${work.order_id}`}>
                   {work.game} · {work.service}
                 </Link>{" "}
-                · {work.state} · {work.progress}%
+                <span className="status">{work.state}</span>
+                <progress
+                  className="work-progress"
+                  value={work.progress}
+                  max={100}
+                  aria-label={`${work.game} reported progress`}
+                />
+                <p>Reported progress: {work.progress}%</p>
               </li>
             ))}
           </ul>

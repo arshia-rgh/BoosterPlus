@@ -76,9 +76,14 @@ export default function Favorites() {
     <section>
       <h2>Your saved offers</h2>
       <p>Favorites do not reserve availability or prices.</p>
+      <Action onClick={resource.reload}>Refresh favorites</Action>
       <ErrorNotice error={resource.error ?? error} />
       {!resource.data ? (
-        <p role="status">Loading favorites…</p>
+        <p role="status">
+          {resource.loading
+            ? "Loading favorites…"
+            : "Could not load favorites. Use Refresh favorites to try again."}
+        </p>
       ) : (
         <>
           {resource.data.favorites.length === 0 && (

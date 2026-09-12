@@ -55,7 +55,7 @@ export function SubmissionList({ admin = false }: { admin?: boolean }) {
       {resource.loading && <p role="status">Loading private submissions…</p>}
       {!resource.error && resource.data && (
         <>
-          <ul>
+          <ul className={admin ? undefined : "order-list"}>
             {resource.data.items.map((row) => (
               <li key={row.id}>
                 <Link

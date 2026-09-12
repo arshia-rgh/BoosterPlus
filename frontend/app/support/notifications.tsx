@@ -35,7 +35,11 @@ export default function Notifications() {
       <Action onClick={resource.reload}>Refresh activity</Action>
       <ErrorNotice error={resource.error ?? error} />
       {!resource.data ? (
-        <p role="status">Loading activity…</p>
+        <p role="status">
+          {resource.loading
+            ? "Loading activity…"
+            : "Could not load activity. Use Refresh activity to try again."}
+        </p>
       ) : (
         <>
           {resource.data.notifications.length === 0 && (

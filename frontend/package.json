@@ -25,10 +25,11 @@
     "budget:home": "node scripts/check-home-budget.mjs",
     "dev:storefront": "FRONTEND_APP=storefront react-router dev --host 127.0.0.1",
     "dev:admin": "FRONTEND_APP=admin react-router dev --host 127.0.0.1",
-    "build:storefront": "FRONTEND_APP=storefront react-router build && npm run budget:home",
+    "build:storefront": "FRONTEND_APP=storefront react-router build && npm run budget:home && npm run budget:experience",
     "build:admin": "FRONTEND_APP=admin react-router build",
     "start:storefront": "FRONTEND_APP=storefront node --env-file-if-exists=.env server.mjs",
-    "start:admin": "FRONTEND_APP=admin node --env-file-if-exists=.env server.mjs"
+    "start:admin": "FRONTEND_APP=admin node --env-file-if-exists=.env server.mjs",
+    "budget:experience": "node scripts/check-experience-budget.mjs"
   },
   "dependencies": {
     "@react-router/express": "8.3.1",

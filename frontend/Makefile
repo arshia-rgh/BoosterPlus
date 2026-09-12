@@ -3,7 +3,7 @@ SHELL := /bin/sh
 .PHONY: help install dev build start preview typecheck lint fmt fmt-check test test-watch test-coverage test-e2e test-a11y security pre-commit ci clean docker-build docker-run
 
 help:
-	@printf '%s\n' 'install dev dev-storefront dev-admin build build-storefront build-admin start typecheck lint fmt fmt-check test test-e2e test-home test-admin test-server budget-home security pre-commit docker-build'
+	@printf '%s\n' 'install dev dev-storefront dev-admin build build-storefront build-admin start typecheck lint fmt fmt-check test test-e2e test-home test-admin test-experience test-server budget-home budget-experience security pre-commit docker-build'
 install:
 	npm ci --include=dev
 dev: setup-env
@@ -83,3 +83,9 @@ start-admin:
 	npm run start:admin
 test-admin: build
 	npm run test:e2e
+
+.PHONY: test-experience budget-experience
+test-experience: build
+	npm run test:e2e
+budget-experience:
+	npm run budget:experience

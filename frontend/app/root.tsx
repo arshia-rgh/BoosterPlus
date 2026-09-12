@@ -29,7 +29,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="storefront-app">
         <a className="skip-link" href="#main">
           Skip to content
         </a>

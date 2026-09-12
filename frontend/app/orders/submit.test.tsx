@@ -114,3 +114,57 @@ it("requires completion of the staff second factor before an order can be submit
   ).not.toBeInTheDocument();
   expect(post).not.toHaveBeenCalled();
 });
+
+it("keeps selections in their tab and refreshes sign-in without allowing stale session responses", async () => {
+  let older: ((value: Session) => void) | undefined;
+  vi.mocked(get).mockResolvedValueOnce({
+    ...session,
+    user: null,
+    capabilities: [],
+  });
+  render(
+    <MemoryRouter>
+      <SubmitOrder
+        slug="game"
+        service="boost"
+        releaseID="release"
+        pack=""
+        answers={{ mode: "duo" }}
+        coupon=""
+        estimate={null}
+        setBusy={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  const link = await screen.findByRole("link", {
+    name: "Sign in and complete verification",
+  });
+  expect(link).toHaveAttribute("target", "_blank");
+  expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  vi.mocked(get)
+    .mockImplementationOnce(
+      () =>
+        new Promise<Session>((resolve) => {
+          older = resolve;
+        }),
+    )
+    .mockResolvedValueOnce(session);
+  fireEvent(window, new Event("focus"));
+  fireEvent(window, new Event("boosterplus:session-changed"));
+  expect(
+    await screen.findByRole("button", { name: "Submit quote request" }),
+  ).toBeDisabled();
+  older?.({ ...session, user: null, capabilities: [] });
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Submit quote request" }),
+    ).toBeInTheDocument(),
+  );
+  expect(post).not.toHaveBeenCalled();
+  vi.mocked(get).mockRejectedValueOnce(new APIError("Session unavailable"));
+  fireEvent(window, new Event("focus"));
+  await screen.findByText("Session unavailable");
+  expect(
+    screen.queryByRole("button", { name: "Submit quote request" }),
+  ).not.toBeInTheDocument();
+});

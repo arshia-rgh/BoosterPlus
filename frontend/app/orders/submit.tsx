@@ -34,16 +34,33 @@ export default function SubmitOrder({
     [pending, setPending] = useState(false),
     [requestKey] = useState(() => crypto.randomUUID());
   useEffect(() => {
-    let active = true;
-    void get("/auth/session", sessionSchema)
-      .then((value) => {
-        if (active) setSession(value);
-      })
-      .catch((cause: unknown) => {
-        if (active) setError(cause);
-      });
+    let active = true,
+      sequence = 0;
+    const refresh = () => {
+      const request = ++sequence;
+      void get("/auth/session", sessionSchema)
+        .then((value) => {
+          if (active && request === sequence) {
+            setSession(value);
+            setAccepted(false);
+            setError(null);
+          }
+        })
+        .catch((cause: unknown) => {
+          if (active && request === sequence) {
+            setSession(null);
+            setAccepted(false);
+            setError(cause);
+          }
+        });
+    };
+    refresh();
+    window.addEventListener("focus", refresh);
+    window.addEventListener("boosterplus:session-changed", refresh);
     return () => {
       active = false;
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("boosterplus:session-changed", refresh);
     };
   }, []);
   const amount = variant
@@ -106,11 +123,18 @@ export default function SubmitOrder({
       </p>
       <ErrorNotice error={error} />
       {!session ? (
-        <p role="status">Checking sign-in…</p>
+        <p role="status">
+          {error
+            ? "Sign-in could not be checked. Return to this tab to retry."
+            : "Checking sign-in…"}
+        </p>
       ) : !session.user || session.mfa_required ? (
         <p>
-          <Link to="/login">Sign in and complete verification</Link> before
-          submitting. Keep this page open to retain your selections.
+          <Link to="/login" target="_blank" rel="noopener noreferrer">
+            Sign in and complete verification
+          </Link>{" "}
+          in a new tab, then return here. Your selections stay in this tab until
+          you leave or reload it.
         </p>
       ) : (
         <>
