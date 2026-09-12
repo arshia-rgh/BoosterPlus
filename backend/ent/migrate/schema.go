@@ -965,6 +965,221 @@ var (
 			},
 		},
 	}
+	// PaymentAllocationsColumns holds the columns for the "payment_allocations" table.
+	PaymentAllocationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "receipt_id", Type: field.TypeString, Size: 36},
+		{Name: "contract_id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "currency", Type: field.TypeString, Size: 3},
+		{Name: "amount_minor", Type: field.TypeString, Size: 12},
+		{Name: "crypto_amount", Type: field.TypeString, Size: 128},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// PaymentAllocationsTable holds the schema information for the "payment_allocations" table.
+	PaymentAllocationsTable = &schema.Table{
+		Name:       "payment_allocations",
+		Columns:    PaymentAllocationsColumns,
+		PrimaryKey: []*schema.Column{PaymentAllocationsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "payment_contract_allocation",
+				Unique:  true,
+				Columns: []*schema.Column{PaymentAllocationsColumns[2]},
+			},
+			{
+				Name:    "payment_receipt_allocation",
+				Unique:  true,
+				Columns: []*schema.Column{PaymentAllocationsColumns[1]},
+			},
+		},
+	}
+	// PaymentAttemptsColumns holds the columns for the "payment_attempts" table.
+	PaymentAttemptsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "contract_id", Type: field.TypeString, Size: 36},
+		{Name: "active_contract_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "account", Type: field.TypeString, Size: 80},
+		{Name: "policy_id", Type: field.TypeString, Size: 36},
+		{Name: "policy", Type: field.TypeJSON},
+		{Name: "route", Type: field.TypeJSON},
+		{Name: "currency", Type: field.TypeString, Size: 3},
+		{Name: "amount_minor", Type: field.TypeString, Size: 12},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "new"},
+		{Name: "invoice_id", Type: field.TypeString, Nullable: true, Size: 32},
+		{Name: "checkout_url", Type: field.TypeString, Size: 2048, Default: ""},
+		{Name: "issue", Type: field.TypeString, Size: 48, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "funds_detected_at", Type: field.TypeTime, Nullable: true},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// PaymentAttemptsTable holds the schema information for the "payment_attempts" table.
+	PaymentAttemptsTable = &schema.Table{
+		Name:       "payment_attempts",
+		Columns:    PaymentAttemptsColumns,
+		PrimaryKey: []*schema.Column{PaymentAttemptsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "payment_active_attempt",
+				Unique:  true,
+				Columns: []*schema.Column{PaymentAttemptsColumns[3]},
+			},
+			{
+				Name:    "payment_invoice",
+				Unique:  true,
+				Columns: []*schema.Column{PaymentAttemptsColumns[5], PaymentAttemptsColumns[12]},
+			},
+			{
+				Name:    "payment_order_history",
+				Unique:  false,
+				Columns: []*schema.Column{PaymentAttemptsColumns[1], PaymentAttemptsColumns[15], PaymentAttemptsColumns[0]},
+			},
+			{
+				Name:    "payment_attempt_queue",
+				Unique:  false,
+				Columns: []*schema.Column{PaymentAttemptsColumns[11], PaymentAttemptsColumns[18], PaymentAttemptsColumns[0]},
+			},
+		},
+	}
+	// PaymentObservationsColumns holds the columns for the "payment_observations" table.
+	PaymentObservationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "record_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// PaymentObservationsTable holds the schema information for the "payment_observations" table.
+	PaymentObservationsTable = &schema.Table{
+		Name:       "payment_observations",
+		Columns:    PaymentObservationsColumns,
+		PrimaryKey: []*schema.Column{PaymentObservationsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "payment_observation_revision",
+				Unique:  true,
+				Columns: []*schema.Column{PaymentObservationsColumns[1], PaymentObservationsColumns[2]},
+			},
+		},
+	}
+	// PaymentPoliciesColumns holds the columns for the "payment_policies" table.
+	PaymentPoliciesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "created_by", Type: field.TypeString, Size: 36},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// PaymentPoliciesTable holds the schema information for the "payment_policies" table.
+	PaymentPoliciesTable = &schema.Table{
+		Name:       "payment_policies",
+		Columns:    PaymentPoliciesColumns,
+		PrimaryKey: []*schema.Column{PaymentPoliciesColumns[0]},
+	}
+	// PaymentReceiptsColumns holds the columns for the "payment_receipts" table.
+	PaymentReceiptsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "record_id", Type: field.TypeString, Size: 36},
+		{Name: "attempt_id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "currency", Type: field.TypeString, Size: 32},
+		{Name: "network", Type: field.TypeString, Size: 64},
+		{Name: "amount", Type: field.TypeString, Size: 128},
+		{Name: "state", Type: field.TypeString, Size: 32},
+		{Name: "observation_id", Type: field.TypeString, Size: 36},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// PaymentReceiptsTable holds the schema information for the "payment_receipts" table.
+	PaymentReceiptsTable = &schema.Table{
+		Name:       "payment_receipts",
+		Columns:    PaymentReceiptsColumns,
+		PrimaryKey: []*schema.Column{PaymentReceiptsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "payment_receipt_reference",
+				Unique:  true,
+				Columns: []*schema.Column{PaymentReceiptsColumns[1]},
+			},
+			{
+				Name:    "payment_receipt_customer",
+				Unique:  false,
+				Columns: []*schema.Column{PaymentReceiptsColumns[4], PaymentReceiptsColumns[10], PaymentReceiptsColumns[0]},
+			},
+		},
+	}
+	// PaymentRecordsColumns holds the columns for the "payment_records" table.
+	PaymentRecordsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "account", Type: field.TypeString, Size: 80},
+		{Name: "payment_id", Type: field.TypeString, Size: 32},
+		{Name: "attempt_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "version", Type: field.TypeInt, Default: 0},
+		{Name: "lease_owner", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "lease_until", Type: field.TypeTime, Nullable: true},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "unknown"},
+		{Name: "issue", Type: field.TypeString, Size: 48, Default: ""},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "checked_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// PaymentRecordsTable holds the schema information for the "payment_records" table.
+	PaymentRecordsTable = &schema.Table{
+		Name:       "payment_records",
+		Columns:    PaymentRecordsColumns,
+		PrimaryKey: []*schema.Column{PaymentRecordsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "payment_provider_reference",
+				Unique:  true,
+				Columns: []*schema.Column{PaymentRecordsColumns[1], PaymentRecordsColumns[2]},
+			},
+			{
+				Name:    "payment_reconcile_due",
+				Unique:  false,
+				Columns: []*schema.Column{PaymentRecordsColumns[1], PaymentRecordsColumns[10], PaymentRecordsColumns[0]},
+			},
+		},
+	}
+	// PaymentSettingsColumns holds the columns for the "payment_settings" table.
+	PaymentSettingsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "published_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "draft", Type: field.TypeJSON},
+		{Name: "discovery_page", Type: field.TypeInt, Default: 0},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// PaymentSettingsTable holds the schema information for the "payment_settings" table.
+	PaymentSettingsTable = &schema.Table{
+		Name:       "payment_settings",
+		Columns:    PaymentSettingsColumns,
+		PrimaryKey: []*schema.Column{PaymentSettingsColumns[0]},
+	}
+	// PaymentSignalsColumns holds the columns for the "payment_signals" table.
+	PaymentSignalsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "account", Type: field.TypeString, Size: 80},
+		{Name: "payment_id", Type: field.TypeString, Size: 32},
+		{Name: "digest", Type: field.TypeString, Size: 64},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// PaymentSignalsTable holds the schema information for the "payment_signals" table.
+	PaymentSignalsTable = &schema.Table{
+		Name:       "payment_signals",
+		Columns:    PaymentSignalsColumns,
+		PrimaryKey: []*schema.Column{PaymentSignalsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "payment_signal_dedup",
+				Unique:  true,
+				Columns: []*schema.Column{PaymentSignalsColumns[1], PaymentSignalsColumns[3]},
+			},
+		},
+	}
 	// ReviewsColumns holds the columns for the "reviews" table.
 	ReviewsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -1202,6 +1417,14 @@ var (
 		OrderContractsTable,
 		OrderEventsTable,
 		OrderQuotesTable,
+		PaymentAllocationsTable,
+		PaymentAttemptsTable,
+		PaymentObservationsTable,
+		PaymentPoliciesTable,
+		PaymentReceiptsTable,
+		PaymentRecordsTable,
+		PaymentSettingsTable,
+		PaymentSignalsTable,
 		ReviewsTable,
 		ReviewRevisionsTable,
 		SecretBundlesTable,

@@ -99,6 +99,30 @@ type OrderEvent func(*sql.Selector)
 // OrderQuote is the predicate function for orderquote builders.
 type OrderQuote func(*sql.Selector)
 
+// PaymentAllocation is the predicate function for paymentallocation builders.
+type PaymentAllocation func(*sql.Selector)
+
+// PaymentAttempt is the predicate function for paymentattempt builders.
+type PaymentAttempt func(*sql.Selector)
+
+// PaymentObservation is the predicate function for paymentobservation builders.
+type PaymentObservation func(*sql.Selector)
+
+// PaymentPolicy is the predicate function for paymentpolicy builders.
+type PaymentPolicy func(*sql.Selector)
+
+// PaymentReceipt is the predicate function for paymentreceipt builders.
+type PaymentReceipt func(*sql.Selector)
+
+// PaymentRecord is the predicate function for paymentrecord builders.
+type PaymentRecord func(*sql.Selector)
+
+// PaymentSettings is the predicate function for paymentsettings builders.
+type PaymentSettings func(*sql.Selector)
+
+// PaymentSignal is the predicate function for paymentsignal builders.
+type PaymentSignal func(*sql.Selector)
+
 // Review is the predicate function for review builders.
 type Review func(*sql.Selector)
 

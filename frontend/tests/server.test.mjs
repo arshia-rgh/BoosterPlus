@@ -58,6 +58,7 @@ test(
           ip: req.headers["x-booster-client-ip"],
           forwarded: req.headers["x-forwarded-for"] ?? null,
           cookie: req.headers.cookie ?? null,
+          signature: req.headers["x-nowpayments-sig"] ?? null,
         }),
       );
     });
@@ -112,6 +113,19 @@ test(
     assert.equal(result.cookie, "bp-session=client-cookie");
     assert.equal(result.path, "/api/v1/test?target=https://evil.example");
     assert.match(response.headers.get("set-cookie"), /HttpOnly/);
+    const callback = await fetch(
+      url + "/api/v1/webhooks/payments/nowpayments",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Nowpayments-Sig": "synthetic-signature",
+        },
+        body: JSON.stringify({ padding: "x".repeat(20000) }),
+      },
+    );
+    assert.equal(callback.status, 200);
+    assert.equal((await callback.json()).signature, "synthetic-signature");
   },
 );
 test(
@@ -181,6 +195,7 @@ for (const application of ["storefront", "admin", "both"]) {
         "/admin/reports",
         "/admin/jobs",
         "/admin/calendar",
+        "/admin/finance",
         "/admin/support",
       ]) {
         const response = await fetch(origin + route);

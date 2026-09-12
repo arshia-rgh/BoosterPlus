@@ -21,6 +21,8 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
 )
 
@@ -47,7 +49,7 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 		return err
 	}
 	defer func() { result = errors.Join(result, db.Close()) }()
-	if err := database.Ready(ctx, db); err != nil {
+	if err = database.Ready(ctx, db); err != nil {
 		return err
 	}
 	client := ent.NewClient(ent.Driver(entsql.OpenDB(dialect.MySQL, db)))
@@ -94,6 +96,19 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 		logger.InfoContext(ctx, "system job completed", "job_id", job.ID)
 		return nil
 	}}
+	var provider payments.Provider
+	if cfg.Crypto.Provider != nil {
+		provider, err = nowpayments.New(*cfg.Crypto.Provider)
+		if err != nil {
+			return err
+		}
+	}
+	finance := payments.New(client, auth, provider, cfg.Crypto.Account, cfg.Crypto.Enabled, nil)
+	financeDone := make(chan struct{})
+	go func() { defer close(financeDone); finance.RunMaintenance(maintenance, logger) }()
+	defer func() { stopMaintenance(); <-financeDone }()
+	handlers["payments.invoice"] = finance.InvoiceHandler()
+	handlers["payments.reconcile"] = finance.ReconcileHandler()
 	handlers["identity.email"] = auth.EmailHandler(sender)
 	notices, noticeErr := notifications.New(client, auth, cfg.Identity.PublicOrigin)
 	if noticeErr != nil {

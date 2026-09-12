@@ -14819,6 +14819,378 @@
           }
         }
       }
+    },
+    "/api/v1/orders/{id}/payments": {
+      "get": {
+        "operationId": "customerPaymentHistory",
+        "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/orders/{id}/payments": {
+      "get": {
+        "operationId": "adminPaymentHistory",
+        "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/orders/{id}/checkout": {
+      "post": {
+        "operationId": "startCheckout",
+        "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentAttempt"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentStartInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/finance": {
+      "get": {
+        "operationId": "financeQueue",
+        "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceQueue"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/finance/policy": {
+      "get": {
+        "operationId": "paymentSettings",
+        "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentSettings"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "updatePaymentPolicy",
+        "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentSettings"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentPolicyInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/finance/reconcile": {
+      "post": {
+        "operationId": "requestPaymentReconciliation",
+        "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentReconcileResult"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentReconcileInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/payments/nowpayments": {
+      "post": {
+        "operationId": "receivePaymentSignal",
+        "summary": "HMAC-authenticated durable callback inbox; provider GET decides settlement",
+        "security": [],
+        "parameters": [
+          {
+            "name": "X-Nowpayments-Sig",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Verified callback and reconciliation job persisted atomically"
+          },
+          "400": {
+            "description": "Invalid signature or payload"
+          },
+          "503": {
+            "description": "Inbox unavailable; callback must be retried"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -19840,6 +20212,360 @@
             "items": {
               "$ref": "#/components/schemas/CatalogIssue"
             }
+          }
+        }
+      },
+      "PaymentRoute": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "label", "network"],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "network": {
+            "type": "string"
+          }
+        }
+      },
+      "PaymentPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "text",
+          "currencies",
+          "routes",
+          "fee_mode",
+          "rate_mode",
+          "window_minutes"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "currencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "routes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentRoute"
+            }
+          },
+          "fee_mode": {
+            "type": "string"
+          },
+          "rate_mode": {
+            "type": "string"
+          },
+          "window_minutes": {
+            "type": "integer"
+          }
+        }
+      },
+      "PublishedPaymentPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "data"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PaymentPolicy"
+          }
+        }
+      },
+      "PaymentAttempt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "order_id",
+          "state",
+          "issue",
+          "currency",
+          "amount_minor",
+          "route",
+          "policy",
+          "checkout_url",
+          "created_at",
+          "expires_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "amount_minor": {
+            "type": "string"
+          },
+          "route": {
+            "$ref": "#/components/schemas/PaymentRoute"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/PublishedPaymentPolicy"
+          },
+          "checkout_url": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PaymentReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "state",
+          "currency",
+          "network",
+          "amount",
+          "allocated_currency",
+          "allocated_minor",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "network": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "allocated_currency": {
+            "type": "string"
+          },
+          "allocated_minor": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PaymentHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["enabled", "policy", "attempts", "receipts"],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "policy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PublishedPaymentPolicy"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "attempts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentAttempt"
+            }
+          },
+          "receipts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentReceipt"
+            }
+          }
+        }
+      },
+      "PaymentSettings": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "draft", "published", "configured", "enabled"],
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "draft": {
+            "$ref": "#/components/schemas/PaymentPolicy"
+          },
+          "published": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PublishedPaymentPolicy"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "configured": {
+            "type": "boolean"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PaymentRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "payment_id",
+          "attempt_id",
+          "state",
+          "issue",
+          "checked_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "payment_id": {
+            "type": "string"
+          },
+          "attempt_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "checked_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "FinanceQueue": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["enabled", "next", "attempts", "records"],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "next": {
+            "type": "string"
+          },
+          "attempts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentAttempt"
+            }
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentRecord"
+            }
+          }
+        }
+      },
+      "PaymentStartInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["contract_id", "policy_id", "route", "accept_policy"],
+        "properties": {
+          "contract_id": {
+            "type": "string"
+          },
+          "policy_id": {
+            "type": "string"
+          },
+          "route": {
+            "type": "string"
+          },
+          "accept_policy": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PaymentPolicyInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "action", "data"],
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["save", "publish"]
+          },
+          "data": {
+            "$ref": "#/components/schemas/PaymentPolicy"
+          }
+        }
+      },
+      "PaymentReconcileInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["payment_id", "reason"],
+        "properties": {
+          "payment_id": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "PaymentReconcileResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["queued"],
+        "properties": {
+          "queued": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PaymentProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "type": "string"
           }
         }
       }

@@ -61,6 +61,18 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "payment_invalid",
+    "Review the payment policy, asset and network, and confirm your acceptance.",
+  ],
+  [
+    "payment_conflict",
+    "Payment details changed. Refresh before continuing; do not create another payment.",
+  ],
+  [
+    "payments_unavailable",
+    "Checkout is temporarily unavailable. Contact support for updates.",
+  ],
+  [
     "report_invalid",
     "Check the report filters, UTC date range, and export reason.",
   ],

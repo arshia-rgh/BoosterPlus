@@ -107,6 +107,8 @@ export default function BackgroundJobs() {
         options={[
           ["", "All task kinds"],
           ...[
+            "payments.invoice",
+            "payments.reconcile",
             "system.ping",
             "identity.email",
             "activity.email",

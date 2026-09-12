@@ -36,6 +36,14 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentallocation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentattempt"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentobservation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentpolicy"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentreceipt"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentrecord"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentsettings"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentsignal"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/schema"
@@ -1189,6 +1197,248 @@ func init() {
 	orderquote.DefaultID = orderquoteDescID.Default.(func() string)
 	// orderquote.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	orderquote.IDValidator = orderquoteDescID.Validators[0].(func(string) error)
+	paymentallocationFields := schema.PaymentAllocation{}.Fields()
+	_ = paymentallocationFields
+	// paymentallocationDescReceiptID is the schema descriptor for receipt_id field.
+	paymentallocationDescReceiptID := paymentallocationFields[1].Descriptor()
+	// paymentallocation.ReceiptIDValidator is a validator for the "receipt_id" field. It is called by the builders before save.
+	paymentallocation.ReceiptIDValidator = paymentallocationDescReceiptID.Validators[0].(func(string) error)
+	// paymentallocationDescContractID is the schema descriptor for contract_id field.
+	paymentallocationDescContractID := paymentallocationFields[2].Descriptor()
+	// paymentallocation.ContractIDValidator is a validator for the "contract_id" field. It is called by the builders before save.
+	paymentallocation.ContractIDValidator = paymentallocationDescContractID.Validators[0].(func(string) error)
+	// paymentallocationDescOrderID is the schema descriptor for order_id field.
+	paymentallocationDescOrderID := paymentallocationFields[3].Descriptor()
+	// paymentallocation.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	paymentallocation.OrderIDValidator = paymentallocationDescOrderID.Validators[0].(func(string) error)
+	// paymentallocationDescCurrency is the schema descriptor for currency field.
+	paymentallocationDescCurrency := paymentallocationFields[4].Descriptor()
+	// paymentallocation.CurrencyValidator is a validator for the "currency" field. It is called by the builders before save.
+	paymentallocation.CurrencyValidator = paymentallocationDescCurrency.Validators[0].(func(string) error)
+	// paymentallocationDescAmountMinor is the schema descriptor for amount_minor field.
+	paymentallocationDescAmountMinor := paymentallocationFields[5].Descriptor()
+	// paymentallocation.AmountMinorValidator is a validator for the "amount_minor" field. It is called by the builders before save.
+	paymentallocation.AmountMinorValidator = paymentallocationDescAmountMinor.Validators[0].(func(string) error)
+	// paymentallocationDescCryptoAmount is the schema descriptor for crypto_amount field.
+	paymentallocationDescCryptoAmount := paymentallocationFields[6].Descriptor()
+	// paymentallocation.CryptoAmountValidator is a validator for the "crypto_amount" field. It is called by the builders before save.
+	paymentallocation.CryptoAmountValidator = paymentallocationDescCryptoAmount.Validators[0].(func(string) error)
+	// paymentallocationDescID is the schema descriptor for id field.
+	paymentallocationDescID := paymentallocationFields[0].Descriptor()
+	// paymentallocation.DefaultID holds the default value on creation for the id field.
+	paymentallocation.DefaultID = paymentallocationDescID.Default.(func() string)
+	// paymentallocation.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	paymentallocation.IDValidator = paymentallocationDescID.Validators[0].(func(string) error)
+	paymentattemptFields := schema.PaymentAttempt{}.Fields()
+	_ = paymentattemptFields
+	// paymentattemptDescOrderID is the schema descriptor for order_id field.
+	paymentattemptDescOrderID := paymentattemptFields[1].Descriptor()
+	// paymentattempt.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	paymentattempt.OrderIDValidator = paymentattemptDescOrderID.Validators[0].(func(string) error)
+	// paymentattemptDescContractID is the schema descriptor for contract_id field.
+	paymentattemptDescContractID := paymentattemptFields[2].Descriptor()
+	// paymentattempt.ContractIDValidator is a validator for the "contract_id" field. It is called by the builders before save.
+	paymentattempt.ContractIDValidator = paymentattemptDescContractID.Validators[0].(func(string) error)
+	// paymentattemptDescActiveContractID is the schema descriptor for active_contract_id field.
+	paymentattemptDescActiveContractID := paymentattemptFields[3].Descriptor()
+	// paymentattempt.ActiveContractIDValidator is a validator for the "active_contract_id" field. It is called by the builders before save.
+	paymentattempt.ActiveContractIDValidator = paymentattemptDescActiveContractID.Validators[0].(func(string) error)
+	// paymentattemptDescUserID is the schema descriptor for user_id field.
+	paymentattemptDescUserID := paymentattemptFields[4].Descriptor()
+	// paymentattempt.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	paymentattempt.UserIDValidator = paymentattemptDescUserID.Validators[0].(func(string) error)
+	// paymentattemptDescAccount is the schema descriptor for account field.
+	paymentattemptDescAccount := paymentattemptFields[5].Descriptor()
+	// paymentattempt.AccountValidator is a validator for the "account" field. It is called by the builders before save.
+	paymentattempt.AccountValidator = paymentattemptDescAccount.Validators[0].(func(string) error)
+	// paymentattemptDescPolicyID is the schema descriptor for policy_id field.
+	paymentattemptDescPolicyID := paymentattemptFields[6].Descriptor()
+	// paymentattempt.PolicyIDValidator is a validator for the "policy_id" field. It is called by the builders before save.
+	paymentattempt.PolicyIDValidator = paymentattemptDescPolicyID.Validators[0].(func(string) error)
+	// paymentattemptDescCurrency is the schema descriptor for currency field.
+	paymentattemptDescCurrency := paymentattemptFields[9].Descriptor()
+	// paymentattempt.CurrencyValidator is a validator for the "currency" field. It is called by the builders before save.
+	paymentattempt.CurrencyValidator = paymentattemptDescCurrency.Validators[0].(func(string) error)
+	// paymentattemptDescAmountMinor is the schema descriptor for amount_minor field.
+	paymentattemptDescAmountMinor := paymentattemptFields[10].Descriptor()
+	// paymentattempt.AmountMinorValidator is a validator for the "amount_minor" field. It is called by the builders before save.
+	paymentattempt.AmountMinorValidator = paymentattemptDescAmountMinor.Validators[0].(func(string) error)
+	// paymentattemptDescState is the schema descriptor for state field.
+	paymentattemptDescState := paymentattemptFields[11].Descriptor()
+	// paymentattempt.DefaultState holds the default value on creation for the state field.
+	paymentattempt.DefaultState = paymentattemptDescState.Default.(string)
+	// paymentattempt.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	paymentattempt.StateValidator = paymentattemptDescState.Validators[0].(func(string) error)
+	// paymentattemptDescInvoiceID is the schema descriptor for invoice_id field.
+	paymentattemptDescInvoiceID := paymentattemptFields[12].Descriptor()
+	// paymentattempt.InvoiceIDValidator is a validator for the "invoice_id" field. It is called by the builders before save.
+	paymentattempt.InvoiceIDValidator = paymentattemptDescInvoiceID.Validators[0].(func(string) error)
+	// paymentattemptDescCheckoutURL is the schema descriptor for checkout_url field.
+	paymentattemptDescCheckoutURL := paymentattemptFields[13].Descriptor()
+	// paymentattempt.DefaultCheckoutURL holds the default value on creation for the checkout_url field.
+	paymentattempt.DefaultCheckoutURL = paymentattemptDescCheckoutURL.Default.(string)
+	// paymentattempt.CheckoutURLValidator is a validator for the "checkout_url" field. It is called by the builders before save.
+	paymentattempt.CheckoutURLValidator = paymentattemptDescCheckoutURL.Validators[0].(func(string) error)
+	// paymentattemptDescIssue is the schema descriptor for issue field.
+	paymentattemptDescIssue := paymentattemptFields[14].Descriptor()
+	// paymentattempt.DefaultIssue holds the default value on creation for the issue field.
+	paymentattempt.DefaultIssue = paymentattemptDescIssue.Default.(string)
+	// paymentattempt.IssueValidator is a validator for the "issue" field. It is called by the builders before save.
+	paymentattempt.IssueValidator = paymentattemptDescIssue.Validators[0].(func(string) error)
+	// paymentattemptDescID is the schema descriptor for id field.
+	paymentattemptDescID := paymentattemptFields[0].Descriptor()
+	// paymentattempt.DefaultID holds the default value on creation for the id field.
+	paymentattempt.DefaultID = paymentattemptDescID.Default.(func() string)
+	// paymentattempt.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	paymentattempt.IDValidator = paymentattemptDescID.Validators[0].(func(string) error)
+	paymentobservationFields := schema.PaymentObservation{}.Fields()
+	_ = paymentobservationFields
+	// paymentobservationDescRecordID is the schema descriptor for record_id field.
+	paymentobservationDescRecordID := paymentobservationFields[1].Descriptor()
+	// paymentobservation.RecordIDValidator is a validator for the "record_id" field. It is called by the builders before save.
+	paymentobservation.RecordIDValidator = paymentobservationDescRecordID.Validators[0].(func(string) error)
+	// paymentobservationDescID is the schema descriptor for id field.
+	paymentobservationDescID := paymentobservationFields[0].Descriptor()
+	// paymentobservation.DefaultID holds the default value on creation for the id field.
+	paymentobservation.DefaultID = paymentobservationDescID.Default.(func() string)
+	// paymentobservation.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	paymentobservation.IDValidator = paymentobservationDescID.Validators[0].(func(string) error)
+	paymentpolicyFields := schema.PaymentPolicy{}.Fields()
+	_ = paymentpolicyFields
+	// paymentpolicyDescCreatedBy is the schema descriptor for created_by field.
+	paymentpolicyDescCreatedBy := paymentpolicyFields[2].Descriptor()
+	// paymentpolicy.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	paymentpolicy.CreatedByValidator = paymentpolicyDescCreatedBy.Validators[0].(func(string) error)
+	// paymentpolicyDescID is the schema descriptor for id field.
+	paymentpolicyDescID := paymentpolicyFields[0].Descriptor()
+	// paymentpolicy.DefaultID holds the default value on creation for the id field.
+	paymentpolicy.DefaultID = paymentpolicyDescID.Default.(func() string)
+	// paymentpolicy.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	paymentpolicy.IDValidator = paymentpolicyDescID.Validators[0].(func(string) error)
+	paymentreceiptFields := schema.PaymentReceipt{}.Fields()
+	_ = paymentreceiptFields
+	// paymentreceiptDescRecordID is the schema descriptor for record_id field.
+	paymentreceiptDescRecordID := paymentreceiptFields[1].Descriptor()
+	// paymentreceipt.RecordIDValidator is a validator for the "record_id" field. It is called by the builders before save.
+	paymentreceipt.RecordIDValidator = paymentreceiptDescRecordID.Validators[0].(func(string) error)
+	// paymentreceiptDescAttemptID is the schema descriptor for attempt_id field.
+	paymentreceiptDescAttemptID := paymentreceiptFields[2].Descriptor()
+	// paymentreceipt.AttemptIDValidator is a validator for the "attempt_id" field. It is called by the builders before save.
+	paymentreceipt.AttemptIDValidator = paymentreceiptDescAttemptID.Validators[0].(func(string) error)
+	// paymentreceiptDescOrderID is the schema descriptor for order_id field.
+	paymentreceiptDescOrderID := paymentreceiptFields[3].Descriptor()
+	// paymentreceipt.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	paymentreceipt.OrderIDValidator = paymentreceiptDescOrderID.Validators[0].(func(string) error)
+	// paymentreceiptDescUserID is the schema descriptor for user_id field.
+	paymentreceiptDescUserID := paymentreceiptFields[4].Descriptor()
+	// paymentreceipt.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	paymentreceipt.UserIDValidator = paymentreceiptDescUserID.Validators[0].(func(string) error)
+	// paymentreceiptDescCurrency is the schema descriptor for currency field.
+	paymentreceiptDescCurrency := paymentreceiptFields[5].Descriptor()
+	// paymentreceipt.CurrencyValidator is a validator for the "currency" field. It is called by the builders before save.
+	paymentreceipt.CurrencyValidator = paymentreceiptDescCurrency.Validators[0].(func(string) error)
+	// paymentreceiptDescNetwork is the schema descriptor for network field.
+	paymentreceiptDescNetwork := paymentreceiptFields[6].Descriptor()
+	// paymentreceipt.NetworkValidator is a validator for the "network" field. It is called by the builders before save.
+	paymentreceipt.NetworkValidator = paymentreceiptDescNetwork.Validators[0].(func(string) error)
+	// paymentreceiptDescAmount is the schema descriptor for amount field.
+	paymentreceiptDescAmount := paymentreceiptFields[7].Descriptor()
+	// paymentreceipt.AmountValidator is a validator for the "amount" field. It is called by the builders before save.
+	paymentreceipt.AmountValidator = paymentreceiptDescAmount.Validators[0].(func(string) error)
+	// paymentreceiptDescState is the schema descriptor for state field.
+	paymentreceiptDescState := paymentreceiptFields[8].Descriptor()
+	// paymentreceipt.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	paymentreceipt.StateValidator = paymentreceiptDescState.Validators[0].(func(string) error)
+	// paymentreceiptDescObservationID is the schema descriptor for observation_id field.
+	paymentreceiptDescObservationID := paymentreceiptFields[9].Descriptor()
+	// paymentreceipt.ObservationIDValidator is a validator for the "observation_id" field. It is called by the builders before save.
+	paymentreceipt.ObservationIDValidator = paymentreceiptDescObservationID.Validators[0].(func(string) error)
+	// paymentreceiptDescID is the schema descriptor for id field.
+	paymentreceiptDescID := paymentreceiptFields[0].Descriptor()
+	// paymentreceipt.DefaultID holds the default value on creation for the id field.
+	paymentreceipt.DefaultID = paymentreceiptDescID.Default.(func() string)
+	// paymentreceipt.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	paymentreceipt.IDValidator = paymentreceiptDescID.Validators[0].(func(string) error)
+	paymentrecordFields := schema.PaymentRecord{}.Fields()
+	_ = paymentrecordFields
+	// paymentrecordDescAccount is the schema descriptor for account field.
+	paymentrecordDescAccount := paymentrecordFields[1].Descriptor()
+	// paymentrecord.AccountValidator is a validator for the "account" field. It is called by the builders before save.
+	paymentrecord.AccountValidator = paymentrecordDescAccount.Validators[0].(func(string) error)
+	// paymentrecordDescPaymentID is the schema descriptor for payment_id field.
+	paymentrecordDescPaymentID := paymentrecordFields[2].Descriptor()
+	// paymentrecord.PaymentIDValidator is a validator for the "payment_id" field. It is called by the builders before save.
+	paymentrecord.PaymentIDValidator = paymentrecordDescPaymentID.Validators[0].(func(string) error)
+	// paymentrecordDescAttemptID is the schema descriptor for attempt_id field.
+	paymentrecordDescAttemptID := paymentrecordFields[3].Descriptor()
+	// paymentrecord.DefaultAttemptID holds the default value on creation for the attempt_id field.
+	paymentrecord.DefaultAttemptID = paymentrecordDescAttemptID.Default.(string)
+	// paymentrecord.AttemptIDValidator is a validator for the "attempt_id" field. It is called by the builders before save.
+	paymentrecord.AttemptIDValidator = paymentrecordDescAttemptID.Validators[0].(func(string) error)
+	// paymentrecordDescVersion is the schema descriptor for version field.
+	paymentrecordDescVersion := paymentrecordFields[4].Descriptor()
+	// paymentrecord.DefaultVersion holds the default value on creation for the version field.
+	paymentrecord.DefaultVersion = paymentrecordDescVersion.Default.(int)
+	// paymentrecordDescLeaseOwner is the schema descriptor for lease_owner field.
+	paymentrecordDescLeaseOwner := paymentrecordFields[5].Descriptor()
+	// paymentrecord.DefaultLeaseOwner holds the default value on creation for the lease_owner field.
+	paymentrecord.DefaultLeaseOwner = paymentrecordDescLeaseOwner.Default.(string)
+	// paymentrecord.LeaseOwnerValidator is a validator for the "lease_owner" field. It is called by the builders before save.
+	paymentrecord.LeaseOwnerValidator = paymentrecordDescLeaseOwner.Validators[0].(func(string) error)
+	// paymentrecordDescState is the schema descriptor for state field.
+	paymentrecordDescState := paymentrecordFields[7].Descriptor()
+	// paymentrecord.DefaultState holds the default value on creation for the state field.
+	paymentrecord.DefaultState = paymentrecordDescState.Default.(string)
+	// paymentrecord.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	paymentrecord.StateValidator = paymentrecordDescState.Validators[0].(func(string) error)
+	// paymentrecordDescIssue is the schema descriptor for issue field.
+	paymentrecordDescIssue := paymentrecordFields[8].Descriptor()
+	// paymentrecord.DefaultIssue holds the default value on creation for the issue field.
+	paymentrecord.DefaultIssue = paymentrecordDescIssue.Default.(string)
+	// paymentrecord.IssueValidator is a validator for the "issue" field. It is called by the builders before save.
+	paymentrecord.IssueValidator = paymentrecordDescIssue.Validators[0].(func(string) error)
+	// paymentrecordDescID is the schema descriptor for id field.
+	paymentrecordDescID := paymentrecordFields[0].Descriptor()
+	// paymentrecord.DefaultID holds the default value on creation for the id field.
+	paymentrecord.DefaultID = paymentrecordDescID.Default.(func() string)
+	// paymentrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	paymentrecord.IDValidator = paymentrecordDescID.Validators[0].(func(string) error)
+	paymentsettingsFields := schema.PaymentSettings{}.Fields()
+	_ = paymentsettingsFields
+	// paymentsettingsDescVersion is the schema descriptor for version field.
+	paymentsettingsDescVersion := paymentsettingsFields[1].Descriptor()
+	// paymentsettings.DefaultVersion holds the default value on creation for the version field.
+	paymentsettings.DefaultVersion = paymentsettingsDescVersion.Default.(int)
+	// paymentsettingsDescPublishedID is the schema descriptor for published_id field.
+	paymentsettingsDescPublishedID := paymentsettingsFields[2].Descriptor()
+	// paymentsettings.DefaultPublishedID holds the default value on creation for the published_id field.
+	paymentsettings.DefaultPublishedID = paymentsettingsDescPublishedID.Default.(string)
+	// paymentsettings.PublishedIDValidator is a validator for the "published_id" field. It is called by the builders before save.
+	paymentsettings.PublishedIDValidator = paymentsettingsDescPublishedID.Validators[0].(func(string) error)
+	// paymentsettingsDescDiscoveryPage is the schema descriptor for discovery_page field.
+	paymentsettingsDescDiscoveryPage := paymentsettingsFields[4].Descriptor()
+	// paymentsettings.DefaultDiscoveryPage holds the default value on creation for the discovery_page field.
+	paymentsettings.DefaultDiscoveryPage = paymentsettingsDescDiscoveryPage.Default.(int)
+	paymentsignalFields := schema.PaymentSignal{}.Fields()
+	_ = paymentsignalFields
+	// paymentsignalDescAccount is the schema descriptor for account field.
+	paymentsignalDescAccount := paymentsignalFields[1].Descriptor()
+	// paymentsignal.AccountValidator is a validator for the "account" field. It is called by the builders before save.
+	paymentsignal.AccountValidator = paymentsignalDescAccount.Validators[0].(func(string) error)
+	// paymentsignalDescPaymentID is the schema descriptor for payment_id field.
+	paymentsignalDescPaymentID := paymentsignalFields[2].Descriptor()
+	// paymentsignal.PaymentIDValidator is a validator for the "payment_id" field. It is called by the builders before save.
+	paymentsignal.PaymentIDValidator = paymentsignalDescPaymentID.Validators[0].(func(string) error)
+	// paymentsignalDescDigest is the schema descriptor for digest field.
+	paymentsignalDescDigest := paymentsignalFields[3].Descriptor()
+	// paymentsignal.DigestValidator is a validator for the "digest" field. It is called by the builders before save.
+	paymentsignal.DigestValidator = paymentsignalDescDigest.Validators[0].(func(string) error)
+	// paymentsignalDescID is the schema descriptor for id field.
+	paymentsignalDescID := paymentsignalFields[0].Descriptor()
+	// paymentsignal.DefaultID holds the default value on creation for the id field.
+	paymentsignal.DefaultID = paymentsignalDescID.Default.(func() string)
+	// paymentsignal.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	paymentsignal.IDValidator = paymentsignalDescID.Validators[0].(func(string) error)
 	reviewFields := schema.Review{}.Fields()
 	_ = reviewFields
 	// reviewDescOrderID is the schema descriptor for order_id field.

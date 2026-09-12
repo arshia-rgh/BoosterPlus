@@ -73,6 +73,7 @@ app.use("/api", (req, res) => {
     "sec-fetch-site",
     "x-csrf-token",
     "last-event-id",
+    "x-nowpayments-sig",
   ]) {
     if (req.headers[name]) headers[name] = req.headers[name];
   }
@@ -125,7 +126,8 @@ app.use("/api", (req, res) => {
         : req.path.startsWith("/v1/media") ||
             req.path.startsWith("/v1/admin/media")
           ? 16384
-          : req.path.startsWith("/v1/conversations") ||
+          : req.path === "/v1/webhooks/payments/nowpayments" ||
+              req.path.startsWith("/v1/conversations") ||
               req.path.startsWith("/v1/admin/conversations") ||
               req.path.startsWith("/v1/orders") ||
               req.path.startsWith("/v1/admin/orders") ||

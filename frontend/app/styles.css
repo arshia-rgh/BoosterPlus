@@ -727,3 +727,21 @@ footer {
     display: none;
   }
 }
+
+.payment-policy {
+  white-space: pre-line;
+}
+.payment-current {
+  padding: 1.25rem;
+  border: 1px solid currentColor;
+  border-radius: 1rem;
+  margin-block: 1rem;
+}
+.payment-receipt {
+  padding: 1rem;
+  border-block-start: 1px solid currentColor;
+  overflow-wrap: anywhere;
+}
+.payment-panel details {
+  margin-block: 0.75rem;
+}

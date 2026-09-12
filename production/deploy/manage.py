@@ -64,7 +64,7 @@ def load(path, staging=False):
         raise ValueError("Public deployments require exact origins, TLS dependencies and a private scanner socket")
     if any("tls=true" not in cfg.get(key, "") for cfg, key in ((backend, "DATABASE_DSN"), (migration, "MIGRATION_DATABASE_DSN"))):
         raise ValueError("Both database accounts require verified TLS")
-    if "MIGRATION_DATABASE_DSN" in backend or "DATABASE_DSN" in migration or any(key in frontend for key in ("AUTH_KEY", "VAULT_KEYS", "DATABASE_DSN", "MEDIA_S3_SECRET_KEY")):
+    if "MIGRATION_DATABASE_DSN" in backend or "DATABASE_DSN" in migration or any(key in frontend for key in ("AUTH_KEY", "VAULT_KEYS", "DATABASE_DSN", "MEDIA_S3_SECRET_KEY", "NOWPAYMENTS_API_KEY", "NOWPAYMENTS_IPN_SECRET", "NOWPAYMENTS_EMAIL", "NOWPAYMENTS_PASSWORD")):
         raise ValueError("Runtime, frontend and migration credentials must remain separate")
     return manifest
 

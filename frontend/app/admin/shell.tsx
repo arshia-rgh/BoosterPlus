@@ -24,6 +24,7 @@ const groups = [
   {
     label: "Operations",
     items: [
+      ["/admin/finance", "Finance", "◉"],
       ["/admin/reports", "Reports", "▥"],
       ["/admin/jobs", "Background tasks", "↻"],
     ],

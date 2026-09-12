@@ -47,6 +47,10 @@ export const overviewSchema = z.object({
 export type Job = z.infer<typeof jobSchema>;
 export function kindLabel(kind: string) {
   switch (kind) {
+    case "payments.invoice":
+      return "Crypto invoice creation";
+    case "payments.reconcile":
+      return "Payment evidence reconciliation";
     case "system.ping":
       return "Worker connectivity check";
     case "identity.email":

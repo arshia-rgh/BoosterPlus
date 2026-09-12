@@ -26,6 +26,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/operations"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/reports"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/reviews"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/submissions"
@@ -64,16 +65,16 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	fixtures := map[string]string{}
 	for _, project := range []string{"desktop", "mobile"} {
-		for _, role := range []string{"customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond", "seller", "selleradmin", "sellerother"} {
+		for _, role := range []string{"payadmin", "paybuyer", "customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond", "seller", "selleradmin", "sellerother"} {
 			email := strings.ToLower(role + "-" + project + "-" + rand.Text() + "@example.test")
 			account, createErr := f.client.User.Create().SetEmail(email).SetEmailVerifiedAt(time.Now()).SetTermsVersion("test-v1").SetTermsAcceptedAt(time.Now()).SetRole(func() string {
 				if role == "workbooster" || role == "worksecond" {
 					return "booster"
 				}
-				if role == "selleradmin" || role == "workadmin" || role == "catalog" || role == "orderadmin" || role == "supportadmin" {
+				if role == "payadmin" || role == "selleradmin" || role == "workadmin" || role == "catalog" || role == "orderadmin" || role == "supportadmin" {
 					return "administrator"
 				}
-				if role == "seller" || role == "sellerother" || role == "workbuyer" || role == "workother" || role == "target" || role == "orders" || role == "orderother" || role == "supportbuyer" || role == "supportother" {
+				if role == "paybuyer" || role == "seller" || role == "sellerother" || role == "workbuyer" || role == "workother" || role == "target" || role == "orders" || role == "orderother" || role == "supportbuyer" || role == "supportother" {
 					return "customer"
 				}
 				return role
@@ -87,6 +88,7 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	seedBrowserFulfillment(t, f, fixtures)
 	seedBrowserOperations(t, f, fixtures)
+	seedBrowserPayments(t, f, fixtures)
 	ring, ringErr := vault.NewKeyring("v1", map[string][]byte{"v1": vaultKey(t)})
 	if ringErr != nil {
 		t.Fatal(ringErr)
@@ -104,13 +106,14 @@ func TestBrowserEnvironment(t *testing.T) {
 		t.Fatal(alertErr)
 	}
 	files := media.New(f.client, service, mediaObjects(t, f.client), media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
-	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, execution.Register, submissions.New(f.client, service, nil).Register, reviews.New(f.client, service, nil).Register, operations.New(f.client, service, nil).Register, alerts.Register, reports.New(service, nil).Register))
+	finance := payments.New(f.client, service, &browserPaymentProvider{newPaymentProvider(t)}, "sandbox:browser-fixture", true, nil)
+	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, finance.Register, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, execution.Register, submissions.New(f.client, service, nil).Register, reviews.New(f.client, service, nil).Register, operations.New(f.client, service, nil).Register, alerts.Register, reports.New(service, nil).Register))
 	defer server.Close()
 	work, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	done := make(chan error, 1)
 	go func() {
-		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"availability.changed": alerts.ChangedHandler(), "availability.fanout": alerts.FanoutHandler(), "availability.email": alerts.EmailHandler(sender), "system.ping": func(context.Context, jobs.Job) error { return nil }, "identity.email": service.EmailHandler(sender), "activity.email": notices.EmailHandler(sender), "media.scan": files.ScanHandler()}, slog.New(slog.DiscardHandler))
+		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"payments.invoice": finance.InvoiceHandler(), "payments.reconcile": finance.ReconcileHandler(), "availability.changed": alerts.ChangedHandler(), "availability.fanout": alerts.FanoutHandler(), "availability.email": alerts.EmailHandler(sender), "system.ping": func(context.Context, jobs.Job) error { return nil }, "identity.email": service.EmailHandler(sender), "activity.email": notices.EmailHandler(sender), "media.scan": files.ScanHandler()}, slog.New(slog.DiscardHandler))
 	}()
 	defer func() {
 		cancel()

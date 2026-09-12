@@ -19,6 +19,7 @@ type Config struct {
 	Identity    identity.Config
 	Media       Media
 	Vault       *vault.Keyring
+	Crypto      Crypto
 }
 
 // Load rejects unknown environments and malformed listener addresses.
@@ -53,5 +54,10 @@ func Load(getenv func(string) string) (Config, error) {
 		return Config{}, keyErr
 	}
 	cfg.Vault = keys
+	cryptoConfig, cryptoErr := crypto(getenv, cfg.Identity.PublicOrigin)
+	if cryptoErr != nil {
+		return Config{}, cryptoErr
+	}
+	cfg.Crypto = cryptoConfig
 	return cfg, nil
 }

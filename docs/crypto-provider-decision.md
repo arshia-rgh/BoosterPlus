@@ -43,3 +43,6 @@ This package is a transport boundary. It is not yet wired to server routes, jobs
 Keep checkout unavailable until merchant secrets, supported assets/networks, settlement settings, fee disclosures, policy content and real sandbox qualification are ready. Secrets belong in local environment/secret storage, never chat or Git. Hosted checkout must show exact asset/network and amount instructions; USD/EUR/GBP catalog totals already use integer minor units and remain immutable.
 
 Refunds and seller payouts need their own approval, recipient verification, evidence, limits and reconciliation. They do not create spendable balances. Sandbox acceptance, controlled live payment/refund qualification and business acceptance are still required before public sales. Selecting a provider is not completion of P07 or a production-readiness claim.
+
+
+R05 now connects the adapter to durable checkout attempts, authenticated reconciliation, receipts, allocations and finance screens; see [payment operations](payments.md). Local fixture verification does not qualify the merchant: sandbox authenticated requests currently return HTTP 403, and external callback qualification remains pending. Checkout stays disabled.

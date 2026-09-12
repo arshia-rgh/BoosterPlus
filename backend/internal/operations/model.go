@@ -99,7 +99,7 @@ type RetryInput struct {
 
 func supportedKind(kind string) bool {
 	switch kind {
-	case "system.ping", "identity.email", "activity.email", "media.scan", "availability.changed", "availability.fanout", "availability.email":
+	case "payments.invoice", "payments.reconcile", "system.ping", "identity.email", "activity.email", "media.scan", "availability.changed", "availability.fanout", "availability.email":
 		return true
 	default:
 		return false

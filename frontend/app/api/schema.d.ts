@@ -3159,6 +3159,126 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/orders/{id}/payments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Direct crypto payments with immutable policy acceptance and verified provider evidence */
+    get: operations["customerPaymentHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/orders/{id}/payments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Direct crypto payments with immutable policy acceptance and verified provider evidence */
+    get: operations["adminPaymentHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/orders/{id}/checkout": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Direct crypto payments with immutable policy acceptance and verified provider evidence */
+    post: operations["startCheckout"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/finance": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Direct crypto payments with immutable policy acceptance and verified provider evidence */
+    get: operations["financeQueue"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/finance/policy": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Direct crypto payments with immutable policy acceptance and verified provider evidence */
+    get: operations["paymentSettings"];
+    put?: never;
+    /** Direct crypto payments with immutable policy acceptance and verified provider evidence */
+    post: operations["updatePaymentPolicy"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/finance/reconcile": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Direct crypto payments with immutable policy acceptance and verified provider evidence */
+    post: operations["requestPaymentReconciliation"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/webhooks/payments/nowpayments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** HMAC-authenticated durable callback inbox; provider GET decides settlement */
+    post: operations["receivePaymentSignal"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4526,6 +4646,100 @@ export interface components {
       /** @enum {string} */
       code: "report_invalid" | "report_conflict";
       issues?: components["schemas"]["CatalogIssue"][];
+    };
+    PaymentRoute: {
+      code: string;
+      label: string;
+      network: string;
+    };
+    PaymentPolicy: {
+      label: string;
+      text: string;
+      currencies: string[];
+      routes: components["schemas"]["PaymentRoute"][];
+      fee_mode: string;
+      rate_mode: string;
+      window_minutes: number;
+    };
+    PublishedPaymentPolicy: {
+      id: string;
+      data: components["schemas"]["PaymentPolicy"];
+    };
+    PaymentAttempt: {
+      id: string;
+      order_id: string;
+      state: string;
+      issue: string;
+      currency: string;
+      amount_minor: string;
+      route: components["schemas"]["PaymentRoute"];
+      policy: components["schemas"]["PublishedPaymentPolicy"];
+      checkout_url: string;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      expires_at: string;
+    };
+    PaymentReceipt: {
+      id: string;
+      state: string;
+      currency: string;
+      network: string;
+      amount: string;
+      allocated_currency: string;
+      allocated_minor: string;
+      /** Format: date-time */
+      created_at: string;
+    };
+    PaymentHistory: {
+      enabled: boolean;
+      policy: components["schemas"]["PublishedPaymentPolicy"] | null;
+      attempts: components["schemas"]["PaymentAttempt"][];
+      receipts: components["schemas"]["PaymentReceipt"][];
+    };
+    PaymentSettings: {
+      version: number;
+      draft: components["schemas"]["PaymentPolicy"];
+      published: components["schemas"]["PublishedPaymentPolicy"] | null;
+      configured: boolean;
+      enabled: boolean;
+    };
+    PaymentRecord: {
+      id: string;
+      payment_id: string;
+      attempt_id: string;
+      state: string;
+      issue: string;
+      /** Format: date-time */
+      checked_at: string;
+    };
+    FinanceQueue: {
+      enabled: boolean;
+      next: string;
+      attempts: components["schemas"]["PaymentAttempt"][];
+      records: components["schemas"]["PaymentRecord"][];
+    };
+    PaymentStartInput: {
+      contract_id: string;
+      policy_id: string;
+      route: string;
+      accept_policy: boolean;
+    };
+    PaymentPolicyInput: {
+      version: number;
+      /** @enum {string} */
+      action: "save" | "publish";
+      data: components["schemas"]["PaymentPolicy"];
+    };
+    PaymentReconcileInput: {
+      payment_id: string;
+      reason: string;
+    };
+    PaymentReconcileResult: {
+      queued: boolean;
+    };
+    PaymentProblem: {
+      code: string;
     };
   };
   responses: never;
@@ -14567,6 +14781,276 @@ export interface operations {
         content: {
           "application/problem+json": components["schemas"]["Problem"];
         };
+      };
+    };
+  };
+  customerPaymentHistory: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentHistory"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  adminPaymentHistory: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentHistory"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  startCheckout: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PaymentStartInput"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentAttempt"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  financeQueue: {
+    parameters: {
+      query?: {
+        after?: string;
+        filter?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FinanceQueue"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  paymentSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentSettings"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  updatePaymentPolicy: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PaymentPolicyInput"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentSettings"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  requestPaymentReconciliation: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PaymentReconcileInput"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentReconcileResult"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  receivePaymentSignal: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-Nowpayments-Sig": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          [key: string]: unknown;
+        };
+      };
+    };
+    responses: {
+      /** @description Verified callback and reconciliation job persisted atomically */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Invalid signature or payload */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Inbox unavailable; callback must be retried */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

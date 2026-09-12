@@ -43,6 +43,14 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/orderquote"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentallocation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentattempt"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentobservation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentpolicy"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentreceipt"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentrecord"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentsettings"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentsignal"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
@@ -140,6 +148,14 @@ func checkColumn(t, c string) error {
 			ordercontract.Table:            ordercontract.ValidColumn,
 			orderevent.Table:               orderevent.ValidColumn,
 			orderquote.Table:               orderquote.ValidColumn,
+			paymentallocation.Table:        paymentallocation.ValidColumn,
+			paymentattempt.Table:           paymentattempt.ValidColumn,
+			paymentobservation.Table:       paymentobservation.ValidColumn,
+			paymentpolicy.Table:            paymentpolicy.ValidColumn,
+			paymentreceipt.Table:           paymentreceipt.ValidColumn,
+			paymentrecord.Table:            paymentrecord.ValidColumn,
+			paymentsettings.Table:          paymentsettings.ValidColumn,
+			paymentsignal.Table:            paymentsignal.ValidColumn,
 			review.Table:                   review.ValidColumn,
 			reviewrevision.Table:           reviewrevision.ValidColumn,
 			secretbundle.Table:             secretbundle.ValidColumn,

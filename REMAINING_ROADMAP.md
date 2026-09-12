@@ -1,6 +1,6 @@
 # Booster Plus — visual redesign, complete product, and production roadmap
 
-Updated: 12 September 2026. Status: R00–R03 delivered; R04 deployment foundation implemented, with delivery subject to the mandatory commit gate recorded in progress. R05–R09 are the current authorized implementation scope; R10–R11 await owner review after R09. Listing a requirement is not evidence of completion.
+Updated: 12 September 2026. Status: R00–R04 delivered; R05 checkout and finance implemented with local verification and the full delivery gate in progress. External provider qualification remains pending. R06–R09 are the remaining authorized implementation scope; R10–R11 await owner review after R09. Listing a requirement is not evidence of completion.
 
 This is the execution roadmap for the work remaining after commit `f20abed6cb4f1909ffde9fe8fa789b7f74fea2de`, including the owner's new visual and deployment requirements. It takes priority over the earlier phase order. [The specification](BOOSTER_PLUS_SPEC.md) continues to define business/security requirements, and [the original phases](IMPLEMENTATION_PHASES.md) remain the detailed P00–P12 reference. This roadmap carries forward every unfinished requirement and all seven approved additions. Delivered foundations are extended and redesigned, not treated as missing or discarded.
 
@@ -288,4 +288,4 @@ The work is complete when the local developer commands show the polished animate
 
 Public launch additionally requires approved commercial content, actual integration credentials/settings, successful staging and controlled live qualification, measured recovery/security/performance evidence, and a documented production handover. Future feature changes remain supported by versioned configuration, immutable accepted contracts, explicit migrations and small verified stage commits.
 
-R02 implementation and operator entry are documented in [the staff workspace guide](docs/admin-workspace.md); actual stage verification and limitations are recorded in [progress](docs/progress.md). `production/` remains deployment-only and awaits R04.
+R02 implementation and operator entry are documented in [the staff workspace guide](docs/admin-workspace.md); actual stage verification and limitations are recorded in [progress](docs/progress.md). `production/` remains deployment-only; R04 is delivered and R10 release operations remain deferred.

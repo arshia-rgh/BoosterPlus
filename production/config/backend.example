@@ -21,3 +21,12 @@ MEDIA_SCANNER_NETWORK=unix
 MEDIA_SCANNER_ADDRESS=/run/clamav/clamd.sock
 VAULT_ACTIVE_KEY=v1
 VAULT_KEYS=
+
+# Configure the correct sandbox/live merchant; explicit activation also needs a published policy.
+PAYMENTS_ENABLED=false
+NOWPAYMENTS_MODE=
+NOWPAYMENTS_ACCOUNT_ID=
+NOWPAYMENTS_API_KEY=
+NOWPAYMENTS_IPN_SECRET=
+NOWPAYMENTS_EMAIL=
+NOWPAYMENTS_PASSWORD=

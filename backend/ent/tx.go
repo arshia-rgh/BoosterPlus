@@ -76,6 +76,22 @@ type Tx struct {
 	OrderEvent *OrderEventClient
 	// OrderQuote is the client for interacting with the OrderQuote builders.
 	OrderQuote *OrderQuoteClient
+	// PaymentAllocation is the client for interacting with the PaymentAllocation builders.
+	PaymentAllocation *PaymentAllocationClient
+	// PaymentAttempt is the client for interacting with the PaymentAttempt builders.
+	PaymentAttempt *PaymentAttemptClient
+	// PaymentObservation is the client for interacting with the PaymentObservation builders.
+	PaymentObservation *PaymentObservationClient
+	// PaymentPolicy is the client for interacting with the PaymentPolicy builders.
+	PaymentPolicy *PaymentPolicyClient
+	// PaymentReceipt is the client for interacting with the PaymentReceipt builders.
+	PaymentReceipt *PaymentReceiptClient
+	// PaymentRecord is the client for interacting with the PaymentRecord builders.
+	PaymentRecord *PaymentRecordClient
+	// PaymentSettings is the client for interacting with the PaymentSettings builders.
+	PaymentSettings *PaymentSettingsClient
+	// PaymentSignal is the client for interacting with the PaymentSignal builders.
+	PaymentSignal *PaymentSignalClient
 	// Review is the client for interacting with the Review builders.
 	Review *ReviewClient
 	// ReviewRevision is the client for interacting with the ReviewRevision builders.
@@ -250,6 +266,14 @@ func (tx *Tx) init() {
 	tx.OrderContract = NewOrderContractClient(tx.config)
 	tx.OrderEvent = NewOrderEventClient(tx.config)
 	tx.OrderQuote = NewOrderQuoteClient(tx.config)
+	tx.PaymentAllocation = NewPaymentAllocationClient(tx.config)
+	tx.PaymentAttempt = NewPaymentAttemptClient(tx.config)
+	tx.PaymentObservation = NewPaymentObservationClient(tx.config)
+	tx.PaymentPolicy = NewPaymentPolicyClient(tx.config)
+	tx.PaymentReceipt = NewPaymentReceiptClient(tx.config)
+	tx.PaymentRecord = NewPaymentRecordClient(tx.config)
+	tx.PaymentSettings = NewPaymentSettingsClient(tx.config)
+	tx.PaymentSignal = NewPaymentSignalClient(tx.config)
 	tx.Review = NewReviewClient(tx.config)
 	tx.ReviewRevision = NewReviewRevisionClient(tx.config)
 	tx.SecretBundle = NewSecretBundleClient(tx.config)

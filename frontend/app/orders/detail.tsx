@@ -1,3 +1,4 @@
+import Checkout from "../payments/checkout";
 import OrderProgress from "../experience/order-progress";
 import PurchaseReview from "../reviews/form";
 import FulfillmentPanel from "../fulfillment/panel";
@@ -254,7 +255,7 @@ function Decisions({
               ? "Payment is verified. Follow the fulfillment updates above."
               : detail.contract.payment_state === "retired"
                 ? "This unpaid contract was retired."
-                : "Crypto checkout is being prepared. No payment has been verified for this order."}
+                : "No payment has been verified for this order. See payment details below."}
           </p>
         )}
       </fieldset>
@@ -456,6 +457,9 @@ export default function OrderDetail({ admin = false }: { admin?: boolean }) {
               Administrator review is required before this request becomes
               payable.
             </p>
+          )}
+          {detail.contract && (
+            <Checkout detail={detail} admin={admin} changed={resource.reload} />
           )}
           <Decisions
             key={`decisions-${String(detail.order.version)}`}
