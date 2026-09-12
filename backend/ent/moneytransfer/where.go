@@ -74,6 +74,11 @@ func Kind(v string) predicate.MoneyTransfer {
 	return predicate.MoneyTransfer(sql.FieldEQ(FieldKind, v))
 }
 
+// SellerOfferID applies equality check predicate on the "seller_offer_id" field. It's identical to SellerOfferIDEQ.
+func SellerOfferID(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldEQ(FieldSellerOfferID, v))
+}
+
 // CaseID applies equality check predicate on the "case_id" field. It's identical to CaseIDEQ.
 func CaseID(v string) predicate.MoneyTransfer {
 	return predicate.MoneyTransfer(sql.FieldEQ(FieldCaseID, v))
@@ -287,6 +292,81 @@ func KindEqualFold(v string) predicate.MoneyTransfer {
 // KindContainsFold applies the ContainsFold predicate on the "kind" field.
 func KindContainsFold(v string) predicate.MoneyTransfer {
 	return predicate.MoneyTransfer(sql.FieldContainsFold(FieldKind, v))
+}
+
+// SellerOfferIDEQ applies the EQ predicate on the "seller_offer_id" field.
+func SellerOfferIDEQ(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldEQ(FieldSellerOfferID, v))
+}
+
+// SellerOfferIDNEQ applies the NEQ predicate on the "seller_offer_id" field.
+func SellerOfferIDNEQ(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldNEQ(FieldSellerOfferID, v))
+}
+
+// SellerOfferIDIn applies the In predicate on the "seller_offer_id" field.
+func SellerOfferIDIn(vs ...string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldIn(FieldSellerOfferID, vs...))
+}
+
+// SellerOfferIDNotIn applies the NotIn predicate on the "seller_offer_id" field.
+func SellerOfferIDNotIn(vs ...string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldNotIn(FieldSellerOfferID, vs...))
+}
+
+// SellerOfferIDGT applies the GT predicate on the "seller_offer_id" field.
+func SellerOfferIDGT(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldGT(FieldSellerOfferID, v))
+}
+
+// SellerOfferIDGTE applies the GTE predicate on the "seller_offer_id" field.
+func SellerOfferIDGTE(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldGTE(FieldSellerOfferID, v))
+}
+
+// SellerOfferIDLT applies the LT predicate on the "seller_offer_id" field.
+func SellerOfferIDLT(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldLT(FieldSellerOfferID, v))
+}
+
+// SellerOfferIDLTE applies the LTE predicate on the "seller_offer_id" field.
+func SellerOfferIDLTE(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldLTE(FieldSellerOfferID, v))
+}
+
+// SellerOfferIDContains applies the Contains predicate on the "seller_offer_id" field.
+func SellerOfferIDContains(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldContains(FieldSellerOfferID, v))
+}
+
+// SellerOfferIDHasPrefix applies the HasPrefix predicate on the "seller_offer_id" field.
+func SellerOfferIDHasPrefix(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldHasPrefix(FieldSellerOfferID, v))
+}
+
+// SellerOfferIDHasSuffix applies the HasSuffix predicate on the "seller_offer_id" field.
+func SellerOfferIDHasSuffix(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldHasSuffix(FieldSellerOfferID, v))
+}
+
+// SellerOfferIDIsNil applies the IsNil predicate on the "seller_offer_id" field.
+func SellerOfferIDIsNil() predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldIsNull(FieldSellerOfferID))
+}
+
+// SellerOfferIDNotNil applies the NotNil predicate on the "seller_offer_id" field.
+func SellerOfferIDNotNil() predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldNotNull(FieldSellerOfferID))
+}
+
+// SellerOfferIDEqualFold applies the EqualFold predicate on the "seller_offer_id" field.
+func SellerOfferIDEqualFold(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldEqualFold(FieldSellerOfferID, v))
+}
+
+// SellerOfferIDContainsFold applies the ContainsFold predicate on the "seller_offer_id" field.
+func SellerOfferIDContainsFold(v string) predicate.MoneyTransfer {
+	return predicate.MoneyTransfer(sql.FieldContainsFold(FieldSellerOfferID, v))
 }
 
 // CaseIDEQ applies the EQ predicate on the "case_id" field.

@@ -215,6 +215,9 @@ func (_u *MoneyTransferUpdate) sqlSave(ctx context.Context) (_node int, err erro
 			}
 		}
 	}
+	if _u.mutation.SellerOfferIDCleared() {
+		_spec.ClearField(moneytransfer.FieldSellerOfferID, field.TypeString)
+	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(moneytransfer.FieldState, field.TypeString, value)
 	}
@@ -484,6 +487,9 @@ func (_u *MoneyTransferUpdateOne) sqlSave(ctx context.Context) (_node *MoneyTran
 				ps[i](selector)
 			}
 		}
+	}
+	if _u.mutation.SellerOfferIDCleared() {
+		_spec.ClearField(moneytransfer.FieldSellerOfferID, field.TypeString)
 	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(moneytransfer.FieldState, field.TypeString, value)

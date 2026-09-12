@@ -1,3 +1,4 @@
+import SellerOffers from "../resale/offers";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
@@ -295,6 +296,7 @@ function ReviewActions({
     }
   }
   if (
+    row.state === "accepted" ||
     row.state === "withdrawn" ||
     row.state === "rejected" ||
     (admin && row.state === "draft")
@@ -434,6 +436,13 @@ export function SubmissionDetail({ admin = false }: { admin?: boolean }) {
             value={value}
             admin={admin}
             reload={resource.reload}
+          />
+          <SellerOffers
+            id={id}
+            version={value.submission.version}
+            state={value.submission.state}
+            admin={admin}
+            changed={resource.reload}
           />
           <History
             key={`history-${String(value.submission.version)}`}

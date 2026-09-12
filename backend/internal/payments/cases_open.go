@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountdelivery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
@@ -15,6 +16,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentreceipt"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/resale"
 )
 
 func caseEvidence(ctx context.Context, tx *ent.Tx, orderID, messageID string) error {
@@ -58,6 +60,25 @@ func (s *Store) casePolicy(ctx context.Context, tx *ent.Tx, row *ent.Order) (map
 	if err != nil {
 		return nil, err
 	}
+	if row.Kind == order.KindAccount {
+		policy, e := decode[Policy](attempt.Policy)
+		if e != nil {
+			return nil, e
+		}
+		listing, e := decode[resale.PublicListing](row.AccountSnapshot)
+		if e != nil {
+			return nil, e
+		}
+		if policy.Remedies != nil {
+			policy.Remedies.DisputeHours = listing.Product.DisputeHours
+		}
+		result, e := document(policy)
+		if e != nil {
+			return nil, e
+		}
+		result["account_terms"] = listing.Product
+		return result, nil
+	}
 	return attempt.Policy, nil
 }
 func (s *Store) caseEligible(ctx context.Context, tx *ent.Tx, row *ent.Order, kind string, policy map[string]any, admin bool) error {
@@ -81,6 +102,16 @@ func (s *Store) caseEligible(ctx context.Context, tx *ent.Tx, row *ent.Order, ki
 		return ErrConflict
 	}
 	if row.State == order.StateCompleted && !admin {
+		if row.Kind == order.KindAccount {
+			delivery, e := tx.AccountDelivery.Query().Where(accountdelivery.OrderIDEQ(row.ID)).Only(ctx)
+			if e != nil {
+				return e
+			}
+			if delivery.DisputeUntil == nil || !delivery.DisputeUntil.After(s.instant()) {
+				return ErrConflict
+			}
+			return nil
+		}
 		parsed, e := decode[Policy](policy)
 		if e != nil {
 			return e

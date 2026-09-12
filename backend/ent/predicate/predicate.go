@@ -6,6 +6,18 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// AccountDelivery is the predicate function for accountdelivery builders.
+type AccountDelivery func(*sql.Selector)
+
+// AccountListing is the predicate function for accountlisting builders.
+type AccountListing func(*sql.Selector)
+
+// AccountListingRelease is the predicate function for accountlistingrelease builders.
+type AccountListingRelease func(*sql.Selector)
+
+// AccountReservation is the predicate function for accountreservation builders.
+type AccountReservation func(*sql.Selector)
+
 // AccountSubmission is the predicate function for accountsubmission builders.
 type AccountSubmission func(*sql.Selector)
 
@@ -137,6 +149,12 @@ type ReviewRevision func(*sql.Selector)
 
 // SecretBundle is the predicate function for secretbundle builders.
 type SecretBundle func(*sql.Selector)
+
+// SellerOffer is the predicate function for selleroffer builders.
+type SellerOffer func(*sql.Selector)
+
+// SellerOfferEvent is the predicate function for sellerofferevent builders.
+type SellerOfferEvent func(*sql.Selector)
 
 // ServiceCase is the predicate function for servicecase builders.
 type ServiceCase func(*sql.Selector)

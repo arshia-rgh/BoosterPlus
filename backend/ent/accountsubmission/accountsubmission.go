@@ -122,6 +122,7 @@ const (
 	StateSubmitted            State = "submitted"
 	StateNeedsInformation     State = "needs_information"
 	StateApprovedPendingTerms State = "approved_pending_terms"
+	StateAccepted             State = "accepted"
 	StateRejected             State = "rejected"
 	StateWithdrawn            State = "withdrawn"
 )
@@ -133,7 +134,7 @@ func (s State) String() string {
 // StateValidator is a validator for the "state" field enum values. It is called by the builders before save.
 func StateValidator(s State) error {
 	switch s {
-	case StateDraft, StateSubmitted, StateNeedsInformation, StateApprovedPendingTerms, StateRejected, StateWithdrawn:
+	case StateDraft, StateSubmitted, StateNeedsInformation, StateApprovedPendingTerms, StateAccepted, StateRejected, StateWithdrawn:
 		return nil
 	default:
 		return fmt.Errorf("accountsubmission: invalid enum value for state field: %q", s)

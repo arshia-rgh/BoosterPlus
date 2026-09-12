@@ -88,6 +88,20 @@ func (_c *PaymentAttemptCreate) SetAmountMinor(v string) *PaymentAttemptCreate {
 	return _c
 }
 
+// SetPostClaimed sets the "post_claimed" field.
+func (_c *PaymentAttemptCreate) SetPostClaimed(v bool) *PaymentAttemptCreate {
+	_c.mutation.SetPostClaimed(v)
+	return _c
+}
+
+// SetNillablePostClaimed sets the "post_claimed" field if the given value is not nil.
+func (_c *PaymentAttemptCreate) SetNillablePostClaimed(v *bool) *PaymentAttemptCreate {
+	if v != nil {
+		_c.SetPostClaimed(*v)
+	}
+	return _c
+}
+
 // SetState sets the "state" field.
 func (_c *PaymentAttemptCreate) SetState(v string) *PaymentAttemptCreate {
 	_c.mutation.SetState(v)
@@ -225,6 +239,10 @@ func (_c *PaymentAttemptCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *PaymentAttemptCreate) defaults() {
+	if _, ok := _c.mutation.PostClaimed(); !ok {
+		v := paymentattempt.DefaultPostClaimed
+		_c.mutation.SetPostClaimed(v)
+	}
 	if _, ok := _c.mutation.State(); !ok {
 		v := paymentattempt.DefaultState
 		_c.mutation.SetState(v)
@@ -311,6 +329,9 @@ func (_c *PaymentAttemptCreate) check() error {
 		if err := paymentattempt.AmountMinorValidator(v); err != nil {
 			return &ValidationError{Name: "amount_minor", err: fmt.Errorf(`ent: validator failed for field "PaymentAttempt.amount_minor": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.PostClaimed(); !ok {
+		return &ValidationError{Name: "post_claimed", err: errors.New(`ent: missing required field "PaymentAttempt.post_claimed"`)}
 	}
 	if _, ok := _c.mutation.State(); !ok {
 		return &ValidationError{Name: "state", err: errors.New(`ent: missing required field "PaymentAttempt.state"`)}
@@ -429,6 +450,10 @@ func (_c *PaymentAttemptCreate) createSpec() (*PaymentAttempt, *sqlgraph.CreateS
 	if value, ok := _c.mutation.AmountMinor(); ok {
 		_spec.SetField(paymentattempt.FieldAmountMinor, field.TypeString, value)
 		_node.AmountMinor = value
+	}
+	if value, ok := _c.mutation.PostClaimed(); ok {
+		_spec.SetField(paymentattempt.FieldPostClaimed, field.TypeBool, value)
+		_node.PostClaimed = value
 	}
 	if value, ok := _c.mutation.State(); ok {
 		_spec.SetField(paymentattempt.FieldState, field.TypeString, value)

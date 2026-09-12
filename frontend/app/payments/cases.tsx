@@ -104,6 +104,27 @@ function CaseConversation({
               resolution for your explicit acceptance.
             </p>
           )}
+          {record.account_terms && (
+            <details>
+              <summary>Accepted account sale and handoff terms</summary>
+              <p className="payment-policy">
+                {record.account_terms.sale_terms}
+              </p>
+              <p className="payment-policy">
+                {record.account_terms.transfer_requirements}
+              </p>
+              <p className="payment-policy">
+                {record.account_terms.dispute_terms}
+              </p>
+              <p>
+                Account dispute window: {record.account_terms.dispute_hours}{" "}
+                hours from delivery.
+              </p>
+              <p className="payment-policy">
+                {record.account_terms.acknowledgement_terms}
+              </p>
+            </details>
+          )}
           <ol>
             {resource.data?.events.map((event) => (
               <li key={event.id}>

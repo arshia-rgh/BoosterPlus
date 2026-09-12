@@ -233,7 +233,7 @@ func (s *Store) Transition(ctx context.Context, p *identity.Principal, id, actio
 			if !slices.Contains([]order.State{order.StateSubmitted, order.StateNeedsInformation, order.StateQuoted, order.StateAwaitingPayment}, row.State) {
 				return ErrConflict
 			}
-			if readErr = retireUnissued(ctx, tx, row); readErr != nil {
+			if readErr = retireUnissued(ctx, tx, row, now); readErr != nil {
 				return readErr
 			}
 			if row.CurrentContract == "" {

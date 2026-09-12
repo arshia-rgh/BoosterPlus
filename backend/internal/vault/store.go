@@ -22,6 +22,7 @@ const (
 	Write   Operation = "write"
 	Inspect Operation = "inspect"
 	Reveal  Operation = "reveal"
+	Deliver Operation = "deliver"
 	Revoke  Operation = "revoke"
 	Rotate  Operation = "rotate"
 )
@@ -155,11 +156,22 @@ func (s *Store) Put(ctx context.Context, p *identity.Principal, scope Scope, ver
 
 // RevealForStaff commits live authorization and its audit before returning bytes.
 func (s *Store) RevealForStaff(ctx context.Context, p *identity.Principal, scope Scope) ([]byte, error) {
+	return s.reveal(ctx, p, scope, "booster", true, Reveal)
+}
+
+// RevealForCustomer requires recent authentication and a separately authorized delivery policy.
+func (s *Store) RevealForCustomer(ctx context.Context, p *identity.Principal, scope Scope) ([]byte, error) {
+	return s.reveal(ctx, p, scope, "account", false, Deliver)
+}
+func (s *Store) reveal(ctx context.Context, p *identity.Principal, scope Scope, capability string, staff bool, operation Operation) ([]byte, error) {
 	var result []byte
-	err := s.auth.AuthorizedTransaction(ctx, p, "booster", true, func(tx *ent.Tx, current *identity.Principal) error {
+	err := s.auth.AuthorizedTransaction(ctx, p, capability, staff, func(tx *ent.Tx, current *identity.Principal) error {
 		clear(result)
 		result = nil
-		if e := s.policy(ctx, tx, current, scope, Reveal); e != nil {
+		if !staff && !current.Session.AuthenticatedAt.Add(identity.RecentTTL).After(s.now()) {
+			return identity.ErrRecent
+		}
+		if e := s.policy(ctx, tx, current, scope, operation); e != nil {
 			return e
 		}
 		row, e := record(ctx, tx.Client(), scope)

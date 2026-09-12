@@ -185,6 +185,9 @@ func (s *Store) observeTransfer(ctx context.Context, tx *ent.Tx, record *ent.Tra
 	return state, issue, attempt.ID, err
 }
 func (s *Store) holdOutgoing(ctx context.Context, tx *ent.Tx, row *ent.MoneyTransfer, message string) error {
+	if row.Kind == "seller_payout" {
+		return s.audit(ctx, tx, nil, "seller_payout_exception", row.ID)
+	}
 	orderRow, err := tx.Order.Get(ctx, row.OrderID)
 	if err != nil {
 		return err

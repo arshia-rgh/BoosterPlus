@@ -84,6 +84,26 @@ func (_c *OrderCreate) SetKind(v order.Kind) *OrderCreate {
 	return _c
 }
 
+// SetListingID sets the "listing_id" field.
+func (_c *OrderCreate) SetListingID(v string) *OrderCreate {
+	_c.mutation.SetListingID(v)
+	return _c
+}
+
+// SetNillableListingID sets the "listing_id" field if the given value is not nil.
+func (_c *OrderCreate) SetNillableListingID(v *string) *OrderCreate {
+	if v != nil {
+		_c.SetListingID(*v)
+	}
+	return _c
+}
+
+// SetAccountSnapshot sets the "account_snapshot" field.
+func (_c *OrderCreate) SetAccountSnapshot(v map[string]interface{}) *OrderCreate {
+	_c.mutation.SetAccountSnapshot(v)
+	return _c
+}
+
 // SetRequestKey sets the "request_key" field.
 func (_c *OrderCreate) SetRequestKey(v string) *OrderCreate {
 	_c.mutation.SetRequestKey(v)
@@ -281,6 +301,10 @@ func (_c *OrderCreate) defaults() {
 		v := order.DefaultVariantKey
 		_c.mutation.SetVariantKey(v)
 	}
+	if _, ok := _c.mutation.ListingID(); !ok {
+		v := order.DefaultListingID
+		_c.mutation.SetListingID(v)
+	}
 	if _, ok := _c.mutation.Version(); !ok {
 		v := order.DefaultVersion
 		_c.mutation.SetVersion(v)
@@ -379,6 +403,14 @@ func (_c *OrderCreate) check() error {
 	if v, ok := _c.mutation.Kind(); ok {
 		if err := order.KindValidator(v); err != nil {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Order.kind": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.ListingID(); !ok {
+		return &ValidationError{Name: "listing_id", err: errors.New(`ent: missing required field "Order.listing_id"`)}
+	}
+	if v, ok := _c.mutation.ListingID(); ok {
+		if err := order.ListingIDValidator(v); err != nil {
+			return &ValidationError{Name: "listing_id", err: fmt.Errorf(`ent: validator failed for field "Order.listing_id": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.RequestKey(); !ok {
@@ -529,6 +561,14 @@ func (_c *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Kind(); ok {
 		_spec.SetField(order.FieldKind, field.TypeEnum, value)
 		_node.Kind = value
+	}
+	if value, ok := _c.mutation.ListingID(); ok {
+		_spec.SetField(order.FieldListingID, field.TypeString, value)
+		_node.ListingID = value
+	}
+	if value, ok := _c.mutation.AccountSnapshot(); ok {
+		_spec.SetField(order.FieldAccountSnapshot, field.TypeJSON, value)
+		_node.AccountSnapshot = value
 	}
 	if value, ok := _c.mutation.RequestKey(); ok {
 		_spec.SetField(order.FieldRequestKey, field.TypeString, value)

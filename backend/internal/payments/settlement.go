@@ -14,6 +14,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/availabilityevents"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/resaleevents"
 )
 
 func matching(attempt *ent.PaymentAttempt, p nowpayments.Payment) string {
@@ -115,6 +116,9 @@ func (s *Store) allocate(ctx context.Context, tx *ent.Tx, attempt *ent.PaymentAt
 	}
 	if !attempt.ExpiresAt.After(s.instant()) && (attempt.FundsDetectedAt == nil || !attempt.FundsDetectedAt.Before(attempt.ExpiresAt)) {
 		return "timing_review", nil
+	}
+	if err = resaleevents.Allocate(ctx, tx, row, s.instant()); err != nil {
+		return "", err
 	}
 	if _, err = tx.PaymentAllocation.Create().SetReceiptID(receipt.ID).SetContractID(contract.ID).SetOrderID(row.ID).SetCurrency(attempt.Currency).SetAmountMinor(attempt.AmountMinor).SetCryptoAmount(string(p.PayAmount)).SetCreatedAt(s.instant()).Save(ctx); err != nil {
 		return "", err

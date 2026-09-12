@@ -147,7 +147,7 @@ func (s *Store) observe(ctx context.Context, tx *ent.Tx, record *ent.PaymentReco
 		return "exception", "invoice_mismatch", "", nil
 	}
 	if attempt.InvoiceID == nil {
-		attempt, err = tx.PaymentAttempt.UpdateOneID(attempt.ID).SetInvoiceID(p.InvoiceID).Save(ctx)
+		attempt, err = tx.PaymentAttempt.UpdateOneID(attempt.ID).SetPostClaimed(true).SetInvoiceID(p.InvoiceID).Save(ctx)
 		if err != nil {
 			return "", "", "", err
 		}

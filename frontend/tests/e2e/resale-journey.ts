@@ -1,0 +1,382 @@
+import { createHmac, randomUUID } from "node:crypto";
+import {
+  expect,
+  type Page,
+  type Browser,
+  type APIRequestContext,
+  type TestInfo,
+} from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { signIn, fixture } from "./identity-fixtures";
+import { sessionSchema } from "../../app/identity/api";
+import {
+  draftSchema,
+  emptyConfiguration,
+  emptyField,
+} from "../../app/catalog/model";
+import { submissionSchema } from "../../app/submissions/model";
+import { settingsSchema } from "../../app/payments/model";
+import { listingSchema } from "../../app/resale/model";
+async function api(page: Page, path: string, body: unknown) {
+  const session = sessionSchema.parse(
+    await (await page.request.get("/api/v1/auth/session")).json(),
+  );
+  const response = await page.request.post("/api/v1" + path, {
+    data: body,
+    headers: {
+      Origin: "http://127.0.0.1:4173",
+      "X-CSRF-Token": session.csrf_token,
+    },
+  });
+  expect(response.ok(), `${path}: ${String(response.status())}`).toBe(true);
+  return response.json() as Promise<unknown>;
+}
+async function accessible(page: Page) {
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+}
+export async function resaleJourney(
+  page: Page,
+  browser: Browser,
+  request: APIRequestContext,
+  info: TestInfo,
+) {
+  const policy = settingsSchema.parse(
+    await (await page.request.get("/api/v1/admin/finance/policy")).json(),
+  );
+  if (!policy.published)
+    throw new Error(
+      "The preceding payment journey must publish the synthetic merchant policy",
+    );
+  const config = emptyConfiguration(`Resale ${info.project.name}`),
+    slug = `resale-${info.project.name}-${randomUUID()}`;
+  config.reviewed = true;
+  config.intake = {
+    name: "Synthetic account review",
+    description: "Synthetic private ownership review",
+    fields: [
+      {
+        ...emptyField("region"),
+        key: "region",
+        label: "Region",
+        stage: "order",
+        type: "short_text",
+        max_length: 80,
+        required: true,
+      },
+    ],
+    rules: [],
+  };
+  const draft = draftSchema.parse(
+    await api(page, "/admin/catalog/games", { slug, configuration: config }),
+  );
+  const published = draftSchema.parse(
+    await api(page, `/admin/catalog/games/${draft.id}/publish`, {
+      revision: draft.revision,
+    }),
+  );
+  const sellerContext = await browser.newContext({
+      baseURL: "http://127.0.0.1:4173",
+      viewport: info.project.use.viewport ?? null,
+    }),
+    buyerContext = await browser.newContext({
+      baseURL: "http://127.0.0.1:4173",
+      viewport: info.project.use.viewport ?? null,
+    });
+  try {
+    const seller = await sellerContext.newPage(),
+      buyer = await buyerContext.newPage();
+    await signIn(seller, request, fixture(info.project.name, "resaleseller"));
+    await signIn(buyer, request, fixture(info.project.name, "resalebuyer"));
+    let submission = submissionSchema.parse(
+      await api(seller, "/submissions", {
+        request_key: randomUUID(),
+        slug,
+        release_id: published.current_release,
+        title: "Synthetic seller private ownership",
+      }),
+    );
+    const id = submission.submission.id;
+    submission = submissionSchema.parse(
+      await api(seller, `/submissions/${id}/edit`, {
+        version: submission.submission.version,
+        title: submission.submission.title,
+        answers: { region: "Synthetic region" },
+        ownership_notes: "I created and control this synthetic account.",
+        ownership_declared: true,
+      }),
+    );
+    submission = submissionSchema.parse(
+      await api(seller, `/submissions/${id}/submit`, {
+        version: submission.submission.version,
+        note: "",
+      }),
+    );
+    await api(page, `/admin/submissions/${id}/approve_review`, {
+      version: submission.submission.version,
+      note: "Synthetic independent ownership review completed.",
+    });
+    await page.goto(`/admin/submissions/${id}`);
+    await page
+      .getByLabel("Seller payment arrangement")
+      .selectOption("consignment");
+    await page.getByLabel("Seller payout asset code").fill("usdttrc20");
+    await page.getByLabel("Seller payout network", { exact: true }).fill("trx");
+    await page.getByLabel("Exact net seller crypto amount").fill("10.00000001");
+    for (const label of [
+      "Seller proceeds basis",
+      "Fees and deductions",
+      "Seller ownership requirements",
+      "Seller dispute terms",
+      "Seller withdrawal terms",
+    ])
+      await page
+        .getByLabel(label, { exact: true })
+        .fill(
+          `Synthetic explicit ${label.toLowerCase()} accepted for browser qualification.`,
+        );
+    await page.getByLabel("Payout deadline hours after eligibility").fill("72");
+    await page
+      .getByLabel("Seller offer expires")
+      .fill(new Date(Date.now() + 86400000).toISOString().slice(0, 16));
+    await page
+      .getByRole("button", { name: "Propose exact seller terms" })
+      .click();
+    await expect(
+      page.getByText("Offer: offered", { exact: true }),
+    ).toBeVisible();
+    await accessible(page);
+    await seller.goto(`/sell/${id}`);
+    await seller
+      .getByLabel("Seller agreement decision note")
+      .fill("I accept the exact synthetic agreement and timing.");
+    await seller
+      .getByLabel("I confirm these exact terms and this decision")
+      .check();
+    await seller
+      .getByRole("button", { name: "Accept seller agreement" })
+      .click();
+    await expect(
+      seller.getByText("Offer: accepted", { exact: true }),
+    ).toBeVisible();
+    await seller
+      .getByLabel("Protected transfer details")
+      .fill("synthetic seller-origin ownership bundle");
+    await seller
+      .getByLabel("Protected details expiry")
+      .fill(new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 16));
+    await seller
+      .getByRole("button", { name: "Store protected transfer" })
+      .click();
+    await expect(seller.getByLabel("Protected transfer details")).toHaveValue(
+      "",
+    );
+    await page.reload();
+    await page
+      .getByRole("button", { name: "Reveal protected details" })
+      .click();
+    await expect(
+      page.getByText("synthetic seller-origin ownership bundle", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Hide protected details" }).click();
+    await page
+      .getByLabel("Seller agreement decision note")
+      .fill("Verified synthetic ownership control independently.");
+    await page
+      .getByLabel("I confirm these exact terms and this decision")
+      .check();
+    await page
+      .getByRole("button", { name: "Verify ownership control" })
+      .click();
+    await page.getByRole("button", { name: "Open inventory listing" }).click();
+    await expect(page).toHaveURL(/\/admin\/accounts\/[a-f0-9-]+$/);
+    const title = `Reviewed account ${info.project.name}`;
+    for (const [label, value] of [
+      ["Public account title", title],
+      [
+        "Public account description",
+        "Synthetic public account with reviewed ownership and clean private handoff.",
+      ],
+      ["Public region", "Synthetic region"],
+      ["Public rank", "Mythic"],
+      ["Price currency", "USD"],
+      ["Exact price in minor units", "1234"],
+    ] as const)
+      await page.getByLabel(label, { exact: true }).fill(value);
+    for (const label of [
+      "Buyer sale terms",
+      "Buyer transfer requirements",
+      "Buyer dispute terms",
+      "Buyer acknowledgement terms",
+    ])
+      await page
+        .getByLabel(label, { exact: true })
+        .fill(
+          `Synthetic explicit ${label.toLowerCase()} displayed for this account.`,
+        );
+    await page.getByLabel("Buyer dispute window hours").fill("48");
+    await page.getByLabel("Earliest delivery hours").fill("1");
+    await page.getByLabel("Latest delivery hours").fill("24");
+    await page
+      .getByLabel(
+        "I reviewed every public field and selected image, with permission to publish, and removed private information",
+      )
+      .check();
+    const publication = page.waitForResponse(
+      (r) => r.request().method() === "POST" && r.url().endsWith("/publish"),
+    );
+    await page.getByRole("button", { name: "Publish account listing" }).click();
+    const item = listingSchema.parse(await (await publication).json());
+    await expect(
+      page.getByText("Inventory state: published", { exact: true }),
+    ).toBeVisible();
+    await accessible(page);
+    await buyer.goto("/accounts");
+    await buyer.getByRole("link", { name: title, exact: true }).click();
+    await accessible(buyer);
+    await expect(
+      buyer.getByText("synthetic seller-origin ownership bundle"),
+    ).toHaveCount(0);
+    await buyer
+      .getByLabel(
+        "I accept this account's price, sale, transfer, dispute and acknowledgement terms and the site terms",
+      )
+      .check();
+    await buyer
+      .getByRole("button", { name: "Reserve and continue to payment" })
+      .click();
+    await expect(buyer).toHaveURL(/\/orders\/[a-f0-9-]+$/);
+    const order = buyer.url().split("/").at(-1);
+    if (!order) throw new Error("Missing account order");
+    await buyer
+      .getByLabel("Payment asset and network")
+      .selectOption("usdttrc20");
+    await buyer
+      .getByLabel("I accept this payment policy and the agreed order price")
+      .check();
+    await buyer.getByRole("button", { name: "Create secure checkout" }).click();
+    const checkout = buyer.getByRole("link", {
+      name: "Continue to NOWPayments",
+    });
+    await expect(checkout).toBeVisible({ timeout: 20000 });
+    const link = await checkout.getAttribute("href");
+    if (!link) throw new Error("Missing invoice link");
+    const paymentID = new URL(link).searchParams.get("iid");
+    if (!paymentID) throw new Error("Missing invoice reference");
+    const body = JSON.stringify({
+        payment_id: paymentID,
+        payment_status: "finished",
+      }),
+      signature = createHmac("sha512", "synthetic-payment-ipn-secret-for-tests")
+        .update(body)
+        .digest("hex");
+    expect(
+      (
+        await request.post("/api/v1/webhooks/payments/nowpayments", {
+          data: body,
+          headers: {
+            "Content-Type": "application/json",
+            "X-Nowpayments-Sig": signature,
+          },
+        })
+      ).status(),
+    ).toBe(204);
+    await expect(
+      buyer
+        .getByText("Payment verified and allocated to your order.", {
+          exact: true,
+        })
+        .first(),
+    ).toBeVisible({ timeout: 25000 });
+    await page.goto(`/admin/orders/${order}`);
+    await page
+      .getByLabel("Protected transfer details")
+      .fill("synthetic distinct buyer ownership bundle");
+    await page
+      .getByLabel("Protected details expiry")
+      .fill(new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 16));
+    const stored = page.waitForResponse(
+      (r) => r.request().method() === "POST" && r.url().endsWith("/secret"),
+    );
+    await page
+      .getByRole("button", { name: "Store protected transfer" })
+      .click();
+    expect((await stored).status()).toBe(200);
+    await page
+      .getByLabel("Buyer ownership checklist")
+      .fill(
+        "Change ownership settings and verify your access using this checklist.",
+      );
+    await page
+      .getByLabel("I verified the buyer bundle and ownership checklist")
+      .check();
+    await page.getByRole("button", { name: "Deliver account access" }).click();
+    await expect(
+      page.getByText("Handoff: delivered", { exact: true }),
+    ).toBeVisible();
+    await buyer
+      .getByRole("button", { name: "Refresh account delivery" })
+      .click();
+    await buyer
+      .getByRole("button", { name: "Reveal protected details" })
+      .click();
+    await expect(
+      buyer.getByText("synthetic distinct buyer ownership bundle", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      buyer.getByText("synthetic seller-origin ownership bundle"),
+    ).toHaveCount(0);
+    await buyer.getByRole("button", { name: "Hide protected details" }).click();
+    await buyer
+      .getByLabel("Your acknowledgement note")
+      .fill("I received and tested ownership using the agreed checklist.");
+    await buyer
+      .getByLabel(
+        "I received and tested account access and accept the acknowledgement terms",
+      )
+      .check();
+    await buyer
+      .getByRole("button", { name: "Acknowledge account received" })
+      .click();
+    await expect(
+      buyer.getByText("Handoff: acknowledged", { exact: true }),
+    ).toBeVisible();
+    await accessible(buyer);
+    await seller.goto(`/accounts/${item.id}`);
+    await expect(
+      seller.getByRole("button", { name: "Reserve and continue to payment" }),
+    ).toHaveCount(0);
+    expect(
+      (
+        await seller.request.post(
+          `/api/v1/account-orders/${order}/secret/reveal`,
+          {
+            data: {},
+            headers: {
+              Origin: "http://127.0.0.1:4173",
+              "X-CSRF-Token": sessionSchema.parse(
+                await (await seller.request.get("/api/v1/auth/session")).json(),
+              ).csrf_token,
+            },
+          },
+        )
+      ).status(),
+    ).toBe(404);
+    await page.goto("/admin/finance");
+    await expect(
+      page.getByRole("heading", { name: "Seller payout obligations" }),
+    ).toBeVisible();
+    await accessible(page);
+  } finally {
+    await sellerContext.close();
+    await buyerContext.close();
+  }
+}

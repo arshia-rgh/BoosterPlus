@@ -38,6 +38,8 @@ type PaymentAttempt struct {
 	Currency string `json:"currency,omitempty"`
 	// AmountMinor holds the value of the "amount_minor" field.
 	AmountMinor string `json:"amount_minor,omitempty"`
+	// PostClaimed holds the value of the "post_claimed" field.
+	PostClaimed bool `json:"post_claimed,omitempty"`
 	// State holds the value of the "state" field.
 	State string `json:"state,omitempty"`
 	// InvoiceID holds the value of the "invoice_id" field.
@@ -64,6 +66,8 @@ func (*PaymentAttempt) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case paymentattempt.FieldPolicy, paymentattempt.FieldRoute:
 			values[i] = new([]byte)
+		case paymentattempt.FieldPostClaimed:
+			values[i] = new(sql.NullBool)
 		case paymentattempt.FieldID, paymentattempt.FieldOrderID, paymentattempt.FieldContractID, paymentattempt.FieldActiveContractID, paymentattempt.FieldUserID, paymentattempt.FieldAccount, paymentattempt.FieldPolicyID, paymentattempt.FieldCurrency, paymentattempt.FieldAmountMinor, paymentattempt.FieldState, paymentattempt.FieldInvoiceID, paymentattempt.FieldCheckoutURL, paymentattempt.FieldIssue:
 			values[i] = new(sql.NullString)
 		case paymentattempt.FieldCreatedAt, paymentattempt.FieldFundsDetectedAt, paymentattempt.FieldExpiresAt, paymentattempt.FieldUpdatedAt:
@@ -153,6 +157,12 @@ func (_m *PaymentAttempt) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field amount_minor", values[i])
 			} else if value.Valid {
 				_m.AmountMinor = value.String
+			}
+		case paymentattempt.FieldPostClaimed:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field post_claimed", values[i])
+			} else if value.Valid {
+				_m.PostClaimed = value.Bool
 			}
 		case paymentattempt.FieldState:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -271,6 +281,9 @@ func (_m *PaymentAttempt) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("amount_minor=")
 	builder.WriteString(_m.AmountMinor)
+	builder.WriteString(", ")
+	builder.WriteString("post_claimed=")
+	builder.WriteString(fmt.Sprintf("%v", _m.PostClaimed))
 	builder.WriteString(", ")
 	builder.WriteString("state=")
 	builder.WriteString(_m.State)

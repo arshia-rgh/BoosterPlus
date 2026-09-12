@@ -16,6 +16,7 @@ const groups = [
     label: "Manage",
     items: [
       ["/admin/catalog", "Catalog editor", "◇"],
+      ["/admin/accounts", "Account inventory", "▣"],
       ["/admin/submissions", "Account submissions", "▣"],
       ["/admin/coupons", "Coupons", "%"],
       ["/admin/reviews", "Review moderation", "☆"],

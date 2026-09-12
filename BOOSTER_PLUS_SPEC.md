@@ -349,9 +349,9 @@ A payment arriving after a reservation was released must not take an account alr
 
 After confirmed payment, staff perform the defined secure ownership handoff and add a delivery record. Proposed launch delivery is manual through an authenticated, audited delivery screen. The owner must define what constitutes transferred ownership, buyer acknowledgement, and the dispute window. A refunded account is not automatically relisted until staff verify control and revoke previous access.
 
-### 9.3 Seller payout arrangement — open
+### 9.3 Seller payout arrangements — both supported per offer
 
-Two supported specification options require an owner choice before implementing settlement:
+The owner selected both arrangements on 12 September 2026. Each offer explicitly chooses one model before seller acceptance:
 
 | Arrangement | When seller payment becomes due | Required commercial decisions |
 | --- | --- | --- |

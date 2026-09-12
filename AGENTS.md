@@ -36,3 +36,7 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 - Keep `PAYMENTS_ENABLED` as a pause switch for new checkout. When false, orders remain unpaid and cannot enter fulfillment. The owner explicitly withdrew the proposed payment bypass; do not implement a runtime success simulation.
 - Reconciliation continues for existing payments while new checkout is paused. Refunds/payouts have a separate explicit activation switch. Provider failure or missing credentials never grants payment success.
 - Automated payment tests use isolated fixtures. Controlled live transaction qualification replaces unavailable sandbox qualification; fixtures cannot qualify real funds movement.
+
+## Current delivery boundary (12 September 2026)
+
+- Finish and verify R07, commit and push it to `origin/main`, then stop. The owner must explicitly authorize continuation before R08 or R09. R10/R11 remain deferred.

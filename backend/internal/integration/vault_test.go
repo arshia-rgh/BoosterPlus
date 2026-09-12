@@ -43,6 +43,8 @@ func qualificationVaultPolicy(ctx context.Context, tx *ent.Tx, p *identity.Princ
 		return err
 	}
 	switch op {
+	case vault.Deliver:
+		return identity.ErrForbidden
 	case vault.Inspect:
 		if p.User.ID != scope.OwnerID {
 			return identity.ErrForbidden

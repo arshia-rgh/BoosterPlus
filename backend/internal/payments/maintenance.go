@@ -65,19 +65,21 @@ func (s *Store) Maintain(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	return s.expire(ctx)
+	if err = s.expire(ctx); err != nil {
+		return err
+	}
+	return s.expireAccountReservations(ctx)
 }
 
 // RunMaintenance repairs missed signals while the durable queue owns provider reads.
 func (s *Store) RunMaintenance(ctx context.Context, logger *slog.Logger) {
-	if s.provider == nil {
-		return
-	}
 	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
 	for {
-		if err := s.Discover(ctx); err != nil && ctx.Err() == nil {
-			logger.ErrorContext(ctx, "payment discovery requires attention")
+		if s.provider != nil {
+			if err := s.Discover(ctx); err != nil && ctx.Err() == nil {
+				logger.ErrorContext(ctx, "payment discovery requires attention")
+			}
 		}
 		if s.outgoing != nil {
 			if err := s.DiscoverOutgoing(ctx); err != nil && ctx.Err() == nil {

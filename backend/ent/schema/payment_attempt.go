@@ -24,6 +24,7 @@ func (PaymentAttempt) Fields() []ent.Field {
 		field.JSON("route", map[string]any{}).Immutable(),
 		field.String("currency").MaxLen(3).Immutable(),
 		field.String("amount_minor").MaxLen(12).Immutable(),
+		field.Bool("post_claimed").Default(true),
 		field.String("state").MaxLen(32).Default("new"),
 		field.String("invoice_id").MaxLen(32).Optional().Nillable(),
 		field.String("checkout_url").MaxLen(2048).Default(""),

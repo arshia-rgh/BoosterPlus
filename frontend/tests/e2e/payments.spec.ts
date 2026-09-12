@@ -1,3 +1,4 @@
+import { resaleJourney } from "./resale-journey";
 import { createHmac } from "node:crypto";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -7,7 +8,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
   browser,
   request,
 }, info) => {
-  test.setTimeout(120000);
+  test.setTimeout(300000);
   await signIn(page, request, fixture(info.project.name, "payadmin"));
   await enroll(page);
   await page.goto("/admin/finance");
@@ -253,4 +254,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
   } finally {
     await customerContext.close();
   }
+  await test.step("Seller offer, public inventory and paid ownership delivery", async () => {
+    await resaleJourney(page, browser, request, info);
+  });
 });

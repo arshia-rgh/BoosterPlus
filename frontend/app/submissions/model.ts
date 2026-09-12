@@ -6,6 +6,7 @@ export const stateSchema = z.enum([
   "submitted",
   "needs_information",
   "approved_pending_terms",
+  "accepted",
   "rejected",
   "withdrawn",
 ]);
@@ -54,6 +55,8 @@ export function stateLabel(state: z.infer<typeof stateSchema>) {
       return "More information requested";
     case "approved_pending_terms":
       return "Review approved · commercial terms pending";
+    case "accepted":
+      return "Seller agreement accepted";
     case "rejected":
       return "Rejected";
     case "withdrawn":

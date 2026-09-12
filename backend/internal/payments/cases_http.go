@@ -83,6 +83,7 @@ func (s *Store) registerCases(mux *http.ServeMux) {
 			return write(w, map[string]any{"transfers": value})
 		})
 	}
+	s.registerSellerPayouts(register)
 	register("GET /api/v1/admin/cases", "admin", false, s.caseQueue)
 	register("GET /api/v1/admin/finance/outgoing", "admin", false, s.outgoingQueue)
 	register("POST /api/v1/admin/cases/{id}/refunds", "admin", true, actionJSON(s.ProposeRefund))

@@ -19,7 +19,7 @@ func (s *Store) CancelRefund(ctx context.Context, p *identity.Principal, id stri
 		if e != nil {
 			return e
 		}
-		if row.Version != input.Version || row.Account != s.account {
+		if row.Kind != "refund" || row.Version != input.Version || row.Account != s.account {
 			return ErrConflict
 		}
 		if row.State != "recipient_pending" && row.State != "verified" && row.State != "approved" {

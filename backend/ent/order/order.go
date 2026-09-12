@@ -30,6 +30,10 @@ const (
 	FieldVariantKey = "variant_key"
 	// FieldKind holds the string denoting the kind field in the database.
 	FieldKind = "kind"
+	// FieldListingID holds the string denoting the listing_id field in the database.
+	FieldListingID = "listing_id"
+	// FieldAccountSnapshot holds the string denoting the account_snapshot field in the database.
+	FieldAccountSnapshot = "account_snapshot"
 	// FieldRequestKey holds the string denoting the request_key field in the database.
 	FieldRequestKey = "request_key"
 	// FieldRequestHash holds the string denoting the request_hash field in the database.
@@ -73,6 +77,8 @@ var Columns = []string{
 	FieldPackageKey,
 	FieldVariantKey,
 	FieldKind,
+	FieldListingID,
+	FieldAccountSnapshot,
 	FieldRequestKey,
 	FieldRequestHash,
 	FieldVersion,
@@ -118,6 +124,10 @@ var (
 	DefaultVariantKey string
 	// VariantKeyValidator is a validator for the "variant_key" field. It is called by the builders before save.
 	VariantKeyValidator func(string) error
+	// DefaultListingID holds the default value on creation for the "listing_id" field.
+	DefaultListingID string
+	// ListingIDValidator is a validator for the "listing_id" field. It is called by the builders before save.
+	ListingIDValidator func(string) error
 	// RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
 	RequestKeyValidator func(string) error
 	// RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
@@ -157,6 +167,7 @@ type Kind string
 const (
 	KindCustom  Kind = "custom"
 	KindPackage Kind = "package"
+	KindAccount Kind = "account"
 )
 
 func (k Kind) String() string {
@@ -166,7 +177,7 @@ func (k Kind) String() string {
 // KindValidator is a validator for the "kind" field enum values. It is called by the builders before save.
 func KindValidator(k Kind) error {
 	switch k {
-	case KindCustom, KindPackage:
+	case KindCustom, KindPackage, KindAccount:
 		return nil
 	default:
 		return fmt.Errorf("order: invalid enum value for kind field: %q", k)
@@ -251,6 +262,11 @@ func ByVariantKey(opts ...sql.OrderTermOption) OrderOption {
 // ByKind orders the results by the kind field.
 func ByKind(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldKind, opts...).ToFunc()
+}
+
+// ByListingID orders the results by the listing_id field.
+func ByListingID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldListingID, opts...).ToFunc()
 }
 
 // ByRequestKey orders the results by the request_key field.

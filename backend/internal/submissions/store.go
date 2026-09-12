@@ -181,7 +181,7 @@ func (s *Store) Transition(ctx context.Context, p *identity.Principal, id string
 				}
 				next, note = accountsubmission.StateSubmitted, "Account submitted for private review. No purchase or payout agreement exists yet."
 			case "withdraw":
-				if row.State == accountsubmission.StateRejected || row.State == accountsubmission.StateWithdrawn {
+				if row.State == accountsubmission.StateRejected || row.State == accountsubmission.StateWithdrawn || row.State == accountsubmission.StateAccepted {
 					return ErrConflict
 				}
 				next, note = accountsubmission.StateWithdrawn, "Submission withdrawn before any commercial acceptance."

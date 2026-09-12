@@ -31,6 +31,8 @@ const (
 	FieldCurrency = "currency"
 	// FieldAmountMinor holds the string denoting the amount_minor field in the database.
 	FieldAmountMinor = "amount_minor"
+	// FieldPostClaimed holds the string denoting the post_claimed field in the database.
+	FieldPostClaimed = "post_claimed"
 	// FieldState holds the string denoting the state field in the database.
 	FieldState = "state"
 	// FieldInvoiceID holds the string denoting the invoice_id field in the database.
@@ -64,6 +66,7 @@ var Columns = []string{
 	FieldRoute,
 	FieldCurrency,
 	FieldAmountMinor,
+	FieldPostClaimed,
 	FieldState,
 	FieldInvoiceID,
 	FieldCheckoutURL,
@@ -101,6 +104,8 @@ var (
 	CurrencyValidator func(string) error
 	// AmountMinorValidator is a validator for the "amount_minor" field. It is called by the builders before save.
 	AmountMinorValidator func(string) error
+	// DefaultPostClaimed holds the default value on creation for the "post_claimed" field.
+	DefaultPostClaimed bool
 	// DefaultState holds the default value on creation for the "state" field.
 	DefaultState string
 	// StateValidator is a validator for the "state" field. It is called by the builders before save.
@@ -167,6 +172,11 @@ func ByCurrency(opts ...sql.OrderTermOption) OrderOption {
 // ByAmountMinor orders the results by the amount_minor field.
 func ByAmountMinor(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAmountMinor, opts...).ToFunc()
+}
+
+// ByPostClaimed orders the results by the post_claimed field.
+func ByPostClaimed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPostClaimed, opts...).ToFunc()
 }
 
 // ByState orders the results by the state field.

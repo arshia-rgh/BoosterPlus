@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountdelivery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
@@ -12,6 +13,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/availabilityevents"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/resaleevents"
 )
 
 func (s *Store) applyCaseOutcome(ctx context.Context, tx *ent.Tx, p *identity.Principal, record *ent.ServiceCase) error {
@@ -23,6 +25,9 @@ func (s *Store) applyCaseOutcome(ctx context.Context, tx *ent.Tx, p *identity.Pr
 	switch record.Outcome {
 	case "cancel":
 		next = order.StateCancelled
+		if err = resaleevents.CancelPaid(ctx, tx, row, s.instant()); err != nil {
+			return err
+		}
 		if _, err = tx.OrderContract.UpdateOneID(row.CurrentContract).SetCapacityHeld(false).Save(ctx); err != nil {
 			return err
 		}
@@ -49,6 +54,15 @@ func (s *Store) applyCaseOutcome(ctx context.Context, tx *ent.Tx, p *identity.Pr
 			}
 		}
 		next = order.StateQueued
+		if row.Kind == order.KindAccount {
+			if e = s.deleteCaseSecrets(ctx, tx, p, row.ID); e != nil {
+				return e
+			}
+			if _, e = tx.AccountDelivery.Update().Where(accountdelivery.OrderIDEQ(row.ID)).AddVersion(1).SetState("pending").SetSecretVersion(0).SetInstructions("").ClearDeliveredAt().ClearAcknowledgedAt().ClearDisputeUntil().SetUpdatedAt(s.instant()).Save(ctx); e != nil {
+				return e
+			}
+			break
+		}
 		update := tx.Fulfillment.Update().Where(fulfillment.OrderIDEQ(row.ID)).AddVersion(1).AddAccessVersion(1).SetCompletionPending(false).SetCurrentNote("Case resolved; review handoff before resuming.")
 		if record.Outcome == "rework" {
 			update.SetProgress(0)
@@ -126,7 +140,7 @@ func (s *Store) closeCaseBookings(ctx context.Context, tx *ent.Tx, id string) er
 	return nil
 }
 func (s *Store) deleteCaseSecrets(ctx context.Context, tx *ent.Tx, p *identity.Principal, id string) error {
-	rows, err := tx.SecretBundle.Query().Where(secretbundle.PurposeEQ(secretbundle.PurposeGameAccess), secretbundle.ResourceIDEQ(id), secretbundle.StateEQ(secretbundle.StateActive)).Limit(101).All(ctx)
+	rows, err := tx.SecretBundle.Query().Where(secretbundle.PurposeIn(secretbundle.PurposeGameAccess, secretbundle.PurposeAccountTransfer), secretbundle.ResourceIDEQ(id), secretbundle.StateEQ(secretbundle.StateActive)).Limit(101).All(ctx)
 	if err != nil {
 		return err
 	}

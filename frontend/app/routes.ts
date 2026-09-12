@@ -7,6 +7,8 @@ import {
 export default [
   index("routes/home.tsx"),
   layout("routes/browse.tsx", [
+    route("accounts", "routes/accounts.tsx"),
+    route("accounts/:id", "routes/account-product.tsx"),
     route("availability/unsubscribe", "routes/availability-unsubscribe.tsx"),
     route("games/:slug/reviews", "routes/game-reviews.tsx"),
     route("terms", "routes/terms.tsx"),

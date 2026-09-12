@@ -1,3 +1,4 @@
+import SellerPayoutQueue from "../resale/payout-queue";
 import CaseQueue from "./case-queue";
 import { useState } from "react";
 import { Link } from "react-router";
@@ -44,6 +45,7 @@ export default function Finance() {
   return (
     <>
       <CaseQueue />
+      <SellerPayoutQueue />
       <p className="admin-intro">
         Review received funds, payment exceptions and checkout policy. Order
         prices and crypto receipts remain separate.

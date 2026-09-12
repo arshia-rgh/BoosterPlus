@@ -39,6 +39,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </Link>
           <nav aria-label="Main navigation">
             <Link to="/games">Games</Link>
+            <Link to="/accounts">Accounts</Link>
             <Link className="desktop-nav-link" to="/#how-it-works">
               How it works
             </Link>

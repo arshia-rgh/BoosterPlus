@@ -221,6 +221,9 @@ func (_u *OrderUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
+	if _u.mutation.AccountSnapshotCleared() {
+		_spec.ClearField(order.FieldAccountSnapshot, field.TypeJSON)
+	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(order.FieldVersion, field.TypeInt, value)
 	}
@@ -496,6 +499,9 @@ func (_u *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error)
 				ps[i](selector)
 			}
 		}
+	}
+	if _u.mutation.AccountSnapshotCleared() {
+		_spec.ClearField(order.FieldAccountSnapshot, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(order.FieldVersion, field.TypeInt, value)

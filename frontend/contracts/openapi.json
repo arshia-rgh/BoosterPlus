@@ -16175,6 +16175,1656 @@
           }
         ]
       }
+    },
+    "/api/v1/accounts": {
+      "get": {
+        "operationId": "getResaleApiV1Accounts",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [],
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "rank",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountListings"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/{id}": {
+      "get": {
+        "operationId": "getResaleApiV1AccountsId",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountListing"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/{id}/reserve": {
+      "post": {
+        "operationId": "postResaleApiV1AccountsIdReserve",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountReserve"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/submissions/{id}/offers": {
+      "get": {
+        "operationId": "getResaleApiV1SubmissionsIdOffers",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellerOffers"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/submissions/{id}/payouts": {
+      "get": {
+        "operationId": "getResaleApiV1SubmissionsIdPayouts",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/seller-offers/{id}/{action}": {
+      "post": {
+        "operationId": "postResaleApiV1SellerOffersIdAction",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["accept", "decline"]
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellerOffer"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SellerOfferChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/account-orders/{id}/delivery": {
+      "get": {
+        "operationId": "getResaleApiV1AccountOrdersIdDelivery",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDelivery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/account-orders/{id}/delivery/{action}": {
+      "post": {
+        "operationId": "postResaleApiV1AccountOrdersIdDeliveryAction",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["acknowledge"]
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDelivery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountDeliveryChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/submissions/{id}/offers": {
+      "get": {
+        "operationId": "getResaleApiV1AdminSubmissionsIdOffers",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellerOffers"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postResaleApiV1AdminSubmissionsIdOffers",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellerOffer"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SellerOfferInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/submissions/{id}/payouts": {
+      "get": {
+        "operationId": "getResaleApiV1AdminSubmissionsIdPayouts",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/seller-offers/{id}/{action}": {
+      "post": {
+        "operationId": "postResaleApiV1AdminSellerOffersIdAction",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["withdraw", "verify_control"]
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellerOffer"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SellerOfferChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/account-orders/{id}/delivery": {
+      "get": {
+        "operationId": "getResaleApiV1AdminAccountOrdersIdDelivery",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDelivery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/account-orders/{id}/delivery/{action}": {
+      "post": {
+        "operationId": "postResaleApiV1AdminAccountOrdersIdDeliveryAction",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["deliver", "takeover"]
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDelivery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountDeliveryChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/seller-offers/{id}/secret": {
+      "get": {
+        "operationId": "getResaleApiV1SellerOffersIdSecret",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountSecret"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postResaleApiV1SellerOffersIdSecret",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountSecret"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountSecretInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/seller-offers/{id}/secret/reveal": {
+      "post": {
+        "operationId": "postResaleApiV1AdminSellerOffersIdSecretReveal",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountSecretReveal"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FulfillmentEmpty"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/account-orders/{id}/secret": {
+      "post": {
+        "operationId": "postResaleApiV1AdminAccountOrdersIdSecret",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountSecret"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountSecretInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/account-orders/{id}/secret/reveal": {
+      "post": {
+        "operationId": "postResaleApiV1AccountOrdersIdSecretReveal",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountSecretReveal"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FulfillmentEmpty"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/seller-offers/{id}/listing": {
+      "post": {
+        "operationId": "postResaleApiV1AdminSellerOffersIdListing",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountInventoryItem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FulfillmentEmpty"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/account-listings": {
+      "get": {
+        "operationId": "getResaleApiV1AdminAccountListings",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountInventory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/account-listings/{id}": {
+      "get": {
+        "operationId": "getResaleApiV1AdminAccountListingsId",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountInventoryItem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/account-listings/{id}/{action}": {
+      "post": {
+        "operationId": "postResaleApiV1AdminAccountListingsIdAction",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["save", "publish", "withdraw"]
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountInventoryItem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountListingInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payouts/{id}/recipient": {
+      "post": {
+        "operationId": "postResaleApiV1PayoutsIdRecipient",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundTransfer"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundRecipientInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/payouts/{id}/approve": {
+      "post": {
+        "operationId": "postResaleApiV1AdminPayoutsIdApprove",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundTransfer"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/payouts/{id}/verify": {
+      "post": {
+        "operationId": "postResaleApiV1AdminPayoutsIdVerify",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceQueued"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/finance/payouts": {
+      "get": {
+        "operationId": "getResaleApiV1AdminFinancePayouts",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellerPayoutQueue"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/{id}/images/{slot}": {
+      "get": {
+        "operationId": "publicReviewedAccountImage",
+        "summary": "Serve a reviewed clean image from the current public release; no private object key exposure",
+        "security": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slot",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 7
+            }
+          },
+          {
+            "name": "release",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verified sanitized image",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unavailable or not approved for public use"
+          }
+        }
+      }
+    },
+    "/api/v1/seller-offers/{id}/events": {
+      "get": {
+        "operationId": "getResaleApiV1SubmissionsIdOffersHistory",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellerOfferHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/seller-offers/{id}/events": {
+      "get": {
+        "operationId": "getResaleApiV1AdminSubmissionsIdOffersHistory",
+        "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellerOfferHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -18018,7 +19668,7 @@
           },
           "kind": {
             "type": "string",
-            "enum": ["custom", "package"]
+            "enum": ["custom", "package", "account"]
           },
           "state": {
             "type": "string",
@@ -19950,7 +21600,8 @@
               "needs_information",
               "approved_pending_terms",
               "rejected",
-              "withdrawn"
+              "withdrawn",
+              "accepted"
             ]
           },
           "created_at": {
@@ -20064,7 +21715,8 @@
                     "needs_information",
                     "approved_pending_terms",
                     "rejected",
-                    "withdrawn"
+                    "withdrawn",
+                    "accepted"
                   ]
                 },
                 "message": {
@@ -21693,6 +23345,16 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "account_terms": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AccountProduct"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -22048,6 +23710,596 @@
           },
           "enabled": {
             "type": "boolean"
+          }
+        }
+      },
+      "SellerTerms": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "network": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "proceeds_basis": {
+            "type": "string"
+          },
+          "fees": {
+            "type": "string"
+          },
+          "transfer_requirements": {
+            "type": "string"
+          },
+          "dispute_terms": {
+            "type": "string"
+          },
+          "withdrawal_terms": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string",
+            "enum": ["consignment", "buy_first"]
+          },
+          "payout_delay_hours": {
+            "type": "integer"
+          },
+          "payout_deadline_hours": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "currency",
+          "network",
+          "amount",
+          "proceeds_basis",
+          "fees",
+          "transfer_requirements",
+          "dispute_terms",
+          "withdrawal_terms",
+          "model",
+          "payout_delay_hours",
+          "payout_deadline_hours"
+        ]
+      },
+      "SellerOffer": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "submission_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "terms": {
+            "$ref": "#/components/schemas/SellerTerms"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "accepted_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "control_verified_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "submission_id",
+          "state",
+          "version",
+          "terms",
+          "expires_at",
+          "accepted_at",
+          "control_verified_at",
+          "created_at"
+        ]
+      },
+      "SellerOffers": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "offers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SellerOffer"
+            }
+          }
+        },
+        "required": ["offers"]
+      },
+      "SellerOfferInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "request_key": {
+            "type": "string"
+          },
+          "submission_version": {
+            "type": "integer"
+          },
+          "terms": {
+            "$ref": "#/components/schemas/SellerTerms"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["request_key", "submission_version", "terms", "expires_at"]
+      },
+      "SellerOfferChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "accept": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": ["version", "accept", "note"]
+      },
+      "AccountProduct": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "amount_minor": {
+            "type": "string"
+          },
+          "sale_terms": {
+            "type": "string"
+          },
+          "transfer_requirements": {
+            "type": "string"
+          },
+          "dispute_terms": {
+            "type": "string"
+          },
+          "acknowledgement_terms": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": ["label", "value"]
+            }
+          },
+          "media_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dispute_hours": {
+            "type": "integer"
+          },
+          "delivery_min_hours": {
+            "type": "integer"
+          },
+          "delivery_max_hours": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "region",
+          "rank",
+          "currency",
+          "amount_minor",
+          "sale_terms",
+          "transfer_requirements",
+          "dispute_terms",
+          "acknowledgement_terms",
+          "attributes",
+          "media_ids",
+          "dispute_hours",
+          "delivery_min_hours",
+          "delivery_max_hours"
+        ]
+      },
+      "AccountListing": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "release_id": {
+            "type": "string"
+          },
+          "game": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "product": {
+            "$ref": "#/components/schemas/AccountProduct"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "release_id",
+          "game",
+          "slug",
+          "state",
+          "product",
+          "images"
+        ]
+      },
+      "AccountListings": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccountListing"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        },
+        "required": ["items", "next"]
+      },
+      "AccountInventoryItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "submission_id": {
+            "type": "string"
+          },
+          "offer_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "game": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "release_id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "draft": {
+            "$ref": "#/components/schemas/AccountProduct"
+          }
+        },
+        "required": [
+          "id",
+          "submission_id",
+          "offer_id",
+          "state",
+          "game",
+          "slug",
+          "release_id",
+          "version",
+          "draft"
+        ]
+      },
+      "AccountInventory": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccountInventoryItem"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        },
+        "required": ["items", "next"]
+      },
+      "AccountListingInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "product": {
+            "$ref": "#/components/schemas/AccountProduct"
+          },
+          "public_reviewed": {
+            "type": "boolean"
+          }
+        },
+        "required": ["version", "product", "public_reviewed"]
+      },
+      "AccountReserve": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "request_key": {
+            "type": "string"
+          },
+          "release_id": {
+            "type": "string"
+          },
+          "expected_amount": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "terms_version": {
+            "type": "string"
+          },
+          "accept_terms": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "request_key",
+          "release_id",
+          "expected_amount",
+          "currency",
+          "terms_version",
+          "accept_terms"
+        ]
+      },
+      "AccountSecretInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "request_key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "contentEncoding": "base64"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["version", "request_key", "value", "expires_at"]
+      },
+      "AccountSecret": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          }
+        },
+        "required": ["version", "state", "expires_at"]
+      },
+      "AccountSecretReveal": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "type": "string",
+            "contentEncoding": "base64"
+          }
+        },
+        "required": ["value"]
+      },
+      "AccountDelivery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "listing": {
+            "$ref": "#/components/schemas/AccountListing"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string"
+          },
+          "instructions": {
+            "type": "string"
+          },
+          "secret": {
+            "$ref": "#/components/schemas/AccountSecret"
+          },
+          "delivered_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "acknowledged_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "dispute_until": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "order_id",
+          "listing",
+          "version",
+          "state",
+          "instructions",
+          "secret",
+          "delivered_at",
+          "acknowledged_at",
+          "dispute_until"
+        ]
+      },
+      "AccountDeliveryChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "secret_version": {
+            "type": "integer"
+          },
+          "instructions": {
+            "type": "string"
+          },
+          "accept": {
+            "type": "boolean"
+          }
+        },
+        "required": ["version", "secret_version", "instructions", "accept"]
+      },
+      "SellerPayoutQueue": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "transfer": {
+                  "$ref": "#/components/schemas/RefundTransfer"
+                },
+                "submission_id": {
+                  "type": "string"
+                },
+                "eligible": {
+                  "type": "boolean"
+                },
+                "due_at": {
+                  "type": ["string", "null"],
+                  "format": "date-time"
+                }
+              },
+              "required": ["transfer", "submission_id", "eligible", "due_at"]
+            }
+          },
+          "next": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": ["items", "next", "enabled"]
+      },
+      "ResaleProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": ["code"]
+      },
+      "SellerOfferHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["events"],
+        "properties": {
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["action", "role", "note", "created_at", "version"],
+              "properties": {
+                "action": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "created_at": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "integer"
+                }
+              }
+            }
           }
         }
       }

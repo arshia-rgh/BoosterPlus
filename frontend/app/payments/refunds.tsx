@@ -6,7 +6,7 @@ import { useResource } from "../orders/resource";
 import { transferSchema, transfersSchema, type Transfer } from "./cases-model";
 import { historySchema } from "./model";
 
-function RefundRecord({
+export function TransferRecord({
   record,
   admin,
   owner,
@@ -26,12 +26,15 @@ function RefundRecord({
     [code, setCode] = useState(""),
     [error, setError] = useState<unknown>(null),
     [busy, setBusy] = useState(false);
+  const seller = record.kind === "seller_payout",
+    noun = seller ? "Seller payout" : "Refund",
+    endpoint = seller ? "payouts" : "refunds";
   async function recipient() {
     setBusy(true);
     setError(null);
     try {
       await post(
-        `/refunds/${record.id}/recipient`,
+        `/${endpoint}/${record.id}/recipient`,
         { version: record.version, address, memo, accept: accepted },
         transferSchema,
       );
@@ -56,13 +59,13 @@ function RefundRecord({
       };
       if (action === "verify")
         await post(
-          `/admin/refunds/${record.id}/verify`,
+          `/admin/${endpoint}/${record.id}/verify`,
           input,
           z.object({ queued: z.boolean() }),
         );
       else
         await post(
-          `/admin/refunds/${record.id}/${action}`,
+          `/admin/${endpoint}/${record.id}/${action}`,
           input,
           transferSchema,
         );
@@ -77,7 +80,7 @@ function RefundRecord({
   return (
     <article className="catalog-section">
       <h3>
-        Refund · {record.amount} {record.currency.toUpperCase()} ·{" "}
+        {noun} · {record.amount} {record.currency.toUpperCase()} ·{" "}
         {record.network}
       </h3>
       <p role="status">
@@ -93,21 +96,21 @@ function RefundRecord({
       )}
       {record.state === "confirmed" && (
         <p>
-          The provider confirmed this outgoing transfer. Your history retains
-          the original received payment separately.
+          The provider confirmed this outgoing transfer. The original agreement
+          and payment history remain available separately.
         </p>
       )}
       <ErrorNotice error={error} />
       {!admin && ["recipient_pending", "verified"].includes(record.state) && (
         <fieldset disabled={busy || refreshing}>
-          <legend>Confirm your refund destination</legend>
+          <legend>Confirm your {noun.toLowerCase()} destination</legend>
           <p>
             Use an address for {record.currency.toUpperCase()} on{" "}
             {record.network}. Include the required memo or tag. A recent Google
             or email sign-in is required.
           </p>
           <Text
-            label="Refund destination address"
+            label={`${noun} destination address`}
             value={address}
             change={(value) => {
               setAddress(value);
@@ -115,7 +118,7 @@ function RefundRecord({
             }}
           />
           <Text
-            label="Refund memo or destination tag"
+            label={`${noun} memo or destination tag`}
             value={memo}
             change={(value) => {
               setMemo(value);
@@ -123,7 +126,7 @@ function RefundRecord({
             }}
           />
           <Check
-            label="I accept these refund terms and confirm this address, network and memo"
+            label={`I accept these ${noun.toLowerCase()} terms and confirm this address, network and memo`}
             value={accepted}
             change={setAccepted}
           />
@@ -131,7 +134,7 @@ function RefundRecord({
             disabled={!accepted || address.length < 8}
             onClick={() => void recipient()}
           >
-            Confirm refund recipient
+            Confirm {noun.toLowerCase()} recipient
           </Action>
         </fieldset>
       )}
@@ -144,7 +147,7 @@ function RefundRecord({
             reconciliation before approval of a new attempt.
           </p>
           <Text
-            label="Refund authorization reason"
+            label={`${noun} authorization reason`}
             multiline
             value={reason}
             change={setReason}
@@ -156,19 +159,20 @@ function RefundRecord({
             >
               {record.state === "failed"
                 ? "Approve new attempt after failure"
-                : "Approve exact refund"}
+                : `Approve exact ${noun.toLowerCase()}`}
             </Action>
           )}
-          {["recipient_pending", "verified", "approved"].includes(
-            record.state,
-          ) && (
-            <Action
-              disabled={reason.trim().length < 10}
-              onClick={() => void act("cancel")}
-            >
-              Cancel unissued refund proposal
-            </Action>
-          )}
+          {!seller &&
+            ["recipient_pending", "verified", "approved"].includes(
+              record.state,
+            ) && (
+              <Action
+                disabled={reason.trim().length < 10}
+                onClick={() => void act("cancel")}
+              >
+                Cancel unissued refund proposal
+              </Action>
+            )}
           {record.state === "awaiting_verification" && (
             <>
               <Text
@@ -313,7 +317,7 @@ export default function Refunds({
             <p>No refund proposals or outgoing payments recorded.</p>
           )}
           {resource.data.transfers.map((record) => (
-            <RefundRecord
+            <TransferRecord
               key={`${record.id}:${String(record.version)}`}
               record={record}
               refreshing={resource.loading}

@@ -35,6 +35,7 @@ func problem(next endpoint) endpoint {
 
 // Register exposes scoped intents, bounded bytes, scan state and signed downloads.
 func (s *Store) Register(mux *http.ServeMux) {
+	s.registerListingImages(mux)
 	for _, admin := range []bool{false, true} {
 		base := "/api/v1/media"
 		if admin {

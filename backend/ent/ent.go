@@ -12,6 +12,10 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountdelivery"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlisting"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlistingrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountreservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountsubmission"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
@@ -56,6 +60,8 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/selleroffer"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/sellerofferevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
@@ -124,6 +130,10 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			accountdelivery.Table:          accountdelivery.ValidColumn,
+			accountlisting.Table:           accountlisting.ValidColumn,
+			accountlistingrelease.Table:    accountlistingrelease.ValidColumn,
+			accountreservation.Table:       accountreservation.ValidColumn,
 			accountsubmission.Table:        accountsubmission.ValidColumn,
 			authaudit.Table:                authaudit.ValidColumn,
 			authchallenge.Table:            authchallenge.ValidColumn,
@@ -168,6 +178,8 @@ func checkColumn(t, c string) error {
 			review.Table:                   review.ValidColumn,
 			reviewrevision.Table:           reviewrevision.ValidColumn,
 			secretbundle.Table:             secretbundle.ValidColumn,
+			selleroffer.Table:              selleroffer.ValidColumn,
+			sellerofferevent.Table:         sellerofferevent.ValidColumn,
 			servicecase.Table:              servicecase.ValidColumn,
 			staffprofile.Table:             staffprofile.ValidColumn,
 			submissionevent.Table:          submissionevent.ValidColumn,

@@ -47,7 +47,7 @@ func (s *Store) issue(ctx context.Context, id string) error {
 		if !row.ExpiresAt.After(s.instant()) {
 			return s.retire(ctx, tx, row, "local_expiry")
 		}
-		claimed, e = tx.PaymentAttempt.UpdateOneID(id).SetState("creating").SetUpdatedAt(s.instant()).Save(ctx)
+		claimed, e = tx.PaymentAttempt.UpdateOneID(id).SetState("creating").SetPostClaimed(true).SetUpdatedAt(s.instant()).Save(ctx)
 		return e
 	})
 	if err != nil || claimed == nil {

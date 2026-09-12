@@ -1,3 +1,4 @@
+import AccountDelivery from "../resale/delivery";
 import Cases from "../payments/cases";
 import Checkout from "../payments/checkout";
 import OrderProgress from "../experience/order-progress";
@@ -421,13 +422,14 @@ export default function OrderDetail({ admin = false }: { admin?: boolean }) {
           </h2>
           <p className="order-id">Order {detail.order.id}</p>
           {!admin && <OrderProgress detail={detail} />}
-          {detail.contract?.payment_state === "settled" && (
-            <FulfillmentPanel
-              detail={detail}
-              admin={admin}
-              reload={resource.reload}
-            />
-          )}
+          {detail.order.kind !== "account" &&
+            detail.contract?.payment_state === "settled" && (
+              <FulfillmentPanel
+                detail={detail}
+                admin={admin}
+                reload={resource.reload}
+              />
+            )}
           {detail.contract && (
             <Cases
               detail={detail}
@@ -476,12 +478,27 @@ export default function OrderDetail({ admin = false }: { admin?: boolean }) {
             admin={admin}
             done={resource.reload}
           />
-          <RequestDetails
-            key={`request-${String(detail.order.version)}`}
-            detail={detail}
-            admin={admin}
-            done={resource.reload}
-          />
+          {detail.order.kind === "account" ? (
+            <AccountDelivery
+              paid={
+                detail.contract?.payment_state === "settled" &&
+                ["queued", "in_progress", "completed"].includes(
+                  detail.order.state,
+                )
+              }
+              owner={session.data?.user?.role === "owner"}
+              id={detail.order.id}
+              admin={admin}
+              changed={resource.reload}
+            />
+          ) : (
+            <RequestDetails
+              key={`request-${String(detail.order.version)}`}
+              detail={detail}
+              admin={admin}
+              done={resource.reload}
+            />
+          )}
           {admin &&
             detail.order.kind === "custom" &&
             !detail.contract &&
@@ -492,7 +509,7 @@ export default function OrderDetail({ admin = false }: { admin?: boolean }) {
                 done={resource.reload}
               />
             )}
-          {!admin && (
+          {!admin && detail.order.kind !== "account" && (
             <PurchaseReview
               orderID={detail.order.id}
               completed={detail.order.state === "completed"}

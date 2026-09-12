@@ -3,7 +3,6 @@ package payments
 import (
 	"context"
 	"encoding/json"
-	"math/big"
 	"strings"
 	"time"
 
@@ -93,22 +92,11 @@ func (s *Store) issueRefund(ctx context.Context, id string) error {
 		if current.State != "approved" || row.State != "approved" || row.CurrentAttempt != id {
 			return nil
 		}
-		receipt, e := tx.PaymentReceipt.Get(ctx, row.ReceiptID)
-		if e != nil {
-			return e
-		}
-		if e = s.refundCap(ctx, tx, receipt, new(big.Rat)); e != nil {
+		if e = s.transferEligible(ctx, tx, row); e != nil {
 			return e
 		}
 		if e = s.previousTransfersFailed(ctx, tx, row); e != nil {
 			return e
-		}
-		record, e := tx.ServiceCase.Get(ctx, row.CaseID)
-		if e != nil {
-			return e
-		}
-		if record.State != "decided" || record.ActiveOrderID == nil {
-			return ErrConflict
 		}
 		if _, e = tx.TransferAttempt.UpdateOneID(id).SetState("creating").SetUpdatedAt(s.instant()).Save(ctx); e != nil {
 			return e
@@ -168,6 +156,14 @@ func (s *Store) issueRefund(ctx context.Context, id string) error {
 
 // VerifyRefund forwards an ephemeral merchant code for one already-created batch.
 func (s *Store) VerifyRefund(ctx context.Context, p *identity.Principal, id string, input TransferChange) error {
+	return s.verifyTransfer(ctx, p, id, "refund", input)
+}
+
+// VerifySellerPayout forwards one ephemeral code only after independently matched payout evidence and eligibility.
+func (s *Store) VerifySellerPayout(ctx context.Context, p *identity.Principal, id string, input TransferChange) error {
+	return s.verifyTransfer(ctx, p, id, "seller_payout", input)
+}
+func (s *Store) verifyTransfer(ctx context.Context, p *identity.Principal, id, kind string, input TransferChange) error {
 	if !validID(id) || input.Version < 1 || input.Version >= maxVersion || !validText(input.Reason, 10, 2000) {
 		return ErrInvalid
 	}
@@ -184,7 +180,7 @@ func (s *Store) VerifyRefund(ctx context.Context, p *identity.Principal, id stri
 		if e != nil {
 			return e
 		}
-		if row.Version != input.Version || row.State != "awaiting_verification" || row.Account != s.account {
+		if row.Kind != kind || row.Version != input.Version || row.State != "awaiting_verification" || row.Account != s.account {
 			return ErrConflict
 		}
 		attempt, e := tx.TransferAttempt.Get(ctx, row.CurrentAttempt)
@@ -210,19 +206,7 @@ func (s *Store) VerifyRefund(ctx context.Context, p *identity.Principal, id stri
 		if !outgoingMatches(row, attempt, observed) || observed.BatchID != attempt.BatchID {
 			return ErrConflict
 		}
-		caseRow, e := tx.ServiceCase.Get(ctx, row.CaseID)
-		if e != nil {
-			return e
-		}
-		if caseRow.State != "decided" || caseRow.ActiveOrderID == nil {
-			return ErrConflict
-		}
-
-		receipt, e := tx.PaymentReceipt.Get(ctx, row.ReceiptID)
-		if e != nil {
-			return e
-		}
-		if e = s.refundCap(ctx, tx, receipt, new(big.Rat)); e != nil {
+		if e = s.transferEligible(ctx, tx, row); e != nil {
 			return e
 		}
 		if e = s.previousTransfersFailed(ctx, tx, row); e != nil {

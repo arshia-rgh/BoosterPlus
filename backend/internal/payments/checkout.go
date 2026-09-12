@@ -13,6 +13,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentreceipt"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/resaleevents"
 )
 
 func owned(ctx context.Context, client *ent.Client, p *identity.Principal, id string, admin bool) (*ent.Order, error) {
@@ -99,8 +100,11 @@ func (s *Store) Start(ctx context.Context, p *identity.Principal, id string, inp
 			return err
 		}
 		now := s.instant()
-		attempt, err := tx.PaymentAttempt.Create().SetOrderID(id).SetContractID(contract.ID).SetActiveContractID(contract.ID).SetUserID(current.User.ID).SetAccount(s.account).SetPolicyID(policy.ID).SetPolicy(policyDoc).SetRoute(routeDoc).SetCurrency(commercial.Currency).SetAmountMinor(commercial.AmountMinor).SetState("new").SetCreatedAt(now).SetUpdatedAt(now).SetExpiresAt(now.Add(time.Duration(policy.Data.WindowMinutes) * time.Minute)).Save(ctx)
+		attempt, err := tx.PaymentAttempt.Create().SetPostClaimed(false).SetOrderID(id).SetContractID(contract.ID).SetActiveContractID(contract.ID).SetUserID(current.User.ID).SetAccount(s.account).SetPolicyID(policy.ID).SetPolicy(policyDoc).SetRoute(routeDoc).SetCurrency(commercial.Currency).SetAmountMinor(commercial.AmountMinor).SetState("new").SetCreatedAt(now).SetUpdatedAt(now).SetExpiresAt(now.Add(time.Duration(policy.Data.WindowMinutes) * time.Minute)).Save(ctx)
 		if err != nil {
+			return err
+		}
+		if err = resaleevents.Checkout(ctx, tx, row, attempt.ExpiresAt, now); err != nil {
 			return err
 		}
 		if _, err = tx.OrderContract.UpdateOneID(contract.ID).SetPaymentState(ordercontract.PaymentStateInvoicePending).Save(ctx); err != nil {

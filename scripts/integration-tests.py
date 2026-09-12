@@ -6,6 +6,8 @@ from test_services import environment
 
 root = Path(__file__).resolve().parents[1]
 raise SystemExit(subprocess.run(
-    ["go", "test", "-race", "-count=1", "-tags=integration", *sys.argv[1:], "./internal/integration/..."],
+    # The full commerce suite runs serial disposable schemas under the race detector.
+    # Bound the whole suite explicitly as it grows; individual assertions are unchanged.
+    ["go", "test", "-race", "-count=1", "-timeout=20m", "-tags=integration", *sys.argv[1:], "./internal/integration/..."],
     cwd=root / "backend", env=environment(root), check=False,
 ).returncode)

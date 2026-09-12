@@ -21,7 +21,7 @@ func (AccountSubmission) Fields() []ent.Field {
 		field.String("game_name").MaxRuneLen(120).Immutable(),
 		field.String("slug").MaxLen(80).Immutable(),
 		field.Int("version").Default(1),
-		field.Enum("state").Values("draft", "submitted", "needs_information", "approved_pending_terms", "rejected", "withdrawn").Default("draft"),
+		field.Enum("state").Values("draft", "submitted", "needs_information", "approved_pending_terms", "accepted", "rejected", "withdrawn").Default("draft"),
 		field.String("title").MaxRuneLen(120),
 		field.JSON("answers", map[string]any{}),
 		field.JSON("snapshot", map[string]any{}).Immutable(),

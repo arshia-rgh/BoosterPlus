@@ -20,6 +20,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/resaleevents"
 )
 
 // Store shares Ent and identity's transactional authority. The optional clock is
@@ -369,7 +370,7 @@ func (s *Store) Events(ctx context.Context, p *identity.Principal, id string, ad
 	return result, nil
 }
 
-func retireUnissued(ctx context.Context, tx *ent.Tx, row *ent.Order) error {
+func retireUnissued(ctx context.Context, tx *ent.Tx, row *ent.Order, now time.Time) error {
 	if row.CurrentContract == "" {
 		return nil
 	}
@@ -382,6 +383,9 @@ func retireUnissued(ctx context.Context, tx *ent.Tx, row *ent.Order) error {
 	}
 	_, err = tx.CouponClaim.Update().Where(couponclaim.ContractIDEQ(row.CurrentContract), couponclaim.StateEQ(couponclaim.StateHeld)).SetState(couponclaim.StateReleased).Save(ctx)
 	if err != nil {
+		return err
+	}
+	if err = resaleevents.ReleaseUnpaid(ctx, tx, row, now); err != nil {
 		return err
 	}
 	return availabilityevents.Changed(ctx, tx, row.GameID)

@@ -15,6 +15,8 @@ const (
 	FieldRequestHash = "request_hash"
 	// FieldKind holds the string denoting the kind field in the database.
 	FieldKind = "kind"
+	// FieldSellerOfferID holds the string denoting the seller_offer_id field in the database.
+	FieldSellerOfferID = "seller_offer_id"
 	// FieldCaseID holds the string denoting the case_id field in the database.
 	FieldCaseID = "case_id"
 	// FieldReceiptID holds the string denoting the receipt_id field in the database.
@@ -60,6 +62,7 @@ var Columns = []string{
 	FieldID,
 	FieldRequestHash,
 	FieldKind,
+	FieldSellerOfferID,
 	FieldCaseID,
 	FieldReceiptID,
 	FieldOrderID,
@@ -95,6 +98,8 @@ var (
 	RequestHashValidator func(string) error
 	// KindValidator is a validator for the "kind" field. It is called by the builders before save.
 	KindValidator func(string) error
+	// SellerOfferIDValidator is a validator for the "seller_offer_id" field. It is called by the builders before save.
+	SellerOfferIDValidator func(string) error
 	// CaseIDValidator is a validator for the "case_id" field. It is called by the builders before save.
 	CaseIDValidator func(string) error
 	// ReceiptIDValidator is a validator for the "receipt_id" field. It is called by the builders before save.
@@ -149,6 +154,11 @@ func ByRequestHash(opts ...sql.OrderTermOption) OrderOption {
 // ByKind orders the results by the kind field.
 func ByKind(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldKind, opts...).ToFunc()
+}
+
+// BySellerOfferID orders the results by the seller_offer_id field.
+func BySellerOfferID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSellerOfferID, opts...).ToFunc()
 }
 
 // ByCaseID orders the results by the case_id field.

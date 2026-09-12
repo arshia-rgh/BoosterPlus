@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { remedySchema } from "./model";
+import { productSchema } from "../resale/model";
 export const caseSchema = z.object({
+  account_terms: productSchema.nullable().optional(),
   id: z.string(),
   order_id: z.string(),
   kind: z.string(),

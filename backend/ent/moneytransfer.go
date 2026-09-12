@@ -22,6 +22,8 @@ type MoneyTransfer struct {
 	RequestHash string `json:"request_hash,omitempty"`
 	// Kind holds the value of the "kind" field.
 	Kind string `json:"kind,omitempty"`
+	// SellerOfferID holds the value of the "seller_offer_id" field.
+	SellerOfferID *string `json:"seller_offer_id,omitempty"`
 	// CaseID holds the value of the "case_id" field.
 	CaseID string `json:"case_id,omitempty"`
 	// ReceiptID holds the value of the "receipt_id" field.
@@ -70,7 +72,7 @@ func (*MoneyTransfer) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case moneytransfer.FieldVersion:
 			values[i] = new(sql.NullInt64)
-		case moneytransfer.FieldID, moneytransfer.FieldRequestHash, moneytransfer.FieldKind, moneytransfer.FieldCaseID, moneytransfer.FieldReceiptID, moneytransfer.FieldOrderID, moneytransfer.FieldUserID, moneytransfer.FieldAccount, moneytransfer.FieldCurrency, moneytransfer.FieldNetwork, moneytransfer.FieldAmount, moneytransfer.FieldTerms, moneytransfer.FieldState, moneytransfer.FieldApprovedBy, moneytransfer.FieldCurrentAttempt:
+		case moneytransfer.FieldID, moneytransfer.FieldRequestHash, moneytransfer.FieldKind, moneytransfer.FieldSellerOfferID, moneytransfer.FieldCaseID, moneytransfer.FieldReceiptID, moneytransfer.FieldOrderID, moneytransfer.FieldUserID, moneytransfer.FieldAccount, moneytransfer.FieldCurrency, moneytransfer.FieldNetwork, moneytransfer.FieldAmount, moneytransfer.FieldTerms, moneytransfer.FieldState, moneytransfer.FieldApprovedBy, moneytransfer.FieldCurrentAttempt:
 			values[i] = new(sql.NullString)
 		case moneytransfer.FieldRecipientAt, moneytransfer.FieldApprovedAt, moneytransfer.FieldCreatedAt, moneytransfer.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -106,6 +108,13 @@ func (_m *MoneyTransfer) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field kind", values[i])
 			} else if value.Valid {
 				_m.Kind = value.String
+			}
+		case moneytransfer.FieldSellerOfferID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field seller_offer_id", values[i])
+			} else if value.Valid {
+				_m.SellerOfferID = new(string)
+				*_m.SellerOfferID = value.String
 			}
 		case moneytransfer.FieldCaseID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -260,6 +269,11 @@ func (_m *MoneyTransfer) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("kind=")
 	builder.WriteString(_m.Kind)
+	builder.WriteString(", ")
+	if v := _m.SellerOfferID; v != nil {
+		builder.WriteString("seller_offer_id=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("case_id=")
 	builder.WriteString(_m.CaseID)

@@ -99,6 +99,11 @@ func VariantKey(v string) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldVariantKey, v))
 }
 
+// ListingID applies equality check predicate on the "listing_id" field. It's identical to ListingIDEQ.
+func ListingID(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldListingID, v))
+}
+
 // RequestKey applies equality check predicate on the "request_key" field. It's identical to RequestKeyEQ.
 func RequestKey(v string) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldRequestKey, v))
@@ -622,6 +627,81 @@ func KindIn(vs ...Kind) predicate.Order {
 // KindNotIn applies the NotIn predicate on the "kind" field.
 func KindNotIn(vs ...Kind) predicate.Order {
 	return predicate.Order(sql.FieldNotIn(FieldKind, vs...))
+}
+
+// ListingIDEQ applies the EQ predicate on the "listing_id" field.
+func ListingIDEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldListingID, v))
+}
+
+// ListingIDNEQ applies the NEQ predicate on the "listing_id" field.
+func ListingIDNEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldListingID, v))
+}
+
+// ListingIDIn applies the In predicate on the "listing_id" field.
+func ListingIDIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldListingID, vs...))
+}
+
+// ListingIDNotIn applies the NotIn predicate on the "listing_id" field.
+func ListingIDNotIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldListingID, vs...))
+}
+
+// ListingIDGT applies the GT predicate on the "listing_id" field.
+func ListingIDGT(v string) predicate.Order {
+	return predicate.Order(sql.FieldGT(FieldListingID, v))
+}
+
+// ListingIDGTE applies the GTE predicate on the "listing_id" field.
+func ListingIDGTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldGTE(FieldListingID, v))
+}
+
+// ListingIDLT applies the LT predicate on the "listing_id" field.
+func ListingIDLT(v string) predicate.Order {
+	return predicate.Order(sql.FieldLT(FieldListingID, v))
+}
+
+// ListingIDLTE applies the LTE predicate on the "listing_id" field.
+func ListingIDLTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldLTE(FieldListingID, v))
+}
+
+// ListingIDContains applies the Contains predicate on the "listing_id" field.
+func ListingIDContains(v string) predicate.Order {
+	return predicate.Order(sql.FieldContains(FieldListingID, v))
+}
+
+// ListingIDHasPrefix applies the HasPrefix predicate on the "listing_id" field.
+func ListingIDHasPrefix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasPrefix(FieldListingID, v))
+}
+
+// ListingIDHasSuffix applies the HasSuffix predicate on the "listing_id" field.
+func ListingIDHasSuffix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasSuffix(FieldListingID, v))
+}
+
+// ListingIDEqualFold applies the EqualFold predicate on the "listing_id" field.
+func ListingIDEqualFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldEqualFold(FieldListingID, v))
+}
+
+// ListingIDContainsFold applies the ContainsFold predicate on the "listing_id" field.
+func ListingIDContainsFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldContainsFold(FieldListingID, v))
+}
+
+// AccountSnapshotIsNil applies the IsNil predicate on the "account_snapshot" field.
+func AccountSnapshotIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldAccountSnapshot))
+}
+
+// AccountSnapshotNotNil applies the NotNil predicate on the "account_snapshot" field.
+func AccountSnapshotNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldAccountSnapshot))
 }
 
 // RequestKeyEQ applies the EQ predicate on the "request_key" field.

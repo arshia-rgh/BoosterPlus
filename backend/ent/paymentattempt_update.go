@@ -48,6 +48,20 @@ func (_u *PaymentAttemptUpdate) ClearActiveContractID() *PaymentAttemptUpdate {
 	return _u
 }
 
+// SetPostClaimed sets the "post_claimed" field.
+func (_u *PaymentAttemptUpdate) SetPostClaimed(v bool) *PaymentAttemptUpdate {
+	_u.mutation.SetPostClaimed(v)
+	return _u
+}
+
+// SetNillablePostClaimed sets the "post_claimed" field if the given value is not nil.
+func (_u *PaymentAttemptUpdate) SetNillablePostClaimed(v *bool) *PaymentAttemptUpdate {
+	if v != nil {
+		_u.SetPostClaimed(*v)
+	}
+	return _u
+}
+
 // SetState sets the "state" field.
 func (_u *PaymentAttemptUpdate) SetState(v string) *PaymentAttemptUpdate {
 	_u.mutation.SetState(v)
@@ -224,6 +238,9 @@ func (_u *PaymentAttemptUpdate) sqlSave(ctx context.Context) (_node int, err err
 	if _u.mutation.ActiveContractIDCleared() {
 		_spec.ClearField(paymentattempt.FieldActiveContractID, field.TypeString)
 	}
+	if value, ok := _u.mutation.PostClaimed(); ok {
+		_spec.SetField(paymentattempt.FieldPostClaimed, field.TypeBool, value)
+	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(paymentattempt.FieldState, field.TypeString, value)
 	}
@@ -285,6 +302,20 @@ func (_u *PaymentAttemptUpdateOne) SetNillableActiveContractID(v *string) *Payme
 // ClearActiveContractID clears the value of the "active_contract_id" field.
 func (_u *PaymentAttemptUpdateOne) ClearActiveContractID() *PaymentAttemptUpdateOne {
 	_u.mutation.ClearActiveContractID()
+	return _u
+}
+
+// SetPostClaimed sets the "post_claimed" field.
+func (_u *PaymentAttemptUpdateOne) SetPostClaimed(v bool) *PaymentAttemptUpdateOne {
+	_u.mutation.SetPostClaimed(v)
+	return _u
+}
+
+// SetNillablePostClaimed sets the "post_claimed" field if the given value is not nil.
+func (_u *PaymentAttemptUpdateOne) SetNillablePostClaimed(v *bool) *PaymentAttemptUpdateOne {
+	if v != nil {
+		_u.SetPostClaimed(*v)
+	}
 	return _u
 }
 
@@ -493,6 +524,9 @@ func (_u *PaymentAttemptUpdateOne) sqlSave(ctx context.Context) (_node *PaymentA
 	}
 	if _u.mutation.ActiveContractIDCleared() {
 		_spec.ClearField(paymentattempt.FieldActiveContractID, field.TypeString)
+	}
+	if value, ok := _u.mutation.PostClaimed(); ok {
+		_spec.SetField(paymentattempt.FieldPostClaimed, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(paymentattempt.FieldState, field.TypeString, value)

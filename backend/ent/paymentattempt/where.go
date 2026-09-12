@@ -104,6 +104,11 @@ func AmountMinor(v string) predicate.PaymentAttempt {
 	return predicate.PaymentAttempt(sql.FieldEQ(FieldAmountMinor, v))
 }
 
+// PostClaimed applies equality check predicate on the "post_claimed" field. It's identical to PostClaimedEQ.
+func PostClaimed(v bool) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldEQ(FieldPostClaimed, v))
+}
+
 // State applies equality check predicate on the "state" field. It's identical to StateEQ.
 func State(v string) predicate.PaymentAttempt {
 	return predicate.PaymentAttempt(sql.FieldEQ(FieldState, v))
@@ -672,6 +677,16 @@ func AmountMinorEqualFold(v string) predicate.PaymentAttempt {
 // AmountMinorContainsFold applies the ContainsFold predicate on the "amount_minor" field.
 func AmountMinorContainsFold(v string) predicate.PaymentAttempt {
 	return predicate.PaymentAttempt(sql.FieldContainsFold(FieldAmountMinor, v))
+}
+
+// PostClaimedEQ applies the EQ predicate on the "post_claimed" field.
+func PostClaimedEQ(v bool) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldEQ(FieldPostClaimed, v))
+}
+
+// PostClaimedNEQ applies the NEQ predicate on the "post_claimed" field.
+func PostClaimedNEQ(v bool) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldNEQ(FieldPostClaimed, v))
 }
 
 // StateEQ applies the EQ predicate on the "state" field.

@@ -1,6 +1,6 @@
 # Booster Plus — visual redesign, complete product, and production roadmap
 
-Updated: 12 September 2026. Status: R00–R04 delivered; R05 checkout and finance implementation delivered through the full gate. External provider qualification remains pending. R06 cases/refunds are in progress; R07–R09 remain in the authorized implementation scope; R10–R11 await owner review after R09. Listing a requirement is not evidence of completion.
+Updated: 12 September 2026. Status: R00–R04 delivered; R05 checkout and finance implementation delivered through the full gate. External provider qualification remains pending. R06 cases/refunds delivered through the full gate; R07 account resale is at its final delivery gate. After its verified push, work stops pending explicit owner authorization for R08 and R09. R10–R11 remain deferred. Listing a requirement is not evidence of completion.
 
 This is the execution roadmap for the work remaining after commit `f20abed6cb4f1909ffde9fe8fa789b7f74fea2de`, including the owner's new visual and deployment requirements. It takes priority over the earlier phase order. [The specification](BOOSTER_PLUS_SPEC.md) continues to define business/security requirements, and [the original phases](IMPLEMENTATION_PHASES.md) remain the detailed P00–P12 reference. This roadmap carries forward every unfinished requirement and all seven approved additions. Delivered foundations are extended and redesigned, not treated as missing or discarded.
 

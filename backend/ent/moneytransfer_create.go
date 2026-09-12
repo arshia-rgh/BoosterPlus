@@ -32,6 +32,20 @@ func (_c *MoneyTransferCreate) SetKind(v string) *MoneyTransferCreate {
 	return _c
 }
 
+// SetSellerOfferID sets the "seller_offer_id" field.
+func (_c *MoneyTransferCreate) SetSellerOfferID(v string) *MoneyTransferCreate {
+	_c.mutation.SetSellerOfferID(v)
+	return _c
+}
+
+// SetNillableSellerOfferID sets the "seller_offer_id" field if the given value is not nil.
+func (_c *MoneyTransferCreate) SetNillableSellerOfferID(v *string) *MoneyTransferCreate {
+	if v != nil {
+		_c.SetSellerOfferID(*v)
+	}
+	return _c
+}
+
 // SetCaseID sets the "case_id" field.
 func (_c *MoneyTransferCreate) SetCaseID(v string) *MoneyTransferCreate {
 	_c.mutation.SetCaseID(v)
@@ -277,6 +291,11 @@ func (_c *MoneyTransferCreate) check() error {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "MoneyTransfer.kind": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.SellerOfferID(); ok {
+		if err := moneytransfer.SellerOfferIDValidator(v); err != nil {
+			return &ValidationError{Name: "seller_offer_id", err: fmt.Errorf(`ent: validator failed for field "MoneyTransfer.seller_offer_id": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.CaseID(); !ok {
 		return &ValidationError{Name: "case_id", err: errors.New(`ent: missing required field "MoneyTransfer.case_id"`)}
 	}
@@ -432,6 +451,10 @@ func (_c *MoneyTransferCreate) createSpec() (*MoneyTransfer, *sqlgraph.CreateSpe
 	if value, ok := _c.mutation.Kind(); ok {
 		_spec.SetField(moneytransfer.FieldKind, field.TypeString, value)
 		_node.Kind = value
+	}
+	if value, ok := _c.mutation.SellerOfferID(); ok {
+		_spec.SetField(moneytransfer.FieldSellerOfferID, field.TypeString, value)
+		_node.SellerOfferID = &value
 	}
 	if value, ok := _c.mutation.CaseID(); ok {
 		_spec.SetField(moneytransfer.FieldCaseID, field.TypeString, value)

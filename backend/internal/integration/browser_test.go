@@ -28,6 +28,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/reports"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/resale"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/reviews"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/submissions"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
@@ -65,7 +66,7 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	fixtures := map[string]string{}
 	for _, project := range []string{"desktop", "mobile"} {
-		for _, role := range []string{"payadmin", "paybuyer", "customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond", "seller", "selleradmin", "sellerother"} {
+		for _, role := range []string{"resaleseller", "resalebuyer", "payadmin", "paybuyer", "customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond", "seller", "selleradmin", "sellerother"} {
 			email := strings.ToLower(role + "-" + project + "-" + rand.Text() + "@example.test")
 			account, createErr := f.client.User.Create().SetEmail(email).SetEmailVerifiedAt(time.Now()).SetTermsVersion("test-v1").SetTermsAcceptedAt(time.Now()).SetRole(func() string {
 				if role == "workbooster" || role == "worksecond" {
@@ -77,7 +78,7 @@ func TestBrowserEnvironment(t *testing.T) {
 				if role == "payadmin" {
 					return "owner"
 				}
-				if role == "paybuyer" || role == "seller" || role == "sellerother" || role == "workbuyer" || role == "workother" || role == "target" || role == "orders" || role == "orderother" || role == "supportbuyer" || role == "supportother" {
+				if role == "resaleseller" || role == "resalebuyer" || role == "paybuyer" || role == "seller" || role == "sellerother" || role == "workbuyer" || role == "workother" || role == "target" || role == "orders" || role == "orderother" || role == "supportbuyer" || role == "supportother" {
 					return "customer"
 				}
 				return role
@@ -110,13 +111,13 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	files := media.New(f.client, service, mediaObjects(t, f.client), media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
 	finance := payments.New(f.client, service, &browserPaymentProvider{newPaymentProvider(t)}, "fixture:browser-fixture", true, nil).ConfigureOutgoing(&browserOutgoingProvider{outgoingFixture: &outgoingFixture{}}, true)
-	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, finance.Register, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, execution.Register, submissions.New(f.client, service, nil).Register, reviews.New(f.client, service, nil).Register, operations.New(f.client, service, nil).Register, alerts.Register, reports.New(service, nil).Register))
+	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, resale.New(f.client, service, ring, nil).Register, finance.Register, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, execution.Register, submissions.New(f.client, service, nil).Register, reviews.New(f.client, service, nil).Register, operations.New(f.client, service, nil).Register, alerts.Register, reports.New(service, nil).Register))
 	defer server.Close()
 	work, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	done := make(chan error, 1)
 	go func() {
-		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"payments.refund": finance.RefundHandler(), "payments.outgoing_reconcile": finance.OutgoingHandler(), "payments.invoice": finance.InvoiceHandler(), "payments.reconcile": finance.ReconcileHandler(), "availability.changed": alerts.ChangedHandler(), "availability.fanout": alerts.FanoutHandler(), "availability.email": alerts.EmailHandler(sender), "system.ping": func(context.Context, jobs.Job) error { return nil }, "identity.email": service.EmailHandler(sender), "activity.email": notices.EmailHandler(sender), "media.scan": files.ScanHandler()}, slog.New(slog.DiscardHandler))
+		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"payments.payout": finance.RefundHandler(), "payments.seller_obligation": finance.SellerObligationHandler(), "payments.refund": finance.RefundHandler(), "payments.outgoing_reconcile": finance.OutgoingHandler(), "payments.invoice": finance.InvoiceHandler(), "payments.reconcile": finance.ReconcileHandler(), "availability.changed": alerts.ChangedHandler(), "availability.fanout": alerts.FanoutHandler(), "availability.email": alerts.EmailHandler(sender), "system.ping": func(context.Context, jobs.Job) error { return nil }, "identity.email": service.EmailHandler(sender), "activity.email": notices.EmailHandler(sender), "media.scan": files.ScanHandler()}, slog.New(slog.DiscardHandler))
 	}()
 	defer func() {
 		cancel()

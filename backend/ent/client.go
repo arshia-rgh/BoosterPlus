@@ -14,6 +14,10 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountdelivery"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlisting"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlistingrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountreservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountsubmission"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
@@ -58,6 +62,8 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/selleroffer"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/sellerofferevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
@@ -75,6 +81,14 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// AccountDelivery is the client for interacting with the AccountDelivery builders.
+	AccountDelivery *AccountDeliveryClient
+	// AccountListing is the client for interacting with the AccountListing builders.
+	AccountListing *AccountListingClient
+	// AccountListingRelease is the client for interacting with the AccountListingRelease builders.
+	AccountListingRelease *AccountListingReleaseClient
+	// AccountReservation is the client for interacting with the AccountReservation builders.
+	AccountReservation *AccountReservationClient
 	// AccountSubmission is the client for interacting with the AccountSubmission builders.
 	AccountSubmission *AccountSubmissionClient
 	// AuthAudit is the client for interacting with the AuthAudit builders.
@@ -163,6 +177,10 @@ type Client struct {
 	ReviewRevision *ReviewRevisionClient
 	// SecretBundle is the client for interacting with the SecretBundle builders.
 	SecretBundle *SecretBundleClient
+	// SellerOffer is the client for interacting with the SellerOffer builders.
+	SellerOffer *SellerOfferClient
+	// SellerOfferEvent is the client for interacting with the SellerOfferEvent builders.
+	SellerOfferEvent *SellerOfferEventClient
 	// ServiceCase is the client for interacting with the ServiceCase builders.
 	ServiceCase *ServiceCaseClient
 	// StaffProfile is the client for interacting with the StaffProfile builders.
@@ -190,6 +208,10 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.AccountDelivery = NewAccountDeliveryClient(c.config)
+	c.AccountListing = NewAccountListingClient(c.config)
+	c.AccountListingRelease = NewAccountListingReleaseClient(c.config)
+	c.AccountReservation = NewAccountReservationClient(c.config)
 	c.AccountSubmission = NewAccountSubmissionClient(c.config)
 	c.AuthAudit = NewAuthAuditClient(c.config)
 	c.AuthChallenge = NewAuthChallengeClient(c.config)
@@ -234,6 +256,8 @@ func (c *Client) init() {
 	c.Review = NewReviewClient(c.config)
 	c.ReviewRevision = NewReviewRevisionClient(c.config)
 	c.SecretBundle = NewSecretBundleClient(c.config)
+	c.SellerOffer = NewSellerOfferClient(c.config)
+	c.SellerOfferEvent = NewSellerOfferEventClient(c.config)
 	c.ServiceCase = NewServiceCaseClient(c.config)
 	c.StaffProfile = NewStaffProfileClient(c.config)
 	c.SubmissionEvent = NewSubmissionEventClient(c.config)
@@ -334,6 +358,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:                      ctx,
 		config:                   cfg,
+		AccountDelivery:          NewAccountDeliveryClient(cfg),
+		AccountListing:           NewAccountListingClient(cfg),
+		AccountListingRelease:    NewAccountListingReleaseClient(cfg),
+		AccountReservation:       NewAccountReservationClient(cfg),
 		AccountSubmission:        NewAccountSubmissionClient(cfg),
 		AuthAudit:                NewAuthAuditClient(cfg),
 		AuthChallenge:            NewAuthChallengeClient(cfg),
@@ -378,6 +406,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Review:                   NewReviewClient(cfg),
 		ReviewRevision:           NewReviewRevisionClient(cfg),
 		SecretBundle:             NewSecretBundleClient(cfg),
+		SellerOffer:              NewSellerOfferClient(cfg),
+		SellerOfferEvent:         NewSellerOfferEventClient(cfg),
 		ServiceCase:              NewServiceCaseClient(cfg),
 		StaffProfile:             NewStaffProfileClient(cfg),
 		SubmissionEvent:          NewSubmissionEventClient(cfg),
@@ -405,6 +435,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:                      ctx,
 		config:                   cfg,
+		AccountDelivery:          NewAccountDeliveryClient(cfg),
+		AccountListing:           NewAccountListingClient(cfg),
+		AccountListingRelease:    NewAccountListingReleaseClient(cfg),
+		AccountReservation:       NewAccountReservationClient(cfg),
 		AccountSubmission:        NewAccountSubmissionClient(cfg),
 		AuthAudit:                NewAuthAuditClient(cfg),
 		AuthChallenge:            NewAuthChallengeClient(cfg),
@@ -449,6 +483,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Review:                   NewReviewClient(cfg),
 		ReviewRevision:           NewReviewRevisionClient(cfg),
 		SecretBundle:             NewSecretBundleClient(cfg),
+		SellerOffer:              NewSellerOfferClient(cfg),
+		SellerOfferEvent:         NewSellerOfferEventClient(cfg),
 		ServiceCase:              NewServiceCaseClient(cfg),
 		StaffProfile:             NewStaffProfileClient(cfg),
 		SubmissionEvent:          NewSubmissionEventClient(cfg),
@@ -463,7 +499,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		AccountSubmission.
+//		AccountDelivery.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -486,16 +522,18 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AccountSubmission, c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity,
-		c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession,
-		c.AvailabilityDelivery, c.AvailabilitySubscription, c.AvailabilityTarget,
-		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CaseEvent, c.CatalogRelease,
-		c.Conversation, c.ConversationMessage, c.ConversationRead, c.Coupon,
-		c.CouponClaim, c.CouponRevision, c.Favorite, c.Fulfillment, c.Game,
-		c.MediaFile, c.MoneyTransfer, c.Notification, c.Order, c.OrderContract,
-		c.OrderEvent, c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt,
-		c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord,
-		c.PaymentSettings, c.PaymentSignal, c.Review, c.ReviewRevision, c.SecretBundle,
+		c.AccountDelivery, c.AccountListing, c.AccountListingRelease,
+		c.AccountReservation, c.AccountSubmission, c.AuthAudit, c.AuthChallenge,
+		c.AuthFlow, c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery,
+		c.AuthSession, c.AvailabilityDelivery, c.AvailabilitySubscription,
+		c.AvailabilityTarget, c.AvailabilityWindow, c.Booking, c.BookingEvent,
+		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
+		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
+		c.Fulfillment, c.Game, c.MediaFile, c.MoneyTransfer, c.Notification, c.Order,
+		c.OrderContract, c.OrderEvent, c.OrderQuote, c.PaymentAllocation,
+		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
+		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.Review,
+		c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
 		c.ServiceCase, c.StaffProfile, c.SubmissionEvent, c.TransferAttempt,
 		c.TransferEvent, c.TransferObservation, c.TransferRecord, c.User,
 	} {
@@ -507,16 +545,18 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AccountSubmission, c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity,
-		c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession,
-		c.AvailabilityDelivery, c.AvailabilitySubscription, c.AvailabilityTarget,
-		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CaseEvent, c.CatalogRelease,
-		c.Conversation, c.ConversationMessage, c.ConversationRead, c.Coupon,
-		c.CouponClaim, c.CouponRevision, c.Favorite, c.Fulfillment, c.Game,
-		c.MediaFile, c.MoneyTransfer, c.Notification, c.Order, c.OrderContract,
-		c.OrderEvent, c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt,
-		c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord,
-		c.PaymentSettings, c.PaymentSignal, c.Review, c.ReviewRevision, c.SecretBundle,
+		c.AccountDelivery, c.AccountListing, c.AccountListingRelease,
+		c.AccountReservation, c.AccountSubmission, c.AuthAudit, c.AuthChallenge,
+		c.AuthFlow, c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery,
+		c.AuthSession, c.AvailabilityDelivery, c.AvailabilitySubscription,
+		c.AvailabilityTarget, c.AvailabilityWindow, c.Booking, c.BookingEvent,
+		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
+		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
+		c.Fulfillment, c.Game, c.MediaFile, c.MoneyTransfer, c.Notification, c.Order,
+		c.OrderContract, c.OrderEvent, c.OrderQuote, c.PaymentAllocation,
+		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
+		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.Review,
+		c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
 		c.ServiceCase, c.StaffProfile, c.SubmissionEvent, c.TransferAttempt,
 		c.TransferEvent, c.TransferObservation, c.TransferRecord, c.User,
 	} {
@@ -527,6 +567,14 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AccountDeliveryMutation:
+		return c.AccountDelivery.mutate(ctx, m)
+	case *AccountListingMutation:
+		return c.AccountListing.mutate(ctx, m)
+	case *AccountListingReleaseMutation:
+		return c.AccountListingRelease.mutate(ctx, m)
+	case *AccountReservationMutation:
+		return c.AccountReservation.mutate(ctx, m)
 	case *AccountSubmissionMutation:
 		return c.AccountSubmission.mutate(ctx, m)
 	case *AuthAuditMutation:
@@ -615,6 +663,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.ReviewRevision.mutate(ctx, m)
 	case *SecretBundleMutation:
 		return c.SecretBundle.mutate(ctx, m)
+	case *SellerOfferMutation:
+		return c.SellerOffer.mutate(ctx, m)
+	case *SellerOfferEventMutation:
+		return c.SellerOfferEvent.mutate(ctx, m)
 	case *ServiceCaseMutation:
 		return c.ServiceCase.mutate(ctx, m)
 	case *StaffProfileMutation:
@@ -633,6 +685,538 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AccountDeliveryClient is a client for the AccountDelivery schema.
+type AccountDeliveryClient struct {
+	config
+}
+
+// NewAccountDeliveryClient returns a client for the AccountDelivery from the given config.
+func NewAccountDeliveryClient(c config) *AccountDeliveryClient {
+	return &AccountDeliveryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `accountdelivery.Hooks(f(g(h())))`.
+func (c *AccountDeliveryClient) Use(hooks ...Hook) {
+	c.hooks.AccountDelivery = append(c.hooks.AccountDelivery, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `accountdelivery.Intercept(f(g(h())))`.
+func (c *AccountDeliveryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AccountDelivery = append(c.inters.AccountDelivery, interceptors...)
+}
+
+// Create returns a builder for creating a AccountDelivery entity.
+func (c *AccountDeliveryClient) Create() *AccountDeliveryCreate {
+	mutation := newAccountDeliveryMutation(c.config, OpCreate)
+	return &AccountDeliveryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AccountDelivery entities.
+func (c *AccountDeliveryClient) CreateBulk(builders ...*AccountDeliveryCreate) *AccountDeliveryCreateBulk {
+	return &AccountDeliveryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AccountDeliveryClient) MapCreateBulk(slice any, setFunc func(*AccountDeliveryCreate, int)) *AccountDeliveryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AccountDeliveryCreateBulk{err: fmt.Errorf("calling to AccountDeliveryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AccountDeliveryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AccountDeliveryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AccountDelivery.
+func (c *AccountDeliveryClient) Update() *AccountDeliveryUpdate {
+	mutation := newAccountDeliveryMutation(c.config, OpUpdate)
+	return &AccountDeliveryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AccountDeliveryClient) UpdateOne(_m *AccountDelivery) *AccountDeliveryUpdateOne {
+	mutation := newAccountDeliveryMutation(c.config, OpUpdateOne, withAccountDelivery(_m))
+	return &AccountDeliveryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AccountDeliveryClient) UpdateOneID(id string) *AccountDeliveryUpdateOne {
+	mutation := newAccountDeliveryMutation(c.config, OpUpdateOne, withAccountDeliveryID(id))
+	return &AccountDeliveryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AccountDelivery.
+func (c *AccountDeliveryClient) Delete() *AccountDeliveryDelete {
+	mutation := newAccountDeliveryMutation(c.config, OpDelete)
+	return &AccountDeliveryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AccountDeliveryClient) DeleteOne(_m *AccountDelivery) *AccountDeliveryDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AccountDeliveryClient) DeleteOneID(id string) *AccountDeliveryDeleteOne {
+	builder := c.Delete().Where(accountdelivery.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AccountDeliveryDeleteOne{builder}
+}
+
+// Query returns a query builder for AccountDelivery.
+func (c *AccountDeliveryClient) Query() *AccountDeliveryQuery {
+	return &AccountDeliveryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAccountDelivery},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AccountDelivery entity by its id.
+func (c *AccountDeliveryClient) Get(ctx context.Context, id string) (*AccountDelivery, error) {
+	return c.Query().Where(accountdelivery.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AccountDeliveryClient) GetX(ctx context.Context, id string) *AccountDelivery {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AccountDeliveryClient) Hooks() []Hook {
+	return c.hooks.AccountDelivery
+}
+
+// Interceptors returns the client interceptors.
+func (c *AccountDeliveryClient) Interceptors() []Interceptor {
+	return c.inters.AccountDelivery
+}
+
+func (c *AccountDeliveryClient) mutate(ctx context.Context, m *AccountDeliveryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AccountDeliveryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AccountDeliveryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AccountDeliveryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AccountDeliveryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AccountDelivery mutation op: %q", m.Op())
+	}
+}
+
+// AccountListingClient is a client for the AccountListing schema.
+type AccountListingClient struct {
+	config
+}
+
+// NewAccountListingClient returns a client for the AccountListing from the given config.
+func NewAccountListingClient(c config) *AccountListingClient {
+	return &AccountListingClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `accountlisting.Hooks(f(g(h())))`.
+func (c *AccountListingClient) Use(hooks ...Hook) {
+	c.hooks.AccountListing = append(c.hooks.AccountListing, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `accountlisting.Intercept(f(g(h())))`.
+func (c *AccountListingClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AccountListing = append(c.inters.AccountListing, interceptors...)
+}
+
+// Create returns a builder for creating a AccountListing entity.
+func (c *AccountListingClient) Create() *AccountListingCreate {
+	mutation := newAccountListingMutation(c.config, OpCreate)
+	return &AccountListingCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AccountListing entities.
+func (c *AccountListingClient) CreateBulk(builders ...*AccountListingCreate) *AccountListingCreateBulk {
+	return &AccountListingCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AccountListingClient) MapCreateBulk(slice any, setFunc func(*AccountListingCreate, int)) *AccountListingCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AccountListingCreateBulk{err: fmt.Errorf("calling to AccountListingClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AccountListingCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AccountListingCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AccountListing.
+func (c *AccountListingClient) Update() *AccountListingUpdate {
+	mutation := newAccountListingMutation(c.config, OpUpdate)
+	return &AccountListingUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AccountListingClient) UpdateOne(_m *AccountListing) *AccountListingUpdateOne {
+	mutation := newAccountListingMutation(c.config, OpUpdateOne, withAccountListing(_m))
+	return &AccountListingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AccountListingClient) UpdateOneID(id string) *AccountListingUpdateOne {
+	mutation := newAccountListingMutation(c.config, OpUpdateOne, withAccountListingID(id))
+	return &AccountListingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AccountListing.
+func (c *AccountListingClient) Delete() *AccountListingDelete {
+	mutation := newAccountListingMutation(c.config, OpDelete)
+	return &AccountListingDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AccountListingClient) DeleteOne(_m *AccountListing) *AccountListingDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AccountListingClient) DeleteOneID(id string) *AccountListingDeleteOne {
+	builder := c.Delete().Where(accountlisting.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AccountListingDeleteOne{builder}
+}
+
+// Query returns a query builder for AccountListing.
+func (c *AccountListingClient) Query() *AccountListingQuery {
+	return &AccountListingQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAccountListing},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AccountListing entity by its id.
+func (c *AccountListingClient) Get(ctx context.Context, id string) (*AccountListing, error) {
+	return c.Query().Where(accountlisting.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AccountListingClient) GetX(ctx context.Context, id string) *AccountListing {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AccountListingClient) Hooks() []Hook {
+	return c.hooks.AccountListing
+}
+
+// Interceptors returns the client interceptors.
+func (c *AccountListingClient) Interceptors() []Interceptor {
+	return c.inters.AccountListing
+}
+
+func (c *AccountListingClient) mutate(ctx context.Context, m *AccountListingMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AccountListingCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AccountListingUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AccountListingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AccountListingDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AccountListing mutation op: %q", m.Op())
+	}
+}
+
+// AccountListingReleaseClient is a client for the AccountListingRelease schema.
+type AccountListingReleaseClient struct {
+	config
+}
+
+// NewAccountListingReleaseClient returns a client for the AccountListingRelease from the given config.
+func NewAccountListingReleaseClient(c config) *AccountListingReleaseClient {
+	return &AccountListingReleaseClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `accountlistingrelease.Hooks(f(g(h())))`.
+func (c *AccountListingReleaseClient) Use(hooks ...Hook) {
+	c.hooks.AccountListingRelease = append(c.hooks.AccountListingRelease, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `accountlistingrelease.Intercept(f(g(h())))`.
+func (c *AccountListingReleaseClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AccountListingRelease = append(c.inters.AccountListingRelease, interceptors...)
+}
+
+// Create returns a builder for creating a AccountListingRelease entity.
+func (c *AccountListingReleaseClient) Create() *AccountListingReleaseCreate {
+	mutation := newAccountListingReleaseMutation(c.config, OpCreate)
+	return &AccountListingReleaseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AccountListingRelease entities.
+func (c *AccountListingReleaseClient) CreateBulk(builders ...*AccountListingReleaseCreate) *AccountListingReleaseCreateBulk {
+	return &AccountListingReleaseCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AccountListingReleaseClient) MapCreateBulk(slice any, setFunc func(*AccountListingReleaseCreate, int)) *AccountListingReleaseCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AccountListingReleaseCreateBulk{err: fmt.Errorf("calling to AccountListingReleaseClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AccountListingReleaseCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AccountListingReleaseCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AccountListingRelease.
+func (c *AccountListingReleaseClient) Update() *AccountListingReleaseUpdate {
+	mutation := newAccountListingReleaseMutation(c.config, OpUpdate)
+	return &AccountListingReleaseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AccountListingReleaseClient) UpdateOne(_m *AccountListingRelease) *AccountListingReleaseUpdateOne {
+	mutation := newAccountListingReleaseMutation(c.config, OpUpdateOne, withAccountListingRelease(_m))
+	return &AccountListingReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AccountListingReleaseClient) UpdateOneID(id string) *AccountListingReleaseUpdateOne {
+	mutation := newAccountListingReleaseMutation(c.config, OpUpdateOne, withAccountListingReleaseID(id))
+	return &AccountListingReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AccountListingRelease.
+func (c *AccountListingReleaseClient) Delete() *AccountListingReleaseDelete {
+	mutation := newAccountListingReleaseMutation(c.config, OpDelete)
+	return &AccountListingReleaseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AccountListingReleaseClient) DeleteOne(_m *AccountListingRelease) *AccountListingReleaseDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AccountListingReleaseClient) DeleteOneID(id string) *AccountListingReleaseDeleteOne {
+	builder := c.Delete().Where(accountlistingrelease.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AccountListingReleaseDeleteOne{builder}
+}
+
+// Query returns a query builder for AccountListingRelease.
+func (c *AccountListingReleaseClient) Query() *AccountListingReleaseQuery {
+	return &AccountListingReleaseQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAccountListingRelease},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AccountListingRelease entity by its id.
+func (c *AccountListingReleaseClient) Get(ctx context.Context, id string) (*AccountListingRelease, error) {
+	return c.Query().Where(accountlistingrelease.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AccountListingReleaseClient) GetX(ctx context.Context, id string) *AccountListingRelease {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AccountListingReleaseClient) Hooks() []Hook {
+	return c.hooks.AccountListingRelease
+}
+
+// Interceptors returns the client interceptors.
+func (c *AccountListingReleaseClient) Interceptors() []Interceptor {
+	return c.inters.AccountListingRelease
+}
+
+func (c *AccountListingReleaseClient) mutate(ctx context.Context, m *AccountListingReleaseMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AccountListingReleaseCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AccountListingReleaseUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AccountListingReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AccountListingReleaseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AccountListingRelease mutation op: %q", m.Op())
+	}
+}
+
+// AccountReservationClient is a client for the AccountReservation schema.
+type AccountReservationClient struct {
+	config
+}
+
+// NewAccountReservationClient returns a client for the AccountReservation from the given config.
+func NewAccountReservationClient(c config) *AccountReservationClient {
+	return &AccountReservationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `accountreservation.Hooks(f(g(h())))`.
+func (c *AccountReservationClient) Use(hooks ...Hook) {
+	c.hooks.AccountReservation = append(c.hooks.AccountReservation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `accountreservation.Intercept(f(g(h())))`.
+func (c *AccountReservationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AccountReservation = append(c.inters.AccountReservation, interceptors...)
+}
+
+// Create returns a builder for creating a AccountReservation entity.
+func (c *AccountReservationClient) Create() *AccountReservationCreate {
+	mutation := newAccountReservationMutation(c.config, OpCreate)
+	return &AccountReservationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AccountReservation entities.
+func (c *AccountReservationClient) CreateBulk(builders ...*AccountReservationCreate) *AccountReservationCreateBulk {
+	return &AccountReservationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AccountReservationClient) MapCreateBulk(slice any, setFunc func(*AccountReservationCreate, int)) *AccountReservationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AccountReservationCreateBulk{err: fmt.Errorf("calling to AccountReservationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AccountReservationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AccountReservationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AccountReservation.
+func (c *AccountReservationClient) Update() *AccountReservationUpdate {
+	mutation := newAccountReservationMutation(c.config, OpUpdate)
+	return &AccountReservationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AccountReservationClient) UpdateOne(_m *AccountReservation) *AccountReservationUpdateOne {
+	mutation := newAccountReservationMutation(c.config, OpUpdateOne, withAccountReservation(_m))
+	return &AccountReservationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AccountReservationClient) UpdateOneID(id string) *AccountReservationUpdateOne {
+	mutation := newAccountReservationMutation(c.config, OpUpdateOne, withAccountReservationID(id))
+	return &AccountReservationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AccountReservation.
+func (c *AccountReservationClient) Delete() *AccountReservationDelete {
+	mutation := newAccountReservationMutation(c.config, OpDelete)
+	return &AccountReservationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AccountReservationClient) DeleteOne(_m *AccountReservation) *AccountReservationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AccountReservationClient) DeleteOneID(id string) *AccountReservationDeleteOne {
+	builder := c.Delete().Where(accountreservation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AccountReservationDeleteOne{builder}
+}
+
+// Query returns a query builder for AccountReservation.
+func (c *AccountReservationClient) Query() *AccountReservationQuery {
+	return &AccountReservationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAccountReservation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AccountReservation entity by its id.
+func (c *AccountReservationClient) Get(ctx context.Context, id string) (*AccountReservation, error) {
+	return c.Query().Where(accountreservation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AccountReservationClient) GetX(ctx context.Context, id string) *AccountReservation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AccountReservationClient) Hooks() []Hook {
+	return c.hooks.AccountReservation
+}
+
+// Interceptors returns the client interceptors.
+func (c *AccountReservationClient) Interceptors() []Interceptor {
+	return c.inters.AccountReservation
+}
+
+func (c *AccountReservationClient) mutate(ctx context.Context, m *AccountReservationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AccountReservationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AccountReservationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AccountReservationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AccountReservationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AccountReservation mutation op: %q", m.Op())
 	}
 }
 
@@ -6488,6 +7072,272 @@ func (c *SecretBundleClient) mutate(ctx context.Context, m *SecretBundleMutation
 	}
 }
 
+// SellerOfferClient is a client for the SellerOffer schema.
+type SellerOfferClient struct {
+	config
+}
+
+// NewSellerOfferClient returns a client for the SellerOffer from the given config.
+func NewSellerOfferClient(c config) *SellerOfferClient {
+	return &SellerOfferClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `selleroffer.Hooks(f(g(h())))`.
+func (c *SellerOfferClient) Use(hooks ...Hook) {
+	c.hooks.SellerOffer = append(c.hooks.SellerOffer, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `selleroffer.Intercept(f(g(h())))`.
+func (c *SellerOfferClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SellerOffer = append(c.inters.SellerOffer, interceptors...)
+}
+
+// Create returns a builder for creating a SellerOffer entity.
+func (c *SellerOfferClient) Create() *SellerOfferCreate {
+	mutation := newSellerOfferMutation(c.config, OpCreate)
+	return &SellerOfferCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SellerOffer entities.
+func (c *SellerOfferClient) CreateBulk(builders ...*SellerOfferCreate) *SellerOfferCreateBulk {
+	return &SellerOfferCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SellerOfferClient) MapCreateBulk(slice any, setFunc func(*SellerOfferCreate, int)) *SellerOfferCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SellerOfferCreateBulk{err: fmt.Errorf("calling to SellerOfferClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SellerOfferCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SellerOfferCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SellerOffer.
+func (c *SellerOfferClient) Update() *SellerOfferUpdate {
+	mutation := newSellerOfferMutation(c.config, OpUpdate)
+	return &SellerOfferUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SellerOfferClient) UpdateOne(_m *SellerOffer) *SellerOfferUpdateOne {
+	mutation := newSellerOfferMutation(c.config, OpUpdateOne, withSellerOffer(_m))
+	return &SellerOfferUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SellerOfferClient) UpdateOneID(id string) *SellerOfferUpdateOne {
+	mutation := newSellerOfferMutation(c.config, OpUpdateOne, withSellerOfferID(id))
+	return &SellerOfferUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SellerOffer.
+func (c *SellerOfferClient) Delete() *SellerOfferDelete {
+	mutation := newSellerOfferMutation(c.config, OpDelete)
+	return &SellerOfferDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SellerOfferClient) DeleteOne(_m *SellerOffer) *SellerOfferDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SellerOfferClient) DeleteOneID(id string) *SellerOfferDeleteOne {
+	builder := c.Delete().Where(selleroffer.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SellerOfferDeleteOne{builder}
+}
+
+// Query returns a query builder for SellerOffer.
+func (c *SellerOfferClient) Query() *SellerOfferQuery {
+	return &SellerOfferQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSellerOffer},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SellerOffer entity by its id.
+func (c *SellerOfferClient) Get(ctx context.Context, id string) (*SellerOffer, error) {
+	return c.Query().Where(selleroffer.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SellerOfferClient) GetX(ctx context.Context, id string) *SellerOffer {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SellerOfferClient) Hooks() []Hook {
+	return c.hooks.SellerOffer
+}
+
+// Interceptors returns the client interceptors.
+func (c *SellerOfferClient) Interceptors() []Interceptor {
+	return c.inters.SellerOffer
+}
+
+func (c *SellerOfferClient) mutate(ctx context.Context, m *SellerOfferMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SellerOfferCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SellerOfferUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SellerOfferUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SellerOfferDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SellerOffer mutation op: %q", m.Op())
+	}
+}
+
+// SellerOfferEventClient is a client for the SellerOfferEvent schema.
+type SellerOfferEventClient struct {
+	config
+}
+
+// NewSellerOfferEventClient returns a client for the SellerOfferEvent from the given config.
+func NewSellerOfferEventClient(c config) *SellerOfferEventClient {
+	return &SellerOfferEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `sellerofferevent.Hooks(f(g(h())))`.
+func (c *SellerOfferEventClient) Use(hooks ...Hook) {
+	c.hooks.SellerOfferEvent = append(c.hooks.SellerOfferEvent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `sellerofferevent.Intercept(f(g(h())))`.
+func (c *SellerOfferEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SellerOfferEvent = append(c.inters.SellerOfferEvent, interceptors...)
+}
+
+// Create returns a builder for creating a SellerOfferEvent entity.
+func (c *SellerOfferEventClient) Create() *SellerOfferEventCreate {
+	mutation := newSellerOfferEventMutation(c.config, OpCreate)
+	return &SellerOfferEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SellerOfferEvent entities.
+func (c *SellerOfferEventClient) CreateBulk(builders ...*SellerOfferEventCreate) *SellerOfferEventCreateBulk {
+	return &SellerOfferEventCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SellerOfferEventClient) MapCreateBulk(slice any, setFunc func(*SellerOfferEventCreate, int)) *SellerOfferEventCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SellerOfferEventCreateBulk{err: fmt.Errorf("calling to SellerOfferEventClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SellerOfferEventCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SellerOfferEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SellerOfferEvent.
+func (c *SellerOfferEventClient) Update() *SellerOfferEventUpdate {
+	mutation := newSellerOfferEventMutation(c.config, OpUpdate)
+	return &SellerOfferEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SellerOfferEventClient) UpdateOne(_m *SellerOfferEvent) *SellerOfferEventUpdateOne {
+	mutation := newSellerOfferEventMutation(c.config, OpUpdateOne, withSellerOfferEvent(_m))
+	return &SellerOfferEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SellerOfferEventClient) UpdateOneID(id string) *SellerOfferEventUpdateOne {
+	mutation := newSellerOfferEventMutation(c.config, OpUpdateOne, withSellerOfferEventID(id))
+	return &SellerOfferEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SellerOfferEvent.
+func (c *SellerOfferEventClient) Delete() *SellerOfferEventDelete {
+	mutation := newSellerOfferEventMutation(c.config, OpDelete)
+	return &SellerOfferEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SellerOfferEventClient) DeleteOne(_m *SellerOfferEvent) *SellerOfferEventDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SellerOfferEventClient) DeleteOneID(id string) *SellerOfferEventDeleteOne {
+	builder := c.Delete().Where(sellerofferevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SellerOfferEventDeleteOne{builder}
+}
+
+// Query returns a query builder for SellerOfferEvent.
+func (c *SellerOfferEventClient) Query() *SellerOfferEventQuery {
+	return &SellerOfferEventQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSellerOfferEvent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SellerOfferEvent entity by its id.
+func (c *SellerOfferEventClient) Get(ctx context.Context, id string) (*SellerOfferEvent, error) {
+	return c.Query().Where(sellerofferevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SellerOfferEventClient) GetX(ctx context.Context, id string) *SellerOfferEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SellerOfferEventClient) Hooks() []Hook {
+	return c.hooks.SellerOfferEvent
+}
+
+// Interceptors returns the client interceptors.
+func (c *SellerOfferEventClient) Interceptors() []Interceptor {
+	return c.inters.SellerOfferEvent
+}
+
+func (c *SellerOfferEventClient) mutate(ctx context.Context, m *SellerOfferEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SellerOfferEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SellerOfferEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SellerOfferEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SellerOfferEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SellerOfferEvent mutation op: %q", m.Op())
+	}
+}
+
 // ServiceCaseClient is a client for the ServiceCase schema.
 type ServiceCaseClient struct {
 	config
@@ -7555,6 +8405,7 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
+		AccountDelivery, AccountListing, AccountListingRelease, AccountReservation,
 		AccountSubmission, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity,
 		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
 		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
@@ -7563,11 +8414,12 @@ type (
 		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
 		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
 		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
-		Review, ReviewRevision, SecretBundle, ServiceCase, StaffProfile,
-		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
-		TransferRecord, User []ent.Hook
+		Review, ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent,
+		ServiceCase, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
+		TransferObservation, TransferRecord, User []ent.Hook
 	}
 	inters struct {
+		AccountDelivery, AccountListing, AccountListingRelease, AccountReservation,
 		AccountSubmission, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity,
 		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
 		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
@@ -7576,9 +8428,9 @@ type (
 		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
 		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
 		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
-		Review, ReviewRevision, SecretBundle, ServiceCase, StaffProfile,
-		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
-		TransferRecord, User []ent.Interceptor
+		Review, ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent,
+		ServiceCase, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
+		TransferObservation, TransferRecord, User []ent.Interceptor
 	}
 )
 

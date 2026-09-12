@@ -21,7 +21,7 @@ export const states = [
 export const summarySchema = z.object({
   id: z.string(),
   version: z.number().int(),
-  kind: z.enum(["custom", "package"]),
+  kind: z.enum(["custom", "package", "account"]),
   state: z.enum(states),
   slug: z.string(),
   service: z.string(),

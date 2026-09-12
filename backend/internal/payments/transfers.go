@@ -57,8 +57,11 @@ func (s *Store) transferEvent(ctx context.Context, tx *ent.Tx, p *identity.Princ
 	if err != nil {
 		return err
 	}
-	if err = s.audit(ctx, tx, p, "refund_"+action, row.ID); err != nil {
+	if err = s.audit(ctx, tx, p, row.Kind+"_"+action, row.ID); err != nil {
 		return err
+	}
+	if row.Kind == "seller_payout" {
+		return s.sellerEvent(ctx, tx, p, row)
 	}
 	orderRow, err := tx.Order.Get(ctx, row.OrderID)
 	if err != nil {
@@ -148,6 +151,14 @@ func (s *Store) ProposeRefund(ctx context.Context, p *identity.Principal, caseID
 
 // ConfirmRecipient invalidates old verification whenever the beneficiary supplies new routing data.
 func (s *Store) ConfirmRecipient(ctx context.Context, p *identity.Principal, id string, input RecipientInput) (TransferView, error) {
+	return s.confirmRecipient(ctx, p, id, "refund", input)
+}
+
+// ConfirmSellerRecipient keeps payout routing consent separate from refunds.
+func (s *Store) ConfirmSellerRecipient(ctx context.Context, p *identity.Principal, id string, input RecipientInput) (TransferView, error) {
+	return s.confirmRecipient(ctx, p, id, "seller_payout", input)
+}
+func (s *Store) confirmRecipient(ctx context.Context, p *identity.Principal, id, kind string, input RecipientInput) (TransferView, error) {
 	recipient := nowpayments.Recipient{Address: input.Address, Memo: input.Memo}
 	if !validID(id) || input.Version < 1 || input.Version >= maxVersion || !input.Accept || !nowpayments.ValidRecipient(recipient) {
 		return TransferView{}, ErrInvalid
@@ -161,7 +172,7 @@ func (s *Store) ConfirmRecipient(ctx context.Context, p *identity.Principal, id 
 		if !current.Session.AuthenticatedAt.Add(identity.RecentTTL).After(s.instant()) {
 			return identity.ErrRecent
 		}
-		row, e := tx.MoneyTransfer.Query().Where(moneytransfer.IDEQ(id), moneytransfer.UserIDEQ(current.User.ID)).Only(ctx)
+		row, e := tx.MoneyTransfer.Query().Where(moneytransfer.IDEQ(id), moneytransfer.UserIDEQ(current.User.ID), moneytransfer.KindEQ(kind)).Only(ctx)
 		if e != nil {
 			return e
 		}
@@ -203,6 +214,14 @@ func (s *Store) Transfers(ctx context.Context, p *identity.Principal, id string,
 
 // ApproveRefund authorizes the precise customer-confirmed recipient and amount once.
 func (s *Store) ApproveRefund(ctx context.Context, p *identity.Principal, id string, input TransferChange) (TransferView, error) {
+	return s.approveTransfer(ctx, p, id, "refund", input)
+}
+
+// ApproveSellerPayout rechecks accepted seller terms and due conditions before each exact approval.
+func (s *Store) ApproveSellerPayout(ctx context.Context, p *identity.Principal, id string, input TransferChange) (TransferView, error) {
+	return s.approveTransfer(ctx, p, id, "seller_payout", input)
+}
+func (s *Store) approveTransfer(ctx context.Context, p *identity.Principal, id, kind string, input TransferChange) (TransferView, error) {
 	if !validID(id) || input.Version < 1 || input.Version >= maxVersion || !validText(input.Reason, 10, 2000) || input.Code != "" {
 		return TransferView{}, ErrInvalid
 	}
@@ -215,21 +234,10 @@ func (s *Store) ApproveRefund(ctx context.Context, p *identity.Principal, id str
 		if e != nil {
 			return e
 		}
-		if row.Account != s.account || row.Version != input.Version || (row.State != "verified" && row.State != "failed") || row.RecipientAt == nil {
+		if row.Kind != kind || row.Account != s.account || row.Version != input.Version || (row.State != "verified" && row.State != "failed") || row.RecipientAt == nil {
 			return ErrConflict
 		}
-		record, e := tx.ServiceCase.Get(ctx, row.CaseID)
-		if e != nil {
-			return e
-		}
-		if record.ActiveOrderID == nil || record.State != "decided" {
-			return ErrConflict
-		}
-		receipt, e := tx.PaymentReceipt.Get(ctx, row.ReceiptID)
-		if e != nil {
-			return e
-		}
-		if e = s.refundCap(ctx, tx, receipt, new(big.Rat)); e != nil {
+		if e = s.transferEligible(ctx, tx, row); e != nil {
 			return e
 		}
 		if row.State == "failed" {
@@ -261,7 +269,11 @@ func (s *Store) ApproveRefund(ctx context.Context, p *identity.Principal, id str
 		if e = s.transferReason(ctx, tx, current, row, input.Reason); e != nil {
 			return e
 		}
-		if e = enqueue(ctx, tx, "payments.refund", "refund-initiate:"+attempt.ID, map[string]string{"attempt_id": attempt.ID}); e != nil {
+		jobKind := "payments.refund"
+		if kind == "seller_payout" {
+			jobKind = "payments.payout"
+		}
+		if e = enqueue(ctx, tx, jobKind, "refund-initiate:"+attempt.ID, map[string]string{"attempt_id": attempt.ID}); e != nil {
 			return e
 		}
 		result, e = transferView(ctx, tx.Client(), row)

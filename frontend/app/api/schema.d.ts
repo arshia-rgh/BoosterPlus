@@ -3553,6 +3553,484 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/accounts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1Accounts"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/accounts/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1AccountsId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/accounts/{id}/reserve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AccountsIdReserve"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/submissions/{id}/offers": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1SubmissionsIdOffers"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/submissions/{id}/payouts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1SubmissionsIdPayouts"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/seller-offers/{id}/{action}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1SellerOffersIdAction"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/account-orders/{id}/delivery": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1AccountOrdersIdDelivery"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/account-orders/{id}/delivery/{action}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AccountOrdersIdDeliveryAction"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/submissions/{id}/offers": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1AdminSubmissionsIdOffers"];
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AdminSubmissionsIdOffers"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/submissions/{id}/payouts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1AdminSubmissionsIdPayouts"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/seller-offers/{id}/{action}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AdminSellerOffersIdAction"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/account-orders/{id}/delivery": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1AdminAccountOrdersIdDelivery"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/account-orders/{id}/delivery/{action}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AdminAccountOrdersIdDeliveryAction"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/seller-offers/{id}/secret": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1SellerOffersIdSecret"];
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1SellerOffersIdSecret"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/seller-offers/{id}/secret/reveal": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AdminSellerOffersIdSecretReveal"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/account-orders/{id}/secret": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AdminAccountOrdersIdSecret"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/account-orders/{id}/secret/reveal": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AccountOrdersIdSecretReveal"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/seller-offers/{id}/listing": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AdminSellerOffersIdListing"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/account-listings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1AdminAccountListings"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/account-listings/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1AdminAccountListingsId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/account-listings/{id}/{action}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AdminAccountListingsIdAction"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payouts/{id}/recipient": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1PayoutsIdRecipient"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/payouts/{id}/approve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AdminPayoutsIdApprove"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/payouts/{id}/verify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    post: operations["postResaleApiV1AdminPayoutsIdVerify"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/finance/payouts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1AdminFinancePayouts"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/accounts/{id}/images/{slot}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Serve a reviewed clean image from the current public release; no private object key exposure */
+    get: operations["publicReviewedAccountImage"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/seller-offers/{id}/events": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1SubmissionsIdOffersHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/seller-offers/{id}/events": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reviewed account resale; exact accepted terms and live authorization boundaries */
+    get: operations["getResaleApiV1AdminSubmissionsIdOffersHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4039,7 +4517,7 @@ export interface components {
     OrderSummary: {
       id: string;
       /** @enum {string} */
-      kind: "custom" | "package";
+      kind: "custom" | "package" | "account";
       /** @enum {string} */
       state:
         | "submitted"
@@ -4594,7 +5072,8 @@ export interface components {
         | "needs_information"
         | "approved_pending_terms"
         | "rejected"
-        | "withdrawn";
+        | "withdrawn"
+        | "accepted";
       /** Format: date-time */
       created_at: string;
       /** Format: date-time */
@@ -4626,7 +5105,8 @@ export interface components {
           | "needs_information"
           | "approved_pending_terms"
           | "rejected"
-          | "withdrawn";
+          | "withdrawn"
+          | "accepted";
         message: string;
         actor_role: string;
         /** Format: date-time */
@@ -5044,6 +5524,7 @@ export interface components {
       created_at: string;
       /** Format: date-time */
       updated_at: string;
+      account_terms?: components["schemas"]["AccountProduct"] | null;
     };
     ServiceCaseInput: {
       request_key: string;
@@ -5138,6 +5619,170 @@ export interface components {
       }[];
       next: string;
       enabled: boolean;
+    };
+    SellerTerms: {
+      currency: string;
+      network: string;
+      amount: string;
+      proceeds_basis: string;
+      fees: string;
+      transfer_requirements: string;
+      dispute_terms: string;
+      withdrawal_terms: string;
+      /** @enum {string} */
+      model: "consignment" | "buy_first";
+      payout_delay_hours: number;
+      payout_deadline_hours: number;
+    };
+    SellerOffer: {
+      id: string;
+      submission_id: string;
+      state: string;
+      version: number;
+      terms: components["schemas"]["SellerTerms"];
+      /** Format: date-time */
+      expires_at: string;
+      /** Format: date-time */
+      accepted_at: string | null;
+      /** Format: date-time */
+      control_verified_at: string | null;
+      /** Format: date-time */
+      created_at: string;
+    };
+    SellerOffers: {
+      offers: components["schemas"]["SellerOffer"][];
+    };
+    SellerOfferInput: {
+      request_key: string;
+      submission_version: number;
+      terms: components["schemas"]["SellerTerms"];
+      /** Format: date-time */
+      expires_at: string;
+    };
+    SellerOfferChange: {
+      version: number;
+      accept: boolean;
+      note: string;
+    };
+    AccountProduct: {
+      title: string;
+      description: string;
+      region: string;
+      rank: string;
+      currency: string;
+      amount_minor: string;
+      sale_terms: string;
+      transfer_requirements: string;
+      dispute_terms: string;
+      acknowledgement_terms: string;
+      attributes: {
+        label: string;
+        value: string;
+      }[];
+      media_ids: string[];
+      dispute_hours: number;
+      delivery_min_hours: number;
+      delivery_max_hours: number;
+    };
+    AccountListing: {
+      id: string;
+      release_id: string;
+      game: string;
+      slug: string;
+      state: string;
+      product: components["schemas"]["AccountProduct"];
+      images: string[];
+    };
+    AccountListings: {
+      items: components["schemas"]["AccountListing"][];
+      next: string;
+    };
+    AccountInventoryItem: {
+      id: string;
+      submission_id: string;
+      offer_id: string;
+      state: string;
+      game: string;
+      slug: string;
+      release_id: string;
+      version: number;
+      draft: components["schemas"]["AccountProduct"];
+    };
+    AccountInventory: {
+      items: components["schemas"]["AccountInventoryItem"][];
+      next: string;
+    };
+    AccountListingInput: {
+      version: number;
+      product: components["schemas"]["AccountProduct"];
+      public_reviewed: boolean;
+    };
+    AccountReserve: {
+      request_key: string;
+      release_id: string;
+      expected_amount: string;
+      currency: string;
+      terms_version: string;
+      accept_terms: boolean;
+    };
+    AccountSecretInput: {
+      version: number;
+      request_key: string;
+      value: string;
+      /** Format: date-time */
+      expires_at: string;
+    };
+    AccountSecret: {
+      version: number;
+      state: string;
+      /** Format: date-time */
+      expires_at: string | null;
+    };
+    AccountSecretReveal: {
+      value: string;
+    };
+    AccountDelivery: {
+      order_id: string;
+      listing: components["schemas"]["AccountListing"];
+      version: number;
+      state: string;
+      instructions: string;
+      secret: components["schemas"]["AccountSecret"];
+      /** Format: date-time */
+      delivered_at: string | null;
+      /** Format: date-time */
+      acknowledged_at: string | null;
+      /** Format: date-time */
+      dispute_until: string | null;
+    };
+    AccountDeliveryChange: {
+      version: number;
+      secret_version: number;
+      instructions: string;
+      accept: boolean;
+    };
+    SellerPayoutQueue: {
+      items: {
+        transfer: components["schemas"]["RefundTransfer"];
+        submission_id: string;
+        eligible: boolean;
+        /** Format: date-time */
+        due_at: string | null;
+      }[];
+      next: string;
+      enabled: boolean;
+    };
+    ResaleProblem: {
+      code: string;
+    };
+    SellerOfferHistory: {
+      events: {
+        action: string;
+        role: string;
+        note: string;
+        created_at: string;
+        version: number;
+      }[];
     };
   };
   responses: never;
@@ -16074,6 +16719,1041 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1Accounts: {
+    parameters: {
+      query?: {
+        after?: string;
+        slug?: string;
+        region?: string;
+        rank?: string;
+        search?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountListings"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1AccountsId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountListing"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AccountsIdReserve: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AccountReserve"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OrderDetail"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1SubmissionsIdOffers: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SellerOffers"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1SubmissionsIdPayouts: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundHistory"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1SellerOffersIdAction: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+        action: "accept" | "decline";
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SellerOfferChange"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SellerOffer"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1AccountOrdersIdDelivery: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountDelivery"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AccountOrdersIdDeliveryAction: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+        action: "acknowledge";
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AccountDeliveryChange"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountDelivery"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1AdminSubmissionsIdOffers: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SellerOffers"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AdminSubmissionsIdOffers: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SellerOfferInput"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SellerOffer"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1AdminSubmissionsIdPayouts: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundHistory"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AdminSellerOffersIdAction: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+        action: "withdraw" | "verify_control";
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SellerOfferChange"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SellerOffer"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1AdminAccountOrdersIdDelivery: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountDelivery"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AdminAccountOrdersIdDeliveryAction: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+        action: "deliver" | "takeover";
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AccountDeliveryChange"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountDelivery"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1SellerOffersIdSecret: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountSecret"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1SellerOffersIdSecret: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AccountSecretInput"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountSecret"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AdminSellerOffersIdSecretReveal: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FulfillmentEmpty"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountSecretReveal"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AdminAccountOrdersIdSecret: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AccountSecretInput"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountSecret"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AccountOrdersIdSecretReveal: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FulfillmentEmpty"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountSecretReveal"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AdminSellerOffersIdListing: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FulfillmentEmpty"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountInventoryItem"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1AdminAccountListings: {
+    parameters: {
+      query?: {
+        after?: string;
+        state?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountInventory"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1AdminAccountListingsId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountInventoryItem"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AdminAccountListingsIdAction: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+        action: "save" | "publish" | "withdraw";
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AccountListingInput"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountInventoryItem"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1PayoutsIdRecipient: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RefundRecipientInput"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundTransfer"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AdminPayoutsIdApprove: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RefundChange"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundTransfer"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  postResaleApiV1AdminPayoutsIdVerify: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RefundChange"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FinanceQueued"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1AdminFinancePayouts: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SellerPayoutQueue"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  publicReviewedAccountImage: {
+    parameters: {
+      query: {
+        release: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+        slot: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Verified sanitized image */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "image/png": string;
+        };
+      };
+      /** @description Unavailable or not approved for public use */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  getResaleApiV1SubmissionsIdOffersHistory: {
+    parameters: {
+      query?: {
+        after?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SellerOfferHistory"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getResaleApiV1AdminSubmissionsIdOffersHistory: {
+    parameters: {
+      query?: {
+        after?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SellerOfferHistory"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
         };
       };
     };

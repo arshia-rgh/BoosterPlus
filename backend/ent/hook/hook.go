@@ -9,6 +9,54 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 )
 
+// The AccountDeliveryFunc type is an adapter to allow the use of ordinary
+// function as AccountDelivery mutator.
+type AccountDeliveryFunc func(context.Context, *ent.AccountDeliveryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AccountDeliveryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AccountDeliveryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountDeliveryMutation", m)
+}
+
+// The AccountListingFunc type is an adapter to allow the use of ordinary
+// function as AccountListing mutator.
+type AccountListingFunc func(context.Context, *ent.AccountListingMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AccountListingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AccountListingMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountListingMutation", m)
+}
+
+// The AccountListingReleaseFunc type is an adapter to allow the use of ordinary
+// function as AccountListingRelease mutator.
+type AccountListingReleaseFunc func(context.Context, *ent.AccountListingReleaseMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AccountListingReleaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AccountListingReleaseMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountListingReleaseMutation", m)
+}
+
+// The AccountReservationFunc type is an adapter to allow the use of ordinary
+// function as AccountReservation mutator.
+type AccountReservationFunc func(context.Context, *ent.AccountReservationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AccountReservationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AccountReservationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountReservationMutation", m)
+}
+
 // The AccountSubmissionFunc type is an adapter to allow the use of ordinary
 // function as AccountSubmission mutator.
 type AccountSubmissionFunc func(context.Context, *ent.AccountSubmissionMutation) (ent.Value, error)
@@ -535,6 +583,30 @@ func (f SecretBundleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SecretBundleMutation", m)
+}
+
+// The SellerOfferFunc type is an adapter to allow the use of ordinary
+// function as SellerOffer mutator.
+type SellerOfferFunc func(context.Context, *ent.SellerOfferMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SellerOfferFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SellerOfferMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SellerOfferMutation", m)
+}
+
+// The SellerOfferEventFunc type is an adapter to allow the use of ordinary
+// function as SellerOfferEvent mutator.
+type SellerOfferEventFunc func(context.Context, *ent.SellerOfferEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SellerOfferEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SellerOfferEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SellerOfferEventMutation", m)
 }
 
 // The ServiceCaseFunc type is an adapter to allow the use of ordinary

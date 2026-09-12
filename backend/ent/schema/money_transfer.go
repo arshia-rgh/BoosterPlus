@@ -16,6 +16,7 @@ func (MoneyTransfer) Fields() []ent.Field {
 		field.String("id").MaxLen(36).DefaultFunc(uuid.NewString).Immutable(),
 		field.String("request_hash").MaxLen(64).Immutable(),
 		field.String("kind").MaxLen(32).Immutable(),
+		field.String("seller_offer_id").MaxLen(36).Optional().Nillable().Immutable(),
 		field.String("case_id").MaxLen(36).Immutable(),
 		field.String("receipt_id").MaxLen(36).Immutable(),
 		field.String("order_id").MaxLen(36).Immutable(),
@@ -40,6 +41,7 @@ func (MoneyTransfer) Fields() []ent.Field {
 // Indexes mirrors the explicit uniqueness and pagination constraints.
 func (MoneyTransfer) Indexes() []ent.Index {
 	return []ent.Index{
+		index.Fields("seller_offer_id").Unique().StorageKey("seller_offer_payout"),
 		index.Fields("receipt_id", "state").StorageKey("transfer_receipt_cap"),
 		index.Fields("case_id", "created_at", "id").StorageKey("transfer_case"),
 		index.Fields("user_id", "created_at", "id").StorageKey("transfer_customer"),

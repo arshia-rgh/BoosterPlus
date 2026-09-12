@@ -14,6 +14,14 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// AccountDelivery is the client for interacting with the AccountDelivery builders.
+	AccountDelivery *AccountDeliveryClient
+	// AccountListing is the client for interacting with the AccountListing builders.
+	AccountListing *AccountListingClient
+	// AccountListingRelease is the client for interacting with the AccountListingRelease builders.
+	AccountListingRelease *AccountListingReleaseClient
+	// AccountReservation is the client for interacting with the AccountReservation builders.
+	AccountReservation *AccountReservationClient
 	// AccountSubmission is the client for interacting with the AccountSubmission builders.
 	AccountSubmission *AccountSubmissionClient
 	// AuthAudit is the client for interacting with the AuthAudit builders.
@@ -102,6 +110,10 @@ type Tx struct {
 	ReviewRevision *ReviewRevisionClient
 	// SecretBundle is the client for interacting with the SecretBundle builders.
 	SecretBundle *SecretBundleClient
+	// SellerOffer is the client for interacting with the SellerOffer builders.
+	SellerOffer *SellerOfferClient
+	// SellerOfferEvent is the client for interacting with the SellerOfferEvent builders.
+	SellerOfferEvent *SellerOfferEventClient
 	// ServiceCase is the client for interacting with the ServiceCase builders.
 	ServiceCase *ServiceCaseClient
 	// StaffProfile is the client for interacting with the StaffProfile builders.
@@ -249,6 +261,10 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.AccountDelivery = NewAccountDeliveryClient(tx.config)
+	tx.AccountListing = NewAccountListingClient(tx.config)
+	tx.AccountListingRelease = NewAccountListingReleaseClient(tx.config)
+	tx.AccountReservation = NewAccountReservationClient(tx.config)
 	tx.AccountSubmission = NewAccountSubmissionClient(tx.config)
 	tx.AuthAudit = NewAuthAuditClient(tx.config)
 	tx.AuthChallenge = NewAuthChallengeClient(tx.config)
@@ -293,6 +309,8 @@ func (tx *Tx) init() {
 	tx.Review = NewReviewClient(tx.config)
 	tx.ReviewRevision = NewReviewRevisionClient(tx.config)
 	tx.SecretBundle = NewSecretBundleClient(tx.config)
+	tx.SellerOffer = NewSellerOfferClient(tx.config)
+	tx.SellerOfferEvent = NewSellerOfferEventClient(tx.config)
 	tx.ServiceCase = NewServiceCaseClient(tx.config)
 	tx.StaffProfile = NewStaffProfileClient(tx.config)
 	tx.SubmissionEvent = NewSubmissionEventClient(tx.config)
@@ -310,7 +328,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: AccountSubmission.QueryXXX(), the query will be executed
+// applies a query, for example: AccountDelivery.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

@@ -8,6 +8,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/caseevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/resale"
 )
 
 // CaseInput binds a customer's single-use request key to an immutable request.
@@ -28,17 +29,18 @@ type CaseChange struct {
 
 // CaseView excludes staff identifiers and internal conversations.
 type CaseView struct {
-	ID          string     `json:"id"`
-	OrderID     string     `json:"order_id"`
-	Kind        string     `json:"kind"`
-	State       string     `json:"state"`
-	Outcome     string     `json:"outcome"`
-	Version     int        `json:"version"`
-	Appeals     int        `json:"appeals"`
-	AppealUntil *time.Time `json:"appeal_until"`
-	Policy      *Remedies  `json:"policy"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	ID           string          `json:"id"`
+	OrderID      string          `json:"order_id"`
+	Kind         string          `json:"kind"`
+	State        string          `json:"state"`
+	Outcome      string          `json:"outcome"`
+	Version      int             `json:"version"`
+	Appeals      int             `json:"appeals"`
+	AppealUntil  *time.Time      `json:"appeal_until"`
+	Policy       *Remedies       `json:"policy"`
+	CreatedAt    time.Time       `json:"created_at"`
+	UpdatedAt    time.Time       `json:"updated_at"`
+	AccountTerms *resale.Product `json:"account_terms"`
 }
 
 // CaseEntry is a private customer-visible review event.
@@ -66,9 +68,10 @@ type CaseDetail struct {
 
 func caseView(row *ent.ServiceCase) (CaseView, error) {
 	policy, err := decode[struct {
-		Remedies *Remedies `json:"remedies"`
+		Remedies     *Remedies       `json:"remedies"`
+		AccountTerms *resale.Product `json:"account_terms"`
 	}](row.Policy)
-	return CaseView{row.ID, row.OrderID, row.Kind, row.State, row.Outcome, row.Version, row.AppealCount, row.AppealUntil, policy.Remedies, row.CreatedAt, row.UpdatedAt}, err
+	return CaseView{row.ID, row.OrderID, row.Kind, row.State, row.Outcome, row.Version, row.AppealCount, row.AppealUntil, policy.Remedies, row.CreatedAt, row.UpdatedAt, policy.AccountTerms}, err
 }
 
 // Cases lists the private cases for an authorized order.
