@@ -131,3 +131,91 @@ test(
     assert.notEqual(code, 0);
   },
 );
+
+for (const application of ["storefront", "admin", "both"]) {
+  test(
+    `${application} build serves only its routes and assets`,
+    { timeout: 20000 },
+    async (t) => {
+      // The storefront /games loader reads the catalog through the configured
+      // API origin. A local stub keeps this routing test independent of a
+      // running development backend; it publishes nothing.
+      const stub = createServer((req, res) => {
+        if (req.url?.startsWith("/api/v1/catalog/games?")) {
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ games: [], next: "" }));
+          return;
+        }
+        res.statusCode = 404;
+        res.end();
+      });
+      const stubPort = await listen(stub);
+      t.after(() => new Promise((resolve) => stub.close(resolve)));
+      const chosen = await port();
+      const origin = "http://127.0.0.1:" + chosen;
+      const child = spawn(process.execPath, ["server.mjs"], {
+        env: {
+          ...process.env,
+          APP_ENV: "test",
+          FRONTEND_APP: application,
+          HOST: "127.0.0.1",
+          PORT: String(chosen),
+          API_ORIGIN: "http://127.0.0.1:" + stubPort,
+        },
+        stdio: "ignore",
+      });
+      t.after(() => stop(child));
+      await started(child, origin + (application === "admin" ? "/admin" : "/"));
+      const hasAdmin = application !== "storefront";
+      for (const route of [
+        "/admin",
+        "/admin/orders",
+        "/admin/orders/test-id",
+        "/admin/support/test-id",
+        "/admin/catalog",
+        "/admin/coupons",
+        "/admin/submissions",
+        "/admin/submissions/test-id",
+        "/admin/reviews",
+        "/admin/reviews/test-id",
+        "/admin/reports",
+        "/admin/jobs",
+        "/admin/calendar",
+        "/admin/support",
+      ]) {
+        const response = await fetch(origin + route);
+        assert.equal(response.status, hasAdmin ? 200 : 404, route);
+        assert.equal(response.headers.get("cache-control"), "no-store");
+        if (hasAdmin) {
+          const html = await response.text();
+          assert.match(html, /Staff workspace/);
+          assert.doesNotMatch(html, /ascension-1536/);
+          const assets = [
+            ...html.matchAll(/(?:src|href)="(\/admin\/assets\/[^"?]+)"/g),
+          ].map((match) => match[1]);
+          assert.ok(
+            assets.length > 0,
+            "Admin assets must use a separate namespace",
+          );
+          const asset = await fetch(origin + assets[0]);
+          assert.equal(asset.status, 200);
+          assert.match(asset.headers.get("cache-control"), /immutable/);
+        }
+      }
+      assert.equal(
+        (await fetch(origin + "/admin.data")).status,
+        hasAdmin ? 200 : 404,
+      );
+      const games = await fetch(origin + "/games");
+      assert.equal(games.status, application === "admin" ? 404 : 200);
+      if (application !== "admin") {
+        const html = await games.text();
+        assert.match(html, /Coming soon/);
+        assert.doesNotMatch(html, /Staff workspace/);
+      }
+      assert.equal((await fetch(origin + "/admin/missing-page")).status, 404);
+      assert.equal((await fetch(origin + "/administrator")).status, 404);
+      assert.equal((await fetch(origin + "/admin/.env")).status, 404);
+    },
+  );
+}

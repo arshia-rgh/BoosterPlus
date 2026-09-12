@@ -1,0 +1,17 @@
+import { route, type RouteConfig } from "@react-router/dev/routes";
+export default [
+  route("admin/reports", "../app/routes/reports-admin.tsx"),
+  route("admin/jobs", "../app/routes/jobs-admin.tsx"),
+  route("admin/reviews", "../app/routes/reviews-admin.tsx"),
+  route("admin/reviews/:id", "../app/routes/review-admin.tsx"),
+  route("admin/catalog", "../app/routes/catalog-admin.tsx"),
+  route("admin/coupons", "../app/routes/coupon-admin.tsx"),
+  route("admin/submissions", "../app/routes/submissions-admin.tsx"),
+  route("admin/submissions/:id", "../app/routes/submission-admin.tsx"),
+  route("admin/orders", "../app/routes/orders-admin.tsx"),
+  route("admin/orders/:id", "../app/routes/order-admin.tsx"),
+  route("admin/support", "../app/routes/support-admin.tsx"),
+  route("admin/support/:id", "../app/routes/conversation-admin.tsx"),
+  route("admin", "../app/routes/admin.tsx", { id: "admin" }),
+  route("admin/calendar", "../app/routes/admin-calendar.tsx"),
+] satisfies RouteConfig;

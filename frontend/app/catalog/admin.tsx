@@ -305,7 +305,11 @@ function Editor({
               </p>
             </div>
             {draft.published && !draft.archived && (
-              <Link className="button compact" to={`/games/${draft.slug}`}>
+              <Link
+                reloadDocument
+                className="button compact"
+                to={`/games/${draft.slug}`}
+              >
                 Open public page
               </Link>
             )}

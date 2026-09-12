@@ -1,20 +1,22 @@
 # Booster Plus frontend
 
-Independent React/TypeScript project in the Booster Plus monorepo. Includes passwordless identity, protected customer/admin/booster workflows, catalog configuration, orders, conversations, fulfillment and account intake. R01 adds the animated storefront and MLBB rank transformation; live checkout remains in development. See [visual implementation and checks](../docs/visual-design.md). The dedicated admin app is the next R02 stage.
+Independent React/TypeScript project in the Booster Plus monorepo. Includes passwordless identity, protected customer/admin/booster workflows, catalog configuration, orders, conversations, fulfillment and account intake. R01 adds the animated storefront and MLBB rank transformation; live checkout remains in development. See [visual implementation and checks](../docs/visual-design.md). R02 adds the dedicated staff application at `/admin`, with its own route graph, shell, build and image. See [staff onboarding and architecture](../docs/admin-workspace.md).
 
 ## Commands
 
 ```sh
 make install
 npx playwright install chromium
-make dev
+make dev          # Starts both apps at 5173; staff at /admin
+make dev-admin    # Individual debug server (5174; see shared-origin notes)
+make build-admin  # Independent admin build
 make test-home    # Focused desktop/mobile homepage + budgets
 make pre-commit
 ```
 
 Install development dependencies explicitly (`npm ci --include=dev`), including when the host has a production Node environment. Use the committed npm lockfile. Node 24.21.0 is the target LTS runtime; the compatibility shell has also been checked with the host Node 26.0.0.
 
-`make pre-commit` runs Prettier, React Router type generation and strict TypeScript, ESLint with React hooks/security/accessibility rules, component tests and route coverage, a dependency audit including development packages, the production SSR build with enforced homepage asset budgets, and desktop/mobile Playwright tests with axe accessibility checks, an independent Docker build, a Trivy image scan, and a non-root/read-only container smoke test. Browser tests start an isolated production server and fail if the port is already occupied.
+`make pre-commit` runs Prettier, React Router type generation and strict TypeScript, ESLint with React hooks/security/accessibility rules, component tests and route coverage, a dependency audit including development packages, the production SSR build with enforced homepage asset budgets, and desktop/mobile Playwright tests with axe accessibility checks, independent storefront/admin Docker images, Trivy image scans, and non-root/read-only container smoke tests for both apps. Browser tests start an isolated production server and fail if the port is already occupied.
 
 The installed JSX accessibility linter currently requires ESLint 9, so ESLint 9.39.5 is pinned despite its upstream deprecation notice. Track migration to ESLint 10 when a compatible accessibility plugin is available; do not bypass peer dependency checks. Dependency audits remain mandatory. TypeScript 5.9.3 is pinned because the current OpenAPI generator requires TypeScript 5; it is also supported by typescript-eslint. A targeted `js-yaml` 4.3.2 override fixes the vulnerable version pinned by the generator's Redocly dependency. Remove that override after upstream includes the patch.
 
@@ -26,14 +28,14 @@ Public pages are rendered on the server through React Router. Go owns authentica
 
 `createAPIClient` takes a trusted API origin and returns a client typed from this contract. It does not invent success responses when the API fails. Identity and catalog responses are validated at runtime with Zod; Go tests verify catalog JSON against the pinned OpenAPI schemas. Only Google and email sign-in are supported, without passwords. Staff need MFA at every sign-in.
 
-## Independent production image
+## Independent production images
 
 ```sh
 make docker-build
 make docker-run
 ```
 
-Visit `http://127.0.0.1:3000`. The multi-stage image uses checksum-pinned Node 24.21.0 LTS archives on a digest-pinned Debian-based image. Both amd64 and arm64 build paths are defined. It contains production dependencies only, removes unused package managers, runs as `node`, and executes the SSR server directly. The gate also exercises it with a read-only filesystem and dropped capabilities. The server provides a same-origin API proxy, nonce-based CSP and browser security headers. Set public deployment configuration explicitly; building the production image alone is not launch approval.
+The default `boosterplus-frontend:local` image serves the storefront at `http://127.0.0.1:3000`. The `boosterplus-admin:local` image serves `/admin` independently. The Docker targets are `storefront` and `admin`, and each excludes the other build. Root `production/` remains reserved for deployment configuration (R04). The multi-stage image uses checksum-pinned Node 24.21.0 LTS archives on a digest-pinned Debian-based image. Both amd64 and arm64 build paths are defined. It contains production dependencies only, removes unused package managers, runs as `node`, and executes the SSR server directly. The gate also exercises it with a read-only filesystem and dropped capabilities. The server provides a same-origin API proxy, nonce-based CSP and browser security headers. Set public deployment configuration explicitly; building the production image alone is not launch approval.
 
 `make image-security` fails on fixable high/critical image findings. Full reports remain in ignored `.cache/`; npm audit includes all installed development and production dependencies and fails at low severity. These checks do not prove that every possible vulnerability is absent.
 

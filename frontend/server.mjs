@@ -142,18 +142,64 @@ app.use("/api", (req, res) => {
   req.on("aborted", () => upstream.destroy());
   req.pipe(upstream);
 });
-app.use(
-  "/assets",
-  express.static("build/client/assets", {
-    immutable: true,
-    maxAge: "1y",
-    index: false,
-    dotfiles: "deny",
-  }),
-);
-app.use(express.static("build/client", { index: false, dotfiles: "deny" }));
-app.use(
-  createRequestHandler({ build: await import("./build/server/index.js") }),
+const application = process.env.FRONTEND_APP ?? "both";
+if (!["both", "storefront", "admin"].includes(application))
+  throw new Error("Invalid FRONTEND_APP");
+// Each handler owns an isolated route graph and asset namespace. The combined
+// local server follows the same /admin boundary as the production gateway.
+if (application !== "storefront") {
+  app.use(
+    "/admin/assets",
+    express.static("build/admin/client/assets", {
+      setHeaders(res) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      },
+      immutable: true,
+      maxAge: "1y",
+      index: false,
+      dotfiles: "deny",
+    }),
+  );
+  const admin = createRequestHandler({
+    build: await import("./build/admin/server/index.js"),
+  });
+  app.use((req, res, next) => {
+    if (
+      req.path === "/admin" ||
+      req.path === "/admin.data" ||
+      req.path.startsWith("/admin/")
+    )
+      return admin(req, res, next);
+    next();
+  });
+}
+if (application !== "admin") {
+  app.use(
+    "/assets",
+    express.static("build/storefront/client/assets", {
+      setHeaders(res) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      },
+      immutable: true,
+      maxAge: "1y",
+      index: false,
+      dotfiles: "deny",
+    }),
+  );
+  app.use(
+    express.static("build/storefront/client", {
+      index: false,
+      dotfiles: "deny",
+    }),
+  );
+  app.use(
+    createRequestHandler({
+      build: await import("./build/storefront/server/index.js"),
+    }),
+  );
+}
+app.use((_req, res) =>
+  res.status(404).type("text/plain").send("Page not found"),
 );
 const server = app.listen(
   Number(process.env.PORT ?? 3000),

@@ -3,7 +3,7 @@ SHELL := /bin/sh
 .PHONY: help install dev build start preview typecheck lint fmt fmt-check test test-watch test-coverage test-e2e test-a11y security pre-commit ci clean docker-build docker-run
 
 help:
-	@printf '%s\n' 'install dev build start typecheck lint fmt fmt-check test test-e2e test-home budget-home security pre-commit docker-build'
+	@printf '%s\n' 'install dev dev-storefront dev-admin build build-storefront build-admin start typecheck lint fmt fmt-check test test-e2e test-home test-admin test-server budget-home security pre-commit docker-build'
 install:
 	npm ci --include=dev
 dev: setup-env
@@ -35,7 +35,8 @@ pre-commit ci:
 clean:
 	rm -rf build coverage test-results playwright-report .react-router
 docker-build:
-	docker build -t boosterplus-frontend:local .
+	docker build --target storefront -t boosterplus-frontend:local .
+	docker build --target admin -t boosterplus-admin:local .
 docker-run:
 	docker run --rm -p 127.0.0.1:3000:3000 boosterplus-frontend:local
 
@@ -51,6 +52,7 @@ contract-update:
 .PHONY: image-security
 image-security:
 	python3 ../scripts/scan-image.py boosterplus-frontend:local
+	python3 ../scripts/scan-image.py boosterplus-admin:local
 
 .PHONY: setup-env
 setup-env:
@@ -65,3 +67,19 @@ test-home: build
 	npx playwright test tests/e2e/home.spec.ts
 budget-home:
 	npm run budget:home
+
+.PHONY: dev-storefront dev-admin build-storefront build-admin start-storefront start-admin test-admin
+dev-storefront: setup-env
+	npm run dev:storefront
+dev-admin: setup-env
+	npm run dev:admin
+build-storefront:
+	npm run build:storefront
+build-admin:
+	npm run build:admin
+start-storefront:
+	npm run start:storefront
+start-admin:
+	npm run start:admin
+test-admin: build
+	npm run test:e2e

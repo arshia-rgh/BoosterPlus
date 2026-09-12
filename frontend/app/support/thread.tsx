@@ -5,6 +5,7 @@ import { command, post, userSchema } from "../identity/api";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { useResource } from "../orders/resource";
 import {
+  conversationsSchema,
   conversationSchema,
   messageSchema,
   messagesSchema,
@@ -411,6 +412,38 @@ function Messages({
     </>
   );
 }
+function ConversationRail({ current }: { current: string }) {
+  const resource = useResource("/admin/conversations", conversationsSchema);
+  return (
+    <aside
+      className="admin-conversation-rail"
+      aria-label="Conversation switcher"
+    >
+      <details open>
+        <summary>Recent conversations</summary>
+        <ErrorNotice error={resource.error} />
+        {resource.loading && <p role="status">Loading inbox…</p>}
+        {!resource.error && resource.data && (
+          <nav aria-label="Recent conversations">
+            {resource.data.conversations.map((thread) => (
+              <Link
+                key={thread.id}
+                to={`/admin/support/${thread.id}`}
+                aria-current={current === thread.id ? "page" : undefined}
+              >
+                <strong>{thread.subject}</strong>
+                <small>
+                  {thread.state} · {thread.unread} unread
+                </small>
+              </Link>
+            ))}
+          </nav>
+        )}
+        <Link to="/admin/support">All conversations and filters →</Link>
+      </details>
+    </aside>
+  );
+}
 export default function Thread({
   admin = false,
   booster = false,
@@ -436,81 +469,90 @@ export default function Thread({
     };
   }, [resource.error, resource.loading, retry]);
   return (
-    <section>
-      <Link
-        to={booster ? "/booster/orders" : (admin ? "/admin" : "") + "/support"}
-      >
-        ← {booster ? "Assigned work" : "Conversations"}
-      </Link>
-      <ErrorNotice error={resource.error} />
-      {!!resource.error && (
-        <Action disabled={resource.loading} onClick={retry}>
-          Retry conversation access
-        </Action>
-      )}
-      {!thread ? (
-        <p role="status">
-          {resource.error
-            ? "Conversation access is unavailable."
-            : "Loading conversation…"}
-        </p>
-      ) : (
-        <>
-          <h2>{thread.subject}</h2>
-          <p>
-            {thread.kind === "fulfillment"
-              ? "Shared boosting coordination"
-              : thread.kind === "presales"
-                ? "Pre-sales support"
-                : thread.kind === "submission"
-                  ? "Private seller review"
-                  : "Order support"}{" "}
-            · {thread.state} · {thread.unread} unread
+    <div className={admin ? "admin-conversation-workspace" : undefined}>
+      {admin && <ConversationRail current={id} />}
+      <section>
+        <Link
+          to={
+            booster ? "/booster/orders" : (admin ? "/admin" : "") + "/support"
+          }
+        >
+          ← {booster ? "Assigned work" : "Conversations"}
+        </Link>
+        <ErrorNotice error={resource.error} />
+        {!!resource.error && (
+          <Action disabled={resource.loading} onClick={retry}>
+            Retry conversation access
+          </Action>
+        )}
+        {!thread ? (
+          <p role="status">
+            {resource.error
+              ? "Conversation access is unavailable."
+              : "Loading conversation…"}
           </p>
-          {thread.submission_id && (
-            <Link
-              to={
-                (admin ? "/admin/submissions/" : "/sell/") +
-                thread.submission_id
-              }
-            >
-              View account submission
-            </Link>
-          )}
-          {(thread.order_id || thread.linked_order_id) && (
-            <Link
-              to={
-                (booster ? "/booster" : admin ? "/admin" : "") +
-                "/orders/" +
-                (thread.order_id || thread.linked_order_id)
-              }
-            >
-              View linked order
-            </Link>
-          )}
-          {thread.kind === "fulfillment" && (
+        ) : (
+          <>
+            <h2>{thread.subject}</h2>
             <p>
-              {thread.booster_shared
-                ? "The currently assigned booster can read shared messages and proof. Internal notes stay restricted to administrators."
-                : "Booster sharing is paused. Customer and administrator history is retained."}
+              {thread.kind === "fulfillment"
+                ? "Shared boosting coordination"
+                : thread.kind === "presales"
+                  ? "Pre-sales support"
+                  : thread.kind === "submission"
+                    ? "Private seller review"
+                    : "Order support"}{" "}
+              · {thread.state} · {thread.unread} unread
             </p>
-          )}
-          <Messages
-            key={thread.id}
-            thread={thread}
-            admin={admin}
-            booster={booster}
-            refresh={resource.reload}
-          />
-          {admin && (
-            <StaffControls
-              key={`staff-${String(thread.version)}`}
-              thread={thread}
-              done={resource.reload}
-            />
-          )}
-        </>
-      )}
-    </section>
+            {thread.submission_id && (
+              <Link
+                to={
+                  (admin ? "/admin/submissions/" : "/sell/") +
+                  thread.submission_id
+                }
+              >
+                View account submission
+              </Link>
+            )}
+            {(thread.order_id || thread.linked_order_id) && (
+              <Link
+                to={
+                  (booster ? "/booster" : admin ? "/admin" : "") +
+                  "/orders/" +
+                  (thread.order_id || thread.linked_order_id)
+                }
+              >
+                View linked order
+              </Link>
+            )}
+            {thread.kind === "fulfillment" && (
+              <p>
+                {thread.booster_shared
+                  ? "The currently assigned booster can read shared messages and proof. Internal notes stay restricted to administrators."
+                  : "Booster sharing is paused. Customer and administrator history is retained."}
+              </p>
+            )}
+            <div className={admin ? "conversation-layout" : undefined}>
+              <div>
+                <Messages
+                  key={thread.id}
+                  thread={thread}
+                  admin={admin}
+                  booster={booster}
+                  refresh={resource.reload}
+                />
+              </div>
+              {admin && (
+                <StaffControls
+                  key={`staff-${String(thread.version)}`}
+                  thread={thread}
+                  done={resource.reload}
+                />
+              )}
+            </div>
+          </>
+        )}
+      </section>
+    </div>
   );
 }

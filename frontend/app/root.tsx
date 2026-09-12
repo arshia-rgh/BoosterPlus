@@ -9,10 +9,10 @@ import {
   useRouteLoaderData,
 } from "react-router";
 import type { ReactNode } from "react";
-import type { Route } from "./+types/root";
+import type { LoaderFunctionArgs } from "react-router";
 import "./styles.css";
 
-export function loader({ request }: Route.LoaderArgs) {
+export function loader({ request }: LoaderFunctionArgs) {
   return { nonce: request.headers.get("x-csp-nonce") ?? undefined };
 }
 export function shouldRevalidate() {
@@ -49,7 +49,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <footer>
           <span>Booster Plus</span>
           <span>Game boosting. Account trading.</span>
-          <Link to="/admin">Staff access ↗</Link>
+          <a href="/admin">Staff access ↗</a>
         </footer>
         <ScrollRestoration nonce={data?.nonce} />
         <Scripts nonce={data?.nonce} />
@@ -62,7 +62,7 @@ export default function App() {
   return <Outlet />;
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ error }: { error: unknown }) {
   const missing = isRouteErrorResponse(error) && error.status === 404;
   return (
     <main id="main" className="page">

@@ -6,10 +6,10 @@ from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
 scanner = "boosterplus-scanner:local"
-images = {"boosterplus-backend:local": "backend", "boosterplus-frontend:local": "frontend", scanner: "backend"}
+images = {"boosterplus-backend:local": "backend", "boosterplus-frontend:local": "frontend", "boosterplus-admin:local": "frontend", scanner: "backend"}
 image = sys.argv[1]
 project = images[image]
-report = root / project / ".cache" / ("scanner-vulnerabilities.json" if image == scanner else "image-vulnerabilities.json")
+report = root / project / ".cache" / ("scanner-vulnerabilities.json" if image == scanner else "admin-image-vulnerabilities.json" if image == "boosterplus-admin:local" else "image-vulnerabilities.json")
 report.parent.mkdir(exist_ok=True)
 report.unlink(missing_ok=True)
 result = subprocess.run([

@@ -8,9 +8,13 @@ export async function reportsJourney(page: Page, device: string) {
     .object({ id: z.string(), email: z.string() })
     .parse(await (await page.request.get("/api/v1/me")).json());
   await page.goto("/admin/reports");
+  if (device === "mobile")
+    await page.getByRole("button", { name: "Menu", exact: true }).click();
   await expect(
     page.getByRole("link", { name: "Reports", exact: true }),
   ).toHaveAttribute("aria-current", "page");
+  if (device === "mobile")
+    await page.getByRole("button", { name: "Close menu", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Sign out", exact: true }),
   ).toBeVisible();

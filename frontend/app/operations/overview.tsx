@@ -6,7 +6,7 @@ export default function OperationsOverview() {
   const resource = useResource("/admin/operations", overviewSchema),
     value = resource.data;
   return (
-    <section aria-label="Operations overview" className="catalog-section">
+    <section aria-label="Operations overview" className="operations-overview">
       <h2>Operations overview</h2>
       <p>
         Review customer requests, active work and background tasks from one

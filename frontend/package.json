@@ -7,10 +7,10 @@
     "node": ">=24.21.0 <25 || >=26.0.0 <27"
   },
   "scripts": {
-    "dev": "react-router dev --host 127.0.0.1",
-    "build": "react-router build && npm run budget:home",
+    "dev": "node scripts/dev.mjs",
+    "build": "npm run build:storefront && npm run build:admin",
     "start": "node --env-file-if-exists=.env server.mjs",
-    "typecheck": "react-router typegen && tsc --noEmit",
+    "typecheck": "FRONTEND_APP=storefront react-router typegen && FRONTEND_APP=admin react-router typegen && tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -21,8 +21,14 @@
     "pre-commit": "npm run contract:check && npm run format:check && npm run typecheck && npm run lint && npm run test && npm run security && npm run build && npm run test:server && npm run test:e2e",
     "contract:generate": "node scripts/contract.mjs --write",
     "contract:check": "node scripts/contract.mjs",
-    "test:server": "node --test tests/server.test.mjs",
-    "budget:home": "node scripts/check-home-budget.mjs"
+    "test:server": "node --test tests/server.test.mjs tests/dev.test.mjs",
+    "budget:home": "node scripts/check-home-budget.mjs",
+    "dev:storefront": "FRONTEND_APP=storefront react-router dev --host 127.0.0.1",
+    "dev:admin": "FRONTEND_APP=admin react-router dev --host 127.0.0.1",
+    "build:storefront": "FRONTEND_APP=storefront react-router build && npm run budget:home",
+    "build:admin": "FRONTEND_APP=admin react-router build",
+    "start:storefront": "FRONTEND_APP=storefront node --env-file-if-exists=.env server.mjs",
+    "start:admin": "FRONTEND_APP=admin node --env-file-if-exists=.env server.mjs"
   },
   "dependencies": {
     "@react-router/express": "8.3.1",

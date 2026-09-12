@@ -2,7 +2,7 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import { gzipSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
 
-const assets = new URL("../build/client/assets/", import.meta.url);
+const assets = new URL("../build/storefront/client/assets/", import.meta.url);
 const files = await readdir(assets);
 for (const [pattern, limit, label] of [
   [/^home-.*\.js$/, 12 * 1024, "Homepage JavaScript (gzip)"],

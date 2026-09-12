@@ -2,6 +2,7 @@ SHELL := /bin/sh
 .DEFAULT_GOAL := help
 TOOLS := $(abspath ../.tools)
 export GOSUMDB := sum.golang.org
+GOVULNCHECK_DATABASE ?= https://vuln.go.dev
 export TEST_DATABASE_DSN ?= root@tcp(127.0.0.1:14000)/mysql
 
 .PHONY: test-scripts help bootstrap fmt fmt-check vet lint gosec vuln security test test-race test-integration test-coverage generate generate-check build build-cli migrate-validate migrate-status migrate-plan migrate-up migrate-down migrate-verify compose-up compose-down compose-logs pre-commit ci clean
@@ -24,7 +25,8 @@ lint:
 gosec:
 	$(TOOLS)/gosec -quiet -tests -tags=integration,browsertest -exclude-generated ./...
 vuln:
-	$(TOOLS)/govulncheck ./...
+	@case "$(GOVULNCHECK_DATABASE)" in https://vuln.go.dev|https://storage.googleapis.com/go-vulndb) ;; *) printf '%s\n' 'Use an official live Go vulnerability database endpoint.' >&2; exit 1 ;; esac
+	$(TOOLS)/govulncheck -db "$(GOVULNCHECK_DATABASE)" ./...
 security: gosec vuln
 	go mod verify
 test test-race:

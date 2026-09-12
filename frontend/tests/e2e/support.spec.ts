@@ -183,6 +183,11 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
       .getByRole("button", { name: "Send message", exact: true })
       .click();
     await expect(page.getByText(/Pre-sales support · open/)).toBeVisible();
+    await page.screenshot({
+      path: `.cache/admin-chat-${info.project.name}.png`,
+      fullPage: true,
+    });
+    await accessible(page);
     await buyer.screenshot({
       path: `.cache/support-${info.project.name}.png`,
       fullPage: true,

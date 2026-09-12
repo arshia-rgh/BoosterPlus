@@ -9,6 +9,8 @@ ADD --checksum=sha256:724282c3b43aec998aa9527380465b45d229e021b58035f5f4f63095ea
 RUN tar -xzf /tmp/node.tar.gz -C /usr/local --strip-components=1 && rm /tmp/node.tar.gz
 
 FROM node-${TARGETARCH} AS node-runtime
+# Security fix for CVE-2026-86145 and CVE-2026-89161 in the pinned base image.
+RUN apt-get update && apt-get install -y --no-install-recommends libpcre2-8-0=10.42-1+deb12u1 && rm -rf /var/lib/apt/lists/*
 FROM node-runtime AS build
 WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
@@ -27,9 +29,17 @@ RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000
 WORKDIR /app
 COPY --from=production-dependencies --chown=node:node /app/node_modules ./node_modules
-COPY --from=build --chown=node:node /app/build ./build
 COPY --chown=node:node package.json server.mjs ./
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=15s --timeout=5s --start-period=15s --retries=3 CMD ["node", "--input-type=module", "-e", "const r=await fetch('http://127.0.0.1:3000/',{signal:AbortSignal.timeout(3000)});process.exit(r.ok?0:1)"]
 CMD ["node", "server.mjs"]
+
+FROM runtime AS admin
+ENV FRONTEND_APP=admin
+COPY --from=build --chown=node:node /app/build/admin ./build/admin
+HEALTHCHECK --interval=15s --timeout=5s --start-period=15s --retries=3 CMD ["node", "--input-type=module", "-e", "const r=await fetch('http://127.0.0.1:3000/admin',{signal:AbortSignal.timeout(3000)});process.exit(r.ok?0:1)"]
+
+FROM runtime AS storefront
+ENV FRONTEND_APP=storefront
+COPY --from=build --chown=node:node /app/build/storefront ./build/storefront

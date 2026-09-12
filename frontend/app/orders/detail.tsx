@@ -403,9 +403,9 @@ export default function OrderDetail({ admin = false }: { admin?: boolean }) {
     base = (admin ? "/admin/orders/" : "/orders/") + encodeURIComponent(id),
     resource = useResource(base, detailSchema),
     session = useResource("/auth/session", sessionSchema);
-  const detail = resource.data;
+  const detail = resource.error ? null : resource.data;
   return (
-    <section>
+    <section className={admin ? "order-detail" : undefined}>
       <Link to={admin ? "/admin/orders" : "/orders"}>← Order list</Link>
       <Action onClick={resource.reload}>Refresh order</Action>
       <ErrorNotice error={resource.error ?? session.error} />

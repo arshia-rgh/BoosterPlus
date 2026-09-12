@@ -1,5 +1,11 @@
 {
-  "include": ["app/**/*", "tests/**/*", "*.ts", ".react-router/types/**/*"],
+  "include": [
+    "app/**/*",
+    "tests/**/*",
+    "*.ts",
+    ".react-router/types/**/*",
+    "admin-app/**/*"
+  ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2023"],
     "types": ["node", "vite/client"],

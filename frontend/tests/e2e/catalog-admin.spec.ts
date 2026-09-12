@@ -44,6 +44,11 @@ test("staff builds, previews, publishes and archives another game through the ge
   await enroll(page);
   const couponCode =
     `SAVE-${info.project.name}-${randomUUID().slice(0, 8)}`.toUpperCase();
+  await page
+    .getByRole("link", { name: "Administration ↗", exact: true })
+    .click();
+  if (info.project.name === "mobile")
+    await page.getByRole("button", { name: "Menu", exact: true }).click();
   await page.getByRole("link", { name: "Coupons", exact: true }).click();
   await page.getByRole("button", { name: "New coupon", exact: true }).click();
   await page.getByLabel("Coupon code", { exact: true }).fill(couponCode);
@@ -74,6 +79,8 @@ test("staff builds, previews, publishes and archives another game through the ge
     path: `.cache/coupons-${info.project.name}.png`,
     fullPage: true,
   });
+  if (info.project.name === "mobile")
+    await page.getByRole("button", { name: "Menu", exact: true }).click();
   await page.getByRole("link", { name: "Catalog editor", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Edit Mobile Legends", exact: true }),

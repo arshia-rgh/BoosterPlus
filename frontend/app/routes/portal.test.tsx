@@ -13,7 +13,6 @@ vi.mock("../identity/identity", () => ({
 }));
 for (const [path, title, capability] of [
   ["/account", "Your account", "account"],
-  ["/admin", "Administration", "admin"],
   ["/booster", "Booster portal", "booster"],
 ] as const) {
   it(`selects the ${path} permission boundary`, () => {

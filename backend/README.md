@@ -86,3 +86,5 @@ SQL migrations 5–6 add `catalog_releases`, a current-release pointer on `games
 ## Crypto provider transport
 
 The initial NOWPayments adapter is in `internal/payments/nowpayments`. It supports bounded hosted-invoice creation, exact-decimal payment observations and signed callback references. It is not enabled in the server or worker until the durable payment workflow is implemented and qualified. See [provider decision and integration boundaries](../docs/crypto-provider-decision.md). No live keys belong in Git or chat.
+
+If the canonical Go vulnerability service is unreachable, the same scan can explicitly use the Go project's official live storage endpoint: `GOVULNCHECK_DATABASE=https://storage.googleapis.com/go-vulndb make pre-commit`. The default remains `https://vuln.go.dev`; only these two HTTPS endpoints are accepted. Record the outage and database metadata in stage evidence. The command must still complete successfully; no cached/offline or arbitrary database is substituted by this target.

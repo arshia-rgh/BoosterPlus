@@ -26,7 +26,7 @@ export default tseslint.config(
   },
   { files: ["**/*.{js,mjs}"], extends: [tseslint.configs.disableTypeChecked] },
   {
-    files: ["app/**/*.{ts,tsx}"],
+    files: ["app/**/*.{ts,tsx}", "admin-app/**/*.{ts,tsx}"],
     plugins: { "react-hooks": hooks, "jsx-a11y": a11y, security },
     rules: {
       ...hooks.configs.recommended.rules,

@@ -110,6 +110,54 @@ for (const role of ["booster", "administrator", "owner"] as const) {
         ).toBeVisible();
       }
     }
+    if (role !== "booster") {
+      const navigation = page.getByRole("navigation", {
+        name: "Staff navigation",
+      });
+      if (info.project.name === "mobile") {
+        await page.getByRole("button", { name: "Menu", exact: true }).click();
+        await expect(
+          page.getByRole("dialog", { name: "Staff menu" }),
+        ).toBeVisible();
+        await page.keyboard.press("Escape");
+        await expect(
+          page.getByRole("dialog", { name: "Staff menu" }),
+        ).not.toBeVisible();
+        await page.getByRole("button", { name: "Menu", exact: true }).click();
+        await page
+          .getByRole("dialog")
+          .getByRole("link", { name: "Order queue" })
+          .click();
+        await expect(page.getByRole("dialog")).not.toBeVisible();
+      } else {
+        await navigation.getByRole("link", { name: "Order queue" }).click();
+      }
+      await expect(page).toHaveURL(/\/admin\/orders$/);
+      await page
+        .getByRole("search")
+        .getByRole("searchbox", { name: "Search orders" })
+        .fill("Mobile Legends");
+      await page
+        .getByRole("search")
+        .getByRole("button", { name: "Search orders" })
+        .click();
+      await expect(page).toHaveURL(/search=Mobile(?:\+|%20)Legends/);
+      await expect(page.getByLabel("Search game or full order ID")).toHaveValue(
+        "Mobile Legends",
+      );
+      expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+      await page.screenshot({
+        path: `test-results/admin-queue-${info.project.name}-${role}.png`,
+        fullPage: true,
+      });
+      await page.goto("/account");
+      await page
+        .getByRole("link", { name: "Administration ↗", exact: true })
+        .click();
+      await expect(
+        page.getByRole("heading", { name: "Operations overview", exact: true }),
+      ).toBeVisible();
+    }
     if (role === "administrator")
       await operationsJourney(
         page,

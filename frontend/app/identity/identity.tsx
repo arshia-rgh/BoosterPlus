@@ -1,4 +1,5 @@
-import OperationsOverview from "../operations/overview";
+import { createElement, useContext } from "react";
+import { AuthorizedIdentity, IdentityFrame } from "./frame";
 import {
   useEffect,
   useState,
@@ -14,18 +15,14 @@ import {
   post,
   command,
   errorMessage,
-  userSchema,
   sessionSchema,
   codesSchema,
   sessionsSchema,
-  auditsSchema,
-  recoveriesSchema,
   type Session,
-  type User,
 } from "./api";
 
 type Refresh = () => Promise<void>;
-function Form({
+export function Form({
   title,
   children,
   submit,
@@ -70,7 +67,7 @@ function Form({
     </form>
   );
 }
-function Text({
+export function Text({
   name,
   label,
   type = "text",
@@ -98,7 +95,7 @@ function Text({
     </label>
   );
 }
-const value = (data: FormData, name: string) => {
+export const value = (data: FormData, name: string) => {
   const field = data.get(name);
   return typeof field === "string" ? field : "";
 };
@@ -518,190 +515,6 @@ function Account({
     </div>
   );
 }
-function UserControls({
-  user,
-  owner,
-  refresh,
-}: {
-  user: User;
-  owner: boolean;
-  refresh: Refresh;
-}) {
-  return (
-    <article className="identity-card">
-      <h3>{user.email}</h3>
-      <p>
-        {user.display_name || "No display name"} · {user.role} ·{" "}
-        {user.suspended ? "Suspended" : "Active"}
-      </p>
-      <p className="muted">Internal ID: {user.id}</p>
-      {owner && (
-        <Form
-          title="Change role"
-          submit={async (data) => {
-            await command(
-              "/admin/users/" + encodeURIComponent(user.id) + "/role",
-              { role: value(data, "role") },
-            );
-            await refresh();
-          }}
-        >
-          <label>
-            Role
-            <select name="role" defaultValue={user.role}>
-              <option value="customer">Customer</option>
-              <option value="booster">Booster</option>
-              <option value="administrator">Administrator</option>
-              <option value="owner">Owner</option>
-            </select>
-          </label>
-          <label className="check">
-            <input type="checkbox" required />
-            Apply this role and revoke their sessions
-          </label>
-        </Form>
-      )}
-      <Form
-        title={user.suspended ? "Restore account" : "Suspend account"}
-        submit={async () => {
-          await command(
-            "/admin/users/" + encodeURIComponent(user.id) + "/suspension",
-            { suspended: !user.suspended },
-          );
-          await refresh();
-        }}
-      >
-        <label className="check">
-          <input type="checkbox" required />
-          Confirm account access change
-        </label>
-      </Form>
-    </article>
-  );
-}
-function Administration({
-  session,
-  refresh,
-}: {
-  session: Session;
-  refresh: Refresh;
-}) {
-  const [users, setUsers] = useState<User[]>([]),
-    [audits, setAudits] = useState<z.infer<typeof auditsSchema>["audits"]>([]),
-    [recoveries, setRecoveries] = useState<
-      z.infer<typeof recoveriesSchema>["recoveries"]
-    >([]);
-  const owner = session.capabilities.includes("owner");
-  async function reload() {
-    setUsers(
-      (await get("/admin/users", z.object({ users: z.array(userSchema) })))
-        .users,
-    );
-    await refresh();
-  }
-  return (
-    <section>
-      <OperationsOverview />
-      <h2>Account and staff administration</h2>
-      <p>
-        For sensitive changes, first verify your identity in{" "}
-        <Link to="/account">account security</Link>.
-      </p>
-      <Form title="User directory" label="Load users" submit={reload}>
-        <p>Displays the latest 100 accounts. Only owners can assign roles.</p>
-      </Form>
-      <div className="identity-grid">
-        {users.map((user) => (
-          <UserControls
-            key={user.id}
-            user={user}
-            owner={owner}
-            refresh={reload}
-          />
-        ))}
-      </div>
-      {owner && (
-        <>
-          <Form
-            title="Security audit"
-            label="Load audit"
-            submit={async () => {
-              setAudits((await get("/admin/audit", auditsSchema)).audits);
-            }}
-          />
-          <ul className="audit-list">
-            {audits.map((entry) => (
-              <li key={entry.id}>
-                <strong>{entry.action}</strong> · {entry.created_at}
-                <br />
-                Actor: {entry.actor_id || entry.actor_reference} · Target:{" "}
-                {entry.target_id}
-              </li>
-            ))}
-          </ul>
-          <Form
-            title="Recovery review"
-            label="Load recovery requests"
-            submit={async () => {
-              setRecoveries(
-                (await get("/admin/recoveries", recoveriesSchema)).recoveries,
-              );
-            }}
-          >
-            <p>
-              Verify ownership using independent evidence before approval. A
-              code sent to a new address is insufficient. Keep evidence in your
-              restricted support case; record only its reference here. Approval
-              disconnects Google and revokes sessions. It preserves suspension
-              and the authenticator.
-            </p>
-          </Form>
-          {recoveries.map((entry) => (
-            <Form
-              key={entry.id}
-              title={"Recovery for " + entry.user_id}
-              label="Resolve recovery"
-              submit={async (data) => {
-                await command(
-                  "/admin/recoveries/" +
-                    encodeURIComponent(entry.id) +
-                    "/resolve",
-                  {
-                    approve: value(data, "decision") === "approve",
-                    case_reference: value(data, "reference"),
-                  },
-                );
-                setRecoveries(
-                  (await get("/admin/recoveries", recoveriesSchema)).recoveries,
-                );
-              }}
-            >
-              <p>Requested destination: {entry.new_email}</p>
-              <Text
-                name="reference"
-                label="Independent support case reference"
-                maxLength={64}
-              />
-              <label>
-                Decision
-                <select name="decision" defaultValue="reject">
-                  <option value="reject">Reject</option>
-                  <option value="approve">
-                    Approve after independent review
-                  </option>
-                </select>
-              </label>
-              <label className="check">
-                <input type="checkbox" required />I reviewed ownership evidence
-                and recorded the case
-              </label>
-            </Form>
-          ))}
-        </>
-      )}
-    </section>
-  );
-}
 export default function Identity({
   title,
   capability = "account",
@@ -711,6 +524,7 @@ export default function Identity({
   capability?: "account" | "admin" | "booster";
   children?: React.ReactNode;
 }) {
+  const Frame = useContext(IdentityFrame);
   const [search] = useSearchParams();
   const googleError = new Map([
     ["verification", "Google verification failed. Start again or use email."],
@@ -772,192 +586,174 @@ export default function Identity({
       active = false;
     };
   }, []);
-  return (
-    <main id="main" className="page identity-page">
-      <title>{`${title} | Booster Plus`}</title>
-      <p className="eyebrow">Booster Plus account</p>
-      <h1>{title}</h1>
-      {googleError && <p role="alert">{googleError}</p>}
-      {failure ? (
-        <div role="alert">
-          <p>{failure}</p>
-          <button className="button" onClick={() => void refresh()}>
-            Retry connection
-          </button>
-        </div>
-      ) : !session ? (
-        <p role="status">Loading sign-in…</p>
-      ) : (
-        <>
-          {codes.length > 0 && (
-            <section className="secret">
-              <h2>Save your recovery codes</h2>
-              <p>
-                Each code works once, after Google or email verification. Store
-                them privately; they will not be shown again.
-              </p>
-              <ul>
-                {codes.map((code) => (
-                  <li key={code}>
-                    <code>{code}</code>
-                  </li>
-                ))}
-              </ul>
-              <button
-                className="button"
-                onClick={() => {
-                  setCodes([]);
-                }}
-              >
-                I saved my recovery codes
-              </button>
-            </section>
-          )}
-          {!session.user ? (
-            <>
-              <p>
-                Sign in with Google or an email code. No password is needed.
-              </p>
-              <div className="identity-grid">
-                <EmailForm purpose="login" refresh={refresh} />
-                {session.google_enabled ? (
-                  <Google session={session} purpose="login" refresh={refresh} />
-                ) : (
+  return createElement(Frame, {
+    session,
+    title,
+    children: (
+      <main id="main" className="page identity-page">
+        <title>{`${title} | Booster Plus`}</title>
+        <p className="eyebrow">
+          {capability === "admin" ? "Staff workspace" : "Booster Plus account"}
+        </p>
+        <h1>{title}</h1>
+        {googleError && <p role="alert">{googleError}</p>}
+        {failure ? (
+          <div role="alert">
+            <p>{failure}</p>
+            <button className="button" onClick={() => void refresh()}>
+              Retry connection
+            </button>
+          </div>
+        ) : !session ? (
+          <p role="status">Loading sign-in…</p>
+        ) : (
+          <>
+            {codes.length > 0 && (
+              <section className="secret">
+                <h2>Save your recovery codes</h2>
+                <p>
+                  Each code works once, after Google or email verification.
+                  Store them privately; they will not be shown again.
+                </p>
+                <ul>
+                  {codes.map((code) => (
+                    <li key={code}>
+                      <code>{code}</code>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  className="button"
+                  onClick={() => {
+                    setCodes([]);
+                  }}
+                >
+                  I saved my recovery codes
+                </button>
+              </section>
+            )}
+            {!session.user ? (
+              <>
+                <p>
+                  Sign in with Google or an email code. No password is needed.
+                </p>
+                <div className="identity-grid">
+                  <EmailForm purpose="login" refresh={refresh} />
+                  {session.google_enabled ? (
+                    <Google
+                      session={session}
+                      purpose="login"
+                      refresh={refresh}
+                    />
+                  ) : (
+                    <p>
+                      Google sign-in is currently unavailable. Continue with
+                      email.
+                    </p>
+                  )}
+                </div>
+                <details>
+                  <summary>Lost access to your email?</summary>
+                  <EmailForm purpose="recovery" refresh={refresh} />
+                </details>
+              </>
+            ) : (
+              <>
+                {capability !== "admin" && (
+                  <nav className="account-nav" aria-label="Account navigation">
+                    <NavLink end to="/account">
+                      Profile and security
+                    </NavLink>
+                    <NavLink end to="/orders">
+                      My orders
+                    </NavLink>
+                    <NavLink end to="/sell">
+                      Sell an account
+                    </NavLink>
+                    <NavLink end to="/reviews">
+                      My reviews
+                    </NavLink>
+                    <NavLink end to="/favorites">
+                      Favorites
+                    </NavLink>
+                    <NavLink end to="/availability">
+                      Package alerts
+                    </NavLink>
+                    <NavLink end to="/support">
+                      Support
+                    </NavLink>
+                    <NavLink end to="/notifications">
+                      Activity
+                    </NavLink>
+                    {session.capabilities.includes("admin") && (
+                      <a href="/admin">Administration ↗</a>
+                    )}
+                    {session.capabilities.includes("booster") && (
+                      <>
+                        <NavLink end to="/booster/orders">
+                          Assigned work
+                        </NavLink>{" "}
+                        <NavLink end to="/booster/calendar">
+                          My calendar
+                        </NavLink>
+                      </>
+                    )}
+                  </nav>
+                )}
+                <Form
+                  compact
+                  title="Sign out"
+                  submit={async () => {
+                    await command("/auth/logout");
+                    setCodes([]);
+                    await refresh();
+                  }}
+                />
+                {session.mfa_required ? (
+                  <>
+                    <p role="alert">
+                      Authenticator verification is required to finish signing
+                      in.
+                    </p>
+                    <Security
+                      session={session}
+                      refresh={refresh}
+                      onCodes={setCodes}
+                    />
+                    <details>
+                      <summary>Verify email again</summary>
+                      <EmailForm
+                        purpose="reauth"
+                        email={session.user.email}
+                        refresh={refresh}
+                      />
+                    </details>
+                  </>
+                ) : !session.capabilities.includes(capability) ? (
+                  <p role="alert">You do not have access to this portal.</p>
+                ) : children ? (
+                  <AuthorizedIdentity value={{ session, refresh }}>
+                    {children}
+                  </AuthorizedIdentity>
+                ) : capability === "booster" ? (
                   <p>
-                    Google sign-in is currently unavailable. Continue with
-                    email.
+                    Open your{" "}
+                    <Link to="/booster/orders">assigned-order workspace</Link>{" "}
+                    or manage your{" "}
+                    <Link to="/booster/calendar">availability calendar</Link>.
                   </p>
-                )}
-              </div>
-              <details>
-                <summary>Lost access to your email?</summary>
-                <EmailForm purpose="recovery" refresh={refresh} />
-              </details>
-            </>
-          ) : (
-            <>
-              <nav className="account-nav" aria-label="Account navigation">
-                <NavLink end to="/account">
-                  Profile and security
-                </NavLink>
-                <NavLink end to="/orders">
-                  My orders
-                </NavLink>
-                <NavLink end to="/sell">
-                  Sell an account
-                </NavLink>
-                <NavLink end to="/reviews">
-                  My reviews
-                </NavLink>
-                <NavLink end to="/favorites">
-                  Favorites
-                </NavLink>
-                <NavLink end to="/availability">
-                  Package alerts
-                </NavLink>
-                <NavLink end to="/support">
-                  Support
-                </NavLink>
-                <NavLink end to="/notifications">
-                  Activity
-                </NavLink>
-                {session.capabilities.includes("admin") && (
-                  <>
-                    <NavLink end to="/admin">
-                      Administration
-                    </NavLink>
-                    <NavLink end to="/admin/catalog">
-                      Catalog editor
-                    </NavLink>
-                    <NavLink end to="/admin/coupons">
-                      Coupons
-                    </NavLink>
-                    <NavLink end to="/admin/orders">
-                      Order queue
-                    </NavLink>
-                    <NavLink end to="/admin/submissions">
-                      Account submissions
-                    </NavLink>
-                    <NavLink end to="/admin/reviews">
-                      Review moderation
-                    </NavLink>
-                    <NavLink end to="/admin/jobs">
-                      Background tasks
-                    </NavLink>
-                    <NavLink end to="/admin/reports">
-                      Reports
-                    </NavLink>
-                    <NavLink end to="/admin/calendar">
-                      Staff calendars
-                    </NavLink>
-                    <NavLink end to="/admin/support">
-                      Support inbox
-                    </NavLink>
-                  </>
-                )}
-                {session.capabilities.includes("booster") && (
-                  <>
-                    <NavLink end to="/booster/orders">
-                      Assigned work
-                    </NavLink>{" "}
-                    <NavLink end to="/booster/calendar">
-                      My calendar
-                    </NavLink>
-                  </>
-                )}
-              </nav>
-              <Form
-                compact
-                title="Sign out"
-                submit={async () => {
-                  await command("/auth/logout");
-                  setCodes([]);
-                  await refresh();
-                }}
-              />
-              {session.mfa_required ? (
-                <>
-                  <p role="alert">
-                    Authenticator verification is required to finish signing in.
-                  </p>
-                  <Security
+                ) : (
+                  <Account
                     session={session}
                     refresh={refresh}
                     onCodes={setCodes}
                   />
-                  <details>
-                    <summary>Verify email again</summary>
-                    <EmailForm
-                      purpose="reauth"
-                      email={session.user.email}
-                      refresh={refresh}
-                    />
-                  </details>
-                </>
-              ) : !session.capabilities.includes(capability) ? (
-                <p role="alert">You do not have access to this portal.</p>
-              ) : children ? (
-                children
-              ) : capability === "admin" ? (
-                <Administration session={session} refresh={refresh} />
-              ) : capability === "booster" ? (
-                <p>
-                  Open your{" "}
-                  <Link to="/booster/orders">assigned-order workspace</Link> or
-                  manage your{" "}
-                  <Link to="/booster/calendar">availability calendar</Link>.
-                </p>
-              ) : (
-                <Account
-                  session={session}
-                  refresh={refresh}
-                  onCodes={setCodes}
-                />
-              )}
-            </>
-          )}
-        </>
-      )}
-    </main>
-  );
+                )}
+              </>
+            )}
+          </>
+        )}
+      </main>
+    ),
+  });
 }

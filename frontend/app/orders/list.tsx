@@ -20,8 +20,11 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
   }
   return (
     <section>
-      <h2>{admin ? "Order queue" : "Your orders"}</h2>
-      <form onSubmit={filter} className="catalog-grid">
+      <h2>{admin ? "Requests and active work" : "Your orders"}</h2>
+      <form
+        onSubmit={filter}
+        className={admin ? "catalog-grid order-filters" : "catalog-grid"}
+      >
         <Text
           label="Search game or full order ID"
           value={search}
@@ -48,28 +51,80 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
         <>
           {resource.data.orders.length === 0 && (
             <p>
-              No matching orders. <Link to="/games">Explore games</Link>.
+              No matching orders.{" "}
+              {admin ? (
+                "Try a different search or status."
+              ) : (
+                <Link to="/games">Explore games</Link>
+              )}
             </p>
           )}
-          <ul className="order-list">
-            {resource.data.orders.map((order) => (
-              <li key={order.id}>
-                <Link to={`${base}/${order.id}`}>
-                  <strong>{order.game_name}</strong>
-                  <span>
-                    {order.kind === "package"
-                      ? "Fixed package"
-                      : "Custom request"}{" "}
-                    · {stateLabel(order.state)}
-                  </span>
-                  <small>Order {order.id}</small>
-                </Link>
-                <time dateTime={order.created_at}>
-                  {new Date(order.created_at).toLocaleString()}
-                </time>
-              </li>
-            ))}
-          </ul>
+          {admin ? (
+            <div className="admin-order-table-wrap">
+              <table className="admin-order-table">
+                <caption className="sr-only">
+                  Orders matching the current filters
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Game / order</th>
+                    <th scope="col">Service</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Received</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {resource.data.orders.map((order) => (
+                    <tr key={order.id}>
+                      <td>
+                        <Link to={`${base}/${order.id}`}>
+                          <strong>{order.game_name}</strong>
+                          <small>Order {order.id}</small>
+                        </Link>
+                      </td>
+                      <td>
+                        {order.kind === "package"
+                          ? "Fixed package"
+                          : "Custom request"}
+                      </td>
+                      <td>
+                        <span className="status">
+                          {stateLabel(order.state)}
+                        </span>
+                      </td>
+                      <td>
+                        <time dateTime={order.created_at}>
+                          {new Date(order.created_at).toLocaleString()}
+                        </time>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <>
+              <ul className="order-list">
+                {resource.data.orders.map((order) => (
+                  <li key={order.id}>
+                    <Link to={`${base}/${order.id}`}>
+                      <strong>{order.game_name}</strong>
+                      <span>
+                        {order.kind === "package"
+                          ? "Fixed package"
+                          : "Custom request"}{" "}
+                        · {stateLabel(order.state)}
+                      </span>
+                      <small>Order {order.id}</small>
+                    </Link>
+                    <time dateTime={order.created_at}>
+                      {new Date(order.created_at).toLocaleString()}
+                    </time>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           {resource.data.next && (
             <Link
               to={`${base}?${new URLSearchParams({ ...Object.fromEntries(query), after: resource.data.next }).toString()}`}

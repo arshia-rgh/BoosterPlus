@@ -249,6 +249,10 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     expect(accepted.contract?.payment_state).toBe("unissued");
     expect(accepted.order.state).toBe("awaiting_payment");
     await accessible(buyer);
+    await page.screenshot({
+      path: `.cache/admin-order-${info.project.name}.png`,
+      fullPage: true,
+    });
     await buyer.screenshot({
       path: `.cache/order-${info.project.name}.png`,
       fullPage: true,

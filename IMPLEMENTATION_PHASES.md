@@ -12,7 +12,7 @@ The specification remains the detailed product and architecture reference. This 
 
 [REMAINING_ROADMAP.md](REMAINING_ROADMAP.md) now owns the order of remaining work after the owner's visual/admin/production request. It prioritizes the animated storefront and dedicated admin frontend, details the required MLBB rank transformation, and specifies the stack under `production/`, preserving the existing `production/deploy/` directory. This document remains the P00–P12 requirements reference; no unfinished feature or approved addition is removed.
 
-R01 now implements the animated homepage and MLBB rank scene, with visual/accessibility/performance evidence recorded in `docs/progress.md`. R02 dedicated administration and R03 remaining route redesign are next; the product phase completion criteria remain unchanged.
+R01 now implements the animated homepage and MLBB rank scene, with visual/accessibility/performance evidence recorded in `docs/progress.md`. R02 now implements separate storefront/admin build graphs, staff navigation and queue/chat layouts, with its final gate recorded in the progress document. R03 remaining route redesign is next; the product phase completion criteria remain unchanged.
 
 ## 1. Working rules
 
