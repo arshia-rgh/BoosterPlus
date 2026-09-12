@@ -50,15 +50,16 @@ func New(client *ent.Client, auth *identity.Service, origin string, now func() t
 
 // View contains only an owned subscription and public catalog labels.
 type View struct {
-	ID        string    `json:"id"`
-	Version   int       `json:"version"`
-	State     string    `json:"state"`
-	Slug      string    `json:"slug"`
-	Package   string    `json:"package"`
-	Variant   string    `json:"variant"`
-	Label     string    `json:"label"`
-	Available bool      `json:"available"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Account   *AccountCriteria `json:"account,omitempty"`
+	ID        string           `json:"id"`
+	Version   int              `json:"version"`
+	State     string           `json:"state"`
+	Slug      string           `json:"slug"`
+	Package   string           `json:"package"`
+	Variant   string           `json:"variant"`
+	Label     string           `json:"label"`
+	Available bool             `json:"available"`
+	UpdatedAt time.Time        `json:"updated_at"`
 }
 
 // Listing is a bounded customer page.
@@ -69,11 +70,12 @@ type Listing struct {
 
 // SubscribeInput requires explicit current policy consent, with no implied reservation.
 type SubscribeInput struct {
-	Slug           string `json:"slug"`
-	Package        string `json:"package"`
-	Variant        string `json:"variant"`
-	ConsentVersion string `json:"consent_version"`
-	Accept         bool   `json:"accept"`
+	Account        *AccountCriteria `json:"account,omitempty"`
+	Slug           string           `json:"slug"`
+	Package        string           `json:"package"`
+	Variant        string           `json:"variant"`
+	ConsentVersion string           `json:"consent_version"`
+	Accept         bool             `json:"accept"`
 }
 
 // ChangeInput fences consent changes against stale tabs.

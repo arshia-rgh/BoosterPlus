@@ -76,6 +76,8 @@ export const publicReviewSchema = z.object({
   purchase_status: z.enum([
     "verified_purchase",
     "purchase_status_updated",
+    "refund_recorded",
+    "dispute_in_progress",
     "fulfillment_status_updated",
   ]),
   published_at: z.string(),

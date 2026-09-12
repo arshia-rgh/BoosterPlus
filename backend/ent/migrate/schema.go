@@ -457,6 +457,8 @@ var (
 		{Name: "slug", Type: field.TypeString, Size: 80},
 		{Name: "package_key", Type: field.TypeString, Size: 48},
 		{Name: "variant_key", Type: field.TypeString, Size: 48},
+		{Name: "criteria", Type: field.TypeJSON, Nullable: true},
+		{Name: "stock_marker", Type: field.TypeString, Size: 100, Default: ""},
 		{Name: "available", Type: field.TypeBool},
 		{Name: "cycle", Type: field.TypeInt},
 		{Name: "checked_at", Type: field.TypeTime},
@@ -832,7 +834,7 @@ var (
 		{Name: "slug", Type: field.TypeString, Size: 80},
 		{Name: "service", Type: field.TypeString, Size: 48, Default: ""},
 		{Name: "package_key", Type: field.TypeString, Size: 48, Default: ""},
-		{Name: "kind", Type: field.TypeEnum, Enums: []string{"game", "service", "package"}},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"game", "service", "package", "account"}},
 		{Name: "name", Type: field.TypeString, Size: 300},
 		{Name: "created_at", Type: field.TypeTime},
 	}

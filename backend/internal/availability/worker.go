@@ -31,12 +31,15 @@ func enqueue(ctx context.Context, tx *ent.Tx, kind, key string, ref any) error {
 	return e
 }
 func (s *Store) refresh(ctx context.Context, tx *ent.Tx, t *ent.AvailabilityTarget) (*ent.AvailabilityTarget, error) {
-	offer, e := readOffering(ctx, tx.Client(), t.Slug, t.PackageKey, t.VariantKey)
+	offer, e := readTarget(ctx, tx.Client(), t)
 	if e != nil {
 		return nil, e
 	}
 	update := tx.AvailabilityTarget.UpdateOne(t).SetAvailable(offer.available).SetCheckedAt(s.now())
-	opened := !t.Available && offer.available
+	opened := offer.available && (!t.Available || t.Criteria != nil && offer.marker > t.StockMarker)
+	if offer.marker > t.StockMarker {
+		update.SetStockMarker(offer.marker)
+	}
 	if opened {
 		if t.Cycle >= maxVersion {
 			return nil, ErrConflict
@@ -139,7 +142,7 @@ func (s *Store) fanout(ctx context.Context, tx *ent.Tx, ref fanoutRef) error {
 	if !t.Available || t.Cycle != ref.Cycle || t.Cycle == 0 {
 		return nil
 	}
-	offer, e := readOffering(ctx, tx.Client(), t.Slug, t.PackageKey, t.VariantKey)
+	offer, e := readTarget(ctx, tx.Client(), t)
 	if e != nil {
 		return e
 	}
@@ -243,7 +246,7 @@ func (s *Store) EmailHandler(sender identity.Sender) jobs.Handler {
 			if readErr != nil {
 				return readErr
 			}
-			offer, readErr := readOffering(ctx, tx.Client(), t.Slug, t.PackageKey, t.VariantKey)
+			offer, readErr := readTarget(ctx, tx.Client(), t)
 			if readErr != nil {
 				return readErr
 			}
@@ -251,9 +254,9 @@ func (s *Store) EmailHandler(sender identity.Sender) jobs.Handler {
 				_, readErr = tx.AvailabilityDelivery.UpdateOne(d).SetState("suppressed").Save(ctx)
 				return readErr
 			}
-			href := s.origin + "/games/" + t.Slug + "/packages/" + t.PackageKey + "?variant=" + t.VariantKey
+			href := targetHref(s.origin, t)
 			unsubscribe := s.origin + "/availability/unsubscribe#" + row.ID + "/" + strconv.Itoa(row.Version) + "/" + s.token(row)
-			message = &identity.Message{To: account.Email, Subject: "A package you follow has availability", Body: "A package variant you asked to follow has capacity available. Check its current price, eligibility and availability before ordering. This email is not a reservation or purchase guarantee.\n" + href + "\n\nStop these availability emails:\n" + unsubscribe + "\n\nManage all package alerts: " + s.origin + "/availability"}
+			message = &identity.Message{To: account.Email, Subject: "An offer you follow has availability", Body: "An offer matching your subscription is available. Check its current price, eligibility and availability before ordering. This email is not a reservation or purchase guarantee.\n" + href + "\n\nStop these availability emails:\n" + unsubscribe + "\n\nManage all availability alerts: " + s.origin + "/availability"}
 			return nil
 		})
 		if e != nil {

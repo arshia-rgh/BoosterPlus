@@ -354,7 +354,9 @@ export default function Bookings({
                       Mark attended
                     </Action>
                     <Action
-                      disabled={!note.trim()}
+                      disabled={
+                        !note.trim() || new Date(value.ends_at) > new Date()
+                      }
                       onClick={() => {
                         void change(value, "no_show");
                       }}

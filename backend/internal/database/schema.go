@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 23
+const SchemaVersion = 24
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,7 +47,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
-		"payment_attempts.post_claimed": "tinyint", "seller_offers.data": "json", "seller_offers.active_submission_id": "varchar", "seller_offer_events.version": "bigint", "account_listings.draft": "json", "account_listing_releases.data": "json", "account_reservations.active_listing_id": "varchar", "account_deliveries.dispute_until": "datetime", "money_transfers.seller_offer_id": "varchar", "orders.listing_id": "varchar", "orders.account_snapshot": "json",
+		"availability_targets.criteria": "json", "availability_targets.stock_marker": "varchar", "payment_attempts.post_claimed": "tinyint", "seller_offers.data": "json", "seller_offers.active_submission_id": "varchar", "seller_offer_events.version": "bigint", "account_listings.draft": "json", "account_listing_releases.data": "json", "account_reservations.active_listing_id": "varchar", "account_deliveries.dispute_until": "datetime", "money_transfers.seller_offer_id": "varchar", "orders.listing_id": "varchar", "orders.account_snapshot": "json",
 		"service_cases.request_hash": "varchar", "service_cases.active_order_id": "varchar", "service_cases.policy": "json", "service_cases.version": "bigint", "case_events.version": "bigint", "case_events.actor_role": "varchar", "money_transfers.recipient": "json", "money_transfers.amount": "varchar", "transfer_attempts.active_transfer_id": "varchar", "transfer_observations.data": "json", "transfer_records.lease_until": "datetime", "transfer_events.version": "bigint", "payment_settings.outgoing_page": "bigint",
 		"payment_settings.version": "bigint", "payment_policies.data": "json", "payment_attempts.active_contract_id": "varchar", "payment_attempts.policy": "json", "payment_signals.digest": "varchar", "payment_records.lease_until": "datetime", "payment_observations.data": "json", "payment_receipts.amount": "varchar", "payment_allocations.amount_minor": "varchar",
 		"availability_targets.cycle": "bigint", "availability_subscriptions.email_fingerprint": "varchar", "availability_deliveries.state": "varchar", "jobs.retry_generation": "bigint", "reviews.body": "text", "reviews.rating": "tinyint", "reviews.policy": "json", "review_revisions.internal_reason": "text",

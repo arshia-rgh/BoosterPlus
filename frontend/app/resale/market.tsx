@@ -1,5 +1,7 @@
+import AccountAlerts from "../availability/accounts";
+import { FavoriteButton } from "../orders/favorites";
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import { Action, Check, ErrorNotice, Text } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { post, sessionSchema } from "../identity/api";
@@ -61,10 +63,11 @@ export function ProductTerms({ listing }: { listing: PublicListing }) {
   );
 }
 export function AccountMarket() {
-  const [search, setSearch] = useState(""),
-    [region, setRegion] = useState(""),
-    [rank, setRank] = useState(""),
-    [query, setQuery] = useState(""),
+  const [params] = useSearchParams();
+  const [search, setSearch] = useState(params.get("search") ?? ""),
+    [region, setRegion] = useState(params.get("region") ?? ""),
+    [rank, setRank] = useState(params.get("rank") ?? ""),
+    [query, setQuery] = useState(params.toString()),
     [after, setAfter] = useState("");
   const resource = useResource(
     `/accounts?${query}&after=${encodeURIComponent(after)}`,
@@ -79,6 +82,7 @@ export function AccountMarket() {
         protected delivery.
       </p>
       <Link to="/sell">Sell an account</Link>
+      <AccountAlerts />
       <fieldset>
         <legend>Find an account</legend>
         <Text label="Search accounts" value={search} change={setSearch} />
@@ -87,7 +91,14 @@ export function AccountMarket() {
         <Action
           onClick={() => {
             setAfter("");
-            setQuery(new URLSearchParams({ search, region, rank }).toString());
+            setQuery(
+              new URLSearchParams({
+                search,
+                region,
+                rank,
+                slug: params.get("slug") ?? "",
+              }).toString(),
+            );
           }}
         >
           Apply account filters
@@ -222,6 +233,20 @@ export function AccountProduct() {
       {resource.data && !resource.error && (
         <>
           <ProductTerms listing={resource.data} />
+          <FavoriteButton
+            kind="account"
+            slug={resource.data.slug}
+            pack={resource.data.id}
+          />
+          <AccountAlerts
+            slug={resource.data.slug}
+            listingID={resource.data.id}
+          />
+          <Link
+            to={`/games/${resource.data.slug}/reviews?service=account_sale`}
+          >
+            Account purchase reviews
+          </Link>
           <Purchase key={resource.data.release_id} listing={resource.data} />
         </>
       )}

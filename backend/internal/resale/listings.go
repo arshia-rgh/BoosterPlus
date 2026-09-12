@@ -4,6 +4,8 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/availabilityevents"
+
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlisting"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlistingrelease"
@@ -184,6 +186,9 @@ func (s *Store) ChangeListing(ctx context.Context, p *identity.Principal, id, ac
 		}
 		row, e = update.Save(ctx)
 		if e != nil {
+			return e
+		}
+		if e = availabilityevents.Changed(ctx, tx, row.GameID); e != nil {
 			return e
 		}
 		if e = s.audit(ctx, tx, current, "listing_"+action, id); e != nil {

@@ -39,4 +39,4 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 
 ## Current delivery boundary (12 September 2026)
 
-- Finish and verify R07, commit and push it to `origin/main`, then stop. The owner must explicitly authorize continuation before R08 or R09. R10/R11 remain deferred.
+- R07 is delivered. The owner has now authorized completing R08 and R09, with a separate fully verified commit and push for each stage. Stop after R09. R10/R11 remain deferred.

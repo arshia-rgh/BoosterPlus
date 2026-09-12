@@ -6,6 +6,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/availabilityevents"
+
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountreservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
@@ -34,7 +36,10 @@ func Allocate(ctx context.Context, tx *ent.Tx, purchase *ent.Order, now time.Tim
 		return err
 	}
 	_, err = tx.AccountListing.UpdateOneID(listing.ID).SetState("sold").AddVersion(1).SetUpdatedAt(now).Save(ctx)
-	return err
+	if err != nil {
+		return err
+	}
+	return availabilityevents.Changed(ctx, tx, purchase.GameID)
 }
 
 // ReleaseUnpaid requires transaction-fenced proof of no invoice or a terminal unfunded provider read.
@@ -56,7 +61,10 @@ func ReleaseUnpaid(ctx context.Context, tx *ent.Tx, purchase *ent.Order, now tim
 		return err
 	}
 	_, err = tx.AccountListing.UpdateOneID(reservation.ListingID).SetState("published").AddVersion(1).SetUpdatedAt(now).Save(ctx)
-	return err
+	if err != nil {
+		return err
+	}
+	return availabilityevents.Changed(ctx, tx, purchase.GameID)
 }
 
 // CancelPaid removes inventory from publication; refund never automatically relists transferred access.
@@ -80,7 +88,10 @@ func CancelPaid(ctx context.Context, tx *ent.Tx, purchase *ent.Order, now time.T
 		return err
 	}
 	_, err = tx.SellerOffer.UpdateOneID(listing.OfferID).ClearControlVerifiedAt().SetControlVerifiedBy("").SetControlEvidence("").AddVersion(1).SetUpdatedAt(now).Save(ctx)
-	return err
+	if err != nil {
+		return err
+	}
+	return availabilityevents.Changed(ctx, tx, purchase.GameID)
 }
 
 // Checkout extends only the still-current reservation to its exact invoice deadline.
@@ -96,5 +107,8 @@ func Checkout(ctx context.Context, tx *ent.Tx, purchase *ent.Order, deadline, no
 		return ErrConflict
 	}
 	_, err = tx.AccountReservation.UpdateOneID(reservation.ID).SetExpiresAt(deadline).AddVersion(1).SetUpdatedAt(now).Save(ctx)
-	return err
+	if err != nil {
+		return err
+	}
+	return availabilityevents.Changed(ctx, tx, purchase.GameID)
 }

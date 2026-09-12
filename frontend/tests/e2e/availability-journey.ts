@@ -83,7 +83,7 @@ export async function availabilityJourney(
               query:
                 "to:" +
                 email +
-                ' subject:"A package you follow has availability"',
+                ' subject:"An offer you follow has availability"',
             },
           },
         );

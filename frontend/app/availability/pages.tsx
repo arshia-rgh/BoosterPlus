@@ -66,7 +66,7 @@ export function Subscribe({
         </>
       )}
       <ErrorNotice error={error} />
-      <Link to="/availability">Manage package alerts</Link>
+      <Link to="/availability">Manage availability alerts</Link>
     </aside>
   );
 }
@@ -137,7 +137,7 @@ export function Subscriptions() {
   );
   return (
     <section>
-      <h2>Your package alerts</h2>
+      <h2>Your availability alerts</h2>
       <p>
         Up to 50 active subscriptions. Availability emails do not reserve a
         package or guarantee its price, eligibility or delivery time. Changing
@@ -148,8 +148,8 @@ export function Subscriptions() {
       {!resource.data ? (
         <p role="status">
           {resource.loading
-            ? "Loading package alerts…"
-            : "Could not load package alerts. Use Refresh alerts to try again."}
+            ? "Loading availability alerts…"
+            : "Could not load availability alerts. Use Refresh alerts to try again."}
         </p>
       ) : (
         <>
@@ -169,7 +169,7 @@ export function Subscriptions() {
           )}
           {resource.data.next && (
             <Link to={`/availability?after=${resource.data.next}`}>
-              Next package alerts
+              Next availability alerts
             </Link>
           )}
         </>

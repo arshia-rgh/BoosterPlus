@@ -20124,7 +20124,7 @@
         "properties": {
           "kind": {
             "type": "string",
-            "enum": ["game", "service", "package"]
+            "enum": ["game", "service", "package", "account"]
           },
           "slug": {
             "type": "string"
@@ -20133,7 +20133,8 @@
             "type": "string"
           },
           "package": {
-            "type": "string"
+            "type": "string",
+            "description": "For account favorites, the public account listing ID; otherwise the package key."
           }
         }
       },
@@ -20154,7 +20155,8 @@
             "type": "string"
           },
           "kind": {
-            "type": "string"
+            "type": "string",
+            "enum": ["game", "service", "package", "account"]
           },
           "slug": {
             "type": "string"
@@ -20163,7 +20165,8 @@
             "type": "string"
           },
           "package": {
-            "type": "string"
+            "type": "string",
+            "description": "For account favorites, the public account listing ID; otherwise the package key."
           },
           "name": {
             "type": "string"
@@ -22252,7 +22255,9 @@
             "enum": [
               "verified_purchase",
               "purchase_status_updated",
-              "fulfillment_status_updated"
+              "fulfillment_status_updated",
+              "refund_recorded",
+              "dispute_in_progress"
             ]
           },
           "published_at": {
@@ -22574,6 +22579,9 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "account": {
+            "$ref": "#/components/schemas/AccountAlertCriteria"
           }
         },
         "required": [
@@ -22616,12 +22624,12 @@
           },
           "package": {
             "type": "string",
-            "minLength": 1,
+            "minLength": 0,
             "maxLength": 48
           },
           "variant": {
             "type": "string",
-            "minLength": 1,
+            "minLength": 0,
             "maxLength": 48
           },
           "consent_version": {
@@ -22629,6 +22637,9 @@
           },
           "accept": {
             "const": true
+          },
+          "account": {
+            "$ref": "#/components/schemas/AccountAlertCriteria"
           }
         },
         "required": ["slug", "package", "variant", "consent_version", "accept"]
@@ -24300,6 +24311,40 @@
                 }
               }
             }
+          }
+        }
+      },
+      "AccountAlertCriteria": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "listing_id",
+          "region",
+          "rank",
+          "currency",
+          "max_amount_minor"
+        ],
+        "properties": {
+          "listing_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "region": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "rank": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3
+          },
+          "max_amount_minor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 999999999999
           }
         }
       }

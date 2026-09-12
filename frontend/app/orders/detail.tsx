@@ -509,7 +509,7 @@ export default function OrderDetail({ admin = false }: { admin?: boolean }) {
                 done={resource.reload}
               />
             )}
-          {!admin && detail.order.kind !== "account" && (
+          {!admin && (
             <PurchaseReview
               orderID={detail.order.id}
               completed={detail.order.state === "completed"}

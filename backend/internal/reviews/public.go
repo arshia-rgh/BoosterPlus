@@ -155,6 +155,10 @@ func (s *Store) Public(ctx context.Context, slug, service, pack, after string) (
 		if convertErr != nil {
 			return out, convertErr
 		}
+		item.PurchaseStatus, err = financialStatus(ctx, tx.Client(), purchaseMap[row.OrderID], item.PurchaseStatus)
+		if err != nil {
+			return out, err
+		}
 		out.Items = append(out.Items, item)
 	}
 	return out, nil

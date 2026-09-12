@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -25,6 +26,10 @@ type AvailabilityTarget struct {
 	PackageKey string `json:"package_key,omitempty"`
 	// VariantKey holds the value of the "variant_key" field.
 	VariantKey string `json:"variant_key,omitempty"`
+	// Criteria holds the value of the "criteria" field.
+	Criteria map[string]interface{} `json:"criteria,omitempty"`
+	// StockMarker holds the value of the "stock_marker" field.
+	StockMarker string `json:"stock_marker,omitempty"`
 	// Available holds the value of the "available" field.
 	Available bool `json:"available,omitempty"`
 	// Cycle holds the value of the "cycle" field.
@@ -41,11 +46,13 @@ func (*AvailabilityTarget) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case availabilitytarget.FieldCriteria:
+			values[i] = new([]byte)
 		case availabilitytarget.FieldAvailable:
 			values[i] = new(sql.NullBool)
 		case availabilitytarget.FieldCycle:
 			values[i] = new(sql.NullInt64)
-		case availabilitytarget.FieldID, availabilitytarget.FieldGameID, availabilitytarget.FieldSlug, availabilitytarget.FieldPackageKey, availabilitytarget.FieldVariantKey:
+		case availabilitytarget.FieldID, availabilitytarget.FieldGameID, availabilitytarget.FieldSlug, availabilitytarget.FieldPackageKey, availabilitytarget.FieldVariantKey, availabilitytarget.FieldStockMarker:
 			values[i] = new(sql.NullString)
 		case availabilitytarget.FieldCheckedAt, availabilitytarget.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -93,6 +100,20 @@ func (_m *AvailabilityTarget) assignValues(columns []string, values []any) error
 				return fmt.Errorf("unexpected type %T for field variant_key", values[i])
 			} else if value.Valid {
 				_m.VariantKey = value.String
+			}
+		case availabilitytarget.FieldCriteria:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field criteria", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Criteria); err != nil {
+					return fmt.Errorf("unmarshal field criteria: %w", err)
+				}
+			}
+		case availabilitytarget.FieldStockMarker:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field stock_marker", values[i])
+			} else if value.Valid {
+				_m.StockMarker = value.String
 			}
 		case availabilitytarget.FieldAvailable:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -165,6 +186,12 @@ func (_m *AvailabilityTarget) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("variant_key=")
 	builder.WriteString(_m.VariantKey)
+	builder.WriteString(", ")
+	builder.WriteString("criteria=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Criteria))
+	builder.WriteString(", ")
+	builder.WriteString("stock_marker=")
+	builder.WriteString(_m.StockMarker)
 	builder.WriteString(", ")
 	builder.WriteString("available=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Available))

@@ -608,12 +608,18 @@ func init() {
 	availabilitytargetDescVariantKey := availabilitytargetFields[4].Descriptor()
 	// availabilitytarget.VariantKeyValidator is a validator for the "variant_key" field. It is called by the builders before save.
 	availabilitytarget.VariantKeyValidator = availabilitytargetDescVariantKey.Validators[0].(func(string) error)
+	// availabilitytargetDescStockMarker is the schema descriptor for stock_marker field.
+	availabilitytargetDescStockMarker := availabilitytargetFields[6].Descriptor()
+	// availabilitytarget.DefaultStockMarker holds the default value on creation for the stock_marker field.
+	availabilitytarget.DefaultStockMarker = availabilitytargetDescStockMarker.Default.(string)
+	// availabilitytarget.StockMarkerValidator is a validator for the "stock_marker" field. It is called by the builders before save.
+	availabilitytarget.StockMarkerValidator = availabilitytargetDescStockMarker.Validators[0].(func(string) error)
 	// availabilitytargetDescCheckedAt is the schema descriptor for checked_at field.
-	availabilitytargetDescCheckedAt := availabilitytargetFields[7].Descriptor()
+	availabilitytargetDescCheckedAt := availabilitytargetFields[9].Descriptor()
 	// availabilitytarget.DefaultCheckedAt holds the default value on creation for the checked_at field.
 	availabilitytarget.DefaultCheckedAt = availabilitytargetDescCheckedAt.Default.(func() time.Time)
 	// availabilitytargetDescCreatedAt is the schema descriptor for created_at field.
-	availabilitytargetDescCreatedAt := availabilitytargetFields[8].Descriptor()
+	availabilitytargetDescCreatedAt := availabilitytargetFields[10].Descriptor()
 	// availabilitytarget.DefaultCreatedAt holds the default value on creation for the created_at field.
 	availabilitytarget.DefaultCreatedAt = availabilitytargetDescCreatedAt.Default.(func() time.Time)
 	// availabilitytargetDescID is the schema descriptor for id field.

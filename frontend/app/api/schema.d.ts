@@ -4649,16 +4649,19 @@ export interface components {
     };
     FavoriteInput: {
       /** @enum {string} */
-      kind: "game" | "service" | "package";
+      kind: "game" | "service" | "package" | "account";
       slug: string;
       service: string;
+      /** @description For account favorites, the public account listing ID; otherwise the package key. */
       package: string;
     };
     Favorite: {
       id: string;
-      kind: string;
+      /** @enum {string} */
+      kind: "game" | "service" | "package" | "account";
       slug: string;
       service: string;
+      /** @description For account favorites, the public account listing ID; otherwise the package key. */
       package: string;
       name: string;
       available: boolean;
@@ -5239,7 +5242,9 @@ export interface components {
       purchase_status:
         | "verified_purchase"
         | "purchase_status_updated"
-        | "fulfillment_status_updated";
+        | "fulfillment_status_updated"
+        | "refund_recorded"
+        | "dispute_in_progress";
       /** Format: date-time */
       published_at: string;
       /** Format: date-time */
@@ -5329,6 +5334,7 @@ export interface components {
       available: boolean;
       /** Format: date-time */
       updated_at: string;
+      account?: components["schemas"]["AccountAlertCriteria"];
     };
     AvailabilityListing: {
       subscriptions: components["schemas"]["AvailabilitySubscription"][];
@@ -5342,6 +5348,7 @@ export interface components {
       consent_version: "availability-v1";
       /** @constant */
       accept: true;
+      account?: components["schemas"]["AccountAlertCriteria"];
     };
     AvailabilityChange: {
       version: number;
@@ -5783,6 +5790,13 @@ export interface components {
         created_at: string;
         version: number;
       }[];
+    };
+    AccountAlertCriteria: {
+      listing_id: string;
+      region: string;
+      rank: string;
+      currency: string;
+      max_amount_minor: number;
     };
   };
   responses: never;

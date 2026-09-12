@@ -68,6 +68,13 @@ func seedBrowserFulfillment(t *testing.T, f *authFixture, fixtures map[string]st
 			if _, createErr = f.client.Order.UpdateOneID(row.ID).SetCurrentContract(contract.ID).Save(ctx); createErr != nil {
 				t.Fatal(createErr)
 			}
+			receipt, receiptErr := f.client.PaymentReceipt.Create().SetRecordID(uuid.NewString()).SetAttemptID(uuid.NewString()).SetOrderID(row.ID).SetUserID(row.UserID).SetCurrency("usdt").SetNetwork("tron").SetAmount("12.34").SetState("confirmed").SetObservationID(uuid.NewString()).SetCreatedAt(now).SetUpdatedAt(now).Save(ctx)
+			if receiptErr != nil {
+				t.Fatal(receiptErr)
+			}
+			if _, receiptErr = f.client.PaymentAllocation.Create().SetReceiptID(receipt.ID).SetContractID(contract.ID).SetOrderID(row.ID).SetCurrency("USD").SetAmountMinor("1234").SetCryptoAmount("12.34").SetCreatedAt(now).Save(ctx); receiptErr != nil {
+				t.Fatal(receiptErr)
+			}
 			fixtures[project+"_work_"+mode] = row.ID
 		}
 	}

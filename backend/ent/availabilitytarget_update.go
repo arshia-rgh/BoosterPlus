@@ -28,6 +28,20 @@ func (_u *AvailabilityTargetUpdate) Where(ps ...predicate.AvailabilityTarget) *A
 	return _u
 }
 
+// SetStockMarker sets the "stock_marker" field.
+func (_u *AvailabilityTargetUpdate) SetStockMarker(v string) *AvailabilityTargetUpdate {
+	_u.mutation.SetStockMarker(v)
+	return _u
+}
+
+// SetNillableStockMarker sets the "stock_marker" field if the given value is not nil.
+func (_u *AvailabilityTargetUpdate) SetNillableStockMarker(v *string) *AvailabilityTargetUpdate {
+	if v != nil {
+		_u.SetStockMarker(*v)
+	}
+	return _u
+}
+
 // SetAvailable sets the "available" field.
 func (_u *AvailabilityTargetUpdate) SetAvailable(v bool) *AvailabilityTargetUpdate {
 	_u.mutation.SetAvailable(v)
@@ -109,7 +123,20 @@ func (_u *AvailabilityTargetUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *AvailabilityTargetUpdate) check() error {
+	if v, ok := _u.mutation.StockMarker(); ok {
+		if err := availabilitytarget.StockMarkerValidator(v); err != nil {
+			return &ValidationError{Name: "stock_marker", err: fmt.Errorf(`ent: validator failed for field "AvailabilityTarget.stock_marker": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (_u *AvailabilityTargetUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(availabilitytarget.Table, availabilitytarget.Columns, sqlgraph.NewFieldSpec(availabilitytarget.FieldID, field.TypeString))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -117,6 +144,12 @@ func (_u *AvailabilityTargetUpdate) sqlSave(ctx context.Context) (_node int, err
 				ps[i](selector)
 			}
 		}
+	}
+	if _u.mutation.CriteriaCleared() {
+		_spec.ClearField(availabilitytarget.FieldCriteria, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.StockMarker(); ok {
+		_spec.SetField(availabilitytarget.FieldStockMarker, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Available(); ok {
 		_spec.SetField(availabilitytarget.FieldAvailable, field.TypeBool, value)
@@ -148,6 +181,20 @@ type AvailabilityTargetUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *AvailabilityTargetMutation
+}
+
+// SetStockMarker sets the "stock_marker" field.
+func (_u *AvailabilityTargetUpdateOne) SetStockMarker(v string) *AvailabilityTargetUpdateOne {
+	_u.mutation.SetStockMarker(v)
+	return _u
+}
+
+// SetNillableStockMarker sets the "stock_marker" field if the given value is not nil.
+func (_u *AvailabilityTargetUpdateOne) SetNillableStockMarker(v *string) *AvailabilityTargetUpdateOne {
+	if v != nil {
+		_u.SetStockMarker(*v)
+	}
+	return _u
 }
 
 // SetAvailable sets the "available" field.
@@ -244,7 +291,20 @@ func (_u *AvailabilityTargetUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *AvailabilityTargetUpdateOne) check() error {
+	if v, ok := _u.mutation.StockMarker(); ok {
+		if err := availabilitytarget.StockMarkerValidator(v); err != nil {
+			return &ValidationError{Name: "stock_marker", err: fmt.Errorf(`ent: validator failed for field "AvailabilityTarget.stock_marker": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (_u *AvailabilityTargetUpdateOne) sqlSave(ctx context.Context) (_node *AvailabilityTarget, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(availabilitytarget.Table, availabilitytarget.Columns, sqlgraph.NewFieldSpec(availabilitytarget.FieldID, field.TypeString))
 	id, ok := _u.mutation.ID()
 	if !ok {
@@ -269,6 +329,12 @@ func (_u *AvailabilityTargetUpdateOne) sqlSave(ctx context.Context) (_node *Avai
 				ps[i](selector)
 			}
 		}
+	}
+	if _u.mutation.CriteriaCleared() {
+		_spec.ClearField(availabilitytarget.FieldCriteria, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.StockMarker(); ok {
+		_spec.SetField(availabilitytarget.FieldStockMarker, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Available(); ok {
 		_spec.SetField(availabilitytarget.FieldAvailable, field.TypeBool, value)

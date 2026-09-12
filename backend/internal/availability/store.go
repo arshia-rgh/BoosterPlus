@@ -12,14 +12,28 @@ import (
 // Subscribe starts at the current opening cycle: an already-open offer is not a new alert.
 func (s *Store) Subscribe(ctx context.Context, p *identity.Principal, input SubscribeInput) (View, error) {
 	var result View
-	if !validKey(input.Slug, 80) || !validKey(input.Package, 48) || !validKey(input.Variant, 48) || !input.Accept || input.ConsentVersion != ConsentVersion {
+	if !validKey(input.Slug, 80) || (input.Account == nil && (!validKey(input.Package, 48) || !validKey(input.Variant, 48))) || !input.Accept || input.ConsentVersion != ConsentVersion {
 		return result, ErrInvalid
+	}
+	var criteria map[string]any
+	if input.Account != nil {
+		if input.Package != "" || input.Variant != "" {
+			return result, ErrInvalid
+		}
+		var key string
+		var err error
+		criteria, key, err = criteriaData(input.Account)
+		if err != nil {
+			return result, err
+		}
+		input.Package = "account_inventory"
+		input.Variant = key
 	}
 	e := s.auth.AuthorizedTransaction(ctx, p, "account", false, func(tx *ent.Tx, current *identity.Principal) error {
 		if current.User.EmailVerifiedAt == nil {
 			return identity.ErrForbidden
 		}
-		offer, e := readOffering(ctx, tx.Client(), input.Slug, input.Package, input.Variant)
+		offer, e := readTarget(ctx, tx.Client(), &ent.AvailabilityTarget{Slug: input.Slug, PackageKey: input.Package, VariantKey: input.Variant, Criteria: criteria})
 		if e != nil {
 			return e
 		}
@@ -28,10 +42,13 @@ func (s *Store) Subscribe(ctx context.Context, p *identity.Principal, input Subs
 		}
 		t, e := tx.AvailabilityTarget.Query().Where(target.GameIDEQ(offer.gameID), target.PackageKeyEQ(input.Package), target.VariantKeyEQ(input.Variant)).Only(ctx)
 		if ent.IsNotFound(e) {
-			t, e = tx.AvailabilityTarget.Create().SetGameID(offer.gameID).SetSlug(input.Slug).SetPackageKey(input.Package).SetVariantKey(input.Variant).SetAvailable(offer.available).SetCycle(0).SetCheckedAt(s.now()).SetCreatedAt(s.now()).Save(ctx)
+			t, e = tx.AvailabilityTarget.Create().SetGameID(offer.gameID).SetSlug(input.Slug).SetPackageKey(input.Package).SetVariantKey(input.Variant).SetCriteria(criteria).SetStockMarker(offer.marker).SetAvailable(offer.available).SetCycle(0).SetCheckedAt(s.now()).SetCreatedAt(s.now()).Save(ctx)
 		}
 		if e != nil {
 			return e
+		}
+		if (t.Criteria == nil) != (criteria == nil) {
+			return ErrConflict
 		}
 		// Observe before consent so a delayed change job cannot send pre-consent stock.
 		t, e = s.refresh(ctx, tx, t)
@@ -104,7 +121,7 @@ func (s *Store) Change(ctx context.Context, p *identity.Principal, id string, in
 			if readErr != nil {
 				return readErr
 			}
-			offer, readErr := readOffering(ctx, tx.Client(), t.Slug, t.PackageKey, t.VariantKey)
+			offer, readErr := readTarget(ctx, tx.Client(), t)
 			if readErr != nil {
 				return readErr
 			}

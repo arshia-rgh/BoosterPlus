@@ -75,6 +75,9 @@ func (s *Store) SaveFavorite(ctx context.Context, p *identity.Principal, input F
 	if len(input.Slug) > 80 || len(input.Service) > 48 || len(input.Package) > 48 {
 		return FavoriteView{}, ErrConflict
 	}
+	if input.Kind == "account" {
+		return s.saveAccountFavorite(ctx, p, input)
+	}
 	var result FavoriteView
 	err := s.auth.AuthorizedTransaction(ctx, p, "account", false, func(tx *ent.Tx, current *identity.Principal) error {
 		release, readErr := catalog.New(tx.Client(), s.auth).Published(ctx, input.Slug)
@@ -121,6 +124,14 @@ func (s *Store) Favorites(ctx context.Context, p *identity.Principal, after stri
 		rows = rows[:50]
 	}
 	for _, row := range rows {
+		if row.Kind == favorite.KindAccount {
+			available, readErr := accountFavoriteAvailable(ctx, s.client, row)
+			if readErr != nil {
+				return result, readErr
+			}
+			result.Favorites = append(result.Favorites, favoriteView(row, available))
+			continue
+		}
 		available := false
 		release, readErr := catalog.New(s.client, s.auth).Published(ctx, row.Slug)
 		if readErr != nil && !ent.IsNotFound(readErr) {

@@ -21,7 +21,7 @@ func (Favorite) Fields() []ent.Field {
 		field.String("slug").MaxLen(80).Immutable(),
 		field.String("service").MaxLen(48).Immutable().Default(""),
 		field.String("package_key").MaxLen(48).Immutable().Default(""),
-		field.Enum("kind").Values("game", "service", "package").Immutable(),
+		field.Enum("kind").Values("game", "service", "package", "account").Immutable(),
 		field.String("name").MaxLen(300).Immutable(),
 		field.Time("created_at").Default(time.Now).Immutable(),
 	}

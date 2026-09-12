@@ -12073,6 +12073,8 @@ type AvailabilityTargetMutation struct {
 	slug          *string
 	package_key   *string
 	variant_key   *string
+	criteria      *map[string]interface{}
+	stock_marker  *string
 	available     *bool
 	cycle         *int
 	addcycle      *int
@@ -12332,6 +12334,91 @@ func (m *AvailabilityTargetMutation) ResetVariantKey() {
 	m.variant_key = nil
 }
 
+// SetCriteria sets the "criteria" field.
+func (m *AvailabilityTargetMutation) SetCriteria(value map[string]interface{}) {
+	m.criteria = &value
+}
+
+// Criteria returns the value of the "criteria" field in the mutation.
+func (m *AvailabilityTargetMutation) Criteria() (r map[string]interface{}, exists bool) {
+	v := m.criteria
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCriteria returns the old "criteria" field's value of the AvailabilityTarget entity.
+// If the AvailabilityTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityTargetMutation) OldCriteria(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCriteria is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCriteria requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCriteria: %w", err)
+	}
+	return oldValue.Criteria, nil
+}
+
+// ClearCriteria clears the value of the "criteria" field.
+func (m *AvailabilityTargetMutation) ClearCriteria() {
+	m.criteria = nil
+	m.clearedFields[availabilitytarget.FieldCriteria] = struct{}{}
+}
+
+// CriteriaCleared returns if the "criteria" field was cleared in this mutation.
+func (m *AvailabilityTargetMutation) CriteriaCleared() bool {
+	_, ok := m.clearedFields[availabilitytarget.FieldCriteria]
+	return ok
+}
+
+// ResetCriteria resets all changes to the "criteria" field.
+func (m *AvailabilityTargetMutation) ResetCriteria() {
+	m.criteria = nil
+	delete(m.clearedFields, availabilitytarget.FieldCriteria)
+}
+
+// SetStockMarker sets the "stock_marker" field.
+func (m *AvailabilityTargetMutation) SetStockMarker(s string) {
+	m.stock_marker = &s
+}
+
+// StockMarker returns the value of the "stock_marker" field in the mutation.
+func (m *AvailabilityTargetMutation) StockMarker() (r string, exists bool) {
+	v := m.stock_marker
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStockMarker returns the old "stock_marker" field's value of the AvailabilityTarget entity.
+// If the AvailabilityTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AvailabilityTargetMutation) OldStockMarker(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStockMarker is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStockMarker requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStockMarker: %w", err)
+	}
+	return oldValue.StockMarker, nil
+}
+
+// ResetStockMarker resets all changes to the "stock_marker" field.
+func (m *AvailabilityTargetMutation) ResetStockMarker() {
+	m.stock_marker = nil
+}
+
 // SetAvailable sets the "available" field.
 func (m *AvailabilityTargetMutation) SetAvailable(b bool) {
 	m.available = &b
@@ -12530,7 +12617,7 @@ func (m *AvailabilityTargetMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AvailabilityTargetMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 10)
 	if m.game_id != nil {
 		fields = append(fields, availabilitytarget.FieldGameID)
 	}
@@ -12542,6 +12629,12 @@ func (m *AvailabilityTargetMutation) Fields() []string {
 	}
 	if m.variant_key != nil {
 		fields = append(fields, availabilitytarget.FieldVariantKey)
+	}
+	if m.criteria != nil {
+		fields = append(fields, availabilitytarget.FieldCriteria)
+	}
+	if m.stock_marker != nil {
+		fields = append(fields, availabilitytarget.FieldStockMarker)
 	}
 	if m.available != nil {
 		fields = append(fields, availabilitytarget.FieldAvailable)
@@ -12571,6 +12664,10 @@ func (m *AvailabilityTargetMutation) Field(name string) (ent.Value, bool) {
 		return m.PackageKey()
 	case availabilitytarget.FieldVariantKey:
 		return m.VariantKey()
+	case availabilitytarget.FieldCriteria:
+		return m.Criteria()
+	case availabilitytarget.FieldStockMarker:
+		return m.StockMarker()
 	case availabilitytarget.FieldAvailable:
 		return m.Available()
 	case availabilitytarget.FieldCycle:
@@ -12596,6 +12693,10 @@ func (m *AvailabilityTargetMutation) OldField(ctx context.Context, name string) 
 		return m.OldPackageKey(ctx)
 	case availabilitytarget.FieldVariantKey:
 		return m.OldVariantKey(ctx)
+	case availabilitytarget.FieldCriteria:
+		return m.OldCriteria(ctx)
+	case availabilitytarget.FieldStockMarker:
+		return m.OldStockMarker(ctx)
 	case availabilitytarget.FieldAvailable:
 		return m.OldAvailable(ctx)
 	case availabilitytarget.FieldCycle:
@@ -12640,6 +12741,20 @@ func (m *AvailabilityTargetMutation) SetField(name string, value ent.Value) erro
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetVariantKey(v)
+		return nil
+	case availabilitytarget.FieldCriteria:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCriteria(v)
+		return nil
+	case availabilitytarget.FieldStockMarker:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStockMarker(v)
 		return nil
 	case availabilitytarget.FieldAvailable:
 		v, ok := value.(bool)
@@ -12713,7 +12828,11 @@ func (m *AvailabilityTargetMutation) AddField(name string, value ent.Value) erro
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *AvailabilityTargetMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(availabilitytarget.FieldCriteria) {
+		fields = append(fields, availabilitytarget.FieldCriteria)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -12726,6 +12845,11 @@ func (m *AvailabilityTargetMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *AvailabilityTargetMutation) ClearField(name string) error {
+	switch name {
+	case availabilitytarget.FieldCriteria:
+		m.ClearCriteria()
+		return nil
+	}
 	return fmt.Errorf("unknown AvailabilityTarget nullable field %s", name)
 }
 
@@ -12744,6 +12868,12 @@ func (m *AvailabilityTargetMutation) ResetField(name string) error {
 		return nil
 	case availabilitytarget.FieldVariantKey:
 		m.ResetVariantKey()
+		return nil
+	case availabilitytarget.FieldCriteria:
+		m.ResetCriteria()
+		return nil
+	case availabilitytarget.FieldStockMarker:
+		m.ResetStockMarker()
 		return nil
 	case availabilitytarget.FieldAvailable:
 		m.ResetAvailable()

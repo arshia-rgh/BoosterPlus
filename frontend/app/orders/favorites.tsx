@@ -35,7 +35,7 @@ export function FavoriteButton({
     }
   }
   return (
-    <div>
+    <div className="catalog-actions">
       <Action disabled={busy || saved} onClick={() => void save()}>
         {saved ? "Saved to favorites" : "Save to favorites"}
       </Action>
@@ -45,6 +45,8 @@ export function FavoriteButton({
   );
 }
 function destination(item: Favorite) {
+  if (item.kind === "account")
+    return `/accounts/${encodeURIComponent(item.package)}`;
   const base = `/games/${encodeURIComponent(item.slug)}`;
   return item.kind === "service"
     ? `${base}/services/${encodeURIComponent(item.service)}`

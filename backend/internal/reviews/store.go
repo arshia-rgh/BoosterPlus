@@ -150,6 +150,19 @@ func (s *Store) Moderate(ctx context.Context, p *identity.Principal, id, action 
 		if row.UserID == current.User.ID {
 			return identity.ErrForbidden
 		}
+		purchase, readErr := tx.Order.Get(ctx, row.OrderID)
+		if readErr != nil {
+			return readErr
+		}
+		if purchase.ListingID != "" {
+			listing, listingErr := tx.AccountListing.Get(ctx, purchase.ListingID)
+			if listingErr != nil {
+				return listingErr
+			}
+			if listing.SellerID == current.User.ID {
+				return identity.ErrForbidden
+			}
+		}
 		if row.Version != input.Version || row.State == review.StateWithdrawn {
 			return ErrConflict
 		}

@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/availabilityevents"
+
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlisting"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountreservation"
@@ -144,6 +146,9 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 			return e
 		}
 		if _, e = tx.OrderEvent.Create().SetOrderID(purchase.ID).SetVersion(1).SetAction("account_reserved").SetActorID(current.User.ID).SetActorRole(current.User.Role).SetMessage("This account is reserved for your accepted agreement. Payment is required before protected delivery.").SetCreatedAt(s.instant()).Save(ctx); e != nil {
+			return e
+		}
+		if e = availabilityevents.Changed(ctx, tx, row.GameID); e != nil {
 			return e
 		}
 		if e = s.audit(ctx, tx, current, "account_reserved", purchase.ID); e != nil {

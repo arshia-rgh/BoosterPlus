@@ -250,6 +250,16 @@ func TestSchedulingCustomerCapacityAdjacencyAndAttendance(t *testing.T) {
 	if _, err = f.work.ChangeBooking(ctx, f.buyer, first.OrderID, confirmed.ID, "account", "attended", action); !errors.Is(err, identity.ErrForbidden) {
 		t.Fatal("customer recorded attendance", err)
 	}
+	if _, err = f.work.ChangeBooking(ctx, f.booster, first.OrderID, confirmed.ID, "booster", "no_show", action); !errors.Is(err, fulfillment.ErrConflict) {
+		t.Fatal("no-show before session ended", err)
+	}
+	// Model continued activity while the session runs; keep the absolute sign-in expiry intact.
+	for _, actor := range []*identity.Principal{f.buyer, f.booster} {
+		if _, err = f.auth.client.AuthSession.UpdateOneID(actor.Session.ID).SetLastSeenAt(confirmed.EndsAt).Save(ctx); err != nil {
+			t.Fatal(err)
+		}
+	}
+	f.auth.clock.Store(confirmed.EndsAt.Add(time.Minute).Unix())
 	recorded, err := f.work.ChangeBooking(ctx, f.booster, first.OrderID, confirmed.ID, "booster", "no_show", action)
 	if err != nil || recorded.State != "no_show" {
 		t.Fatal("attendance", err)

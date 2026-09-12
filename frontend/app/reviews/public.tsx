@@ -74,6 +74,18 @@ export default function PublicReviews() {
                 feedback remains visible.
               </p>
             )}
+            {item.purchase_status === "refund_recorded" && (
+              <p>
+                A verified refund was recorded for this purchase. The customer's
+                feedback remains visible.
+              </p>
+            )}
+            {item.purchase_status === "dispute_in_progress" && (
+              <p>
+                A service case is in progress. The customer's feedback remains
+                visible.
+              </p>
+            )}
             <p className="preserve-lines">{item.body}</p>
             <dl>
               {item.feedback.map((field, index) => (

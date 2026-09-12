@@ -197,6 +197,9 @@ func (s *Store) ChangeBooking(ctx context.Context, p *identity.Principal, id, bo
 			}
 			next = booking.StateCompleted
 			if action == "no_show" {
+				if s.now().Before(value.EndsAt) {
+					return ErrConflict
+				}
 				next = booking.StateNoShow
 			}
 		default:

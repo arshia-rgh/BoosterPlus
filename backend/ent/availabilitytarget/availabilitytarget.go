@@ -21,6 +21,10 @@ const (
 	FieldPackageKey = "package_key"
 	// FieldVariantKey holds the string denoting the variant_key field in the database.
 	FieldVariantKey = "variant_key"
+	// FieldCriteria holds the string denoting the criteria field in the database.
+	FieldCriteria = "criteria"
+	// FieldStockMarker holds the string denoting the stock_marker field in the database.
+	FieldStockMarker = "stock_marker"
 	// FieldAvailable holds the string denoting the available field in the database.
 	FieldAvailable = "available"
 	// FieldCycle holds the string denoting the cycle field in the database.
@@ -40,6 +44,8 @@ var Columns = []string{
 	FieldSlug,
 	FieldPackageKey,
 	FieldVariantKey,
+	FieldCriteria,
+	FieldStockMarker,
 	FieldAvailable,
 	FieldCycle,
 	FieldCheckedAt,
@@ -65,6 +71,10 @@ var (
 	PackageKeyValidator func(string) error
 	// VariantKeyValidator is a validator for the "variant_key" field. It is called by the builders before save.
 	VariantKeyValidator func(string) error
+	// DefaultStockMarker holds the default value on creation for the "stock_marker" field.
+	DefaultStockMarker string
+	// StockMarkerValidator is a validator for the "stock_marker" field. It is called by the builders before save.
+	StockMarkerValidator func(string) error
 	// DefaultCheckedAt holds the default value on creation for the "checked_at" field.
 	DefaultCheckedAt func() time.Time
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
@@ -101,6 +111,11 @@ func ByPackageKey(opts ...sql.OrderTermOption) OrderOption {
 // ByVariantKey orders the results by the variant_key field.
 func ByVariantKey(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldVariantKey, opts...).ToFunc()
+}
+
+// ByStockMarker orders the results by the stock_marker field.
+func ByStockMarker(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStockMarker, opts...).ToFunc()
 }
 
 // ByAvailable orders the results by the available field.

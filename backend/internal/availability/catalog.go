@@ -12,6 +12,7 @@ import (
 )
 
 type offering struct {
+	marker    string
 	gameID    string
 	label     string
 	available bool
@@ -76,7 +77,7 @@ func (s *Store) view(ctx context.Context, c *ent.Client, row *ent.AvailabilitySu
 	if e != nil {
 		return View{}, e
 	}
-	offer, e := readOffering(ctx, c, target.Slug, target.PackageKey, target.VariantKey)
+	offer, e := readTarget(ctx, c, target)
 	if e != nil {
 		return View{}, e
 	}
@@ -90,5 +91,17 @@ func (s *Store) view(ctx context.Context, c *ent.Client, row *ent.AvailabilitySu
 			state = "suppressed"
 		}
 	}
-	return View{row.ID, row.Version, state, target.Slug, target.PackageKey, target.VariantKey, offer.label, offer.available, row.UpdatedAt}, nil
+	v := View{ID: row.ID, Version: row.Version, State: state, Slug: target.Slug, Package: target.PackageKey, Variant: target.VariantKey, Label: offer.label, Available: offer.available, UpdatedAt: row.UpdatedAt}
+	if target.Criteria != nil {
+		raw, encodeErr := json.Marshal(target.Criteria)
+		if encodeErr != nil {
+			return View{}, encodeErr
+		}
+		var criteria AccountCriteria
+		if decodeErr := json.Unmarshal(raw, &criteria); decodeErr != nil {
+			return View{}, decodeErr
+		}
+		v.Account = &criteria
+	}
+	return v, nil
 }

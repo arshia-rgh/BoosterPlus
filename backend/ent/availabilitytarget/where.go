@@ -84,6 +84,11 @@ func VariantKey(v string) predicate.AvailabilityTarget {
 	return predicate.AvailabilityTarget(sql.FieldEQ(FieldVariantKey, v))
 }
 
+// StockMarker applies equality check predicate on the "stock_marker" field. It's identical to StockMarkerEQ.
+func StockMarker(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldEQ(FieldStockMarker, v))
+}
+
 // Available applies equality check predicate on the "available" field. It's identical to AvailableEQ.
 func Available(v bool) predicate.AvailabilityTarget {
 	return predicate.AvailabilityTarget(sql.FieldEQ(FieldAvailable, v))
@@ -362,6 +367,81 @@ func VariantKeyEqualFold(v string) predicate.AvailabilityTarget {
 // VariantKeyContainsFold applies the ContainsFold predicate on the "variant_key" field.
 func VariantKeyContainsFold(v string) predicate.AvailabilityTarget {
 	return predicate.AvailabilityTarget(sql.FieldContainsFold(FieldVariantKey, v))
+}
+
+// CriteriaIsNil applies the IsNil predicate on the "criteria" field.
+func CriteriaIsNil() predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldIsNull(FieldCriteria))
+}
+
+// CriteriaNotNil applies the NotNil predicate on the "criteria" field.
+func CriteriaNotNil() predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldNotNull(FieldCriteria))
+}
+
+// StockMarkerEQ applies the EQ predicate on the "stock_marker" field.
+func StockMarkerEQ(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldEQ(FieldStockMarker, v))
+}
+
+// StockMarkerNEQ applies the NEQ predicate on the "stock_marker" field.
+func StockMarkerNEQ(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldNEQ(FieldStockMarker, v))
+}
+
+// StockMarkerIn applies the In predicate on the "stock_marker" field.
+func StockMarkerIn(vs ...string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldIn(FieldStockMarker, vs...))
+}
+
+// StockMarkerNotIn applies the NotIn predicate on the "stock_marker" field.
+func StockMarkerNotIn(vs ...string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldNotIn(FieldStockMarker, vs...))
+}
+
+// StockMarkerGT applies the GT predicate on the "stock_marker" field.
+func StockMarkerGT(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldGT(FieldStockMarker, v))
+}
+
+// StockMarkerGTE applies the GTE predicate on the "stock_marker" field.
+func StockMarkerGTE(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldGTE(FieldStockMarker, v))
+}
+
+// StockMarkerLT applies the LT predicate on the "stock_marker" field.
+func StockMarkerLT(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldLT(FieldStockMarker, v))
+}
+
+// StockMarkerLTE applies the LTE predicate on the "stock_marker" field.
+func StockMarkerLTE(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldLTE(FieldStockMarker, v))
+}
+
+// StockMarkerContains applies the Contains predicate on the "stock_marker" field.
+func StockMarkerContains(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldContains(FieldStockMarker, v))
+}
+
+// StockMarkerHasPrefix applies the HasPrefix predicate on the "stock_marker" field.
+func StockMarkerHasPrefix(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldHasPrefix(FieldStockMarker, v))
+}
+
+// StockMarkerHasSuffix applies the HasSuffix predicate on the "stock_marker" field.
+func StockMarkerHasSuffix(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldHasSuffix(FieldStockMarker, v))
+}
+
+// StockMarkerEqualFold applies the EqualFold predicate on the "stock_marker" field.
+func StockMarkerEqualFold(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldEqualFold(FieldStockMarker, v))
+}
+
+// StockMarkerContainsFold applies the ContainsFold predicate on the "stock_marker" field.
+func StockMarkerContainsFold(v string) predicate.AvailabilityTarget {
+	return predicate.AvailabilityTarget(sql.FieldContainsFold(FieldStockMarker, v))
 }
 
 // AvailableEQ applies the EQ predicate on the "available" field.

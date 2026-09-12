@@ -20,6 +20,8 @@ func (AvailabilityTarget) Fields() []ent.Field {
 		field.String("slug").MaxLen(80).Immutable(),
 		field.String("package_key").MaxLen(48).Immutable(),
 		field.String("variant_key").MaxLen(48).Immutable(),
+		field.JSON("criteria", map[string]any{}).Optional().Immutable(),
+		field.String("stock_marker").MaxLen(100).Default(""),
 		field.Bool("available"),
 		field.Int("cycle"),
 		field.Time("checked_at").Default(time.Now),

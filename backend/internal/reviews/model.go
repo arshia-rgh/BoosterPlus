@@ -11,7 +11,6 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
-	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
@@ -66,12 +65,6 @@ func capability(admin bool) string {
 }
 func ownedOrder(ctx context.Context, c *ent.Client, p *identity.Principal, id string) (*ent.Order, error) {
 	return c.Order.Query().Where(order.IDEQ(id), order.UserIDEQ(p.User.ID)).Only(ctx)
-}
-func eligible(ctx context.Context, c *ent.Client, row *ent.Order) (bool, error) {
-	if (row.Kind != order.KindCustom && row.Kind != order.KindPackage) || row.State != order.StateCompleted || row.CurrentContract == "" {
-		return false, nil
-	}
-	return c.OrderContract.Query().Where(ordercontract.IDEQ(row.CurrentContract), ordercontract.OrderIDEQ(row.ID), ordercontract.ActiveOrderIDEQ(row.ID), ordercontract.UserIDEQ(row.UserID), ordercontract.PaymentStateEQ(ordercontract.PaymentStateSettled)).Exist(ctx)
 }
 
 // Policy is a copy of an actually published policy, with the reference data its fields need.

@@ -1,6 +1,15 @@
 import { z } from "zod";
 export const consentVersion = "availability-v1";
 export const subscriptionSchema = z.object({
+  account: z
+    .object({
+      listing_id: z.string(),
+      region: z.string(),
+      rank: z.string(),
+      currency: z.string(),
+      max_amount_minor: z.number().int(),
+    })
+    .optional(),
   id: z.string(),
   version: z.number().int(),
   state: z.enum(["active", "unsubscribed", "suppressed"]),
@@ -29,7 +38,11 @@ export function parseLink(fragment: string) {
   return parsed.success ? parsed.data : null;
 }
 export function destination(
-  item: Pick<Subscription, "slug" | "package" | "variant">,
+  item: Pick<Subscription, "slug" | "package" | "variant" | "account">,
 ) {
+  if (item.account)
+    return item.account.listing_id
+      ? `/accounts/${encodeURIComponent(item.account.listing_id)}`
+      : `/accounts?slug=${encodeURIComponent(item.slug)}&region=${encodeURIComponent(item.account.region)}&rank=${encodeURIComponent(item.account.rank)}`;
   return `/games/${encodeURIComponent(item.slug)}/packages/${encodeURIComponent(item.package)}?variant=${encodeURIComponent(item.variant)}`;
 }

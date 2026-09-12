@@ -47,9 +47,17 @@ func reviewDB(t *testing.T) *reviewFixture {
 func (f *reviewFixture) completed(t *testing.T) orders.Detail {
 	t.Helper()
 	v := f.create(t, "package")
-	// This isolated review fixture stands in for verified provider settlement and P08 completion.
+	// This isolated review fixture supplies explicit financial evidence and P08 completion.
 	// No production endpoint, runtime flag, or administrator operation can fabricate this evidence.
 	if _, err := f.auth.client.OrderContract.UpdateOneID(v.Contract.ID).SetPaymentState(ordercontract.PaymentStateSettled).SetCapacityHeld(false).Save(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	now := time.Unix(f.auth.clock.Load(), 0)
+	receipt, err := f.auth.client.PaymentReceipt.Create().SetRecordID(uuid.NewString()).SetAttemptID(uuid.NewString()).SetOrderID(v.Order.ID).SetUserID(f.buyer.User.ID).SetCurrency("usdt").SetNetwork("tron").SetAmount("10").SetState("confirmed").SetObservationID(uuid.NewString()).SetCreatedAt(now).SetUpdatedAt(now).Save(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = f.auth.client.PaymentAllocation.Create().SetReceiptID(receipt.ID).SetContractID(v.Contract.ID).SetOrderID(v.Order.ID).SetCurrency("USD").SetAmountMinor("1000").SetCryptoAmount("10").SetCreatedAt(now).Save(t.Context()); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := f.auth.client.Order.UpdateOneID(v.Order.ID).SetState(order.StateCompleted).Save(t.Context()); err != nil {

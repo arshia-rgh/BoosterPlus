@@ -44,6 +44,26 @@ func (_c *AvailabilityTargetCreate) SetVariantKey(v string) *AvailabilityTargetC
 	return _c
 }
 
+// SetCriteria sets the "criteria" field.
+func (_c *AvailabilityTargetCreate) SetCriteria(v map[string]interface{}) *AvailabilityTargetCreate {
+	_c.mutation.SetCriteria(v)
+	return _c
+}
+
+// SetStockMarker sets the "stock_marker" field.
+func (_c *AvailabilityTargetCreate) SetStockMarker(v string) *AvailabilityTargetCreate {
+	_c.mutation.SetStockMarker(v)
+	return _c
+}
+
+// SetNillableStockMarker sets the "stock_marker" field if the given value is not nil.
+func (_c *AvailabilityTargetCreate) SetNillableStockMarker(v *string) *AvailabilityTargetCreate {
+	if v != nil {
+		_c.SetStockMarker(*v)
+	}
+	return _c
+}
+
 // SetAvailable sets the "available" field.
 func (_c *AvailabilityTargetCreate) SetAvailable(v bool) *AvailabilityTargetCreate {
 	_c.mutation.SetAvailable(v)
@@ -133,6 +153,10 @@ func (_c *AvailabilityTargetCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *AvailabilityTargetCreate) defaults() {
+	if _, ok := _c.mutation.StockMarker(); !ok {
+		v := availabilitytarget.DefaultStockMarker
+		_c.mutation.SetStockMarker(v)
+	}
 	if _, ok := _c.mutation.CheckedAt(); !ok {
 		v := availabilitytarget.DefaultCheckedAt()
 		_c.mutation.SetCheckedAt(v)
@@ -179,6 +203,14 @@ func (_c *AvailabilityTargetCreate) check() error {
 	if v, ok := _c.mutation.VariantKey(); ok {
 		if err := availabilitytarget.VariantKeyValidator(v); err != nil {
 			return &ValidationError{Name: "variant_key", err: fmt.Errorf(`ent: validator failed for field "AvailabilityTarget.variant_key": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.StockMarker(); !ok {
+		return &ValidationError{Name: "stock_marker", err: errors.New(`ent: missing required field "AvailabilityTarget.stock_marker"`)}
+	}
+	if v, ok := _c.mutation.StockMarker(); ok {
+		if err := availabilitytarget.StockMarkerValidator(v); err != nil {
+			return &ValidationError{Name: "stock_marker", err: fmt.Errorf(`ent: validator failed for field "AvailabilityTarget.stock_marker": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Available(); !ok {
@@ -248,6 +280,14 @@ func (_c *AvailabilityTargetCreate) createSpec() (*AvailabilityTarget, *sqlgraph
 	if value, ok := _c.mutation.VariantKey(); ok {
 		_spec.SetField(availabilitytarget.FieldVariantKey, field.TypeString, value)
 		_node.VariantKey = value
+	}
+	if value, ok := _c.mutation.Criteria(); ok {
+		_spec.SetField(availabilitytarget.FieldCriteria, field.TypeJSON, value)
+		_node.Criteria = value
+	}
+	if value, ok := _c.mutation.StockMarker(); ok {
+		_spec.SetField(availabilitytarget.FieldStockMarker, field.TypeString, value)
+		_node.StockMarker = value
 	}
 	if value, ok := _c.mutation.Available(); ok {
 		_spec.SetField(availabilitytarget.FieldAvailable, field.TypeBool, value)

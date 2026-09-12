@@ -55,6 +55,12 @@ export async function resaleJourney(
   const config = emptyConfiguration(`Resale ${info.project.name}`),
     slug = `resale-${info.project.name}-${randomUUID()}`;
   config.reviewed = true;
+  config.review_policy = {
+    content:
+      "Synthetic review policy permits critical feedback and excludes private data, spam and abuse.",
+    fields: [],
+    rules: [],
+  };
   config.intake = {
     name: "Synthetic account review",
     description: "Synthetic private ownership review",
@@ -239,6 +245,25 @@ export async function resaleJourney(
     await accessible(page);
     await buyer.goto("/accounts");
     await buyer.getByRole("link", { name: title, exact: true }).click();
+    await buyer
+      .getByRole("button", { name: "Save to favorites", exact: true })
+      .click();
+    await expect(
+      buyer.getByText("Saved to favorites", { exact: true }),
+    ).toBeVisible();
+    await buyer
+      .getByLabel(
+        "Email me about matching account availability. I can unsubscribe at any time.",
+      )
+      .check();
+    await buyer
+      .getByRole("button", { name: "Save account alert", exact: true })
+      .click();
+    await expect(buyer.getByText(/Account alert saved/)).toBeVisible();
+    await buyer.screenshot({
+      path: info.outputPath("account-additions.png"),
+      fullPage: true,
+    });
     await accessible(buyer);
     await expect(
       buyer.getByText("synthetic seller-origin ownership bundle"),
@@ -348,6 +373,21 @@ export async function resaleJourney(
       .click();
     await expect(
       buyer.getByText("Handoff: acknowledged", { exact: true }),
+    ).toBeVisible();
+    await buyer.reload();
+    await buyer.getByLabel("Purchase rating").selectOption("1");
+    await buyer
+      .getByLabel("Purchase feedback")
+      .fill("Synthetic account delivery could be clearer.");
+    await buyer.getByLabel("I accept this review publication policy").check();
+    await buyer
+      .getByRole("button", {
+        name: "Submit review for moderation",
+        exact: true,
+      })
+      .click();
+    await expect(
+      buyer.getByText("Pending moderation · 1/5", { exact: true }),
     ).toBeVisible();
     await accessible(buyer);
     await seller.goto(`/accounts/${item.id}`);
