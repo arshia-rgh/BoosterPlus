@@ -104,6 +104,8 @@ type Tx struct {
 	PaymentSettings *PaymentSettingsClient
 	// PaymentSignal is the client for interacting with the PaymentSignal builders.
 	PaymentSignal *PaymentSignalClient
+	// PrivacyRequest is the client for interacting with the PrivacyRequest builders.
+	PrivacyRequest *PrivacyRequestClient
 	// Review is the client for interacting with the Review builders.
 	Review *ReviewClient
 	// ReviewRevision is the client for interacting with the ReviewRevision builders.
@@ -116,6 +118,10 @@ type Tx struct {
 	SellerOfferEvent *SellerOfferEventClient
 	// ServiceCase is the client for interacting with the ServiceCase builders.
 	ServiceCase *ServiceCaseClient
+	// SiteRelease is the client for interacting with the SiteRelease builders.
+	SiteRelease *SiteReleaseClient
+	// SiteSetting is the client for interacting with the SiteSetting builders.
+	SiteSetting *SiteSettingClient
 	// StaffProfile is the client for interacting with the StaffProfile builders.
 	StaffProfile *StaffProfileClient
 	// SubmissionEvent is the client for interacting with the SubmissionEvent builders.
@@ -306,12 +312,15 @@ func (tx *Tx) init() {
 	tx.PaymentRecord = NewPaymentRecordClient(tx.config)
 	tx.PaymentSettings = NewPaymentSettingsClient(tx.config)
 	tx.PaymentSignal = NewPaymentSignalClient(tx.config)
+	tx.PrivacyRequest = NewPrivacyRequestClient(tx.config)
 	tx.Review = NewReviewClient(tx.config)
 	tx.ReviewRevision = NewReviewRevisionClient(tx.config)
 	tx.SecretBundle = NewSecretBundleClient(tx.config)
 	tx.SellerOffer = NewSellerOfferClient(tx.config)
 	tx.SellerOfferEvent = NewSellerOfferEventClient(tx.config)
 	tx.ServiceCase = NewServiceCaseClient(tx.config)
+	tx.SiteRelease = NewSiteReleaseClient(tx.config)
+	tx.SiteSetting = NewSiteSettingClient(tx.config)
 	tx.StaffProfile = NewStaffProfileClient(tx.config)
 	tx.SubmissionEvent = NewSubmissionEventClient(tx.config)
 	tx.TransferAttempt = NewTransferAttemptClient(tx.config)

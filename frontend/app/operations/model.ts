@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../validation";
 export const jobStateSchema = z.enum([
   "pending",
   "running",

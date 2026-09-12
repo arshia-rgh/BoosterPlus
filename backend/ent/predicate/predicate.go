@@ -141,6 +141,9 @@ type PaymentSettings func(*sql.Selector)
 // PaymentSignal is the predicate function for paymentsignal builders.
 type PaymentSignal func(*sql.Selector)
 
+// PrivacyRequest is the predicate function for privacyrequest builders.
+type PrivacyRequest func(*sql.Selector)
+
 // Review is the predicate function for review builders.
 type Review func(*sql.Selector)
 
@@ -158,6 +161,12 @@ type SellerOfferEvent func(*sql.Selector)
 
 // ServiceCase is the predicate function for servicecase builders.
 type ServiceCase func(*sql.Selector)
+
+// SiteRelease is the predicate function for siterelease builders.
+type SiteRelease func(*sql.Selector)
+
+// SiteSetting is the predicate function for sitesetting builders.
+type SiteSetting func(*sql.Selector)
 
 // StaffProfile is the predicate function for staffprofile builders.
 type StaffProfile func(*sql.Selector)

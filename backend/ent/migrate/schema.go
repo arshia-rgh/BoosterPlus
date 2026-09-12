@@ -994,6 +994,11 @@ var (
 		PrimaryKey: []*schema.Column{MoneyTransfersColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "transfer_report_created",
+				Unique:  false,
+				Columns: []*schema.Column{MoneyTransfersColumns[2], MoneyTransfersColumns[20], MoneyTransfersColumns[0]},
+			},
+			{
 				Name:    "seller_offer_payout",
 				Unique:  true,
 				Columns: []*schema.Column{MoneyTransfersColumns[3]},
@@ -1316,6 +1321,11 @@ var (
 		PrimaryKey: []*schema.Column{PaymentReceiptsColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "receipt_report_created",
+				Unique:  false,
+				Columns: []*schema.Column{PaymentReceiptsColumns[10], PaymentReceiptsColumns[0]},
+			},
+			{
 				Name:    "payment_receipt_reference",
 				Unique:  true,
 				Columns: []*schema.Column{PaymentReceiptsColumns[1]},
@@ -1394,6 +1404,46 @@ var (
 				Name:    "payment_signal_dedup",
 				Unique:  true,
 				Columns: []*schema.Column{PaymentSignalsColumns[1], PaymentSignalsColumns[3]},
+			},
+		},
+	}
+	// PrivacyRequestsColumns holds the columns for the "privacy_requests" table.
+	PrivacyRequestsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "active_user_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "requested"},
+		{Name: "policy_id", Type: field.TypeString, Size: 36},
+		{Name: "reviewed_policy_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "manual_hold", Type: field.TypeBool, Default: false},
+		{Name: "hold_reason", Type: field.TypeString, Size: 2000, Default: ""},
+		{Name: "reviewed_by", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "eligible_at", Type: field.TypeTime, Nullable: true},
+		{Name: "completed_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// PrivacyRequestsTable holds the schema information for the "privacy_requests" table.
+	PrivacyRequestsTable = &schema.Table{
+		Name:       "privacy_requests",
+		Columns:    PrivacyRequestsColumns,
+		PrimaryKey: []*schema.Column{PrivacyRequestsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "privacy_active_user",
+				Unique:  true,
+				Columns: []*schema.Column{PrivacyRequestsColumns[2]},
+			},
+			{
+				Name:    "privacy_owner",
+				Unique:  false,
+				Columns: []*schema.Column{PrivacyRequestsColumns[1], PrivacyRequestsColumns[0]},
+			},
+			{
+				Name:    "privacy_queue",
+				Unique:  false,
+				Columns: []*schema.Column{PrivacyRequestsColumns[4], PrivacyRequestsColumns[12], PrivacyRequestsColumns[0]},
 			},
 		},
 	}
@@ -1633,6 +1683,48 @@ var (
 			},
 		},
 	}
+	// SiteReleasesColumns holds the columns for the "site_releases" table.
+	SiteReleasesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "kind", Type: field.TypeString, Size: 32},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "label", Type: field.TypeString, Size: 64},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "created_by", Type: field.TypeString, Size: 36},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// SiteReleasesTable holds the schema information for the "site_releases" table.
+	SiteReleasesTable = &schema.Table{
+		Name:       "site_releases",
+		Columns:    SiteReleasesColumns,
+		PrimaryKey: []*schema.Column{SiteReleasesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "site_release_version",
+				Unique:  true,
+				Columns: []*schema.Column{SiteReleasesColumns[1], SiteReleasesColumns[2]},
+			},
+			{
+				Name:    "site_release_label",
+				Unique:  true,
+				Columns: []*schema.Column{SiteReleasesColumns[1], SiteReleasesColumns[3]},
+			},
+		},
+	}
+	// SiteSettingsColumns holds the columns for the "site_settings" table.
+	SiteSettingsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 32},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "current_release", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "draft", Type: field.TypeJSON},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// SiteSettingsTable holds the schema information for the "site_settings" table.
+	SiteSettingsTable = &schema.Table{
+		Name:       "site_settings",
+		Columns:    SiteSettingsColumns,
+		PrimaryKey: []*schema.Column{SiteSettingsColumns[0]},
+	}
 	// StaffProfilesColumns holds the columns for the "staff_profiles" table.
 	StaffProfilesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -1795,6 +1887,7 @@ var (
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "email", Type: field.TypeString, Unique: true, Size: 254},
 		{Name: "display_name", Type: field.TypeString, Size: 100, Default: ""},
 		{Name: "email_verified_at", Type: field.TypeTime, Nullable: true},
@@ -1822,7 +1915,7 @@ var (
 			{
 				Name:    "users_report_created",
 				Unique:  false,
-				Columns: []*schema.Column{UsersColumns[17], UsersColumns[0]},
+				Columns: []*schema.Column{UsersColumns[18], UsersColumns[0]},
 			},
 		},
 	}
@@ -1873,12 +1966,15 @@ var (
 		PaymentRecordsTable,
 		PaymentSettingsTable,
 		PaymentSignalsTable,
+		PrivacyRequestsTable,
 		ReviewsTable,
 		ReviewRevisionsTable,
 		SecretBundlesTable,
 		SellerOffersTable,
 		SellerOfferEventsTable,
 		ServiceCasesTable,
+		SiteReleasesTable,
+		SiteSettingsTable,
 		StaffProfilesTable,
 		SubmissionEventsTable,
 		TransferAttemptsTable,

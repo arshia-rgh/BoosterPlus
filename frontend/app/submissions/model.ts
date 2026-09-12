@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../validation";
 import { answersSchema, releaseSchema } from "../catalog/model";
 
 export const stateSchema = z.enum([

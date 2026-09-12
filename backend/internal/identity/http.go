@@ -18,6 +18,8 @@ import (
 
 // UserView deliberately excludes every stored credential, digest and provider subject.
 type UserView struct {
+	EmailVerified bool   `json:"email_verified"`
+	Deleted       bool   `json:"deleted"`
 	ID            string `json:"id"`
 	Email         string `json:"email"`
 	DisplayName   string `json:"display_name"`
@@ -29,7 +31,7 @@ type UserView struct {
 }
 
 func userView(account *ent.User) UserView {
-	return UserView{ID: account.ID, Email: account.Email, DisplayName: account.DisplayName, Role: account.Role, StaffAlias: account.StaffAlias, Suspended: account.Suspended, MFAEnabled: account.MfaEnabled, NotifyUpdates: account.NotifyUpdates}
+	return UserView{EmailVerified: account.EmailVerifiedAt != nil, Deleted: account.DeletedAt != nil, ID: account.ID, Email: account.Email, DisplayName: account.DisplayName, Role: account.Role, StaffAlias: account.StaffAlias, Suspended: account.Suspended, MFAEnabled: account.MfaEnabled, NotifyUpdates: account.NotifyUpdates}
 }
 
 type requestState struct {
@@ -41,30 +43,32 @@ type endpoint func(http.ResponseWriter, *http.Request, requestState) error
 // Register installs identity routes under the existing API security/logging middleware.
 func (s *Service) Register(mux *http.ServeMux) {
 	routes := map[string]endpoint{
-		"GET /api/v1/auth/session":                   s.bootstrap,
-		"POST /api/v1/auth/email/request":            s.requestEmail,
-		"POST /api/v1/auth/email/verify":             s.verifyEmail,
-		"POST /api/v1/auth/google/start":             s.startGoogle,
-		"GET /api/v1/auth/google/callback":           s.finishGoogle,
-		"POST /api/v1/auth/logout":                   s.logout,
-		"POST /api/v1/auth/sessions/revoke":          s.revokeSessions,
-		"POST /api/v1/auth/mfa/enroll":               s.enrollMFA,
-		"POST /api/v1/auth/mfa/verify":               s.verifyMFA,
-		"POST /api/v1/auth/mfa/disable":              s.disableMFA,
-		"POST /api/v1/auth/mfa/recovery-codes":       s.regenerateCodes,
-		"GET /api/v1/me":                             s.me,
-		"POST /api/v1/me/profile":                    s.profile,
-		"GET /api/v1/me/sessions":                    s.sessions,
-		"POST /api/v1/me/google/unlink":              s.unlinkGoogle,
-		"GET /api/v1/portal/booster":                 s.portal("booster"),
-		"GET /api/v1/portal/admin":                   s.portal("admin"),
-		"GET /api/v1/admin/users":                    s.users,
-		"GET /api/v1/admin/users/{id}":               s.getUser,
-		"POST /api/v1/admin/users/{id}/role":         s.role,
-		"POST /api/v1/admin/users/{id}/suspension":   s.suspension,
-		"GET /api/v1/admin/audit":                    s.audits,
-		"GET /api/v1/admin/recoveries":               s.recoveries,
-		"POST /api/v1/admin/recoveries/{id}/resolve": s.resolveRecovery,
+		"GET /api/v1/admin/users/{id}/sessions":         s.staffUserSessions,
+		"POST /api/v1/admin/users/{id}/sessions/revoke": s.staffRevokeSessions,
+		"GET /api/v1/auth/session":                      s.bootstrap,
+		"POST /api/v1/auth/email/request":               s.requestEmail,
+		"POST /api/v1/auth/email/verify":                s.verifyEmail,
+		"POST /api/v1/auth/google/start":                s.startGoogle,
+		"GET /api/v1/auth/google/callback":              s.finishGoogle,
+		"POST /api/v1/auth/logout":                      s.logout,
+		"POST /api/v1/auth/sessions/revoke":             s.revokeSessions,
+		"POST /api/v1/auth/mfa/enroll":                  s.enrollMFA,
+		"POST /api/v1/auth/mfa/verify":                  s.verifyMFA,
+		"POST /api/v1/auth/mfa/disable":                 s.disableMFA,
+		"POST /api/v1/auth/mfa/recovery-codes":          s.regenerateCodes,
+		"GET /api/v1/me":                                s.me,
+		"POST /api/v1/me/profile":                       s.profile,
+		"GET /api/v1/me/sessions":                       s.sessions,
+		"POST /api/v1/me/google/unlink":                 s.unlinkGoogle,
+		"GET /api/v1/portal/booster":                    s.portal("booster"),
+		"GET /api/v1/portal/admin":                      s.portal("admin"),
+		"GET /api/v1/admin/users":                       s.users,
+		"GET /api/v1/admin/users/{id}":                  s.getUser,
+		"POST /api/v1/admin/users/{id}/role":            s.role,
+		"POST /api/v1/admin/users/{id}/suspension":      s.suspension,
+		"GET /api/v1/admin/audit":                       s.audits,
+		"GET /api/v1/admin/recoveries":                  s.recoveries,
+		"POST /api/v1/admin/recoveries/{id}/resolve":    s.resolveRecovery,
 	}
 	for pattern, handler := range routes {
 		mux.HandleFunc(pattern, s.handle(handler))
@@ -225,12 +229,17 @@ func (s *Service) bootstrap(w http.ResponseWriter, r *http.Request, state reques
 			}
 		}
 	}
-	return respond(w, http.StatusOK, map[string]any{"user": account, "csrf_token": s.csrf(state.browser, state.token), "google_enabled": s.google != nil, "google_linked": linked, "mfa_required": needsMFA, "capabilities": capabilities, "terms_version": s.config.TermsVersion, "terms_url": s.config.TermsURL})
+	termsVersion, termsErr := s.TermsVersion(r.Context(), s.client)
+	if termsErr != nil {
+		return termsErr
+	}
+	return respond(w, http.StatusOK, map[string]any{"user": account, "csrf_token": s.csrf(state.browser, state.token), "google_enabled": s.google != nil, "google_linked": linked, "mfa_required": needsMFA, "capabilities": capabilities, "terms_version": termsVersion, "terms_url": s.config.TermsURL})
 }
 func (s *Service) requestEmail(w http.ResponseWriter, r *http.Request, state requestState) error {
 	var input struct {
 		Email        string `json:"email"`
 		AccountEmail string `json:"account_email"`
+		TermsVersion string `json:"terms_version"`
 		Purpose      string `json:"purpose"`
 		AcceptTerms  bool   `json:"accept_terms"`
 	}
@@ -240,7 +249,7 @@ func (s *Service) requestEmail(w http.ResponseWriter, r *http.Request, state req
 	if input.Purpose == "reauth" && state.principal != nil {
 		input.Email = state.principal.User.Email
 	}
-	id, err := s.RequestEmail(r.Context(), EmailRequest{Email: input.Email, AccountEmail: input.AccountEmail, Purpose: input.Purpose, Browser: state.browser, IP: state.ip, AcceptTerms: input.AcceptTerms, Principal: state.principal})
+	id, err := s.RequestEmail(r.Context(), EmailRequest{Email: input.Email, AccountEmail: input.AccountEmail, Purpose: input.Purpose, Browser: state.browser, IP: state.ip, AcceptTerms: input.AcceptTerms, TermsVersion: input.TermsVersion, Principal: state.principal})
 	if err != nil {
 		return err
 	}
@@ -267,13 +276,14 @@ func (s *Service) verifyEmail(w http.ResponseWriter, r *http.Request, state requ
 }
 func (s *Service) startGoogle(w http.ResponseWriter, r *http.Request, state requestState) error {
 	var input struct {
-		Purpose     string `json:"purpose"`
-		AcceptTerms bool   `json:"accept_terms"`
+		Purpose      string `json:"purpose"`
+		TermsVersion string `json:"terms_version"`
+		AcceptTerms  bool   `json:"accept_terms"`
 	}
 	if err := decode(r, &input); err != nil {
 		return err
 	}
-	url, err := s.StartGoogle(r.Context(), state.principal, state.browser, state.ip, input.Purpose, input.AcceptTerms)
+	url, err := s.StartGoogle(r.Context(), state.principal, state.browser, state.ip, input.Purpose, input.AcceptTerms, input.TermsVersion)
 	if err != nil {
 		return err
 	}
@@ -419,15 +429,11 @@ func (s *Service) unlinkGoogle(w http.ResponseWriter, r *http.Request, state req
 	return nil
 }
 func (s *Service) users(w http.ResponseWriter, r *http.Request, state requestState) error {
-	accounts, err := s.Users(r.Context(), state.principal)
+	page, err := s.Directory(r.Context(), state.principal, UserQuery{Search: r.URL.Query().Get("search"), State: r.URL.Query().Get("state"), After: r.URL.Query().Get("after")})
 	if err != nil {
 		return err
 	}
-	output := make([]UserView, 0, len(accounts))
-	for _, account := range accounts {
-		output = append(output, userView(account))
-	}
-	return respond(w, http.StatusOK, map[string]any{"users": output})
+	return respond(w, http.StatusOK, page)
 }
 func (s *Service) getUser(w http.ResponseWriter, r *http.Request, state requestState) error {
 	account, err := s.User(r.Context(), state.principal, r.PathValue("id"))
@@ -539,4 +545,20 @@ func (s *Service) RunCleanup(ctx context.Context, logger *slog.Logger) {
 		case <-ticker.C:
 		}
 	}
+}
+
+func (s *Service) staffRevokeSessions(w http.ResponseWriter, r *http.Request, state requestState) error {
+	if e := s.RevokeUserSessions(r.Context(), state.principal, r.PathValue("id")); e != nil {
+		return e
+	}
+	w.WriteHeader(http.StatusNoContent)
+	return nil
+}
+
+func (s *Service) staffUserSessions(w http.ResponseWriter, r *http.Request, state requestState) error {
+	entries, e := s.UserSessions(r.Context(), state.principal, r.PathValue("id"))
+	if e != nil {
+		return e
+	}
+	return respond(w, http.StatusOK, map[string]any{"sessions": entries})
 }

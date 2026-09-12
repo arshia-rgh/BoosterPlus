@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../validation";
 import { listingSchema, releaseSchema } from "./model";
 
 async function read<T>(path: string, schema: z.ZodType<T>): Promise<T> {

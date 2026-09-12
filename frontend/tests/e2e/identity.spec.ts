@@ -86,12 +86,19 @@ for (const role of ["booster", "administrator", "owner"] as const) {
     if (role === "booster") {
       await expect(page.getByText(/assigned-order workspace/)).toBeVisible();
     } else {
+      await page
+        .getByLabel("Search email, display name or full user ID")
+        .fill(email);
       await page.getByRole("button", { name: "Load users" }).click();
       await expect(
         page.getByRole("heading", { name: email, exact: true }),
       ).toBeVisible();
       if (role === "owner") {
         const target = fixture(info.project.name, "target");
+        await page
+          .getByLabel("Search email, display name or full user ID")
+          .fill(target);
+        await page.getByRole("button", { name: "Load users" }).click();
         const card = page.locator("article").filter({
           has: page.getByRole("heading", { name: target, exact: true }),
         });

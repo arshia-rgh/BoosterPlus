@@ -57,12 +57,15 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentrecord"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentsettings"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentsignal"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/privacyrequest"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/selleroffer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sellerofferevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/siterelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/sitesetting"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
@@ -175,12 +178,15 @@ func checkColumn(t, c string) error {
 			paymentrecord.Table:            paymentrecord.ValidColumn,
 			paymentsettings.Table:          paymentsettings.ValidColumn,
 			paymentsignal.Table:            paymentsignal.ValidColumn,
+			privacyrequest.Table:           privacyrequest.ValidColumn,
 			review.Table:                   review.ValidColumn,
 			reviewrevision.Table:           reviewrevision.ValidColumn,
 			secretbundle.Table:             secretbundle.ValidColumn,
 			selleroffer.Table:              selleroffer.ValidColumn,
 			sellerofferevent.Table:         sellerofferevent.ValidColumn,
 			servicecase.Table:              servicecase.ValidColumn,
+			siterelease.Table:              siterelease.ValidColumn,
+			sitesetting.Table:              sitesetting.ValidColumn,
 			staffprofile.Table:             staffprofile.ValidColumn,
 			submissionevent.Table:          submissionevent.ValidColumn,
 			transferattempt.Table:          transferattempt.ValidColumn,

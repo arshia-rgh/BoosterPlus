@@ -71,7 +71,11 @@ func (s *Store) IssueQuote(ctx context.Context, p *identity.Principal, id string
 		if discount != nil {
 			lines = append(lines, catalog.PriceLine{Key: "coupon", Label: "Coupon " + discount.Code, AmountMinor: "-" + discount.AmountMinor})
 		}
-		data := Commercial{QuoteID: quoteID, Revision: row.QuoteCount + 1, Currency: input.Currency, SubtotalMinor: input.AmountMinor, AmountMinor: total, Discount: discount, Lines: lines, Scope: input.Scope, Reason: input.Reason, DeliveryMinHours: input.DeliveryMinHours, DeliveryMaxHours: input.DeliveryMaxHours, ExpiresAt: input.ExpiresAt.UTC().Truncate(time.Microsecond), TermsVersion: s.auth.TermsVersion()}
+		termsVersion, termsErr := s.auth.TermsVersion(ctx, tx.Client())
+		if termsErr != nil {
+			return termsErr
+		}
+		data := Commercial{QuoteID: quoteID, Revision: row.QuoteCount + 1, Currency: input.Currency, SubtotalMinor: input.AmountMinor, AmountMinor: total, Discount: discount, Lines: lines, Scope: input.Scope, Reason: input.Reason, DeliveryMinHours: input.DeliveryMinHours, DeliveryMaxHours: input.DeliveryMaxHours, ExpiresAt: input.ExpiresAt.UTC().Truncate(time.Microsecond), TermsVersion: termsVersion}
 		doc, readErr := document(data)
 		if readErr != nil {
 			return readErr
@@ -142,7 +146,11 @@ func (s *Store) accept(ctx context.Context, tx *ent.Tx, row *ent.Order, input Ac
 	if !data.ExpiresAt.After(now) {
 		return "", ErrConflict
 	}
-	if !input.AcceptTerms || input.TermsVersion != data.TermsVersion || data.TermsVersion != s.auth.TermsVersion() {
+	termsVersion, termsErr := s.auth.TermsVersion(ctx, tx.Client())
+	if termsErr != nil {
+		return "", termsErr
+	}
+	if !input.AcceptTerms || input.TermsVersion != data.TermsVersion || data.TermsVersion != termsVersion {
 		return "", identity.ErrTerms
 	}
 	discount, total, err := catalog.ContractDiscount(ctx, tx, row.UserID, row.CouponCode, catalog.CouponOffer{Slug: row.Slug, Service: row.Service, Currency: data.Currency, SubtotalMinor: data.SubtotalMinor}, now)

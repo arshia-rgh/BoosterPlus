@@ -27,7 +27,11 @@ def run_project(project):
                     time.sleep(0.2)
                 settings = json.loads((directory / "ready.json").read_text())
                 environment.update(API_ORIGIN=settings["api_origin"], PROXY_SHARED_KEY=settings["proxy_key"], BROWSER_TEST_CONFIG=str(directory / "ready.json"))
-                result = subprocess.run(["npx", "playwright", "test", "--project=" + project, "--output=test-results/" + project], cwd=root / "frontend", env=environment, check=False).returncode
+                # Global policy publication runs after ordinary journeys in the same isolated device database.
+                # Complementary filters execute every test; both results are required, with no retries or skipped failures.
+                ordinary = subprocess.run(["npx", "playwright", "test", "--grep-invert=@global-policy", "--project=" + project, "--output=test-results/" + project], cwd=root / "frontend", env=environment, check=False).returncode
+                policies = subprocess.run(["npx", "playwright", "test", "--grep=@global-policy", "--project=" + project, "--output=test-results/policies-" + project], cwd=root / "frontend", env=environment, check=False).returncode
+                result = 1 if ordinary or policies else 0
             finally:
                 (directory / "stop").touch()
                 try:

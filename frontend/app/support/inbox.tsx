@@ -8,17 +8,30 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
   const [params, setParams] = useSearchParams(),
     state = params.get("state") ?? "",
     assigned = params.get("assigned") ?? "",
+    customer = admin ? (params.get("customer") ?? "") : "",
     after = params.get("after") ?? "";
   const base = (admin ? "/admin" : "") + "/support",
     resource = useResource(
       (admin ? "/admin" : "") +
-        `/conversations?${new URLSearchParams({ state, assigned, after }).toString()}`,
+        `/conversations?${new URLSearchParams({ state, assigned, after, customer }).toString()}`,
       conversationsSchema,
     );
   return (
     <section>
       <h2>{admin ? "Support inbox" : "Your conversations"}</h2>
       {!admin && <NewSupport />}
+      {admin && customer && (
+        <p>
+          Customer filter: {customer}{" "}
+          <Action
+            onClick={() => {
+              setParams({ state, assigned });
+            }}
+          >
+            Clear customer filter
+          </Action>
+        </p>
+      )}
       <div className="catalog-grid">
         <Select
           label="Conversation status"
@@ -30,7 +43,7 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
             ["resolved", "Resolved"],
           ]}
           change={(value) => {
-            setParams({ state: value, assigned });
+            setParams({ state: value, assigned, customer });
           }}
         />
         {admin && (
@@ -43,7 +56,7 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
               ["unassigned", "Unassigned"],
             ]}
             change={(value) => {
-              setParams({ state, assigned: value });
+              setParams({ state, assigned: value, customer });
             }}
           />
         )}
@@ -83,6 +96,7 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
                 base +
                 "?" +
                 new URLSearchParams({
+                  customer,
                   state,
                   assigned,
                   after: resource.data.next,

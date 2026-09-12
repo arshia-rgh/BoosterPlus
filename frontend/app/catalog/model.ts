@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../validation";
 
 const list = <T extends z.ZodType>(item: T) =>
   z

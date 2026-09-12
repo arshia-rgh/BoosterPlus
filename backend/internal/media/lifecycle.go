@@ -29,7 +29,7 @@ func (s *Store) failed(ctx context.Context, id string) (failed bool, result erro
 // not turn scanner errors into clean results or permit a different file payload.
 func (s *Store) Retry(ctx context.Context, p *identity.Principal, id string, admin bool) error {
 	return s.auth.AuthorizedTransaction(ctx, p, capFor(admin), admin, func(tx *ent.Tx, current *identity.Principal) error {
-		row, err := owned(ctx, tx.Client(), current, id)
+		row, err := managed(ctx, tx.Client(), current, id, admin)
 		if err != nil {
 			return err
 		}
@@ -57,8 +57,8 @@ func (s *Store) Retry(ctx context.Context, p *identity.Principal, id string, adm
 // Remove revokes an unattached upload immediately; object cleanup is retried by
 // the worker. Bound conversation evidence cannot be deleted by this endpoint.
 func (s *Store) Remove(ctx context.Context, p *identity.Principal, id string, admin bool) error {
-	return s.auth.AuthorizedTransaction(ctx, p, capFor(admin), false, func(tx *ent.Tx, current *identity.Principal) error {
-		row, err := owned(ctx, tx.Client(), current, id)
+	return s.auth.AuthorizedTransaction(ctx, p, capFor(admin), admin, func(tx *ent.Tx, current *identity.Principal) error {
+		row, err := managed(ctx, tx.Client(), current, id, admin)
 		if err != nil {
 			return err
 		}

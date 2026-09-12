@@ -109,12 +109,25 @@ func (s *Store) Get(ctx context.Context, p *identity.Principal, id string, admin
 }
 
 // List returns 50 chronological summaries; private form/quote payloads stay in detail endpoints.
-func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, cursor, state, search string) (Listing, error) {
+func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, cursor, state, search string, filters ...Filters) (Listing, error) {
 	result := Listing{Orders: []Summary{}}
 	if err := require(p, admin); err != nil {
 		return result, err
 	}
+	current, authErr := s.auth.Recheck(ctx, p, map[bool]string{true: "admin", false: "account"}[admin])
+	if authErr != nil {
+		return result, authErr
+	}
+	p = current
+	if len(filters) > 1 {
+		return result, ErrConflict
+	}
 	q := s.client.Order.Query().Order(ent.Desc(order.FieldCreatedAt), ent.Desc(order.FieldID)).Limit(51)
+	if len(filters) == 1 {
+		if e := applyFilters(q, admin, filters[0]); e != nil {
+			return result, e
+		}
+	}
 	if !admin {
 		q.Where(order.UserIDEQ(p.User.ID))
 	}
@@ -245,7 +258,11 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, input CreateI
 		if !ent.IsNotFound(readErr) {
 			return readErr
 		}
-		if !input.AcceptTerms || input.TermsVersion != s.auth.TermsVersion() {
+		termsVersion, termsErr := s.auth.TermsVersion(ctx, tx.Client())
+		if termsErr != nil {
+			return termsErr
+		}
+		if !input.AcceptTerms || input.TermsVersion != termsVersion {
 			return identity.ErrTerms
 		}
 		release, readErr := catalog.New(tx.Client(), s.auth).Published(ctx, input.Slug)

@@ -42,8 +42,23 @@ if (["staging", "production"].includes(environment)) {
   if (!response.ok)
     throw new Error("Identity backend is unavailable at startup");
   const session = await response.json();
-  if (session.terms_version !== process.env.TERMS_VERSION)
-    throw new Error("Frontend and backend account terms versions must match");
+  if (session.terms_version !== process.env.TERMS_VERSION) {
+    const policyResponse = await fetch(new URL("/api/v1/site/legal", api), {
+      signal: AbortSignal.timeout(10000),
+      redirect: "error",
+    });
+    if (!policyResponse.ok)
+      throw new Error("Published legal terms are unavailable");
+    const policy = await policyResponse.json();
+    if (
+      !policy.release_id ||
+      policy.kind !== "legal" ||
+      policy.label !== session.terms_version ||
+      typeof policy.data?.text !== "string" ||
+      !policy.data.text.trim()
+    )
+      throw new Error("Frontend and backend account terms versions must match");
+  }
 }
 
 app.use((req, res, next) => {

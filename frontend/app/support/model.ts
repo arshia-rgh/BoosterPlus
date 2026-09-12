@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../validation";
 export const conversationSchema = z.object({
   id: z.string(),
   booster_shared: z.boolean(),

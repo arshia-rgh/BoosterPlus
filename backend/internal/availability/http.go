@@ -26,8 +26,12 @@ func read(r *http.Request, v any) error {
 	}
 	return nil
 }
-func write(w http.ResponseWriter, v any) error { return json.NewEncoder(w).Encode(v) }
+func write(w http.ResponseWriter, v any) error {
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(v)
+}
 func failure(w http.ResponseWriter, err error) error {
+	w.Header().Set("Content-Type", "application/json")
 	if errors.Is(err, ErrInvalid) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return write(w, map[string]string{"code": "availability_invalid"})
@@ -41,6 +45,7 @@ func failure(w http.ResponseWriter, err error) error {
 
 // Register uses live account authority and the same CSRF/Origin protection for signed links.
 func (s *Store) Register(mux *http.ServeMux) {
+	s.registerAdministration(mux)
 	register := func(pattern, capability string, fn func(http.ResponseWriter, *http.Request, *identity.Principal) error) {
 		mux.HandleFunc(pattern, s.auth.ProtectRate(capability, "availability", 120, time.Hour, func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 			w.Header().Set("Content-Type", "application/json")

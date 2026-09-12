@@ -1,7 +1,9 @@
-import { z } from "zod";
+import { z } from "../validation";
 import type { components } from "../api/schema";
 
 export const userSchema: z.ZodType<components["schemas"]["User"]> = z.object({
+  email_verified: z.boolean().default(false),
+  deleted: z.boolean().default(false),
   id: z.string(),
   email: z.string(),
   display_name: z.string(),
@@ -133,6 +135,22 @@ const messages = new Map([
     "This conversation changed. Refresh it before trying again.",
   ],
   ["conversation_invalid", "Review the highlighted conversation issues."],
+  [
+    "privacy_invalid",
+    "Review the selected privacy action and required policy acceptance.",
+  ],
+  [
+    "privacy_conflict",
+    "Refresh this request and policy. Holds, retention deadlines or pending file cleanup must be resolved before erasure can finish.",
+  ],
+  [
+    "content_invalid",
+    "Review the content limits and required fields. Published versions must be unique and cannot reuse the original deployment terms label.",
+  ],
+  [
+    "content_conflict",
+    "The draft changed or this published version already exists. Reload and review before saving.",
+  ],
   ["not_found", "This item is unavailable or you do not have access."],
   [
     "order_conflict",

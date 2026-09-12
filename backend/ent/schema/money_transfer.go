@@ -41,6 +41,7 @@ func (MoneyTransfer) Fields() []ent.Field {
 // Indexes mirrors the explicit uniqueness and pagination constraints.
 func (MoneyTransfer) Indexes() []ent.Index {
 	return []ent.Index{
+		index.Fields("kind", "created_at", "id").StorageKey("transfer_report_created"),
 		index.Fields("seller_offer_id").Unique().StorageKey("seller_offer_payout"),
 		index.Fields("receipt_id", "state").StorageKey("transfer_receipt_cap"),
 		index.Fields("case_id", "created_at", "id").StorageKey("transfer_case"),

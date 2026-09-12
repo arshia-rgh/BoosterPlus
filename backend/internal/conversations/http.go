@@ -85,7 +85,7 @@ func (s *Store) Register(mux *http.ServeMux) {
 		}
 		routes := map[string]endpoint{
 			"GET " + base: func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
-				result, err := s.List(r.Context(), p, admin, r.URL.Query().Get("after"), r.URL.Query().Get("state"), r.URL.Query().Get("assigned"), r.URL.Query().Get("order_id"))
+				result, err := s.List(r.Context(), p, admin, r.URL.Query().Get("after"), r.URL.Query().Get("state"), r.URL.Query().Get("assigned"), r.URL.Query().Get("order_id"), r.URL.Query().Get("customer"))
 				if err != nil {
 					return err
 				}

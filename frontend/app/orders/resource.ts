@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { z } from "zod";
+import type { z } from "../validation";
 import { get } from "../identity/api";
 // Private data is held in component memory and discarded on route/session unmount.
 export function useResource<T>(path: string, schema: z.ZodType<T>) {

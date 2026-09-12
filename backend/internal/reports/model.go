@@ -89,7 +89,7 @@ type bounds struct {
 func validate(q Query) (bounds, error) {
 	var b bounds
 	var e error
-	if q.Kind != "orders" && q.Kind != "catalog" && q.Kind != "staff" && q.Kind != "audits" {
+	if q.Kind != "orders" && q.Kind != "catalog" && q.Kind != "staff" && q.Kind != "audits" && q.Kind != "receipts" && q.Kind != "refunds" && q.Kind != "payouts" {
 		return b, ErrInvalid
 	}
 	if len(q.From) > 40 || len(q.To) > 40 || len(q.After) > 300 || !utf8.ValidString(q.Search) || utf8.RuneCountInString(q.Search) > 80 || strings.ContainsRune(q.Search, 0) || len(q.State) > 64 || strings.ContainsRune(q.State, 0) {
@@ -211,6 +211,10 @@ func (s *Store) report(ctx context.Context, tx *ent.Tx, q Query, b bounds) (Repo
 	r := Report{Kind: q.Kind, Basis: "Records created in [from, to), UTC; current operational state at generation time. No financial recognition or revenue totals.", ObservedAt: s.now().UTC(), Query: q, Rows: [][]string{}}
 	var e error
 	switch q.Kind {
+	case "receipts":
+		e = s.receipts(ctx, tx, q, b, &r)
+	case "refunds", "payouts":
+		e = s.transfers(ctx, tx, q, b, &r)
 	case "orders":
 		e = s.orders(ctx, tx, q, b, &r)
 	case "catalog":

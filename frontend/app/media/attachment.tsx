@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { z } from "zod";
+import { z } from "../validation";
 import { APIError, command, get, post, sessionSchema } from "../identity/api";
 import { Action, ErrorNotice } from "../catalog/controls";
 

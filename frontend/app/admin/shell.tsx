@@ -9,6 +9,7 @@ const groups = [
       ["/admin", "Overview", "◈"],
       ["/admin/orders", "Order queue", "▤"],
       ["/admin/support", "Support inbox", "◌"],
+      ["/admin/customers", "Customers and staff", "◎"],
       ["/admin/calendar", "Staff calendars", "▦"],
     ],
   },
@@ -27,27 +28,33 @@ const groups = [
     items: [
       ["/admin/finance", "Finance", "◉"],
       ["/admin/reports", "Reports", "▥"],
+      ["/admin/content", "Content and policies", "◇"],
+      ["/admin/privacy", "Privacy requests", "◎"],
+      ["/admin/media", "Media directory", "▣"],
+      ["/admin/alerts", "Availability alerts", "◌"],
       ["/admin/jobs", "Background tasks", "↻"],
     ],
   },
 ] as const;
-function Navigation({ close }: { close?: () => void }) {
+function Navigation({ close, owner }: { close?: () => void; owner: boolean }) {
   return (
     <nav aria-label="Staff navigation" className="admin-navigation">
       {groups.map((group) => (
         <div key={group.label}>
           <p>{group.label}</p>
-          {group.items.map(([href, label, icon]) => (
-            <NavLink
-              key={href}
-              end={href === "/admin"}
-              to={href}
-              onClick={close}
-            >
-              <span aria-hidden="true">{icon}</span>
-              {label}
-            </NavLink>
-          ))}
+          {group.items
+            .filter(([href]) => href !== "/admin/privacy" || owner)
+            .map(([href, label, icon]) => (
+              <NavLink
+                key={href}
+                end={href === "/admin"}
+                to={href}
+                onClick={close}
+              >
+                <span aria-hidden="true">{icon}</span>
+                {label}
+              </NavLink>
+            ))}
         </div>
       ))}
       <a className="admin-external" href="/account">
@@ -78,7 +85,7 @@ export default function AdminShell({ session, title, children }: FrameProps) {
             BOOSTER<span>+</span>
           </a>
           <span className="admin-edition">STAFF CONSOLE</span>
-          <Navigation />
+          <Navigation owner={session.user?.role === "owner"} />
           <div className="admin-staff-card">
             <span className="admin-avatar" aria-hidden="true">
               {(session.user?.staff_alias || session.user?.display_name || "S")
@@ -197,7 +204,10 @@ export default function AdminShell({ session, title, children }: FrameProps) {
               Close menu
             </button>
           </div>
-          <Navigation close={() => drawer.current?.close()} />
+          <Navigation
+            owner={session.user?.role === "owner"}
+            close={() => drawer.current?.close()}
+          />
         </dialog>
       )}
     </div>

@@ -53,9 +53,6 @@ func (s *Service) AuthorizedTransaction(ctx context.Context, p *Principal, capab
 	})
 }
 
-// TermsVersion identifies the configured agreement; it is public bootstrap data.
-func (s *Service) TermsVersion() string { return s.config.TermsVersion }
-
 // RequestDigest hashes canonical request data with domain separation for private
 // idempotency comparison. Neither raw request data nor the digest belongs in logs.
 func (s *Service) RequestDigest(scope string, data []byte) string {
@@ -125,4 +122,19 @@ func (s *Service) ProtectUpload(capability string, next func(http.ResponseWriter
 		}
 		return next(w, r, state.principal)
 	}, 4<<20)
+}
+
+// RecentAccountTransaction requires a recent primary factor and, when enrolled, a recent second factor for personal-data operations.
+func (s *Service) RecentAccountTransaction(ctx context.Context, p *Principal, fn func(*ent.Tx, *Principal) error) error {
+	return s.AuthorizedTransaction(ctx, p, "account", false, func(tx *ent.Tx, current *Principal) error {
+		if e := s.recent(current); e != nil {
+			return e
+		}
+		if current.User.MfaEnabled {
+			if e := s.sensitive(current); e != nil {
+				return e
+			}
+		}
+		return fn(tx, current)
+	})
 }

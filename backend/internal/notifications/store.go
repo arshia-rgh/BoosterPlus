@@ -15,6 +15,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/sitecontent"
 )
 
 // Store sends generic activity notices; message bodies never enter email jobs.
@@ -202,7 +203,11 @@ func (s *Store) EmailHandler(sender identity.Sender) jobs.Handler {
 				return errors.New("activity kind invalid")
 			}
 			if allowed {
-				if err = sender.Send(ctx, identity.Message{To: account.Email, Subject: "New activity on Booster Plus", Body: "There is an update in your Booster Plus account. Sign in to read it:\n" + s.origin + href + "\n\nChange activity email preferences in your account settings."}); err != nil {
+				messageCopy, copyErr := sitecontent.NotificationCopy(ctx, s.client)
+				if copyErr != nil {
+					return copyErr
+				}
+				if err = sender.Send(ctx, identity.Message{To: account.Email, Subject: messageCopy.ActivitySubject, Body: messageCopy.ActivityIntro + "\nSign in to read it:\n" + s.origin + href + "\n\nChange activity email preferences in your account settings.\n\n" + messageCopy.Footer}); err != nil {
 					return errors.New("activity email delivery unavailable")
 				}
 				state = notification.EmailStateSent

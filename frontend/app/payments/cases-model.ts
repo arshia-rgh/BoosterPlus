@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../validation";
 import { remedySchema } from "./model";
 import { productSchema } from "../resale/model";
 export const caseSchema = z.object({

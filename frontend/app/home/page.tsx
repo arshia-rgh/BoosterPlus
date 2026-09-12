@@ -1,3 +1,5 @@
+import { defaultHome } from "../site/content";
+import type { HomeContent } from "../site/model";
 import { Link } from "react-router";
 import { Avatar, Emblem } from "./emblem";
 import {
@@ -11,7 +13,13 @@ import "./home.css";
 function Arrow() {
   return <span aria-hidden="true">↗</span>;
 }
-function RankProfile({ elevated = false }: { elevated?: boolean }) {
+function RankProfile({
+  elevated = false,
+  content,
+}: {
+  elevated?: boolean;
+  content: HomeContent;
+}) {
   return (
     <div className={`rank-profile ${elevated ? "rank-finish" : "rank-start"}`}>
       <div className="profile-top">
@@ -33,7 +41,7 @@ function RankProfile({ elevated = false }: { elevated?: boolean }) {
         <p className="rank-caption">
           {elevated ? "THE DESTINATION" : "THE STARTING POINT"}
         </p>
-        <h3>{elevated ? "Mythical Glory" : "Warrior"}</h3>
+        <h3>{elevated ? content.end_rank : content.start_rank}</h3>
         <div className="rank-stars">{elevated ? "✦ ✦ ✦ ✦ ✦" : "✦ · ·"}</div>
       </div>
       <div className="profile-bottom">
@@ -43,7 +51,13 @@ function RankProfile({ elevated = false }: { elevated?: boolean }) {
     </div>
   );
 }
-function RankJourney({ enabled }: { enabled: boolean }) {
+function RankJourney({
+  enabled,
+  content,
+}: {
+  enabled: boolean;
+  content: HomeContent;
+}) {
   const scene = useRankScene(enabled);
   return (
     <section
@@ -62,14 +76,11 @@ function RankJourney({ enabled }: { enabled: boolean }) {
             <br />
             <em>Different league.</em>
           </h2>
-          <p>
-            Every climb starts somewhere. Choose where yours goes next—with a
-            boost shaped around your goals.
-          </p>
+          <p>{content.scene_description}</p>
           <div className="rank-path">
-            <span>WARRIOR</span>
+            <span>{content.start_rank.toUpperCase()}</span>
             <span aria-hidden="true">⟶</span>
-            <span>MYTHICAL GLORY</span>
+            <span>{content.end_rank.toUpperCase()}</span>
           </div>
           <div className="journey-track" aria-hidden="true">
             <div className="journey-fill" />
@@ -91,8 +102,8 @@ function RankJourney({ enabled }: { enabled: boolean }) {
         <div className="rank-visual" aria-hidden="true">
           <div className="rank-orbit" />
           <div className="profile-stage">
-            <RankProfile />
-            <RankProfile elevated />
+            <RankProfile content={content} />
+            <RankProfile elevated content={content} />
             <div className="rank-shimmer" />
             <svg
               className="rank-sparks"
@@ -113,30 +124,10 @@ function RankJourney({ enabled }: { enabled: boolean }) {
     </section>
   );
 }
-const questions = [
-  [
-    "How does custom boosting work?",
-    "Choose a published game and tell us your starting rank, target and preferred options. The form provides an estimate; an admin reviews the request and sends a final quote for you to accept before payment.",
-  ],
-  [
-    "Can I play alongside my booster?",
-    "Both playing together and playing on your account are supported. Available modes and requirements are shown on each published service or package.",
-  ],
-  [
-    "What is different about fixed packages?",
-    "Published fixed packages have a defined scope and price. They do not need a separate admin quote. Live crypto checkout is being prepared; no payment is taken from this preview.",
-  ],
-  [
-    "How will I follow my order?",
-    "Your account brings together order history, private conversations, agreed scope, status updates, scheduling and shared photo proof.",
-  ],
-  [
-    "Can I sell a game account?",
-    "You can submit an account privately for admin review. Approval alone is not a sale or payout agreement. Public resale and seller payments are being prepared.",
-  ],
-] as const;
-
-export function HomePage() {
+export function HomePage({
+  loaderData = defaultHome,
+}: { loaderData?: HomeContent } = {}) {
+  const content = loaderData;
   const preference = useMotionPreference();
   const enabled = preference === "system-full";
   const root = useSectionReveals(enabled);
@@ -148,19 +139,21 @@ export function HomePage() {
       data-motion={enabled ? "full" : "reduced"}
     >
       <section className="ascend-hero" aria-labelledby="hero-title">
-        <picture className="hero-art">
-          <source
-            media="(max-width: 700px)"
-            srcSet="/artwork/ascension-768.jpg"
-          />
-          <img
-            src="/artwork/ascension-1536.jpg"
-            width="1536"
-            height="1024"
-            alt=""
-            fetchPriority="high"
-          />
-        </picture>
+        {content.artwork === "ascension" && (
+          <picture className="hero-art">
+            <source
+              media="(max-width: 700px)"
+              srcSet="/artwork/ascension-768.jpg"
+            />
+            <img
+              src="/artwork/ascension-1536.jpg"
+              width="1536"
+              height="1024"
+              alt=""
+              fetchPriority="high"
+            />
+          </picture>
+        )}
         <div className="hero-veil" aria-hidden="true" />
         <div className="hero-grain" aria-hidden="true" />
         <div className="hero-content">
@@ -168,27 +161,23 @@ export function HomePage() {
             <span className="live-dot" /> BUILT FOR YOUR NEXT CHAPTER
           </p>
           <h1 id="hero-title">
-            YOUR NEXT
+            {content.headline}
             <br />
-            LEVEL.
-            <br />
-            <em>Starts here.</em>
+            <em>{content.accent}</em>
           </h1>
-          <p className="hero-description">
-            Less grind. More game.
-            <br />
-            Mobile Legends boosting, on your terms.
-          </p>
+          <p className="hero-description">{content.description}</p>
           <div className="hero-actions">
             <Link className="home-button" to="/games">
               Explore games <Arrow />
             </Link>
-            <a className="home-text-link" href="#rank-journey">
-              See the ascent <span aria-hidden="true">↓</span>
-            </a>
+            {content.show_scene && (
+              <a className="home-text-link" href="#rank-journey">
+                See the ascent <span aria-hidden="true">↓</span>
+              </a>
+            )}
           </div>
           <p className="home-preview">
-            <span /> Launch preview · Live checkout is being prepared.
+            <span /> {content.notice}
           </p>
         </div>
         <div className="hero-coordinate" aria-hidden="true">
@@ -199,7 +188,10 @@ export function HomePage() {
         <div className="hero-bottom">
           <span>MOBILE LEGENDS: BANG BANG</span>
           <span>YOUR GAME. YOUR GOALS.</span>
-          <a href="#rank-journey" aria-label="Scroll to the rank journey">
+          <a
+            href={content.show_scene ? "#rank-journey" : "#faq-title"}
+            aria-label="Scroll to more information"
+          >
             SCROLL TO EXPLORE <span aria-hidden="true">↓</span>
           </a>
         </div>
@@ -242,104 +234,110 @@ export function HomePage() {
           </button>
         </div>
       </div>
-      <RankJourney enabled={enabled} />
-      <section className="home-section pathways" aria-labelledby="path-title">
-        <div className="section-heading">
-          <div>
-            <p className="home-kicker">02 / YOUR WAY TO PLAY</p>
-            <h2 id="path-title">
-              A better climb.
+      {content.show_scene && (
+        <RankJourney enabled={enabled} content={content} />
+      )}
+      {content.show_pathways && (
+        <section className="home-section pathways" aria-labelledby="path-title">
+          <div className="section-heading">
+            <div>
+              <p className="home-kicker">02 / YOUR WAY TO PLAY</p>
+              <h2 id="path-title">
+                A better climb.
+                <br />
+                <em>On your terms.</em>
+              </h2>
+            </div>
+            <p>
+              One game. Different goals.
               <br />
-              <em>On your terms.</em>
-            </h2>
+              Choose the route that fits you.
+            </p>
           </div>
-          <p>
-            One game. Different goals.
-            <br />
-            Choose the route that fits you.
-          </p>
-        </div>
-        <div className="pathway-grid">
-          <article className="pathway-card custom-path">
-            <span className="card-index">01 / MADE FOR YOU</span>
-            <div className="pathway-art" aria-hidden="true">
-              <div className="mini-rank">
-                W<span>⟶</span>M
+          <div className="pathway-grid">
+            <article className="pathway-card custom-path">
+              <span className="card-index">01 / MADE FOR YOU</span>
+              <div className="pathway-art" aria-hidden="true">
+                <div className="mini-rank">
+                  W<span>⟶</span>M
+                </div>
+                <div className="option-tags">
+                  <span>Your rank</span>
+                  <span>Your role</span>
+                  <span>Your hero</span>
+                </div>
               </div>
-              <div className="option-tags">
-                <span>Your rank</span>
-                <span>Your role</span>
-                <span>Your hero</span>
+              <h3>Your climb, customized.</h3>
+              <p>
+                Set your target rank, play mode and preferences. Get an
+                estimate, then review your final quote with the team.
+              </p>
+              <Link className="home-text-link" to="/games">
+                Explore custom boosting <Arrow />
+              </Link>
+            </article>
+            <article className="pathway-card package-path">
+              <span className="card-index">02 / A CLEAR GAME PLAN</span>
+              <div className="pathway-art package-symbol" aria-hidden="true">
+                <Emblem elevated />
               </div>
-            </div>
-            <h3>Your climb, customized.</h3>
-            <p>
-              Set your target rank, play mode and preferences. Get an estimate,
-              then review your final quote with the team.
-            </p>
-            <Link className="home-text-link" to="/games">
-              Explore custom boosting <Arrow />
-            </Link>
-          </article>
-          <article className="pathway-card package-path">
-            <span className="card-index">02 / A CLEAR GAME PLAN</span>
-            <div className="pathway-art package-symbol" aria-hidden="true">
-              <Emblem elevated />
-            </div>
-            <h3>One pack. A clear plan.</h3>
-            <p>
-              Browse published packages with a defined scope and price. No
-              separate admin quote before checkout.
-            </p>
-            <Link className="home-text-link" to="/games">
-              Browse published packages <Arrow />
-            </Link>
-          </article>
-        </div>
-      </section>
-      <section
-        className="home-section how-section"
-        id="how-it-works"
-        aria-labelledby="how-title"
-      >
-        <div className="section-heading">
-          <div>
-            <p className="home-kicker">03 / FROM FIRST CLICK TO FINAL GG</p>
-            <h2 id="how-title">
-              The climb, <em>simplified.</em>
-            </h2>
+              <h3>One pack. A clear plan.</h3>
+              <p>
+                Browse published packages with a defined scope and price. No
+                separate admin quote before checkout.
+              </p>
+              <Link className="home-text-link" to="/games">
+                Browse published packages <Arrow />
+              </Link>
+            </article>
           </div>
-          <Link className="home-text-link" to="/support">
-            Talk to the team <Arrow />
-          </Link>
-        </div>
-        <ol className="steps-grid">
-          <li>
-            <span>01</span>
-            <h3>Tell us your goal.</h3>
-            <p>
-              Choose a game, a target and how you want to play. Your preferences
-              shape the plan.
-            </p>
-          </li>
-          <li>
-            <span>02</span>
-            <h3>Make it official.</h3>
-            <p>
-              Review your custom quote or fixed package. Crypto checkout is
-              coming next.
-            </p>
-          </li>
-          <li>
-            <span>03</span>
-            <h3>Stay in the loop.</h3>
-            <p>
-              Chat with the team, follow your timeline and see the proof—all in
-              your account.
-            </p>
-          </li>
-        </ol>
-      </section>
+        </section>
+      )}
+      {content.show_steps && (
+        <section
+          className="home-section how-section"
+          id="how-it-works"
+          aria-labelledby="how-title"
+        >
+          <div className="section-heading">
+            <div>
+              <p className="home-kicker">03 / FROM FIRST CLICK TO FINAL GG</p>
+              <h2 id="how-title">
+                The climb, <em>simplified.</em>
+              </h2>
+            </div>
+            <Link className="home-text-link" to="/support">
+              Talk to the team <Arrow />
+            </Link>
+          </div>
+          <ol className="steps-grid">
+            <li>
+              <span>01</span>
+              <h3>Tell us your goal.</h3>
+              <p>
+                Choose a game, a target and how you want to play. Your
+                preferences shape the plan.
+              </p>
+            </li>
+            <li>
+              <span>02</span>
+              <h3>Make it official.</h3>
+              <p>
+                Review your custom quote or fixed package, accept its terms and
+                complete the available checkout before fulfillment.
+              </p>
+            </li>
+            <li>
+              <span>03</span>
+              <h3>Stay in the loop.</h3>
+              <p>
+                Chat with the team, follow your timeline and see the proof—all
+                in your account.
+              </p>
+            </li>
+          </ol>
+        </section>
+      )}
       <section
         className="home-section control-section"
         aria-labelledby="control-title"
@@ -404,7 +402,7 @@ export function HomePage() {
           </Link>
         </div>
         <div className="faq-list">
-          {questions.map(([question, answer]) => (
+          {content.faqs.map(({ question, answer }) => (
             <details key={question}>
               <summary>
                 {question}
@@ -415,6 +413,32 @@ export function HomePage() {
           ))}
         </div>
       </section>
+      {content.featured.length > 0 && (
+        <section className="home-section" aria-label="Featured offerings">
+          <h2>Featured offerings</h2>
+          <div className="pathway-grid">
+            {content.featured.map((item) => (
+              <Link className="home-text-link" key={item.href} to={item.href}>
+                {item.label} ↗
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+      {(content.contact_email || content.support_hours) && (
+        <section className="home-section" aria-label="Contact and support">
+          <h2>Talk to the team</h2>
+          <p>{content.support_hours}</p>
+          {content.contact_email && (
+            <a
+              className="home-text-link"
+              href={"mailto:" + content.contact_email}
+            >
+              {content.contact_email}
+            </a>
+          )}
+        </section>
+      )}
       <section className="final-ascent" aria-labelledby="final-title">
         <p className="home-kicker">THE NEXT CHAPTER IS YOURS</p>
         <h2 id="final-title">

@@ -1099,3 +1099,8 @@
     opacity: 1 !important;
   }
 }
+
+.hero-content h1,
+.hero-description {
+  white-space: pre-line;
+}

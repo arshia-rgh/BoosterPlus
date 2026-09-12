@@ -29,7 +29,7 @@ type ReserveInput struct {
 
 // Reserve atomically creates a unique unpaid purchase before any provider invoice.
 func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, input ReserveInput) (orders.Detail, error) {
-	if !validID(id) || !validID(input.RequestKey) || !validID(input.ReleaseID) || !minorAmount.MatchString(input.ExpectedAmount) || !currencyCode.MatchString(input.Currency) || !input.AcceptTerms || input.TermsVersion != s.auth.TermsVersion() {
+	if !validID(id) || !validID(input.RequestKey) || !validID(input.ReleaseID) || !minorAmount.MatchString(input.ExpectedAmount) || !currencyCode.MatchString(input.Currency) || !input.AcceptTerms {
 		return orders.Detail{}, ErrInvalid
 	}
 	raw, err := json.Marshal(struct {
@@ -42,6 +42,13 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 	digest := s.auth.RequestDigest("account-reservation", raw)
 	orderID := ""
 	err = s.auth.AuthorizedTransaction(ctx, p, "account", false, func(tx *ent.Tx, current *identity.Principal) error {
+		termsVersion, termsErr := s.auth.TermsVersion(ctx, tx.Client())
+		if termsErr != nil {
+			return termsErr
+		}
+		if input.TermsVersion != termsVersion {
+			return identity.ErrTerms
+		}
 		if current.User.Role != identity.RoleCustomer {
 			return identity.ErrForbidden
 		}

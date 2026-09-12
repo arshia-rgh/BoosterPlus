@@ -9,7 +9,7 @@ import {
   type SubmitEvent,
 } from "react";
 import { Link, NavLink, useSearchParams } from "react-router";
-import { z } from "zod";
+import { z } from "../validation";
 import {
   get,
   post,
@@ -100,11 +100,13 @@ export const value = (data: FormData, name: string) => {
   return typeof field === "string" ? field : "";
 };
 function EmailForm({
+  termsVersion = "",
   purpose,
   email = "",
   refresh,
 }: {
   purpose: "login" | "reauth" | "email_change" | "recovery";
+  termsVersion?: string;
   email?: string;
   refresh: Refresh;
 }) {
@@ -134,6 +136,7 @@ function EmailForm({
               account_email: value(data, "account_email"),
               purpose,
               accept_terms: data.get("terms") === "on",
+              terms_version: termsVersion,
             },
             z.object({ challenge_id: z.string() }),
           );
@@ -239,7 +242,11 @@ function Google({
       submit={async (data) => {
         const result = await post(
           "/auth/google/start",
-          { purpose, accept_terms: data.get("terms") === "on" },
+          {
+            purpose,
+            accept_terms: data.get("terms") === "on",
+            terms_version: session.terms_version,
+          },
           z.object({ url: z.url() }),
         );
         const target = new URL(result.url);
@@ -490,6 +497,7 @@ function Account({
         <details>
           <summary>Email and linked Google account</summary>
           <EmailForm purpose="email_change" refresh={refresh} />
+          <Link to="/privacy">Download your data or request deletion</Link>
           {session.google_enabled && !session.google_linked && (
             <Google session={session} purpose="link" refresh={refresh} />
           )}{" "}
@@ -521,7 +529,7 @@ export default function Identity({
   children,
 }: {
   title: string;
-  capability?: "account" | "admin" | "booster";
+  capability?: "account" | "admin" | "booster" | "owner";
   children?: React.ReactNode;
 }) {
   const Frame = useContext(IdentityFrame);
@@ -593,7 +601,9 @@ export default function Identity({
       <main id="main" className="page identity-page">
         <title>{`${title} | Booster Plus`}</title>
         <p className="eyebrow">
-          {capability === "admin" ? "Staff workspace" : "Booster Plus account"}
+          {capability === "admin" || capability === "owner"
+            ? "Staff workspace"
+            : "Booster Plus account"}
         </p>
         <h1>{title}</h1>
         {googleError && <p role="alert">{googleError}</p>}
@@ -638,7 +648,11 @@ export default function Identity({
                   Sign in with Google or an email code. No password is needed.
                 </p>
                 <div className="identity-grid">
-                  <EmailForm purpose="login" refresh={refresh} />
+                  <EmailForm
+                    purpose="login"
+                    refresh={refresh}
+                    termsVersion={session.terms_version}
+                  />
                   {session.google_enabled ? (
                     <Google
                       session={session}

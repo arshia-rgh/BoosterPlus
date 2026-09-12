@@ -1,6 +1,14 @@
-import { z } from "zod";
+import { z } from "../validation";
 export const querySchema = z.object({
-  kind: z.enum(["orders", "catalog", "staff", "audits"]),
+  kind: z.enum([
+    "orders",
+    "catalog",
+    "staff",
+    "audits",
+    "receipts",
+    "refunds",
+    "payouts",
+  ]),
   from: z.string(),
   to: z.string(),
   state: z.string(),

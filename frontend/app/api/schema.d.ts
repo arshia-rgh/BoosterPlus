@@ -1595,7 +1595,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get?: never;
+    /** getStaffMediaDirectory */
+    get: operations["getStaffMediaDirectory"];
     put?: never;
     /** Reserve private quota and immutable checksum, scope and audience. JPEG/PNG/WebP only, 4 MiB and 4 million pixels maximum. Intent expires in 24 hours. */
     post: operations["staffCreateMediaIntent"];
@@ -1699,7 +1700,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Retry only an exhausted scan for an owned, unbound, unexpired upload. Staff require recent authentication. */
+    /** Audited staff maintenance for authorized unbound uploads; recent factors required. Bound evidence cannot be removed. */
     post: operations["staffRetryMedia"];
     delete?: never;
     options?: never;
@@ -1716,7 +1717,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Discard an owned unbound upload; cleanup retries deletion in private storage. */
+    /** Audited staff maintenance for authorized unbound uploads; recent factors required. Bound evidence cannot be removed. */
     post: operations["staffRemoveMedia"];
     delete?: never;
     options?: never;
@@ -4031,6 +4032,229 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/site/{kind}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** getPublishedSiteContent */
+    get: operations["getPublishedSiteContent"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/site/{kind}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** getSiteDraft */
+    get: operations["getSiteDraft"];
+    put?: never;
+    /** saveOrPublishSiteContent */
+    post: operations["saveOrPublishSiteContent"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/site/{kind}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** getSitePublicationHistory */
+    get: operations["getSitePublicationHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/privacy/requests": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** getOwnPrivacyRequests */
+    get: operations["getOwnPrivacyRequests"];
+    put?: never;
+    /** requestOwnPrivacyErasure */
+    post: operations["requestOwnPrivacyErasure"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/privacy/requests/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** changeOwnPrivacyRequest */
+    post: operations["changeOwnPrivacyRequest"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/privacy/requests": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** getOwnerReviewedPrivacyRequests */
+    get: operations["getOwnerReviewedPrivacyRequests"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/privacy/requests/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** changeOwnerReviewedPrivacyRequest */
+    post: operations["changeOwnerReviewedPrivacyRequest"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/privacy/export": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** exportOwnPersonalData */
+    post: operations["exportOwnPersonalData"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/availability": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** getStaffAvailabilityConsent */
+    get: operations["getStaffAvailabilityConsent"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/availability/{id}/suppress": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** suppressAvailabilityDelivery */
+    post: operations["suppressAvailabilityDelivery"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/users/{id}/sessions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** getStaffUserSessions */
+    get: operations["getStaffUserSessions"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/users/{id}/sessions/revoke": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** revokeStaffUserSessions */
+    post: operations["revokeStaffUserSessions"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/site/{kind}/versions/{label}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** getPublishedContentVersion */
+    get: operations["getPublishedContentVersion"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4062,6 +4286,8 @@ export interface components {
       suspended: boolean;
       mfa_enabled: boolean;
       notify_updates: boolean;
+      email_verified?: boolean;
+      deleted?: boolean;
     };
     AuthSession: {
       user: components["schemas"]["User"] | null;
@@ -4079,6 +4305,8 @@ export interface components {
       /** @enum {string} */
       purpose: "login" | "reauth" | "email_change" | "recovery";
       accept_terms?: boolean;
+      /** @description Version presented to the customer; required for consent after an operator publishes legal terms. */
+      terms_version?: string;
     };
     EmailChallenge: {
       challenge_id: string;
@@ -4095,6 +4323,8 @@ export interface components {
       /** @enum {string} */
       purpose: "login" | "link" | "reauth";
       accept_terms?: boolean;
+      /** @description Version presented to the customer; required for consent after an operator publishes legal terms. */
+      terms_version?: string;
     };
     GoogleLocation: {
       /** Format: uri */
@@ -4133,6 +4363,7 @@ export interface components {
     };
     Users: {
       users: components["schemas"]["User"][];
+      next?: string;
     };
     RoleChange: {
       /** @enum {string} */
@@ -5372,7 +5603,14 @@ export interface components {
     };
     ReportQuery: {
       /** @enum {string} */
-      kind: "orders" | "catalog" | "staff" | "audits";
+      kind:
+        | "orders"
+        | "catalog"
+        | "staff"
+        | "audits"
+        | "receipts"
+        | "refunds"
+        | "payouts";
       /** Format: date-time */
       from: string;
       /** Format: date-time */
@@ -5797,6 +6035,126 @@ export interface components {
       rank: string;
       currency: string;
       max_amount_minor: number;
+    };
+    SiteContent: {
+      /** @enum {string} */
+      kind: "home" | "legal" | "retention" | "notifications";
+      version: number;
+      release_id: string;
+      label: string;
+      data: {
+        [key: string]: unknown;
+      };
+      /** Format: date-time */
+      updated_at: string;
+    };
+    SiteContentInput: {
+      version: number;
+      label: string;
+      data: {
+        [key: string]: unknown;
+      };
+      publish: boolean;
+    };
+    SiteHistory: {
+      releases: components["schemas"]["SiteContent"][];
+      next: string;
+    };
+    PrivacyRequest: {
+      manual_hold: boolean;
+      id: string;
+      user_id: string;
+      version: number;
+      /** @enum {string} */
+      state:
+        | "requested"
+        | "held"
+        | "reviewed"
+        | "erased_pending_files"
+        | "completed"
+        | "cancelled";
+      policy_id: string;
+      reviewed_policy_id: string;
+      hold_reason: string;
+      /** Format: date-time */
+      eligible_at: string | null;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    PrivacyRequests: {
+      requests: components["schemas"]["PrivacyRequest"][];
+      next: string;
+    };
+    PrivacyRequestInput: {
+      policy_id: string;
+      accept: boolean;
+    };
+    PrivacyChange: {
+      version: number;
+      /** @enum {string} */
+      action:
+        "review" | "hold" | "release_hold" | "erase" | "finalize" | "cancel";
+      reason: string;
+      policy_id: string;
+    };
+    PrivacyExportInput: {
+      section: string;
+      after: string;
+    };
+    PrivacyExport: {
+      section: string;
+      records: {
+        [key: string]: unknown;
+      }[];
+      next: string;
+      audit_id: string;
+      /** Format: date-time */
+      observed_at: string;
+    };
+    StaffAvailability: {
+      subscription: components["schemas"]["AvailabilitySubscription"];
+      user_id: string;
+      consent_version: string;
+      suppression_reason: string;
+      delivery_state: string;
+      /** Format: date-time */
+      last_sent_at: string | null;
+    };
+    StaffAvailabilityPage: {
+      subscriptions: components["schemas"]["StaffAvailability"][];
+      next: string;
+    };
+    StaffMediaFile: {
+      id: string;
+      user_id: string;
+      conversation_id: string;
+      state: string;
+      bound: boolean;
+      size: number;
+      content_type: string;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      expires_at: string;
+      /** Format: date-time */
+      purged_at: string | null;
+    };
+    StaffMediaPage: {
+      files: components["schemas"]["StaffMediaFile"][];
+      next: string;
+    };
+    StaffSuppressAlert: {
+      version: number;
+    };
+    ContentProblem: {
+      /** @enum {string} */
+      code: "content_invalid" | "content_conflict";
+    };
+    PrivacyProblem: {
+      /** @enum {string} */
+      code: "privacy_invalid" | "privacy_conflict";
     };
   };
   responses: never;
@@ -6419,7 +6777,11 @@ export interface operations {
   };
   getUsers: {
     parameters: {
-      query?: never;
+      query?: {
+        after?: string;
+        search?: string;
+        state?: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -8288,6 +8650,12 @@ export interface operations {
         after?: string;
         state?: string;
         search?: string;
+        game?: string;
+        kind?: string;
+        customer?: string;
+        assigned?: string;
+        from?: string;
+        to?: string;
       };
       header?: never;
       path?: never;
@@ -9399,6 +9767,7 @@ export interface operations {
         state?: string;
         assigned?: string;
         order_id?: string;
+        customer?: string;
       };
       header?: never;
       path?: never;
@@ -10503,6 +10872,57 @@ export interface operations {
         };
       };
       /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MediaProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getStaffMediaDirectory: {
+    parameters: {
+      query?: {
+        after?: string;
+        customer?: string;
+        state?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StaffMediaPage"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MediaProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
       422: {
         headers: {
           [name: string]: unknown;
@@ -15747,7 +16167,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Private bounded report; audits require owner; no financial recognition or secrets */
+      /** @description Bounded operational or financial report with explicit date/recognition basis; no private provider secrets, cross-currency totals or inferred exchange rates. */
       200: {
         headers: {
           [name: string]: unknown;
@@ -15801,7 +16221,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Private bounded report; audits require owner; no financial recognition or secrets */
+      /** @description Bounded operational or financial report with explicit date/recognition basis; no private provider secrets, cross-currency totals or inferred exchange rates. */
       200: {
         headers: {
           /** @description Fixed report attachment filename */
@@ -17768,6 +18188,747 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getPublishedSiteContent: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        kind: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SiteContent"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContentProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getSiteDraft: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        kind: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SiteContent"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContentProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  saveOrPublishSiteContent: {
+    parameters: {
+      query?: never;
+      header: {
+        Origin: string;
+        "X-CSRF-Token": string;
+      };
+      path: {
+        kind: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SiteContentInput"];
+      };
+    };
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SiteContent"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContentProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getSitePublicationHistory: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path: {
+        kind: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SiteHistory"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContentProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getOwnPrivacyRequests: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyRequests"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  requestOwnPrivacyErasure: {
+    parameters: {
+      query?: never;
+      header: {
+        Origin: string;
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PrivacyRequestInput"];
+      };
+    };
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyRequest"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  changeOwnPrivacyRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        Origin: string;
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PrivacyChange"];
+      };
+    };
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyRequest"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getOwnerReviewedPrivacyRequests: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyRequests"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  changeOwnerReviewedPrivacyRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        Origin: string;
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PrivacyChange"];
+      };
+    };
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyRequest"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  exportOwnPersonalData: {
+    parameters: {
+      query?: never;
+      header: {
+        Origin: string;
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PrivacyExportInput"];
+      };
+    };
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyExport"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PrivacyProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getStaffAvailabilityConsent: {
+    parameters: {
+      query?: {
+        after?: string;
+        customer?: string;
+        state?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StaffAvailabilityPage"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  suppressAvailabilityDelivery: {
+    parameters: {
+      query?: never;
+      header: {
+        Origin: string;
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StaffSuppressAlert"];
+      };
+    };
+    responses: {
+      /** @description Successful bounded operation */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilityProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getStaffUserSessions: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SessionList"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  revokeStaffUserSessions: {
+    parameters: {
+      query?: never;
+      header: {
+        Origin: string;
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful bounded operation */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getPublishedContentVersion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        kind: string;
+        label: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful bounded operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SiteContent"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContentProblem"];
+        };
+      };
+      /** @description Reload current revision, resolve holds or correct validation. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ContentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
         };
       };
     };

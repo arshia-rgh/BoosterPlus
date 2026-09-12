@@ -75,7 +75,7 @@ func (s *Service) GrantRole(ctx context.Context, p *Principal, id, role string) 
 		if targetErr != nil {
 			return targetErr
 		}
-		if target.EmailVerifiedAt == nil {
+		if target.EmailVerifiedAt == nil || target.DeletedAt != nil {
 			return ErrInvalid
 		}
 		if target.Role == RoleOwner && role != RoleOwner {
@@ -119,6 +119,9 @@ func (s *Service) Suspend(ctx context.Context, p *Principal, id string, suspende
 		target, targetErr := tx.User.Get(ctx, id)
 		if targetErr != nil {
 			return targetErr
+		}
+		if target.DeletedAt != nil {
+			return ErrConflict
 		}
 		if id == actor.User.ID {
 			return ErrForbidden

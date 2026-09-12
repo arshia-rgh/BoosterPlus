@@ -39,4 +39,9 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 
 ## Current delivery boundary (12 September 2026)
 
-- R07 is delivered. The owner has now authorized completing R08 and R09, with a separate fully verified commit and push for each stage. Stop after R09. R10/R11 remain deferred.
+- R07 and R08 are delivered. The owner authorized completing R09 with its own fully verified commit and push. Stop after R09. R10/R11 remain deferred.
+
+## Owner retention decision (13 September 2026)
+
+- Customer deletion must stay disabled until the owner publishes and enables an explicit retention policy. Do not infer minimum periods or backup promises.
+- Preserve active-order/dispute holds and financial/audit evidence. Erasure completion must distinguish live-data cleanup from pending file purges and retained backups/evidence.

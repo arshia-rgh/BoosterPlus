@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../validation";
 
 export const sellerTermsSchema = z.object({
   model: z.enum(["consignment", "buy_first"]),

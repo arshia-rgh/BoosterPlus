@@ -1,3 +1,4 @@
+import { loadHome } from "../site/loaders.server";
 import { HomePage } from "../home/page";
 
 export function meta() {
@@ -9,5 +10,8 @@ export function meta() {
         "Your next level starts here. Explore Mobile Legends boosting, custom rank journeys and fixed packages with Booster Plus. Live checkout is being prepared.",
     },
   ];
+}
+export function loader() {
+  return loadHome();
 }
 export default HomePage;

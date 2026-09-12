@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type SubmitEvent } from "react";
 import { Link, useParams } from "react-router";
-import { z } from "zod";
+import { z } from "../validation";
 import { command, post, userSchema } from "../identity/api";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { useResource } from "../orders/resource";
@@ -468,15 +468,21 @@ export default function Thread({
     thread = resource.error ? null : resource.data;
   const retry = resource.reload;
   useEffect(() => {
+    // Listen before any failed-request render: an online event can arrive before
+    // that render's passive effects run. Recovery also invalidates stale reads.
+    window.addEventListener("online", retry);
+    return () => {
+      window.removeEventListener("online", retry);
+    };
+  }, [retry]);
+  useEffect(() => {
     if (!resource.error || resource.loading) return;
     // Keep recovery outside Messages, which unmounts to conceal private data on failure.
     const poll = setInterval(() => {
       if (document.visibilityState === "visible") retry();
     }, 10000);
-    window.addEventListener("online", retry);
     return () => {
       clearInterval(poll);
-      window.removeEventListener("online", retry);
     };
   }, [resource.error, resource.loading, retry]);
   return (

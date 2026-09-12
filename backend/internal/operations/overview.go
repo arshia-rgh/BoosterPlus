@@ -11,20 +11,31 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentattempt"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/privacyrequest"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
 // Overview returns defined workflow counts and bounded action samples under current staff authority.
 func (s *Store) Overview(ctx context.Context, p *identity.Principal) (out Overview, err error) {
-	err = s.private(ctx, p, false, func(tx *ent.Tx, _ *identity.Principal) error {
+	err = s.private(ctx, p, false, func(tx *ent.Tx, current *identity.Principal) error {
 		now := s.now().UTC()
 		out = Overview{ObservedAt: now, Cards: []Card{}, Requests: []Item{}, Sessions: []Item{}, Jobs: []Job{}}
 		queries := []struct {
 			key, label, detail, href string
 			count                    func(context.Context) (int, error)
 		}{
+			{"financial_exceptions", "Payments requiring review", "Payment attempts with unresolved evidence or route issues.", "/admin/finance", tx.PaymentAttempt.Query().Where(paymentattempt.IssueNEQ("")).Count},
+			{"outgoing", "Outgoing obligations pending", "Refund and seller payout obligations not yet confirmed or cancelled.", "/admin/finance", tx.MoneyTransfer.Query().Where(moneytransfer.StateNotIn("confirmed", "cancelled")).Count},
+			{"cases", "Active service cases", "Open disputes and remedy cases holding an order.", "/admin/finance", tx.ServiceCase.Query().Where(servicecase.ActiveOrderIDNotNil()).Count},
+			{"expiring_checkout", "Checkouts expiring within 24 hours", "Active payment attempts whose deadline is approaching.", "/admin/finance", tx.PaymentAttempt.Query().Where(paymentattempt.ActiveContractIDNotNil(), paymentattempt.ExpiresAtGT(now), paymentattempt.ExpiresAtLTE(now.Add(24*time.Hour))).Count},
+			{"media_processing", "Files awaiting scanning", "Private uploads queued for antivirus and sanitization.", "/admin/media", tx.MediaFile.Query().Where(mediafile.StateEQ(mediafile.StateQueued)).Count},
+			{"media_cleanup", "Files awaiting purge", "Revoked private files whose object cleanup is still pending.", "/admin/media", tx.MediaFile.Query().Where(mediafile.StateEQ(mediafile.StateDeleted), mediafile.PurgedAtIsNil()).Count},
 			{"requests", "Requests to review", "Custom orders submitted for administrator review.", "/admin/orders", tx.Order.Query().Where(order.StateEQ(order.StateSubmitted)).Count},
 			{"customer", "Waiting for customers", "Orders needing information or awaiting quote acceptance.", "/admin/orders", tx.Order.Query().Where(order.StateIn(order.StateNeedsInformation, order.StateQuoted)).Count},
 			{"payment", "Awaiting payment", "Accepted commercial orders awaiting payment; this is not a settlement or revenue total.", "/admin/orders", tx.Order.Query().Where(order.StateEQ(order.StateAwaitingPayment)).Count},
@@ -44,6 +55,13 @@ func (s *Store) Overview(ctx context.Context, p *identity.Principal) (out Overvi
 				return e
 			}
 			out.Cards = append(out.Cards, Card{q.key, q.label, n, q.detail, q.href})
+		}
+		if current.User.Role == identity.RoleOwner {
+			n, e := tx.PrivacyRequest.Query().Where(privacyrequest.StateNotIn("completed", "cancelled")).Count(ctx)
+			if e != nil {
+				return e
+			}
+			out.Cards = append(out.Cards, Card{"privacy", "Privacy requests requiring review", n, "Owner review, retention holds or pending file cleanup.", "/admin/privacy"})
 		}
 		requests, e := tx.Order.Query().Where(order.StateEQ(order.StateSubmitted)).Order(ent.Asc(order.FieldCreatedAt), ent.Asc(order.FieldID)).Limit(6).All(ctx)
 		if e != nil {

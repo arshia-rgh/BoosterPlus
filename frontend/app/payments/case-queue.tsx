@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { z } from "zod";
+import { z } from "../validation";
 import { Action, ErrorNotice, Text } from "../catalog/controls";
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";

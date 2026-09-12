@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../validation";
 export const localTimeSchema = z.object({
   local: z.string(),
   zone: z.string(),

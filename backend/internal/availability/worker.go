@@ -14,6 +14,7 @@ import (
 	target "github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitytarget"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/sitecontent"
 )
 
 type fanoutRef struct {
@@ -256,7 +257,11 @@ func (s *Store) EmailHandler(sender identity.Sender) jobs.Handler {
 			}
 			href := targetHref(s.origin, t)
 			unsubscribe := s.origin + "/availability/unsubscribe#" + row.ID + "/" + strconv.Itoa(row.Version) + "/" + s.token(row)
-			message = &identity.Message{To: account.Email, Subject: "An offer you follow has availability", Body: "An offer matching your subscription is available. Check its current price, eligibility and availability before ordering. This email is not a reservation or purchase guarantee.\n" + href + "\n\nStop these availability emails:\n" + unsubscribe + "\n\nManage all availability alerts: " + s.origin + "/availability"}
+			messageCopy, copyErr := sitecontent.NotificationCopy(ctx, tx.Client())
+			if copyErr != nil {
+				return copyErr
+			}
+			message = &identity.Message{To: account.Email, Subject: messageCopy.AvailabilitySubject, Body: messageCopy.AvailabilityIntro + "\nCheck its current price, eligibility and availability before ordering. This email is not a reservation or purchase guarantee.\n" + href + "\n\nStop these availability emails:\n" + unsubscribe + "\n\nManage all availability alerts: " + s.origin + "/availability" + "\n\n" + messageCopy.Footer}
 			return nil
 		})
 		if e != nil {

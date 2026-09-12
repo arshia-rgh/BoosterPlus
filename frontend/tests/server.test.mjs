@@ -47,6 +47,19 @@ test(
         res.end(JSON.stringify({ terms_version: "approved-test-v1" }));
         return;
       }
+      if (req.url === "/api/v1/site/legal") {
+        res.end(
+          JSON.stringify({
+            kind: "legal",
+            version: 0,
+            release_id: "",
+            label: "",
+            data: {},
+            updated_at: new Date().toISOString(),
+          }),
+        );
+        return;
+      }
       res.setHeader(
         "Set-Cookie",
         "__Host-test=opaque; Secure; HttpOnly; SameSite=Lax; Path=/",
@@ -231,6 +244,70 @@ for (const application of ["storefront", "admin", "both"]) {
       assert.equal((await fetch(origin + "/admin/missing-page")).status, 404);
       assert.equal((await fetch(origin + "/administrator")).status, 404);
       assert.equal((await fetch(origin + "/admin/.env")).status, 404);
+    },
+  );
+}
+
+for (const published of [true, false]) {
+  test(
+    `production startup requires matching published legal revision (${String(published)})`,
+    { timeout: 15000 },
+    async (t) => {
+      const backend = createServer((req, res) => {
+        res.setHeader("Content-Type", "application/json");
+        if (req.url === "/api/v1/auth/session") {
+          res.end(JSON.stringify({ terms_version: "published-v2" }));
+        } else if (req.url === "/api/v1/site/legal") {
+          res.end(
+            JSON.stringify({
+              kind: "legal",
+              version: 2,
+              release_id: published ? "published-id" : "",
+              label: published ? "published-v2" : "wrong-version",
+              data: {
+                text: "Approved published terms for this isolated startup check.",
+              },
+              updated_at: new Date().toISOString(),
+            }),
+          );
+        } else {
+          res.statusCode = 404;
+          res.end();
+        }
+      });
+      const backendPort = await listen(backend);
+      t.after(() => new Promise((resolve) => backend.close(resolve)));
+      const frontendPort = await port();
+      const origin = "http://127.0.0.1:" + frontendPort;
+      const child = spawn(process.execPath, ["server.mjs"], {
+        env: {
+          ...process.env,
+          HOST: "127.0.0.1",
+          PORT: String(frontendPort),
+          APP_ENV: "production",
+          API_ORIGIN: "http://127.0.0.1:" + backendPort,
+          PROXY_SHARED_KEY: randomBytes(32).toString("hex"),
+          TERMS_VERSION: "bootstrap-v1",
+          ACCOUNT_TERMS_TEXT: "Approved retained bootstrap text",
+          TRUST_PROXY_CIDRS: "",
+        },
+        stdio: "ignore",
+      });
+      t.after(() => stop(child));
+      if (published) {
+        await started(child, origin);
+        assert.match(
+          await (await fetch(origin + "/terms")).text(),
+          /Approved published terms/,
+        );
+        assert.match(
+          await (await fetch(origin + "/terms?version=bootstrap-v1")).text(),
+          /Approved retained bootstrap text/,
+        );
+      } else {
+        const [code] = await once(child, "exit");
+        assert.notEqual(code, 0);
+      }
     },
   );
 }

@@ -1,19 +1,11 @@
-const previewText =
-  "This environment is for testing Booster Plus accounts. Do not provide real game credentials or payment information. Purchases and public service terms are not available yet.\n\nTest accounts use a verified email or Google identity. Staff require an authenticator at each sign-in. Security notifications are mandatory.\n\nPublic launch requires approved account terms and privacy information from the operator. This preview text must be replaced before public registration opens.";
-export function loader() {
-  const text = process.env.ACCOUNT_TERMS_TEXT?.trim();
-  const version = process.env.TERMS_VERSION ?? "development-preview-v1";
-  const local = ["development", "test"].includes(
-    process.env.APP_ENV ?? "development",
-  );
-  if (!local && (!text || version.startsWith("development-")))
-    throw new Error("Account terms unavailable");
-  return { text: text || previewText, preview: !text, version };
+import { loadTerms } from "../site/loaders.server";
+export function loader({ request }: { request: Request }) {
+  return loadTerms(new URL(request.url).searchParams.get("version") ?? "");
 }
 export default function Terms({
   loaderData,
 }: {
-  loaderData: ReturnType<typeof loader>;
+  loaderData: Awaited<ReturnType<typeof loader>>;
 }) {
   return (
     <main id="main" className="page">

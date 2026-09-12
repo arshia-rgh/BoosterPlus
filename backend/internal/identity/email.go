@@ -23,6 +23,7 @@ type EmailRequest struct {
 	Purpose      string
 	Browser      string
 	IP           string
+	TermsVersion string
 	AcceptTerms  bool
 	Principal    *Principal
 }
@@ -121,13 +122,20 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 		return "", codeErr
 	}
 	err := s.transaction(ctx, func(tx *ent.Tx) error {
+		if e := lockSecurity(ctx, tx); e != nil {
+			return e
+		}
 		// A newly issued code invalidates previous codes for the same destination/purpose.
 		if _, invalidateErr := tx.AuthChallenge.Update().Where(authchallenge.EmailEQ(email), authchallenge.PurposeEQ(input.Purpose), authchallenge.ConsumedEQ(false)).SetConsumed(true).Save(ctx); invalidateErr != nil {
 			return invalidateErr
 		}
 		terms := ""
 		if input.AcceptTerms {
-			terms = s.config.TermsVersion
+			var termsErr error
+			terms, termsErr = s.acceptedTerms(ctx, tx.Client(), input.TermsVersion)
+			if termsErr != nil {
+				return termsErr
+			}
 		}
 		_, createErr := tx.AuthChallenge.Create().SetID(id).SetEmail(email).SetPurpose(input.Purpose).SetUserID(accountID).SetSessionID(sessionID).SetBrowserHash(s.digest("browser", input.Browser)).SetCodeDigest(s.digest("code", id, input.Purpose, code)).SetTermsVersion(terms).SetCreatedAt(s.now()).SetExpiresAt(s.now().Add(10 * time.Minute)).Save(ctx)
 		if createErr != nil {
@@ -187,6 +195,9 @@ func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string,
 	// Preserve failed-attempt/consumption state while returning a public rejection after commit.
 	reject := func(reason error) error { resultErr = reason; return nil }
 	txErr := s.transaction(ctx, func(tx *ent.Tx) error {
+		if e := lockSecurity(ctx, tx); e != nil {
+			return e
+		}
 		output = Verification{}
 		resultErr = ErrInvalid
 		if p != nil {
@@ -219,9 +230,13 @@ func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string,
 		output.Purpose = challenge.Purpose
 		switch challenge.Purpose {
 		case "login":
+			currentTerms, termsErr := s.TermsVersion(ctx, tx.Client())
+			if termsErr != nil {
+				return termsErr
+			}
 			account, accountErr := tx.User.Query().Where(user.EmailEQ(challenge.Email)).Only(ctx)
 			if ent.IsNotFound(accountErr) {
-				if challenge.TermsVersion == "" || challenge.TermsVersion != s.config.TermsVersion {
+				if challenge.TermsVersion == "" || challenge.TermsVersion != currentTerms {
 					resultErr = ErrTerms
 					return nil
 				}
@@ -239,8 +254,8 @@ func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string,
 			if account.Suspended {
 				return nil
 			}
-			if account.TermsVersion != s.config.TermsVersion {
-				if challenge.TermsVersion != s.config.TermsVersion || challenge.TermsVersion == "" {
+			if account.TermsVersion != currentTerms {
+				if challenge.TermsVersion != currentTerms || challenge.TermsVersion == "" {
 					resultErr = ErrTerms
 					return nil
 				}

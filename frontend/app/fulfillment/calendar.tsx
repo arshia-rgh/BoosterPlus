@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { z } from "zod";
+import { z } from "../validation";
 import { Action, Check, ErrorNotice, Select, Text } from "../catalog/controls";
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";

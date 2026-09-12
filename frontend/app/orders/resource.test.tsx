@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
-import { z } from "zod";
+import { z } from "../validation";
 import { get } from "../identity/api";
 import { useResource } from "./resource";
 vi.mock("../identity/api", () => ({ get: vi.fn() }));

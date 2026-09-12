@@ -165,7 +165,7 @@ test("no-JS and failed artwork retain readable content, navigation and static ra
       .filter({ hasText: "What is different about fixed packages?" })
       .click();
     await expect(page.locator("details[open]")).toContainText(
-      "no payment is taken",
+      "Payment is required before fulfillment.",
     );
     await page.getByRole("link", { name: /explore games/i }).click();
     await expect(page).toHaveURL(/\/games$/);

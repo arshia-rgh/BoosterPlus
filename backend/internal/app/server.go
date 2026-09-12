@@ -28,9 +28,11 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/privacy"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/reports"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/resale"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/reviews"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/sitecontent"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/submissions"
 )
 
@@ -83,7 +85,7 @@ func Server(ctx context.Context, cfg config.Config, logger *slog.Logger) (result
 	if outgoing, ok := paymentProvider.(payments.OutgoingProvider); ok {
 		finance.ConfigureOutgoing(outgoing, cfg.Crypto.OutgoingEnabled)
 	}
-	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, finance.Register, resale.New(client, auth, cfg.Vault, nil).Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.New(client, auth, nil).Register, notices.Register, files.Register, work.Register, submissions.New(client, auth, nil).Register, reviews.New(client, auth, nil).Register, operations.New(client, auth, nil).Register, alerts.Register, reports.New(auth, nil).Register))
+	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, finance.Register, resale.New(client, auth, cfg.Vault, nil).Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.New(client, auth, nil).Register, notices.Register, files.Register, work.Register, submissions.New(client, auth, nil).Register, reviews.New(client, auth, nil).Register, operations.New(client, auth, nil).Register, alerts.Register, reports.New(auth, nil).Register, privacy.New(client, auth, nil).Register, sitecontent.New(client, auth, nil).Register))
 }
 
 // Serve applies transport timeouts and drains in-flight work on cancellation.

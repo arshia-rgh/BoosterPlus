@@ -2,7 +2,7 @@ import SellerPayoutQueue from "../resale/payout-queue";
 import CaseQueue from "./case-queue";
 import { useState } from "react";
 import { Link } from "react-router";
-import { z } from "zod";
+import { z } from "../validation";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { post } from "../identity/api";

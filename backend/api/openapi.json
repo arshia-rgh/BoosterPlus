@@ -881,7 +881,30 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       }
     },
     "/api/v1/admin/users/{id}": {
@@ -3563,6 +3586,48 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "game",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customer",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assigned",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ]
       }
@@ -5203,6 +5268,13 @@
           },
           {
             "name": "order_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customer",
             "in": "query",
             "schema": {
               "type": "string"
@@ -6877,6 +6949,80 @@
             }
           }
         }
+      },
+      "get": {
+        "operationId": "getStaffMediaDirectory",
+        "summary": "getStaffMediaDirectory",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customer",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMediaPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaProblem"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/admin/media/{id}": {
@@ -7273,7 +7419,7 @@
     "/api/v1/admin/media/{id}/retry": {
       "post": {
         "operationId": "staffRetryMedia",
-        "summary": "Retry only an exhausted scan for an owned, unbound, unexpired upload. Staff require recent authentication.",
+        "summary": "Audited staff maintenance for authorized unbound uploads; recent factors required. Bound evidence cannot be removed.",
         "security": [
           {
             "sessionCookie": []
@@ -7345,7 +7491,7 @@
     "/api/v1/admin/media/{id}/remove": {
       "post": {
         "operationId": "staffRemoveMedia",
-        "summary": "Discard an owned unbound upload; cleanup retries deletion in private storage.",
+        "summary": "Audited staff maintenance for authorized unbound uploads; recent factors required. Bound evidence cannot be removed.",
         "security": [
           {
             "sessionCookie": []
@@ -14661,7 +14807,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Private bounded report; audits require owner; no financial recognition or secrets",
+            "description": "Bounded operational or financial report with explicit date/recognition basis; no private provider secrets, cross-currency totals or inferred exchange rates.",
             "content": {
               "application/json": {
                 "schema": {
@@ -14742,7 +14888,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Private bounded report; audits require owner; no financial recognition or secrets",
+            "description": "Bounded operational or financial report with explicit date/recognition basis; no private provider secrets, cross-currency totals or inferred exchange rates.",
             "content": {
               "application/json": {
                 "schema": {
@@ -17825,6 +17971,1067 @@
           }
         }
       }
+    },
+    "/api/v1/site/{kind}": {
+      "get": {
+        "operationId": "getPublishedSiteContent",
+        "summary": "getPublishedSiteContent",
+        "security": [],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteContent"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/site/{kind}": {
+      "get": {
+        "operationId": "getSiteDraft",
+        "summary": "getSiteDraft",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteContent"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "saveOrPublishSiteContent",
+        "summary": "saveOrPublishSiteContent",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteContent"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SiteContentInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/site/{kind}/history": {
+      "get": {
+        "operationId": "getSitePublicationHistory",
+        "summary": "getSitePublicationHistory",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/privacy/requests": {
+      "get": {
+        "operationId": "getOwnPrivacyRequests",
+        "summary": "getOwnPrivacyRequests",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyRequests"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "requestOwnPrivacyErasure",
+        "summary": "requestOwnPrivacyErasure",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyRequest"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacyRequestInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/privacy/requests/{id}": {
+      "post": {
+        "operationId": "changeOwnPrivacyRequest",
+        "summary": "changeOwnPrivacyRequest",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyRequest"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacyChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/privacy/requests": {
+      "get": {
+        "operationId": "getOwnerReviewedPrivacyRequests",
+        "summary": "getOwnerReviewedPrivacyRequests",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyRequests"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/privacy/requests/{id}": {
+      "post": {
+        "operationId": "changeOwnerReviewedPrivacyRequest",
+        "summary": "changeOwnerReviewedPrivacyRequest",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyRequest"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacyChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/privacy/export": {
+      "post": {
+        "operationId": "exportOwnPersonalData",
+        "summary": "exportOwnPersonalData",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyExport"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacyExportInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/availability": {
+      "get": {
+        "operationId": "getStaffAvailabilityConsent",
+        "summary": "getStaffAvailabilityConsent",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customer",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffAvailabilityPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/availability/{id}/suppress": {
+      "post": {
+        "operationId": "suppressAvailabilityDelivery",
+        "summary": "suppressAvailabilityDelivery",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful bounded operation"
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffSuppressAlert"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users/{id}/sessions": {
+      "get": {
+        "operationId": "getStaffUserSessions",
+        "summary": "getStaffUserSessions",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users/{id}/sessions/revoke": {
+      "post": {
+        "operationId": "revokeStaffUserSessions",
+        "summary": "revokeStaffUserSessions",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful bounded operation"
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/site/{kind}/versions/{label}": {
+      "get": {
+        "operationId": "getPublishedContentVersion",
+        "summary": "getPublishedContentVersion",
+        "security": [],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "label",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful bounded operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteContent"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload current revision, resolve holds or correct validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentProblem"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -17903,6 +19110,12 @@
             "type": "boolean"
           },
           "notify_updates": {
+            "type": "boolean"
+          },
+          "email_verified": {
+            "type": "boolean"
+          },
+          "deleted": {
             "type": "boolean"
           }
         },
@@ -17985,6 +19198,11 @@
           },
           "accept_terms": {
             "type": "boolean"
+          },
+          "terms_version": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Version presented to the customer; required for consent after an operator publishes legal terms."
           }
         },
         "required": ["purpose"]
@@ -18037,6 +19255,11 @@
           },
           "accept_terms": {
             "type": "boolean"
+          },
+          "terms_version": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Version presented to the customer; required for consent after an operator publishes legal terms."
           }
         },
         "required": ["purpose"]
@@ -18171,6 +19394,9 @@
             "items": {
               "$ref": "#/components/schemas/User"
             }
+          },
+          "next": {
+            "type": "string"
           }
         },
         "required": ["users"]
@@ -22718,7 +23944,15 @@
         "properties": {
           "kind": {
             "type": "string",
-            "enum": ["orders", "catalog", "staff", "audits"]
+            "enum": [
+              "orders",
+              "catalog",
+              "staff",
+              "audits",
+              "receipts",
+              "refunds",
+              "payouts"
+            ]
           },
           "from": {
             "type": "string",
@@ -24347,6 +25581,400 @@
             "maximum": 999999999999
           }
         }
+      },
+      "SiteContent": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["home", "legal", "retention", "notifications"]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "release_id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "kind",
+          "version",
+          "release_id",
+          "label",
+          "data",
+          "updated_at"
+        ]
+      },
+      "SiteContentInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "label": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "publish": {
+            "type": "boolean"
+          }
+        },
+        "required": ["version", "label", "data", "publish"]
+      },
+      "SiteHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "releases": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiteContent"
+            },
+            "maxItems": 50
+          },
+          "next": {
+            "type": "string"
+          }
+        },
+        "required": ["releases", "next"]
+      },
+      "PrivacyRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "manual_hold": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "requested",
+              "held",
+              "reviewed",
+              "erased_pending_files",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "policy_id": {
+            "type": "string"
+          },
+          "reviewed_policy_id": {
+            "type": "string"
+          },
+          "hold_reason": {
+            "type": "string"
+          },
+          "eligible_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "manual_hold",
+          "id",
+          "user_id",
+          "version",
+          "state",
+          "policy_id",
+          "reviewed_policy_id",
+          "hold_reason",
+          "eligible_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "PrivacyRequests": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PrivacyRequest"
+            },
+            "maxItems": 50
+          },
+          "next": {
+            "type": "string"
+          }
+        },
+        "required": ["requests", "next"]
+      },
+      "PrivacyRequestInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "policy_id": {
+            "type": "string"
+          },
+          "accept": {
+            "type": "boolean"
+          }
+        },
+        "required": ["policy_id", "accept"]
+      },
+      "PrivacyChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "review",
+              "hold",
+              "release_hold",
+              "erase",
+              "finalize",
+              "cancel"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "policy_id": {
+            "type": "string"
+          }
+        },
+        "required": ["version", "action", "reason", "policy_id"]
+      },
+      "PrivacyExportInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "section": {
+            "type": "string"
+          },
+          "after": {
+            "type": "string"
+          }
+        },
+        "required": ["section", "after"]
+      },
+      "PrivacyExport": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "section": {
+            "type": "string"
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "maxItems": 100
+          },
+          "next": {
+            "type": "string"
+          },
+          "audit_id": {
+            "type": "string"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["section", "records", "next", "audit_id", "observed_at"]
+      },
+      "StaffAvailability": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "subscription": {
+            "$ref": "#/components/schemas/AvailabilitySubscription"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "consent_version": {
+            "type": "string"
+          },
+          "suppression_reason": {
+            "type": "string"
+          },
+          "delivery_state": {
+            "type": "string"
+          },
+          "last_sent_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "subscription",
+          "user_id",
+          "consent_version",
+          "suppression_reason",
+          "delivery_state",
+          "last_sent_at"
+        ]
+      },
+      "StaffAvailabilityPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffAvailability"
+            },
+            "maxItems": 50
+          },
+          "next": {
+            "type": "string"
+          }
+        },
+        "required": ["subscriptions", "next"]
+      },
+      "StaffMediaFile": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "conversation_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "bound": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "purged_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "conversation_id",
+          "state",
+          "bound",
+          "size",
+          "content_type",
+          "created_at",
+          "expires_at",
+          "purged_at"
+        ]
+      },
+      "StaffMediaPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffMediaFile"
+            },
+            "maxItems": 50
+          },
+          "next": {
+            "type": "string"
+          }
+        },
+        "required": ["files", "next"]
+      },
+      "StaffSuppressAlert": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          }
+        },
+        "required": ["version"]
+      },
+      "ContentProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["content_invalid", "content_conflict"]
+          }
+        },
+        "required": ["code"]
+      },
+      "PrivacyProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["privacy_invalid", "privacy_conflict"]
+          }
+        },
+        "required": ["code"]
       }
     },
     "securitySchemes": {

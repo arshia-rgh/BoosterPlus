@@ -31,6 +31,7 @@ export default [
     route("support", "routes/support.tsx"),
     route("support/:id", "routes/conversation.tsx"),
     route("notifications", "routes/notifications.tsx"),
+    route("privacy", "routes/privacy.tsx"),
     route("account", "routes/portal.tsx", { id: "account" }),
     route("booster/support/:id", "routes/conversation-booster.tsx"),
     route("booster/calendar", "routes/booster-calendar.tsx"),

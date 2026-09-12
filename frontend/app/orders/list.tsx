@@ -6,17 +6,32 @@ import { useResource } from "./resource";
 export default function OrderList({ admin = false }: { admin?: boolean }) {
   const [params, setParams] = useSearchParams(),
     [search, setSearch] = useState(params.get("search") ?? ""),
-    [state, setState] = useState(params.get("state") ?? "");
+    [state, setState] = useState(params.get("state") ?? ""),
+    [advanced, setAdvanced] = useState(
+      Object.fromEntries(
+        ["game", "kind", "customer", "assigned", "from", "to"].map((key) => [
+          key,
+          params.get(key) ?? "",
+        ]),
+      ),
+    );
   const base = admin ? "/admin/orders" : "/orders",
     query = new URLSearchParams({
       after: params.get("after") ?? "",
       state: params.get("state") ?? "",
       search: params.get("search") ?? "",
+      ...(admin
+        ? Object.fromEntries(
+            ["game", "kind", "customer", "assigned", "from", "to"].map(
+              (key) => [key, params.get(key) ?? ""],
+            ),
+          )
+        : {}),
     });
   const resource = useResource(base + "?" + query.toString(), listingSchema);
   function filter(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    setParams({ state, search });
+    setParams({ state, search, ...(admin ? advanced : {}) });
   }
   return (
     <section>
@@ -88,6 +103,64 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
             ...states.map((v) => [v, stateLabel(v)] as const),
           ]}
         />
+        {admin && (
+          <>
+            <Text
+              label="Game slug"
+              value={advanced.game ?? ""}
+              change={(v) => {
+                setAdvanced({ ...advanced, game: v });
+              }}
+            />
+            <Select
+              label="Order type"
+              value={advanced.kind ?? ""}
+              change={(v) => {
+                setAdvanced({ ...advanced, kind: v });
+              }}
+              options={[
+                ["", "All types"],
+                ["custom", "Custom boost"],
+                ["package", "Fixed pack"],
+                ["account", "Account purchase"],
+              ]}
+            />
+            <Text
+              label="Customer ID"
+              value={advanced.customer ?? ""}
+              change={(v) => {
+                setAdvanced({ ...advanced, customer: v });
+              }}
+            />
+            <Text
+              label="Assignee ID or unassigned"
+              value={advanced.assigned ?? ""}
+              change={(v) => {
+                setAdvanced({ ...advanced, assigned: v });
+              }}
+            />
+            <label>
+              Created from (UTC, inclusive)
+              <input
+                type="date"
+                value={advanced.from ?? ""}
+                onChange={(event) => {
+                  setAdvanced({ ...advanced, from: event.target.value });
+                }}
+              />
+            </label>
+            <label>
+              Created until (UTC, exclusive)
+              <input
+                type="date"
+                value={advanced.to ?? ""}
+                onChange={(event) => {
+                  setAdvanced({ ...advanced, to: event.target.value });
+                }}
+              />
+            </label>
+          </>
+        )}
         <button className="button" type="submit">
           Filter orders
         </button>
@@ -138,7 +211,9 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
                       <td>
                         {order.kind === "package"
                           ? "Fixed package"
-                          : "Custom request"}
+                          : order.kind === "account"
+                            ? "Account purchase"
+                            : "Custom request"}
                       </td>
                       <td>
                         <span className="status">
@@ -165,7 +240,9 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
                       <span>
                         {order.kind === "package"
                           ? "Fixed package"
-                          : "Custom request"}{" "}
+                          : order.kind === "account"
+                            ? "Account purchase"
+                            : "Custom request"}{" "}
                         · {stateLabel(order.state)}
                       </span>
                       <small>Order {order.id}</small>

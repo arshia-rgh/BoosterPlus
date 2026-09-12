@@ -549,6 +549,18 @@ func (f PaymentSignalFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PaymentSignalMutation", m)
 }
 
+// The PrivacyRequestFunc type is an adapter to allow the use of ordinary
+// function as PrivacyRequest mutator.
+type PrivacyRequestFunc func(context.Context, *ent.PrivacyRequestMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PrivacyRequestFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PrivacyRequestMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PrivacyRequestMutation", m)
+}
+
 // The ReviewFunc type is an adapter to allow the use of ordinary
 // function as Review mutator.
 type ReviewFunc func(context.Context, *ent.ReviewMutation) (ent.Value, error)
@@ -619,6 +631,30 @@ func (f ServiceCaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ServiceCaseMutation", m)
+}
+
+// The SiteReleaseFunc type is an adapter to allow the use of ordinary
+// function as SiteRelease mutator.
+type SiteReleaseFunc func(context.Context, *ent.SiteReleaseMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SiteReleaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SiteReleaseMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SiteReleaseMutation", m)
+}
+
+// The SiteSettingFunc type is an adapter to allow the use of ordinary
+// function as SiteSetting mutator.
+type SiteSettingFunc func(context.Context, *ent.SiteSettingMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SiteSettingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SiteSettingMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SiteSettingMutation", m)
 }
 
 // The StaffProfileFunc type is an adapter to allow the use of ordinary

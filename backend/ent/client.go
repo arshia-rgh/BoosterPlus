@@ -59,12 +59,15 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentrecord"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentsettings"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentsignal"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/privacyrequest"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/selleroffer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sellerofferevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/siterelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/sitesetting"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
@@ -171,6 +174,8 @@ type Client struct {
 	PaymentSettings *PaymentSettingsClient
 	// PaymentSignal is the client for interacting with the PaymentSignal builders.
 	PaymentSignal *PaymentSignalClient
+	// PrivacyRequest is the client for interacting with the PrivacyRequest builders.
+	PrivacyRequest *PrivacyRequestClient
 	// Review is the client for interacting with the Review builders.
 	Review *ReviewClient
 	// ReviewRevision is the client for interacting with the ReviewRevision builders.
@@ -183,6 +188,10 @@ type Client struct {
 	SellerOfferEvent *SellerOfferEventClient
 	// ServiceCase is the client for interacting with the ServiceCase builders.
 	ServiceCase *ServiceCaseClient
+	// SiteRelease is the client for interacting with the SiteRelease builders.
+	SiteRelease *SiteReleaseClient
+	// SiteSetting is the client for interacting with the SiteSetting builders.
+	SiteSetting *SiteSettingClient
 	// StaffProfile is the client for interacting with the StaffProfile builders.
 	StaffProfile *StaffProfileClient
 	// SubmissionEvent is the client for interacting with the SubmissionEvent builders.
@@ -253,12 +262,15 @@ func (c *Client) init() {
 	c.PaymentRecord = NewPaymentRecordClient(c.config)
 	c.PaymentSettings = NewPaymentSettingsClient(c.config)
 	c.PaymentSignal = NewPaymentSignalClient(c.config)
+	c.PrivacyRequest = NewPrivacyRequestClient(c.config)
 	c.Review = NewReviewClient(c.config)
 	c.ReviewRevision = NewReviewRevisionClient(c.config)
 	c.SecretBundle = NewSecretBundleClient(c.config)
 	c.SellerOffer = NewSellerOfferClient(c.config)
 	c.SellerOfferEvent = NewSellerOfferEventClient(c.config)
 	c.ServiceCase = NewServiceCaseClient(c.config)
+	c.SiteRelease = NewSiteReleaseClient(c.config)
+	c.SiteSetting = NewSiteSettingClient(c.config)
 	c.StaffProfile = NewStaffProfileClient(c.config)
 	c.SubmissionEvent = NewSubmissionEventClient(c.config)
 	c.TransferAttempt = NewTransferAttemptClient(c.config)
@@ -403,12 +415,15 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PaymentRecord:            NewPaymentRecordClient(cfg),
 		PaymentSettings:          NewPaymentSettingsClient(cfg),
 		PaymentSignal:            NewPaymentSignalClient(cfg),
+		PrivacyRequest:           NewPrivacyRequestClient(cfg),
 		Review:                   NewReviewClient(cfg),
 		ReviewRevision:           NewReviewRevisionClient(cfg),
 		SecretBundle:             NewSecretBundleClient(cfg),
 		SellerOffer:              NewSellerOfferClient(cfg),
 		SellerOfferEvent:         NewSellerOfferEventClient(cfg),
 		ServiceCase:              NewServiceCaseClient(cfg),
+		SiteRelease:              NewSiteReleaseClient(cfg),
+		SiteSetting:              NewSiteSettingClient(cfg),
 		StaffProfile:             NewStaffProfileClient(cfg),
 		SubmissionEvent:          NewSubmissionEventClient(cfg),
 		TransferAttempt:          NewTransferAttemptClient(cfg),
@@ -480,12 +495,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PaymentRecord:            NewPaymentRecordClient(cfg),
 		PaymentSettings:          NewPaymentSettingsClient(cfg),
 		PaymentSignal:            NewPaymentSignalClient(cfg),
+		PrivacyRequest:           NewPrivacyRequestClient(cfg),
 		Review:                   NewReviewClient(cfg),
 		ReviewRevision:           NewReviewRevisionClient(cfg),
 		SecretBundle:             NewSecretBundleClient(cfg),
 		SellerOffer:              NewSellerOfferClient(cfg),
 		SellerOfferEvent:         NewSellerOfferEventClient(cfg),
 		ServiceCase:              NewServiceCaseClient(cfg),
+		SiteRelease:              NewSiteReleaseClient(cfg),
+		SiteSetting:              NewSiteSettingClient(cfg),
 		StaffProfile:             NewStaffProfileClient(cfg),
 		SubmissionEvent:          NewSubmissionEventClient(cfg),
 		TransferAttempt:          NewTransferAttemptClient(cfg),
@@ -532,10 +550,11 @@ func (c *Client) Use(hooks ...Hook) {
 		c.Fulfillment, c.Game, c.MediaFile, c.MoneyTransfer, c.Notification, c.Order,
 		c.OrderContract, c.OrderEvent, c.OrderQuote, c.PaymentAllocation,
 		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
-		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.Review,
-		c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
-		c.ServiceCase, c.StaffProfile, c.SubmissionEvent, c.TransferAttempt,
-		c.TransferEvent, c.TransferObservation, c.TransferRecord, c.User,
+		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
+		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
+		c.ServiceCase, c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
+		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
+		c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -555,10 +574,11 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.Fulfillment, c.Game, c.MediaFile, c.MoneyTransfer, c.Notification, c.Order,
 		c.OrderContract, c.OrderEvent, c.OrderQuote, c.PaymentAllocation,
 		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
-		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.Review,
-		c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
-		c.ServiceCase, c.StaffProfile, c.SubmissionEvent, c.TransferAttempt,
-		c.TransferEvent, c.TransferObservation, c.TransferRecord, c.User,
+		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
+		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
+		c.ServiceCase, c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
+		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
+		c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -657,6 +677,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PaymentSettings.mutate(ctx, m)
 	case *PaymentSignalMutation:
 		return c.PaymentSignal.mutate(ctx, m)
+	case *PrivacyRequestMutation:
+		return c.PrivacyRequest.mutate(ctx, m)
 	case *ReviewMutation:
 		return c.Review.mutate(ctx, m)
 	case *ReviewRevisionMutation:
@@ -669,6 +691,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.SellerOfferEvent.mutate(ctx, m)
 	case *ServiceCaseMutation:
 		return c.ServiceCase.mutate(ctx, m)
+	case *SiteReleaseMutation:
+		return c.SiteRelease.mutate(ctx, m)
+	case *SiteSettingMutation:
+		return c.SiteSetting.mutate(ctx, m)
 	case *StaffProfileMutation:
 		return c.StaffProfile.mutate(ctx, m)
 	case *SubmissionEventMutation:
@@ -6673,6 +6699,139 @@ func (c *PaymentSignalClient) mutate(ctx context.Context, m *PaymentSignalMutati
 	}
 }
 
+// PrivacyRequestClient is a client for the PrivacyRequest schema.
+type PrivacyRequestClient struct {
+	config
+}
+
+// NewPrivacyRequestClient returns a client for the PrivacyRequest from the given config.
+func NewPrivacyRequestClient(c config) *PrivacyRequestClient {
+	return &PrivacyRequestClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `privacyrequest.Hooks(f(g(h())))`.
+func (c *PrivacyRequestClient) Use(hooks ...Hook) {
+	c.hooks.PrivacyRequest = append(c.hooks.PrivacyRequest, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `privacyrequest.Intercept(f(g(h())))`.
+func (c *PrivacyRequestClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PrivacyRequest = append(c.inters.PrivacyRequest, interceptors...)
+}
+
+// Create returns a builder for creating a PrivacyRequest entity.
+func (c *PrivacyRequestClient) Create() *PrivacyRequestCreate {
+	mutation := newPrivacyRequestMutation(c.config, OpCreate)
+	return &PrivacyRequestCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PrivacyRequest entities.
+func (c *PrivacyRequestClient) CreateBulk(builders ...*PrivacyRequestCreate) *PrivacyRequestCreateBulk {
+	return &PrivacyRequestCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PrivacyRequestClient) MapCreateBulk(slice any, setFunc func(*PrivacyRequestCreate, int)) *PrivacyRequestCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PrivacyRequestCreateBulk{err: fmt.Errorf("calling to PrivacyRequestClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PrivacyRequestCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PrivacyRequestCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PrivacyRequest.
+func (c *PrivacyRequestClient) Update() *PrivacyRequestUpdate {
+	mutation := newPrivacyRequestMutation(c.config, OpUpdate)
+	return &PrivacyRequestUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PrivacyRequestClient) UpdateOne(_m *PrivacyRequest) *PrivacyRequestUpdateOne {
+	mutation := newPrivacyRequestMutation(c.config, OpUpdateOne, withPrivacyRequest(_m))
+	return &PrivacyRequestUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PrivacyRequestClient) UpdateOneID(id string) *PrivacyRequestUpdateOne {
+	mutation := newPrivacyRequestMutation(c.config, OpUpdateOne, withPrivacyRequestID(id))
+	return &PrivacyRequestUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PrivacyRequest.
+func (c *PrivacyRequestClient) Delete() *PrivacyRequestDelete {
+	mutation := newPrivacyRequestMutation(c.config, OpDelete)
+	return &PrivacyRequestDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PrivacyRequestClient) DeleteOne(_m *PrivacyRequest) *PrivacyRequestDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PrivacyRequestClient) DeleteOneID(id string) *PrivacyRequestDeleteOne {
+	builder := c.Delete().Where(privacyrequest.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PrivacyRequestDeleteOne{builder}
+}
+
+// Query returns a query builder for PrivacyRequest.
+func (c *PrivacyRequestClient) Query() *PrivacyRequestQuery {
+	return &PrivacyRequestQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePrivacyRequest},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PrivacyRequest entity by its id.
+func (c *PrivacyRequestClient) Get(ctx context.Context, id string) (*PrivacyRequest, error) {
+	return c.Query().Where(privacyrequest.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PrivacyRequestClient) GetX(ctx context.Context, id string) *PrivacyRequest {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *PrivacyRequestClient) Hooks() []Hook {
+	return c.hooks.PrivacyRequest
+}
+
+// Interceptors returns the client interceptors.
+func (c *PrivacyRequestClient) Interceptors() []Interceptor {
+	return c.inters.PrivacyRequest
+}
+
+func (c *PrivacyRequestClient) mutate(ctx context.Context, m *PrivacyRequestMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PrivacyRequestCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PrivacyRequestUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PrivacyRequestUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PrivacyRequestDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PrivacyRequest mutation op: %q", m.Op())
+	}
+}
+
 // ReviewClient is a client for the Review schema.
 type ReviewClient struct {
 	config
@@ -7468,6 +7627,272 @@ func (c *ServiceCaseClient) mutate(ctx context.Context, m *ServiceCaseMutation) 
 		return (&ServiceCaseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown ServiceCase mutation op: %q", m.Op())
+	}
+}
+
+// SiteReleaseClient is a client for the SiteRelease schema.
+type SiteReleaseClient struct {
+	config
+}
+
+// NewSiteReleaseClient returns a client for the SiteRelease from the given config.
+func NewSiteReleaseClient(c config) *SiteReleaseClient {
+	return &SiteReleaseClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `siterelease.Hooks(f(g(h())))`.
+func (c *SiteReleaseClient) Use(hooks ...Hook) {
+	c.hooks.SiteRelease = append(c.hooks.SiteRelease, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `siterelease.Intercept(f(g(h())))`.
+func (c *SiteReleaseClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SiteRelease = append(c.inters.SiteRelease, interceptors...)
+}
+
+// Create returns a builder for creating a SiteRelease entity.
+func (c *SiteReleaseClient) Create() *SiteReleaseCreate {
+	mutation := newSiteReleaseMutation(c.config, OpCreate)
+	return &SiteReleaseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SiteRelease entities.
+func (c *SiteReleaseClient) CreateBulk(builders ...*SiteReleaseCreate) *SiteReleaseCreateBulk {
+	return &SiteReleaseCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SiteReleaseClient) MapCreateBulk(slice any, setFunc func(*SiteReleaseCreate, int)) *SiteReleaseCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SiteReleaseCreateBulk{err: fmt.Errorf("calling to SiteReleaseClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SiteReleaseCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SiteReleaseCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SiteRelease.
+func (c *SiteReleaseClient) Update() *SiteReleaseUpdate {
+	mutation := newSiteReleaseMutation(c.config, OpUpdate)
+	return &SiteReleaseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SiteReleaseClient) UpdateOne(_m *SiteRelease) *SiteReleaseUpdateOne {
+	mutation := newSiteReleaseMutation(c.config, OpUpdateOne, withSiteRelease(_m))
+	return &SiteReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SiteReleaseClient) UpdateOneID(id string) *SiteReleaseUpdateOne {
+	mutation := newSiteReleaseMutation(c.config, OpUpdateOne, withSiteReleaseID(id))
+	return &SiteReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SiteRelease.
+func (c *SiteReleaseClient) Delete() *SiteReleaseDelete {
+	mutation := newSiteReleaseMutation(c.config, OpDelete)
+	return &SiteReleaseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SiteReleaseClient) DeleteOne(_m *SiteRelease) *SiteReleaseDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SiteReleaseClient) DeleteOneID(id string) *SiteReleaseDeleteOne {
+	builder := c.Delete().Where(siterelease.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SiteReleaseDeleteOne{builder}
+}
+
+// Query returns a query builder for SiteRelease.
+func (c *SiteReleaseClient) Query() *SiteReleaseQuery {
+	return &SiteReleaseQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSiteRelease},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SiteRelease entity by its id.
+func (c *SiteReleaseClient) Get(ctx context.Context, id string) (*SiteRelease, error) {
+	return c.Query().Where(siterelease.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SiteReleaseClient) GetX(ctx context.Context, id string) *SiteRelease {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SiteReleaseClient) Hooks() []Hook {
+	return c.hooks.SiteRelease
+}
+
+// Interceptors returns the client interceptors.
+func (c *SiteReleaseClient) Interceptors() []Interceptor {
+	return c.inters.SiteRelease
+}
+
+func (c *SiteReleaseClient) mutate(ctx context.Context, m *SiteReleaseMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SiteReleaseCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SiteReleaseUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SiteReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SiteReleaseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SiteRelease mutation op: %q", m.Op())
+	}
+}
+
+// SiteSettingClient is a client for the SiteSetting schema.
+type SiteSettingClient struct {
+	config
+}
+
+// NewSiteSettingClient returns a client for the SiteSetting from the given config.
+func NewSiteSettingClient(c config) *SiteSettingClient {
+	return &SiteSettingClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `sitesetting.Hooks(f(g(h())))`.
+func (c *SiteSettingClient) Use(hooks ...Hook) {
+	c.hooks.SiteSetting = append(c.hooks.SiteSetting, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `sitesetting.Intercept(f(g(h())))`.
+func (c *SiteSettingClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SiteSetting = append(c.inters.SiteSetting, interceptors...)
+}
+
+// Create returns a builder for creating a SiteSetting entity.
+func (c *SiteSettingClient) Create() *SiteSettingCreate {
+	mutation := newSiteSettingMutation(c.config, OpCreate)
+	return &SiteSettingCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SiteSetting entities.
+func (c *SiteSettingClient) CreateBulk(builders ...*SiteSettingCreate) *SiteSettingCreateBulk {
+	return &SiteSettingCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SiteSettingClient) MapCreateBulk(slice any, setFunc func(*SiteSettingCreate, int)) *SiteSettingCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SiteSettingCreateBulk{err: fmt.Errorf("calling to SiteSettingClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SiteSettingCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SiteSettingCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SiteSetting.
+func (c *SiteSettingClient) Update() *SiteSettingUpdate {
+	mutation := newSiteSettingMutation(c.config, OpUpdate)
+	return &SiteSettingUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SiteSettingClient) UpdateOne(_m *SiteSetting) *SiteSettingUpdateOne {
+	mutation := newSiteSettingMutation(c.config, OpUpdateOne, withSiteSetting(_m))
+	return &SiteSettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SiteSettingClient) UpdateOneID(id string) *SiteSettingUpdateOne {
+	mutation := newSiteSettingMutation(c.config, OpUpdateOne, withSiteSettingID(id))
+	return &SiteSettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SiteSetting.
+func (c *SiteSettingClient) Delete() *SiteSettingDelete {
+	mutation := newSiteSettingMutation(c.config, OpDelete)
+	return &SiteSettingDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SiteSettingClient) DeleteOne(_m *SiteSetting) *SiteSettingDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SiteSettingClient) DeleteOneID(id string) *SiteSettingDeleteOne {
+	builder := c.Delete().Where(sitesetting.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SiteSettingDeleteOne{builder}
+}
+
+// Query returns a query builder for SiteSetting.
+func (c *SiteSettingClient) Query() *SiteSettingQuery {
+	return &SiteSettingQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSiteSetting},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SiteSetting entity by its id.
+func (c *SiteSettingClient) Get(ctx context.Context, id string) (*SiteSetting, error) {
+	return c.Query().Where(sitesetting.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SiteSettingClient) GetX(ctx context.Context, id string) *SiteSetting {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SiteSettingClient) Hooks() []Hook {
+	return c.hooks.SiteSetting
+}
+
+// Interceptors returns the client interceptors.
+func (c *SiteSettingClient) Interceptors() []Interceptor {
+	return c.inters.SiteSetting
+}
+
+func (c *SiteSettingClient) mutate(ctx context.Context, m *SiteSettingMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SiteSettingCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SiteSettingUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SiteSettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SiteSettingDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SiteSetting mutation op: %q", m.Op())
 	}
 }
 
@@ -8414,9 +8839,10 @@ type (
 		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
 		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
 		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
-		Review, ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent,
-		ServiceCase, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
-		TransferObservation, TransferRecord, User []ent.Hook
+		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
+		SellerOfferEvent, ServiceCase, SiteRelease, SiteSetting, StaffProfile,
+		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
+		TransferRecord, User []ent.Hook
 	}
 	inters struct {
 		AccountDelivery, AccountListing, AccountListingRelease, AccountReservation,
@@ -8428,9 +8854,10 @@ type (
 		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
 		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
 		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
-		Review, ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent,
-		ServiceCase, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
-		TransferObservation, TransferRecord, User []ent.Interceptor
+		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
+		SellerOfferEvent, ServiceCase, SiteRelease, SiteSetting, StaffProfile,
+		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
+		TransferRecord, User []ent.Interceptor
 	}
 )
 

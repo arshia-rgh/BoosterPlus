@@ -104,7 +104,7 @@ func (f *resaleFixture) publish(t *testing.T) {
 	f.listing = v
 }
 func (f *resaleFixture) reserveInput() resale.ReserveInput {
-	return resale.ReserveInput{RequestKey: uuid.NewString(), ReleaseID: f.listing.ReleaseID, ExpectedAmount: "1234", Currency: "USD", AcceptTerms: true, TermsVersion: f.base.auth.service.TermsVersion()}
+	return resale.ReserveInput{RequestKey: uuid.NewString(), ReleaseID: f.listing.ReleaseID, ExpectedAmount: "1234", Currency: "USD", AcceptTerms: true, TermsVersion: f.base.auth.cfg.TermsVersion}
 }
 func (f *resaleFixture) reserve(t *testing.T) orders.Detail {
 	t.Helper()

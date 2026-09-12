@@ -16,6 +16,7 @@ type User struct{ ent.Schema }
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").MaxLen(36).DefaultFunc(uuid.NewString).Immutable(),
+		field.Time("deleted_at").Optional().Nillable(),
 		field.String("email").MaxLen(254).Unique().NotEmpty(),
 		field.String("display_name").MaxLen(100).Default(""),
 		field.Time("email_verified_at").Optional().Nillable(),

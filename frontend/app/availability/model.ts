@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../validation";
 export const consentVersion = "availability-v1";
 export const subscriptionSchema = z.object({
   account: z

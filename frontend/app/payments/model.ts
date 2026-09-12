@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../validation";
 export const routeSchema = z.object({
   code: z.string(),
   label: z.string(),

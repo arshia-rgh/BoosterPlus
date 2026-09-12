@@ -50,6 +50,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentrecord"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentsettings"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentsignal"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/privacyrequest"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/schema"
@@ -57,6 +58,8 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/selleroffer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sellerofferevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/siterelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/sitesetting"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
@@ -1788,6 +1791,58 @@ func init() {
 	paymentsignal.DefaultID = paymentsignalDescID.Default.(func() string)
 	// paymentsignal.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	paymentsignal.IDValidator = paymentsignalDescID.Validators[0].(func(string) error)
+	privacyrequestFields := schema.PrivacyRequest{}.Fields()
+	_ = privacyrequestFields
+	// privacyrequestDescUserID is the schema descriptor for user_id field.
+	privacyrequestDescUserID := privacyrequestFields[1].Descriptor()
+	// privacyrequest.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	privacyrequest.UserIDValidator = privacyrequestDescUserID.Validators[0].(func(string) error)
+	// privacyrequestDescActiveUserID is the schema descriptor for active_user_id field.
+	privacyrequestDescActiveUserID := privacyrequestFields[2].Descriptor()
+	// privacyrequest.ActiveUserIDValidator is a validator for the "active_user_id" field. It is called by the builders before save.
+	privacyrequest.ActiveUserIDValidator = privacyrequestDescActiveUserID.Validators[0].(func(string) error)
+	// privacyrequestDescVersion is the schema descriptor for version field.
+	privacyrequestDescVersion := privacyrequestFields[3].Descriptor()
+	// privacyrequest.DefaultVersion holds the default value on creation for the version field.
+	privacyrequest.DefaultVersion = privacyrequestDescVersion.Default.(int)
+	// privacyrequestDescState is the schema descriptor for state field.
+	privacyrequestDescState := privacyrequestFields[4].Descriptor()
+	// privacyrequest.DefaultState holds the default value on creation for the state field.
+	privacyrequest.DefaultState = privacyrequestDescState.Default.(string)
+	// privacyrequest.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	privacyrequest.StateValidator = privacyrequestDescState.Validators[0].(func(string) error)
+	// privacyrequestDescPolicyID is the schema descriptor for policy_id field.
+	privacyrequestDescPolicyID := privacyrequestFields[5].Descriptor()
+	// privacyrequest.PolicyIDValidator is a validator for the "policy_id" field. It is called by the builders before save.
+	privacyrequest.PolicyIDValidator = privacyrequestDescPolicyID.Validators[0].(func(string) error)
+	// privacyrequestDescReviewedPolicyID is the schema descriptor for reviewed_policy_id field.
+	privacyrequestDescReviewedPolicyID := privacyrequestFields[6].Descriptor()
+	// privacyrequest.DefaultReviewedPolicyID holds the default value on creation for the reviewed_policy_id field.
+	privacyrequest.DefaultReviewedPolicyID = privacyrequestDescReviewedPolicyID.Default.(string)
+	// privacyrequest.ReviewedPolicyIDValidator is a validator for the "reviewed_policy_id" field. It is called by the builders before save.
+	privacyrequest.ReviewedPolicyIDValidator = privacyrequestDescReviewedPolicyID.Validators[0].(func(string) error)
+	// privacyrequestDescManualHold is the schema descriptor for manual_hold field.
+	privacyrequestDescManualHold := privacyrequestFields[7].Descriptor()
+	// privacyrequest.DefaultManualHold holds the default value on creation for the manual_hold field.
+	privacyrequest.DefaultManualHold = privacyrequestDescManualHold.Default.(bool)
+	// privacyrequestDescHoldReason is the schema descriptor for hold_reason field.
+	privacyrequestDescHoldReason := privacyrequestFields[8].Descriptor()
+	// privacyrequest.DefaultHoldReason holds the default value on creation for the hold_reason field.
+	privacyrequest.DefaultHoldReason = privacyrequestDescHoldReason.Default.(string)
+	// privacyrequest.HoldReasonValidator is a validator for the "hold_reason" field. It is called by the builders before save.
+	privacyrequest.HoldReasonValidator = privacyrequestDescHoldReason.Validators[0].(func(string) error)
+	// privacyrequestDescReviewedBy is the schema descriptor for reviewed_by field.
+	privacyrequestDescReviewedBy := privacyrequestFields[9].Descriptor()
+	// privacyrequest.DefaultReviewedBy holds the default value on creation for the reviewed_by field.
+	privacyrequest.DefaultReviewedBy = privacyrequestDescReviewedBy.Default.(string)
+	// privacyrequest.ReviewedByValidator is a validator for the "reviewed_by" field. It is called by the builders before save.
+	privacyrequest.ReviewedByValidator = privacyrequestDescReviewedBy.Validators[0].(func(string) error)
+	// privacyrequestDescID is the schema descriptor for id field.
+	privacyrequestDescID := privacyrequestFields[0].Descriptor()
+	// privacyrequest.DefaultID holds the default value on creation for the id field.
+	privacyrequest.DefaultID = privacyrequestDescID.Default.(func() string)
+	// privacyrequest.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	privacyrequest.IDValidator = privacyrequestDescID.Validators[0].(func(string) error)
 	reviewFields := schema.Review{}.Fields()
 	_ = reviewFields
 	// reviewDescOrderID is the schema descriptor for order_id field.
@@ -2066,6 +2121,42 @@ func init() {
 	servicecase.DefaultID = servicecaseDescID.Default.(func() string)
 	// servicecase.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	servicecase.IDValidator = servicecaseDescID.Validators[0].(func(string) error)
+	sitereleaseFields := schema.SiteRelease{}.Fields()
+	_ = sitereleaseFields
+	// sitereleaseDescKind is the schema descriptor for kind field.
+	sitereleaseDescKind := sitereleaseFields[1].Descriptor()
+	// siterelease.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	siterelease.KindValidator = sitereleaseDescKind.Validators[0].(func(string) error)
+	// sitereleaseDescLabel is the schema descriptor for label field.
+	sitereleaseDescLabel := sitereleaseFields[3].Descriptor()
+	// siterelease.LabelValidator is a validator for the "label" field. It is called by the builders before save.
+	siterelease.LabelValidator = sitereleaseDescLabel.Validators[0].(func(string) error)
+	// sitereleaseDescCreatedBy is the schema descriptor for created_by field.
+	sitereleaseDescCreatedBy := sitereleaseFields[5].Descriptor()
+	// siterelease.CreatedByValidator is a validator for the "created_by" field. It is called by the builders before save.
+	siterelease.CreatedByValidator = sitereleaseDescCreatedBy.Validators[0].(func(string) error)
+	// sitereleaseDescID is the schema descriptor for id field.
+	sitereleaseDescID := sitereleaseFields[0].Descriptor()
+	// siterelease.DefaultID holds the default value on creation for the id field.
+	siterelease.DefaultID = sitereleaseDescID.Default.(func() string)
+	// siterelease.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	siterelease.IDValidator = sitereleaseDescID.Validators[0].(func(string) error)
+	sitesettingFields := schema.SiteSetting{}.Fields()
+	_ = sitesettingFields
+	// sitesettingDescVersion is the schema descriptor for version field.
+	sitesettingDescVersion := sitesettingFields[1].Descriptor()
+	// sitesetting.DefaultVersion holds the default value on creation for the version field.
+	sitesetting.DefaultVersion = sitesettingDescVersion.Default.(int)
+	// sitesettingDescCurrentRelease is the schema descriptor for current_release field.
+	sitesettingDescCurrentRelease := sitesettingFields[2].Descriptor()
+	// sitesetting.DefaultCurrentRelease holds the default value on creation for the current_release field.
+	sitesetting.DefaultCurrentRelease = sitesettingDescCurrentRelease.Default.(string)
+	// sitesetting.CurrentReleaseValidator is a validator for the "current_release" field. It is called by the builders before save.
+	sitesetting.CurrentReleaseValidator = sitesettingDescCurrentRelease.Validators[0].(func(string) error)
+	// sitesettingDescID is the schema descriptor for id field.
+	sitesettingDescID := sitesettingFields[0].Descriptor()
+	// sitesetting.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	sitesetting.IDValidator = sitesettingDescID.Validators[0].(func(string) error)
 	staffprofileFields := schema.StaffProfile{}.Fields()
 	_ = staffprofileFields
 	// staffprofileDescVersion is the schema descriptor for version field.
@@ -2251,7 +2342,7 @@ func init() {
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescEmail is the schema descriptor for email field.
-	userDescEmail := userFields[1].Descriptor()
+	userDescEmail := userFields[2].Descriptor()
 	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	user.EmailValidator = func() func(string) error {
 		validators := userDescEmail.Validators
@@ -2269,51 +2360,51 @@ func init() {
 		}
 	}()
 	// userDescDisplayName is the schema descriptor for display_name field.
-	userDescDisplayName := userFields[2].Descriptor()
+	userDescDisplayName := userFields[3].Descriptor()
 	// user.DefaultDisplayName holds the default value on creation for the display_name field.
 	user.DefaultDisplayName = userDescDisplayName.Default.(string)
 	// user.DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
 	user.DisplayNameValidator = userDescDisplayName.Validators[0].(func(string) error)
 	// userDescRole is the schema descriptor for role field.
-	userDescRole := userFields[4].Descriptor()
+	userDescRole := userFields[5].Descriptor()
 	// user.DefaultRole holds the default value on creation for the role field.
 	user.DefaultRole = userDescRole.Default.(string)
 	// user.RoleValidator is a validator for the "role" field. It is called by the builders before save.
 	user.RoleValidator = userDescRole.Validators[0].(func(string) error)
 	// userDescStaffAlias is the schema descriptor for staff_alias field.
-	userDescStaffAlias := userFields[5].Descriptor()
+	userDescStaffAlias := userFields[6].Descriptor()
 	// user.DefaultStaffAlias holds the default value on creation for the staff_alias field.
 	user.DefaultStaffAlias = userDescStaffAlias.Default.(string)
 	// user.StaffAliasValidator is a validator for the "staff_alias" field. It is called by the builders before save.
 	user.StaffAliasValidator = userDescStaffAlias.Validators[0].(func(string) error)
 	// userDescSuspended is the schema descriptor for suspended field.
-	userDescSuspended := userFields[6].Descriptor()
+	userDescSuspended := userFields[7].Descriptor()
 	// user.DefaultSuspended holds the default value on creation for the suspended field.
 	user.DefaultSuspended = userDescSuspended.Default.(bool)
 	// userDescAuthVersion is the schema descriptor for auth_version field.
-	userDescAuthVersion := userFields[7].Descriptor()
+	userDescAuthVersion := userFields[8].Descriptor()
 	// user.DefaultAuthVersion holds the default value on creation for the auth_version field.
 	user.DefaultAuthVersion = userDescAuthVersion.Default.(int64)
 	// userDescTermsVersion is the schema descriptor for terms_version field.
-	userDescTermsVersion := userFields[8].Descriptor()
+	userDescTermsVersion := userFields[9].Descriptor()
 	// user.DefaultTermsVersion holds the default value on creation for the terms_version field.
 	user.DefaultTermsVersion = userDescTermsVersion.Default.(string)
 	// user.TermsVersionValidator is a validator for the "terms_version" field. It is called by the builders before save.
 	user.TermsVersionValidator = userDescTermsVersion.Validators[0].(func(string) error)
 	// userDescNotifyUpdates is the schema descriptor for notify_updates field.
-	userDescNotifyUpdates := userFields[10].Descriptor()
+	userDescNotifyUpdates := userFields[11].Descriptor()
 	// user.DefaultNotifyUpdates holds the default value on creation for the notify_updates field.
 	user.DefaultNotifyUpdates = userDescNotifyUpdates.Default.(bool)
 	// userDescMfaCounter is the schema descriptor for mfa_counter field.
-	userDescMfaCounter := userFields[14].Descriptor()
+	userDescMfaCounter := userFields[15].Descriptor()
 	// user.DefaultMfaCounter holds the default value on creation for the mfa_counter field.
 	user.DefaultMfaCounter = userDescMfaCounter.Default.(int64)
 	// userDescMfaEnabled is the schema descriptor for mfa_enabled field.
-	userDescMfaEnabled := userFields[15].Descriptor()
+	userDescMfaEnabled := userFields[16].Descriptor()
 	// user.DefaultMfaEnabled holds the default value on creation for the mfa_enabled field.
 	user.DefaultMfaEnabled = userDescMfaEnabled.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[17].Descriptor()
+	userDescCreatedAt := userFields[18].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescID is the schema descriptor for id field.

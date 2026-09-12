@@ -51,7 +51,10 @@ export function Agreement({ data }: { data: Commercial }) {
         <time dateTime={price.expires_at}>
           {new Date(price.expires_at).toLocaleString()}
         </time>{" "}
-        · Terms {price.terms_version}
+        ·{" "}
+        <Link to={"/terms?version=" + encodeURIComponent(price.terms_version)}>
+          Terms {price.terms_version}
+        </Link>
       </p>
       {price.discount && (
         <p>

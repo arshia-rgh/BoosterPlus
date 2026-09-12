@@ -106,15 +106,28 @@ func (s *Store) Get(ctx context.Context, p *identity.Principal, id string, admin
 }
 
 // List returns bounded inbox entries without message bodies or internal previews.
-func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, after, state, assigned, orderID string) (Listing, error) {
+func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, after, state, assigned, orderID string, customer ...string) (Listing, error) {
 	result := Listing{Conversations: []View{}}
 	p, err := s.auth.Recheck(ctx, p, capability(admin))
 	if err != nil {
 		return result, err
 	}
+	if len(customer) > 1 {
+		return result, ErrConflict
+	}
 	q := s.client.Conversation.Query().Order(ent.Desc(conversation.FieldID)).Limit(51)
 	if !admin {
 		q.Where(conversation.UserIDEQ(p.User.ID))
+	}
+	if len(customer) == 1 && customer[0] != "" {
+		if !admin {
+			return result, identity.ErrForbidden
+		}
+		id, e := uuid.Parse(customer[0])
+		if e != nil || id.String() != customer[0] {
+			return result, ErrConflict
+		}
+		q.Where(conversation.UserIDEQ(customer[0]))
 	}
 	if after != "" {
 		if _, parseErr := uuid.Parse(after); parseErr != nil {

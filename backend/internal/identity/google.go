@@ -86,7 +86,7 @@ func (g *oidcGoogle) Exchange(ctx context.Context, code, verifier, nonce string)
 }
 
 // StartGoogle stores a short-lived, browser-bound, one-use flow; verifier material is encrypted at rest.
-func (s *Service) StartGoogle(ctx context.Context, p *Principal, browser, ip, purpose string, acceptTerms bool) (string, error) {
+func (s *Service) StartGoogle(ctx context.Context, p *Principal, browser, ip, purpose string, acceptTerms bool, acceptedVersion ...string) (string, error) {
 	if s.google == nil {
 		return "", ErrUnavailable
 	}
@@ -131,7 +131,18 @@ func (s *Service) StartGoogle(ctx context.Context, p *Principal, browser, ip, pu
 	}
 	terms := ""
 	if acceptTerms {
-		terms = s.config.TermsVersion
+		version := ""
+		if len(acceptedVersion) > 1 {
+			return "", ErrInvalid
+		}
+		if len(acceptedVersion) == 1 {
+			version = acceptedVersion[0]
+		}
+		var termsErr error
+		terms, termsErr = s.acceptedTerms(ctx, s.client, version)
+		if termsErr != nil {
+			return "", termsErr
+		}
 	}
 	create := s.client.AuthFlow.Create().SetID(id).SetBrowserHash(s.digest("browser", browser)).SetPurpose(purpose).SetNonce(nonce).SetVerifier(encrypted).SetTermsVersion(terms).SetExpiresAt(s.now().Add(10 * time.Minute))
 	if p != nil && purpose != "login" {
@@ -181,6 +192,14 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 	}
 	var token string
 	err := s.transaction(ctx, func(tx *ent.Tx) error {
+		if e := lockSecurity(ctx, tx); e != nil {
+			return e
+		}
+		currentTerms, termsErr := s.TermsVersion(ctx, tx.Client())
+		if termsErr != nil {
+			return termsErr
+		}
+
 		if p != nil {
 			fresh, freshErr := s.fresh(ctx, tx, p)
 			if freshErr != nil {
@@ -251,7 +270,7 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 				if exists {
 					return ErrConflict
 				}
-				if flow.TermsVersion == "" || flow.TermsVersion != s.config.TermsVersion {
+				if flow.TermsVersion == "" || flow.TermsVersion != currentTerms {
 					return ErrTerms
 				}
 				var createErr error
@@ -269,8 +288,8 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 					return identityErr
 				}
 			}
-			if account.TermsVersion != s.config.TermsVersion {
-				if flow.TermsVersion == "" || flow.TermsVersion != s.config.TermsVersion {
+			if account.TermsVersion != currentTerms {
+				if flow.TermsVersion == "" || flow.TermsVersion != currentTerms {
 					return ErrTerms
 				}
 				var termsErr error

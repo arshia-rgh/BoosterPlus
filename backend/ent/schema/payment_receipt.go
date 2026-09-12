@@ -31,6 +31,7 @@ func (PaymentReceipt) Fields() []ent.Field {
 // Indexes mirrors the explicit uniqueness and pagination constraints.
 func (PaymentReceipt) Indexes() []ent.Index {
 	return []ent.Index{
+		index.Fields("created_at", "id").StorageKey("receipt_report_created"),
 		index.Fields("record_id").Unique().StorageKey("payment_receipt_reference"),
 		index.Fields("user_id", "created_at", "id").StorageKey("payment_receipt_customer"),
 	}

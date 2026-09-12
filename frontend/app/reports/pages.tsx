@@ -26,6 +26,33 @@ const filters = new Map<Query["kind"], readonly string[]>(
     catalog: ["draft", "published", "paused", "archived"],
     staff: ["active", "suspended"],
     audits: [],
+    receipts: ["confirmed", "detected", "reversed"],
+    refunds: [
+      "recipient_pending",
+      "verified",
+      "approved",
+      "creating",
+      "created",
+      "verifying",
+      "uncertain",
+      "confirmed",
+      "failed",
+      "cancelled",
+      "exception",
+    ],
+    payouts: [
+      "recipient_pending",
+      "verified",
+      "approved",
+      "creating",
+      "created",
+      "verifying",
+      "uncertain",
+      "confirmed",
+      "failed",
+      "cancelled",
+      "exception",
+    ],
   }) as [Query["kind"], readonly string[]][],
 );
 export default function Reports() {
@@ -93,10 +120,11 @@ export default function Reports() {
     <section>
       <h2>Operational reports</h2>
       <p>
-        Preview and download up to 100 records per page. These reports describe
-        current work and publication states; payment, refund and seller-payout
-        reports will follow their settlement workflows. Audit reports are
-        restricted to the owner.
+        Preview and download up to 100 records per page. Financial reports show
+        exact crypto quantities by asset and network and distinguish confirmed
+        evidence from pending obligations. Each report states its date and
+        recognition basis; no exchange conversion or revenue total is inferred.
+        Audit reports are restricted to the owner.
       </p>
       <form className="report-form" onSubmit={submit}>
         <fieldset disabled={busy}>
@@ -106,7 +134,15 @@ export default function Reports() {
             value={kind}
             change={(value) => {
               const parsed = (
-                ["orders", "catalog", "staff", "audits"] as const
+                [
+                  "orders",
+                  "catalog",
+                  "staff",
+                  "audits",
+                  "receipts",
+                  "refunds",
+                  "payouts",
+                ] as const
               ).find((item) => item === value);
               if (parsed)
                 edit(() => {
@@ -116,6 +152,9 @@ export default function Reports() {
             }}
             options={[
               ["orders", "Orders"],
+              ["receipts", "Payment receipts"],
+              ["refunds", "Refund obligations"],
+              ["payouts", "Seller payouts"],
               ["catalog", "Catalog"],
               ["staff", "Staff"],
               ["audits", "Audit events (owner)"],

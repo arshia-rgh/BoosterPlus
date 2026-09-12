@@ -88,7 +88,7 @@ func (s *Store) Register(mux *http.ServeMux) {
 }
 func (s *Store) list(admin bool) func(http.ResponseWriter, *http.Request, *identity.Principal) error {
 	return func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
-		result, err := s.List(r.Context(), p, admin, r.URL.Query().Get("after"), r.URL.Query().Get("state"), r.URL.Query().Get("search"))
+		result, err := s.List(r.Context(), p, admin, r.URL.Query().Get("after"), r.URL.Query().Get("state"), r.URL.Query().Get("search"), Filters{Game: r.URL.Query().Get("game"), Kind: r.URL.Query().Get("kind"), Customer: r.URL.Query().Get("customer"), Assigned: r.URL.Query().Get("assigned"), From: r.URL.Query().Get("from"), To: r.URL.Query().Get("to")})
 		if err != nil {
 			return err
 		}

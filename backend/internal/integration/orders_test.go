@@ -57,7 +57,7 @@ func orderDB(t *testing.T) *orderFixture {
 	return &orderFixture{f, p, buyer, other, orders.New(f.client, f.service, func() time.Time { return time.Unix(f.clock.Load(), 0) }), cat, d}
 }
 func (f *orderFixture) input(kind string) orders.CreateInput {
-	input := orders.CreateInput{RequestKey: uuid.NewString(), ReleaseID: f.game.CurrentRelease, Slug: f.game.Slug, Service: "boost", Kind: kind, Answers: catalog.Answers{"mode": json.RawMessage(`"solo"`), "note": json.RawMessage(`"ordinary customer note"`)}, AcceptTerms: true, TermsVersion: f.auth.service.TermsVersion()}
+	input := orders.CreateInput{RequestKey: uuid.NewString(), ReleaseID: f.game.CurrentRelease, Slug: f.game.Slug, Service: "boost", Kind: kind, Answers: catalog.Answers{"mode": json.RawMessage(`"solo"`), "note": json.RawMessage(`"ordinary customer note"`)}, AcceptTerms: true, TermsVersion: f.auth.cfg.TermsVersion}
 	if kind == "package" {
 		input.Package = "pack"
 		input.Variant = "basic"
@@ -328,7 +328,7 @@ func TestOrderQuoteExpiryAndAuthority(t *testing.T) {
 	if _, err = f.store.Transition(ctx, f.buyer, detail.Order.ID, "accept", false, action); err == nil {
 		t.Fatal("old terms accepted")
 	}
-	action.TermsVersion = f.auth.service.TermsVersion()
+	action.TermsVersion = f.auth.cfg.TermsVersion
 	f.auth.clock.Add(48 * 3600)
 	if _, err = f.store.Transition(ctx, f.buyer, detail.Order.ID, "accept", false, action); err == nil {
 		t.Fatal("expired quote accepted")
@@ -410,7 +410,7 @@ func TestQuoteAcceptanceRechecksCouponAndSerializes(t *testing.T) {
 		t.Fatal(err)
 	}
 	accept := func(d orders.Detail) error {
-		_, e := f.store.Transition(ctx, f.buyer, d.Order.ID, "accept", false, orders.Action{Version: d.Order.Version, QuoteID: d.Quote.ID, AcceptTerms: true, TermsVersion: f.auth.service.TermsVersion()})
+		_, e := f.store.Transition(ctx, f.buyer, d.Order.ID, "accept", false, orders.Action{Version: d.Order.Version, QuoteID: d.Quote.ID, AcceptTerms: true, TermsVersion: f.auth.cfg.TermsVersion})
 		return e
 	}
 	if err = accept(first); err == nil {
@@ -553,7 +553,7 @@ func TestOrderAcceptanceAgainstConcurrentQuote(t *testing.T) {
 		}
 	})
 	wg.Go(func() {
-		_, e := f.store.Transition(ctx, f.buyer, detail.Order.ID, "accept", false, orders.Action{Version: detail.Order.Version, QuoteID: detail.Quote.ID, AcceptTerms: true, TermsVersion: f.auth.service.TermsVersion()})
+		_, e := f.store.Transition(ctx, f.buyer, detail.Order.ID, "accept", false, orders.Action{Version: detail.Order.Version, QuoteID: detail.Quote.ID, AcceptTerms: true, TermsVersion: f.auth.cfg.TermsVersion})
 		if e == nil {
 			wins.Add(1)
 		} else if !errors.Is(e, orders.ErrConflict) {

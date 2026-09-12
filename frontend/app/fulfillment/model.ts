@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../validation";
 import { answerSchema, answersSchema } from "../catalog/model";
 export const forecastSchema = z.object({
   calculated_at: z.string(),
