@@ -37,9 +37,12 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 - Reconciliation continues for existing payments while new checkout is paused. Refunds/payouts have a separate explicit activation switch. Provider failure or missing credentials never grants payment success.
 - Automated payment tests use isolated fixtures. Controlled live transaction qualification replaces unavailable sandbox qualification; fixtures cannot qualify real funds movement.
 
-## Current delivery boundary (12 September 2026)
+## Current delivery boundary (13 September 2026)
 
-- R07 and R08 are delivered. The owner authorized completing R09 with its own fully verified commit and push. Stop after R09. R10/R11 remain deferred.
+- R07, R08 and R09 are delivered. The current authorized task is UI/UX planning in `UI_UX_ROADMAP.md`; wait for owner authorization before implementing UX01–UX10.
+- Preserve the accepted fonts, background artwork, image quality and existing animations while planning improvements to layout, readability, navigation and interaction across all roles.
+- R10/R11 are on hold. Their full retained scope is in `final-launch.md`; completing the UX work does not automatically authorize production implementation or launch.
+- Continue running established production regression checks in the full pre-commit gate. This does not resume deferred R10/R11 implementation.
 
 ## Owner retention decision (13 September 2026)
 
