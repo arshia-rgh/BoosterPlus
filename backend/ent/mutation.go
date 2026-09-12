@@ -26,6 +26,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/bookingevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/caseevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
@@ -37,6 +38,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
@@ -54,8 +56,13 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferobservation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferrecord"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
@@ -83,6 +90,7 @@ const (
 	TypeAvailabilityWindow       = "AvailabilityWindow"
 	TypeBooking                  = "Booking"
 	TypeBookingEvent             = "BookingEvent"
+	TypeCaseEvent                = "CaseEvent"
 	TypeCatalogRelease           = "CatalogRelease"
 	TypeConversation             = "Conversation"
 	TypeConversationMessage      = "ConversationMessage"
@@ -94,6 +102,7 @@ const (
 	TypeFulfillment              = "Fulfillment"
 	TypeGame                     = "Game"
 	TypeMediaFile                = "MediaFile"
+	TypeMoneyTransfer            = "MoneyTransfer"
 	TypeNotification             = "Notification"
 	TypeOrder                    = "Order"
 	TypeOrderContract            = "OrderContract"
@@ -110,8 +119,13 @@ const (
 	TypeReview                   = "Review"
 	TypeReviewRevision           = "ReviewRevision"
 	TypeSecretBundle             = "SecretBundle"
+	TypeServiceCase              = "ServiceCase"
 	TypeStaffProfile             = "StaffProfile"
 	TypeSubmissionEvent          = "SubmissionEvent"
+	TypeTransferAttempt          = "TransferAttempt"
+	TypeTransferEvent            = "TransferEvent"
+	TypeTransferObservation      = "TransferObservation"
+	TypeTransferRecord           = "TransferRecord"
 	TypeUser                     = "User"
 )
 
@@ -11565,6 +11579,752 @@ func (m *BookingEventMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown BookingEvent edge %s", name)
 }
 
+// CaseEventMutation represents an operation that mutates the CaseEvent nodes in the graph.
+type CaseEventMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	case_id       *string
+	version       *int
+	addversion    *int
+	action        *string
+	actor_id      *string
+	actor_role    *string
+	note          *string
+	message_id    *string
+	created_at    *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*CaseEvent, error)
+	predicates    []predicate.CaseEvent
+}
+
+var _ ent.Mutation = (*CaseEventMutation)(nil)
+
+// caseeventOption allows management of the mutation configuration using functional options.
+type caseeventOption func(*CaseEventMutation)
+
+// newCaseEventMutation creates new mutation for the CaseEvent entity.
+func newCaseEventMutation(c config, op Op, opts ...caseeventOption) *CaseEventMutation {
+	m := &CaseEventMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCaseEvent,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCaseEventID sets the ID field of the mutation.
+func withCaseEventID(id string) caseeventOption {
+	return func(m *CaseEventMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CaseEvent
+		)
+		m.oldValue = func(ctx context.Context) (*CaseEvent, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CaseEvent.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCaseEvent sets the old CaseEvent of the mutation.
+func withCaseEvent(node *CaseEvent) caseeventOption {
+	return func(m *CaseEventMutation) {
+		m.oldValue = func(context.Context) (*CaseEvent, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CaseEventMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CaseEventMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of CaseEvent entities.
+func (m *CaseEventMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CaseEventMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CaseEventMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CaseEvent.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCaseID sets the "case_id" field.
+func (m *CaseEventMutation) SetCaseID(s string) {
+	m.case_id = &s
+}
+
+// CaseID returns the value of the "case_id" field in the mutation.
+func (m *CaseEventMutation) CaseID() (r string, exists bool) {
+	v := m.case_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCaseID returns the old "case_id" field's value of the CaseEvent entity.
+// If the CaseEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CaseEventMutation) OldCaseID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCaseID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCaseID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCaseID: %w", err)
+	}
+	return oldValue.CaseID, nil
+}
+
+// ResetCaseID resets all changes to the "case_id" field.
+func (m *CaseEventMutation) ResetCaseID() {
+	m.case_id = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *CaseEventMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *CaseEventMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the CaseEvent entity.
+// If the CaseEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CaseEventMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *CaseEventMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *CaseEventMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *CaseEventMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetAction sets the "action" field.
+func (m *CaseEventMutation) SetAction(s string) {
+	m.action = &s
+}
+
+// Action returns the value of the "action" field in the mutation.
+func (m *CaseEventMutation) Action() (r string, exists bool) {
+	v := m.action
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAction returns the old "action" field's value of the CaseEvent entity.
+// If the CaseEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CaseEventMutation) OldAction(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAction is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAction requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAction: %w", err)
+	}
+	return oldValue.Action, nil
+}
+
+// ResetAction resets all changes to the "action" field.
+func (m *CaseEventMutation) ResetAction() {
+	m.action = nil
+}
+
+// SetActorID sets the "actor_id" field.
+func (m *CaseEventMutation) SetActorID(s string) {
+	m.actor_id = &s
+}
+
+// ActorID returns the value of the "actor_id" field in the mutation.
+func (m *CaseEventMutation) ActorID() (r string, exists bool) {
+	v := m.actor_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActorID returns the old "actor_id" field's value of the CaseEvent entity.
+// If the CaseEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CaseEventMutation) OldActorID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActorID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActorID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActorID: %w", err)
+	}
+	return oldValue.ActorID, nil
+}
+
+// ResetActorID resets all changes to the "actor_id" field.
+func (m *CaseEventMutation) ResetActorID() {
+	m.actor_id = nil
+}
+
+// SetActorRole sets the "actor_role" field.
+func (m *CaseEventMutation) SetActorRole(s string) {
+	m.actor_role = &s
+}
+
+// ActorRole returns the value of the "actor_role" field in the mutation.
+func (m *CaseEventMutation) ActorRole() (r string, exists bool) {
+	v := m.actor_role
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActorRole returns the old "actor_role" field's value of the CaseEvent entity.
+// If the CaseEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CaseEventMutation) OldActorRole(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActorRole is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActorRole requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActorRole: %w", err)
+	}
+	return oldValue.ActorRole, nil
+}
+
+// ResetActorRole resets all changes to the "actor_role" field.
+func (m *CaseEventMutation) ResetActorRole() {
+	m.actor_role = nil
+}
+
+// SetNote sets the "note" field.
+func (m *CaseEventMutation) SetNote(s string) {
+	m.note = &s
+}
+
+// Note returns the value of the "note" field in the mutation.
+func (m *CaseEventMutation) Note() (r string, exists bool) {
+	v := m.note
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNote returns the old "note" field's value of the CaseEvent entity.
+// If the CaseEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CaseEventMutation) OldNote(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNote is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNote requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNote: %w", err)
+	}
+	return oldValue.Note, nil
+}
+
+// ResetNote resets all changes to the "note" field.
+func (m *CaseEventMutation) ResetNote() {
+	m.note = nil
+}
+
+// SetMessageID sets the "message_id" field.
+func (m *CaseEventMutation) SetMessageID(s string) {
+	m.message_id = &s
+}
+
+// MessageID returns the value of the "message_id" field in the mutation.
+func (m *CaseEventMutation) MessageID() (r string, exists bool) {
+	v := m.message_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMessageID returns the old "message_id" field's value of the CaseEvent entity.
+// If the CaseEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CaseEventMutation) OldMessageID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMessageID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMessageID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMessageID: %w", err)
+	}
+	return oldValue.MessageID, nil
+}
+
+// ResetMessageID resets all changes to the "message_id" field.
+func (m *CaseEventMutation) ResetMessageID() {
+	m.message_id = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CaseEventMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CaseEventMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CaseEvent entity.
+// If the CaseEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CaseEventMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CaseEventMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the CaseEventMutation builder.
+func (m *CaseEventMutation) Where(ps ...predicate.CaseEvent) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CaseEventMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CaseEventMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CaseEvent, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CaseEventMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CaseEventMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CaseEvent).
+func (m *CaseEventMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CaseEventMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.case_id != nil {
+		fields = append(fields, caseevent.FieldCaseID)
+	}
+	if m.version != nil {
+		fields = append(fields, caseevent.FieldVersion)
+	}
+	if m.action != nil {
+		fields = append(fields, caseevent.FieldAction)
+	}
+	if m.actor_id != nil {
+		fields = append(fields, caseevent.FieldActorID)
+	}
+	if m.actor_role != nil {
+		fields = append(fields, caseevent.FieldActorRole)
+	}
+	if m.note != nil {
+		fields = append(fields, caseevent.FieldNote)
+	}
+	if m.message_id != nil {
+		fields = append(fields, caseevent.FieldMessageID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, caseevent.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CaseEventMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case caseevent.FieldCaseID:
+		return m.CaseID()
+	case caseevent.FieldVersion:
+		return m.Version()
+	case caseevent.FieldAction:
+		return m.Action()
+	case caseevent.FieldActorID:
+		return m.ActorID()
+	case caseevent.FieldActorRole:
+		return m.ActorRole()
+	case caseevent.FieldNote:
+		return m.Note()
+	case caseevent.FieldMessageID:
+		return m.MessageID()
+	case caseevent.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CaseEventMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case caseevent.FieldCaseID:
+		return m.OldCaseID(ctx)
+	case caseevent.FieldVersion:
+		return m.OldVersion(ctx)
+	case caseevent.FieldAction:
+		return m.OldAction(ctx)
+	case caseevent.FieldActorID:
+		return m.OldActorID(ctx)
+	case caseevent.FieldActorRole:
+		return m.OldActorRole(ctx)
+	case caseevent.FieldNote:
+		return m.OldNote(ctx)
+	case caseevent.FieldMessageID:
+		return m.OldMessageID(ctx)
+	case caseevent.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CaseEvent field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CaseEventMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case caseevent.FieldCaseID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCaseID(v)
+		return nil
+	case caseevent.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case caseevent.FieldAction:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAction(v)
+		return nil
+	case caseevent.FieldActorID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActorID(v)
+		return nil
+	case caseevent.FieldActorRole:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActorRole(v)
+		return nil
+	case caseevent.FieldNote:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNote(v)
+		return nil
+	case caseevent.FieldMessageID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMessageID(v)
+		return nil
+	case caseevent.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CaseEvent field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CaseEventMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, caseevent.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CaseEventMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case caseevent.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CaseEventMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case caseevent.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CaseEvent numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CaseEventMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CaseEventMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CaseEventMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown CaseEvent nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CaseEventMutation) ResetField(name string) error {
+	switch name {
+	case caseevent.FieldCaseID:
+		m.ResetCaseID()
+		return nil
+	case caseevent.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case caseevent.FieldAction:
+		m.ResetAction()
+		return nil
+	case caseevent.FieldActorID:
+		m.ResetActorID()
+		return nil
+	case caseevent.FieldActorRole:
+		m.ResetActorRole()
+		return nil
+	case caseevent.FieldNote:
+		m.ResetNote()
+		return nil
+	case caseevent.FieldMessageID:
+		m.ResetMessageID()
+		return nil
+	case caseevent.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CaseEvent field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CaseEventMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CaseEventMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CaseEventMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CaseEventMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CaseEventMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CaseEventMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CaseEventMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CaseEvent unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CaseEventMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CaseEvent edge %s", name)
+}
+
 // CatalogReleaseMutation represents an operation that mutates the CatalogRelease nodes in the graph.
 type CatalogReleaseMutation struct {
 	config
@@ -21177,6 +21937,1441 @@ func (m *MediaFileMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown MediaFile edge %s", name)
 }
 
+// MoneyTransferMutation represents an operation that mutates the MoneyTransfer nodes in the graph.
+type MoneyTransferMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *string
+	request_hash    *string
+	kind            *string
+	case_id         *string
+	receipt_id      *string
+	order_id        *string
+	user_id         *string
+	account         *string
+	currency        *string
+	network         *string
+	amount          *string
+	terms           *string
+	state           *string
+	version         *int
+	addversion      *int
+	recipient       *map[string]interface{}
+	recipient_at    *time.Time
+	approved_by     *string
+	approved_at     *time.Time
+	current_attempt *string
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	done            bool
+	oldValue        func(context.Context) (*MoneyTransfer, error)
+	predicates      []predicate.MoneyTransfer
+}
+
+var _ ent.Mutation = (*MoneyTransferMutation)(nil)
+
+// moneytransferOption allows management of the mutation configuration using functional options.
+type moneytransferOption func(*MoneyTransferMutation)
+
+// newMoneyTransferMutation creates new mutation for the MoneyTransfer entity.
+func newMoneyTransferMutation(c config, op Op, opts ...moneytransferOption) *MoneyTransferMutation {
+	m := &MoneyTransferMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeMoneyTransfer,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withMoneyTransferID sets the ID field of the mutation.
+func withMoneyTransferID(id string) moneytransferOption {
+	return func(m *MoneyTransferMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *MoneyTransfer
+		)
+		m.oldValue = func(ctx context.Context) (*MoneyTransfer, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().MoneyTransfer.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withMoneyTransfer sets the old MoneyTransfer of the mutation.
+func withMoneyTransfer(node *MoneyTransfer) moneytransferOption {
+	return func(m *MoneyTransferMutation) {
+		m.oldValue = func(context.Context) (*MoneyTransfer, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m MoneyTransferMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m MoneyTransferMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of MoneyTransfer entities.
+func (m *MoneyTransferMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *MoneyTransferMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *MoneyTransferMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().MoneyTransfer.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetRequestHash sets the "request_hash" field.
+func (m *MoneyTransferMutation) SetRequestHash(s string) {
+	m.request_hash = &s
+}
+
+// RequestHash returns the value of the "request_hash" field in the mutation.
+func (m *MoneyTransferMutation) RequestHash() (r string, exists bool) {
+	v := m.request_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestHash returns the old "request_hash" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldRequestHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestHash: %w", err)
+	}
+	return oldValue.RequestHash, nil
+}
+
+// ResetRequestHash resets all changes to the "request_hash" field.
+func (m *MoneyTransferMutation) ResetRequestHash() {
+	m.request_hash = nil
+}
+
+// SetKind sets the "kind" field.
+func (m *MoneyTransferMutation) SetKind(s string) {
+	m.kind = &s
+}
+
+// Kind returns the value of the "kind" field in the mutation.
+func (m *MoneyTransferMutation) Kind() (r string, exists bool) {
+	v := m.kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKind returns the old "kind" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldKind(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+	}
+	return oldValue.Kind, nil
+}
+
+// ResetKind resets all changes to the "kind" field.
+func (m *MoneyTransferMutation) ResetKind() {
+	m.kind = nil
+}
+
+// SetCaseID sets the "case_id" field.
+func (m *MoneyTransferMutation) SetCaseID(s string) {
+	m.case_id = &s
+}
+
+// CaseID returns the value of the "case_id" field in the mutation.
+func (m *MoneyTransferMutation) CaseID() (r string, exists bool) {
+	v := m.case_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCaseID returns the old "case_id" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldCaseID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCaseID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCaseID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCaseID: %w", err)
+	}
+	return oldValue.CaseID, nil
+}
+
+// ResetCaseID resets all changes to the "case_id" field.
+func (m *MoneyTransferMutation) ResetCaseID() {
+	m.case_id = nil
+}
+
+// SetReceiptID sets the "receipt_id" field.
+func (m *MoneyTransferMutation) SetReceiptID(s string) {
+	m.receipt_id = &s
+}
+
+// ReceiptID returns the value of the "receipt_id" field in the mutation.
+func (m *MoneyTransferMutation) ReceiptID() (r string, exists bool) {
+	v := m.receipt_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReceiptID returns the old "receipt_id" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldReceiptID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReceiptID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReceiptID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReceiptID: %w", err)
+	}
+	return oldValue.ReceiptID, nil
+}
+
+// ResetReceiptID resets all changes to the "receipt_id" field.
+func (m *MoneyTransferMutation) ResetReceiptID() {
+	m.receipt_id = nil
+}
+
+// SetOrderID sets the "order_id" field.
+func (m *MoneyTransferMutation) SetOrderID(s string) {
+	m.order_id = &s
+}
+
+// OrderID returns the value of the "order_id" field in the mutation.
+func (m *MoneyTransferMutation) OrderID() (r string, exists bool) {
+	v := m.order_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrderID returns the old "order_id" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldOrderID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrderID: %w", err)
+	}
+	return oldValue.OrderID, nil
+}
+
+// ResetOrderID resets all changes to the "order_id" field.
+func (m *MoneyTransferMutation) ResetOrderID() {
+	m.order_id = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *MoneyTransferMutation) SetUserID(s string) {
+	m.user_id = &s
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *MoneyTransferMutation) UserID() (r string, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *MoneyTransferMutation) ResetUserID() {
+	m.user_id = nil
+}
+
+// SetAccount sets the "account" field.
+func (m *MoneyTransferMutation) SetAccount(s string) {
+	m.account = &s
+}
+
+// Account returns the value of the "account" field in the mutation.
+func (m *MoneyTransferMutation) Account() (r string, exists bool) {
+	v := m.account
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccount returns the old "account" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldAccount(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAccount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAccount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccount: %w", err)
+	}
+	return oldValue.Account, nil
+}
+
+// ResetAccount resets all changes to the "account" field.
+func (m *MoneyTransferMutation) ResetAccount() {
+	m.account = nil
+}
+
+// SetCurrency sets the "currency" field.
+func (m *MoneyTransferMutation) SetCurrency(s string) {
+	m.currency = &s
+}
+
+// Currency returns the value of the "currency" field in the mutation.
+func (m *MoneyTransferMutation) Currency() (r string, exists bool) {
+	v := m.currency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurrency returns the old "currency" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldCurrency(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurrency is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurrency requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurrency: %w", err)
+	}
+	return oldValue.Currency, nil
+}
+
+// ResetCurrency resets all changes to the "currency" field.
+func (m *MoneyTransferMutation) ResetCurrency() {
+	m.currency = nil
+}
+
+// SetNetwork sets the "network" field.
+func (m *MoneyTransferMutation) SetNetwork(s string) {
+	m.network = &s
+}
+
+// Network returns the value of the "network" field in the mutation.
+func (m *MoneyTransferMutation) Network() (r string, exists bool) {
+	v := m.network
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNetwork returns the old "network" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldNetwork(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNetwork is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNetwork requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNetwork: %w", err)
+	}
+	return oldValue.Network, nil
+}
+
+// ResetNetwork resets all changes to the "network" field.
+func (m *MoneyTransferMutation) ResetNetwork() {
+	m.network = nil
+}
+
+// SetAmount sets the "amount" field.
+func (m *MoneyTransferMutation) SetAmount(s string) {
+	m.amount = &s
+}
+
+// Amount returns the value of the "amount" field in the mutation.
+func (m *MoneyTransferMutation) Amount() (r string, exists bool) {
+	v := m.amount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAmount returns the old "amount" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldAmount(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAmount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAmount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAmount: %w", err)
+	}
+	return oldValue.Amount, nil
+}
+
+// ResetAmount resets all changes to the "amount" field.
+func (m *MoneyTransferMutation) ResetAmount() {
+	m.amount = nil
+}
+
+// SetTerms sets the "terms" field.
+func (m *MoneyTransferMutation) SetTerms(s string) {
+	m.terms = &s
+}
+
+// Terms returns the value of the "terms" field in the mutation.
+func (m *MoneyTransferMutation) Terms() (r string, exists bool) {
+	v := m.terms
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTerms returns the old "terms" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldTerms(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTerms is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTerms requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTerms: %w", err)
+	}
+	return oldValue.Terms, nil
+}
+
+// ResetTerms resets all changes to the "terms" field.
+func (m *MoneyTransferMutation) ResetTerms() {
+	m.terms = nil
+}
+
+// SetState sets the "state" field.
+func (m *MoneyTransferMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *MoneyTransferMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *MoneyTransferMutation) ResetState() {
+	m.state = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *MoneyTransferMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *MoneyTransferMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *MoneyTransferMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *MoneyTransferMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *MoneyTransferMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetRecipient sets the "recipient" field.
+func (m *MoneyTransferMutation) SetRecipient(value map[string]interface{}) {
+	m.recipient = &value
+}
+
+// Recipient returns the value of the "recipient" field in the mutation.
+func (m *MoneyTransferMutation) Recipient() (r map[string]interface{}, exists bool) {
+	v := m.recipient
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecipient returns the old "recipient" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldRecipient(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecipient is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecipient requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecipient: %w", err)
+	}
+	return oldValue.Recipient, nil
+}
+
+// ResetRecipient resets all changes to the "recipient" field.
+func (m *MoneyTransferMutation) ResetRecipient() {
+	m.recipient = nil
+}
+
+// SetRecipientAt sets the "recipient_at" field.
+func (m *MoneyTransferMutation) SetRecipientAt(t time.Time) {
+	m.recipient_at = &t
+}
+
+// RecipientAt returns the value of the "recipient_at" field in the mutation.
+func (m *MoneyTransferMutation) RecipientAt() (r time.Time, exists bool) {
+	v := m.recipient_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecipientAt returns the old "recipient_at" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldRecipientAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecipientAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecipientAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecipientAt: %w", err)
+	}
+	return oldValue.RecipientAt, nil
+}
+
+// ClearRecipientAt clears the value of the "recipient_at" field.
+func (m *MoneyTransferMutation) ClearRecipientAt() {
+	m.recipient_at = nil
+	m.clearedFields[moneytransfer.FieldRecipientAt] = struct{}{}
+}
+
+// RecipientAtCleared returns if the "recipient_at" field was cleared in this mutation.
+func (m *MoneyTransferMutation) RecipientAtCleared() bool {
+	_, ok := m.clearedFields[moneytransfer.FieldRecipientAt]
+	return ok
+}
+
+// ResetRecipientAt resets all changes to the "recipient_at" field.
+func (m *MoneyTransferMutation) ResetRecipientAt() {
+	m.recipient_at = nil
+	delete(m.clearedFields, moneytransfer.FieldRecipientAt)
+}
+
+// SetApprovedBy sets the "approved_by" field.
+func (m *MoneyTransferMutation) SetApprovedBy(s string) {
+	m.approved_by = &s
+}
+
+// ApprovedBy returns the value of the "approved_by" field in the mutation.
+func (m *MoneyTransferMutation) ApprovedBy() (r string, exists bool) {
+	v := m.approved_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldApprovedBy returns the old "approved_by" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldApprovedBy(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldApprovedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldApprovedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldApprovedBy: %w", err)
+	}
+	return oldValue.ApprovedBy, nil
+}
+
+// ResetApprovedBy resets all changes to the "approved_by" field.
+func (m *MoneyTransferMutation) ResetApprovedBy() {
+	m.approved_by = nil
+}
+
+// SetApprovedAt sets the "approved_at" field.
+func (m *MoneyTransferMutation) SetApprovedAt(t time.Time) {
+	m.approved_at = &t
+}
+
+// ApprovedAt returns the value of the "approved_at" field in the mutation.
+func (m *MoneyTransferMutation) ApprovedAt() (r time.Time, exists bool) {
+	v := m.approved_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldApprovedAt returns the old "approved_at" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldApprovedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldApprovedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldApprovedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldApprovedAt: %w", err)
+	}
+	return oldValue.ApprovedAt, nil
+}
+
+// ClearApprovedAt clears the value of the "approved_at" field.
+func (m *MoneyTransferMutation) ClearApprovedAt() {
+	m.approved_at = nil
+	m.clearedFields[moneytransfer.FieldApprovedAt] = struct{}{}
+}
+
+// ApprovedAtCleared returns if the "approved_at" field was cleared in this mutation.
+func (m *MoneyTransferMutation) ApprovedAtCleared() bool {
+	_, ok := m.clearedFields[moneytransfer.FieldApprovedAt]
+	return ok
+}
+
+// ResetApprovedAt resets all changes to the "approved_at" field.
+func (m *MoneyTransferMutation) ResetApprovedAt() {
+	m.approved_at = nil
+	delete(m.clearedFields, moneytransfer.FieldApprovedAt)
+}
+
+// SetCurrentAttempt sets the "current_attempt" field.
+func (m *MoneyTransferMutation) SetCurrentAttempt(s string) {
+	m.current_attempt = &s
+}
+
+// CurrentAttempt returns the value of the "current_attempt" field in the mutation.
+func (m *MoneyTransferMutation) CurrentAttempt() (r string, exists bool) {
+	v := m.current_attempt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurrentAttempt returns the old "current_attempt" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldCurrentAttempt(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurrentAttempt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurrentAttempt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurrentAttempt: %w", err)
+	}
+	return oldValue.CurrentAttempt, nil
+}
+
+// ResetCurrentAttempt resets all changes to the "current_attempt" field.
+func (m *MoneyTransferMutation) ResetCurrentAttempt() {
+	m.current_attempt = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *MoneyTransferMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *MoneyTransferMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *MoneyTransferMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *MoneyTransferMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *MoneyTransferMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the MoneyTransfer entity.
+// If the MoneyTransfer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MoneyTransferMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *MoneyTransferMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the MoneyTransferMutation builder.
+func (m *MoneyTransferMutation) Where(ps ...predicate.MoneyTransfer) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the MoneyTransferMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *MoneyTransferMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.MoneyTransfer, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *MoneyTransferMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *MoneyTransferMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (MoneyTransfer).
+func (m *MoneyTransferMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *MoneyTransferMutation) Fields() []string {
+	fields := make([]string, 0, 20)
+	if m.request_hash != nil {
+		fields = append(fields, moneytransfer.FieldRequestHash)
+	}
+	if m.kind != nil {
+		fields = append(fields, moneytransfer.FieldKind)
+	}
+	if m.case_id != nil {
+		fields = append(fields, moneytransfer.FieldCaseID)
+	}
+	if m.receipt_id != nil {
+		fields = append(fields, moneytransfer.FieldReceiptID)
+	}
+	if m.order_id != nil {
+		fields = append(fields, moneytransfer.FieldOrderID)
+	}
+	if m.user_id != nil {
+		fields = append(fields, moneytransfer.FieldUserID)
+	}
+	if m.account != nil {
+		fields = append(fields, moneytransfer.FieldAccount)
+	}
+	if m.currency != nil {
+		fields = append(fields, moneytransfer.FieldCurrency)
+	}
+	if m.network != nil {
+		fields = append(fields, moneytransfer.FieldNetwork)
+	}
+	if m.amount != nil {
+		fields = append(fields, moneytransfer.FieldAmount)
+	}
+	if m.terms != nil {
+		fields = append(fields, moneytransfer.FieldTerms)
+	}
+	if m.state != nil {
+		fields = append(fields, moneytransfer.FieldState)
+	}
+	if m.version != nil {
+		fields = append(fields, moneytransfer.FieldVersion)
+	}
+	if m.recipient != nil {
+		fields = append(fields, moneytransfer.FieldRecipient)
+	}
+	if m.recipient_at != nil {
+		fields = append(fields, moneytransfer.FieldRecipientAt)
+	}
+	if m.approved_by != nil {
+		fields = append(fields, moneytransfer.FieldApprovedBy)
+	}
+	if m.approved_at != nil {
+		fields = append(fields, moneytransfer.FieldApprovedAt)
+	}
+	if m.current_attempt != nil {
+		fields = append(fields, moneytransfer.FieldCurrentAttempt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, moneytransfer.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, moneytransfer.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *MoneyTransferMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case moneytransfer.FieldRequestHash:
+		return m.RequestHash()
+	case moneytransfer.FieldKind:
+		return m.Kind()
+	case moneytransfer.FieldCaseID:
+		return m.CaseID()
+	case moneytransfer.FieldReceiptID:
+		return m.ReceiptID()
+	case moneytransfer.FieldOrderID:
+		return m.OrderID()
+	case moneytransfer.FieldUserID:
+		return m.UserID()
+	case moneytransfer.FieldAccount:
+		return m.Account()
+	case moneytransfer.FieldCurrency:
+		return m.Currency()
+	case moneytransfer.FieldNetwork:
+		return m.Network()
+	case moneytransfer.FieldAmount:
+		return m.Amount()
+	case moneytransfer.FieldTerms:
+		return m.Terms()
+	case moneytransfer.FieldState:
+		return m.State()
+	case moneytransfer.FieldVersion:
+		return m.Version()
+	case moneytransfer.FieldRecipient:
+		return m.Recipient()
+	case moneytransfer.FieldRecipientAt:
+		return m.RecipientAt()
+	case moneytransfer.FieldApprovedBy:
+		return m.ApprovedBy()
+	case moneytransfer.FieldApprovedAt:
+		return m.ApprovedAt()
+	case moneytransfer.FieldCurrentAttempt:
+		return m.CurrentAttempt()
+	case moneytransfer.FieldCreatedAt:
+		return m.CreatedAt()
+	case moneytransfer.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *MoneyTransferMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case moneytransfer.FieldRequestHash:
+		return m.OldRequestHash(ctx)
+	case moneytransfer.FieldKind:
+		return m.OldKind(ctx)
+	case moneytransfer.FieldCaseID:
+		return m.OldCaseID(ctx)
+	case moneytransfer.FieldReceiptID:
+		return m.OldReceiptID(ctx)
+	case moneytransfer.FieldOrderID:
+		return m.OldOrderID(ctx)
+	case moneytransfer.FieldUserID:
+		return m.OldUserID(ctx)
+	case moneytransfer.FieldAccount:
+		return m.OldAccount(ctx)
+	case moneytransfer.FieldCurrency:
+		return m.OldCurrency(ctx)
+	case moneytransfer.FieldNetwork:
+		return m.OldNetwork(ctx)
+	case moneytransfer.FieldAmount:
+		return m.OldAmount(ctx)
+	case moneytransfer.FieldTerms:
+		return m.OldTerms(ctx)
+	case moneytransfer.FieldState:
+		return m.OldState(ctx)
+	case moneytransfer.FieldVersion:
+		return m.OldVersion(ctx)
+	case moneytransfer.FieldRecipient:
+		return m.OldRecipient(ctx)
+	case moneytransfer.FieldRecipientAt:
+		return m.OldRecipientAt(ctx)
+	case moneytransfer.FieldApprovedBy:
+		return m.OldApprovedBy(ctx)
+	case moneytransfer.FieldApprovedAt:
+		return m.OldApprovedAt(ctx)
+	case moneytransfer.FieldCurrentAttempt:
+		return m.OldCurrentAttempt(ctx)
+	case moneytransfer.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case moneytransfer.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown MoneyTransfer field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *MoneyTransferMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case moneytransfer.FieldRequestHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestHash(v)
+		return nil
+	case moneytransfer.FieldKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKind(v)
+		return nil
+	case moneytransfer.FieldCaseID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCaseID(v)
+		return nil
+	case moneytransfer.FieldReceiptID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReceiptID(v)
+		return nil
+	case moneytransfer.FieldOrderID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrderID(v)
+		return nil
+	case moneytransfer.FieldUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case moneytransfer.FieldAccount:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccount(v)
+		return nil
+	case moneytransfer.FieldCurrency:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurrency(v)
+		return nil
+	case moneytransfer.FieldNetwork:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNetwork(v)
+		return nil
+	case moneytransfer.FieldAmount:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAmount(v)
+		return nil
+	case moneytransfer.FieldTerms:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTerms(v)
+		return nil
+	case moneytransfer.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case moneytransfer.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case moneytransfer.FieldRecipient:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecipient(v)
+		return nil
+	case moneytransfer.FieldRecipientAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecipientAt(v)
+		return nil
+	case moneytransfer.FieldApprovedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetApprovedBy(v)
+		return nil
+	case moneytransfer.FieldApprovedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetApprovedAt(v)
+		return nil
+	case moneytransfer.FieldCurrentAttempt:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurrentAttempt(v)
+		return nil
+	case moneytransfer.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case moneytransfer.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown MoneyTransfer field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *MoneyTransferMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, moneytransfer.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *MoneyTransferMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case moneytransfer.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *MoneyTransferMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case moneytransfer.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown MoneyTransfer numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *MoneyTransferMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(moneytransfer.FieldRecipientAt) {
+		fields = append(fields, moneytransfer.FieldRecipientAt)
+	}
+	if m.FieldCleared(moneytransfer.FieldApprovedAt) {
+		fields = append(fields, moneytransfer.FieldApprovedAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *MoneyTransferMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *MoneyTransferMutation) ClearField(name string) error {
+	switch name {
+	case moneytransfer.FieldRecipientAt:
+		m.ClearRecipientAt()
+		return nil
+	case moneytransfer.FieldApprovedAt:
+		m.ClearApprovedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown MoneyTransfer nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *MoneyTransferMutation) ResetField(name string) error {
+	switch name {
+	case moneytransfer.FieldRequestHash:
+		m.ResetRequestHash()
+		return nil
+	case moneytransfer.FieldKind:
+		m.ResetKind()
+		return nil
+	case moneytransfer.FieldCaseID:
+		m.ResetCaseID()
+		return nil
+	case moneytransfer.FieldReceiptID:
+		m.ResetReceiptID()
+		return nil
+	case moneytransfer.FieldOrderID:
+		m.ResetOrderID()
+		return nil
+	case moneytransfer.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case moneytransfer.FieldAccount:
+		m.ResetAccount()
+		return nil
+	case moneytransfer.FieldCurrency:
+		m.ResetCurrency()
+		return nil
+	case moneytransfer.FieldNetwork:
+		m.ResetNetwork()
+		return nil
+	case moneytransfer.FieldAmount:
+		m.ResetAmount()
+		return nil
+	case moneytransfer.FieldTerms:
+		m.ResetTerms()
+		return nil
+	case moneytransfer.FieldState:
+		m.ResetState()
+		return nil
+	case moneytransfer.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case moneytransfer.FieldRecipient:
+		m.ResetRecipient()
+		return nil
+	case moneytransfer.FieldRecipientAt:
+		m.ResetRecipientAt()
+		return nil
+	case moneytransfer.FieldApprovedBy:
+		m.ResetApprovedBy()
+		return nil
+	case moneytransfer.FieldApprovedAt:
+		m.ResetApprovedAt()
+		return nil
+	case moneytransfer.FieldCurrentAttempt:
+		m.ResetCurrentAttempt()
+		return nil
+	case moneytransfer.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case moneytransfer.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown MoneyTransfer field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *MoneyTransferMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *MoneyTransferMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *MoneyTransferMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *MoneyTransferMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *MoneyTransferMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *MoneyTransferMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *MoneyTransferMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown MoneyTransfer unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *MoneyTransferMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown MoneyTransfer edge %s", name)
+}
+
 // NotificationMutation represents an operation that mutates the Notification nodes in the graph.
 type NotificationMutation struct {
 	config
@@ -30381,6 +32576,8 @@ type PaymentSettingsMutation struct {
 	addversion        *int
 	published_id      *string
 	draft             *map[string]interface{}
+	outgoing_page     *int
+	addoutgoing_page  *int
 	discovery_page    *int
 	adddiscovery_page *int
 	updated_at        *time.Time
@@ -30622,6 +32819,62 @@ func (m *PaymentSettingsMutation) ResetDraft() {
 	m.draft = nil
 }
 
+// SetOutgoingPage sets the "outgoing_page" field.
+func (m *PaymentSettingsMutation) SetOutgoingPage(i int) {
+	m.outgoing_page = &i
+	m.addoutgoing_page = nil
+}
+
+// OutgoingPage returns the value of the "outgoing_page" field in the mutation.
+func (m *PaymentSettingsMutation) OutgoingPage() (r int, exists bool) {
+	v := m.outgoing_page
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOutgoingPage returns the old "outgoing_page" field's value of the PaymentSettings entity.
+// If the PaymentSettings object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaymentSettingsMutation) OldOutgoingPage(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOutgoingPage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOutgoingPage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOutgoingPage: %w", err)
+	}
+	return oldValue.OutgoingPage, nil
+}
+
+// AddOutgoingPage adds i to the "outgoing_page" field.
+func (m *PaymentSettingsMutation) AddOutgoingPage(i int) {
+	if m.addoutgoing_page != nil {
+		*m.addoutgoing_page += i
+	} else {
+		m.addoutgoing_page = &i
+	}
+}
+
+// AddedOutgoingPage returns the value that was added to the "outgoing_page" field in this mutation.
+func (m *PaymentSettingsMutation) AddedOutgoingPage() (r int, exists bool) {
+	v := m.addoutgoing_page
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOutgoingPage resets all changes to the "outgoing_page" field.
+func (m *PaymentSettingsMutation) ResetOutgoingPage() {
+	m.outgoing_page = nil
+	m.addoutgoing_page = nil
+}
+
 // SetDiscoveryPage sets the "discovery_page" field.
 func (m *PaymentSettingsMutation) SetDiscoveryPage(i int) {
 	m.discovery_page = &i
@@ -30748,7 +33001,7 @@ func (m *PaymentSettingsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PaymentSettingsMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.version != nil {
 		fields = append(fields, paymentsettings.FieldVersion)
 	}
@@ -30757,6 +33010,9 @@ func (m *PaymentSettingsMutation) Fields() []string {
 	}
 	if m.draft != nil {
 		fields = append(fields, paymentsettings.FieldDraft)
+	}
+	if m.outgoing_page != nil {
+		fields = append(fields, paymentsettings.FieldOutgoingPage)
 	}
 	if m.discovery_page != nil {
 		fields = append(fields, paymentsettings.FieldDiscoveryPage)
@@ -30778,6 +33034,8 @@ func (m *PaymentSettingsMutation) Field(name string) (ent.Value, bool) {
 		return m.PublishedID()
 	case paymentsettings.FieldDraft:
 		return m.Draft()
+	case paymentsettings.FieldOutgoingPage:
+		return m.OutgoingPage()
 	case paymentsettings.FieldDiscoveryPage:
 		return m.DiscoveryPage()
 	case paymentsettings.FieldUpdatedAt:
@@ -30797,6 +33055,8 @@ func (m *PaymentSettingsMutation) OldField(ctx context.Context, name string) (en
 		return m.OldPublishedID(ctx)
 	case paymentsettings.FieldDraft:
 		return m.OldDraft(ctx)
+	case paymentsettings.FieldOutgoingPage:
+		return m.OldOutgoingPage(ctx)
 	case paymentsettings.FieldDiscoveryPage:
 		return m.OldDiscoveryPage(ctx)
 	case paymentsettings.FieldUpdatedAt:
@@ -30831,6 +33091,13 @@ func (m *PaymentSettingsMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDraft(v)
 		return nil
+	case paymentsettings.FieldOutgoingPage:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOutgoingPage(v)
+		return nil
 	case paymentsettings.FieldDiscoveryPage:
 		v, ok := value.(int)
 		if !ok {
@@ -30856,6 +33123,9 @@ func (m *PaymentSettingsMutation) AddedFields() []string {
 	if m.addversion != nil {
 		fields = append(fields, paymentsettings.FieldVersion)
 	}
+	if m.addoutgoing_page != nil {
+		fields = append(fields, paymentsettings.FieldOutgoingPage)
+	}
 	if m.adddiscovery_page != nil {
 		fields = append(fields, paymentsettings.FieldDiscoveryPage)
 	}
@@ -30869,6 +33139,8 @@ func (m *PaymentSettingsMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case paymentsettings.FieldVersion:
 		return m.AddedVersion()
+	case paymentsettings.FieldOutgoingPage:
+		return m.AddedOutgoingPage()
 	case paymentsettings.FieldDiscoveryPage:
 		return m.AddedDiscoveryPage()
 	}
@@ -30886,6 +33158,13 @@ func (m *PaymentSettingsMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddVersion(v)
+		return nil
+	case paymentsettings.FieldOutgoingPage:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOutgoingPage(v)
 		return nil
 	case paymentsettings.FieldDiscoveryPage:
 		v, ok := value.(int)
@@ -30929,6 +33208,9 @@ func (m *PaymentSettingsMutation) ResetField(name string) error {
 		return nil
 	case paymentsettings.FieldDraft:
 		m.ResetDraft()
+		return nil
+	case paymentsettings.FieldOutgoingPage:
+		m.ResetOutgoingPage()
 		return nil
 	case paymentsettings.FieldDiscoveryPage:
 		m.ResetDiscoveryPage()
@@ -35199,6 +37481,1150 @@ func (m *SecretBundleMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown SecretBundle edge %s", name)
 }
 
+// ServiceCaseMutation represents an operation that mutates the ServiceCase nodes in the graph.
+type ServiceCaseMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *string
+	request_hash    *string
+	order_id        *string
+	active_order_id *string
+	user_id         *string
+	kind            *string
+	policy          *map[string]interface{}
+	state           *string
+	previous_state  *string
+	outcome         *string
+	version         *int
+	addversion      *int
+	appeal_count    *int
+	addappeal_count *int
+	appeal_until    *time.Time
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	done            bool
+	oldValue        func(context.Context) (*ServiceCase, error)
+	predicates      []predicate.ServiceCase
+}
+
+var _ ent.Mutation = (*ServiceCaseMutation)(nil)
+
+// servicecaseOption allows management of the mutation configuration using functional options.
+type servicecaseOption func(*ServiceCaseMutation)
+
+// newServiceCaseMutation creates new mutation for the ServiceCase entity.
+func newServiceCaseMutation(c config, op Op, opts ...servicecaseOption) *ServiceCaseMutation {
+	m := &ServiceCaseMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeServiceCase,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withServiceCaseID sets the ID field of the mutation.
+func withServiceCaseID(id string) servicecaseOption {
+	return func(m *ServiceCaseMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ServiceCase
+		)
+		m.oldValue = func(ctx context.Context) (*ServiceCase, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ServiceCase.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withServiceCase sets the old ServiceCase of the mutation.
+func withServiceCase(node *ServiceCase) servicecaseOption {
+	return func(m *ServiceCaseMutation) {
+		m.oldValue = func(context.Context) (*ServiceCase, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ServiceCaseMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ServiceCaseMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ServiceCase entities.
+func (m *ServiceCaseMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ServiceCaseMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ServiceCaseMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ServiceCase.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetRequestHash sets the "request_hash" field.
+func (m *ServiceCaseMutation) SetRequestHash(s string) {
+	m.request_hash = &s
+}
+
+// RequestHash returns the value of the "request_hash" field in the mutation.
+func (m *ServiceCaseMutation) RequestHash() (r string, exists bool) {
+	v := m.request_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestHash returns the old "request_hash" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldRequestHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestHash: %w", err)
+	}
+	return oldValue.RequestHash, nil
+}
+
+// ResetRequestHash resets all changes to the "request_hash" field.
+func (m *ServiceCaseMutation) ResetRequestHash() {
+	m.request_hash = nil
+}
+
+// SetOrderID sets the "order_id" field.
+func (m *ServiceCaseMutation) SetOrderID(s string) {
+	m.order_id = &s
+}
+
+// OrderID returns the value of the "order_id" field in the mutation.
+func (m *ServiceCaseMutation) OrderID() (r string, exists bool) {
+	v := m.order_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrderID returns the old "order_id" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldOrderID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrderID: %w", err)
+	}
+	return oldValue.OrderID, nil
+}
+
+// ResetOrderID resets all changes to the "order_id" field.
+func (m *ServiceCaseMutation) ResetOrderID() {
+	m.order_id = nil
+}
+
+// SetActiveOrderID sets the "active_order_id" field.
+func (m *ServiceCaseMutation) SetActiveOrderID(s string) {
+	m.active_order_id = &s
+}
+
+// ActiveOrderID returns the value of the "active_order_id" field in the mutation.
+func (m *ServiceCaseMutation) ActiveOrderID() (r string, exists bool) {
+	v := m.active_order_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActiveOrderID returns the old "active_order_id" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldActiveOrderID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActiveOrderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActiveOrderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActiveOrderID: %w", err)
+	}
+	return oldValue.ActiveOrderID, nil
+}
+
+// ClearActiveOrderID clears the value of the "active_order_id" field.
+func (m *ServiceCaseMutation) ClearActiveOrderID() {
+	m.active_order_id = nil
+	m.clearedFields[servicecase.FieldActiveOrderID] = struct{}{}
+}
+
+// ActiveOrderIDCleared returns if the "active_order_id" field was cleared in this mutation.
+func (m *ServiceCaseMutation) ActiveOrderIDCleared() bool {
+	_, ok := m.clearedFields[servicecase.FieldActiveOrderID]
+	return ok
+}
+
+// ResetActiveOrderID resets all changes to the "active_order_id" field.
+func (m *ServiceCaseMutation) ResetActiveOrderID() {
+	m.active_order_id = nil
+	delete(m.clearedFields, servicecase.FieldActiveOrderID)
+}
+
+// SetUserID sets the "user_id" field.
+func (m *ServiceCaseMutation) SetUserID(s string) {
+	m.user_id = &s
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *ServiceCaseMutation) UserID() (r string, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *ServiceCaseMutation) ResetUserID() {
+	m.user_id = nil
+}
+
+// SetKind sets the "kind" field.
+func (m *ServiceCaseMutation) SetKind(s string) {
+	m.kind = &s
+}
+
+// Kind returns the value of the "kind" field in the mutation.
+func (m *ServiceCaseMutation) Kind() (r string, exists bool) {
+	v := m.kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKind returns the old "kind" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldKind(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+	}
+	return oldValue.Kind, nil
+}
+
+// ResetKind resets all changes to the "kind" field.
+func (m *ServiceCaseMutation) ResetKind() {
+	m.kind = nil
+}
+
+// SetPolicy sets the "policy" field.
+func (m *ServiceCaseMutation) SetPolicy(value map[string]interface{}) {
+	m.policy = &value
+}
+
+// Policy returns the value of the "policy" field in the mutation.
+func (m *ServiceCaseMutation) Policy() (r map[string]interface{}, exists bool) {
+	v := m.policy
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPolicy returns the old "policy" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldPolicy(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPolicy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPolicy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPolicy: %w", err)
+	}
+	return oldValue.Policy, nil
+}
+
+// ResetPolicy resets all changes to the "policy" field.
+func (m *ServiceCaseMutation) ResetPolicy() {
+	m.policy = nil
+}
+
+// SetState sets the "state" field.
+func (m *ServiceCaseMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *ServiceCaseMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *ServiceCaseMutation) ResetState() {
+	m.state = nil
+}
+
+// SetPreviousState sets the "previous_state" field.
+func (m *ServiceCaseMutation) SetPreviousState(s string) {
+	m.previous_state = &s
+}
+
+// PreviousState returns the value of the "previous_state" field in the mutation.
+func (m *ServiceCaseMutation) PreviousState() (r string, exists bool) {
+	v := m.previous_state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPreviousState returns the old "previous_state" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldPreviousState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPreviousState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPreviousState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPreviousState: %w", err)
+	}
+	return oldValue.PreviousState, nil
+}
+
+// ResetPreviousState resets all changes to the "previous_state" field.
+func (m *ServiceCaseMutation) ResetPreviousState() {
+	m.previous_state = nil
+}
+
+// SetOutcome sets the "outcome" field.
+func (m *ServiceCaseMutation) SetOutcome(s string) {
+	m.outcome = &s
+}
+
+// Outcome returns the value of the "outcome" field in the mutation.
+func (m *ServiceCaseMutation) Outcome() (r string, exists bool) {
+	v := m.outcome
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOutcome returns the old "outcome" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldOutcome(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOutcome is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOutcome requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOutcome: %w", err)
+	}
+	return oldValue.Outcome, nil
+}
+
+// ResetOutcome resets all changes to the "outcome" field.
+func (m *ServiceCaseMutation) ResetOutcome() {
+	m.outcome = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *ServiceCaseMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *ServiceCaseMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *ServiceCaseMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *ServiceCaseMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *ServiceCaseMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetAppealCount sets the "appeal_count" field.
+func (m *ServiceCaseMutation) SetAppealCount(i int) {
+	m.appeal_count = &i
+	m.addappeal_count = nil
+}
+
+// AppealCount returns the value of the "appeal_count" field in the mutation.
+func (m *ServiceCaseMutation) AppealCount() (r int, exists bool) {
+	v := m.appeal_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAppealCount returns the old "appeal_count" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldAppealCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAppealCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAppealCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAppealCount: %w", err)
+	}
+	return oldValue.AppealCount, nil
+}
+
+// AddAppealCount adds i to the "appeal_count" field.
+func (m *ServiceCaseMutation) AddAppealCount(i int) {
+	if m.addappeal_count != nil {
+		*m.addappeal_count += i
+	} else {
+		m.addappeal_count = &i
+	}
+}
+
+// AddedAppealCount returns the value that was added to the "appeal_count" field in this mutation.
+func (m *ServiceCaseMutation) AddedAppealCount() (r int, exists bool) {
+	v := m.addappeal_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAppealCount resets all changes to the "appeal_count" field.
+func (m *ServiceCaseMutation) ResetAppealCount() {
+	m.appeal_count = nil
+	m.addappeal_count = nil
+}
+
+// SetAppealUntil sets the "appeal_until" field.
+func (m *ServiceCaseMutation) SetAppealUntil(t time.Time) {
+	m.appeal_until = &t
+}
+
+// AppealUntil returns the value of the "appeal_until" field in the mutation.
+func (m *ServiceCaseMutation) AppealUntil() (r time.Time, exists bool) {
+	v := m.appeal_until
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAppealUntil returns the old "appeal_until" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldAppealUntil(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAppealUntil is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAppealUntil requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAppealUntil: %w", err)
+	}
+	return oldValue.AppealUntil, nil
+}
+
+// ClearAppealUntil clears the value of the "appeal_until" field.
+func (m *ServiceCaseMutation) ClearAppealUntil() {
+	m.appeal_until = nil
+	m.clearedFields[servicecase.FieldAppealUntil] = struct{}{}
+}
+
+// AppealUntilCleared returns if the "appeal_until" field was cleared in this mutation.
+func (m *ServiceCaseMutation) AppealUntilCleared() bool {
+	_, ok := m.clearedFields[servicecase.FieldAppealUntil]
+	return ok
+}
+
+// ResetAppealUntil resets all changes to the "appeal_until" field.
+func (m *ServiceCaseMutation) ResetAppealUntil() {
+	m.appeal_until = nil
+	delete(m.clearedFields, servicecase.FieldAppealUntil)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ServiceCaseMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ServiceCaseMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ServiceCaseMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ServiceCaseMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ServiceCaseMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ServiceCase entity.
+// If the ServiceCase object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServiceCaseMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ServiceCaseMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the ServiceCaseMutation builder.
+func (m *ServiceCaseMutation) Where(ps ...predicate.ServiceCase) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ServiceCaseMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ServiceCaseMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ServiceCase, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ServiceCaseMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ServiceCaseMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ServiceCase).
+func (m *ServiceCaseMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ServiceCaseMutation) Fields() []string {
+	fields := make([]string, 0, 14)
+	if m.request_hash != nil {
+		fields = append(fields, servicecase.FieldRequestHash)
+	}
+	if m.order_id != nil {
+		fields = append(fields, servicecase.FieldOrderID)
+	}
+	if m.active_order_id != nil {
+		fields = append(fields, servicecase.FieldActiveOrderID)
+	}
+	if m.user_id != nil {
+		fields = append(fields, servicecase.FieldUserID)
+	}
+	if m.kind != nil {
+		fields = append(fields, servicecase.FieldKind)
+	}
+	if m.policy != nil {
+		fields = append(fields, servicecase.FieldPolicy)
+	}
+	if m.state != nil {
+		fields = append(fields, servicecase.FieldState)
+	}
+	if m.previous_state != nil {
+		fields = append(fields, servicecase.FieldPreviousState)
+	}
+	if m.outcome != nil {
+		fields = append(fields, servicecase.FieldOutcome)
+	}
+	if m.version != nil {
+		fields = append(fields, servicecase.FieldVersion)
+	}
+	if m.appeal_count != nil {
+		fields = append(fields, servicecase.FieldAppealCount)
+	}
+	if m.appeal_until != nil {
+		fields = append(fields, servicecase.FieldAppealUntil)
+	}
+	if m.created_at != nil {
+		fields = append(fields, servicecase.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, servicecase.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ServiceCaseMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case servicecase.FieldRequestHash:
+		return m.RequestHash()
+	case servicecase.FieldOrderID:
+		return m.OrderID()
+	case servicecase.FieldActiveOrderID:
+		return m.ActiveOrderID()
+	case servicecase.FieldUserID:
+		return m.UserID()
+	case servicecase.FieldKind:
+		return m.Kind()
+	case servicecase.FieldPolicy:
+		return m.Policy()
+	case servicecase.FieldState:
+		return m.State()
+	case servicecase.FieldPreviousState:
+		return m.PreviousState()
+	case servicecase.FieldOutcome:
+		return m.Outcome()
+	case servicecase.FieldVersion:
+		return m.Version()
+	case servicecase.FieldAppealCount:
+		return m.AppealCount()
+	case servicecase.FieldAppealUntil:
+		return m.AppealUntil()
+	case servicecase.FieldCreatedAt:
+		return m.CreatedAt()
+	case servicecase.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ServiceCaseMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case servicecase.FieldRequestHash:
+		return m.OldRequestHash(ctx)
+	case servicecase.FieldOrderID:
+		return m.OldOrderID(ctx)
+	case servicecase.FieldActiveOrderID:
+		return m.OldActiveOrderID(ctx)
+	case servicecase.FieldUserID:
+		return m.OldUserID(ctx)
+	case servicecase.FieldKind:
+		return m.OldKind(ctx)
+	case servicecase.FieldPolicy:
+		return m.OldPolicy(ctx)
+	case servicecase.FieldState:
+		return m.OldState(ctx)
+	case servicecase.FieldPreviousState:
+		return m.OldPreviousState(ctx)
+	case servicecase.FieldOutcome:
+		return m.OldOutcome(ctx)
+	case servicecase.FieldVersion:
+		return m.OldVersion(ctx)
+	case servicecase.FieldAppealCount:
+		return m.OldAppealCount(ctx)
+	case servicecase.FieldAppealUntil:
+		return m.OldAppealUntil(ctx)
+	case servicecase.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case servicecase.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ServiceCase field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ServiceCaseMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case servicecase.FieldRequestHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestHash(v)
+		return nil
+	case servicecase.FieldOrderID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrderID(v)
+		return nil
+	case servicecase.FieldActiveOrderID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActiveOrderID(v)
+		return nil
+	case servicecase.FieldUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case servicecase.FieldKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKind(v)
+		return nil
+	case servicecase.FieldPolicy:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPolicy(v)
+		return nil
+	case servicecase.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case servicecase.FieldPreviousState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPreviousState(v)
+		return nil
+	case servicecase.FieldOutcome:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOutcome(v)
+		return nil
+	case servicecase.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case servicecase.FieldAppealCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAppealCount(v)
+		return nil
+	case servicecase.FieldAppealUntil:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAppealUntil(v)
+		return nil
+	case servicecase.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case servicecase.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCase field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ServiceCaseMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, servicecase.FieldVersion)
+	}
+	if m.addappeal_count != nil {
+		fields = append(fields, servicecase.FieldAppealCount)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ServiceCaseMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case servicecase.FieldVersion:
+		return m.AddedVersion()
+	case servicecase.FieldAppealCount:
+		return m.AddedAppealCount()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ServiceCaseMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case servicecase.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	case servicecase.FieldAppealCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAppealCount(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCase numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ServiceCaseMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(servicecase.FieldActiveOrderID) {
+		fields = append(fields, servicecase.FieldActiveOrderID)
+	}
+	if m.FieldCleared(servicecase.FieldAppealUntil) {
+		fields = append(fields, servicecase.FieldAppealUntil)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ServiceCaseMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ServiceCaseMutation) ClearField(name string) error {
+	switch name {
+	case servicecase.FieldActiveOrderID:
+		m.ClearActiveOrderID()
+		return nil
+	case servicecase.FieldAppealUntil:
+		m.ClearAppealUntil()
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCase nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ServiceCaseMutation) ResetField(name string) error {
+	switch name {
+	case servicecase.FieldRequestHash:
+		m.ResetRequestHash()
+		return nil
+	case servicecase.FieldOrderID:
+		m.ResetOrderID()
+		return nil
+	case servicecase.FieldActiveOrderID:
+		m.ResetActiveOrderID()
+		return nil
+	case servicecase.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case servicecase.FieldKind:
+		m.ResetKind()
+		return nil
+	case servicecase.FieldPolicy:
+		m.ResetPolicy()
+		return nil
+	case servicecase.FieldState:
+		m.ResetState()
+		return nil
+	case servicecase.FieldPreviousState:
+		m.ResetPreviousState()
+		return nil
+	case servicecase.FieldOutcome:
+		m.ResetOutcome()
+		return nil
+	case servicecase.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case servicecase.FieldAppealCount:
+		m.ResetAppealCount()
+		return nil
+	case servicecase.FieldAppealUntil:
+		m.ResetAppealUntil()
+		return nil
+	case servicecase.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case servicecase.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ServiceCase field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ServiceCaseMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ServiceCaseMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ServiceCaseMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ServiceCaseMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ServiceCaseMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ServiceCaseMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ServiceCaseMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ServiceCase unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ServiceCaseMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ServiceCase edge %s", name)
+}
+
 // StaffProfileMutation represents an operation that mutates the StaffProfile nodes in the graph.
 type StaffProfileMutation struct {
 	config
@@ -36559,6 +39985,3288 @@ func (m *SubmissionEventMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *SubmissionEventMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown SubmissionEvent edge %s", name)
+}
+
+// TransferAttemptMutation represents an operation that mutates the TransferAttempt nodes in the graph.
+type TransferAttemptMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *string
+	transfer_id        *string
+	account            *string
+	active_transfer_id *string
+	recipient          *map[string]interface{}
+	state              *string
+	version            *int
+	addversion         *int
+	provider_id        *string
+	batch_id           *string
+	issue              *string
+	lease_owner        *string
+	lease_until        *time.Time
+	data               *map[string]interface{}
+	checked_at         *time.Time
+	created_at         *time.Time
+	updated_at         *time.Time
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*TransferAttempt, error)
+	predicates         []predicate.TransferAttempt
+}
+
+var _ ent.Mutation = (*TransferAttemptMutation)(nil)
+
+// transferattemptOption allows management of the mutation configuration using functional options.
+type transferattemptOption func(*TransferAttemptMutation)
+
+// newTransferAttemptMutation creates new mutation for the TransferAttempt entity.
+func newTransferAttemptMutation(c config, op Op, opts ...transferattemptOption) *TransferAttemptMutation {
+	m := &TransferAttemptMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTransferAttempt,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTransferAttemptID sets the ID field of the mutation.
+func withTransferAttemptID(id string) transferattemptOption {
+	return func(m *TransferAttemptMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TransferAttempt
+		)
+		m.oldValue = func(ctx context.Context) (*TransferAttempt, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TransferAttempt.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTransferAttempt sets the old TransferAttempt of the mutation.
+func withTransferAttempt(node *TransferAttempt) transferattemptOption {
+	return func(m *TransferAttemptMutation) {
+		m.oldValue = func(context.Context) (*TransferAttempt, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TransferAttemptMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TransferAttemptMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TransferAttempt entities.
+func (m *TransferAttemptMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TransferAttemptMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *TransferAttemptMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().TransferAttempt.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetTransferID sets the "transfer_id" field.
+func (m *TransferAttemptMutation) SetTransferID(s string) {
+	m.transfer_id = &s
+}
+
+// TransferID returns the value of the "transfer_id" field in the mutation.
+func (m *TransferAttemptMutation) TransferID() (r string, exists bool) {
+	v := m.transfer_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTransferID returns the old "transfer_id" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldTransferID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTransferID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTransferID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTransferID: %w", err)
+	}
+	return oldValue.TransferID, nil
+}
+
+// ResetTransferID resets all changes to the "transfer_id" field.
+func (m *TransferAttemptMutation) ResetTransferID() {
+	m.transfer_id = nil
+}
+
+// SetAccount sets the "account" field.
+func (m *TransferAttemptMutation) SetAccount(s string) {
+	m.account = &s
+}
+
+// Account returns the value of the "account" field in the mutation.
+func (m *TransferAttemptMutation) Account() (r string, exists bool) {
+	v := m.account
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccount returns the old "account" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldAccount(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAccount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAccount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccount: %w", err)
+	}
+	return oldValue.Account, nil
+}
+
+// ResetAccount resets all changes to the "account" field.
+func (m *TransferAttemptMutation) ResetAccount() {
+	m.account = nil
+}
+
+// SetActiveTransferID sets the "active_transfer_id" field.
+func (m *TransferAttemptMutation) SetActiveTransferID(s string) {
+	m.active_transfer_id = &s
+}
+
+// ActiveTransferID returns the value of the "active_transfer_id" field in the mutation.
+func (m *TransferAttemptMutation) ActiveTransferID() (r string, exists bool) {
+	v := m.active_transfer_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActiveTransferID returns the old "active_transfer_id" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldActiveTransferID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActiveTransferID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActiveTransferID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActiveTransferID: %w", err)
+	}
+	return oldValue.ActiveTransferID, nil
+}
+
+// ClearActiveTransferID clears the value of the "active_transfer_id" field.
+func (m *TransferAttemptMutation) ClearActiveTransferID() {
+	m.active_transfer_id = nil
+	m.clearedFields[transferattempt.FieldActiveTransferID] = struct{}{}
+}
+
+// ActiveTransferIDCleared returns if the "active_transfer_id" field was cleared in this mutation.
+func (m *TransferAttemptMutation) ActiveTransferIDCleared() bool {
+	_, ok := m.clearedFields[transferattempt.FieldActiveTransferID]
+	return ok
+}
+
+// ResetActiveTransferID resets all changes to the "active_transfer_id" field.
+func (m *TransferAttemptMutation) ResetActiveTransferID() {
+	m.active_transfer_id = nil
+	delete(m.clearedFields, transferattempt.FieldActiveTransferID)
+}
+
+// SetRecipient sets the "recipient" field.
+func (m *TransferAttemptMutation) SetRecipient(value map[string]interface{}) {
+	m.recipient = &value
+}
+
+// Recipient returns the value of the "recipient" field in the mutation.
+func (m *TransferAttemptMutation) Recipient() (r map[string]interface{}, exists bool) {
+	v := m.recipient
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecipient returns the old "recipient" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldRecipient(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecipient is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecipient requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecipient: %w", err)
+	}
+	return oldValue.Recipient, nil
+}
+
+// ResetRecipient resets all changes to the "recipient" field.
+func (m *TransferAttemptMutation) ResetRecipient() {
+	m.recipient = nil
+}
+
+// SetState sets the "state" field.
+func (m *TransferAttemptMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *TransferAttemptMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *TransferAttemptMutation) ResetState() {
+	m.state = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *TransferAttemptMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *TransferAttemptMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *TransferAttemptMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *TransferAttemptMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *TransferAttemptMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetProviderID sets the "provider_id" field.
+func (m *TransferAttemptMutation) SetProviderID(s string) {
+	m.provider_id = &s
+}
+
+// ProviderID returns the value of the "provider_id" field in the mutation.
+func (m *TransferAttemptMutation) ProviderID() (r string, exists bool) {
+	v := m.provider_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProviderID returns the old "provider_id" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldProviderID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProviderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProviderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProviderID: %w", err)
+	}
+	return oldValue.ProviderID, nil
+}
+
+// ClearProviderID clears the value of the "provider_id" field.
+func (m *TransferAttemptMutation) ClearProviderID() {
+	m.provider_id = nil
+	m.clearedFields[transferattempt.FieldProviderID] = struct{}{}
+}
+
+// ProviderIDCleared returns if the "provider_id" field was cleared in this mutation.
+func (m *TransferAttemptMutation) ProviderIDCleared() bool {
+	_, ok := m.clearedFields[transferattempt.FieldProviderID]
+	return ok
+}
+
+// ResetProviderID resets all changes to the "provider_id" field.
+func (m *TransferAttemptMutation) ResetProviderID() {
+	m.provider_id = nil
+	delete(m.clearedFields, transferattempt.FieldProviderID)
+}
+
+// SetBatchID sets the "batch_id" field.
+func (m *TransferAttemptMutation) SetBatchID(s string) {
+	m.batch_id = &s
+}
+
+// BatchID returns the value of the "batch_id" field in the mutation.
+func (m *TransferAttemptMutation) BatchID() (r string, exists bool) {
+	v := m.batch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatchID returns the old "batch_id" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldBatchID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatchID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatchID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatchID: %w", err)
+	}
+	return oldValue.BatchID, nil
+}
+
+// ResetBatchID resets all changes to the "batch_id" field.
+func (m *TransferAttemptMutation) ResetBatchID() {
+	m.batch_id = nil
+}
+
+// SetIssue sets the "issue" field.
+func (m *TransferAttemptMutation) SetIssue(s string) {
+	m.issue = &s
+}
+
+// Issue returns the value of the "issue" field in the mutation.
+func (m *TransferAttemptMutation) Issue() (r string, exists bool) {
+	v := m.issue
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIssue returns the old "issue" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldIssue(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIssue is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIssue requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIssue: %w", err)
+	}
+	return oldValue.Issue, nil
+}
+
+// ResetIssue resets all changes to the "issue" field.
+func (m *TransferAttemptMutation) ResetIssue() {
+	m.issue = nil
+}
+
+// SetLeaseOwner sets the "lease_owner" field.
+func (m *TransferAttemptMutation) SetLeaseOwner(s string) {
+	m.lease_owner = &s
+}
+
+// LeaseOwner returns the value of the "lease_owner" field in the mutation.
+func (m *TransferAttemptMutation) LeaseOwner() (r string, exists bool) {
+	v := m.lease_owner
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLeaseOwner returns the old "lease_owner" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldLeaseOwner(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLeaseOwner is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLeaseOwner requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLeaseOwner: %w", err)
+	}
+	return oldValue.LeaseOwner, nil
+}
+
+// ResetLeaseOwner resets all changes to the "lease_owner" field.
+func (m *TransferAttemptMutation) ResetLeaseOwner() {
+	m.lease_owner = nil
+}
+
+// SetLeaseUntil sets the "lease_until" field.
+func (m *TransferAttemptMutation) SetLeaseUntil(t time.Time) {
+	m.lease_until = &t
+}
+
+// LeaseUntil returns the value of the "lease_until" field in the mutation.
+func (m *TransferAttemptMutation) LeaseUntil() (r time.Time, exists bool) {
+	v := m.lease_until
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLeaseUntil returns the old "lease_until" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldLeaseUntil(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLeaseUntil is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLeaseUntil requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLeaseUntil: %w", err)
+	}
+	return oldValue.LeaseUntil, nil
+}
+
+// ClearLeaseUntil clears the value of the "lease_until" field.
+func (m *TransferAttemptMutation) ClearLeaseUntil() {
+	m.lease_until = nil
+	m.clearedFields[transferattempt.FieldLeaseUntil] = struct{}{}
+}
+
+// LeaseUntilCleared returns if the "lease_until" field was cleared in this mutation.
+func (m *TransferAttemptMutation) LeaseUntilCleared() bool {
+	_, ok := m.clearedFields[transferattempt.FieldLeaseUntil]
+	return ok
+}
+
+// ResetLeaseUntil resets all changes to the "lease_until" field.
+func (m *TransferAttemptMutation) ResetLeaseUntil() {
+	m.lease_until = nil
+	delete(m.clearedFields, transferattempt.FieldLeaseUntil)
+}
+
+// SetData sets the "data" field.
+func (m *TransferAttemptMutation) SetData(value map[string]interface{}) {
+	m.data = &value
+}
+
+// Data returns the value of the "data" field in the mutation.
+func (m *TransferAttemptMutation) Data() (r map[string]interface{}, exists bool) {
+	v := m.data
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldData returns the old "data" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldData(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldData is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldData requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldData: %w", err)
+	}
+	return oldValue.Data, nil
+}
+
+// ResetData resets all changes to the "data" field.
+func (m *TransferAttemptMutation) ResetData() {
+	m.data = nil
+}
+
+// SetCheckedAt sets the "checked_at" field.
+func (m *TransferAttemptMutation) SetCheckedAt(t time.Time) {
+	m.checked_at = &t
+}
+
+// CheckedAt returns the value of the "checked_at" field in the mutation.
+func (m *TransferAttemptMutation) CheckedAt() (r time.Time, exists bool) {
+	v := m.checked_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCheckedAt returns the old "checked_at" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldCheckedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCheckedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCheckedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCheckedAt: %w", err)
+	}
+	return oldValue.CheckedAt, nil
+}
+
+// ResetCheckedAt resets all changes to the "checked_at" field.
+func (m *TransferAttemptMutation) ResetCheckedAt() {
+	m.checked_at = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TransferAttemptMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TransferAttemptMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TransferAttemptMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TransferAttemptMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TransferAttemptMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TransferAttempt entity.
+// If the TransferAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferAttemptMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TransferAttemptMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the TransferAttemptMutation builder.
+func (m *TransferAttemptMutation) Where(ps ...predicate.TransferAttempt) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the TransferAttemptMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *TransferAttemptMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.TransferAttempt, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *TransferAttemptMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *TransferAttemptMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (TransferAttempt).
+func (m *TransferAttemptMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TransferAttemptMutation) Fields() []string {
+	fields := make([]string, 0, 15)
+	if m.transfer_id != nil {
+		fields = append(fields, transferattempt.FieldTransferID)
+	}
+	if m.account != nil {
+		fields = append(fields, transferattempt.FieldAccount)
+	}
+	if m.active_transfer_id != nil {
+		fields = append(fields, transferattempt.FieldActiveTransferID)
+	}
+	if m.recipient != nil {
+		fields = append(fields, transferattempt.FieldRecipient)
+	}
+	if m.state != nil {
+		fields = append(fields, transferattempt.FieldState)
+	}
+	if m.version != nil {
+		fields = append(fields, transferattempt.FieldVersion)
+	}
+	if m.provider_id != nil {
+		fields = append(fields, transferattempt.FieldProviderID)
+	}
+	if m.batch_id != nil {
+		fields = append(fields, transferattempt.FieldBatchID)
+	}
+	if m.issue != nil {
+		fields = append(fields, transferattempt.FieldIssue)
+	}
+	if m.lease_owner != nil {
+		fields = append(fields, transferattempt.FieldLeaseOwner)
+	}
+	if m.lease_until != nil {
+		fields = append(fields, transferattempt.FieldLeaseUntil)
+	}
+	if m.data != nil {
+		fields = append(fields, transferattempt.FieldData)
+	}
+	if m.checked_at != nil {
+		fields = append(fields, transferattempt.FieldCheckedAt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, transferattempt.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, transferattempt.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TransferAttemptMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case transferattempt.FieldTransferID:
+		return m.TransferID()
+	case transferattempt.FieldAccount:
+		return m.Account()
+	case transferattempt.FieldActiveTransferID:
+		return m.ActiveTransferID()
+	case transferattempt.FieldRecipient:
+		return m.Recipient()
+	case transferattempt.FieldState:
+		return m.State()
+	case transferattempt.FieldVersion:
+		return m.Version()
+	case transferattempt.FieldProviderID:
+		return m.ProviderID()
+	case transferattempt.FieldBatchID:
+		return m.BatchID()
+	case transferattempt.FieldIssue:
+		return m.Issue()
+	case transferattempt.FieldLeaseOwner:
+		return m.LeaseOwner()
+	case transferattempt.FieldLeaseUntil:
+		return m.LeaseUntil()
+	case transferattempt.FieldData:
+		return m.Data()
+	case transferattempt.FieldCheckedAt:
+		return m.CheckedAt()
+	case transferattempt.FieldCreatedAt:
+		return m.CreatedAt()
+	case transferattempt.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TransferAttemptMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case transferattempt.FieldTransferID:
+		return m.OldTransferID(ctx)
+	case transferattempt.FieldAccount:
+		return m.OldAccount(ctx)
+	case transferattempt.FieldActiveTransferID:
+		return m.OldActiveTransferID(ctx)
+	case transferattempt.FieldRecipient:
+		return m.OldRecipient(ctx)
+	case transferattempt.FieldState:
+		return m.OldState(ctx)
+	case transferattempt.FieldVersion:
+		return m.OldVersion(ctx)
+	case transferattempt.FieldProviderID:
+		return m.OldProviderID(ctx)
+	case transferattempt.FieldBatchID:
+		return m.OldBatchID(ctx)
+	case transferattempt.FieldIssue:
+		return m.OldIssue(ctx)
+	case transferattempt.FieldLeaseOwner:
+		return m.OldLeaseOwner(ctx)
+	case transferattempt.FieldLeaseUntil:
+		return m.OldLeaseUntil(ctx)
+	case transferattempt.FieldData:
+		return m.OldData(ctx)
+	case transferattempt.FieldCheckedAt:
+		return m.OldCheckedAt(ctx)
+	case transferattempt.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case transferattempt.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TransferAttempt field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TransferAttemptMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case transferattempt.FieldTransferID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTransferID(v)
+		return nil
+	case transferattempt.FieldAccount:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccount(v)
+		return nil
+	case transferattempt.FieldActiveTransferID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActiveTransferID(v)
+		return nil
+	case transferattempt.FieldRecipient:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecipient(v)
+		return nil
+	case transferattempt.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case transferattempt.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case transferattempt.FieldProviderID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProviderID(v)
+		return nil
+	case transferattempt.FieldBatchID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatchID(v)
+		return nil
+	case transferattempt.FieldIssue:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIssue(v)
+		return nil
+	case transferattempt.FieldLeaseOwner:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLeaseOwner(v)
+		return nil
+	case transferattempt.FieldLeaseUntil:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLeaseUntil(v)
+		return nil
+	case transferattempt.FieldData:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetData(v)
+		return nil
+	case transferattempt.FieldCheckedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCheckedAt(v)
+		return nil
+	case transferattempt.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case transferattempt.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TransferAttempt field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TransferAttemptMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, transferattempt.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TransferAttemptMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case transferattempt.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TransferAttemptMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case transferattempt.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TransferAttempt numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TransferAttemptMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(transferattempt.FieldActiveTransferID) {
+		fields = append(fields, transferattempt.FieldActiveTransferID)
+	}
+	if m.FieldCleared(transferattempt.FieldProviderID) {
+		fields = append(fields, transferattempt.FieldProviderID)
+	}
+	if m.FieldCleared(transferattempt.FieldLeaseUntil) {
+		fields = append(fields, transferattempt.FieldLeaseUntil)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TransferAttemptMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TransferAttemptMutation) ClearField(name string) error {
+	switch name {
+	case transferattempt.FieldActiveTransferID:
+		m.ClearActiveTransferID()
+		return nil
+	case transferattempt.FieldProviderID:
+		m.ClearProviderID()
+		return nil
+	case transferattempt.FieldLeaseUntil:
+		m.ClearLeaseUntil()
+		return nil
+	}
+	return fmt.Errorf("unknown TransferAttempt nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TransferAttemptMutation) ResetField(name string) error {
+	switch name {
+	case transferattempt.FieldTransferID:
+		m.ResetTransferID()
+		return nil
+	case transferattempt.FieldAccount:
+		m.ResetAccount()
+		return nil
+	case transferattempt.FieldActiveTransferID:
+		m.ResetActiveTransferID()
+		return nil
+	case transferattempt.FieldRecipient:
+		m.ResetRecipient()
+		return nil
+	case transferattempt.FieldState:
+		m.ResetState()
+		return nil
+	case transferattempt.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case transferattempt.FieldProviderID:
+		m.ResetProviderID()
+		return nil
+	case transferattempt.FieldBatchID:
+		m.ResetBatchID()
+		return nil
+	case transferattempt.FieldIssue:
+		m.ResetIssue()
+		return nil
+	case transferattempt.FieldLeaseOwner:
+		m.ResetLeaseOwner()
+		return nil
+	case transferattempt.FieldLeaseUntil:
+		m.ResetLeaseUntil()
+		return nil
+	case transferattempt.FieldData:
+		m.ResetData()
+		return nil
+	case transferattempt.FieldCheckedAt:
+		m.ResetCheckedAt()
+		return nil
+	case transferattempt.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case transferattempt.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TransferAttempt field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TransferAttemptMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TransferAttemptMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TransferAttemptMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TransferAttemptMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TransferAttemptMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TransferAttemptMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TransferAttemptMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown TransferAttempt unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TransferAttemptMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown TransferAttempt edge %s", name)
+}
+
+// TransferEventMutation represents an operation that mutates the TransferEvent nodes in the graph.
+type TransferEventMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	transfer_id   *string
+	version       *int
+	addversion    *int
+	action        *string
+	actor_id      *string
+	created_at    *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*TransferEvent, error)
+	predicates    []predicate.TransferEvent
+}
+
+var _ ent.Mutation = (*TransferEventMutation)(nil)
+
+// transfereventOption allows management of the mutation configuration using functional options.
+type transfereventOption func(*TransferEventMutation)
+
+// newTransferEventMutation creates new mutation for the TransferEvent entity.
+func newTransferEventMutation(c config, op Op, opts ...transfereventOption) *TransferEventMutation {
+	m := &TransferEventMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTransferEvent,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTransferEventID sets the ID field of the mutation.
+func withTransferEventID(id string) transfereventOption {
+	return func(m *TransferEventMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TransferEvent
+		)
+		m.oldValue = func(ctx context.Context) (*TransferEvent, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TransferEvent.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTransferEvent sets the old TransferEvent of the mutation.
+func withTransferEvent(node *TransferEvent) transfereventOption {
+	return func(m *TransferEventMutation) {
+		m.oldValue = func(context.Context) (*TransferEvent, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TransferEventMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TransferEventMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TransferEvent entities.
+func (m *TransferEventMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TransferEventMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *TransferEventMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().TransferEvent.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetTransferID sets the "transfer_id" field.
+func (m *TransferEventMutation) SetTransferID(s string) {
+	m.transfer_id = &s
+}
+
+// TransferID returns the value of the "transfer_id" field in the mutation.
+func (m *TransferEventMutation) TransferID() (r string, exists bool) {
+	v := m.transfer_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTransferID returns the old "transfer_id" field's value of the TransferEvent entity.
+// If the TransferEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferEventMutation) OldTransferID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTransferID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTransferID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTransferID: %w", err)
+	}
+	return oldValue.TransferID, nil
+}
+
+// ResetTransferID resets all changes to the "transfer_id" field.
+func (m *TransferEventMutation) ResetTransferID() {
+	m.transfer_id = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *TransferEventMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *TransferEventMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the TransferEvent entity.
+// If the TransferEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferEventMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *TransferEventMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *TransferEventMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *TransferEventMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetAction sets the "action" field.
+func (m *TransferEventMutation) SetAction(s string) {
+	m.action = &s
+}
+
+// Action returns the value of the "action" field in the mutation.
+func (m *TransferEventMutation) Action() (r string, exists bool) {
+	v := m.action
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAction returns the old "action" field's value of the TransferEvent entity.
+// If the TransferEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferEventMutation) OldAction(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAction is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAction requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAction: %w", err)
+	}
+	return oldValue.Action, nil
+}
+
+// ResetAction resets all changes to the "action" field.
+func (m *TransferEventMutation) ResetAction() {
+	m.action = nil
+}
+
+// SetActorID sets the "actor_id" field.
+func (m *TransferEventMutation) SetActorID(s string) {
+	m.actor_id = &s
+}
+
+// ActorID returns the value of the "actor_id" field in the mutation.
+func (m *TransferEventMutation) ActorID() (r string, exists bool) {
+	v := m.actor_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActorID returns the old "actor_id" field's value of the TransferEvent entity.
+// If the TransferEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferEventMutation) OldActorID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActorID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActorID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActorID: %w", err)
+	}
+	return oldValue.ActorID, nil
+}
+
+// ResetActorID resets all changes to the "actor_id" field.
+func (m *TransferEventMutation) ResetActorID() {
+	m.actor_id = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TransferEventMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TransferEventMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TransferEvent entity.
+// If the TransferEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferEventMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TransferEventMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the TransferEventMutation builder.
+func (m *TransferEventMutation) Where(ps ...predicate.TransferEvent) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the TransferEventMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *TransferEventMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.TransferEvent, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *TransferEventMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *TransferEventMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (TransferEvent).
+func (m *TransferEventMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TransferEventMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.transfer_id != nil {
+		fields = append(fields, transferevent.FieldTransferID)
+	}
+	if m.version != nil {
+		fields = append(fields, transferevent.FieldVersion)
+	}
+	if m.action != nil {
+		fields = append(fields, transferevent.FieldAction)
+	}
+	if m.actor_id != nil {
+		fields = append(fields, transferevent.FieldActorID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, transferevent.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TransferEventMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case transferevent.FieldTransferID:
+		return m.TransferID()
+	case transferevent.FieldVersion:
+		return m.Version()
+	case transferevent.FieldAction:
+		return m.Action()
+	case transferevent.FieldActorID:
+		return m.ActorID()
+	case transferevent.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TransferEventMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case transferevent.FieldTransferID:
+		return m.OldTransferID(ctx)
+	case transferevent.FieldVersion:
+		return m.OldVersion(ctx)
+	case transferevent.FieldAction:
+		return m.OldAction(ctx)
+	case transferevent.FieldActorID:
+		return m.OldActorID(ctx)
+	case transferevent.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TransferEvent field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TransferEventMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case transferevent.FieldTransferID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTransferID(v)
+		return nil
+	case transferevent.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case transferevent.FieldAction:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAction(v)
+		return nil
+	case transferevent.FieldActorID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActorID(v)
+		return nil
+	case transferevent.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TransferEvent field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TransferEventMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, transferevent.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TransferEventMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case transferevent.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TransferEventMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case transferevent.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TransferEvent numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TransferEventMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TransferEventMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TransferEventMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TransferEvent nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TransferEventMutation) ResetField(name string) error {
+	switch name {
+	case transferevent.FieldTransferID:
+		m.ResetTransferID()
+		return nil
+	case transferevent.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case transferevent.FieldAction:
+		m.ResetAction()
+		return nil
+	case transferevent.FieldActorID:
+		m.ResetActorID()
+		return nil
+	case transferevent.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TransferEvent field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TransferEventMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TransferEventMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TransferEventMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TransferEventMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TransferEventMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TransferEventMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TransferEventMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown TransferEvent unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TransferEventMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown TransferEvent edge %s", name)
+}
+
+// TransferObservationMutation represents an operation that mutates the TransferObservation nodes in the graph.
+type TransferObservationMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	record_id     *string
+	attempt_id    *string
+	version       *int
+	addversion    *int
+	data          *map[string]interface{}
+	created_at    *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*TransferObservation, error)
+	predicates    []predicate.TransferObservation
+}
+
+var _ ent.Mutation = (*TransferObservationMutation)(nil)
+
+// transferobservationOption allows management of the mutation configuration using functional options.
+type transferobservationOption func(*TransferObservationMutation)
+
+// newTransferObservationMutation creates new mutation for the TransferObservation entity.
+func newTransferObservationMutation(c config, op Op, opts ...transferobservationOption) *TransferObservationMutation {
+	m := &TransferObservationMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTransferObservation,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTransferObservationID sets the ID field of the mutation.
+func withTransferObservationID(id string) transferobservationOption {
+	return func(m *TransferObservationMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TransferObservation
+		)
+		m.oldValue = func(ctx context.Context) (*TransferObservation, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TransferObservation.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTransferObservation sets the old TransferObservation of the mutation.
+func withTransferObservation(node *TransferObservation) transferobservationOption {
+	return func(m *TransferObservationMutation) {
+		m.oldValue = func(context.Context) (*TransferObservation, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TransferObservationMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TransferObservationMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TransferObservation entities.
+func (m *TransferObservationMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TransferObservationMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *TransferObservationMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().TransferObservation.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetRecordID sets the "record_id" field.
+func (m *TransferObservationMutation) SetRecordID(s string) {
+	m.record_id = &s
+}
+
+// RecordID returns the value of the "record_id" field in the mutation.
+func (m *TransferObservationMutation) RecordID() (r string, exists bool) {
+	v := m.record_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordID returns the old "record_id" field's value of the TransferObservation entity.
+// If the TransferObservation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferObservationMutation) OldRecordID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordID: %w", err)
+	}
+	return oldValue.RecordID, nil
+}
+
+// ResetRecordID resets all changes to the "record_id" field.
+func (m *TransferObservationMutation) ResetRecordID() {
+	m.record_id = nil
+}
+
+// SetAttemptID sets the "attempt_id" field.
+func (m *TransferObservationMutation) SetAttemptID(s string) {
+	m.attempt_id = &s
+}
+
+// AttemptID returns the value of the "attempt_id" field in the mutation.
+func (m *TransferObservationMutation) AttemptID() (r string, exists bool) {
+	v := m.attempt_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAttemptID returns the old "attempt_id" field's value of the TransferObservation entity.
+// If the TransferObservation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferObservationMutation) OldAttemptID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAttemptID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAttemptID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAttemptID: %w", err)
+	}
+	return oldValue.AttemptID, nil
+}
+
+// ResetAttemptID resets all changes to the "attempt_id" field.
+func (m *TransferObservationMutation) ResetAttemptID() {
+	m.attempt_id = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *TransferObservationMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *TransferObservationMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the TransferObservation entity.
+// If the TransferObservation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferObservationMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *TransferObservationMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *TransferObservationMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *TransferObservationMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetData sets the "data" field.
+func (m *TransferObservationMutation) SetData(value map[string]interface{}) {
+	m.data = &value
+}
+
+// Data returns the value of the "data" field in the mutation.
+func (m *TransferObservationMutation) Data() (r map[string]interface{}, exists bool) {
+	v := m.data
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldData returns the old "data" field's value of the TransferObservation entity.
+// If the TransferObservation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferObservationMutation) OldData(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldData is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldData requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldData: %w", err)
+	}
+	return oldValue.Data, nil
+}
+
+// ResetData resets all changes to the "data" field.
+func (m *TransferObservationMutation) ResetData() {
+	m.data = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TransferObservationMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TransferObservationMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TransferObservation entity.
+// If the TransferObservation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferObservationMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TransferObservationMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the TransferObservationMutation builder.
+func (m *TransferObservationMutation) Where(ps ...predicate.TransferObservation) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the TransferObservationMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *TransferObservationMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.TransferObservation, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *TransferObservationMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *TransferObservationMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (TransferObservation).
+func (m *TransferObservationMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TransferObservationMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.record_id != nil {
+		fields = append(fields, transferobservation.FieldRecordID)
+	}
+	if m.attempt_id != nil {
+		fields = append(fields, transferobservation.FieldAttemptID)
+	}
+	if m.version != nil {
+		fields = append(fields, transferobservation.FieldVersion)
+	}
+	if m.data != nil {
+		fields = append(fields, transferobservation.FieldData)
+	}
+	if m.created_at != nil {
+		fields = append(fields, transferobservation.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TransferObservationMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case transferobservation.FieldRecordID:
+		return m.RecordID()
+	case transferobservation.FieldAttemptID:
+		return m.AttemptID()
+	case transferobservation.FieldVersion:
+		return m.Version()
+	case transferobservation.FieldData:
+		return m.Data()
+	case transferobservation.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TransferObservationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case transferobservation.FieldRecordID:
+		return m.OldRecordID(ctx)
+	case transferobservation.FieldAttemptID:
+		return m.OldAttemptID(ctx)
+	case transferobservation.FieldVersion:
+		return m.OldVersion(ctx)
+	case transferobservation.FieldData:
+		return m.OldData(ctx)
+	case transferobservation.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TransferObservation field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TransferObservationMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case transferobservation.FieldRecordID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordID(v)
+		return nil
+	case transferobservation.FieldAttemptID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAttemptID(v)
+		return nil
+	case transferobservation.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case transferobservation.FieldData:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetData(v)
+		return nil
+	case transferobservation.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TransferObservation field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TransferObservationMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, transferobservation.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TransferObservationMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case transferobservation.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TransferObservationMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case transferobservation.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TransferObservation numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TransferObservationMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TransferObservationMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TransferObservationMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TransferObservation nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TransferObservationMutation) ResetField(name string) error {
+	switch name {
+	case transferobservation.FieldRecordID:
+		m.ResetRecordID()
+		return nil
+	case transferobservation.FieldAttemptID:
+		m.ResetAttemptID()
+		return nil
+	case transferobservation.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case transferobservation.FieldData:
+		m.ResetData()
+		return nil
+	case transferobservation.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TransferObservation field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TransferObservationMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TransferObservationMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TransferObservationMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TransferObservationMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TransferObservationMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TransferObservationMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TransferObservationMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown TransferObservation unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TransferObservationMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown TransferObservation edge %s", name)
+}
+
+// TransferRecordMutation represents an operation that mutates the TransferRecord nodes in the graph.
+type TransferRecordMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	account       *string
+	provider_id   *string
+	attempt_id    *string
+	version       *int
+	addversion    *int
+	lease_owner   *string
+	lease_until   *time.Time
+	state         *string
+	issue         *string
+	data          *map[string]interface{}
+	checked_at    *time.Time
+	created_at    *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*TransferRecord, error)
+	predicates    []predicate.TransferRecord
+}
+
+var _ ent.Mutation = (*TransferRecordMutation)(nil)
+
+// transferrecordOption allows management of the mutation configuration using functional options.
+type transferrecordOption func(*TransferRecordMutation)
+
+// newTransferRecordMutation creates new mutation for the TransferRecord entity.
+func newTransferRecordMutation(c config, op Op, opts ...transferrecordOption) *TransferRecordMutation {
+	m := &TransferRecordMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTransferRecord,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTransferRecordID sets the ID field of the mutation.
+func withTransferRecordID(id string) transferrecordOption {
+	return func(m *TransferRecordMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TransferRecord
+		)
+		m.oldValue = func(ctx context.Context) (*TransferRecord, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TransferRecord.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTransferRecord sets the old TransferRecord of the mutation.
+func withTransferRecord(node *TransferRecord) transferrecordOption {
+	return func(m *TransferRecordMutation) {
+		m.oldValue = func(context.Context) (*TransferRecord, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TransferRecordMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TransferRecordMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TransferRecord entities.
+func (m *TransferRecordMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TransferRecordMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *TransferRecordMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().TransferRecord.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetAccount sets the "account" field.
+func (m *TransferRecordMutation) SetAccount(s string) {
+	m.account = &s
+}
+
+// Account returns the value of the "account" field in the mutation.
+func (m *TransferRecordMutation) Account() (r string, exists bool) {
+	v := m.account
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccount returns the old "account" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldAccount(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAccount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAccount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccount: %w", err)
+	}
+	return oldValue.Account, nil
+}
+
+// ResetAccount resets all changes to the "account" field.
+func (m *TransferRecordMutation) ResetAccount() {
+	m.account = nil
+}
+
+// SetProviderID sets the "provider_id" field.
+func (m *TransferRecordMutation) SetProviderID(s string) {
+	m.provider_id = &s
+}
+
+// ProviderID returns the value of the "provider_id" field in the mutation.
+func (m *TransferRecordMutation) ProviderID() (r string, exists bool) {
+	v := m.provider_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProviderID returns the old "provider_id" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldProviderID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProviderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProviderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProviderID: %w", err)
+	}
+	return oldValue.ProviderID, nil
+}
+
+// ResetProviderID resets all changes to the "provider_id" field.
+func (m *TransferRecordMutation) ResetProviderID() {
+	m.provider_id = nil
+}
+
+// SetAttemptID sets the "attempt_id" field.
+func (m *TransferRecordMutation) SetAttemptID(s string) {
+	m.attempt_id = &s
+}
+
+// AttemptID returns the value of the "attempt_id" field in the mutation.
+func (m *TransferRecordMutation) AttemptID() (r string, exists bool) {
+	v := m.attempt_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAttemptID returns the old "attempt_id" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldAttemptID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAttemptID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAttemptID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAttemptID: %w", err)
+	}
+	return oldValue.AttemptID, nil
+}
+
+// ResetAttemptID resets all changes to the "attempt_id" field.
+func (m *TransferRecordMutation) ResetAttemptID() {
+	m.attempt_id = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *TransferRecordMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *TransferRecordMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *TransferRecordMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *TransferRecordMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *TransferRecordMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetLeaseOwner sets the "lease_owner" field.
+func (m *TransferRecordMutation) SetLeaseOwner(s string) {
+	m.lease_owner = &s
+}
+
+// LeaseOwner returns the value of the "lease_owner" field in the mutation.
+func (m *TransferRecordMutation) LeaseOwner() (r string, exists bool) {
+	v := m.lease_owner
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLeaseOwner returns the old "lease_owner" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldLeaseOwner(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLeaseOwner is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLeaseOwner requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLeaseOwner: %w", err)
+	}
+	return oldValue.LeaseOwner, nil
+}
+
+// ResetLeaseOwner resets all changes to the "lease_owner" field.
+func (m *TransferRecordMutation) ResetLeaseOwner() {
+	m.lease_owner = nil
+}
+
+// SetLeaseUntil sets the "lease_until" field.
+func (m *TransferRecordMutation) SetLeaseUntil(t time.Time) {
+	m.lease_until = &t
+}
+
+// LeaseUntil returns the value of the "lease_until" field in the mutation.
+func (m *TransferRecordMutation) LeaseUntil() (r time.Time, exists bool) {
+	v := m.lease_until
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLeaseUntil returns the old "lease_until" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldLeaseUntil(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLeaseUntil is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLeaseUntil requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLeaseUntil: %w", err)
+	}
+	return oldValue.LeaseUntil, nil
+}
+
+// ClearLeaseUntil clears the value of the "lease_until" field.
+func (m *TransferRecordMutation) ClearLeaseUntil() {
+	m.lease_until = nil
+	m.clearedFields[transferrecord.FieldLeaseUntil] = struct{}{}
+}
+
+// LeaseUntilCleared returns if the "lease_until" field was cleared in this mutation.
+func (m *TransferRecordMutation) LeaseUntilCleared() bool {
+	_, ok := m.clearedFields[transferrecord.FieldLeaseUntil]
+	return ok
+}
+
+// ResetLeaseUntil resets all changes to the "lease_until" field.
+func (m *TransferRecordMutation) ResetLeaseUntil() {
+	m.lease_until = nil
+	delete(m.clearedFields, transferrecord.FieldLeaseUntil)
+}
+
+// SetState sets the "state" field.
+func (m *TransferRecordMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *TransferRecordMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *TransferRecordMutation) ResetState() {
+	m.state = nil
+}
+
+// SetIssue sets the "issue" field.
+func (m *TransferRecordMutation) SetIssue(s string) {
+	m.issue = &s
+}
+
+// Issue returns the value of the "issue" field in the mutation.
+func (m *TransferRecordMutation) Issue() (r string, exists bool) {
+	v := m.issue
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIssue returns the old "issue" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldIssue(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIssue is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIssue requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIssue: %w", err)
+	}
+	return oldValue.Issue, nil
+}
+
+// ResetIssue resets all changes to the "issue" field.
+func (m *TransferRecordMutation) ResetIssue() {
+	m.issue = nil
+}
+
+// SetData sets the "data" field.
+func (m *TransferRecordMutation) SetData(value map[string]interface{}) {
+	m.data = &value
+}
+
+// Data returns the value of the "data" field in the mutation.
+func (m *TransferRecordMutation) Data() (r map[string]interface{}, exists bool) {
+	v := m.data
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldData returns the old "data" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldData(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldData is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldData requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldData: %w", err)
+	}
+	return oldValue.Data, nil
+}
+
+// ResetData resets all changes to the "data" field.
+func (m *TransferRecordMutation) ResetData() {
+	m.data = nil
+}
+
+// SetCheckedAt sets the "checked_at" field.
+func (m *TransferRecordMutation) SetCheckedAt(t time.Time) {
+	m.checked_at = &t
+}
+
+// CheckedAt returns the value of the "checked_at" field in the mutation.
+func (m *TransferRecordMutation) CheckedAt() (r time.Time, exists bool) {
+	v := m.checked_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCheckedAt returns the old "checked_at" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldCheckedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCheckedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCheckedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCheckedAt: %w", err)
+	}
+	return oldValue.CheckedAt, nil
+}
+
+// ResetCheckedAt resets all changes to the "checked_at" field.
+func (m *TransferRecordMutation) ResetCheckedAt() {
+	m.checked_at = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TransferRecordMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TransferRecordMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TransferRecordMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the TransferRecordMutation builder.
+func (m *TransferRecordMutation) Where(ps ...predicate.TransferRecord) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the TransferRecordMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *TransferRecordMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.TransferRecord, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *TransferRecordMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *TransferRecordMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (TransferRecord).
+func (m *TransferRecordMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TransferRecordMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.account != nil {
+		fields = append(fields, transferrecord.FieldAccount)
+	}
+	if m.provider_id != nil {
+		fields = append(fields, transferrecord.FieldProviderID)
+	}
+	if m.attempt_id != nil {
+		fields = append(fields, transferrecord.FieldAttemptID)
+	}
+	if m.version != nil {
+		fields = append(fields, transferrecord.FieldVersion)
+	}
+	if m.lease_owner != nil {
+		fields = append(fields, transferrecord.FieldLeaseOwner)
+	}
+	if m.lease_until != nil {
+		fields = append(fields, transferrecord.FieldLeaseUntil)
+	}
+	if m.state != nil {
+		fields = append(fields, transferrecord.FieldState)
+	}
+	if m.issue != nil {
+		fields = append(fields, transferrecord.FieldIssue)
+	}
+	if m.data != nil {
+		fields = append(fields, transferrecord.FieldData)
+	}
+	if m.checked_at != nil {
+		fields = append(fields, transferrecord.FieldCheckedAt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, transferrecord.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TransferRecordMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case transferrecord.FieldAccount:
+		return m.Account()
+	case transferrecord.FieldProviderID:
+		return m.ProviderID()
+	case transferrecord.FieldAttemptID:
+		return m.AttemptID()
+	case transferrecord.FieldVersion:
+		return m.Version()
+	case transferrecord.FieldLeaseOwner:
+		return m.LeaseOwner()
+	case transferrecord.FieldLeaseUntil:
+		return m.LeaseUntil()
+	case transferrecord.FieldState:
+		return m.State()
+	case transferrecord.FieldIssue:
+		return m.Issue()
+	case transferrecord.FieldData:
+		return m.Data()
+	case transferrecord.FieldCheckedAt:
+		return m.CheckedAt()
+	case transferrecord.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TransferRecordMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case transferrecord.FieldAccount:
+		return m.OldAccount(ctx)
+	case transferrecord.FieldProviderID:
+		return m.OldProviderID(ctx)
+	case transferrecord.FieldAttemptID:
+		return m.OldAttemptID(ctx)
+	case transferrecord.FieldVersion:
+		return m.OldVersion(ctx)
+	case transferrecord.FieldLeaseOwner:
+		return m.OldLeaseOwner(ctx)
+	case transferrecord.FieldLeaseUntil:
+		return m.OldLeaseUntil(ctx)
+	case transferrecord.FieldState:
+		return m.OldState(ctx)
+	case transferrecord.FieldIssue:
+		return m.OldIssue(ctx)
+	case transferrecord.FieldData:
+		return m.OldData(ctx)
+	case transferrecord.FieldCheckedAt:
+		return m.OldCheckedAt(ctx)
+	case transferrecord.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TransferRecord field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TransferRecordMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case transferrecord.FieldAccount:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccount(v)
+		return nil
+	case transferrecord.FieldProviderID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProviderID(v)
+		return nil
+	case transferrecord.FieldAttemptID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAttemptID(v)
+		return nil
+	case transferrecord.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case transferrecord.FieldLeaseOwner:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLeaseOwner(v)
+		return nil
+	case transferrecord.FieldLeaseUntil:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLeaseUntil(v)
+		return nil
+	case transferrecord.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case transferrecord.FieldIssue:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIssue(v)
+		return nil
+	case transferrecord.FieldData:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetData(v)
+		return nil
+	case transferrecord.FieldCheckedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCheckedAt(v)
+		return nil
+	case transferrecord.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TransferRecord field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TransferRecordMutation) AddedFields() []string {
+	var fields []string
+	if m.addversion != nil {
+		fields = append(fields, transferrecord.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TransferRecordMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case transferrecord.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TransferRecordMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case transferrecord.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TransferRecord numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TransferRecordMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(transferrecord.FieldLeaseUntil) {
+		fields = append(fields, transferrecord.FieldLeaseUntil)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TransferRecordMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TransferRecordMutation) ClearField(name string) error {
+	switch name {
+	case transferrecord.FieldLeaseUntil:
+		m.ClearLeaseUntil()
+		return nil
+	}
+	return fmt.Errorf("unknown TransferRecord nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TransferRecordMutation) ResetField(name string) error {
+	switch name {
+	case transferrecord.FieldAccount:
+		m.ResetAccount()
+		return nil
+	case transferrecord.FieldProviderID:
+		m.ResetProviderID()
+		return nil
+	case transferrecord.FieldAttemptID:
+		m.ResetAttemptID()
+		return nil
+	case transferrecord.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case transferrecord.FieldLeaseOwner:
+		m.ResetLeaseOwner()
+		return nil
+	case transferrecord.FieldLeaseUntil:
+		m.ResetLeaseUntil()
+		return nil
+	case transferrecord.FieldState:
+		m.ResetState()
+		return nil
+	case transferrecord.FieldIssue:
+		m.ResetIssue()
+		return nil
+	case transferrecord.FieldData:
+		m.ResetData()
+		return nil
+	case transferrecord.FieldCheckedAt:
+		m.ResetCheckedAt()
+		return nil
+	case transferrecord.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TransferRecord field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TransferRecordMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TransferRecordMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TransferRecordMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TransferRecordMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TransferRecordMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TransferRecordMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TransferRecordMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown TransferRecord unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TransferRecordMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown TransferRecord edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.

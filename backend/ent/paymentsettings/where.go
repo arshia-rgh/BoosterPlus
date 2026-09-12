@@ -64,6 +64,11 @@ func PublishedID(v string) predicate.PaymentSettings {
 	return predicate.PaymentSettings(sql.FieldEQ(FieldPublishedID, v))
 }
 
+// OutgoingPage applies equality check predicate on the "outgoing_page" field. It's identical to OutgoingPageEQ.
+func OutgoingPage(v int) predicate.PaymentSettings {
+	return predicate.PaymentSettings(sql.FieldEQ(FieldOutgoingPage, v))
+}
+
 // DiscoveryPage applies equality check predicate on the "discovery_page" field. It's identical to DiscoveryPageEQ.
 func DiscoveryPage(v int) predicate.PaymentSettings {
 	return predicate.PaymentSettings(sql.FieldEQ(FieldDiscoveryPage, v))
@@ -177,6 +182,46 @@ func PublishedIDEqualFold(v string) predicate.PaymentSettings {
 // PublishedIDContainsFold applies the ContainsFold predicate on the "published_id" field.
 func PublishedIDContainsFold(v string) predicate.PaymentSettings {
 	return predicate.PaymentSettings(sql.FieldContainsFold(FieldPublishedID, v))
+}
+
+// OutgoingPageEQ applies the EQ predicate on the "outgoing_page" field.
+func OutgoingPageEQ(v int) predicate.PaymentSettings {
+	return predicate.PaymentSettings(sql.FieldEQ(FieldOutgoingPage, v))
+}
+
+// OutgoingPageNEQ applies the NEQ predicate on the "outgoing_page" field.
+func OutgoingPageNEQ(v int) predicate.PaymentSettings {
+	return predicate.PaymentSettings(sql.FieldNEQ(FieldOutgoingPage, v))
+}
+
+// OutgoingPageIn applies the In predicate on the "outgoing_page" field.
+func OutgoingPageIn(vs ...int) predicate.PaymentSettings {
+	return predicate.PaymentSettings(sql.FieldIn(FieldOutgoingPage, vs...))
+}
+
+// OutgoingPageNotIn applies the NotIn predicate on the "outgoing_page" field.
+func OutgoingPageNotIn(vs ...int) predicate.PaymentSettings {
+	return predicate.PaymentSettings(sql.FieldNotIn(FieldOutgoingPage, vs...))
+}
+
+// OutgoingPageGT applies the GT predicate on the "outgoing_page" field.
+func OutgoingPageGT(v int) predicate.PaymentSettings {
+	return predicate.PaymentSettings(sql.FieldGT(FieldOutgoingPage, v))
+}
+
+// OutgoingPageGTE applies the GTE predicate on the "outgoing_page" field.
+func OutgoingPageGTE(v int) predicate.PaymentSettings {
+	return predicate.PaymentSettings(sql.FieldGTE(FieldOutgoingPage, v))
+}
+
+// OutgoingPageLT applies the LT predicate on the "outgoing_page" field.
+func OutgoingPageLT(v int) predicate.PaymentSettings {
+	return predicate.PaymentSettings(sql.FieldLT(FieldOutgoingPage, v))
+}
+
+// OutgoingPageLTE applies the LTE predicate on the "outgoing_page" field.
+func OutgoingPageLTE(v int) predicate.PaymentSettings {
+	return predicate.PaymentSettings(sql.FieldLTE(FieldOutgoingPage, v))
 }
 
 // DiscoveryPageEQ applies the EQ predicate on the "discovery_page" field.

@@ -9,10 +9,18 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
 func (s *Store) checkBookable(ctx context.Context, tx *ent.Tx, work *ent.Fulfillment, availabilityID string, start, end time.Time) error {
+	blocked, caseErr := tx.ServiceCase.Query().Where(servicecase.ActiveOrderIDEQ(work.OrderID)).Exist(ctx)
+	if caseErr != nil {
+		return caseErr
+	}
+	if blocked {
+		return ErrConflict
+	}
 	if !start.After(s.now()) || start.After(s.now().Add(90*24*time.Hour)) {
 		return ErrConflict
 	}

@@ -2,7 +2,7 @@ import { createHmac } from "node:crypto";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { signIn, enroll, fixture } from "./identity-fixtures";
-test("staff publishes checkout policy and customer pays through verified provider evidence", async ({
+test("staff publishes policy and verifies customer payment, dispute and refund", async ({
   page,
   browser,
   request,
@@ -17,8 +17,23 @@ test("staff publishes checkout policy and customer pays through verified provide
   await page
     .getByLabel("Customer payment policy")
     .fill(
-      "Synthetic sandbox payment terms for this automated browser journey only.",
+      "Synthetic fixture payment terms for this automated browser journey only.",
     );
+  for (const label of [
+    "Cancellation terms",
+    "Partial work terms",
+    "No-show terms",
+    "Missed target terms",
+    "Refund calculation terms",
+    "Refund fee terms",
+  ]) {
+    await page
+      .getByLabel(label, { exact: true })
+      .fill("Synthetic operator-approved terms for this automated test only.");
+  }
+  await page.getByLabel("Dispute window in hours (1–8760)").fill("168");
+  await page.getByLabel("Appeal window in hours (0–720)").fill("48");
+  await page.getByLabel("Maximum appeals (0–3)").fill("1");
   await page.getByLabel("Processing fees paid by").selectOption("merchant");
   await page.getByLabel("Exchange rate policy").selectOption("fixed");
   await page
@@ -57,7 +72,7 @@ test("staff publishes checkout policy and customer pays through verified provide
       .click();
     await expect(
       customer.getByRole("link", { name: "Continue to NOWPayments" }),
-    ).toHaveAttribute("href", "https://sandbox.nowpayments.io/payment/?iid=1", {
+    ).toHaveAttribute("href", "https://nowpayments.io/payment/?iid=1", {
       timeout: 20000,
     });
     const invalid = await request.post(
@@ -116,6 +131,125 @@ test("staff publishes checkout policy and customer pays through verified provide
     await expect(
       page.getByRole("link", { name: `Order ${id.slice(0, 8)}` }),
     ).toBeVisible();
+    await customer.getByLabel("Review reason").selectOption("cancellation");
+    await customer
+      .getByLabel("Describe your case")
+      .fill("Please cancel the unused service and review a partial refund.");
+    await customer
+      .getByRole("button", { name: "Open service case", exact: true })
+      .click();
+    await expect(
+      customer.getByRole("heading", { name: "cancellation · open" }),
+    ).toBeVisible();
+    await page.goto(`/admin/orders/${id}`);
+    await page
+      .getByLabel("Case message")
+      .fill(
+        "We reviewed the unused work and propose cancellation with this refund.",
+      );
+    await page.getByLabel("Case outcome").selectOption("cancel");
+    await page.getByRole("button", { name: "Propose case decision" }).click();
+    await expect(
+      page.getByRole("heading", { name: "cancellation · decided" }),
+    ).toBeVisible();
+    await page.getByLabel("Refund source receipt").selectOption({ index: 1 });
+    await page.getByLabel("Exact refund crypto amount").fill("4.00000001");
+    await page
+      .getByLabel("Refund proposal terms")
+      .fill("Synthetic exact unused-service refund; no additional test fees.");
+    await page
+      .getByRole("button", { name: "Propose refund", exact: true })
+      .click();
+    await expect(
+      page.getByText("Status: recipient pending", { exact: true }),
+    ).toBeVisible();
+    await customer
+      .getByRole("button", { name: "Refresh refunds", exact: true })
+      .click();
+    await customer
+      .getByLabel("Refund destination address")
+      .fill("synthetic-browser-recipient");
+    await customer
+      .getByLabel("Refund memo or destination tag")
+      .fill("synthetic-memo");
+    await customer
+      .getByLabel(
+        "I accept these refund terms and confirm this address, network and memo",
+      )
+      .check();
+    await customer
+      .getByRole("button", { name: "Confirm refund recipient" })
+      .click();
+    await expect(
+      customer.getByText("Status: verified", { exact: true }),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Refresh refunds", exact: true })
+      .click();
+    await expect(
+      page.getByText("Status: verified", { exact: true }),
+    ).toBeVisible();
+    await page
+      .getByLabel("Refund authorization reason")
+      .fill(
+        "Owner approves this exact customer-confirmed destination and amount.",
+      );
+    await page.getByRole("button", { name: "Approve exact refund" }).click();
+    await expect
+      .poll(
+        async () => {
+          await page
+            .getByRole("button", { name: "Refresh refunds", exact: true })
+            .click();
+          return await page
+            .getByLabel("NOWPayments authenticator code")
+            .count();
+        },
+        { timeout: 20000 },
+      )
+      .toBe(1);
+    await page
+      .getByLabel("Refund authorization reason")
+      .fill("Authorize the independently verified outgoing transfer.");
+    await page.getByLabel("NOWPayments authenticator code").fill("123456");
+    await page
+      .getByRole("button", { name: "Authorize provider transfer" })
+      .click();
+    await expect
+      .poll(
+        async () => {
+          await page
+            .getByRole("button", { name: "Refresh refunds", exact: true })
+            .click();
+          return await page
+            .getByText("Status: confirmed", { exact: true })
+            .count();
+        },
+        { timeout: 20000 },
+      )
+      .toBe(1);
+    await customer
+      .getByRole("button", { name: "Refresh cases and order", exact: true })
+      .click();
+    await expect(
+      customer.getByRole("heading", { name: "cancellation · decided" }),
+    ).toBeVisible();
+    await customer
+      .getByLabel("Case message")
+      .fill("I accept the confirmed refund and the cancellation resolution.");
+    await customer
+      .getByRole("button", { name: "Accept resolution and close case" })
+      .click();
+    await expect(
+      customer.getByRole("heading", { name: "cancellation · closed" }),
+    ).toBeVisible();
+    await expect(
+      customer.getByText("Status: confirmed", { exact: true }),
+    ).toBeVisible();
+    expect(
+      (await new AxeBuilder({ page: customer }).analyze()).violations,
+    ).toEqual([]);
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   } finally {
     await customerContext.close();
   }

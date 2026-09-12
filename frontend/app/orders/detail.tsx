@@ -1,3 +1,4 @@
+import Cases from "../payments/cases";
 import Checkout from "../payments/checkout";
 import OrderProgress from "../experience/order-progress";
 import PurchaseReview from "../reviews/form";
@@ -425,6 +426,14 @@ export default function OrderDetail({ admin = false }: { admin?: boolean }) {
               detail={detail}
               admin={admin}
               reload={resource.reload}
+            />
+          )}
+          {detail.contract && (
+            <Cases
+              detail={detail}
+              admin={admin}
+              owner={session.data?.user?.role === "owner"}
+              changed={resource.reload}
             />
           )}
           <OrderSupport

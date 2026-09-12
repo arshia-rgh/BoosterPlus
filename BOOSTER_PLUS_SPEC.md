@@ -740,7 +740,7 @@ The release is complete only after all selected launch workflows work end to end
 | Operations | Backup restored into a clean environment; worker failure/retry, graceful shutdown, monitoring alerts, and application rollback rehearsed. |
 | User interface | Mobile/desktop checkout, dynamic forms, keyboard operation, accessible errors, loading/empty/failure states, and selected languages pass review. |
 
-Use backend unit tests for price/state rules, integration tests for transactional behavior and adapters, frontend tests for important form/checkout interactions, and browser tests for the journeys above. Prefer provider sandbox and recorded signed webhook fixtures; perform a controlled real payment/refund smoke test before accepting public orders.
+Use backend unit tests for price/state rules, integration tests for transactional behavior and adapters, frontend tests for important form/checkout interactions, and browser tests for the journeys above. Use isolated provider fixtures and recorded signed webhook fixtures; perform a controlled real payment/refund smoke test before accepting public orders.
 
 ### 18.2 Operational requirements
 

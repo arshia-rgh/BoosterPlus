@@ -15191,6 +15191,990 @@
           }
         }
       }
+    },
+    "/api/v1/orders/{id}/cases": {
+      "get": {
+        "operationId": "getApiV1OrdersIdCases",
+        "summary": "Read private order cases",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceCaseHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "postApiV1OrdersIdCases",
+        "summary": "Open a private service case",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceCase"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceCaseInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cases/{id}": {
+      "get": {
+        "operationId": "getApiV1CasesId",
+        "summary": "Read a private case and event page",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceCaseDetail"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/cases/{id}/{action}": {
+      "post": {
+        "operationId": "postApiV1CasesIdAction",
+        "summary": "Reply, decide, appeal or close a case with authority and version checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceCase"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "action",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceCaseChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{id}/refunds": {
+      "get": {
+        "operationId": "getApiV1OrdersIdRefunds",
+        "summary": "Read private refund history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/orders/{id}/cases": {
+      "get": {
+        "operationId": "getApiV1AdminOrdersIdCases",
+        "summary": "Read private order cases",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceCaseHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "postApiV1AdminOrdersIdCases",
+        "summary": "Open a private service case",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceCase"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceCaseInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/cases/{id}": {
+      "get": {
+        "operationId": "getApiV1AdminCasesId",
+        "summary": "Read a private case and event page",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceCaseDetail"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/cases/{id}/{action}": {
+      "post": {
+        "operationId": "postApiV1AdminCasesIdAction",
+        "summary": "Reply, decide, appeal or close a case with authority and version checks",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceCase"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "action",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceCaseChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/orders/{id}/refunds": {
+      "get": {
+        "operationId": "getApiV1AdminOrdersIdRefunds",
+        "summary": "Read private refund history",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/cases": {
+      "get": {
+        "operationId": "getApiV1AdminCases",
+        "summary": "Read open service case queue",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceCaseQueue"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "after",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/cases/{id}/refunds": {
+      "post": {
+        "operationId": "postApiV1AdminCasesIdRefunds",
+        "summary": "Propose a refund reserved against received funds",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundTransfer"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundProposal"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/refunds/{id}/recipient": {
+      "post": {
+        "operationId": "postApiV1RefundsIdRecipient",
+        "summary": "Confirm a refund destination after recent customer sign-in",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundTransfer"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundRecipientInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/refunds/{id}/approve": {
+      "post": {
+        "operationId": "postApiV1AdminRefundsIdApprove",
+        "summary": "Owner authorization with recent sign-in and authenticator verification",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundTransfer"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/refunds/{id}/cancel": {
+      "post": {
+        "operationId": "postApiV1AdminRefundsIdCancel",
+        "summary": "Owner authorization with recent sign-in and authenticator verification",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundTransfer"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/refunds/{id}/verify": {
+      "post": {
+        "operationId": "postApiV1AdminRefundsIdVerify",
+        "summary": "Authorize an independently verified outgoing attempt with an ephemeral provider code",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceQueued"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/finance/outgoing/reconcile": {
+      "post": {
+        "operationId": "postApiV1AdminFinanceOutgoingReconcile",
+        "summary": "Request authoritative outgoing evidence",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceQueued"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentReconcileInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/finance/outgoing": {
+      "get": {
+        "operationId": "getOutgoingExceptions",
+        "summary": "Read outgoing exceptions without private provider payloads",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutgoingQueue"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "after",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -17178,7 +18162,8 @@
               "funds_detected",
               "settled",
               "retired"
-            ]
+            ],
+            "description": "Payment lifecycle. Fulfillment requires verified provider settlement; pausing checkout cannot grant payment success."
           },
           "data": {
             "$ref": "#/components/schemas/OrderCommercial"
@@ -20241,7 +21226,8 @@
           "routes",
           "fee_mode",
           "rate_mode",
-          "window_minutes"
+          "window_minutes",
+          "remedies"
         ],
         "properties": {
           "label": {
@@ -20270,6 +21256,16 @@
           },
           "window_minutes": {
             "type": "integer"
+          },
+          "remedies": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PaymentRemedies"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -20566,6 +21562,492 @@
         "properties": {
           "code": {
             "type": "string"
+          }
+        }
+      },
+      "PaymentRemedies": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cancellation",
+          "partial_work",
+          "no_show",
+          "missed_target",
+          "refund_basis",
+          "refund_fees",
+          "dispute_hours",
+          "appeal_hours",
+          "max_appeals"
+        ],
+        "properties": {
+          "cancellation": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          },
+          "partial_work": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          },
+          "no_show": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          },
+          "missed_target": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          },
+          "refund_basis": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          },
+          "refund_fees": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          },
+          "dispute_hours": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8760
+          },
+          "appeal_hours": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 720
+          },
+          "max_appeals": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3
+          }
+        }
+      },
+      "ServiceCase": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "order_id",
+          "kind",
+          "state",
+          "outcome",
+          "version",
+          "appeals",
+          "appeal_until",
+          "policy",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "appeals": {
+            "type": "integer"
+          },
+          "appeal_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "policy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PaymentRemedies"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ServiceCaseInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["request_key", "kind", "note", "message_id"],
+        "properties": {
+          "request_key": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "message_id": {
+            "type": "string"
+          }
+        }
+      },
+      "ServiceCaseChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "note", "message_id", "outcome"],
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "note": {
+            "type": "string"
+          },
+          "message_id": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string"
+          }
+        }
+      },
+      "ServiceCaseEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "id",
+          "action",
+          "note",
+          "message_id",
+          "created_at",
+          "role"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "message_id": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      },
+      "ServiceCaseHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cases"],
+        "properties": {
+          "cases": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceCase"
+            }
+          }
+        }
+      },
+      "ServiceCaseQueue": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cases", "next"],
+        "properties": {
+          "cases": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceCase"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        }
+      },
+      "ServiceCaseDetail": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case", "events", "next"],
+        "properties": {
+          "case": {
+            "$ref": "#/components/schemas/ServiceCase"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceCaseEvent"
+            }
+          },
+          "next": {
+            "type": "integer"
+          }
+        }
+      },
+      "RefundRecipient": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["address", "memo"],
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "memo": {
+            "type": "string"
+          }
+        }
+      },
+      "RefundTransfer": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "case_id",
+          "receipt_id",
+          "order_id",
+          "kind",
+          "currency",
+          "network",
+          "amount",
+          "terms",
+          "state",
+          "issue",
+          "version",
+          "recipient",
+          "recipient_at",
+          "approved_at",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "case_id": {
+            "type": "string"
+          },
+          "receipt_id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "network": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "terms": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/RefundRecipient"
+          },
+          "recipient_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RefundHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["transfers"],
+        "properties": {
+          "transfers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RefundTransfer"
+            }
+          }
+        }
+      },
+      "RefundProposal": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["request_key", "receipt_id", "amount", "terms"],
+        "properties": {
+          "request_key": {
+            "type": "string"
+          },
+          "receipt_id": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "terms": {
+            "type": "string"
+          }
+        }
+      },
+      "RefundRecipientInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "address", "memo", "accept"],
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "address": {
+            "type": "string"
+          },
+          "memo": {
+            "type": "string"
+          },
+          "accept": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RefundChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "reason", "code"],
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        }
+      },
+      "FinanceQueued": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["queued"],
+        "properties": {
+          "queued": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OutgoingQueue": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["records", "next", "enabled"],
+        "properties": {
+          "records": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "payment_id",
+                "attempt_id",
+                "state",
+                "issue",
+                "checked_at"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "payment_id": {
+                  "type": "string"
+                },
+                "attempt_id": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "issue": {
+                  "type": "string"
+                },
+                "checked_at": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "next": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
           }
         }
       }

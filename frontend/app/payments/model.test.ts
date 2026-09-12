@@ -1,13 +1,10 @@
 import { expect, it } from "vitest";
 import { safeCheckout, paymentMessage } from "./model";
 it("permits only exact provider checkout destinations", () => {
-  for (const value of [
-    "",
-    "https://nowpayments.io/payment/?iid=123",
-    "https://sandbox.nowpayments.io/payment/?iid=123",
-  ])
+  for (const value of ["", "https://nowpayments.io/payment/?iid=123"])
     expect(safeCheckout(value)).toBe(true);
   for (const value of [
+    "https://sandbox.nowpayments.io/payment/?iid=123",
     "javascript:alert(1)",
     "http://nowpayments.io/payment/?iid=1",
     "https://nowpayments.io.evil.test/payment/?iid=1",

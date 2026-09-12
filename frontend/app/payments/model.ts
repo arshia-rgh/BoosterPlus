@@ -4,7 +4,38 @@ export const routeSchema = z.object({
   label: z.string(),
   network: z.string(),
 });
+export const remedySchema = z.object({
+  cancellation: z.string(),
+  partial_work: z.string(),
+  no_show: z.string(),
+  missed_target: z.string(),
+  refund_basis: z.string(),
+  refund_fees: z.string(),
+  dispute_hours: z.number().int(),
+  appeal_hours: z.number().int(),
+  max_appeals: z.number().int(),
+});
+export const remedyLabels = [
+  ["cancellation", "Cancellation terms"],
+  ["partial_work", "Partial work terms"],
+  ["no_show", "No-show terms"],
+  ["missed_target", "Missed target terms"],
+  ["refund_basis", "Refund calculation terms"],
+  ["refund_fees", "Refund fee terms"],
+] as const;
+export const emptyRemedies = {
+  cancellation: "",
+  partial_work: "",
+  no_show: "",
+  missed_target: "",
+  refund_basis: "",
+  refund_fees: "",
+  dispute_hours: 0,
+  appeal_hours: 0,
+  max_appeals: 0,
+};
 export const policySchema = z.object({
+  remedies: remedySchema.nullable(),
   label: z.string(),
   text: z.string(),
   currencies: z.array(z.string()),
@@ -22,7 +53,7 @@ export function safeCheckout(value: string): boolean {
     const url = new URL(value);
     return (
       url.protocol === "https:" &&
-      ["nowpayments.io", "sandbox.nowpayments.io"].includes(url.hostname) &&
+      url.hostname === "nowpayments.io" &&
       url.port === "" &&
       url.username === "" &&
       url.password === "" &&
@@ -147,4 +178,24 @@ export function paymentMessage(state: string, issue = "") {
     descriptions.get(state) ||
     "Payment information is being reconciled. Contact support if you need help."
   );
+}
+
+export function remedyText(
+  value: z.infer<typeof remedySchema>,
+  key: (typeof remedyLabels)[number][0],
+): string {
+  switch (key) {
+    case "cancellation":
+      return value.cancellation;
+    case "partial_work":
+      return value.partial_work;
+    case "no_show":
+      return value.no_show;
+    case "missed_target":
+      return value.missed_target;
+    case "refund_basis":
+      return value.refund_basis;
+    case "refund_fees":
+      return value.refund_fees;
+  }
 }

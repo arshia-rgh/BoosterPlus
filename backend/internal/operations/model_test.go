@@ -32,7 +32,10 @@ func TestOperationalInputBoundaries(t *testing.T) {
 	if errorCode("secret server exception") != "internal_error" {
 		t.Fatal("arbitrary error text leaked")
 	}
-	if supportedKind("payments.refund") || jobState("injected") {
+	if supportedKind("payments.mark_paid") || jobState("injected") {
 		t.Fatal("undeclared task capability accepted")
+	}
+	if !supportedKind("payments.refund") || !supportedKind("payments.outgoing_reconcile") {
+		t.Fatal("registered refund worker jobs missing from operations")
 	}
 }

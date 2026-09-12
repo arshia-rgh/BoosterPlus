@@ -51,6 +51,9 @@ type Booking func(*sql.Selector)
 // BookingEvent is the predicate function for bookingevent builders.
 type BookingEvent func(*sql.Selector)
 
+// CaseEvent is the predicate function for caseevent builders.
+type CaseEvent func(*sql.Selector)
+
 // CatalogRelease is the predicate function for catalogrelease builders.
 type CatalogRelease func(*sql.Selector)
 
@@ -83,6 +86,9 @@ type Game func(*sql.Selector)
 
 // MediaFile is the predicate function for mediafile builders.
 type MediaFile func(*sql.Selector)
+
+// MoneyTransfer is the predicate function for moneytransfer builders.
+type MoneyTransfer func(*sql.Selector)
 
 // Notification is the predicate function for notification builders.
 type Notification func(*sql.Selector)
@@ -132,11 +138,26 @@ type ReviewRevision func(*sql.Selector)
 // SecretBundle is the predicate function for secretbundle builders.
 type SecretBundle func(*sql.Selector)
 
+// ServiceCase is the predicate function for servicecase builders.
+type ServiceCase func(*sql.Selector)
+
 // StaffProfile is the predicate function for staffprofile builders.
 type StaffProfile func(*sql.Selector)
 
 // SubmissionEvent is the predicate function for submissionevent builders.
 type SubmissionEvent func(*sql.Selector)
+
+// TransferAttempt is the predicate function for transferattempt builders.
+type TransferAttempt func(*sql.Selector)
+
+// TransferEvent is the predicate function for transferevent builders.
+type TransferEvent func(*sql.Selector)
+
+// TransferObservation is the predicate function for transferobservation builders.
+type TransferObservation func(*sql.Selector)
+
+// TransferRecord is the predicate function for transferrecord builders.
+type TransferRecord func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

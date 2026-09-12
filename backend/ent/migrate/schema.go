@@ -449,6 +449,31 @@ var (
 			},
 		},
 	}
+	// CaseEventsColumns holds the columns for the "case_events" table.
+	CaseEventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "case_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "action", Type: field.TypeString, Size: 32},
+		{Name: "actor_id", Type: field.TypeString, Size: 36},
+		{Name: "actor_role", Type: field.TypeString, Size: 32},
+		{Name: "note", Type: field.TypeString, Size: 2000},
+		{Name: "message_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// CaseEventsTable holds the schema information for the "case_events" table.
+	CaseEventsTable = &schema.Table{
+		Name:       "case_events",
+		Columns:    CaseEventsColumns,
+		PrimaryKey: []*schema.Column{CaseEventsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "case_event_version",
+				Unique:  true,
+				Columns: []*schema.Column{CaseEventsColumns[1], CaseEventsColumns[2]},
+			},
+		},
+	}
 	// CatalogReleasesColumns holds the columns for the "catalog_releases" table.
 	CatalogReleasesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -802,6 +827,53 @@ var (
 			},
 		},
 	}
+	// MoneyTransfersColumns holds the columns for the "money_transfers" table.
+	MoneyTransfersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "kind", Type: field.TypeString, Size: 32},
+		{Name: "case_id", Type: field.TypeString, Size: 36},
+		{Name: "receipt_id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "account", Type: field.TypeString, Size: 80},
+		{Name: "currency", Type: field.TypeString, Size: 32},
+		{Name: "network", Type: field.TypeString, Size: 64},
+		{Name: "amount", Type: field.TypeString, Size: 128},
+		{Name: "terms", Type: field.TypeString, Size: 2000},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "recipient_pending"},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "recipient", Type: field.TypeJSON},
+		{Name: "recipient_at", Type: field.TypeTime, Nullable: true},
+		{Name: "approved_by", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "approved_at", Type: field.TypeTime, Nullable: true},
+		{Name: "current_attempt", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// MoneyTransfersTable holds the schema information for the "money_transfers" table.
+	MoneyTransfersTable = &schema.Table{
+		Name:       "money_transfers",
+		Columns:    MoneyTransfersColumns,
+		PrimaryKey: []*schema.Column{MoneyTransfersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "transfer_receipt_cap",
+				Unique:  false,
+				Columns: []*schema.Column{MoneyTransfersColumns[4], MoneyTransfersColumns[12]},
+			},
+			{
+				Name:    "transfer_case",
+				Unique:  false,
+				Columns: []*schema.Column{MoneyTransfersColumns[3], MoneyTransfersColumns[19], MoneyTransfersColumns[0]},
+			},
+			{
+				Name:    "transfer_customer",
+				Unique:  false,
+				Columns: []*schema.Column{MoneyTransfersColumns[6], MoneyTransfersColumns[19], MoneyTransfersColumns[0]},
+			},
+		},
+	}
 	// NotificationsColumns holds the columns for the "notifications" table.
 	NotificationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -1150,6 +1222,7 @@ var (
 		{Name: "version", Type: field.TypeInt, Default: 1},
 		{Name: "published_id", Type: field.TypeString, Size: 36, Default: ""},
 		{Name: "draft", Type: field.TypeJSON},
+		{Name: "outgoing_page", Type: field.TypeInt, Default: 0},
 		{Name: "discovery_page", Type: field.TypeInt, Default: 0},
 		{Name: "updated_at", Type: field.TypeTime},
 	}
@@ -1310,6 +1383,47 @@ var (
 			},
 		},
 	}
+	// ServiceCasesColumns holds the columns for the "service_cases" table.
+	ServiceCasesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "active_order_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "kind", Type: field.TypeString, Size: 32},
+		{Name: "policy", Type: field.TypeJSON},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "open"},
+		{Name: "previous_state", Type: field.TypeString, Size: 32},
+		{Name: "outcome", Type: field.TypeString, Size: 32, Default: ""},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "appeal_count", Type: field.TypeInt, Default: 0},
+		{Name: "appeal_until", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ServiceCasesTable holds the schema information for the "service_cases" table.
+	ServiceCasesTable = &schema.Table{
+		Name:       "service_cases",
+		Columns:    ServiceCasesColumns,
+		PrimaryKey: []*schema.Column{ServiceCasesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "case_active_order",
+				Unique:  true,
+				Columns: []*schema.Column{ServiceCasesColumns[3]},
+			},
+			{
+				Name:    "case_order_history",
+				Unique:  false,
+				Columns: []*schema.Column{ServiceCasesColumns[2], ServiceCasesColumns[13], ServiceCasesColumns[0]},
+			},
+			{
+				Name:    "case_review_queue",
+				Unique:  false,
+				Columns: []*schema.Column{ServiceCasesColumns[7], ServiceCasesColumns[14], ServiceCasesColumns[0]},
+			},
+		},
+	}
 	// StaffProfilesColumns holds the columns for the "staff_profiles" table.
 	StaffProfilesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -1347,6 +1461,125 @@ var (
 				Name:    "submission_event_version",
 				Unique:  true,
 				Columns: []*schema.Column{SubmissionEventsColumns[1], SubmissionEventsColumns[2]},
+			},
+		},
+	}
+	// TransferAttemptsColumns holds the columns for the "transfer_attempts" table.
+	TransferAttemptsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "transfer_id", Type: field.TypeString, Size: 36},
+		{Name: "account", Type: field.TypeString, Size: 80},
+		{Name: "active_transfer_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "recipient", Type: field.TypeJSON},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "approved"},
+		{Name: "version", Type: field.TypeInt, Default: 0},
+		{Name: "provider_id", Type: field.TypeString, Nullable: true, Size: 32},
+		{Name: "batch_id", Type: field.TypeString, Size: 32, Default: ""},
+		{Name: "issue", Type: field.TypeString, Size: 48, Default: ""},
+		{Name: "lease_owner", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "lease_until", Type: field.TypeTime, Nullable: true},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "checked_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// TransferAttemptsTable holds the schema information for the "transfer_attempts" table.
+	TransferAttemptsTable = &schema.Table{
+		Name:       "transfer_attempts",
+		Columns:    TransferAttemptsColumns,
+		PrimaryKey: []*schema.Column{TransferAttemptsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "transfer_active_attempt",
+				Unique:  true,
+				Columns: []*schema.Column{TransferAttemptsColumns[3]},
+			},
+			{
+				Name:    "transfer_provider_reference",
+				Unique:  true,
+				Columns: []*schema.Column{TransferAttemptsColumns[2], TransferAttemptsColumns[7]},
+			},
+			{
+				Name:    "transfer_reconcile_due",
+				Unique:  false,
+				Columns: []*schema.Column{TransferAttemptsColumns[2], TransferAttemptsColumns[13], TransferAttemptsColumns[0]},
+			},
+		},
+	}
+	// TransferEventsColumns holds the columns for the "transfer_events" table.
+	TransferEventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "transfer_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "action", Type: field.TypeString, Size: 32},
+		{Name: "actor_id", Type: field.TypeString, Size: 36},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// TransferEventsTable holds the schema information for the "transfer_events" table.
+	TransferEventsTable = &schema.Table{
+		Name:       "transfer_events",
+		Columns:    TransferEventsColumns,
+		PrimaryKey: []*schema.Column{TransferEventsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "transfer_event_version",
+				Unique:  true,
+				Columns: []*schema.Column{TransferEventsColumns[1], TransferEventsColumns[2]},
+			},
+		},
+	}
+	// TransferObservationsColumns holds the columns for the "transfer_observations" table.
+	TransferObservationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "record_id", Type: field.TypeString, Size: 36},
+		{Name: "attempt_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// TransferObservationsTable holds the schema information for the "transfer_observations" table.
+	TransferObservationsTable = &schema.Table{
+		Name:       "transfer_observations",
+		Columns:    TransferObservationsColumns,
+		PrimaryKey: []*schema.Column{TransferObservationsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "transfer_observation_version",
+				Unique:  true,
+				Columns: []*schema.Column{TransferObservationsColumns[1], TransferObservationsColumns[3]},
+			},
+		},
+	}
+	// TransferRecordsColumns holds the columns for the "transfer_records" table.
+	TransferRecordsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "account", Type: field.TypeString, Size: 80},
+		{Name: "provider_id", Type: field.TypeString, Size: 32},
+		{Name: "attempt_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "version", Type: field.TypeInt, Default: 0},
+		{Name: "lease_owner", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "lease_until", Type: field.TypeTime, Nullable: true},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "unknown"},
+		{Name: "issue", Type: field.TypeString, Size: 48, Default: ""},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "checked_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// TransferRecordsTable holds the schema information for the "transfer_records" table.
+	TransferRecordsTable = &schema.Table{
+		Name:       "transfer_records",
+		Columns:    TransferRecordsColumns,
+		PrimaryKey: []*schema.Column{TransferRecordsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "transfer_record_reference",
+				Unique:  true,
+				Columns: []*schema.Column{TransferRecordsColumns[1], TransferRecordsColumns[2]},
+			},
+			{
+				Name:    "transfer_record_due",
+				Unique:  false,
+				Columns: []*schema.Column{TransferRecordsColumns[1], TransferRecordsColumns[10], TransferRecordsColumns[0]},
 			},
 		},
 	}
@@ -1401,6 +1634,7 @@ var (
 		AvailabilityWindowsTable,
 		BookingsTable,
 		BookingEventsTable,
+		CaseEventsTable,
 		CatalogReleasesTable,
 		ConversationsTable,
 		ConversationMessagesTable,
@@ -1412,6 +1646,7 @@ var (
 		FulfillmentsTable,
 		GamesTable,
 		MediaFilesTable,
+		MoneyTransfersTable,
 		NotificationsTable,
 		OrdersTable,
 		OrderContractsTable,
@@ -1428,8 +1663,13 @@ var (
 		ReviewsTable,
 		ReviewRevisionsTable,
 		SecretBundlesTable,
+		ServiceCasesTable,
 		StaffProfilesTable,
 		SubmissionEventsTable,
+		TransferAttemptsTable,
+		TransferEventsTable,
+		TransferObservationsTable,
+		TransferRecordsTable,
 		UsersTable,
 	}
 )

@@ -79,6 +79,9 @@ func Server(ctx context.Context, cfg config.Config, logger *slog.Logger) (result
 		}
 	}
 	finance := payments.New(client, auth, paymentProvider, cfg.Crypto.Account, cfg.Crypto.Enabled, nil)
+	if outgoing, ok := paymentProvider.(payments.OutgoingProvider); ok {
+		finance.ConfigureOutgoing(outgoing, cfg.Crypto.OutgoingEnabled)
+	}
 	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, finance.Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.New(client, auth, nil).Register, notices.Register, files.Register, work.Register, submissions.New(client, auth, nil).Register, reviews.New(client, auth, nil).Register, operations.New(client, auth, nil).Register, alerts.Register, reports.New(auth, nil).Register))
 }
 

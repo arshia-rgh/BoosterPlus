@@ -98,7 +98,7 @@ func TestDiscoveryMalformedAndExpiredCredentials(t *testing.T) {
 	}
 }
 func TestMerchantCredentialPairValidation(t *testing.T) {
-	base := Config{Mode: "sandbox", APIKey: strings.Repeat("test-api", 4), IPNSecret: strings.Repeat("test-ipn", 4), PublicOrigin: "https://booster.example.test"}
+	base := Config{APIKey: strings.Repeat("test-api", 4), IPNSecret: strings.Repeat("test-ipn", 4), PublicOrigin: "https://booster.example.test"}
 	for _, change := range []func(*Config){func(c *Config) { c.Email = "x@example.test" }, func(c *Config) { c.Password = "synthetic-test-password" }, func(c *Config) { c.Email = "x@example.test"; c.Password = "bad\x00password" }} {
 		c := base
 		change(&c)
@@ -109,14 +109,14 @@ func TestMerchantCredentialPairValidation(t *testing.T) {
 }
 
 func TestReadOnlyMerchantCannotCreateInvoices(t *testing.T) {
-	c, err := New(Config{Mode: "sandbox", APIKey: strings.Repeat("synthetic-api", 3), IPNSecret: strings.Repeat("synthetic-ipn", 3), PublicOrigin: "http://127.0.0.1:5173", ReadOnly: true})
+	c, err := New(Config{APIKey: strings.Repeat("synthetic-api", 3), IPNSecret: strings.Repeat("synthetic-ipn", 3), PublicOrigin: "http://127.0.0.1:5173", ReadOnly: true})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if _, err = c.CreateInvoice(t.Context(), sampleRequest()); !errors.Is(err, ErrUnavailable) {
 		t.Fatal("read-only merchant issued an invoice", err)
 	}
-	if c.baseURL != "https://api-sandbox.nowpayments.io/v1" {
+	if c.baseURL != "https://api.nowpayments.io/v1" {
 		t.Fatal("local public origin altered provider destination")
 	}
 }

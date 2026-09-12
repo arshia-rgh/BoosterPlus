@@ -1,3 +1,4 @@
+import CaseQueue from "./case-queue";
 import { useState } from "react";
 import { Link } from "react-router";
 import { z } from "zod";
@@ -42,6 +43,7 @@ export default function Finance() {
   }
   return (
     <>
+      <CaseQueue />
       <p className="admin-intro">
         Review received funds, payment exceptions and checkout policy. Order
         prices and crypto receipts remain separate.

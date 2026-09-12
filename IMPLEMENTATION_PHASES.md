@@ -229,7 +229,7 @@ Completion evidence:
 - Duplicate, forged, missed, and out-of-order webhooks, pending confirmations, provider outages, and replayed checkout requests are tested.
 - Concurrent payment attempts activate fulfillment once; concurrent coupon redemptions cannot exceed limits; limited package capacity cannot be oversold.
 - Browser redirects, screenshots, and manually entered transaction hashes cannot independently mark payments/refunds confirmed.
-- Payment and refund sandbox journeys pass. A controlled live smoke test occurs in P12 before public sales.
+- Payment and refund fixture journeys pass; sandbox is unavailable. A controlled live smoke test occurs in P12 before public sales.
 
 **Implementation update:** NOWPayments is selected for the first hosted crypto adapter after the owner requested minimal-onboarding third-party processing. [Provider decision](docs/crypto-provider-decision.md) records the evidence and limitations. Transport implementation does not enable checkout or complete P07.
 

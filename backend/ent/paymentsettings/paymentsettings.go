@@ -17,6 +17,8 @@ const (
 	FieldPublishedID = "published_id"
 	// FieldDraft holds the string denoting the draft field in the database.
 	FieldDraft = "draft"
+	// FieldOutgoingPage holds the string denoting the outgoing_page field in the database.
+	FieldOutgoingPage = "outgoing_page"
 	// FieldDiscoveryPage holds the string denoting the discovery_page field in the database.
 	FieldDiscoveryPage = "discovery_page"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -31,6 +33,7 @@ var Columns = []string{
 	FieldVersion,
 	FieldPublishedID,
 	FieldDraft,
+	FieldOutgoingPage,
 	FieldDiscoveryPage,
 	FieldUpdatedAt,
 }
@@ -52,6 +55,8 @@ var (
 	DefaultPublishedID string
 	// PublishedIDValidator is a validator for the "published_id" field. It is called by the builders before save.
 	PublishedIDValidator func(string) error
+	// DefaultOutgoingPage holds the default value on creation for the "outgoing_page" field.
+	DefaultOutgoingPage int
 	// DefaultDiscoveryPage holds the default value on creation for the "discovery_page" field.
 	DefaultDiscoveryPage int
 )
@@ -72,6 +77,11 @@ func ByVersion(opts ...sql.OrderTermOption) OrderOption {
 // ByPublishedID orders the results by the published_id field.
 func ByPublishedID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPublishedID, opts...).ToFunc()
+}
+
+// ByOutgoingPage orders the results by the outgoing_page field.
+func ByOutgoingPage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOutgoingPage, opts...).ToFunc()
 }
 
 // ByDiscoveryPage orders the results by the discovery_page field.

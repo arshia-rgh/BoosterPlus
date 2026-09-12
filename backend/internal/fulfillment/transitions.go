@@ -8,6 +8,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/availabilityevents"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
@@ -38,6 +39,13 @@ func handoffValidation(row *ent.Order, work *ent.Fulfillment) (catalog.Validatio
 	return catalog.ValidateAnswers(release.Configuration, row.Service, "fulfillment", answers, variant), nil
 }
 func (s *Store) canStart(ctx context.Context, tx *ent.Tx, row *ent.Order, work *ent.Fulfillment) error {
+	blocked, err := tx.ServiceCase.Query().Where(servicecase.ActiveOrderIDEQ(row.ID)).Exist(ctx)
+	if err != nil {
+		return err
+	}
+	if blocked {
+		return ErrConflict
+	}
 	validated, err := handoffValidation(row, work)
 	if err != nil {
 		return err
@@ -95,6 +103,15 @@ func (s *Store) Transition(ctx context.Context, p *identity.Principal, id, audie
 		}
 		if !active(row) || work.Version != input.Version || row.Version != input.OrderVersion || row.Version >= 2147483646 {
 			return ErrConflict
+		}
+		if action == "progress" || action == "submit_completion" || action == "approve_completion" {
+			blocked, caseErr := tx.ServiceCase.Query().Where(servicecase.ActiveOrderIDEQ(row.ID)).Exist(ctx)
+			if caseErr != nil {
+				return caseErr
+			}
+			if blocked {
+				return ErrConflict
+			}
 		}
 		now := s.now().UTC()
 		change := tx.Fulfillment.UpdateOneID(work.ID).AddVersion(1).SetCurrentNote(input.Note).SetUpdatedAt(now)

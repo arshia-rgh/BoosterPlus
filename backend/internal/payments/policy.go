@@ -58,7 +58,7 @@ func (s *Store) settings(ctx context.Context, client *ent.Client) (Settings, err
 
 // SavePolicy preserves every published agreement. Publishing requires recent staff factors.
 func (s *Store) SavePolicy(ctx context.Context, p *identity.Principal, input PolicyInput) (Settings, error) {
-	if input.Version < 1 || input.Version >= maxVersion || (input.Action != "save" && input.Action != "publish") || validatePolicy(input.Data) != nil {
+	if input.Version < 1 || input.Version >= maxVersion || (input.Action != "save" && input.Action != "publish") || validatePolicy(input.Data) != nil || validateRemedies(input.Data.Remedies) != nil {
 		return Settings{}, ErrInvalid
 	}
 	var result Settings

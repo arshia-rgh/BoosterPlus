@@ -44,7 +44,7 @@ const paymentTestSecret = "synthetic-payment-ipn-secret-for-tests"
 
 func newPaymentProvider(t *testing.T) *paymentProvider {
 	t.Helper()
-	verifier, err := nowpayments.New(nowpayments.Config{Mode: "sandbox", APIKey: strings.Repeat("synthetic-api", 3), IPNSecret: paymentTestSecret, PublicOrigin: "https://booster.example.test"})
+	verifier, err := nowpayments.New(nowpayments.Config{APIKey: strings.Repeat("synthetic-api", 3), IPNSecret: paymentTestSecret, PublicOrigin: "https://booster.example.test"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -58,7 +58,7 @@ func (p *paymentProvider) CreateInvoice(_ context.Context, _ nowpayments.Invoice
 	if p.ambiguous {
 		return nowpayments.Invoice{}, nowpayments.ErrAmbiguous
 	}
-	return nowpayments.Invoice{ID: id, URL: "https://sandbox.nowpayments.io/payment/?iid=" + id}, nil
+	return nowpayments.Invoice{ID: id, URL: "https://nowpayments.io/payment/?iid=" + id}, nil
 }
 func (p *paymentProvider) VerifyWebhook(body []byte, signature string) (nowpayments.Notice, error) {
 	return p.verifier.VerifyWebhook(body, signature)
@@ -116,8 +116,8 @@ func paymentDB(t *testing.T) *paymentFixture {
 	t.Helper()
 	base := orderDB(t)
 	provider := newPaymentProvider(t)
-	store := payments.New(base.auth.client, base.auth.service, provider, "sandbox:synthetic-merchant", true, func() time.Time { return time.Unix(base.auth.clock.Load(), 0) })
-	policy := payments.Policy{Label: "Synthetic checkout policy", Text: "Synthetic testing agreement; no live merchant or real payment.", Currencies: []string{"USD"}, Routes: []payments.Route{{Code: "usdttrc20", Label: "Synthetic USDT TRON", Network: "trx"}}, FeeMode: "merchant", RateMode: "fixed", WindowMinutes: 30}
+	store := payments.New(base.auth.client, base.auth.service, provider, "fixture:synthetic-merchant", true, func() time.Time { return time.Unix(base.auth.clock.Load(), 0) })
+	policy := payments.Policy{Remedies: &payments.Remedies{Cancellation: "Synthetic cancellation review terms.", PartialWork: "Synthetic partial work review terms.", NoShow: "Synthetic no show review terms.", MissedTarget: "Synthetic missed target review terms.", RefundBasis: "Synthetic exact received funds basis.", RefundFees: "Synthetic approved fee treatment.", DisputeHours: 168, AppealHours: 48, MaxAppeals: 1}, Label: "Synthetic checkout policy", Text: "Synthetic testing agreement; no live merchant or real payment.", Currencies: []string{"USD"}, Routes: []payments.Route{{Code: "usdttrc20", Label: "Synthetic USDT TRON", Network: "trx"}}, FeeMode: "merchant", RateMode: "fixed", WindowMinutes: 30}
 	settings, err := store.SavePolicy(t.Context(), base.admin, payments.PolicyInput{Version: 1, Action: "publish", Data: policy})
 	if err != nil {
 		t.Fatal(err)

@@ -22,9 +22,10 @@ MEDIA_SCANNER_ADDRESS=/run/clamav/clamd.sock
 VAULT_ACTIVE_KEY=v1
 VAULT_KEYS=
 
-# Configure the correct sandbox/live merchant; explicit activation also needs a published policy.
+# Live NOWPayments only. Enabling checkout also needs a published policy.
+# false pauses new checkout; existing payments still reconcile. No unpaid bypass.
 PAYMENTS_ENABLED=false
-NOWPAYMENTS_MODE=
+PAYOUTS_ENABLED=false
 NOWPAYMENTS_ACCOUNT_ID=
 NOWPAYMENTS_API_KEY=
 NOWPAYMENTS_IPN_SECRET=

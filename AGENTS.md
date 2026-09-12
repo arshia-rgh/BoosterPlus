@@ -29,3 +29,10 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 - Google/email passwordless login only; no customer/seller wallet. Crypto checkout uses verified evidence, idempotency, reconciliation, and explicit refund/payout records.
 - Keep private information, game credentials, provider secrets, auth codes, and personal data out of logs, commits, public files, and message/event payloads that do not require them.
 - Missing business decisions may block their dependent features, not unrelated implementation. Do not invent live prices, payout terms, or win-rate guarantees.
+
+## Final NOWPayments decision (12 September 2026)
+
+- Use the production NOWPayments API only; sandbox has been retired by the provider. Credentials remain private runtime configuration.
+- Keep `PAYMENTS_ENABLED` as a pause switch for new checkout. When false, orders remain unpaid and cannot enter fulfillment. The owner explicitly withdrew the proposed payment bypass; do not implement a runtime success simulation.
+- Reconciliation continues for existing payments while new checkout is paused. Refunds/payouts have a separate explicit activation switch. Provider failure or missing credentials never grants payment success.
+- Automated payment tests use isolated fixtures. Controlled live transaction qualification replaces unavailable sandbox qualification; fixtures cannot qualify real funds movement.

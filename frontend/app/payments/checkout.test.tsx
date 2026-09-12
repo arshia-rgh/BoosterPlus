@@ -13,6 +13,7 @@ afterEach(() => vi.clearAllMocks());
 const policy = {
   id: "policy-one",
   data: {
+    remedies: null,
     label: "Test agreement",
     text: "Synthetic checkout policy for this purchase.",
     currencies: ["USD"],
@@ -94,7 +95,7 @@ it("requires fresh acceptance when the published policy changes", () => {
     screen.getByRole("button", { name: "Create secure checkout" }),
   ).toBeDisabled();
 });
-it("keeps checkout unavailable when merchant activation is absent", () => {
+it("keeps orders unpaid when checkout is paused", () => {
   const { data, reload, changed } = setup();
   vi.mocked(useResource).mockReturnValue({
     data: { ...data, enabled: false },

@@ -10,6 +10,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentallocation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/availabilityevents"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
@@ -124,7 +125,19 @@ func (s *Store) allocate(ctx context.Context, tx *ent.Tx, attempt *ent.PaymentAt
 	if _, err = tx.CouponClaim.Update().Where(couponclaim.ContractIDEQ(contract.ID), couponclaim.StateEQ(couponclaim.StateHeld)).SetState(couponclaim.StateRedeemed).Save(ctx); err != nil {
 		return "", err
 	}
-	if err = s.event(ctx, tx, row, order.StateQueued, "payment_verified", "The provider confirmed payment and it was allocated to this agreement. Your order is ready for fulfillment."); err != nil {
+	next := order.StateQueued
+	held, e := tx.ServiceCase.Query().Where(servicecase.ActiveOrderIDEQ(row.ID)).Exist(ctx)
+	if e != nil {
+		return "", e
+	}
+	if held {
+		next = order.StateOnHold
+	}
+	message := "The provider confirmed payment and it was allocated to this agreement. Your order is ready for fulfillment."
+	if held {
+		message = "The provider confirmed payment and it was allocated to this agreement. Work remains on hold for the active service case."
+	}
+	if err = s.event(ctx, tx, row, next, "payment_verified", message); err != nil {
 		return "", err
 	}
 	return "", s.audit(ctx, tx, nil, "allocated", receipt.ID)

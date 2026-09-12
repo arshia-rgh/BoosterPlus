@@ -71,8 +71,11 @@ func TestBrowserEnvironment(t *testing.T) {
 				if role == "workbooster" || role == "worksecond" {
 					return "booster"
 				}
-				if role == "payadmin" || role == "selleradmin" || role == "workadmin" || role == "catalog" || role == "orderadmin" || role == "supportadmin" {
+				if role == "selleradmin" || role == "workadmin" || role == "catalog" || role == "orderadmin" || role == "supportadmin" {
 					return "administrator"
+				}
+				if role == "payadmin" {
+					return "owner"
 				}
 				if role == "paybuyer" || role == "seller" || role == "sellerother" || role == "workbuyer" || role == "workother" || role == "target" || role == "orders" || role == "orderother" || role == "supportbuyer" || role == "supportother" {
 					return "customer"
@@ -106,14 +109,14 @@ func TestBrowserEnvironment(t *testing.T) {
 		t.Fatal(alertErr)
 	}
 	files := media.New(f.client, service, mediaObjects(t, f.client), media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
-	finance := payments.New(f.client, service, &browserPaymentProvider{newPaymentProvider(t)}, "sandbox:browser-fixture", true, nil)
+	finance := payments.New(f.client, service, &browserPaymentProvider{newPaymentProvider(t)}, "fixture:browser-fixture", true, nil).ConfigureOutgoing(&browserOutgoingProvider{outgoingFixture: &outgoingFixture{}}, true)
 	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, finance.Register, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, execution.Register, submissions.New(f.client, service, nil).Register, reviews.New(f.client, service, nil).Register, operations.New(f.client, service, nil).Register, alerts.Register, reports.New(service, nil).Register))
 	defer server.Close()
 	work, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	done := make(chan error, 1)
 	go func() {
-		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"payments.invoice": finance.InvoiceHandler(), "payments.reconcile": finance.ReconcileHandler(), "availability.changed": alerts.ChangedHandler(), "availability.fanout": alerts.FanoutHandler(), "availability.email": alerts.EmailHandler(sender), "system.ping": func(context.Context, jobs.Job) error { return nil }, "identity.email": service.EmailHandler(sender), "activity.email": notices.EmailHandler(sender), "media.scan": files.ScanHandler()}, slog.New(slog.DiscardHandler))
+		done <- jobs.Run(work, jobs.New(f.db), map[string]jobs.Handler{"payments.refund": finance.RefundHandler(), "payments.outgoing_reconcile": finance.OutgoingHandler(), "payments.invoice": finance.InvoiceHandler(), "payments.reconcile": finance.ReconcileHandler(), "availability.changed": alerts.ChangedHandler(), "availability.fanout": alerts.FanoutHandler(), "availability.email": alerts.EmailHandler(sender), "system.ping": func(context.Context, jobs.Job) error { return nil }, "identity.email": service.EmailHandler(sender), "activity.email": notices.EmailHandler(sender), "media.scan": files.ScanHandler()}, slog.New(slog.DiscardHandler))
 	}()
 	defer func() {
 		cancel()

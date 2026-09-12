@@ -8,7 +8,13 @@ import {
   Text,
 } from "../catalog/controls";
 import { post } from "../identity/api";
-import { settingsSchema, type Settings } from "./model";
+import {
+  settingsSchema,
+  remedyLabels,
+  remedyText,
+  emptyRemedies,
+  type Settings,
+} from "./model";
 export default function PaymentPolicyEditor({
   settings,
   done,
@@ -19,6 +25,7 @@ export default function PaymentPolicyEditor({
   const [data, setData] = useState(settings.draft),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
+  const remedies = data.remedies ?? emptyRemedies;
   async function save(action: string) {
     setBusy(true);
     setError(null);
@@ -64,6 +71,46 @@ export default function PaymentPolicyEditor({
             setData({ ...data, text });
           }}
         />
+        <fieldset>
+          <legend>Service remedies and appeal policy</legend>
+          <p>
+            Enter approved terms. Blank fields cannot be published. These terms
+            are saved with each checkout.
+          </p>
+          {remedyLabels.map(([key, label]) => (
+            <Text
+              key={key}
+              label={label}
+              multiline
+              value={remedyText(remedies, key)}
+              change={(value) => {
+                setData({ ...data, remedies: { ...remedies, [key]: value } });
+              }}
+            />
+          ))}
+          {(
+            [
+              ["dispute_hours", "Dispute window in hours (1–8760)"],
+              ["appeal_hours", "Appeal window in hours (0–720)"],
+              ["max_appeals", "Maximum appeals (0–3)"],
+            ] as const
+          ).map(([key, label]) => (
+            <NumberInput
+              key={key}
+              label={label}
+              value={
+                key === "dispute_hours"
+                  ? remedies.dispute_hours
+                  : key === "appeal_hours"
+                    ? remedies.appeal_hours
+                    : remedies.max_appeals
+              }
+              change={(value) => {
+                setData({ ...data, remedies: { ...remedies, [key]: value } });
+              }}
+            />
+          ))}
+        </fieldset>
         <Select
           label="Processing fees paid by"
           value={data.fee_mode}

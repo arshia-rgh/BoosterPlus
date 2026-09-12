@@ -20,6 +20,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/bookingevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/caseevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
@@ -31,6 +32,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
@@ -48,8 +50,13 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/schema"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferobservation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferrecord"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
@@ -527,6 +534,40 @@ func init() {
 	bookingevent.DefaultID = bookingeventDescID.Default.(func() string)
 	// bookingevent.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	bookingevent.IDValidator = bookingeventDescID.Validators[0].(func(string) error)
+	caseeventFields := schema.CaseEvent{}.Fields()
+	_ = caseeventFields
+	// caseeventDescCaseID is the schema descriptor for case_id field.
+	caseeventDescCaseID := caseeventFields[1].Descriptor()
+	// caseevent.CaseIDValidator is a validator for the "case_id" field. It is called by the builders before save.
+	caseevent.CaseIDValidator = caseeventDescCaseID.Validators[0].(func(string) error)
+	// caseeventDescAction is the schema descriptor for action field.
+	caseeventDescAction := caseeventFields[3].Descriptor()
+	// caseevent.ActionValidator is a validator for the "action" field. It is called by the builders before save.
+	caseevent.ActionValidator = caseeventDescAction.Validators[0].(func(string) error)
+	// caseeventDescActorID is the schema descriptor for actor_id field.
+	caseeventDescActorID := caseeventFields[4].Descriptor()
+	// caseevent.ActorIDValidator is a validator for the "actor_id" field. It is called by the builders before save.
+	caseevent.ActorIDValidator = caseeventDescActorID.Validators[0].(func(string) error)
+	// caseeventDescActorRole is the schema descriptor for actor_role field.
+	caseeventDescActorRole := caseeventFields[5].Descriptor()
+	// caseevent.ActorRoleValidator is a validator for the "actor_role" field. It is called by the builders before save.
+	caseevent.ActorRoleValidator = caseeventDescActorRole.Validators[0].(func(string) error)
+	// caseeventDescNote is the schema descriptor for note field.
+	caseeventDescNote := caseeventFields[6].Descriptor()
+	// caseevent.NoteValidator is a validator for the "note" field. It is called by the builders before save.
+	caseevent.NoteValidator = caseeventDescNote.Validators[0].(func(string) error)
+	// caseeventDescMessageID is the schema descriptor for message_id field.
+	caseeventDescMessageID := caseeventFields[7].Descriptor()
+	// caseevent.DefaultMessageID holds the default value on creation for the message_id field.
+	caseevent.DefaultMessageID = caseeventDescMessageID.Default.(string)
+	// caseevent.MessageIDValidator is a validator for the "message_id" field. It is called by the builders before save.
+	caseevent.MessageIDValidator = caseeventDescMessageID.Validators[0].(func(string) error)
+	// caseeventDescID is the schema descriptor for id field.
+	caseeventDescID := caseeventFields[0].Descriptor()
+	// caseevent.DefaultID holds the default value on creation for the id field.
+	caseevent.DefaultID = caseeventDescID.Default.(func() string)
+	// caseevent.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	caseevent.IDValidator = caseeventDescID.Validators[0].(func(string) error)
 	catalogreleaseFields := schema.CatalogRelease{}.Fields()
 	_ = catalogreleaseFields
 	// catalogreleaseDescGameID is the schema descriptor for game_id field.
@@ -985,6 +1026,80 @@ func init() {
 	mediafile.DefaultID = mediafileDescID.Default.(func() string)
 	// mediafile.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	mediafile.IDValidator = mediafileDescID.Validators[0].(func(string) error)
+	moneytransferFields := schema.MoneyTransfer{}.Fields()
+	_ = moneytransferFields
+	// moneytransferDescRequestHash is the schema descriptor for request_hash field.
+	moneytransferDescRequestHash := moneytransferFields[1].Descriptor()
+	// moneytransfer.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	moneytransfer.RequestHashValidator = moneytransferDescRequestHash.Validators[0].(func(string) error)
+	// moneytransferDescKind is the schema descriptor for kind field.
+	moneytransferDescKind := moneytransferFields[2].Descriptor()
+	// moneytransfer.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	moneytransfer.KindValidator = moneytransferDescKind.Validators[0].(func(string) error)
+	// moneytransferDescCaseID is the schema descriptor for case_id field.
+	moneytransferDescCaseID := moneytransferFields[3].Descriptor()
+	// moneytransfer.CaseIDValidator is a validator for the "case_id" field. It is called by the builders before save.
+	moneytransfer.CaseIDValidator = moneytransferDescCaseID.Validators[0].(func(string) error)
+	// moneytransferDescReceiptID is the schema descriptor for receipt_id field.
+	moneytransferDescReceiptID := moneytransferFields[4].Descriptor()
+	// moneytransfer.ReceiptIDValidator is a validator for the "receipt_id" field. It is called by the builders before save.
+	moneytransfer.ReceiptIDValidator = moneytransferDescReceiptID.Validators[0].(func(string) error)
+	// moneytransferDescOrderID is the schema descriptor for order_id field.
+	moneytransferDescOrderID := moneytransferFields[5].Descriptor()
+	// moneytransfer.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	moneytransfer.OrderIDValidator = moneytransferDescOrderID.Validators[0].(func(string) error)
+	// moneytransferDescUserID is the schema descriptor for user_id field.
+	moneytransferDescUserID := moneytransferFields[6].Descriptor()
+	// moneytransfer.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	moneytransfer.UserIDValidator = moneytransferDescUserID.Validators[0].(func(string) error)
+	// moneytransferDescAccount is the schema descriptor for account field.
+	moneytransferDescAccount := moneytransferFields[7].Descriptor()
+	// moneytransfer.AccountValidator is a validator for the "account" field. It is called by the builders before save.
+	moneytransfer.AccountValidator = moneytransferDescAccount.Validators[0].(func(string) error)
+	// moneytransferDescCurrency is the schema descriptor for currency field.
+	moneytransferDescCurrency := moneytransferFields[8].Descriptor()
+	// moneytransfer.CurrencyValidator is a validator for the "currency" field. It is called by the builders before save.
+	moneytransfer.CurrencyValidator = moneytransferDescCurrency.Validators[0].(func(string) error)
+	// moneytransferDescNetwork is the schema descriptor for network field.
+	moneytransferDescNetwork := moneytransferFields[9].Descriptor()
+	// moneytransfer.NetworkValidator is a validator for the "network" field. It is called by the builders before save.
+	moneytransfer.NetworkValidator = moneytransferDescNetwork.Validators[0].(func(string) error)
+	// moneytransferDescAmount is the schema descriptor for amount field.
+	moneytransferDescAmount := moneytransferFields[10].Descriptor()
+	// moneytransfer.AmountValidator is a validator for the "amount" field. It is called by the builders before save.
+	moneytransfer.AmountValidator = moneytransferDescAmount.Validators[0].(func(string) error)
+	// moneytransferDescTerms is the schema descriptor for terms field.
+	moneytransferDescTerms := moneytransferFields[11].Descriptor()
+	// moneytransfer.TermsValidator is a validator for the "terms" field. It is called by the builders before save.
+	moneytransfer.TermsValidator = moneytransferDescTerms.Validators[0].(func(string) error)
+	// moneytransferDescState is the schema descriptor for state field.
+	moneytransferDescState := moneytransferFields[12].Descriptor()
+	// moneytransfer.DefaultState holds the default value on creation for the state field.
+	moneytransfer.DefaultState = moneytransferDescState.Default.(string)
+	// moneytransfer.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	moneytransfer.StateValidator = moneytransferDescState.Validators[0].(func(string) error)
+	// moneytransferDescVersion is the schema descriptor for version field.
+	moneytransferDescVersion := moneytransferFields[13].Descriptor()
+	// moneytransfer.DefaultVersion holds the default value on creation for the version field.
+	moneytransfer.DefaultVersion = moneytransferDescVersion.Default.(int)
+	// moneytransferDescApprovedBy is the schema descriptor for approved_by field.
+	moneytransferDescApprovedBy := moneytransferFields[16].Descriptor()
+	// moneytransfer.DefaultApprovedBy holds the default value on creation for the approved_by field.
+	moneytransfer.DefaultApprovedBy = moneytransferDescApprovedBy.Default.(string)
+	// moneytransfer.ApprovedByValidator is a validator for the "approved_by" field. It is called by the builders before save.
+	moneytransfer.ApprovedByValidator = moneytransferDescApprovedBy.Validators[0].(func(string) error)
+	// moneytransferDescCurrentAttempt is the schema descriptor for current_attempt field.
+	moneytransferDescCurrentAttempt := moneytransferFields[18].Descriptor()
+	// moneytransfer.DefaultCurrentAttempt holds the default value on creation for the current_attempt field.
+	moneytransfer.DefaultCurrentAttempt = moneytransferDescCurrentAttempt.Default.(string)
+	// moneytransfer.CurrentAttemptValidator is a validator for the "current_attempt" field. It is called by the builders before save.
+	moneytransfer.CurrentAttemptValidator = moneytransferDescCurrentAttempt.Validators[0].(func(string) error)
+	// moneytransferDescID is the schema descriptor for id field.
+	moneytransferDescID := moneytransferFields[0].Descriptor()
+	// moneytransfer.DefaultID holds the default value on creation for the id field.
+	moneytransfer.DefaultID = moneytransferDescID.Default.(func() string)
+	// moneytransfer.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	moneytransfer.IDValidator = moneytransferDescID.Validators[0].(func(string) error)
 	notificationFields := schema.Notification{}.Fields()
 	_ = notificationFields
 	// notificationDescUserID is the schema descriptor for user_id field.
@@ -1415,8 +1530,12 @@ func init() {
 	paymentsettings.DefaultPublishedID = paymentsettingsDescPublishedID.Default.(string)
 	// paymentsettings.PublishedIDValidator is a validator for the "published_id" field. It is called by the builders before save.
 	paymentsettings.PublishedIDValidator = paymentsettingsDescPublishedID.Validators[0].(func(string) error)
+	// paymentsettingsDescOutgoingPage is the schema descriptor for outgoing_page field.
+	paymentsettingsDescOutgoingPage := paymentsettingsFields[4].Descriptor()
+	// paymentsettings.DefaultOutgoingPage holds the default value on creation for the outgoing_page field.
+	paymentsettings.DefaultOutgoingPage = paymentsettingsDescOutgoingPage.Default.(int)
 	// paymentsettingsDescDiscoveryPage is the schema descriptor for discovery_page field.
-	paymentsettingsDescDiscoveryPage := paymentsettingsFields[4].Descriptor()
+	paymentsettingsDescDiscoveryPage := paymentsettingsFields[5].Descriptor()
 	// paymentsettings.DefaultDiscoveryPage holds the default value on creation for the discovery_page field.
 	paymentsettings.DefaultDiscoveryPage = paymentsettingsDescDiscoveryPage.Default.(int)
 	paymentsignalFields := schema.PaymentSignal{}.Fields()
@@ -1579,6 +1698,58 @@ func init() {
 	secretbundle.DefaultID = secretbundleDescID.Default.(func() string)
 	// secretbundle.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	secretbundle.IDValidator = secretbundleDescID.Validators[0].(func(string) error)
+	servicecaseFields := schema.ServiceCase{}.Fields()
+	_ = servicecaseFields
+	// servicecaseDescRequestHash is the schema descriptor for request_hash field.
+	servicecaseDescRequestHash := servicecaseFields[1].Descriptor()
+	// servicecase.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	servicecase.RequestHashValidator = servicecaseDescRequestHash.Validators[0].(func(string) error)
+	// servicecaseDescOrderID is the schema descriptor for order_id field.
+	servicecaseDescOrderID := servicecaseFields[2].Descriptor()
+	// servicecase.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	servicecase.OrderIDValidator = servicecaseDescOrderID.Validators[0].(func(string) error)
+	// servicecaseDescActiveOrderID is the schema descriptor for active_order_id field.
+	servicecaseDescActiveOrderID := servicecaseFields[3].Descriptor()
+	// servicecase.ActiveOrderIDValidator is a validator for the "active_order_id" field. It is called by the builders before save.
+	servicecase.ActiveOrderIDValidator = servicecaseDescActiveOrderID.Validators[0].(func(string) error)
+	// servicecaseDescUserID is the schema descriptor for user_id field.
+	servicecaseDescUserID := servicecaseFields[4].Descriptor()
+	// servicecase.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	servicecase.UserIDValidator = servicecaseDescUserID.Validators[0].(func(string) error)
+	// servicecaseDescKind is the schema descriptor for kind field.
+	servicecaseDescKind := servicecaseFields[5].Descriptor()
+	// servicecase.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	servicecase.KindValidator = servicecaseDescKind.Validators[0].(func(string) error)
+	// servicecaseDescState is the schema descriptor for state field.
+	servicecaseDescState := servicecaseFields[7].Descriptor()
+	// servicecase.DefaultState holds the default value on creation for the state field.
+	servicecase.DefaultState = servicecaseDescState.Default.(string)
+	// servicecase.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	servicecase.StateValidator = servicecaseDescState.Validators[0].(func(string) error)
+	// servicecaseDescPreviousState is the schema descriptor for previous_state field.
+	servicecaseDescPreviousState := servicecaseFields[8].Descriptor()
+	// servicecase.PreviousStateValidator is a validator for the "previous_state" field. It is called by the builders before save.
+	servicecase.PreviousStateValidator = servicecaseDescPreviousState.Validators[0].(func(string) error)
+	// servicecaseDescOutcome is the schema descriptor for outcome field.
+	servicecaseDescOutcome := servicecaseFields[9].Descriptor()
+	// servicecase.DefaultOutcome holds the default value on creation for the outcome field.
+	servicecase.DefaultOutcome = servicecaseDescOutcome.Default.(string)
+	// servicecase.OutcomeValidator is a validator for the "outcome" field. It is called by the builders before save.
+	servicecase.OutcomeValidator = servicecaseDescOutcome.Validators[0].(func(string) error)
+	// servicecaseDescVersion is the schema descriptor for version field.
+	servicecaseDescVersion := servicecaseFields[10].Descriptor()
+	// servicecase.DefaultVersion holds the default value on creation for the version field.
+	servicecase.DefaultVersion = servicecaseDescVersion.Default.(int)
+	// servicecaseDescAppealCount is the schema descriptor for appeal_count field.
+	servicecaseDescAppealCount := servicecaseFields[11].Descriptor()
+	// servicecase.DefaultAppealCount holds the default value on creation for the appeal_count field.
+	servicecase.DefaultAppealCount = servicecaseDescAppealCount.Default.(int)
+	// servicecaseDescID is the schema descriptor for id field.
+	servicecaseDescID := servicecaseFields[0].Descriptor()
+	// servicecase.DefaultID holds the default value on creation for the id field.
+	servicecase.DefaultID = servicecaseDescID.Default.(func() string)
+	// servicecase.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	servicecase.IDValidator = servicecaseDescID.Validators[0].(func(string) error)
 	staffprofileFields := schema.StaffProfile{}.Fields()
 	_ = staffprofileFields
 	// staffprofileDescVersion is the schema descriptor for version field.
@@ -1629,6 +1800,138 @@ func init() {
 	submissionevent.DefaultID = submissioneventDescID.Default.(func() string)
 	// submissionevent.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	submissionevent.IDValidator = submissioneventDescID.Validators[0].(func(string) error)
+	transferattemptFields := schema.TransferAttempt{}.Fields()
+	_ = transferattemptFields
+	// transferattemptDescTransferID is the schema descriptor for transfer_id field.
+	transferattemptDescTransferID := transferattemptFields[1].Descriptor()
+	// transferattempt.TransferIDValidator is a validator for the "transfer_id" field. It is called by the builders before save.
+	transferattempt.TransferIDValidator = transferattemptDescTransferID.Validators[0].(func(string) error)
+	// transferattemptDescAccount is the schema descriptor for account field.
+	transferattemptDescAccount := transferattemptFields[2].Descriptor()
+	// transferattempt.AccountValidator is a validator for the "account" field. It is called by the builders before save.
+	transferattempt.AccountValidator = transferattemptDescAccount.Validators[0].(func(string) error)
+	// transferattemptDescActiveTransferID is the schema descriptor for active_transfer_id field.
+	transferattemptDescActiveTransferID := transferattemptFields[3].Descriptor()
+	// transferattempt.ActiveTransferIDValidator is a validator for the "active_transfer_id" field. It is called by the builders before save.
+	transferattempt.ActiveTransferIDValidator = transferattemptDescActiveTransferID.Validators[0].(func(string) error)
+	// transferattemptDescState is the schema descriptor for state field.
+	transferattemptDescState := transferattemptFields[5].Descriptor()
+	// transferattempt.DefaultState holds the default value on creation for the state field.
+	transferattempt.DefaultState = transferattemptDescState.Default.(string)
+	// transferattempt.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	transferattempt.StateValidator = transferattemptDescState.Validators[0].(func(string) error)
+	// transferattemptDescVersion is the schema descriptor for version field.
+	transferattemptDescVersion := transferattemptFields[6].Descriptor()
+	// transferattempt.DefaultVersion holds the default value on creation for the version field.
+	transferattempt.DefaultVersion = transferattemptDescVersion.Default.(int)
+	// transferattemptDescProviderID is the schema descriptor for provider_id field.
+	transferattemptDescProviderID := transferattemptFields[7].Descriptor()
+	// transferattempt.ProviderIDValidator is a validator for the "provider_id" field. It is called by the builders before save.
+	transferattempt.ProviderIDValidator = transferattemptDescProviderID.Validators[0].(func(string) error)
+	// transferattemptDescBatchID is the schema descriptor for batch_id field.
+	transferattemptDescBatchID := transferattemptFields[8].Descriptor()
+	// transferattempt.DefaultBatchID holds the default value on creation for the batch_id field.
+	transferattempt.DefaultBatchID = transferattemptDescBatchID.Default.(string)
+	// transferattempt.BatchIDValidator is a validator for the "batch_id" field. It is called by the builders before save.
+	transferattempt.BatchIDValidator = transferattemptDescBatchID.Validators[0].(func(string) error)
+	// transferattemptDescIssue is the schema descriptor for issue field.
+	transferattemptDescIssue := transferattemptFields[9].Descriptor()
+	// transferattempt.DefaultIssue holds the default value on creation for the issue field.
+	transferattempt.DefaultIssue = transferattemptDescIssue.Default.(string)
+	// transferattempt.IssueValidator is a validator for the "issue" field. It is called by the builders before save.
+	transferattempt.IssueValidator = transferattemptDescIssue.Validators[0].(func(string) error)
+	// transferattemptDescLeaseOwner is the schema descriptor for lease_owner field.
+	transferattemptDescLeaseOwner := transferattemptFields[10].Descriptor()
+	// transferattempt.DefaultLeaseOwner holds the default value on creation for the lease_owner field.
+	transferattempt.DefaultLeaseOwner = transferattemptDescLeaseOwner.Default.(string)
+	// transferattempt.LeaseOwnerValidator is a validator for the "lease_owner" field. It is called by the builders before save.
+	transferattempt.LeaseOwnerValidator = transferattemptDescLeaseOwner.Validators[0].(func(string) error)
+	// transferattemptDescID is the schema descriptor for id field.
+	transferattemptDescID := transferattemptFields[0].Descriptor()
+	// transferattempt.DefaultID holds the default value on creation for the id field.
+	transferattempt.DefaultID = transferattemptDescID.Default.(func() string)
+	// transferattempt.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	transferattempt.IDValidator = transferattemptDescID.Validators[0].(func(string) error)
+	transfereventFields := schema.TransferEvent{}.Fields()
+	_ = transfereventFields
+	// transfereventDescTransferID is the schema descriptor for transfer_id field.
+	transfereventDescTransferID := transfereventFields[1].Descriptor()
+	// transferevent.TransferIDValidator is a validator for the "transfer_id" field. It is called by the builders before save.
+	transferevent.TransferIDValidator = transfereventDescTransferID.Validators[0].(func(string) error)
+	// transfereventDescAction is the schema descriptor for action field.
+	transfereventDescAction := transfereventFields[3].Descriptor()
+	// transferevent.ActionValidator is a validator for the "action" field. It is called by the builders before save.
+	transferevent.ActionValidator = transfereventDescAction.Validators[0].(func(string) error)
+	// transfereventDescActorID is the schema descriptor for actor_id field.
+	transfereventDescActorID := transfereventFields[4].Descriptor()
+	// transferevent.ActorIDValidator is a validator for the "actor_id" field. It is called by the builders before save.
+	transferevent.ActorIDValidator = transfereventDescActorID.Validators[0].(func(string) error)
+	// transfereventDescID is the schema descriptor for id field.
+	transfereventDescID := transfereventFields[0].Descriptor()
+	// transferevent.DefaultID holds the default value on creation for the id field.
+	transferevent.DefaultID = transfereventDescID.Default.(func() string)
+	// transferevent.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	transferevent.IDValidator = transfereventDescID.Validators[0].(func(string) error)
+	transferobservationFields := schema.TransferObservation{}.Fields()
+	_ = transferobservationFields
+	// transferobservationDescRecordID is the schema descriptor for record_id field.
+	transferobservationDescRecordID := transferobservationFields[1].Descriptor()
+	// transferobservation.RecordIDValidator is a validator for the "record_id" field. It is called by the builders before save.
+	transferobservation.RecordIDValidator = transferobservationDescRecordID.Validators[0].(func(string) error)
+	// transferobservationDescAttemptID is the schema descriptor for attempt_id field.
+	transferobservationDescAttemptID := transferobservationFields[2].Descriptor()
+	// transferobservation.AttemptIDValidator is a validator for the "attempt_id" field. It is called by the builders before save.
+	transferobservation.AttemptIDValidator = transferobservationDescAttemptID.Validators[0].(func(string) error)
+	// transferobservationDescID is the schema descriptor for id field.
+	transferobservationDescID := transferobservationFields[0].Descriptor()
+	// transferobservation.DefaultID holds the default value on creation for the id field.
+	transferobservation.DefaultID = transferobservationDescID.Default.(func() string)
+	// transferobservation.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	transferobservation.IDValidator = transferobservationDescID.Validators[0].(func(string) error)
+	transferrecordFields := schema.TransferRecord{}.Fields()
+	_ = transferrecordFields
+	// transferrecordDescAccount is the schema descriptor for account field.
+	transferrecordDescAccount := transferrecordFields[1].Descriptor()
+	// transferrecord.AccountValidator is a validator for the "account" field. It is called by the builders before save.
+	transferrecord.AccountValidator = transferrecordDescAccount.Validators[0].(func(string) error)
+	// transferrecordDescProviderID is the schema descriptor for provider_id field.
+	transferrecordDescProviderID := transferrecordFields[2].Descriptor()
+	// transferrecord.ProviderIDValidator is a validator for the "provider_id" field. It is called by the builders before save.
+	transferrecord.ProviderIDValidator = transferrecordDescProviderID.Validators[0].(func(string) error)
+	// transferrecordDescAttemptID is the schema descriptor for attempt_id field.
+	transferrecordDescAttemptID := transferrecordFields[3].Descriptor()
+	// transferrecord.DefaultAttemptID holds the default value on creation for the attempt_id field.
+	transferrecord.DefaultAttemptID = transferrecordDescAttemptID.Default.(string)
+	// transferrecord.AttemptIDValidator is a validator for the "attempt_id" field. It is called by the builders before save.
+	transferrecord.AttemptIDValidator = transferrecordDescAttemptID.Validators[0].(func(string) error)
+	// transferrecordDescVersion is the schema descriptor for version field.
+	transferrecordDescVersion := transferrecordFields[4].Descriptor()
+	// transferrecord.DefaultVersion holds the default value on creation for the version field.
+	transferrecord.DefaultVersion = transferrecordDescVersion.Default.(int)
+	// transferrecordDescLeaseOwner is the schema descriptor for lease_owner field.
+	transferrecordDescLeaseOwner := transferrecordFields[5].Descriptor()
+	// transferrecord.DefaultLeaseOwner holds the default value on creation for the lease_owner field.
+	transferrecord.DefaultLeaseOwner = transferrecordDescLeaseOwner.Default.(string)
+	// transferrecord.LeaseOwnerValidator is a validator for the "lease_owner" field. It is called by the builders before save.
+	transferrecord.LeaseOwnerValidator = transferrecordDescLeaseOwner.Validators[0].(func(string) error)
+	// transferrecordDescState is the schema descriptor for state field.
+	transferrecordDescState := transferrecordFields[7].Descriptor()
+	// transferrecord.DefaultState holds the default value on creation for the state field.
+	transferrecord.DefaultState = transferrecordDescState.Default.(string)
+	// transferrecord.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	transferrecord.StateValidator = transferrecordDescState.Validators[0].(func(string) error)
+	// transferrecordDescIssue is the schema descriptor for issue field.
+	transferrecordDescIssue := transferrecordFields[8].Descriptor()
+	// transferrecord.DefaultIssue holds the default value on creation for the issue field.
+	transferrecord.DefaultIssue = transferrecordDescIssue.Default.(string)
+	// transferrecord.IssueValidator is a validator for the "issue" field. It is called by the builders before save.
+	transferrecord.IssueValidator = transferrecordDescIssue.Validators[0].(func(string) error)
+	// transferrecordDescID is the schema descriptor for id field.
+	transferrecordDescID := transferrecordFields[0].Descriptor()
+	// transferrecord.DefaultID holds the default value on creation for the id field.
+	transferrecord.DefaultID = transferrecordDescID.Default.(func() string)
+	// transferrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	transferrecord.IDValidator = transferrecordDescID.Validators[0].(func(string) error)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescEmail is the schema descriptor for email field.

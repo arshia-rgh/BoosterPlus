@@ -58,3 +58,15 @@ func seedBrowserPayments(t *testing.T, f *authFixture, fixtures map[string]strin
 		fixtures[project+"_pay_order"] = row.ID
 	}
 }
+
+// Browser fixture completes only after explicit owner verification through the real API.
+// No runtime provider or environment switch can select this implementation.
+type browserOutgoingProvider struct{ *outgoingFixture }
+
+func (p *browserOutgoingProvider) VerifyPayout(ctx context.Context, batch, code string) error {
+	if err := p.outgoingFixture.VerifyPayout(ctx, batch, code); err != nil {
+		return err
+	}
+	p.status("finished")
+	return nil
+}

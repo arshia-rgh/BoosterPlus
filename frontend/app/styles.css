@@ -729,6 +729,7 @@ footer {
 }
 
 .payment-policy {
+  overflow-wrap: anywhere;
   white-space: pre-line;
 }
 .payment-current {

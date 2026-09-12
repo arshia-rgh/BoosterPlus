@@ -35,7 +35,7 @@ func New(client *ent.Client, auth *identity.Service, now func() time.Time) *Stor
 	if now == nil {
 		now = time.Now
 	}
-	return &Store{client, auth, now}
+	return &Store{client: client, auth: auth, now: now}
 }
 func (s *Store) instant() time.Time { return s.now().UTC().Truncate(time.Microsecond) }
 func summary(row *ent.Order) Summary {

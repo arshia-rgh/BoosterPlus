@@ -16,9 +16,9 @@ func TestCryptoRequiresExplicitCompleteConfiguration(t *testing.T) {
 	if _, err = crypto(get, "https://booster.example.test"); err == nil {
 		t.Fatal("enabled without credentials")
 	}
-	values = map[string]string{"NOWPAYMENTS_MODE": "sandbox", "NOWPAYMENTS_API_KEY": strings.Repeat("synthetic-api", 3), "NOWPAYMENTS_IPN_SECRET": strings.Repeat("synthetic-ipn", 3), "NOWPAYMENTS_ACCOUNT_ID": "da3ff1a3-de08-4938-83d1-d501297c3977", "NOWPAYMENTS_EMAIL": "merchant@example.test", "NOWPAYMENTS_PASSWORD": "synthetic-merchant-password"}
+	values = map[string]string{"NOWPAYMENTS_API_KEY": strings.Repeat("synthetic-api", 3), "NOWPAYMENTS_IPN_SECRET": strings.Repeat("synthetic-ipn", 3), "NOWPAYMENTS_ACCOUNT_ID": "da3ff1a3-de08-4938-83d1-d501297c3977", "NOWPAYMENTS_EMAIL": "merchant@example.test", "NOWPAYMENTS_PASSWORD": "synthetic-merchant-password"}
 	cfg, err = crypto(get, "https://booster.example.test")
-	if err != nil || cfg.Enabled || cfg.Provider == nil || cfg.Account != "sandbox:da3ff1a3-de08-4938-83d1-d501297c3977" {
+	if err != nil || cfg.Enabled || cfg.Provider == nil || cfg.Account != "live:da3ff1a3-de08-4938-83d1-d501297c3977" {
 		t.Fatal("configured reconciliation disabled with checkout", err)
 	}
 	for key, value := range values {
@@ -42,5 +42,33 @@ func TestCryptoRequiresExplicitCompleteConfiguration(t *testing.T) {
 	values["PAYMENTS_ENABLED"] = "yes"
 	if _, err = crypto(get, "https://booster.example.test"); err == nil {
 		t.Fatal("unrecognized activation value")
+	}
+}
+
+func TestCryptoRejectsRetiredEnvironment(t *testing.T) {
+	_, err := crypto(func(k string) string {
+		if k == "NOWPAYMENTS_MODE" {
+			return "sandbox"
+		}
+		return ""
+	}, "https://booster.example.test")
+	if err == nil {
+		t.Fatal("retired environment accepted")
+	}
+}
+
+func TestOutgoingActivationIsIndependentAndRequiresSecureConfiguration(t *testing.T) {
+	values := map[string]string{"PAYMENTS_ENABLED": "false", "PAYOUTS_ENABLED": "true", "NOWPAYMENTS_API_KEY": strings.Repeat("synthetic-api", 3), "NOWPAYMENTS_IPN_SECRET": strings.Repeat("synthetic-ipn", 3), "NOWPAYMENTS_ACCOUNT_ID": "da3ff1a3-de08-4938-83d1-d501297c3977", "NOWPAYMENTS_EMAIL": "merchant@example.test", "NOWPAYMENTS_PASSWORD": "synthetic-merchant-password"}
+	get := func(k string) string { return values[k] }
+	cfg, err := crypto(get, "https://booster.example.test")
+	if err != nil || cfg.Enabled || !cfg.OutgoingEnabled || !cfg.Provider.PayoutsEnabled {
+		t.Fatal("outgoing must remain independent of checkout", err)
+	}
+	if _, err = crypto(get, "http://localhost:5173"); err == nil {
+		t.Fatal("enabled outgoing accepted insecure origin")
+	}
+	values["PAYOUTS_ENABLED"] = "yes"
+	if _, err = crypto(get, "https://booster.example.test"); err == nil {
+		t.Fatal("invalid outgoing switch accepted")
 	}
 }

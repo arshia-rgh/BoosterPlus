@@ -11,9 +11,10 @@ import (
 
 // Crypto separates merchant credentials from the explicit checkout activation switch.
 type Crypto struct {
-	Provider *nowpayments.Config
-	Account  string
-	Enabled  bool
+	Provider        *nowpayments.Config
+	Account         string
+	Enabled         bool
+	OutgoingEnabled bool
 }
 
 func crypto(getenv func(string) string, origin string) (Crypto, error) {
@@ -22,15 +23,21 @@ func crypto(getenv func(string) string, origin string) (Crypto, error) {
 	if enabled != "" && enabled != "false" && enabled != "true" {
 		return cfg, errors.New("PAYMENTS_ENABLED must be true or false")
 	}
-	mode := getenv("NOWPAYMENTS_MODE")
-	if mode == "" {
-		for _, key := range []string{"NOWPAYMENTS_API_KEY", "NOWPAYMENTS_IPN_SECRET", "NOWPAYMENTS_ACCOUNT_ID", "NOWPAYMENTS_EMAIL", "NOWPAYMENTS_PASSWORD"} {
-			if getenv(key) != "" {
-				return cfg, errors.New("incomplete crypto provider configuration")
-			}
-		}
-		if enabled == "true" {
-			return cfg, errors.New("checkout requires configured provider credentials")
+	outgoing := getenv("PAYOUTS_ENABLED")
+	if outgoing != "" && outgoing != "false" && outgoing != "true" {
+		return cfg, errors.New("PAYOUTS_ENABLED must be true or false")
+	}
+	// Reject stale environment selection instead of ever sending live keys to a retired API.
+	if legacy := getenv("NOWPAYMENTS_MODE"); legacy != "" && legacy != "live" {
+		return cfg, errors.New("NOWPayments supports only the live API; remove NOWPAYMENTS_MODE")
+	}
+	configured := false
+	for _, key := range []string{"NOWPAYMENTS_API_KEY", "NOWPAYMENTS_IPN_SECRET", "NOWPAYMENTS_ACCOUNT_ID", "NOWPAYMENTS_EMAIL", "NOWPAYMENTS_PASSWORD"} {
+		configured = configured || getenv(key) != ""
+	}
+	if !configured {
+		if enabled == "true" || outgoing == "true" {
+			return cfg, errors.New("enabled payments require configured provider credentials")
 		}
 		return cfg, nil
 	}
@@ -38,7 +45,7 @@ func crypto(getenv func(string) string, origin string) (Crypto, error) {
 	if err != nil || id.String() != getenv("NOWPAYMENTS_ACCOUNT_ID") {
 		return cfg, errors.New("configure a stable merchant account UUID")
 	}
-	provider := nowpayments.Config{Mode: mode, APIKey: getenv("NOWPAYMENTS_API_KEY"), IPNSecret: getenv("NOWPAYMENTS_IPN_SECRET"), PublicOrigin: origin, ReadOnly: enabled != "true", Email: getenv("NOWPAYMENTS_EMAIL"), Password: getenv("NOWPAYMENTS_PASSWORD")}
+	provider := nowpayments.Config{PayoutsEnabled: outgoing == "true", APIKey: getenv("NOWPAYMENTS_API_KEY"), IPNSecret: getenv("NOWPAYMENTS_IPN_SECRET"), PublicOrigin: origin, ReadOnly: enabled != "true", Email: getenv("NOWPAYMENTS_EMAIL"), Password: getenv("NOWPAYMENTS_PASSWORD")}
 	if provider.Email == "" || !strings.Contains(provider.Email, "@") || provider.Password == "" {
 		return cfg, errors.New("merchant discovery requires protected dashboard credentials")
 	}
@@ -46,7 +53,8 @@ func crypto(getenv func(string) string, origin string) (Crypto, error) {
 		return cfg, errors.New("invalid crypto provider configuration")
 	}
 	cfg.Provider = &provider
-	cfg.Account = mode + ":" + id.String()
+	cfg.Account = "live:" + id.String()
 	cfg.Enabled = enabled == "true"
+	cfg.OutgoingEnabled = outgoing == "true"
 	return cfg, nil
 }

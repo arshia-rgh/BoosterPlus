@@ -15,6 +15,7 @@ func (PaymentSettings) Fields() []ent.Field {
 		field.Int("version").Default(1),
 		field.String("published_id").MaxLen(36).Default(""),
 		field.JSON("draft", map[string]any{}),
+		field.Int("outgoing_page").Default(0),
 		field.Int("discovery_page").Default(0),
 		field.Time("updated_at"),
 	}

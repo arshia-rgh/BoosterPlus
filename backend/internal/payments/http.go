@@ -55,6 +55,7 @@ func problem(w http.ResponseWriter, err error) error {
 
 // Register keeps customer operations behind identity/CSRF and provider callbacks behind HMAC.
 func (s *Store) Register(mux *http.ServeMux) {
+	s.registerCases(mux)
 	routes := map[string]struct {
 		capability string
 		handle     func(http.ResponseWriter, *http.Request, *identity.Principal) error

@@ -18,7 +18,7 @@ import (
 
 func testClient(t *testing.T) *Client {
 	t.Helper()
-	c, err := New(Config{Mode: "sandbox", APIKey: strings.Repeat("api-test-", 4), IPNSecret: strings.Repeat("ipn-test-", 4), PublicOrigin: "https://booster.example.test"})
+	c, err := New(Config{APIKey: strings.Repeat("api-test-", 4), IPNSecret: strings.Repeat("ipn-test-", 4), PublicOrigin: "https://booster.example.test"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,10 +70,10 @@ func TestInvoiceExactAmountPrivacyAndFixedDestination(t *testing.T) {
 				t.Error("private provider payload")
 			}
 		}
-		respond(t, w, map[string]any{"id": 123456, "invoice_url": "https://sandbox.nowpayments.io/payment/?iid=123456&unknown=ignored", "order_id": input.AttemptID})
+		respond(t, w, map[string]any{"id": 123456, "invoice_url": "https://nowpayments.io/payment/?iid=123456&unknown=ignored", "order_id": input.AttemptID})
 	})
 	invoice, err := c.CreateInvoice(t.Context(), input)
-	if err != nil || invoice.ID != "123456" || invoice.URL != "https://sandbox.nowpayments.io/payment/?iid=123456" || calls != 1 {
+	if err != nil || invoice.ID != "123456" || invoice.URL != "https://nowpayments.io/payment/?iid=123456" || calls != 1 {
 		t.Fatal("invoice reference", err)
 	}
 }
@@ -90,7 +90,7 @@ func TestInvoiceLocalValidationAndSmallAmounts(t *testing.T) {
 		if string(v["price_amount"]) != "0.01" {
 			t.Error("minor-unit rounding")
 		}
-		respond(t, w, map[string]any{"id": "1", "invoice_url": "https://sandbox.nowpayments.io/payment/?iid=1"})
+		respond(t, w, map[string]any{"id": "1", "invoice_url": "https://nowpayments.io/payment/?iid=1"})
 	})
 	for _, change := range []func(*InvoiceRequest){func(v *InvoiceRequest) { v.AttemptID = "../other" }, func(v *InvoiceRequest) { v.AmountMinor = "0" }, func(v *InvoiceRequest) { v.AmountMinor = "1.5" }, func(v *InvoiceRequest) { v.AmountMinor = "1000000000000" }, func(v *InvoiceRequest) { v.Currency = "BTC" }, func(v *InvoiceRequest) { v.PayCurrency = "btc&next=evil" }} {
 		v := input
@@ -108,7 +108,7 @@ func TestInvoiceLocalValidationAndSmallAmounts(t *testing.T) {
 	}
 }
 func TestInvoiceRemoteFailuresRemainAmbiguousAndNeverRetry(t *testing.T) {
-	for _, body := range []string{`{"id":"1","invoice_url":"https://evil.test/payment/?iid=1"}`, `{"id":"1","invoice_url":"https://sandbox.nowpayments.io.evil.test/payment/?iid=1"}`, `{"id":"1","invoice_url":"https://nowpayments.io/payment/?iid=1"}`, `{"id":"1","invoice_url":"https://sandbox.nowpayments.io/payment/?iid=2"}`, `{"id":"1","invoice_url":"https://sandbox.nowpayments.io/payment/?iid=1&iid=2"}`, `{"id":"1","invoice_url":"https://user@sandbox.nowpayments.io/payment/?iid=1"}`, `{"id":"1","id":"2"}`, `{}`, `{} {}`, strings.Repeat("x", maxBody+1)} {
+	for _, body := range []string{`{"id":"1","invoice_url":"https://evil.test/payment/?iid=1"}`, `{"id":"1","invoice_url":"https://nowpayments.io.evil.test/payment/?iid=1"}`, `{"id":"1","invoice_url":"https://retired-provider.invalid/payment/?iid=1"}`, `{"id":"1","invoice_url":"https://nowpayments.io/payment/?iid=2"}`, `{"id":"1","invoice_url":"https://nowpayments.io/payment/?iid=1&iid=2"}`, `{"id":"1","invoice_url":"https://user@nowpayments.io/payment/?iid=1"}`, `{"id":"1","id":"2"}`, `{}`, `{} {}`, strings.Repeat("x", maxBody+1)} {
 		c := testClient(t)
 		var calls atomic.Int32
 		attach(t, c, func(w http.ResponseWriter, _ *http.Request) {
@@ -161,15 +161,14 @@ func TestTimeoutAndCancellationDoNotExposeTransportDetails(t *testing.T) {
 	}
 }
 func TestConfigHasNoArbitraryProviderEndpoint(t *testing.T) {
-	base := Config{Mode: "sandbox", APIKey: strings.Repeat("test-api", 4), IPNSecret: strings.Repeat("test-ipn", 4), PublicOrigin: "https://booster.example.test"}
-	for _, change := range []func(*Config){func(v *Config) { v.Mode = "custom" }, func(v *Config) { v.PublicOrigin = "https://" + strings.Repeat("x", 2048) + ".test" }, func(v *Config) { v.APIKey = "" }, func(v *Config) { v.IPNSecret = "" }, func(v *Config) { v.APIKey += "\n" }, func(v *Config) { v.PublicOrigin = "http://booster.example.test" }, func(v *Config) { v.PublicOrigin = "https://user:pass@booster.example.test" }, func(v *Config) { v.PublicOrigin += "/path" }, func(v *Config) { v.PublicOrigin += "?" }, func(v *Config) { v.PublicOrigin += "#bad" }} {
+	base := Config{APIKey: strings.Repeat("test-api", 4), IPNSecret: strings.Repeat("test-ipn", 4), PublicOrigin: "https://booster.example.test"}
+	for _, change := range []func(*Config){func(v *Config) { v.PublicOrigin = "https://" + strings.Repeat("x", 2048) + ".test" }, func(v *Config) { v.APIKey = "" }, func(v *Config) { v.IPNSecret = "" }, func(v *Config) { v.APIKey += "\n" }, func(v *Config) { v.PublicOrigin = "http://booster.example.test" }, func(v *Config) { v.PublicOrigin = "https://user:pass@booster.example.test" }, func(v *Config) { v.PublicOrigin += "/path" }, func(v *Config) { v.PublicOrigin += "?" }, func(v *Config) { v.PublicOrigin += "#bad" }} {
 		v := base
 		change(&v)
 		if _, err := New(v); !errors.Is(err, ErrInvalid) {
 			t.Fatal("unsafe config")
 		}
 	}
-	base.Mode = "live"
 	c, err := New(base)
 	if err != nil || c.baseURL != "https://api.nowpayments.io/v1" || c.checkoutHost != "nowpayments.io" || c.http.Timeout <= 0 {
 		t.Fatal("live transport", err)
@@ -202,7 +201,7 @@ func TestInvoiceEchoMustMatchPersistedCommercialInput(t *testing.T) {
 	} {
 		c := testClient(t)
 		value["id"] = "1"
-		value["invoice_url"] = "https://sandbox.nowpayments.io/payment/?iid=1"
+		value["invoice_url"] = "https://nowpayments.io/payment/?iid=1"
 		attach(t, c, func(w http.ResponseWriter, _ *http.Request) { respond(t, w, value) })
 		if _, err := c.CreateInvoice(t.Context(), sampleRequest()); !errors.Is(err, ErrAmbiguous) {
 			t.Fatal("changed commercial echo accepted", err)

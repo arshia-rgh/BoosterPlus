@@ -14,6 +14,17 @@ import (
 // object rejects duplicate keys, trailing values, oversized or excessively nested JSON.
 // Numbers remain exact decimal tokens until a caller explicitly chooses signature canonicalization.
 func object(raw []byte) (map[string]any, error) {
+	value, err := jsonValue(raw)
+	if err != nil {
+		return nil, err
+	}
+	result, ok := value.(map[string]any)
+	if !ok || result == nil {
+		return nil, ErrEvidence
+	}
+	return result, nil
+}
+func jsonValue(raw []byte) (any, error) {
 	if len(raw) == 0 || len(raw) > maxBody || !utf8.Valid(raw) {
 		return nil, ErrEvidence
 	}
@@ -26,12 +37,9 @@ func object(raw []byte) (map[string]any, error) {
 	if _, err = decoder.Token(); !errors.Is(err, io.EOF) {
 		return nil, ErrEvidence
 	}
-	result, ok := value.(map[string]any)
-	if !ok || result == nil {
-		return nil, ErrEvidence
-	}
-	return result, nil
+	return value, nil
 }
+
 func readValue(d *json.Decoder, depth int) (any, error) {
 	if depth > 16 {
 		return nil, ErrEvidence

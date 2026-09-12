@@ -27,6 +27,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/bookingevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/caseevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
@@ -38,6 +39,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
@@ -54,8 +56,13 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferobservation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferrecord"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
@@ -132,6 +139,7 @@ func checkColumn(t, c string) error {
 			availabilitywindow.Table:       availabilitywindow.ValidColumn,
 			booking.Table:                  booking.ValidColumn,
 			bookingevent.Table:             bookingevent.ValidColumn,
+			caseevent.Table:                caseevent.ValidColumn,
 			catalogrelease.Table:           catalogrelease.ValidColumn,
 			conversation.Table:             conversation.ValidColumn,
 			conversationmessage.Table:      conversationmessage.ValidColumn,
@@ -143,6 +151,7 @@ func checkColumn(t, c string) error {
 			fulfillment.Table:              fulfillment.ValidColumn,
 			game.Table:                     game.ValidColumn,
 			mediafile.Table:                mediafile.ValidColumn,
+			moneytransfer.Table:            moneytransfer.ValidColumn,
 			notification.Table:             notification.ValidColumn,
 			order.Table:                    order.ValidColumn,
 			ordercontract.Table:            ordercontract.ValidColumn,
@@ -159,8 +168,13 @@ func checkColumn(t, c string) error {
 			review.Table:                   review.ValidColumn,
 			reviewrevision.Table:           reviewrevision.ValidColumn,
 			secretbundle.Table:             secretbundle.ValidColumn,
+			servicecase.Table:              servicecase.ValidColumn,
 			staffprofile.Table:             staffprofile.ValidColumn,
 			submissionevent.Table:          submissionevent.ValidColumn,
+			transferattempt.Table:          transferattempt.ValidColumn,
+			transferevent.Table:            transferevent.ValidColumn,
+			transferobservation.Table:      transferobservation.ValidColumn,
+			transferrecord.Table:           transferrecord.ValidColumn,
 			user.Table:                     user.ValidColumn,
 		})
 	})

@@ -29,6 +29,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitywindow"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/bookingevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/caseevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/catalogrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationmessage"
@@ -40,6 +41,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
@@ -56,8 +58,13 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/review"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/reviewrevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/submissionevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferattempt"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferobservation"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/transferrecord"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 
 	stdsql "database/sql"
@@ -98,6 +105,8 @@ type Client struct {
 	Booking *BookingClient
 	// BookingEvent is the client for interacting with the BookingEvent builders.
 	BookingEvent *BookingEventClient
+	// CaseEvent is the client for interacting with the CaseEvent builders.
+	CaseEvent *CaseEventClient
 	// CatalogRelease is the client for interacting with the CatalogRelease builders.
 	CatalogRelease *CatalogReleaseClient
 	// Conversation is the client for interacting with the Conversation builders.
@@ -120,6 +129,8 @@ type Client struct {
 	Game *GameClient
 	// MediaFile is the client for interacting with the MediaFile builders.
 	MediaFile *MediaFileClient
+	// MoneyTransfer is the client for interacting with the MoneyTransfer builders.
+	MoneyTransfer *MoneyTransferClient
 	// Notification is the client for interacting with the Notification builders.
 	Notification *NotificationClient
 	// Order is the client for interacting with the Order builders.
@@ -152,10 +163,20 @@ type Client struct {
 	ReviewRevision *ReviewRevisionClient
 	// SecretBundle is the client for interacting with the SecretBundle builders.
 	SecretBundle *SecretBundleClient
+	// ServiceCase is the client for interacting with the ServiceCase builders.
+	ServiceCase *ServiceCaseClient
 	// StaffProfile is the client for interacting with the StaffProfile builders.
 	StaffProfile *StaffProfileClient
 	// SubmissionEvent is the client for interacting with the SubmissionEvent builders.
 	SubmissionEvent *SubmissionEventClient
+	// TransferAttempt is the client for interacting with the TransferAttempt builders.
+	TransferAttempt *TransferAttemptClient
+	// TransferEvent is the client for interacting with the TransferEvent builders.
+	TransferEvent *TransferEventClient
+	// TransferObservation is the client for interacting with the TransferObservation builders.
+	TransferObservation *TransferObservationClient
+	// TransferRecord is the client for interacting with the TransferRecord builders.
+	TransferRecord *TransferRecordClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -184,6 +205,7 @@ func (c *Client) init() {
 	c.AvailabilityWindow = NewAvailabilityWindowClient(c.config)
 	c.Booking = NewBookingClient(c.config)
 	c.BookingEvent = NewBookingEventClient(c.config)
+	c.CaseEvent = NewCaseEventClient(c.config)
 	c.CatalogRelease = NewCatalogReleaseClient(c.config)
 	c.Conversation = NewConversationClient(c.config)
 	c.ConversationMessage = NewConversationMessageClient(c.config)
@@ -195,6 +217,7 @@ func (c *Client) init() {
 	c.Fulfillment = NewFulfillmentClient(c.config)
 	c.Game = NewGameClient(c.config)
 	c.MediaFile = NewMediaFileClient(c.config)
+	c.MoneyTransfer = NewMoneyTransferClient(c.config)
 	c.Notification = NewNotificationClient(c.config)
 	c.Order = NewOrderClient(c.config)
 	c.OrderContract = NewOrderContractClient(c.config)
@@ -211,8 +234,13 @@ func (c *Client) init() {
 	c.Review = NewReviewClient(c.config)
 	c.ReviewRevision = NewReviewRevisionClient(c.config)
 	c.SecretBundle = NewSecretBundleClient(c.config)
+	c.ServiceCase = NewServiceCaseClient(c.config)
 	c.StaffProfile = NewStaffProfileClient(c.config)
 	c.SubmissionEvent = NewSubmissionEventClient(c.config)
+	c.TransferAttempt = NewTransferAttemptClient(c.config)
+	c.TransferEvent = NewTransferEventClient(c.config)
+	c.TransferObservation = NewTransferObservationClient(c.config)
+	c.TransferRecord = NewTransferRecordClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -321,6 +349,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AvailabilityWindow:       NewAvailabilityWindowClient(cfg),
 		Booking:                  NewBookingClient(cfg),
 		BookingEvent:             NewBookingEventClient(cfg),
+		CaseEvent:                NewCaseEventClient(cfg),
 		CatalogRelease:           NewCatalogReleaseClient(cfg),
 		Conversation:             NewConversationClient(cfg),
 		ConversationMessage:      NewConversationMessageClient(cfg),
@@ -332,6 +361,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Fulfillment:              NewFulfillmentClient(cfg),
 		Game:                     NewGameClient(cfg),
 		MediaFile:                NewMediaFileClient(cfg),
+		MoneyTransfer:            NewMoneyTransferClient(cfg),
 		Notification:             NewNotificationClient(cfg),
 		Order:                    NewOrderClient(cfg),
 		OrderContract:            NewOrderContractClient(cfg),
@@ -348,8 +378,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Review:                   NewReviewClient(cfg),
 		ReviewRevision:           NewReviewRevisionClient(cfg),
 		SecretBundle:             NewSecretBundleClient(cfg),
+		ServiceCase:              NewServiceCaseClient(cfg),
 		StaffProfile:             NewStaffProfileClient(cfg),
 		SubmissionEvent:          NewSubmissionEventClient(cfg),
+		TransferAttempt:          NewTransferAttemptClient(cfg),
+		TransferEvent:            NewTransferEventClient(cfg),
+		TransferObservation:      NewTransferObservationClient(cfg),
+		TransferRecord:           NewTransferRecordClient(cfg),
 		User:                     NewUserClient(cfg),
 	}, nil
 }
@@ -385,6 +420,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AvailabilityWindow:       NewAvailabilityWindowClient(cfg),
 		Booking:                  NewBookingClient(cfg),
 		BookingEvent:             NewBookingEventClient(cfg),
+		CaseEvent:                NewCaseEventClient(cfg),
 		CatalogRelease:           NewCatalogReleaseClient(cfg),
 		Conversation:             NewConversationClient(cfg),
 		ConversationMessage:      NewConversationMessageClient(cfg),
@@ -396,6 +432,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Fulfillment:              NewFulfillmentClient(cfg),
 		Game:                     NewGameClient(cfg),
 		MediaFile:                NewMediaFileClient(cfg),
+		MoneyTransfer:            NewMoneyTransferClient(cfg),
 		Notification:             NewNotificationClient(cfg),
 		Order:                    NewOrderClient(cfg),
 		OrderContract:            NewOrderContractClient(cfg),
@@ -412,8 +449,13 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Review:                   NewReviewClient(cfg),
 		ReviewRevision:           NewReviewRevisionClient(cfg),
 		SecretBundle:             NewSecretBundleClient(cfg),
+		ServiceCase:              NewServiceCaseClient(cfg),
 		StaffProfile:             NewStaffProfileClient(cfg),
 		SubmissionEvent:          NewSubmissionEventClient(cfg),
+		TransferAttempt:          NewTransferAttemptClient(cfg),
+		TransferEvent:            NewTransferEventClient(cfg),
+		TransferObservation:      NewTransferObservationClient(cfg),
+		TransferRecord:           NewTransferRecordClient(cfg),
 		User:                     NewUserClient(cfg),
 	}, nil
 }
@@ -447,14 +489,15 @@ func (c *Client) Use(hooks ...Hook) {
 		c.AccountSubmission, c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity,
 		c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession,
 		c.AvailabilityDelivery, c.AvailabilitySubscription, c.AvailabilityTarget,
-		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CatalogRelease,
+		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CaseEvent, c.CatalogRelease,
 		c.Conversation, c.ConversationMessage, c.ConversationRead, c.Coupon,
 		c.CouponClaim, c.CouponRevision, c.Favorite, c.Fulfillment, c.Game,
-		c.MediaFile, c.Notification, c.Order, c.OrderContract, c.OrderEvent,
-		c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt, c.PaymentObservation,
-		c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord, c.PaymentSettings,
-		c.PaymentSignal, c.Review, c.ReviewRevision, c.SecretBundle, c.StaffProfile,
-		c.SubmissionEvent, c.User,
+		c.MediaFile, c.MoneyTransfer, c.Notification, c.Order, c.OrderContract,
+		c.OrderEvent, c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt,
+		c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord,
+		c.PaymentSettings, c.PaymentSignal, c.Review, c.ReviewRevision, c.SecretBundle,
+		c.ServiceCase, c.StaffProfile, c.SubmissionEvent, c.TransferAttempt,
+		c.TransferEvent, c.TransferObservation, c.TransferRecord, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -467,14 +510,15 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.AccountSubmission, c.AuthAudit, c.AuthChallenge, c.AuthFlow, c.AuthIdentity,
 		c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession,
 		c.AvailabilityDelivery, c.AvailabilitySubscription, c.AvailabilityTarget,
-		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CatalogRelease,
+		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CaseEvent, c.CatalogRelease,
 		c.Conversation, c.ConversationMessage, c.ConversationRead, c.Coupon,
 		c.CouponClaim, c.CouponRevision, c.Favorite, c.Fulfillment, c.Game,
-		c.MediaFile, c.Notification, c.Order, c.OrderContract, c.OrderEvent,
-		c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt, c.PaymentObservation,
-		c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord, c.PaymentSettings,
-		c.PaymentSignal, c.Review, c.ReviewRevision, c.SecretBundle, c.StaffProfile,
-		c.SubmissionEvent, c.User,
+		c.MediaFile, c.MoneyTransfer, c.Notification, c.Order, c.OrderContract,
+		c.OrderEvent, c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt,
+		c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord,
+		c.PaymentSettings, c.PaymentSignal, c.Review, c.ReviewRevision, c.SecretBundle,
+		c.ServiceCase, c.StaffProfile, c.SubmissionEvent, c.TransferAttempt,
+		c.TransferEvent, c.TransferObservation, c.TransferRecord, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -513,6 +557,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Booking.mutate(ctx, m)
 	case *BookingEventMutation:
 		return c.BookingEvent.mutate(ctx, m)
+	case *CaseEventMutation:
+		return c.CaseEvent.mutate(ctx, m)
 	case *CatalogReleaseMutation:
 		return c.CatalogRelease.mutate(ctx, m)
 	case *ConversationMutation:
@@ -535,6 +581,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Game.mutate(ctx, m)
 	case *MediaFileMutation:
 		return c.MediaFile.mutate(ctx, m)
+	case *MoneyTransferMutation:
+		return c.MoneyTransfer.mutate(ctx, m)
 	case *NotificationMutation:
 		return c.Notification.mutate(ctx, m)
 	case *OrderMutation:
@@ -567,10 +615,20 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.ReviewRevision.mutate(ctx, m)
 	case *SecretBundleMutation:
 		return c.SecretBundle.mutate(ctx, m)
+	case *ServiceCaseMutation:
+		return c.ServiceCase.mutate(ctx, m)
 	case *StaffProfileMutation:
 		return c.StaffProfile.mutate(ctx, m)
 	case *SubmissionEventMutation:
 		return c.SubmissionEvent.mutate(ctx, m)
+	case *TransferAttemptMutation:
+		return c.TransferAttempt.mutate(ctx, m)
+	case *TransferEventMutation:
+		return c.TransferEvent.mutate(ctx, m)
+	case *TransferObservationMutation:
+		return c.TransferObservation.mutate(ctx, m)
+	case *TransferRecordMutation:
+		return c.TransferRecord.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
@@ -2573,6 +2631,139 @@ func (c *BookingEventClient) mutate(ctx context.Context, m *BookingEventMutation
 	}
 }
 
+// CaseEventClient is a client for the CaseEvent schema.
+type CaseEventClient struct {
+	config
+}
+
+// NewCaseEventClient returns a client for the CaseEvent from the given config.
+func NewCaseEventClient(c config) *CaseEventClient {
+	return &CaseEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `caseevent.Hooks(f(g(h())))`.
+func (c *CaseEventClient) Use(hooks ...Hook) {
+	c.hooks.CaseEvent = append(c.hooks.CaseEvent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `caseevent.Intercept(f(g(h())))`.
+func (c *CaseEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CaseEvent = append(c.inters.CaseEvent, interceptors...)
+}
+
+// Create returns a builder for creating a CaseEvent entity.
+func (c *CaseEventClient) Create() *CaseEventCreate {
+	mutation := newCaseEventMutation(c.config, OpCreate)
+	return &CaseEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CaseEvent entities.
+func (c *CaseEventClient) CreateBulk(builders ...*CaseEventCreate) *CaseEventCreateBulk {
+	return &CaseEventCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CaseEventClient) MapCreateBulk(slice any, setFunc func(*CaseEventCreate, int)) *CaseEventCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CaseEventCreateBulk{err: fmt.Errorf("calling to CaseEventClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CaseEventCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CaseEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CaseEvent.
+func (c *CaseEventClient) Update() *CaseEventUpdate {
+	mutation := newCaseEventMutation(c.config, OpUpdate)
+	return &CaseEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CaseEventClient) UpdateOne(_m *CaseEvent) *CaseEventUpdateOne {
+	mutation := newCaseEventMutation(c.config, OpUpdateOne, withCaseEvent(_m))
+	return &CaseEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CaseEventClient) UpdateOneID(id string) *CaseEventUpdateOne {
+	mutation := newCaseEventMutation(c.config, OpUpdateOne, withCaseEventID(id))
+	return &CaseEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CaseEvent.
+func (c *CaseEventClient) Delete() *CaseEventDelete {
+	mutation := newCaseEventMutation(c.config, OpDelete)
+	return &CaseEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CaseEventClient) DeleteOne(_m *CaseEvent) *CaseEventDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CaseEventClient) DeleteOneID(id string) *CaseEventDeleteOne {
+	builder := c.Delete().Where(caseevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CaseEventDeleteOne{builder}
+}
+
+// Query returns a query builder for CaseEvent.
+func (c *CaseEventClient) Query() *CaseEventQuery {
+	return &CaseEventQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCaseEvent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CaseEvent entity by its id.
+func (c *CaseEventClient) Get(ctx context.Context, id string) (*CaseEvent, error) {
+	return c.Query().Where(caseevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CaseEventClient) GetX(ctx context.Context, id string) *CaseEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CaseEventClient) Hooks() []Hook {
+	return c.hooks.CaseEvent
+}
+
+// Interceptors returns the client interceptors.
+func (c *CaseEventClient) Interceptors() []Interceptor {
+	return c.inters.CaseEvent
+}
+
+func (c *CaseEventClient) mutate(ctx context.Context, m *CaseEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CaseEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CaseEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CaseEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CaseEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CaseEvent mutation op: %q", m.Op())
+	}
+}
+
 // CatalogReleaseClient is a client for the CatalogRelease schema.
 type CatalogReleaseClient struct {
 	config
@@ -4033,6 +4224,139 @@ func (c *MediaFileClient) mutate(ctx context.Context, m *MediaFileMutation) (Val
 		return (&MediaFileDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown MediaFile mutation op: %q", m.Op())
+	}
+}
+
+// MoneyTransferClient is a client for the MoneyTransfer schema.
+type MoneyTransferClient struct {
+	config
+}
+
+// NewMoneyTransferClient returns a client for the MoneyTransfer from the given config.
+func NewMoneyTransferClient(c config) *MoneyTransferClient {
+	return &MoneyTransferClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `moneytransfer.Hooks(f(g(h())))`.
+func (c *MoneyTransferClient) Use(hooks ...Hook) {
+	c.hooks.MoneyTransfer = append(c.hooks.MoneyTransfer, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `moneytransfer.Intercept(f(g(h())))`.
+func (c *MoneyTransferClient) Intercept(interceptors ...Interceptor) {
+	c.inters.MoneyTransfer = append(c.inters.MoneyTransfer, interceptors...)
+}
+
+// Create returns a builder for creating a MoneyTransfer entity.
+func (c *MoneyTransferClient) Create() *MoneyTransferCreate {
+	mutation := newMoneyTransferMutation(c.config, OpCreate)
+	return &MoneyTransferCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of MoneyTransfer entities.
+func (c *MoneyTransferClient) CreateBulk(builders ...*MoneyTransferCreate) *MoneyTransferCreateBulk {
+	return &MoneyTransferCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MoneyTransferClient) MapCreateBulk(slice any, setFunc func(*MoneyTransferCreate, int)) *MoneyTransferCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MoneyTransferCreateBulk{err: fmt.Errorf("calling to MoneyTransferClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MoneyTransferCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MoneyTransferCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for MoneyTransfer.
+func (c *MoneyTransferClient) Update() *MoneyTransferUpdate {
+	mutation := newMoneyTransferMutation(c.config, OpUpdate)
+	return &MoneyTransferUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MoneyTransferClient) UpdateOne(_m *MoneyTransfer) *MoneyTransferUpdateOne {
+	mutation := newMoneyTransferMutation(c.config, OpUpdateOne, withMoneyTransfer(_m))
+	return &MoneyTransferUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MoneyTransferClient) UpdateOneID(id string) *MoneyTransferUpdateOne {
+	mutation := newMoneyTransferMutation(c.config, OpUpdateOne, withMoneyTransferID(id))
+	return &MoneyTransferUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for MoneyTransfer.
+func (c *MoneyTransferClient) Delete() *MoneyTransferDelete {
+	mutation := newMoneyTransferMutation(c.config, OpDelete)
+	return &MoneyTransferDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MoneyTransferClient) DeleteOne(_m *MoneyTransfer) *MoneyTransferDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MoneyTransferClient) DeleteOneID(id string) *MoneyTransferDeleteOne {
+	builder := c.Delete().Where(moneytransfer.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MoneyTransferDeleteOne{builder}
+}
+
+// Query returns a query builder for MoneyTransfer.
+func (c *MoneyTransferClient) Query() *MoneyTransferQuery {
+	return &MoneyTransferQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMoneyTransfer},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a MoneyTransfer entity by its id.
+func (c *MoneyTransferClient) Get(ctx context.Context, id string) (*MoneyTransfer, error) {
+	return c.Query().Where(moneytransfer.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MoneyTransferClient) GetX(ctx context.Context, id string) *MoneyTransfer {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *MoneyTransferClient) Hooks() []Hook {
+	return c.hooks.MoneyTransfer
+}
+
+// Interceptors returns the client interceptors.
+func (c *MoneyTransferClient) Interceptors() []Interceptor {
+	return c.inters.MoneyTransfer
+}
+
+func (c *MoneyTransferClient) mutate(ctx context.Context, m *MoneyTransferMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MoneyTransferCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MoneyTransferUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MoneyTransferUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MoneyTransferDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown MoneyTransfer mutation op: %q", m.Op())
 	}
 }
 
@@ -6164,6 +6488,139 @@ func (c *SecretBundleClient) mutate(ctx context.Context, m *SecretBundleMutation
 	}
 }
 
+// ServiceCaseClient is a client for the ServiceCase schema.
+type ServiceCaseClient struct {
+	config
+}
+
+// NewServiceCaseClient returns a client for the ServiceCase from the given config.
+func NewServiceCaseClient(c config) *ServiceCaseClient {
+	return &ServiceCaseClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `servicecase.Hooks(f(g(h())))`.
+func (c *ServiceCaseClient) Use(hooks ...Hook) {
+	c.hooks.ServiceCase = append(c.hooks.ServiceCase, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `servicecase.Intercept(f(g(h())))`.
+func (c *ServiceCaseClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ServiceCase = append(c.inters.ServiceCase, interceptors...)
+}
+
+// Create returns a builder for creating a ServiceCase entity.
+func (c *ServiceCaseClient) Create() *ServiceCaseCreate {
+	mutation := newServiceCaseMutation(c.config, OpCreate)
+	return &ServiceCaseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ServiceCase entities.
+func (c *ServiceCaseClient) CreateBulk(builders ...*ServiceCaseCreate) *ServiceCaseCreateBulk {
+	return &ServiceCaseCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ServiceCaseClient) MapCreateBulk(slice any, setFunc func(*ServiceCaseCreate, int)) *ServiceCaseCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ServiceCaseCreateBulk{err: fmt.Errorf("calling to ServiceCaseClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ServiceCaseCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ServiceCaseCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ServiceCase.
+func (c *ServiceCaseClient) Update() *ServiceCaseUpdate {
+	mutation := newServiceCaseMutation(c.config, OpUpdate)
+	return &ServiceCaseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ServiceCaseClient) UpdateOne(_m *ServiceCase) *ServiceCaseUpdateOne {
+	mutation := newServiceCaseMutation(c.config, OpUpdateOne, withServiceCase(_m))
+	return &ServiceCaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ServiceCaseClient) UpdateOneID(id string) *ServiceCaseUpdateOne {
+	mutation := newServiceCaseMutation(c.config, OpUpdateOne, withServiceCaseID(id))
+	return &ServiceCaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ServiceCase.
+func (c *ServiceCaseClient) Delete() *ServiceCaseDelete {
+	mutation := newServiceCaseMutation(c.config, OpDelete)
+	return &ServiceCaseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ServiceCaseClient) DeleteOne(_m *ServiceCase) *ServiceCaseDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ServiceCaseClient) DeleteOneID(id string) *ServiceCaseDeleteOne {
+	builder := c.Delete().Where(servicecase.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ServiceCaseDeleteOne{builder}
+}
+
+// Query returns a query builder for ServiceCase.
+func (c *ServiceCaseClient) Query() *ServiceCaseQuery {
+	return &ServiceCaseQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeServiceCase},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ServiceCase entity by its id.
+func (c *ServiceCaseClient) Get(ctx context.Context, id string) (*ServiceCase, error) {
+	return c.Query().Where(servicecase.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ServiceCaseClient) GetX(ctx context.Context, id string) *ServiceCase {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ServiceCaseClient) Hooks() []Hook {
+	return c.hooks.ServiceCase
+}
+
+// Interceptors returns the client interceptors.
+func (c *ServiceCaseClient) Interceptors() []Interceptor {
+	return c.inters.ServiceCase
+}
+
+func (c *ServiceCaseClient) mutate(ctx context.Context, m *ServiceCaseMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ServiceCaseCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ServiceCaseUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ServiceCaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ServiceCaseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ServiceCase mutation op: %q", m.Op())
+	}
+}
+
 // StaffProfileClient is a client for the StaffProfile schema.
 type StaffProfileClient struct {
 	config
@@ -6430,6 +6887,538 @@ func (c *SubmissionEventClient) mutate(ctx context.Context, m *SubmissionEventMu
 	}
 }
 
+// TransferAttemptClient is a client for the TransferAttempt schema.
+type TransferAttemptClient struct {
+	config
+}
+
+// NewTransferAttemptClient returns a client for the TransferAttempt from the given config.
+func NewTransferAttemptClient(c config) *TransferAttemptClient {
+	return &TransferAttemptClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `transferattempt.Hooks(f(g(h())))`.
+func (c *TransferAttemptClient) Use(hooks ...Hook) {
+	c.hooks.TransferAttempt = append(c.hooks.TransferAttempt, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `transferattempt.Intercept(f(g(h())))`.
+func (c *TransferAttemptClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TransferAttempt = append(c.inters.TransferAttempt, interceptors...)
+}
+
+// Create returns a builder for creating a TransferAttempt entity.
+func (c *TransferAttemptClient) Create() *TransferAttemptCreate {
+	mutation := newTransferAttemptMutation(c.config, OpCreate)
+	return &TransferAttemptCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TransferAttempt entities.
+func (c *TransferAttemptClient) CreateBulk(builders ...*TransferAttemptCreate) *TransferAttemptCreateBulk {
+	return &TransferAttemptCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TransferAttemptClient) MapCreateBulk(slice any, setFunc func(*TransferAttemptCreate, int)) *TransferAttemptCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TransferAttemptCreateBulk{err: fmt.Errorf("calling to TransferAttemptClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TransferAttemptCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TransferAttemptCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TransferAttempt.
+func (c *TransferAttemptClient) Update() *TransferAttemptUpdate {
+	mutation := newTransferAttemptMutation(c.config, OpUpdate)
+	return &TransferAttemptUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TransferAttemptClient) UpdateOne(_m *TransferAttempt) *TransferAttemptUpdateOne {
+	mutation := newTransferAttemptMutation(c.config, OpUpdateOne, withTransferAttempt(_m))
+	return &TransferAttemptUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TransferAttemptClient) UpdateOneID(id string) *TransferAttemptUpdateOne {
+	mutation := newTransferAttemptMutation(c.config, OpUpdateOne, withTransferAttemptID(id))
+	return &TransferAttemptUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TransferAttempt.
+func (c *TransferAttemptClient) Delete() *TransferAttemptDelete {
+	mutation := newTransferAttemptMutation(c.config, OpDelete)
+	return &TransferAttemptDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TransferAttemptClient) DeleteOne(_m *TransferAttempt) *TransferAttemptDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TransferAttemptClient) DeleteOneID(id string) *TransferAttemptDeleteOne {
+	builder := c.Delete().Where(transferattempt.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TransferAttemptDeleteOne{builder}
+}
+
+// Query returns a query builder for TransferAttempt.
+func (c *TransferAttemptClient) Query() *TransferAttemptQuery {
+	return &TransferAttemptQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTransferAttempt},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TransferAttempt entity by its id.
+func (c *TransferAttemptClient) Get(ctx context.Context, id string) (*TransferAttempt, error) {
+	return c.Query().Where(transferattempt.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TransferAttemptClient) GetX(ctx context.Context, id string) *TransferAttempt {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TransferAttemptClient) Hooks() []Hook {
+	return c.hooks.TransferAttempt
+}
+
+// Interceptors returns the client interceptors.
+func (c *TransferAttemptClient) Interceptors() []Interceptor {
+	return c.inters.TransferAttempt
+}
+
+func (c *TransferAttemptClient) mutate(ctx context.Context, m *TransferAttemptMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TransferAttemptCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TransferAttemptUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TransferAttemptUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TransferAttemptDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TransferAttempt mutation op: %q", m.Op())
+	}
+}
+
+// TransferEventClient is a client for the TransferEvent schema.
+type TransferEventClient struct {
+	config
+}
+
+// NewTransferEventClient returns a client for the TransferEvent from the given config.
+func NewTransferEventClient(c config) *TransferEventClient {
+	return &TransferEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `transferevent.Hooks(f(g(h())))`.
+func (c *TransferEventClient) Use(hooks ...Hook) {
+	c.hooks.TransferEvent = append(c.hooks.TransferEvent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `transferevent.Intercept(f(g(h())))`.
+func (c *TransferEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TransferEvent = append(c.inters.TransferEvent, interceptors...)
+}
+
+// Create returns a builder for creating a TransferEvent entity.
+func (c *TransferEventClient) Create() *TransferEventCreate {
+	mutation := newTransferEventMutation(c.config, OpCreate)
+	return &TransferEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TransferEvent entities.
+func (c *TransferEventClient) CreateBulk(builders ...*TransferEventCreate) *TransferEventCreateBulk {
+	return &TransferEventCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TransferEventClient) MapCreateBulk(slice any, setFunc func(*TransferEventCreate, int)) *TransferEventCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TransferEventCreateBulk{err: fmt.Errorf("calling to TransferEventClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TransferEventCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TransferEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TransferEvent.
+func (c *TransferEventClient) Update() *TransferEventUpdate {
+	mutation := newTransferEventMutation(c.config, OpUpdate)
+	return &TransferEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TransferEventClient) UpdateOne(_m *TransferEvent) *TransferEventUpdateOne {
+	mutation := newTransferEventMutation(c.config, OpUpdateOne, withTransferEvent(_m))
+	return &TransferEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TransferEventClient) UpdateOneID(id string) *TransferEventUpdateOne {
+	mutation := newTransferEventMutation(c.config, OpUpdateOne, withTransferEventID(id))
+	return &TransferEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TransferEvent.
+func (c *TransferEventClient) Delete() *TransferEventDelete {
+	mutation := newTransferEventMutation(c.config, OpDelete)
+	return &TransferEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TransferEventClient) DeleteOne(_m *TransferEvent) *TransferEventDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TransferEventClient) DeleteOneID(id string) *TransferEventDeleteOne {
+	builder := c.Delete().Where(transferevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TransferEventDeleteOne{builder}
+}
+
+// Query returns a query builder for TransferEvent.
+func (c *TransferEventClient) Query() *TransferEventQuery {
+	return &TransferEventQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTransferEvent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TransferEvent entity by its id.
+func (c *TransferEventClient) Get(ctx context.Context, id string) (*TransferEvent, error) {
+	return c.Query().Where(transferevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TransferEventClient) GetX(ctx context.Context, id string) *TransferEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TransferEventClient) Hooks() []Hook {
+	return c.hooks.TransferEvent
+}
+
+// Interceptors returns the client interceptors.
+func (c *TransferEventClient) Interceptors() []Interceptor {
+	return c.inters.TransferEvent
+}
+
+func (c *TransferEventClient) mutate(ctx context.Context, m *TransferEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TransferEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TransferEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TransferEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TransferEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TransferEvent mutation op: %q", m.Op())
+	}
+}
+
+// TransferObservationClient is a client for the TransferObservation schema.
+type TransferObservationClient struct {
+	config
+}
+
+// NewTransferObservationClient returns a client for the TransferObservation from the given config.
+func NewTransferObservationClient(c config) *TransferObservationClient {
+	return &TransferObservationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `transferobservation.Hooks(f(g(h())))`.
+func (c *TransferObservationClient) Use(hooks ...Hook) {
+	c.hooks.TransferObservation = append(c.hooks.TransferObservation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `transferobservation.Intercept(f(g(h())))`.
+func (c *TransferObservationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TransferObservation = append(c.inters.TransferObservation, interceptors...)
+}
+
+// Create returns a builder for creating a TransferObservation entity.
+func (c *TransferObservationClient) Create() *TransferObservationCreate {
+	mutation := newTransferObservationMutation(c.config, OpCreate)
+	return &TransferObservationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TransferObservation entities.
+func (c *TransferObservationClient) CreateBulk(builders ...*TransferObservationCreate) *TransferObservationCreateBulk {
+	return &TransferObservationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TransferObservationClient) MapCreateBulk(slice any, setFunc func(*TransferObservationCreate, int)) *TransferObservationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TransferObservationCreateBulk{err: fmt.Errorf("calling to TransferObservationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TransferObservationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TransferObservationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TransferObservation.
+func (c *TransferObservationClient) Update() *TransferObservationUpdate {
+	mutation := newTransferObservationMutation(c.config, OpUpdate)
+	return &TransferObservationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TransferObservationClient) UpdateOne(_m *TransferObservation) *TransferObservationUpdateOne {
+	mutation := newTransferObservationMutation(c.config, OpUpdateOne, withTransferObservation(_m))
+	return &TransferObservationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TransferObservationClient) UpdateOneID(id string) *TransferObservationUpdateOne {
+	mutation := newTransferObservationMutation(c.config, OpUpdateOne, withTransferObservationID(id))
+	return &TransferObservationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TransferObservation.
+func (c *TransferObservationClient) Delete() *TransferObservationDelete {
+	mutation := newTransferObservationMutation(c.config, OpDelete)
+	return &TransferObservationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TransferObservationClient) DeleteOne(_m *TransferObservation) *TransferObservationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TransferObservationClient) DeleteOneID(id string) *TransferObservationDeleteOne {
+	builder := c.Delete().Where(transferobservation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TransferObservationDeleteOne{builder}
+}
+
+// Query returns a query builder for TransferObservation.
+func (c *TransferObservationClient) Query() *TransferObservationQuery {
+	return &TransferObservationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTransferObservation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TransferObservation entity by its id.
+func (c *TransferObservationClient) Get(ctx context.Context, id string) (*TransferObservation, error) {
+	return c.Query().Where(transferobservation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TransferObservationClient) GetX(ctx context.Context, id string) *TransferObservation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TransferObservationClient) Hooks() []Hook {
+	return c.hooks.TransferObservation
+}
+
+// Interceptors returns the client interceptors.
+func (c *TransferObservationClient) Interceptors() []Interceptor {
+	return c.inters.TransferObservation
+}
+
+func (c *TransferObservationClient) mutate(ctx context.Context, m *TransferObservationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TransferObservationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TransferObservationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TransferObservationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TransferObservationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TransferObservation mutation op: %q", m.Op())
+	}
+}
+
+// TransferRecordClient is a client for the TransferRecord schema.
+type TransferRecordClient struct {
+	config
+}
+
+// NewTransferRecordClient returns a client for the TransferRecord from the given config.
+func NewTransferRecordClient(c config) *TransferRecordClient {
+	return &TransferRecordClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `transferrecord.Hooks(f(g(h())))`.
+func (c *TransferRecordClient) Use(hooks ...Hook) {
+	c.hooks.TransferRecord = append(c.hooks.TransferRecord, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `transferrecord.Intercept(f(g(h())))`.
+func (c *TransferRecordClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TransferRecord = append(c.inters.TransferRecord, interceptors...)
+}
+
+// Create returns a builder for creating a TransferRecord entity.
+func (c *TransferRecordClient) Create() *TransferRecordCreate {
+	mutation := newTransferRecordMutation(c.config, OpCreate)
+	return &TransferRecordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TransferRecord entities.
+func (c *TransferRecordClient) CreateBulk(builders ...*TransferRecordCreate) *TransferRecordCreateBulk {
+	return &TransferRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TransferRecordClient) MapCreateBulk(slice any, setFunc func(*TransferRecordCreate, int)) *TransferRecordCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TransferRecordCreateBulk{err: fmt.Errorf("calling to TransferRecordClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TransferRecordCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TransferRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TransferRecord.
+func (c *TransferRecordClient) Update() *TransferRecordUpdate {
+	mutation := newTransferRecordMutation(c.config, OpUpdate)
+	return &TransferRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TransferRecordClient) UpdateOne(_m *TransferRecord) *TransferRecordUpdateOne {
+	mutation := newTransferRecordMutation(c.config, OpUpdateOne, withTransferRecord(_m))
+	return &TransferRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TransferRecordClient) UpdateOneID(id string) *TransferRecordUpdateOne {
+	mutation := newTransferRecordMutation(c.config, OpUpdateOne, withTransferRecordID(id))
+	return &TransferRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TransferRecord.
+func (c *TransferRecordClient) Delete() *TransferRecordDelete {
+	mutation := newTransferRecordMutation(c.config, OpDelete)
+	return &TransferRecordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TransferRecordClient) DeleteOne(_m *TransferRecord) *TransferRecordDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TransferRecordClient) DeleteOneID(id string) *TransferRecordDeleteOne {
+	builder := c.Delete().Where(transferrecord.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TransferRecordDeleteOne{builder}
+}
+
+// Query returns a query builder for TransferRecord.
+func (c *TransferRecordClient) Query() *TransferRecordQuery {
+	return &TransferRecordQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTransferRecord},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TransferRecord entity by its id.
+func (c *TransferRecordClient) Get(ctx context.Context, id string) (*TransferRecord, error) {
+	return c.Query().Where(transferrecord.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TransferRecordClient) GetX(ctx context.Context, id string) *TransferRecord {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TransferRecordClient) Hooks() []Hook {
+	return c.hooks.TransferRecord
+}
+
+// Interceptors returns the client interceptors.
+func (c *TransferRecordClient) Interceptors() []Interceptor {
+	return c.inters.TransferRecord
+}
+
+func (c *TransferRecordClient) mutate(ctx context.Context, m *TransferRecordMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TransferRecordCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TransferRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TransferRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TransferRecordDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TransferRecord mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -6569,24 +7558,27 @@ type (
 		AccountSubmission, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity,
 		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
 		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
-		BookingEvent, CatalogRelease, Conversation, ConversationMessage,
+		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
-		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
-		PaymentAllocation, PaymentAttempt, PaymentObservation, PaymentPolicy,
-		PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal, Review,
-		ReviewRevision, SecretBundle, StaffProfile, SubmissionEvent, User []ent.Hook
+		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
+		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
+		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
+		Review, ReviewRevision, SecretBundle, ServiceCase, StaffProfile,
+		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
+		TransferRecord, User []ent.Hook
 	}
 	inters struct {
 		AccountSubmission, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity,
 		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
 		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
-		BookingEvent, CatalogRelease, Conversation, ConversationMessage,
+		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
-		Game, MediaFile, Notification, Order, OrderContract, OrderEvent, OrderQuote,
-		PaymentAllocation, PaymentAttempt, PaymentObservation, PaymentPolicy,
-		PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal, Review,
-		ReviewRevision, SecretBundle, StaffProfile, SubmissionEvent,
-		User []ent.Interceptor
+		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
+		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
+		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
+		Review, ReviewRevision, SecretBundle, ServiceCase, StaffProfile,
+		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
+		TransferRecord, User []ent.Interceptor
 	}
 )
 

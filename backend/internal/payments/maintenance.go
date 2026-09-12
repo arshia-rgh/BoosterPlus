@@ -79,6 +79,14 @@ func (s *Store) RunMaintenance(ctx context.Context, logger *slog.Logger) {
 		if err := s.Discover(ctx); err != nil && ctx.Err() == nil {
 			logger.ErrorContext(ctx, "payment discovery requires attention")
 		}
+		if s.outgoing != nil {
+			if err := s.DiscoverOutgoing(ctx); err != nil && ctx.Err() == nil {
+				logger.ErrorContext(ctx, "outgoing discovery requires attention")
+			}
+			if err := s.maintainOutgoing(ctx); err != nil && ctx.Err() == nil {
+				logger.ErrorContext(ctx, "outgoing maintenance requires attention")
+			}
+		}
 		if err := s.Maintain(ctx); err != nil && ctx.Err() == nil {
 			logger.ErrorContext(ctx, "payment maintenance requires attention")
 		}

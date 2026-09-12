@@ -3279,6 +3279,280 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/orders/{id}/cases": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read private order cases */
+    get: operations["getApiV1OrdersIdCases"];
+    put?: never;
+    /** Open a private service case */
+    post: operations["postApiV1OrdersIdCases"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/cases/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read a private case and event page */
+    get: operations["getApiV1CasesId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/cases/{id}/{action}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reply, decide, appeal or close a case with authority and version checks */
+    post: operations["postApiV1CasesIdAction"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/orders/{id}/refunds": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read private refund history */
+    get: operations["getApiV1OrdersIdRefunds"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/orders/{id}/cases": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read private order cases */
+    get: operations["getApiV1AdminOrdersIdCases"];
+    put?: never;
+    /** Open a private service case */
+    post: operations["postApiV1AdminOrdersIdCases"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/cases/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read a private case and event page */
+    get: operations["getApiV1AdminCasesId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/cases/{id}/{action}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reply, decide, appeal or close a case with authority and version checks */
+    post: operations["postApiV1AdminCasesIdAction"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/orders/{id}/refunds": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read private refund history */
+    get: operations["getApiV1AdminOrdersIdRefunds"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/cases": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read open service case queue */
+    get: operations["getApiV1AdminCases"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/cases/{id}/refunds": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Propose a refund reserved against received funds */
+    post: operations["postApiV1AdminCasesIdRefunds"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/refunds/{id}/recipient": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Confirm a refund destination after recent customer sign-in */
+    post: operations["postApiV1RefundsIdRecipient"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/refunds/{id}/approve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Owner authorization with recent sign-in and authenticator verification */
+    post: operations["postApiV1AdminRefundsIdApprove"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/refunds/{id}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Owner authorization with recent sign-in and authenticator verification */
+    post: operations["postApiV1AdminRefundsIdCancel"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/refunds/{id}/verify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Authorize an independently verified outgoing attempt with an ephemeral provider code */
+    post: operations["postApiV1AdminRefundsIdVerify"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/finance/outgoing/reconcile": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Request authoritative outgoing evidence */
+    post: operations["postApiV1AdminFinanceOutgoingReconcile"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/finance/outgoing": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read outgoing exceptions without private provider payloads */
+    get: operations["getOutgoingExceptions"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3814,7 +4088,10 @@ export interface components {
     };
     OrderContract: {
       id: string;
-      /** @enum {string} */
+      /**
+       * @description Payment lifecycle. Fulfillment requires verified provider settlement; pausing checkout cannot grant payment success.
+       * @enum {string}
+       */
       payment_state:
         | "unissued"
         | "invoice_pending"
@@ -4660,6 +4937,7 @@ export interface components {
       fee_mode: string;
       rate_mode: string;
       window_minutes: number;
+      remedies: components["schemas"]["PaymentRemedies"] | null;
     };
     PublishedPaymentPolicy: {
       id: string;
@@ -4740,6 +5018,126 @@ export interface components {
     };
     PaymentProblem: {
       code: string;
+    };
+    PaymentRemedies: {
+      cancellation: string;
+      partial_work: string;
+      no_show: string;
+      missed_target: string;
+      refund_basis: string;
+      refund_fees: string;
+      dispute_hours: number;
+      appeal_hours: number;
+      max_appeals: number;
+    };
+    ServiceCase: {
+      id: string;
+      order_id: string;
+      kind: string;
+      state: string;
+      outcome: string;
+      version: number;
+      appeals: number;
+      appeal_until: string | null;
+      policy: components["schemas"]["PaymentRemedies"] | null;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    ServiceCaseInput: {
+      request_key: string;
+      kind: string;
+      note: string;
+      message_id: string;
+    };
+    ServiceCaseChange: {
+      version: number;
+      note: string;
+      message_id: string;
+      outcome: string;
+    };
+    ServiceCaseEvent: {
+      version: number;
+      id: string;
+      action: string;
+      note: string;
+      message_id: string;
+      /** Format: date-time */
+      created_at: string;
+      role: string;
+    };
+    ServiceCaseHistory: {
+      cases: components["schemas"]["ServiceCase"][];
+    };
+    ServiceCaseQueue: {
+      cases: components["schemas"]["ServiceCase"][];
+      next: string;
+    };
+    ServiceCaseDetail: {
+      case: components["schemas"]["ServiceCase"];
+      events: components["schemas"]["ServiceCaseEvent"][];
+      next: number;
+    };
+    RefundRecipient: {
+      address: string;
+      memo: string;
+    };
+    RefundTransfer: {
+      id: string;
+      case_id: string;
+      receipt_id: string;
+      order_id: string;
+      kind: string;
+      currency: string;
+      network: string;
+      amount: string;
+      terms: string;
+      state: string;
+      issue: string;
+      version: number;
+      recipient: components["schemas"]["RefundRecipient"];
+      recipient_at: string | null;
+      approved_at: string | null;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    RefundHistory: {
+      transfers: components["schemas"]["RefundTransfer"][];
+    };
+    RefundProposal: {
+      request_key: string;
+      receipt_id: string;
+      amount: string;
+      terms: string;
+    };
+    RefundRecipientInput: {
+      version: number;
+      address: string;
+      memo: string;
+      accept: boolean;
+    };
+    RefundChange: {
+      version: number;
+      reason: string;
+      code: string;
+    };
+    FinanceQueued: {
+      queued: boolean;
+    };
+    OutgoingQueue: {
+      records: {
+        id: string;
+        payment_id: string;
+        attempt_id: string;
+        state: string;
+        issue: string;
+        checked_at: string;
+      }[];
+      next: string;
+      enabled: boolean;
     };
   };
   responses: never;
@@ -15051,6 +15449,632 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  getApiV1OrdersIdCases: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ServiceCaseHistory"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  postApiV1OrdersIdCases: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ServiceCaseInput"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ServiceCase"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getApiV1CasesId: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ServiceCaseDetail"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  postApiV1CasesIdAction: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+        action: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ServiceCaseChange"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ServiceCase"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getApiV1OrdersIdRefunds: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundHistory"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getApiV1AdminOrdersIdCases: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ServiceCaseHistory"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  postApiV1AdminOrdersIdCases: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ServiceCaseInput"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ServiceCase"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getApiV1AdminCasesId: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ServiceCaseDetail"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  postApiV1AdminCasesIdAction: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+        action: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ServiceCaseChange"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ServiceCase"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getApiV1AdminOrdersIdRefunds: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundHistory"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getApiV1AdminCases: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ServiceCaseQueue"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  postApiV1AdminCasesIdRefunds: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RefundProposal"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundTransfer"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  postApiV1RefundsIdRecipient: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RefundRecipientInput"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundTransfer"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  postApiV1AdminRefundsIdApprove: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RefundChange"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundTransfer"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  postApiV1AdminRefundsIdCancel: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RefundChange"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundTransfer"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  postApiV1AdminRefundsIdVerify: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RefundChange"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FinanceQueued"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  postApiV1AdminFinanceOutgoingReconcile: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PaymentReconcileInput"];
+      };
+    };
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FinanceQueued"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getOutgoingExceptions: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OutgoingQueue"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
       };
     };
   };

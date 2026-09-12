@@ -76,7 +76,7 @@ func (s *Store) Start(ctx context.Context, p *identity.Principal, id string, inp
 		if err != nil {
 			return err
 		}
-		if policy == nil || policy.ID != input.PolicyID || validatePolicy(policy.Data) != nil {
+		if policy == nil || policy.ID != input.PolicyID || validatePolicy(policy.Data) != nil || validateRemedies(policy.Data.Remedies) != nil {
 			return ErrConflict
 		}
 		commercial, err := decode[orders.Commercial](contract.Data)
@@ -138,7 +138,7 @@ func (s *Store) History(ctx context.Context, p *identity.Principal, id string, a
 		if e != nil {
 			return result, e
 		}
-		if !row.ExpiresAt.After(s.instant()) || row.State != "awaiting_payment" {
+		if row.Account != s.account || !row.ExpiresAt.After(s.instant()) || row.State != "awaiting_payment" {
 			view.CheckoutURL = ""
 		}
 		result.Attempts = append(result.Attempts, view)

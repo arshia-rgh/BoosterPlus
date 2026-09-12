@@ -39,14 +39,14 @@ var minorPattern = regexp.MustCompile(`^[1-9][0-9]{0,11}$`)
 var coinPattern = regexp.MustCompile(`^[a-z0-9]{1,32}$`)
 
 // Config is server-only configuration. Never log this value or expose it to a browser.
-// Mode explicitly selects sandbox or live; arbitrary API hosts are not supported.
+// All provider traffic uses the production API; arbitrary API hosts are not supported.
 type Config struct {
-	Mode         string
 	APIKey       string
 	IPNSecret    string
 	PublicOrigin string
 	// ReadOnly permits local HTTP origins while forbidding invoice creation. Provider requests still use fixed HTTPS endpoints.
-	ReadOnly bool
+	ReadOnly       bool
+	PayoutsEnabled bool
 	// Dashboard credentials are used only for authenticated discovery/outgoing APIs.
 	Email    string
 	Password string
@@ -58,6 +58,7 @@ type Client struct {
 	http                                             *http.Client
 	email, password                                  string
 	readOnly                                         bool
+	payoutsEnabled                                   bool
 	tokenMu                                          sync.Mutex
 	token                                            string
 	tokenUntil                                       time.Time
@@ -65,9 +66,6 @@ type Client struct {
 
 // New validates configuration without making a network call or enabling checkout routes.
 func New(cfg Config) (*Client, error) {
-	if cfg.Mode != "sandbox" && cfg.Mode != "live" {
-		return nil, ErrInvalid
-	}
 	for _, secret := range []string{cfg.APIKey, cfg.IPNSecret} {
 		if len(secret) < 16 || len(secret) > 1024 || strings.TrimSpace(secret) != secret {
 			return nil, ErrInvalid
@@ -85,14 +83,10 @@ func New(cfg Config) (*Client, error) {
 		return nil, ErrInvalid
 	}
 	origin, err := url.Parse(cfg.PublicOrigin)
-	if err != nil || (origin.Scheme != "https" && (!cfg.ReadOnly || origin.Scheme != "http")) || origin.Hostname() == "" || origin.User != nil || origin.Path != "" || origin.RawQuery != "" || origin.Fragment != "" || origin.Opaque != "" || origin.ForceQuery {
+	if err != nil || (origin.Scheme != "https" && (!cfg.ReadOnly || cfg.PayoutsEnabled || origin.Scheme != "http")) || origin.Hostname() == "" || origin.User != nil || origin.Path != "" || origin.RawQuery != "" || origin.Fragment != "" || origin.Opaque != "" || origin.ForceQuery {
 		return nil, ErrInvalid
 	}
-	c := &Client{readOnly: cfg.ReadOnly, email: cfg.Email, password: cfg.Password, apiKey: cfg.APIKey, ipnSecret: cfg.IPNSecret, origin: cfg.PublicOrigin, baseURL: "https://api.nowpayments.io/v1", checkoutHost: "nowpayments.io", http: &http.Client{Timeout: 15 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}
-	if cfg.Mode == "sandbox" {
-		c.baseURL = "https://api-sandbox.nowpayments.io/v1"
-		c.checkoutHost = "sandbox.nowpayments.io"
-	}
+	c := &Client{payoutsEnabled: cfg.PayoutsEnabled, readOnly: cfg.ReadOnly, email: cfg.Email, password: cfg.Password, apiKey: cfg.APIKey, ipnSecret: cfg.IPNSecret, origin: cfg.PublicOrigin, baseURL: "https://api.nowpayments.io/v1", checkoutHost: "nowpayments.io", http: &http.Client{Timeout: 15 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}
 	return c, nil
 }
 
@@ -188,6 +182,17 @@ func (c *Client) request(ctx context.Context, method, path string, body []byte) 
 }
 
 func (c *Client) requestToken(ctx context.Context, method, path string, body []byte, token string) (map[string]any, error) {
+	value, err := c.requestValue(ctx, method, path, body, token)
+	if err != nil {
+		return nil, err
+	}
+	result, ok := value.(map[string]any)
+	if !ok || result == nil {
+		return nil, ErrEvidence
+	}
+	return result, nil
+}
+func (c *Client) requestBytes(ctx context.Context, method, path string, body []byte, token string) ([]byte, error) {
 	req, err := http.NewRequestWithContext(ctx, method, c.baseURL+path, bytes.NewReader(body))
 	if err != nil {
 		return nil, ErrUnavailable
@@ -209,9 +214,47 @@ func (c *Client) requestToken(ctx context.Context, method, path string, body []b
 	if readErr != nil || closeErr != nil || len(raw) > maxBody || response.StatusCode < 200 || response.StatusCode >= 300 {
 		return nil, ErrUnavailable
 	}
-	value, err := object(raw)
+	return raw, nil
+}
+func (c *Client) requestValue(ctx context.Context, method, path string, body []byte, token string) (any, error) {
+	raw, err := c.requestBytes(ctx, method, path, body, token)
+	if err != nil {
+		return nil, err
+	}
+	value, err := jsonValue(raw)
 	if err != nil {
 		return nil, ErrEvidence
 	}
 	return value, nil
+}
+
+// requestAcknowledgement accepts an empty successful response only for actions
+// whose outcome will be checked separately. Financial evidence still needs JSON.
+func (c *Client) requestAcknowledgement(ctx context.Context, path string, body []byte, token string) error {
+	raw, err := c.requestBytes(ctx, http.MethodPost, path, body, token)
+	if err != nil {
+		return err
+	}
+	if len(bytes.TrimSpace(raw)) == 0 {
+		return nil
+	}
+	value, err := jsonValue(raw)
+	if err != nil {
+		return ErrEvidence
+	}
+	switch result := value.(type) {
+	case bool:
+		if !result {
+			return ErrEvidence
+		}
+	case map[string]any:
+		for _, key := range []string{"valid", "success"} {
+			if valid, exists := result[key]; exists && valid != true {
+				return ErrEvidence
+			}
+		}
+	default:
+		return ErrEvidence
+	}
+	return nil
 }

@@ -104,9 +104,14 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 		}
 	}
 	finance := payments.New(client, auth, provider, cfg.Crypto.Account, cfg.Crypto.Enabled, nil)
+	if outgoing, ok := provider.(payments.OutgoingProvider); ok {
+		finance.ConfigureOutgoing(outgoing, cfg.Crypto.OutgoingEnabled)
+	}
 	financeDone := make(chan struct{})
 	go func() { defer close(financeDone); finance.RunMaintenance(maintenance, logger) }()
 	defer func() { stopMaintenance(); <-financeDone }()
+	handlers["payments.refund"] = finance.RefundHandler()
+	handlers["payments.outgoing_reconcile"] = finance.OutgoingHandler()
 	handlers["payments.invoice"] = finance.InvoiceHandler()
 	handlers["payments.reconcile"] = finance.ReconcileHandler()
 	handlers["identity.email"] = auth.EmailHandler(sender)

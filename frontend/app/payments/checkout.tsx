@@ -4,7 +4,13 @@ import { minorDisplay } from "../catalog/dynamic-form";
 import { post } from "../identity/api";
 import type { Detail } from "../orders/model";
 import { useResource } from "../orders/resource";
-import { attemptSchema, historySchema, paymentMessage } from "./model";
+import {
+  attemptSchema,
+  historySchema,
+  paymentMessage,
+  remedyLabels,
+  remedyText,
+} from "./model";
 export default function Checkout({
   detail,
   admin,
@@ -82,8 +88,9 @@ export default function Checkout({
       {!data && <p role="status">Loading payment information…</p>}
       {data && !data.enabled && (
         <p>
-          Checkout is currently unavailable. Your order and agreed price remain
-          visible here. Contact support for updates.
+          Checkout is currently unavailable. Your order remains unpaid until
+          funds are verified. Existing payments continue to be reconciled;
+          contact support for updates.
         </p>
       )}
       {!admin &&
@@ -94,6 +101,25 @@ export default function Checkout({
           <fieldset disabled={busy} key={policy.id}>
             <legend>{policy.data.label}</legend>
             <p className="payment-policy">{policy.data.text}</p>
+            {policy.data.remedies && (
+              <details>
+                <summary>Cancellation, disputes and refunds</summary>
+                {remedyLabels.map(([key, label]) => (
+                  <div key={key}>
+                    <h4>{label}</h4>
+                    <p>
+                      {policy.data.remedies &&
+                        remedyText(policy.data.remedies, key)}
+                    </p>
+                  </div>
+                ))}
+                <p>
+                  Dispute window: {policy.data.remedies.dispute_hours} hours.
+                  Appeal window: {policy.data.remedies.appeal_hours} hours; up
+                  to {policy.data.remedies.max_appeals} appeals.
+                </p>
+              </details>
+            )}
             <p>
               Processing fees:{" "}
               {policy.data.fee_mode === "customer"

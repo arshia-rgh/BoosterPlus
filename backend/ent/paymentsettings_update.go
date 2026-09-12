@@ -69,6 +69,27 @@ func (_u *PaymentSettingsUpdate) SetDraft(v map[string]interface{}) *PaymentSett
 	return _u
 }
 
+// SetOutgoingPage sets the "outgoing_page" field.
+func (_u *PaymentSettingsUpdate) SetOutgoingPage(v int) *PaymentSettingsUpdate {
+	_u.mutation.ResetOutgoingPage()
+	_u.mutation.SetOutgoingPage(v)
+	return _u
+}
+
+// SetNillableOutgoingPage sets the "outgoing_page" field if the given value is not nil.
+func (_u *PaymentSettingsUpdate) SetNillableOutgoingPage(v *int) *PaymentSettingsUpdate {
+	if v != nil {
+		_u.SetOutgoingPage(*v)
+	}
+	return _u
+}
+
+// AddOutgoingPage adds value to the "outgoing_page" field.
+func (_u *PaymentSettingsUpdate) AddOutgoingPage(v int) *PaymentSettingsUpdate {
+	_u.mutation.AddOutgoingPage(v)
+	return _u
+}
+
 // SetDiscoveryPage sets the "discovery_page" field.
 func (_u *PaymentSettingsUpdate) SetDiscoveryPage(v int) *PaymentSettingsUpdate {
 	_u.mutation.ResetDiscoveryPage()
@@ -170,6 +191,12 @@ func (_u *PaymentSettingsUpdate) sqlSave(ctx context.Context) (_node int, err er
 	if value, ok := _u.mutation.Draft(); ok {
 		_spec.SetField(paymentsettings.FieldDraft, field.TypeJSON, value)
 	}
+	if value, ok := _u.mutation.OutgoingPage(); ok {
+		_spec.SetField(paymentsettings.FieldOutgoingPage, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedOutgoingPage(); ok {
+		_spec.AddField(paymentsettings.FieldOutgoingPage, field.TypeInt, value)
+	}
 	if value, ok := _u.mutation.DiscoveryPage(); ok {
 		_spec.SetField(paymentsettings.FieldDiscoveryPage, field.TypeInt, value)
 	}
@@ -237,6 +264,27 @@ func (_u *PaymentSettingsUpdateOne) SetNillablePublishedID(v *string) *PaymentSe
 // SetDraft sets the "draft" field.
 func (_u *PaymentSettingsUpdateOne) SetDraft(v map[string]interface{}) *PaymentSettingsUpdateOne {
 	_u.mutation.SetDraft(v)
+	return _u
+}
+
+// SetOutgoingPage sets the "outgoing_page" field.
+func (_u *PaymentSettingsUpdateOne) SetOutgoingPage(v int) *PaymentSettingsUpdateOne {
+	_u.mutation.ResetOutgoingPage()
+	_u.mutation.SetOutgoingPage(v)
+	return _u
+}
+
+// SetNillableOutgoingPage sets the "outgoing_page" field if the given value is not nil.
+func (_u *PaymentSettingsUpdateOne) SetNillableOutgoingPage(v *int) *PaymentSettingsUpdateOne {
+	if v != nil {
+		_u.SetOutgoingPage(*v)
+	}
+	return _u
+}
+
+// AddOutgoingPage adds value to the "outgoing_page" field.
+func (_u *PaymentSettingsUpdateOne) AddOutgoingPage(v int) *PaymentSettingsUpdateOne {
+	_u.mutation.AddOutgoingPage(v)
 	return _u
 }
 
@@ -370,6 +418,12 @@ func (_u *PaymentSettingsUpdateOne) sqlSave(ctx context.Context) (_node *Payment
 	}
 	if value, ok := _u.mutation.Draft(); ok {
 		_spec.SetField(paymentsettings.FieldDraft, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.OutgoingPage(); ok {
+		_spec.SetField(paymentsettings.FieldOutgoingPage, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedOutgoingPage(); ok {
+		_spec.AddField(paymentsettings.FieldOutgoingPage, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.DiscoveryPage(); ok {
 		_spec.SetField(paymentsettings.FieldDiscoveryPage, field.TypeInt, value)

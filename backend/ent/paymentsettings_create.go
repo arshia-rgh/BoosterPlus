@@ -54,6 +54,20 @@ func (_c *PaymentSettingsCreate) SetDraft(v map[string]interface{}) *PaymentSett
 	return _c
 }
 
+// SetOutgoingPage sets the "outgoing_page" field.
+func (_c *PaymentSettingsCreate) SetOutgoingPage(v int) *PaymentSettingsCreate {
+	_c.mutation.SetOutgoingPage(v)
+	return _c
+}
+
+// SetNillableOutgoingPage sets the "outgoing_page" field if the given value is not nil.
+func (_c *PaymentSettingsCreate) SetNillableOutgoingPage(v *int) *PaymentSettingsCreate {
+	if v != nil {
+		_c.SetOutgoingPage(*v)
+	}
+	return _c
+}
+
 // SetDiscoveryPage sets the "discovery_page" field.
 func (_c *PaymentSettingsCreate) SetDiscoveryPage(v int) *PaymentSettingsCreate {
 	_c.mutation.SetDiscoveryPage(v)
@@ -123,6 +137,10 @@ func (_c *PaymentSettingsCreate) defaults() {
 		v := paymentsettings.DefaultPublishedID
 		_c.mutation.SetPublishedID(v)
 	}
+	if _, ok := _c.mutation.OutgoingPage(); !ok {
+		v := paymentsettings.DefaultOutgoingPage
+		_c.mutation.SetOutgoingPage(v)
+	}
 	if _, ok := _c.mutation.DiscoveryPage(); !ok {
 		v := paymentsettings.DefaultDiscoveryPage
 		_c.mutation.SetDiscoveryPage(v)
@@ -144,6 +162,9 @@ func (_c *PaymentSettingsCreate) check() error {
 	}
 	if _, ok := _c.mutation.Draft(); !ok {
 		return &ValidationError{Name: "draft", err: errors.New(`ent: missing required field "PaymentSettings.draft"`)}
+	}
+	if _, ok := _c.mutation.OutgoingPage(); !ok {
+		return &ValidationError{Name: "outgoing_page", err: errors.New(`ent: missing required field "PaymentSettings.outgoing_page"`)}
 	}
 	if _, ok := _c.mutation.DiscoveryPage(); !ok {
 		return &ValidationError{Name: "discovery_page", err: errors.New(`ent: missing required field "PaymentSettings.discovery_page"`)}
@@ -194,6 +215,10 @@ func (_c *PaymentSettingsCreate) createSpec() (*PaymentSettings, *sqlgraph.Creat
 	if value, ok := _c.mutation.Draft(); ok {
 		_spec.SetField(paymentsettings.FieldDraft, field.TypeJSON, value)
 		_node.Draft = value
+	}
+	if value, ok := _c.mutation.OutgoingPage(); ok {
+		_spec.SetField(paymentsettings.FieldOutgoingPage, field.TypeInt, value)
+		_node.OutgoingPage = value
 	}
 	if value, ok := _c.mutation.DiscoveryPage(); ok {
 		_spec.SetField(paymentsettings.FieldDiscoveryPage, field.TypeInt, value)

@@ -189,6 +189,18 @@ func (f BookingEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BookingEventMutation", m)
 }
 
+// The CaseEventFunc type is an adapter to allow the use of ordinary
+// function as CaseEvent mutator.
+type CaseEventFunc func(context.Context, *ent.CaseEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CaseEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CaseEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CaseEventMutation", m)
+}
+
 // The CatalogReleaseFunc type is an adapter to allow the use of ordinary
 // function as CatalogRelease mutator.
 type CatalogReleaseFunc func(context.Context, *ent.CatalogReleaseMutation) (ent.Value, error)
@@ -319,6 +331,18 @@ func (f MediaFileFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MediaFileMutation", m)
+}
+
+// The MoneyTransferFunc type is an adapter to allow the use of ordinary
+// function as MoneyTransfer mutator.
+type MoneyTransferFunc func(context.Context, *ent.MoneyTransferMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MoneyTransferFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MoneyTransferMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MoneyTransferMutation", m)
 }
 
 // The NotificationFunc type is an adapter to allow the use of ordinary
@@ -513,6 +537,18 @@ func (f SecretBundleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SecretBundleMutation", m)
 }
 
+// The ServiceCaseFunc type is an adapter to allow the use of ordinary
+// function as ServiceCase mutator.
+type ServiceCaseFunc func(context.Context, *ent.ServiceCaseMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ServiceCaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ServiceCaseMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ServiceCaseMutation", m)
+}
+
 // The StaffProfileFunc type is an adapter to allow the use of ordinary
 // function as StaffProfile mutator.
 type StaffProfileFunc func(context.Context, *ent.StaffProfileMutation) (ent.Value, error)
@@ -535,6 +571,54 @@ func (f SubmissionEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Va
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SubmissionEventMutation", m)
+}
+
+// The TransferAttemptFunc type is an adapter to allow the use of ordinary
+// function as TransferAttempt mutator.
+type TransferAttemptFunc func(context.Context, *ent.TransferAttemptMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TransferAttemptFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TransferAttemptMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TransferAttemptMutation", m)
+}
+
+// The TransferEventFunc type is an adapter to allow the use of ordinary
+// function as TransferEvent mutator.
+type TransferEventFunc func(context.Context, *ent.TransferEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TransferEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TransferEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TransferEventMutation", m)
+}
+
+// The TransferObservationFunc type is an adapter to allow the use of ordinary
+// function as TransferObservation mutator.
+type TransferObservationFunc func(context.Context, *ent.TransferObservationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TransferObservationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TransferObservationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TransferObservationMutation", m)
+}
+
+// The TransferRecordFunc type is an adapter to allow the use of ordinary
+// function as TransferRecord mutator.
+type TransferRecordFunc func(context.Context, *ent.TransferRecordMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TransferRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TransferRecordMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TransferRecordMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary

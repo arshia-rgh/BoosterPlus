@@ -8,6 +8,7 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
 )
@@ -52,6 +53,13 @@ func (s *Store) secretPolicy(ctx context.Context, tx *ent.Tx, p *identity.Princi
 		return identity.Require(p, "owner")
 	}
 	if operation == vault.Reveal {
+		blocked, e := tx.ServiceCase.Query().Where(servicecase.ActiveOrderIDEQ(row.ID)).Exist(ctx)
+		if e != nil {
+			return e
+		}
+		if blocked {
+			return identity.ErrForbidden
+		}
 		if p.User.Role == "administrator" || p.User.Role == "owner" {
 			return nil
 		}

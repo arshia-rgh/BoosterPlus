@@ -44,6 +44,8 @@ type Tx struct {
 	Booking *BookingClient
 	// BookingEvent is the client for interacting with the BookingEvent builders.
 	BookingEvent *BookingEventClient
+	// CaseEvent is the client for interacting with the CaseEvent builders.
+	CaseEvent *CaseEventClient
 	// CatalogRelease is the client for interacting with the CatalogRelease builders.
 	CatalogRelease *CatalogReleaseClient
 	// Conversation is the client for interacting with the Conversation builders.
@@ -66,6 +68,8 @@ type Tx struct {
 	Game *GameClient
 	// MediaFile is the client for interacting with the MediaFile builders.
 	MediaFile *MediaFileClient
+	// MoneyTransfer is the client for interacting with the MoneyTransfer builders.
+	MoneyTransfer *MoneyTransferClient
 	// Notification is the client for interacting with the Notification builders.
 	Notification *NotificationClient
 	// Order is the client for interacting with the Order builders.
@@ -98,10 +102,20 @@ type Tx struct {
 	ReviewRevision *ReviewRevisionClient
 	// SecretBundle is the client for interacting with the SecretBundle builders.
 	SecretBundle *SecretBundleClient
+	// ServiceCase is the client for interacting with the ServiceCase builders.
+	ServiceCase *ServiceCaseClient
 	// StaffProfile is the client for interacting with the StaffProfile builders.
 	StaffProfile *StaffProfileClient
 	// SubmissionEvent is the client for interacting with the SubmissionEvent builders.
 	SubmissionEvent *SubmissionEventClient
+	// TransferAttempt is the client for interacting with the TransferAttempt builders.
+	TransferAttempt *TransferAttemptClient
+	// TransferEvent is the client for interacting with the TransferEvent builders.
+	TransferEvent *TransferEventClient
+	// TransferObservation is the client for interacting with the TransferObservation builders.
+	TransferObservation *TransferObservationClient
+	// TransferRecord is the client for interacting with the TransferRecord builders.
+	TransferRecord *TransferRecordClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -250,6 +264,7 @@ func (tx *Tx) init() {
 	tx.AvailabilityWindow = NewAvailabilityWindowClient(tx.config)
 	tx.Booking = NewBookingClient(tx.config)
 	tx.BookingEvent = NewBookingEventClient(tx.config)
+	tx.CaseEvent = NewCaseEventClient(tx.config)
 	tx.CatalogRelease = NewCatalogReleaseClient(tx.config)
 	tx.Conversation = NewConversationClient(tx.config)
 	tx.ConversationMessage = NewConversationMessageClient(tx.config)
@@ -261,6 +276,7 @@ func (tx *Tx) init() {
 	tx.Fulfillment = NewFulfillmentClient(tx.config)
 	tx.Game = NewGameClient(tx.config)
 	tx.MediaFile = NewMediaFileClient(tx.config)
+	tx.MoneyTransfer = NewMoneyTransferClient(tx.config)
 	tx.Notification = NewNotificationClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
 	tx.OrderContract = NewOrderContractClient(tx.config)
@@ -277,8 +293,13 @@ func (tx *Tx) init() {
 	tx.Review = NewReviewClient(tx.config)
 	tx.ReviewRevision = NewReviewRevisionClient(tx.config)
 	tx.SecretBundle = NewSecretBundleClient(tx.config)
+	tx.ServiceCase = NewServiceCaseClient(tx.config)
 	tx.StaffProfile = NewStaffProfileClient(tx.config)
 	tx.SubmissionEvent = NewSubmissionEventClient(tx.config)
+	tx.TransferAttempt = NewTransferAttemptClient(tx.config)
+	tx.TransferEvent = NewTransferEventClient(tx.config)
+	tx.TransferObservation = NewTransferObservationClient(tx.config)
+	tx.TransferRecord = NewTransferRecordClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

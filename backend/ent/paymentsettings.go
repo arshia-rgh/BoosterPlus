@@ -24,6 +24,8 @@ type PaymentSettings struct {
 	PublishedID string `json:"published_id,omitempty"`
 	// Draft holds the value of the "draft" field.
 	Draft map[string]interface{} `json:"draft,omitempty"`
+	// OutgoingPage holds the value of the "outgoing_page" field.
+	OutgoingPage int `json:"outgoing_page,omitempty"`
 	// DiscoveryPage holds the value of the "discovery_page" field.
 	DiscoveryPage int `json:"discovery_page,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -38,7 +40,7 @@ func (*PaymentSettings) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case paymentsettings.FieldDraft:
 			values[i] = new([]byte)
-		case paymentsettings.FieldID, paymentsettings.FieldVersion, paymentsettings.FieldDiscoveryPage:
+		case paymentsettings.FieldID, paymentsettings.FieldVersion, paymentsettings.FieldOutgoingPage, paymentsettings.FieldDiscoveryPage:
 			values[i] = new(sql.NullInt64)
 		case paymentsettings.FieldPublishedID:
 			values[i] = new(sql.NullString)
@@ -84,6 +86,12 @@ func (_m *PaymentSettings) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &_m.Draft); err != nil {
 					return fmt.Errorf("unmarshal field draft: %w", err)
 				}
+			}
+		case paymentsettings.FieldOutgoingPage:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field outgoing_page", values[i])
+			} else if value.Valid {
+				_m.OutgoingPage = int(value.Int64)
 			}
 		case paymentsettings.FieldDiscoveryPage:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -141,6 +149,9 @@ func (_m *PaymentSettings) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("draft=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Draft))
+	builder.WriteString(", ")
+	builder.WriteString("outgoing_page=")
+	builder.WriteString(fmt.Sprintf("%v", _m.OutgoingPage))
 	builder.WriteString(", ")
 	builder.WriteString("discovery_page=")
 	builder.WriteString(fmt.Sprintf("%v", _m.DiscoveryPage))

@@ -46,12 +46,14 @@ type Provider interface {
 
 // Store shares identity's short transaction fence. Provider I/O never holds it.
 type Store struct {
-	client   *ent.Client
-	auth     *identity.Service
-	provider Provider
-	account  string
-	enabled  bool
-	now      func() time.Time
+	client          *ent.Client
+	auth            *identity.Service
+	provider        Provider
+	account         string
+	enabled         bool
+	now             func() time.Time
+	outgoing        OutgoingProvider
+	outgoingEnabled bool
 }
 
 // New creates financial services without applying schema or activating checkout by default.
@@ -59,7 +61,7 @@ func New(client *ent.Client, auth *identity.Service, provider Provider, account 
 	if now == nil {
 		now = time.Now
 	}
-	return &Store{client, auth, provider, account, enabled, now}
+	return &Store{client: client, auth: auth, provider: provider, account: account, enabled: enabled, now: now}
 }
 func (s *Store) instant() time.Time { return s.now().UTC().Truncate(time.Microsecond) }
 func validID(id string) bool        { value, err := uuid.Parse(id); return err == nil && value.String() == id }
@@ -132,13 +134,14 @@ type Route struct {
 
 // Policy records explicit fees, validity and rate choices before customer acceptance.
 type Policy struct {
-	Label         string   `json:"label"`
-	Text          string   `json:"text"`
-	Currencies    []string `json:"currencies"`
-	Routes        []Route  `json:"routes"`
-	FeeMode       string   `json:"fee_mode"`
-	RateMode      string   `json:"rate_mode"`
-	WindowMinutes int      `json:"window_minutes"`
+	Remedies      *Remedies `json:"remedies"`
+	Label         string    `json:"label"`
+	Text          string    `json:"text"`
+	Currencies    []string  `json:"currencies"`
+	Routes        []Route   `json:"routes"`
+	FeeMode       string    `json:"fee_mode"`
+	RateMode      string    `json:"rate_mode"`
+	WindowMinutes int       `json:"window_minutes"`
 }
 
 func validatePolicy(p Policy) error {
