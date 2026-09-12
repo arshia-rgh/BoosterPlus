@@ -16,3 +16,5 @@ backend/bin/
 *.test
 *.prof
 *.out
+
+__pycache__/

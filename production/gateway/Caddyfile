@@ -1,0 +1,52 @@
+{
+	admin off
+	http_port 8080
+	https_port 8443
+	email {$ACME_EMAIL}
+	servers {
+		timeouts {
+			read_header 10s
+			idle 2m
+		}
+		max_header_size 32KB
+	}
+}
+
+(upstream) {
+	header_up -Forwarded
+	header_up -X-Real-IP
+	header_up -X-Booster-Proxy-Key
+	header_up -X-Booster-Client-IP
+	header_up X-Forwarded-For {remote_host}
+	header_up X-Forwarded-Proto https
+	header_up X-Forwarded-Host {http.request.hostport}
+	transport http {
+		dial_timeout 5s
+		response_header_timeout 15s
+	}
+}
+
+{$SITE_ADDRESS} {
+	encode zstd gzip
+	request_body {
+		max_size 6MB
+	}
+	header -Server
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	@admin path /admin /admin/* /admin.data
+	handle @admin {
+		reverse_proxy admin:3000 {
+			import upstream
+		}
+	}
+	handle {
+		# /api stays behind the storefront's trusted proxy, never a direct API bypass.
+		reverse_proxy storefront:3000 {
+			import upstream
+		}
+	}
+}
+
+http://127.0.0.1:8090 {
+	respond /health 200
+}

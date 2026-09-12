@@ -1,0 +1,2 @@
+APP_ENV=production
+MIGRATION_DATABASE_DSN=migrator:REPLACE@tcp(MANAGED_TIDB_HOST:4000)/boosterplus?tls=true

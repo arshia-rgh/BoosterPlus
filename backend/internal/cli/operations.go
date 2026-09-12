@@ -17,7 +17,7 @@ import (
 )
 
 func addOperations(root *cobra.Command, getenv func(string) string) {
-	root.AddCommand(development(getenv), identityCommands(getenv))
+	root.AddCommand(development(getenv), identityCommands(getenv), dependencies(getenv))
 	configuration := &cobra.Command{Use: "config"}
 	configuration.AddCommand(&cobra.Command{Use: "validate", Args: cobra.NoArgs, RunE: func(cmd *cobra.Command, _ []string) error {
 		if _, err := config.Load(getenv); err != nil {

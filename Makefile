@@ -25,3 +25,4 @@ pre-commit:
 	$(MAKE) check-repository
 	$(MAKE) -C backend pre-commit
 	$(MAKE) -C frontend pre-commit
+	$(MAKE) -C production pre-commit

@@ -1,6 +1,6 @@
 # Booster Plus — visual redesign, complete product, and production roadmap
 
-Updated: 12 September 2026. Status: R00–R02 delivered; R03 storefront/customer/booster redesign implemented, with delivery subject to the mandatory commit gate recorded in progress. R04–R11 remain outstanding. Listing a requirement is not evidence of completion.
+Updated: 12 September 2026. Status: R00–R03 delivered; R04 deployment foundation implemented, with delivery subject to the mandatory commit gate recorded in progress. R05–R09 are the current authorized implementation scope; R10–R11 await owner review after R09. Listing a requirement is not evidence of completion.
 
 This is the execution roadmap for the work remaining after commit `f20abed6cb4f1909ffde9fe8fa789b7f74fea2de`, including the owner's new visual and deployment requirements. It takes priority over the earlier phase order. [The specification](BOOSTER_PLUS_SPEC.md) continues to define business/security requirements, and [the original phases](IMPLEMENTATION_PHASES.md) remain the detailed P00–P12 reference. This roadmap carries forward every unfinished requirement and all seven approved additions. Delivered foundations are extended and redesigned, not treated as missing or discarded.
 
@@ -8,7 +8,7 @@ This is the execution roadmap for the work remaining after commit `f20abed6cb4f1
 
 ## Current implementation update
 
-R01 now provides the cinematic homepage, scoped visual system, responsive artwork, continuous MLBB profile transformation, smaller section reveals, accessible motion preferences and enforced asset budgets. See [visual implementation](docs/visual-design.md) and [verification evidence](docs/progress.md). The homepage is visibly upgraded; the dedicated staff shell is implemented in R02; R03 now extends the visual system to the catalog, estimator, customer account and booster workspace. See [the customer experience guide](docs/customer-experience.md). Admin-managed homepage content and real featured offering/review feeds remain in their later stages, without fabricated launch data. The following baseline inventory describes the starting point before R01.
+R01 now provides the cinematic homepage, scoped visual system, responsive artwork, continuous MLBB profile transformation, smaller section reveals, accessible motion preferences and enforced asset budgets. See [visual implementation](docs/visual-design.md) and [verification evidence](docs/progress.md). The homepage is visibly upgraded; the dedicated staff shell is implemented in R02; R03 extends the visual system to the catalog, estimator, customer account and booster workspace. R04 adds the deployment-only Compose/gateway and isolated TLS qualification package under `production/`. See [the customer experience guide](docs/customer-experience.md). Admin-managed homepage content and real featured offering/review feeds remain in their later stages, without fabricated launch data. The following baseline inventory describes the starting point before R01.
 
 ## 1. What existed at the baseline, and why the site looked basic
 

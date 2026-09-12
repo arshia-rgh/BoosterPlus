@@ -1,0 +1,79 @@
+# Disposable local qualification only; never merge this into a public deployment.
+services:
+  gateway:
+    ports: !override ["127.0.0.1:${STAGING_HTTP_PORT:?}:8080", "127.0.0.1:${STAGING_HTTPS_PORT:?}:8443"]
+    volumes:
+      - ${STAGING_DIRECTORY:?}/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${STAGING_DIRECTORY:?}/certs:/certs:ro
+  api:
+    environment: {SSL_CERT_FILE: /certs/ca.crt}
+    volumes: ["${STAGING_DIRECTORY:?}/certs/ca.crt:/certs/ca.crt:ro"]
+  worker:
+    environment: {SSL_CERT_FILE: /certs/ca.crt}
+    volumes: ["${STAGING_DIRECTORY:?}/certs/ca.crt:/certs/ca.crt:ro"]
+  migrate:
+    environment: {SSL_CERT_FILE: /certs/ca.crt}
+    volumes: ["${STAGING_DIRECTORY:?}/certs/ca.crt:/certs/ca.crt:ro"]
+  tidb:
+    image: pingcap/tidb:v8.5.7@sha256:41708a564e47e96d346fed433c3b9bc40d1950fdcc9c768812daeff6aadd930c
+    command: ["--store=unistore", "--path=/data", "--host=0.0.0.0", "--config=/etc/tidb.toml"]
+    volumes:
+      - staging-database:/data
+      - ${STAGING_DIRECTORY:?}/tidb.toml:/etc/tidb.toml:ro
+      - ${STAGING_DIRECTORY:?}/certs:/certs:ro
+    networks: [outbound]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 3g
+    cpus: 2
+  bootstrap:
+    image: ${BACKEND_IMAGE:?}
+    profiles: [tools]
+    entrypoint: [/app/boosterplus, dev, bootstrap]
+    env_file: [{path: "${STAGING_DIRECTORY:?}/bootstrap.env", format: raw}]
+    environment: {SSL_CERT_FILE: /certs/ca.crt}
+    volumes: ["${STAGING_DIRECTORY:?}/certs/ca.crt:/certs/ca.crt:ro"]
+    networks: [outbound]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck: {disable: true}
+  storage:
+    image: chrislusf/seaweedfs:4.46@sha256:08d516132314207d10c8e37cbffc1f32b147d870169688734cc61c6231625b62
+    command: [mini, "-dir=/data"]
+    env_file: [{path: "${STAGING_DIRECTORY:?}/storage.env", format: raw}]
+    volumes: [staging-storage:/data]
+    networks: [outbound]
+    mem_limit: 512m
+    security_opt: [no-new-privileges:true]
+  storage-tls:
+    image: ${GATEWAY_IMAGE:?}
+    command: [caddy, run, --config, /etc/caddy/storage.Caddyfile]
+    tmpfs: ["/data:uid=1000,gid=1000,mode=700,size=16m", "/config:uid=1000,gid=1000,mode=700,size=16m"]
+    volumes:
+      - ${STAGING_DIRECTORY:?}/storage.Caddyfile:/etc/caddy/storage.Caddyfile:ro
+      - ${STAGING_DIRECTORY:?}/certs:/certs:ro
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [outbound]
+    healthcheck: {disable: true}
+    mem_limit: 128m
+  mailpit:
+    image: axllent/mailpit:v1.31.1@sha256:98b916bd3c8d61f7633a52d3ea2f58d00620cb01ca57ab59edde68c347a95365
+    environment:
+      MP_SMTP_TLS_CERT: /certs/server.crt
+      MP_SMTP_TLS_KEY: /certs/server.key
+      MP_SMTP_REQUIRE_STARTTLS: "true"
+    volumes: ["${STAGING_DIRECTORY:?}/certs:/certs:ro"]
+    networks: [application, outbound]
+    read_only: true
+    tmpfs: ["/tmp:size=64m,noexec,nosuid"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+volumes:
+  scanner-data:
+    external: true
+    name: ${STAGING_SIGNATURE_VOLUME:?}
+  staging-database: {}
+  staging-storage: {}
