@@ -3,11 +3,11 @@ import { HomePage } from "../home/page";
 
 export function meta() {
   return [
-    { title: "Booster Plus — Game boosting & accounts" },
+    { title: "PLAYORA — Game boosting & accounts" },
     {
       name: "description",
       content:
-        "Your next level starts here. Explore Mobile Legends boosting, custom rank journeys and fixed packages with Booster Plus. Live checkout is being prepared.",
+        "Your next level starts here. Explore Mobile Legends boosting, custom rank journeys and fixed packages with PLAYORA. Track your order and talk to our team in one place.",
     },
   ];
 }

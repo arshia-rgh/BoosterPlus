@@ -26,7 +26,7 @@ vi.mock("../submissions/pages", () => ({
 }));
 it("protects all five seller and review routes with their intended capability", () => {
   for (const meta of [listMeta, createMeta, detailMeta, queueMeta, reviewMeta])
-    expect(meta()[0]?.title).toContain("Booster Plus");
+    expect(meta()[0]?.title).toContain("PLAYORA");
   render(
     <>
       <List />

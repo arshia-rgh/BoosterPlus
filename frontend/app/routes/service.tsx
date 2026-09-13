@@ -1,7 +1,7 @@
 import { loadOffering } from "../catalog/loaders.server";
 import { ServicePage } from "../catalog/public";
 export function meta() {
-  return [{ title: "Custom boosting — Booster Plus" }];
+  return [{ title: "Custom boosting — PLAYORA" }];
 }
 export function loader({
   params,

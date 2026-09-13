@@ -28,7 +28,7 @@ vi.mock("../reviews/public", () => ({ default: () => <p>Public reviews</p> }));
 vi.mock("../reviews/loaders.server", () => ({ loadReviews: vi.fn() }));
 it("protects private routes and loads public feedback through the server", async () => {
   for (const meta of [listMeta, detailMeta, queueMeta, reviewMeta, publicMeta])
-    expect(meta()[0]?.title).toContain("Booster Plus");
+    expect(meta()[0]?.title).toContain("PLAYORA");
   render(
     <>
       <List />

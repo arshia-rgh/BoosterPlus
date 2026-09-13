@@ -15,7 +15,7 @@ vi.mock("../payments/finance", () => ({
   default: () => <p>Payment reconciliation</p>,
 }));
 it("requires administrator authority for payment finance", () => {
-  expect(meta()[0]?.title).toContain("Booster Plus");
+  expect(meta()[0]?.title).toContain("PLAYORA");
   render(<Page />);
   expect(screen.getByRole("region", { name: "admin" })).toHaveTextContent(
     "Payment reconciliation",

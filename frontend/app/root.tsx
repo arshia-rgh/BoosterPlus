@@ -11,6 +11,7 @@ import {
 import type { ReactNode } from "react";
 import type { LoaderFunctionArgs } from "react-router";
 import "./styles.css";
+import { BrandLogo, brand } from "./brand/brand";
 
 export function loader({ request }: LoaderFunctionArgs) {
   return { nonce: request.headers.get("x-csp-nonce") ?? undefined };
@@ -26,6 +27,11 @@ export function Layout({ children }: { children: ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+          rel="icon"
+          type="image/svg+xml"
+          href="/brand/playora-symbol.svg"
+        />
         <Meta />
         <Links />
       </head>
@@ -34,8 +40,8 @@ export function Layout({ children }: { children: ReactNode }) {
           Skip to content
         </a>
         <header className="site-header">
-          <Link className="brand" to="/" aria-label="Booster Plus home">
-            BOOSTER<span>+</span>
+          <Link className="brand" to="/" aria-label="PLAYORA home">
+            <BrandLogo />
           </Link>
           <nav aria-label="Main navigation">
             <Link to="/games">Games</Link>
@@ -48,8 +54,8 @@ export function Layout({ children }: { children: ReactNode }) {
         </header>
         {children}
         <footer>
-          <span>Booster Plus</span>
-          <span>Game boosting. Account trading.</span>
+          <span>{brand.name}</span>
+          <span>{brand.description}</span>
           <a href="/admin">Staff access ↗</a>
         </footer>
         <ScrollRestoration nonce={data?.nonce} />

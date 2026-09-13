@@ -1,3 +1,4 @@
+import { PageHeader } from "../ui/page-header";
 import { createElement, useContext } from "react";
 import { AuthorizedIdentity, IdentityFrame } from "./frame";
 import {
@@ -304,7 +305,7 @@ function Security({
           }}
         >
           <p>
-            Add Booster Plus to your authenticator app using the setup key, then
+            Add this account to your authenticator app using the setup key, then
             verify its six-digit code.
           </p>
         </Form>
@@ -599,13 +600,15 @@ export default function Identity({
     title,
     children: (
       <main id="main" className="page identity-page">
-        <title>{`${title} | Booster Plus`}</title>
-        <p className="eyebrow">
-          {capability === "admin" || capability === "owner"
-            ? "Staff workspace"
-            : "Booster Plus account"}
-        </p>
-        <h1>{title}</h1>
+        <title>{`${title} | PLAYORA`}</title>
+        <PageHeader
+          title={title}
+          eyebrow={
+            capability === "admin" || capability === "owner"
+              ? "Staff workspace"
+              : "PLAYORA account"
+          }
+        />
         {googleError && <p role="alert">{googleError}</p>}
         {failure ? (
           <div role="alert">

@@ -19,7 +19,7 @@ export async function loadHome() {
   }
 }
 const previewText =
-  "This environment is for testing Booster Plus accounts. Do not provide real game credentials or payment information. Public launch requires operator-approved account terms and privacy information.";
+  "This environment is for testing PLAYORA accounts. Do not provide real game credentials or payment information. Public launch requires operator-approved account terms and privacy information.";
 export async function loadTerms(versionLabel = "") {
   if (versionLabel && !/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/.test(versionLabel))
     throw new Error("Invalid legal version");

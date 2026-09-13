@@ -2,7 +2,7 @@ import { loadCatalog } from "../catalog/loaders.server";
 import { GameCatalog } from "../catalog/public";
 export function meta() {
   return [
-    { title: "Games — Booster Plus" },
+    { title: "Games — PLAYORA" },
     {
       name: "description",
       content:

@@ -119,7 +119,7 @@ export default function PaymentPolicyEditor({
           }}
           options={[
             ["", "Choose fee treatment"],
-            ["merchant", "Booster Plus"],
+            ["merchant", "PLAYORA"],
             ["customer", "Customer"],
           ]}
         />

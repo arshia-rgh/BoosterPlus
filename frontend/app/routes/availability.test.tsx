@@ -31,6 +31,6 @@ it("protects management while keeping scoped unsubscribe accessible without sign
     "Owned package subscriptions",
   );
   expect(screen.getByText("Confirm scoped unsubscribe")).toBeVisible();
-  expect(meta()[0]?.title).toContain("Booster Plus");
-  expect(unsubscribeMeta()[0]?.title).toContain("Booster Plus");
+  expect(meta()[0]?.title).toContain("PLAYORA");
+  expect(unsubscribeMeta()[0]?.title).toContain("PLAYORA");
 });

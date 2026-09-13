@@ -1,7 +1,7 @@
 import Identity from "../identity/identity";
 import { SubmissionDetail } from "../submissions/pages";
 export function meta() {
-  return [{ title: "Review account submission — Booster Plus" }];
+  return [{ title: "Review account submission — PLAYORA" }];
 }
 export default function Page() {
   return (

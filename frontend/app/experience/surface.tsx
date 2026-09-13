@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { useLocation } from "react-router";
-import { setMotionPreference, useMotionPreference } from "../home/motion";
+import { setMotionPreference, useMotionPreference } from "../ui/motion";
 
 export default function Surface({
   children,

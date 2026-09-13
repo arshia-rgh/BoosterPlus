@@ -34,7 +34,7 @@ it("keeps customer and administrator routes behind distinct identity capabilitie
     adminOrderMeta,
     favoritesMeta,
   ])
-    expect(meta()[0]?.title).toContain("Booster Plus");
+    expect(meta()[0]?.title).toContain("PLAYORA");
   render(
     <>
       <Orders />

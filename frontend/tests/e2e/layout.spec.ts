@@ -1,0 +1,73 @@
+import { expect, test, type Page } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+
+async function fitsViewport(page: Page) {
+  const problems = await page.evaluate(() => {
+    const issues: string[] = [];
+    if (document.documentElement.scrollWidth > innerWidth + 1)
+      issues.push("Page overflows viewport");
+    for (const element of document.querySelectorAll(
+      ".site-header a, main input, main select, main textarea, main button, main h1",
+    )) {
+      const rect = element.getBoundingClientRect();
+      if (rect.width && (rect.left < -1 || rect.right > innerWidth + 1))
+        issues.push(
+          element.tagName +
+            ": " +
+            (element.getAttribute("aria-label") ??
+              element.textContent.slice(0, 60)),
+        );
+    }
+    const links = [...document.querySelectorAll(".site-header a")]
+      .map((e) => e.getBoundingClientRect())
+      .filter((r) => r.width);
+    for (const [index, a] of links.entries())
+      for (const b of links.slice(index + 1)) {
+        if (
+          Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1 &&
+          Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1
+        )
+          issues.push("Header links overlap");
+      }
+    return issues;
+  });
+  expect(problems).toEqual([]);
+}
+
+test("shared layouts reflow with long labels, narrow screens and enlarged text", async ({
+  page,
+}, info) => {
+  for (const route of ["/account", "/admin"]) {
+    await page.goto(route);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(
+      page.getByRole("textbox", { name: "Email address", exact: true }),
+    ).toBeVisible();
+    for (const width of [320, 390, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await fitsViewport(page);
+      if (width < 581)
+        await expect(
+          page.locator(".site-header .desktop-nav-link"),
+        ).toBeHidden();
+    }
+    await page.setViewportSize({ width: 320, height: 900 });
+    // Synthetic copy stress only: no auth/session or business state is replaced.
+    await page.locator("main h1").evaluate((e) => {
+      e.textContent =
+        "Account and communication preferences " + "LongReference".repeat(8);
+    });
+    await page.evaluate(() => {
+      document.documentElement.style.fontSize = "200%";
+    });
+    await fitsViewport(page);
+    await page.evaluate(() => {
+      document.documentElement.style.removeProperty("font-size");
+    });
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    await page.screenshot({
+      path: `.cache/ux01-${route.slice(1)}-${info.project.name}-320.png`,
+      fullPage: true,
+    });
+  }
+});

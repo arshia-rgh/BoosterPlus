@@ -30,7 +30,7 @@ describe("prelaunch catalog", () => {
       screen.queryByRole("button", { name: /buy|pay/i }),
     ).not.toBeInTheDocument();
     expect(homeMeta()[0]).toEqual({
-      title: "Booster Plus — Game boosting & accounts",
+      title: "PLAYORA — Game boosting & accounts",
     });
   });
   it("shows an unavailable catalog without invented prices", () => {
@@ -39,7 +39,7 @@ describe("prelaunch catalog", () => {
       screen.getByRole("heading", { name: "Mobile Legends" }),
     ).toBeVisible();
     expect(screen.getByText("Coming soon")).toBeVisible();
-    expect(gamesMeta()[0]).toEqual({ title: "Games — Booster Plus" });
+    expect(gamesMeta()[0]).toEqual({ title: "Games — PLAYORA" });
   });
 });
 

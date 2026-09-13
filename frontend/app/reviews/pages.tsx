@@ -109,7 +109,7 @@ function History({ id, admin }: { id: string; admin: boolean }) {
                   <p className="preserve-lines">{row.body}</p>
                   {row.response && (
                     <p className="preserve-lines">
-                      Booster Plus response: {row.response}
+                      PLAYORA response: {row.response}
                     </p>
                   )}
                   {admin && row.internal_reason && (
@@ -247,7 +247,7 @@ function Moderation({ value, reload }: { value: Review; reload: () => void }) {
         {state === "published" && (
           <>
             <Text
-              label="Public Booster Plus response"
+              label="Public PLAYORA response"
               multiline
               value={response}
               change={setResponse}
@@ -320,8 +320,8 @@ export function ReviewDetail({ admin = false }: { admin?: boolean }) {
             <p className="preserve-lines">{value.policy.policy.content}</p>
           </section>
           {value.response && (
-            <section aria-label="Booster Plus response">
-              <h3>Booster Plus response</h3>
+            <section aria-label="PLAYORA response">
+              <h3>PLAYORA response</h3>
               <p className="preserve-lines">{value.response}</p>
             </section>
           )}

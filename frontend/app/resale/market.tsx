@@ -75,7 +75,7 @@ export function AccountMarket() {
   );
   return (
     <main id="main" className="page catalog-page">
-      <p className="eyebrow">Booster Plus marketplace</p>
+      <p className="eyebrow">PLAYORA marketplace</p>
       <h1>Find your next account</h1>
       <p>
         Reviewed listings with clear ownership terms, direct crypto checkout and

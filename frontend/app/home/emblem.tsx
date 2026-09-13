@@ -1,4 +1,4 @@
-// Original Booster Plus illustrations; not official MLBB rank artwork.
+// Original PLAYORA illustrations; not official MLBB rank artwork.
 export function Emblem({ elevated = false }: { elevated?: boolean }) {
   return (
     <svg

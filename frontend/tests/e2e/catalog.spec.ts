@@ -5,7 +5,7 @@ test("home and game catalog are accessible and navigate correctly", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page).toHaveTitle(/Booster Plus/);
+  await expect(page).toHaveTitle(/PLAYORA/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "YOUR NEXT",
   );

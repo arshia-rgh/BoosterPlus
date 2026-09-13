@@ -15,7 +15,7 @@ vi.mock("../operations/jobs", () => ({
   default: () => <p>Safe task inspection</p>,
 }));
 it("requires administrator authority for background task recovery", () => {
-  expect(meta()[0]?.title).toContain("Booster Plus");
+  expect(meta()[0]?.title).toContain("PLAYORA");
   render(<Page />);
   expect(screen.getByRole("region", { name: "admin" })).toHaveTextContent(
     "Safe task inspection",

@@ -1,6 +1,6 @@
-# Booster Plus frontend
+# PLAYORA frontend
 
-Independent React/TypeScript project in the Booster Plus monorepo. Includes passwordless identity, protected customer/admin/booster workflows, catalog configuration, orders, conversations, fulfillment and account intake. R01 adds the animated storefront and MLBB rank transformation; live checkout remains in development. See [visual implementation and checks](../docs/visual-design.md). R02 adds the dedicated staff application at `/admin`, with its own route graph, shell, build and image. See [staff onboarding and architecture](../docs/admin-workspace.md).
+Independent React/TypeScript project in the PLAYORA monorepo. Includes passwordless identity, protected customer/admin/booster workflows, catalog configuration, orders, conversations, fulfillment and account intake. R01 adds the animated storefront and MLBB rank transformation; the existing checkout uses live-provider adapters and isolated test fixtures. See [visual implementation and checks](../docs/visual-design.md). R02 adds the dedicated staff application at `/admin`, with its own route graph, shell, build and image. See [staff onboarding and architecture](../docs/admin-workspace.md).
 
 ## Commands
 
@@ -54,3 +54,5 @@ Administrators and owners can open `/admin/catalog` after both sign-in factors. 
 ## Customer and booster experience
 
 R03 applies the storefront design to the catalog, live selection summary, order guidance, customer conversations, account tools and booster workspace. See [routes, behavior and verification](../docs/customer-experience.md). `make test-experience` runs the complete real-service browser suite; `make budget-experience` checks the incremental route assets. Both remain included in the required `pre-commit` gate.
+
+UX01 adds the vector PLAYORA identity, shared task headers/reflow rules and reusable scroll/motion foundation. See [the foundation and storyboard](../docs/ux/UX01_FOUNDATION.md).

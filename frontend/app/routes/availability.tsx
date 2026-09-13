@@ -1,7 +1,7 @@
 import Identity from "../identity/identity";
 import { Subscriptions } from "../availability/pages";
 export function meta() {
-  return [{ title: "Package alerts — Booster Plus" }];
+  return [{ title: "Package alerts — PLAYORA" }];
 }
 export default function Page() {
   return (

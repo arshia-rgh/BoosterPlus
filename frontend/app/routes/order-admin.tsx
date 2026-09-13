@@ -1,7 +1,7 @@
 import Identity from "../identity/identity";
 import OrderDetail from "../orders/detail";
 export function meta() {
-  return [{ title: "Manage order — Booster Plus" }];
+  return [{ title: "Manage order — PLAYORA" }];
 }
 export default function Page() {
   return (

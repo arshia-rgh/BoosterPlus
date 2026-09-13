@@ -1,7 +1,7 @@
 import { loadOffering } from "../catalog/loaders.server";
 import { PackagePage } from "../catalog/public";
 export function meta() {
-  return [{ title: "Fixed package — Booster Plus" }];
+  return [{ title: "Fixed package — PLAYORA" }];
 }
 export function loader({
   params,

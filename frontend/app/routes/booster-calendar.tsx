@@ -1,7 +1,7 @@
 import Identity from "../identity/identity";
 import { BoosterCalendar } from "../fulfillment/calendar";
 export function meta() {
-  return [{ title: "Your staff calendar — Booster Plus" }];
+  return [{ title: "Your staff calendar — PLAYORA" }];
 }
 export default function Page() {
   return (

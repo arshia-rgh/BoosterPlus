@@ -1,7 +1,7 @@
 import Identity from "../identity/identity";
 import Thread from "../support/thread";
 export function meta() {
-  return [{ title: "Manage conversation — Booster Plus" }];
+  return [{ title: "Manage conversation — PLAYORA" }];
 }
 export default function Page() {
   return (

@@ -124,7 +124,7 @@ export default function Checkout({
               Processing fees:{" "}
               {policy.data.fee_mode === "customer"
                 ? "paid by you"
-                : "paid by Booster Plus"}
+                : "paid by PLAYORA"}
               . Exchange rate: {policy.data.rate_mode}. Local checkout window:{" "}
               {policy.data.window_minutes} minutes. The provider may impose a
               shorter deposit window; follow its instructions.

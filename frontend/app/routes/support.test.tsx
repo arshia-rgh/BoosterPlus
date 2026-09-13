@@ -42,7 +42,7 @@ it("uses explicit customer and staff identity boundaries for support routes", ()
     noticesMeta,
     boosterMeta,
   ])
-    expect(meta()[0]?.title).toContain("Booster Plus");
+    expect(meta()[0]?.title).toContain("PLAYORA");
   render(
     <>
       <Support />

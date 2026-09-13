@@ -443,12 +443,12 @@ export default function ContentEditor() {
                   [
                     "activity_subject",
                     "Activity email subject",
-                    "New activity on Booster Plus",
+                    "New activity on PLAYORA",
                   ],
                   [
                     "activity_intro",
                     "Activity email introduction",
-                    "There is an update in your Booster Plus account.",
+                    "There is an update in your PLAYORA account.",
                   ],
                   [
                     "availability_subject",

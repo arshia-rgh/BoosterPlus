@@ -227,8 +227,8 @@ export default function PurchaseReview({
               </p>
               <p className="preserve-lines">{value.review.body}</p>
               {value.review.response && (
-                <section aria-label="Booster Plus response">
-                  <h3>Booster Plus response</h3>
+                <section aria-label="PLAYORA response">
+                  <h3>PLAYORA response</h3>
                   <p className="preserve-lines">{value.review.response}</p>
                 </section>
               )}

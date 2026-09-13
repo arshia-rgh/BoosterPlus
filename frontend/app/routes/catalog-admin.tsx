@@ -1,7 +1,7 @@
 import Identity from "../identity/identity";
 import CatalogAdmin from "../catalog/admin";
 export function meta() {
-  return [{ title: "Catalog editor — Booster Plus" }];
+  return [{ title: "Catalog editor — PLAYORA" }];
 }
 export default function CatalogEditor() {
   return (

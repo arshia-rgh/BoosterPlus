@@ -1,8 +1,7 @@
-import { Link, useLocation } from "react-router";
+import "../ui/workspace.css";
+import { Link } from "react-router";
 import type { FrameProps } from "../identity/frame";
 export default function CustomerShell({ session, children }: FrameProps) {
-  const { pathname } = useLocation();
-  const booster = pathname.startsWith("/booster");
   const signedIn = !!session?.user && !session.mfa_required;
   return (
     <div className={signedIn ? "customer-shell" : "customer-entry"}>
@@ -16,7 +15,7 @@ export default function CustomerShell({ session, children }: FrameProps) {
           </h2>
           <p>
             Your requests, conversations, and progress stay together in your
-            Booster Plus account.
+            PLAYORA account.
           </p>
           <ul>
             <li>
@@ -33,27 +32,6 @@ export default function CustomerShell({ session, children }: FrameProps) {
             </li>
           </ul>
           <Link to="/games">Explore the game lineup ↗</Link>
-        </section>
-      )}
-      {signedIn && (
-        <section className="customer-banner" aria-label="Workspace overview">
-          <div>
-            <p className="eyebrow">
-              {booster ? "BOOSTER WORKSPACE" : "YOUR BOOSTER PLUS"}
-            </p>
-            <p>
-              {booster
-                ? "Good work starts with a clear plan."
-                : "Every step of your next climb."}
-            </p>
-          </div>
-          <Link
-            className="button"
-            to={booster ? "/booster/calendar" : "/games"}
-          >
-            {booster ? "Manage availability" : "Find your next boost"}{" "}
-            <span aria-hidden="true">↗</span>
-          </Link>
         </section>
       )}
       {children}

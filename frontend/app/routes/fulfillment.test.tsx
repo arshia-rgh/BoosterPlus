@@ -23,8 +23,8 @@ vi.mock("../fulfillment/panel", () => ({
   BoosterOrder: () => <p>Assigned detail</p>,
 }));
 it("requires booster authentication for assigned work routes", () => {
-  expect(queueMeta()[0]?.title).toContain("Booster Plus");
-  expect(orderMeta()[0]?.title).toContain("Booster Plus");
+  expect(queueMeta()[0]?.title).toContain("PLAYORA");
+  expect(orderMeta()[0]?.title).toContain("PLAYORA");
   render(
     <>
       <Queue />
@@ -36,8 +36,8 @@ it("requires booster authentication for assigned work routes", () => {
 });
 
 it("protects calendar routes by staff capability", () => {
-  expect(staffCalendarMeta()[0]?.title).toContain("Booster Plus");
-  expect(adminCalendarMeta()[0]?.title).toContain("Booster Plus");
+  expect(staffCalendarMeta()[0]?.title).toContain("PLAYORA");
+  expect(adminCalendarMeta()[0]?.title).toContain("PLAYORA");
   render(
     <>
       <StaffCalendar />

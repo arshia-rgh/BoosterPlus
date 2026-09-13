@@ -196,7 +196,7 @@ export function HomePage({
           </a>
         </div>
       </section>
-      <div className="promise-strip" aria-label="How Booster Plus works">
+      <div className="promise-strip" aria-label="How PLAYORA works">
         <span>
           <b>◈</b> Your choice of play mode
         </span>

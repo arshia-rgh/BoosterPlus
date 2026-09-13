@@ -100,8 +100,8 @@ export default function PublicReviews() {
               ))}
             </dl>
             {item.response && (
-              <section aria-label="Booster Plus response">
-                <h3>Booster Plus response</h3>
+              <section aria-label="PLAYORA response">
+                <h3>PLAYORA response</h3>
                 <p className="preserve-lines">{item.response}</p>
               </section>
             )}

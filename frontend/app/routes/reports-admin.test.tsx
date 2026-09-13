@@ -19,5 +19,5 @@ it("protects report navigation with the administrator capability", () => {
   expect(screen.getByRole("region", { name: "admin" })).toHaveTextContent(
     "Operational reports",
   );
-  expect(meta()[0]?.title).toContain("Booster Plus");
+  expect(meta()[0]?.title).toContain("PLAYORA");
 });

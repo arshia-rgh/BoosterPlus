@@ -1,10 +1,10 @@
 # PLAYORA — UI/UX improvement roadmap
 
-Status: planning delivered for owner review; implementation has not started. Baseline: R09 commit `7f9b7e00d9f0a6025b46bfb7cb33372bc27f987f`. Research: 13 September 2026.
+Status: implementation authorized on 13 September 2026; UX01 foundation is implemented and requires the complete stage gate before delivery. The disk/Docker blocker has been resolved; see `docs/progress.md` for recovery and verification evidence. UX02–UX10 follow. Baseline: R09 commit `7f9b7e00d9f0a6025b46bfb7cb33372bc27f987f`. Research: 13 September 2026.
 
-This is the next product-design roadmap. R10 and R11 are **on hold**, with their complete retained scope in [final-launch.md](final-launch.md). Completing this roadmap does not authorize production work or launch. The owner will review this plan before implementation starts.
+This is the next product-design roadmap. R10 and R11 are **on hold**, with their complete retained scope in [final-launch.md](final-launch.md). Completing this roadmap does not authorize production work or launch. The owner has authorized implementation; present representative account/chat work early for review.
 
-The owner renamed Booster Plus to **PLAYORA** on 13 September 2026 and requested a new logo and separate reusable background. The latest clarification is binding: **keep the current overall green website theme and change the details; the logo must match it.** This supersedes the earlier permission to explore a different overall theme. Preserve the accepted font families, existing website background/art direction, image quality and low-rank-to-high-rank scroll experience with its accessibility behavior. Improve layout, typography sizing, line height, wrapping, spacing and interaction within that identity. The latest refinement adds game-character social artwork, a detailed O in the logo and richer scroll-driven character animation in the plan. New PLAYORA artwork complements the existing green identity and is available for social media; it does not require replacing the homepage background. Assets and planning are delivered now; application rebranding and UX01–UX10 implementation await authorization.
+The owner renamed Booster Plus to **PLAYORA** on 13 September 2026 and requested a new logo and separate reusable background. The latest clarification is binding: **keep the current overall green website theme and change the details; the logo must match it.** This supersedes the earlier permission to explore a different overall theme. Preserve the accepted font families, existing website background/art direction, image quality and low-rank-to-high-rank scroll experience with its accessibility behavior. Improve layout, typography sizing, line height, wrapping, spacing and interaction within that identity. The latest refinement adds game-character social artwork, a detailed O in the logo and richer scroll-driven character animation in the plan. New PLAYORA artwork complements the existing green identity and is available for social media; it does not require replacing the homepage background. Assets and planning are delivered; application rebranding and UX01–UX10 implementation are now authorized.
 
 ## 1. Outcomes and constraints
 
@@ -190,7 +190,7 @@ Booster navigation stays focused on assigned work, messages and availability. Se
 
 ## 5. Ordered implementation phases
 
-UX01–UX10 are **not started**. UX00 is the delivered audit/plan; UX00B delivered the initial green identity; UX00C refines the O, adds character social artwork and specifies rich motion before implementation. Implementation scope includes desktop/mobile layouts, text, all relevant states, backend compatibility, visual evidence and the full repository gate. Start only after the owner authorizes implementation. Phases may use smaller verified commits without merging unrelated work or bypassing checks.
+**UX01 foundation is implemented; UX02–UX10 are not started.** See [UX01 conventions, evidence and storyboard](docs/ux/UX01_FOUNDATION.md). UX00 is the delivered audit/plan; UX00B delivered the initial green identity; UX00C refines the O, adds character social artwork and specifies rich motion before implementation. Implementation scope includes desktop/mobile layouts, text, all relevant states, backend compatibility, visual evidence and the full repository gate. Implementation was authorized on 13 September 2026. Phases may use smaller verified commits without merging unrelated work or bypassing checks.
 
 | Phase | Deliverables | Completion evidence / dependency |
 | --- | --- | --- |
@@ -318,7 +318,7 @@ Maintain the existing asset/bundle/performance budgets and compare new layouts a
 
 ## 8. Review and handoff
 
-Review the refined PLAYORA O, character social background and sections 1.1–1.2 first. After authorization, the next implementation milestone is UX01 and UX02, followed immediately by UX03 chat. Present representative account and chat layouts early so the owner can steer spacing and interaction before every screen is converted. Do the authorized work needed to make that review concrete; avoid repeatedly asking about routine controls or already confirmed branding.
+The owner has reviewed the brand direction and authorized implementation. The first milestone is UX01 and UX02, followed immediately by UX03 chat. Present representative account and chat layouts early so the owner can steer spacing and interaction before every screen is converted. Do the authorized work needed to make that review concrete; avoid repeatedly asking about routine controls or already confirmed branding.
 
 Typing indicators, read receipts, chat search requiring new indexing, canned staff replies, persistent server drafts, voice/video and public interactive demos are optional future decisions. They are not silently added to this roadmap's committed scope. The core redesign must stand on its own without them.
 

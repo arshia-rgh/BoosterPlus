@@ -18,7 +18,7 @@ def smoke(image, path, excluded):
             try:
                 with urllib.request.urlopen("http://127.0.0.1:" + port + path, timeout=2) as response:
                     assert response.status == 200
-                    assert "BOOSTER" in response.read().decode()
+                    assert "PLAYORA" in response.read().decode(), "Public page must render the current brand"
                 break
             except OSError:
                 time.sleep(1)

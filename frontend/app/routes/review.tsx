@@ -1,7 +1,7 @@
 import Identity from "../identity/identity";
 import { ReviewDetail } from "../reviews/pages";
 export function meta() {
-  return [{ title: "Purchase review history — Booster Plus" }];
+  return [{ title: "Purchase review history — PLAYORA" }];
 }
 export default function Page() {
   return (

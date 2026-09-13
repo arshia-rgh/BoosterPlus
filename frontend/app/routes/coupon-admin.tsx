@@ -1,7 +1,7 @@
 import Identity from "../identity/identity";
 import Coupons from "../catalog/coupons";
 export function meta() {
-  return [{ title: "Coupons — Booster Plus" }];
+  return [{ title: "Coupons — PLAYORA" }];
 }
 export default function CouponAdmin() {
   return (

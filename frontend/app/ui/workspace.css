@@ -1,0 +1,134 @@
+/* Shared task surfaces: marketing retains its own type scale and motion. */
+:is(.workspace-experience, .admin-app)
+  :is(main, section, article, form, fieldset, nav, label, details, header) {
+  min-inline-size: 0;
+}
+:is(.workspace-experience, .admin-app)
+  :is(h1, h2, h3, p, a, button, legend, label, dd, summary) {
+  overflow-wrap: anywhere;
+}
+:is(.workspace-experience, .admin-app) .page-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-block: 0 1.5rem;
+}
+:is(.workspace-experience, .admin-app) .page-heading h1 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  margin: 0.4rem 0 0;
+}
+.page-heading > div {
+  min-width: 0;
+}
+.page-heading .eyebrow {
+  margin: 0;
+}
+.page-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+:is(.workspace-experience, .admin-app) .button {
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+:is(.workspace-experience, .admin-app)
+  :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  min-width: 0;
+  max-width: 100%;
+  font-size: 1rem;
+}
+:is(.workspace-experience, .admin-app)
+  :is(input:not([type="checkbox"]):not([type="radio"]), select) {
+  min-height: 44px;
+}
+:is(.workspace-experience, .admin-app) .identity-grid > *,
+:is(.workspace-experience, .admin-app) .catalog-grid > *,
+:is(.workspace-experience, .admin-app) .order-list li > * {
+  min-width: 0;
+}
+:is(.workspace-experience, .admin-app) legend {
+  max-width: 100%;
+  white-space: normal;
+}
+:is(.workspace-experience, .admin-app) summary {
+  min-height: 44px;
+  align-content: center;
+}
+:is(.workspace-experience, .admin-app)
+  :is(.status, .order-list small, .order-list time, .message-meta) {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+:is(.workspace-experience, .admin-app) .identity-card {
+  margin-block: 0 1rem;
+}
+:is(.workspace-experience, .admin-app) .identity-card .button {
+  margin-top: 1rem;
+}
+:is(.workspace-experience, .admin-app) .catalog-actions {
+  gap: 0.5rem;
+}
+:is(.workspace-experience, .admin-app) .catalog-actions .button {
+  margin: 0;
+}
+:is(.workspace-experience, .admin-app) :is([role="alert"], .field-error) {
+  overflow-wrap: anywhere;
+}
+:is(.workspace-experience, .admin-app)
+  :is(.report-scroll, .admin-order-table-wrap) {
+  max-width: 100%;
+  overscroll-behavior-inline: contain;
+}
+:is(.workspace-experience, .admin-app) :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  scroll-margin-block: 1rem;
+}
+.admin-topbar > nav {
+  min-width: 0;
+  flex: 1 1 12rem;
+}
+.admin-staff-card > div {
+  min-width: 0;
+}
+.admin-avatar {
+  flex: 0 0 2.2rem;
+}
+.admin-drawer-heading > .brand-logo {
+  width: min(9rem, 45%);
+}
+@media (max-width: 600px) {
+  :is(.workspace-experience, .admin-app) .page {
+    padding: 1.5rem 1rem 3rem;
+  }
+  :is(.workspace-experience, .admin-app) :is(.identity-grid, .catalog-grid) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  :is(.workspace-experience, .admin-app) :is(.identity-card, .catalog-section) {
+    padding: 1rem;
+  }
+  :is(.workspace-experience, .admin-app) .order-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .workspace-experience .account-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .workspace-experience .account-summary > div {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .workspace-experience .account-summary span {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+}

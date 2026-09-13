@@ -1,7 +1,7 @@
 import Identity from "../identity/identity";
 import { BoosterQueue } from "../fulfillment/panel";
 export function meta() {
-  return [{ title: "Assigned work — Booster Plus" }];
+  return [{ title: "Assigned work — PLAYORA" }];
 }
 export default function Page() {
   return (

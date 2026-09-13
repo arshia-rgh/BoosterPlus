@@ -54,7 +54,7 @@ it("routes catalog requests through authoritative loaders", async () => {
     adminMeta,
     couponMeta,
   ])
-    expect(meta()[0]?.title).toContain("Booster Plus");
+    expect(meta()[0]?.title).toContain("PLAYORA");
   render(
     <>
       <Game />

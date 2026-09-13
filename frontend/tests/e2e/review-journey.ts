@@ -50,7 +50,7 @@ export async function reviewJourney(
     admin.getByRole("button", { name: "Hide customer review", exact: true }),
   ).toBeVisible();
   await admin
-    .getByLabel("Public Booster Plus response")
+    .getByLabel("Public PLAYORA response")
     .fill("Thank you for the feedback. We will improve communication.");
   await admin
     .getByLabel(

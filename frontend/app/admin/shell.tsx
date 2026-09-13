@@ -1,3 +1,5 @@
+import { BrandLogo } from "../brand/brand";
+import "../ui/workspace.css";
 import { useRef } from "react";
 import { NavLink, useLocation } from "react-router";
 import type { FrameProps } from "../identity/frame";
@@ -80,9 +82,9 @@ export default function AdminShell({ session, title, children }: FrameProps) {
           <a
             href="/admin"
             className="brand"
-            aria-label="Booster Plus administration"
+            aria-label="PLAYORA administration"
           >
-            BOOSTER<span>+</span>
+            <BrandLogo />
           </a>
           <span className="admin-edition">STAFF CONSOLE</span>
           <Navigation owner={session.user?.role === "owner"} />
@@ -146,7 +148,7 @@ export default function AdminShell({ session, title, children }: FrameProps) {
           ) : (
             <>
               <a href="/admin" className="brand">
-                BOOSTER<span>+</span>
+                <BrandLogo />
               </a>
               <a href="/">Visit storefront ↗</a>
             </>
@@ -195,7 +197,7 @@ export default function AdminShell({ session, title, children }: FrameProps) {
       {authorized && (
         <dialog ref={drawer} className="admin-drawer" aria-label="Staff menu">
           <div className="admin-drawer-heading">
-            <strong>BOOSTER+</strong>
+            <BrandLogo />
             <button
               className="button"
               type="button"

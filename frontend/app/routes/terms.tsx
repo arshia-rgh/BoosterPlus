@@ -9,7 +9,7 @@ export default function Terms({
 }) {
   return (
     <main id="main" className="page">
-      <title>Account terms | Booster Plus</title>
+      <title>Account terms | PLAYORA</title>
       <h1>
         {loaderData.preview
           ? "Development preview account terms"

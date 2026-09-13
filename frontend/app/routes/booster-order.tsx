@@ -1,7 +1,7 @@
 import Identity from "../identity/identity";
 import { BoosterOrder } from "../fulfillment/panel";
 export function meta() {
-  return [{ title: "Assigned order — Booster Plus" }];
+  return [{ title: "Assigned order — PLAYORA" }];
 }
 export default function Page() {
   return (

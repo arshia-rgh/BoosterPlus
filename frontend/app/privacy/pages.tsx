@@ -126,7 +126,9 @@ export default function Privacy({ admin = false }: { admin?: boolean }) {
     enabled = parsed.success && parsed.data.enabled;
   return (
     <section>
-      <h2>{admin ? "Privacy request review" : "Your data and privacy"}</h2>
+      <h2>
+        {admin ? "Privacy request review" : "Data controls and retention"}
+      </h2>
       <p>
         Active orders, disputes, unsettled payouts, inventory and unresolved
         support hold deletion. Owner review and all retention deadlines must

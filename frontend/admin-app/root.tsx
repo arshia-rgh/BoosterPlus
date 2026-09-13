@@ -27,6 +27,11 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="noindex, nofollow" />
+        <link
+          rel="icon"
+          type="image/svg+xml"
+          href="/brand/playora-symbol.svg"
+        />
         <Meta />
         <Links />
       </head>
@@ -52,7 +57,7 @@ export function ErrorBoundary({ error }: { error: unknown }) {
   const missing = isRouteErrorResponse(error) && error.status === 404;
   return (
     <main id="main" className="page">
-      <p className="eyebrow">Booster Plus staff</p>
+      <p className="eyebrow">PLAYORA staff</p>
       <h1>{missing ? "Page not found" : "Workspace unavailable"}</h1>
       <p>
         {missing

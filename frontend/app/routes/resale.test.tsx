@@ -24,7 +24,7 @@ vi.mock("../resale/inventory", () => ({
 }));
 it("exposes public listings and protects both inventory routes", () => {
   for (const meta of [marketMeta, productMeta, inventoryMeta, editorMeta])
-    expect(meta()[0]?.title).toContain("Booster Plus");
+    expect(meta()[0]?.title).toContain("PLAYORA");
   render(
     <>
       <Market />

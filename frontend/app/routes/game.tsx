@@ -1,7 +1,7 @@
 import { loadGame } from "../catalog/loaders.server";
 import { GamePage } from "../catalog/public";
 export function meta() {
-  return [{ title: "Game services — Booster Plus" }];
+  return [{ title: "Game services — PLAYORA" }];
 }
 export function loader({
   params,

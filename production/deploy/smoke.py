@@ -10,7 +10,7 @@ def client(ca=None):
 
 def public_smoke(origin, ca=None):
     opener = client(ca)
-    for path, text in (("/", "BOOSTER"), ("/games", "Choose your game"), ("/account", "Your account"), ("/admin", "Administration"), ("/admin/orders", "Order queue")):
+    for path, text in (("/", "PLAYORA"), ("/games", "Choose your game"), ("/account", "Your account"), ("/admin", "Administration"), ("/admin/orders", "Order queue")):
         with opener.open(origin + path, timeout=15) as response:
             body = response.read(2 << 20).decode()
             if response.status != 200 or text not in body:

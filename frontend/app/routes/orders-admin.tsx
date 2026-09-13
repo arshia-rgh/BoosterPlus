@@ -1,7 +1,7 @@
 import Identity from "../identity/identity";
 import OrderList from "../orders/list";
 export function meta() {
-  return [{ title: "Order queue — Booster Plus" }];
+  return [{ title: "Order queue — PLAYORA" }];
 }
 export default function Page() {
   return (
