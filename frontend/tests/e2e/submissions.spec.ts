@@ -196,9 +196,9 @@ test("seller drafts, clarification and review stay private and create no commerc
     await seller
       .getByRole("link", { name: "Open private review conversation" })
       .click();
-    await expect(
-      seller.getByText(/Private seller review · open/),
-    ).toBeVisible();
+    await expect(seller.locator(".chat-title")).toContainText(
+      "Private seller review · Needs staff reply",
+    );
     await accessible(seller);
     await seller.goto(`/sell/${id}`);
     await action(

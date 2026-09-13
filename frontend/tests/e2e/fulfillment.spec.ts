@@ -238,6 +238,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       fullPage: true,
     });
     await page.goto(sharedHref ?? "/admin/support");
+    await page.getByText("Details & actions", { exact: true }).click();
     await page
       .getByRole("button", { name: "Pause booster sharing", exact: true })
       .click();

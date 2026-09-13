@@ -4,6 +4,8 @@ import { useResource } from "../orders/resource";
 import { conversationsSchema } from "./model";
 import Deliveries from "./deliveries";
 import NewSupport from "./new";
+import { kindLabel, stateLabel } from "./chat-state";
+import "./chat.css";
 export default function Inbox({ admin = false }: { admin?: boolean }) {
   const [params, setParams] = useSearchParams(),
     state = params.get("state") ?? "",
@@ -17,9 +19,17 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
       conversationsSchema,
     );
   return (
-    <section>
-      <h2>{admin ? "Support inbox" : "Your conversations"}</h2>
-      {!admin && <NewSupport />}
+    <section className="chat-inbox">
+      <div className="chat-inbox-heading">
+        <h2>{admin ? "Support inbox" : "Your conversations"}</h2>
+        <span className="quiet">Private conversations, all in one place.</span>
+      </div>
+      {!admin && (
+        <details>
+          <summary>New conversation</summary>
+          <NewSupport />
+        </details>
+      )}
       {admin && customer && (
         <p>
           Customer filter: {customer}{" "}
@@ -32,7 +42,7 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
           </Action>
         </p>
       )}
-      <div className="catalog-grid">
+      <div className="chat-inbox-filters">
         <Select
           label="Conversation status"
           value={state}
@@ -72,21 +82,32 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
       ) : (
         <>
           {resource.data.conversations.length === 0 && (
-            <p>No matching conversations.</p>
+            <p>
+              {state || assigned || customer
+                ? "No conversations match these filters. Change a filter to see more."
+                : "No conversations yet. Start a conversation when you need help."}
+            </p>
           )}
-          <ul className="order-list">
+          <ul className="chat-inbox-list">
             {resource.data.conversations.map((thread) => (
               <li key={thread.id}>
-                <Link to={base + "/" + thread.id}>
-                  <strong>{thread.subject}</strong>
+                <Link
+                  to={base + "/" + thread.id}
+                  state={{ inboxSearch: params.toString() }}
+                >
                   <span>
-                    {thread.kind === "order" ? "Order support" : "Pre-sales"} ·{" "}
-                    {thread.state} · {thread.unread} unread
+                    <strong>{thread.subject}</strong>
+                    <small>
+                      {kindLabel(thread.kind)} · {stateLabel(thread.state)}
+                    </small>
                   </span>
+                  {!!thread.unread && (
+                    <span className="chat-unread">{thread.unread} unread</span>
+                  )}
+                  <time dateTime={thread.updated_at}>
+                    {new Date(thread.updated_at).toLocaleString()}
+                  </time>
                 </Link>
-                <time dateTime={thread.updated_at}>
-                  {new Date(thread.updated_at).toLocaleString()}
-                </time>
               </li>
             ))}
           </ul>
@@ -108,7 +129,12 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
           )}
         </>
       )}
-      {admin && <Deliveries />}
+      {admin && (
+        <details>
+          <summary>Notification delivery history</summary>
+          <Deliveries />
+        </details>
+      )}
     </section>
   );
 }

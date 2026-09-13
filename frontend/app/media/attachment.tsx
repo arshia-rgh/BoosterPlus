@@ -25,11 +25,13 @@ export function UploadImage({
   admin,
   visibility,
   change,
+  compact = false,
 }: {
   conversation: string;
   admin: boolean;
   visibility: string;
   change: (id: string, pending: boolean) => void;
+  compact?: boolean;
 }) {
   const base = (admin ? "/admin" : "") + "/media";
   const mounted = useRef(true);
@@ -45,6 +47,28 @@ export function UploadImage({
   const [item, setItem] = useState<Media | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>(null);
+  const [preview, setPreview] = useState<{ file: File; url: string } | null>(
+    null,
+  );
+  useEffect(() => {
+    if (
+      !file ||
+      file.size > 4 * 1024 * 1024 ||
+      !["image/png", "image/jpeg", "image/webp"].includes(file.type)
+    )
+      return;
+    const reader = new FileReader();
+    let active = true;
+    reader.onload = () => {
+      if (active && typeof reader.result === "string")
+        setPreview({ file, url: reader.result });
+    };
+    reader.readAsDataURL(file);
+    return () => {
+      active = false;
+      if (reader.readyState === 1) reader.abort();
+    };
+  }, [file]);
   useEffect(() => {
     if (item?.state !== "queued") return;
     let active = true;
@@ -169,8 +193,11 @@ export function UploadImage({
     }
   }
   return (
-    <section aria-label="Image attachment">
-      <h3>Attach an image</h3>
+    <section
+      aria-label="Image attachment"
+      className={compact ? "chat-attachment" : undefined}
+    >
+      {!compact && <h3>Attach an image</h3>}
       <p>
         JPEG, PNG, or WebP, up to 4 MiB and 4 million pixels. Remove personal
         information before uploading. Do not upload game credentials.
@@ -194,6 +221,13 @@ export function UploadImage({
         </label>
       }
       {file && <p>{file.name}</p>}
+      {preview?.file === file && (
+        <figure className="attachment-preview">
+          <img src={preview.url} alt="Selected attachment preview" />
+          <figcaption>Local preview · not sent</figcaption>
+        </figure>
+      )}
+      {busy && <progress aria-label="Image upload progress" />}
       {file &&
         (!item || item.state === "pending" || item.state === "uploaded") && (
           <Action disabled={busy} onClick={() => void upload()}>

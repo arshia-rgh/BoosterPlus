@@ -1,6 +1,6 @@
 # PLAYORA — UI/UX improvement roadmap
 
-Status: implementation authorized on 13 September 2026. UX01 is delivered as `6e852f1`; UX02 account navigation/sign-in/settings is implemented and requires the complete stage gate before delivery. UX03–UX10 follow. See `docs/progress.md` for verification evidence. Baseline: R09 commit `7f9b7e00d9f0a6025b46bfb7cb33372bc27f987f`. Research: 13 September 2026.
+Status: implementation authorized on 13 September 2026. UX01 is delivered as `6e852f1`; UX02 is delivered as `1e3e51c`; UX03 chat/support is implemented; its delivery commit is gated by the complete repository checks. UX04–UX10 follow. See `docs/progress.md` for verification evidence. Baseline: R09 commit `7f9b7e00d9f0a6025b46bfb7cb33372bc27f987f`. Research: 13 September 2026.
 
 This is the next product-design roadmap. R10 and R11 are **on hold**, with their complete retained scope in [final-launch.md](final-launch.md). Completing this roadmap does not authorize production work or launch. The owner has authorized implementation; present representative account/chat work early for review.
 
@@ -190,7 +190,7 @@ Booster navigation stays focused on assigned work, messages and availability. Se
 
 ## 5. Ordered implementation phases
 
-**UX01 is delivered; UX02 is implemented pending the full delivery gate; UX03–UX10 are not started.** See [UX01 conventions and storyboard](docs/ux/UX01_FOUNDATION.md) and [UX02 account behavior and verification](docs/ux/UX02_ACCOUNT.md). UX00 is the delivered audit/plan; UX00B delivered the initial green identity; UX00C refines the O, adds character social artwork and specifies rich motion before implementation. Implementation scope includes desktop/mobile layouts, text, all relevant states, backend compatibility, visual evidence and the full repository gate. Implementation was authorized on 13 September 2026. Phases may use smaller verified commits without merging unrelated work or bypassing checks.
+**UX01–UX03 are implemented; UX04–UX10 are not started. UX03 delivery requires its complete tracked commit gate.** See [UX01 conventions and storyboard](docs/ux/UX01_FOUNDATION.md) and [UX02 account behavior and verification](docs/ux/UX02_ACCOUNT.md), and [UX03 chat behavior and verification](docs/ux/UX03_CHAT.md). UX00 is the delivered audit/plan; UX00B delivered the initial green identity; UX00C refines the O, adds character social artwork and specifies rich motion before implementation. Implementation scope includes desktop/mobile layouts, text, all relevant states, backend compatibility, visual evidence and the full repository gate. Implementation was authorized on 13 September 2026. Phases may use smaller verified commits without merging unrelated work or bypassing checks.
 
 | Phase | Deliverables | Completion evidence / dependency |
 | --- | --- | --- |

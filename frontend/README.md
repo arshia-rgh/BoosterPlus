@@ -58,3 +58,5 @@ R03 applies the storefront design to the catalog, live selection summary, order 
 UX01 adds the vector PLAYORA identity, shared task headers/reflow rules and reusable scroll/motion foundation. See [the foundation and storyboard](../docs/ux/UX01_FOUNDATION.md).
 
 UX02 makes `/account` the current-work overview, with separate `/account/settings` (profile), `/account/security` and `/account/preferences` pages and a privacy destination. Desktop navigation and the mobile Overview/Orders/Messages/More menu retain role-appropriate access. Passwordless verification returns users to validated local tasks without replaying sensitive actions. See [account behavior and verification](../docs/ux/UX02_ACCOUNT.md).
+
+UX03 unifies customer/staff/booster conversation history and the composer, with separate internal drafts, immutable retry payloads, reading anchors and compact attachment/staff controls. See [chat behavior, privacy and verification](../docs/ux/UX03_CHAT.md). UX04–UX10 follow; R10/R11 remain held.

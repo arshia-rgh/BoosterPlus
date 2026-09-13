@@ -100,11 +100,13 @@ export function Select({
   value,
   change,
   options,
+  disabled = false,
 }: {
   label: string;
   value: string;
   change: (value: string) => void;
   options: readonly (readonly [string, string])[];
+  disabled?: boolean;
 }) {
   const id = useId();
   return (
@@ -112,6 +114,7 @@ export function Select({
       <label htmlFor={id}>{label}</label>
       <select
         id={id}
+        disabled={disabled}
         value={value}
         onChange={(event) => {
           change(event.target.value);

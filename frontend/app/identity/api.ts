@@ -185,6 +185,7 @@ const messages = new Map([
 ]);
 export class APIError extends Error {
   code = "";
+  status = 0;
   issues: { path: string; message: string }[] = [];
 }
 async function read(
@@ -208,13 +209,14 @@ async function read(
         }),
   });
   if (response.status === 204) return null;
-  const result: unknown = await response.json();
+  if (
+    (response.status === 401 || response.status === 403) &&
+    typeof window !== "undefined"
+  )
+    window.dispatchEvent(new Event("boosterplus:session-changed"));
+  // Preserve authority/status even when a proxy returns a non-JSON error page.
+  const result: unknown = await response.json().catch(() => null);
   if (!response.ok) {
-    if (
-      (response.status === 401 || response.status === 403) &&
-      typeof window !== "undefined"
-    )
-      window.dispatchEvent(new Event("boosterplus:session-changed"));
     const problem = z
       .object({
         code: z.string(),
@@ -229,6 +231,7 @@ async function read(
             "The service is unavailable. Please try again.")
         : "The service is unavailable. Please try again.",
     );
+    error.status = response.status;
     if (problem.success) {
       error.issues = problem.data.issues ?? [];
       error.code = problem.data.code;

@@ -7,7 +7,7 @@ import {
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
-import { get } from "../identity/api";
+import { APIError, get } from "../identity/api";
 import Thread from "./thread";
 import type { Conversation } from "./model";
 vi.mock("../identity/api", async (original) => ({
@@ -36,8 +36,12 @@ it("recovers outside hidden message components on reconnect and keeps denied dat
     updated_at: "2026-09-10T00:00:00Z",
     created_at: "2026-09-10T00:00:00Z",
   };
-  let connected = false;
+  let connected = false,
+    revoked = false;
+  const refusal = new APIError("Access ended");
+  refusal.status = 403;
   vi.mocked(get).mockImplementation((path) => {
+    if (revoked) return Promise.reject(refusal);
     if (!connected) return Promise.reject(new Error("Offline"));
     if (path === "/conversations")
       return Promise.resolve({ conversations: [], next: "" });
@@ -62,13 +66,37 @@ it("recovers outside hidden message components on reconnect and keeps denied dat
   expect(
     await screen.findByRole("heading", { name: "Private review" }),
   ).toBeVisible();
+  fireEvent.change(screen.getByLabelText("Message", { exact: true }), {
+    target: { value: "Keep my private draft" },
+  });
   connected = false;
+  fireEvent.click(screen.getByRole("button", { name: "Refresh conversation" }));
+  await screen.findByText(/Messages are hidden while access is checked/);
+  expect(screen.getByLabelText("Message", { exact: true })).toHaveValue(
+    "Keep my private draft",
+  );
+  expect(screen.getByLabelText("Message", { exact: true })).toBeDisabled();
+  connected = true;
+  await act(async () => {
+    window.dispatchEvent(new Event("online"));
+    await Promise.resolve();
+  });
+  await waitFor(() => {
+    expect(screen.getByLabelText("Message", { exact: true })).toBeEnabled();
+  });
+  expect(screen.getByLabelText("Message", { exact: true })).toHaveValue(
+    "Keep my private draft",
+  );
+  revoked = true;
   fireEvent.click(screen.getByRole("button", { name: "Refresh conversation" }));
   await waitFor(() => {
     expect(
       screen.queryByRole("heading", { name: "Private review" }),
     ).not.toBeInTheDocument();
   });
+  expect(
+    screen.queryByDisplayValue("Keep my private draft"),
+  ).not.toBeInTheDocument();
   const retry = screen.getByRole("button", {
     name: "Retry conversation access",
   });
@@ -133,4 +161,21 @@ it("recovers when online arrives before the initial request reports failure", as
   expect(
     screen.getByRole("heading", { name: "Recovered pending request" }),
   ).toBeVisible();
+  waiting = true;
+  fireEvent.click(screen.getByRole("button", { name: "Refresh conversation" }));
+  waiting = false;
+  await act(async () => {
+    fireEvent.click(
+      screen.getByRole("button", { name: "Refresh conversation" }),
+    );
+    await Promise.resolve();
+  });
+  await act(async () => {
+    rejectInitial(new Error("Late stalled manual refresh"));
+    await Promise.resolve();
+  });
+  expect(
+    screen.queryByText(/Messages are hidden while access is checked/),
+  ).not.toBeInTheDocument();
+  expect(screen.getByLabelText("Message", { exact: true })).toBeEnabled();
 });

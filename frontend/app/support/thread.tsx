@@ -1,458 +1,614 @@
-import { useCallback, useEffect, useState, type SubmitEvent } from "react";
-import { Link, useParams } from "react-router";
-import { z } from "../validation";
-import { command, post, userSchema } from "../identity/api";
-import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
-import { useResource } from "../orders/resource";
 import {
-  conversationsSchema,
-  conversationSchema,
-  messageSchema,
-  messagesSchema,
-  type Conversation,
-} from "./model";
-import { UploadImage, DownloadImage } from "../media/attachment";
-const staffSchema = z.object({ users: z.array(userSchema) });
-function StaffControls({
-  thread,
-  done,
-}: {
-  thread: Conversation;
-  done: () => void;
-}) {
-  const staff = useResource("/admin/users", staffSchema),
-    [state, setState] = useState(thread.state),
-    [assigned, setAssigned] = useState(thread.assigned_to ?? ""),
-    [order, setOrder] = useState(""),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState<unknown>(null);
-  async function change(action: string) {
-    setBusy(true);
-    setError(null);
-    try {
-      await post(
-        `/admin/conversations/${thread.id}/${action}`,
-        {
-          version: thread.version,
-          state: action === "state" ? state : "",
-          assigned_to: action === "assign" ? assigned : "",
-          order_id: action === "link" ? order : "",
-          ...(action === "sharing"
-            ? { booster_shared: !thread.booster_shared }
-            : {}),
-        },
-        conversationSchema,
-      );
-      done();
-    } catch (cause) {
-      setError(cause);
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <section className="catalog-section">
-      <h2>Manage conversation</h2>
-      <fieldset disabled={busy}>
-        <legend>Staff controls</legend>
-        <Select
-          label="Set conversation status"
-          value={state}
-          change={(value) => {
-            if (value === "open" || value === "waiting" || value === "resolved")
-              setState(value);
-          }}
-          options={[
-            ["open", "Needs staff reply"],
-            ["waiting", "Waiting for customer"],
-            ["resolved", "Resolved"],
-          ]}
-        />
-        <Action onClick={() => void change("state")}>
-          Save conversation status
-        </Action>
-        <Select
-          label="Assign support staff"
-          value={assigned}
-          change={setAssigned}
-          options={[
-            ["", "Unassigned"],
-            ...(staff.data?.users
-              .filter(
-                (user) =>
-                  ["administrator", "owner"].includes(user.role) &&
-                  user.mfa_enabled &&
-                  !user.suspended,
-              )
-              .map(
-                (user) =>
-                  [
-                    user.id,
-                    user.staff_alias || user.display_name || user.email,
-                  ] as const,
-              ) ?? []),
-          ]}
-        />
-        <Action disabled={!staff.data} onClick={() => void change("assign")}>
-          Save assignment
-        </Action>
-        {thread.kind === "fulfillment" && (
-          <Action onClick={() => void change("sharing")}>
-            {thread.booster_shared
-              ? "Pause booster sharing"
-              : "Resume booster sharing"}
-          </Action>
-        )}
-        {thread.kind === "presales" && !thread.linked_order_id && (
-          <>
-            <Text
-              label="Link to customer order ID"
-              value={order}
-              change={setOrder}
-              help="The order must belong to this conversation’s customer. The original conversation is preserved."
-            />
-            <Action
-              disabled={!order.trim()}
-              onClick={() => void change("link")}
-            >
-              Link order
-            </Action>
-          </>
-        )}
-      </fieldset>
-      <ErrorNotice error={error ?? staff.error} />
-    </section>
-  );
-}
-function Compose({
-  base,
-  admin,
-  proofAllowed,
-  done,
-}: {
-  base: string;
-  admin: boolean;
-  proofAllowed: boolean;
-  done: () => void;
-}) {
-  const [purpose, setPurpose] = useState("message");
-  const [body, setBody] = useState(""),
-    [visibility, setVisibility] = useState("public"),
-    [key, setKey] = useState(() => crypto.randomUUID()),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState<unknown>(null);
-  const [attachment, setAttachment] = useState("");
-  const [uploadPending, setUploadPending] = useState(false);
-  const [uploadVersion, setUploadVersion] = useState(0);
-  const changeAttachment = useCallback((id: string, pending: boolean) => {
-    setAttachment(id);
-    setUploadPending(pending);
-    setKey(crypto.randomUUID());
-  }, []);
-  async function send(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      await post(
-        base + "/messages",
-        {
-          request_key: key,
-          purpose,
-          body,
-          visibility,
-          attachments: attachment ? [attachment] : [],
-        },
-        messageSchema,
-      );
-      setBody("");
-      setAttachment("");
-      setUploadPending(false);
-      setUploadVersion((v) => v + 1);
-      setKey(crypto.randomUUID());
-      done();
-    } catch (cause) {
-      setError(cause);
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <form className="catalog-section" onSubmit={(event) => void send(event)}>
-      <fieldset disabled={busy}>
-        <legend>
-          {visibility === "internal" ? "Internal staff note" : "Send a message"}
-        </legend>
-        <p>
-          Messages are private to this conversation. Do not send game passwords,
-          recovery codes, or payment secrets here.
-        </p>
-        {admin && (
-          <Select
-            label="Message audience"
-            value={visibility}
-            change={(value) => {
-              setVisibility(value);
-              setPurpose("message");
-              setAttachment("");
-              setUploadPending(false);
-              setKey(crypto.randomUUID());
-            }}
-            options={[
-              ["public", "Customer-visible reply"],
-              ["internal", "Internal staff note"],
-            ]}
-          />
-        )}
-        {proofAllowed && visibility === "public" && (
-          <Select
-            label="Message type"
-            value={purpose}
-            change={(value) => {
-              setPurpose(value);
-              setKey(crypto.randomUUID());
-            }}
-            options={[
-              ["message", "Coordination message"],
-              ["proof", "Publish proof images"],
-            ]}
-          />
-        )}
-        <Text
-          label={visibility === "internal" ? "Internal note" : "Message"}
-          value={body}
-          change={(value) => {
-            setBody(value);
-            setKey(crypto.randomUUID());
-          }}
-          multiline
-        />
-        <p className="quiet">Up to 4,000 characters.</p>
-        <UploadImage
-          key={visibility + String(uploadVersion)}
-          conversation={base.split("/").at(-1) ?? ""}
-          admin={admin}
-          visibility={visibility}
-          change={changeAttachment}
-        />
-        <button
-          className="button"
-          type="submit"
-          disabled={
-            !body.trim() ||
-            uploadPending ||
-            (purpose === "proof" && !attachment)
-          }
-        >
-          {busy
-            ? "Sending…"
-            : visibility === "internal"
-              ? "Save internal note"
-              : purpose === "proof"
-                ? "Publish proof"
-                : "Send message"}
-        </button>
-      </fieldset>
-      <ErrorNotice error={error} />
-    </form>
-  );
-}
-function Messages({
-  thread,
-  admin,
-  booster,
-  refresh,
-}: {
-  thread: Conversation;
-  admin: boolean;
-  booster: boolean;
-  refresh: () => void;
-}) {
-  const base = (admin ? "/admin" : "") + "/conversations/" + thread.id,
-    [before, setBefore] = useState(0),
-    [live, setLive] = useState(false),
-    [error, setError] = useState<unknown>(null);
-  const resource = useResource(
-      base + `/messages?before=${String(before)}`,
-      messagesSchema,
-    ),
-    reload = resource.reload;
-  const last = resource.data?.messages.at(-1)?.sequence ?? 0;
-  useEffect(() => {
-    if (!last || document.visibilityState !== "visible") return;
-    let active = true;
-    void command(base + "/read", { sequence: last })
-      .then(() => {
-        if (active) refresh();
-      })
-      .catch((cause: unknown) => {
-        if (active) setError(cause);
-      });
-    return () => {
-      active = false;
-    };
-  }, [base, last, refresh]);
-  useEffect(() => {
-    let source: EventSource | null = null;
-    if (typeof EventSource !== "undefined") {
-      source = new EventSource(
-        "/api/v1" + base + "/stream?after=" + String(thread.version),
-      );
-      source.onopen = () => {
-        setLive(true);
-      };
-      source.onerror = () => {
-        setLive(false);
-        refresh();
-      };
-      source.addEventListener("change", () => {
-        reload();
-        refresh();
-      });
-    }
-    const poll = setInterval(() => {
-      if (document.visibilityState === "visible") {
-        reload();
-        refresh();
-      }
-    }, 10000);
-    return () => {
-      source?.close();
-      clearInterval(poll);
-    };
-  }, [base, thread.version, reload, refresh]);
-  function sent() {
-    setBefore(0);
-    reload();
-    refresh();
-  }
-  return (
-    <>
-      <section className="catalog-section" aria-label="Conversation messages">
-        <h2>Messages</h2>
-        <p role="status">
-          {live
-            ? "Live updates connected"
-            : "Updates refresh automatically; reconnecting live updates…"}
-        </p>
-        <Action
-          onClick={() => {
-            reload();
-            refresh();
-          }}
-        >
-          Refresh conversation
-        </Action>
-        <ErrorNotice error={resource.error ?? error} />
-        {!resource.data || resource.error ? (
-          <p role="status">
-            {resource.error ? "Messages are unavailable." : "Loading messages…"}
-          </p>
-        ) : (
-          <>
-            {resource.data.messages.length === 0 && (
-              <p>No messages yet. Introduce your question below.</p>
-            )}
-            {resource.data.next > 0 && (
-              <Action
-                onClick={() => {
-                  setBefore(resource.data?.next ?? 0);
-                }}
-              >
-                Earlier messages
-              </Action>
-            )}
-            {before > 0 && (
-              <Action
-                onClick={() => {
-                  setBefore(0);
-                }}
-              >
-                Latest messages
-              </Action>
-            )}
-            <ol className="message-list">
-              {resource.data.messages.map((message) => (
-                <li
-                  key={message.id}
-                  data-sender={message.sender_role}
-                  className={
-                    message.visibility === "internal"
-                      ? "message internal-note"
-                      : "message"
-                  }
-                >
-                  <div className="message-meta">
-                    <strong>{message.sender_label}</strong>
-                    {message.purpose === "proof" && (
-                      <span className="status">Published proof</span>
-                    )}
-                    {message.visibility === "internal" && (
-                      <span className="status">Internal · staff only</span>
-                    )}
-                    <time dateTime={message.created_at}>
-                      {new Date(message.created_at).toLocaleString()}
-                    </time>
-                  </div>
-                  <p>{message.body}</p>
-                  {message.attachments?.map((id) => (
-                    <DownloadImage key={id} id={id} admin={admin} />
-                  ))}
-                </li>
-              ))}
-            </ol>
-          </>
-        )}
-      </section>
-      <Compose
-        base={base}
-        admin={admin}
-        proofAllowed={(admin || booster) && thread.kind === "fulfillment"}
-        done={sent}
-      />
-    </>
-  );
-}
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { Link, useLocation, useParams } from "react-router";
+import { z } from "../validation";
+import { command } from "../identity/api";
+import { AuthorizedIdentity } from "../identity/frame";
+import { Action, ErrorNotice } from "../catalog/controls";
+import { useResource } from "../orders/resource";
+import { conversationsSchema, type Conversation } from "./model";
+import { DownloadImage } from "../media/attachment";
+import { kindLabel, readingPosition, stateLabel } from "./chat-state";
+import { useChat } from "./use-chat";
+import Composer from "./composer";
+import StaffControls from "./staff-controls";
+import "./chat.css";
+
 function ConversationRail({
   current,
   admin,
+  active,
 }: {
   current: string;
   admin: boolean;
+  active: Conversation | null;
 }) {
   const prefix = admin ? "/admin" : "";
   const resource = useResource(prefix + "/conversations", conversationsSchema);
   return (
-    <aside
-      className={
-        admin ? "admin-conversation-rail" : "customer-conversation-rail"
-      }
-      aria-label="Conversation switcher"
-    >
-      <details open>
-        <summary>Recent conversations</summary>
-        <ErrorNotice error={resource.error} />
-        {resource.loading && <p role="status">Loading inbox…</p>}
-        {!resource.error && resource.data && (
-          <nav aria-label="Recent conversations">
-            {resource.data.conversations.map((thread) => (
-              <Link
-                key={thread.id}
-                to={`${prefix}/support/${thread.id}`}
-                aria-current={current === thread.id ? "page" : undefined}
-              >
-                <strong>{thread.subject}</strong>
-                <small>
-                  {thread.state} · {thread.unread} unread
-                </small>
-              </Link>
-            ))}
-          </nav>
-        )}
-        <Action onClick={resource.reload}>Refresh recent conversations</Action>
-        <Link to={prefix + "/support"}>All conversations and filters →</Link>
-      </details>
+    <aside className="chat-rail" aria-label="Conversation switcher">
+      <div className="chat-rail-heading">
+        <strong>Inbox</strong>
+        <Link to={prefix + "/support"}>All conversations</Link>
+      </div>
+      <ErrorNotice error={resource.error} />
+      {resource.loading && <p role="status">Loading inbox…</p>}
+      <nav aria-label="Recent conversations">
+        {resource.data?.conversations.map((item) => {
+          const thread = item.id === current && active ? active : item;
+          return (
+            <Link
+              key={thread.id}
+              to={`${prefix}/support/${thread.id}`}
+              aria-current={current === thread.id ? "page" : undefined}
+            >
+              <strong>{thread.subject}</strong>
+              <small>{stateLabel(thread.state)}</small>
+              {!!thread.unread && (
+                <span className="chat-unread">{thread.unread} unread</span>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+      <Action onClick={resource.reload}>Refresh recent conversations</Action>
     </aside>
+  );
+}
+function ContextLinks({
+  thread,
+  admin,
+  booster,
+}: {
+  thread: Conversation;
+  admin: boolean;
+  booster: boolean;
+}) {
+  return (
+    <>
+      <p>
+        {kindLabel(thread.kind)} · {thread.state} · {thread.unread} unread
+      </p>
+      {thread.submission_id && (
+        <Link
+          to={(admin ? "/admin/submissions/" : "/sell/") + thread.submission_id}
+        >
+          View account submission
+        </Link>
+      )}
+      {(thread.order_id || thread.linked_order_id) && (
+        <Link
+          to={
+            (booster ? "/booster" : admin ? "/admin" : "") +
+            "/orders/" +
+            (thread.order_id || thread.linked_order_id)
+          }
+        >
+          View linked order
+        </Link>
+      )}
+      {thread.kind === "fulfillment" && (
+        <p>
+          {thread.booster_shared
+            ? "The currently assigned booster can read shared messages and proof. Internal notes stay restricted to administrators."
+            : "Booster sharing is paused. Customer and administrator history is retained."}
+        </p>
+      )}
+    </>
+  );
+}
+function ThreadSession({
+  id,
+  admin,
+  booster,
+}: {
+  id: string;
+  admin: boolean;
+  booster: boolean;
+}) {
+  const base =
+    (admin ? "/admin" : "") + "/conversations/" + encodeURIComponent(id);
+  const identity = useContext(AuthorizedIdentity);
+  const user = identity?.session.user?.id ?? "isolated-view";
+  const [savedPosition] = useState(() => readingPosition(user, id));
+  const chat = useChat(base, savedPosition?.sequence);
+  const details = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const close = (event: globalThis.KeyboardEvent) => {
+      const element = details.current;
+      if (
+        event.key === "Escape" &&
+        element?.open &&
+        event.target instanceof Node &&
+        element.contains(event.target)
+      ) {
+        event.preventDefault();
+        element.open = false;
+        element.querySelector("summary")?.focus();
+      }
+    };
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("keydown", close);
+    };
+  }, []);
+  const room = useRef<HTMLDivElement>(null),
+    history = useRef<HTMLDivElement>(null);
+  const recovering = useRef<boolean | null>(null);
+  const initial = useRef(false),
+    pinned = useRef(true),
+    last = useRef(0),
+    marked = useRef(0);
+  const anchor = useRef<{
+    sequence: string;
+    offset: number;
+    first: number;
+  } | null>(null);
+  const [newCount, setNewCount] = useState(0),
+    [announcement, setAnnouncement] = useState("");
+  const refresh = chat.refresh,
+    fail = chat.fail;
+  const latest = chat.messages.at(-1)?.sequence ?? 0;
+  const markRead = useCallback(() => {
+    if (
+      !latest ||
+      chat.error ||
+      marked.current >= latest ||
+      document.visibilityState !== "visible"
+    )
+      return;
+    marked.current = latest;
+    void command(base + "/read", { sequence: latest })
+      .then(() => {
+        void refresh();
+      })
+      .catch((cause: unknown) => {
+        marked.current = 0;
+        fail(cause);
+      });
+  }, [base, latest, chat.error, refresh, fail]);
+  const atBottom = useCallback(() => {
+    const box = history.current;
+    if (!box || chat.error) return;
+    const remaining = box.scrollHeight - box.scrollTop - box.clientHeight;
+    pinned.current = remaining <= 24;
+    const node = [...box.querySelectorAll<HTMLElement>(".message-bubble")].find(
+      (item) =>
+        item.getBoundingClientRect().bottom >
+        box.getBoundingClientRect().top + 4,
+    );
+    if (node)
+      readingPosition(user, id, {
+        sequence: Number(
+          node.closest<HTMLElement>(".message")?.dataset.sequence,
+        ),
+        offset:
+          box.getBoundingClientRect().top - node.getBoundingClientRect().top,
+      });
+    if (remaining <= 3) {
+      setNewCount(0);
+      markRead();
+    }
+  }, [id, user, markRead, chat.error]);
+  useLayoutEffect(() => {
+    const box = history.current;
+    if (!chat.thread) {
+      initial.current = false;
+      recovering.current = null;
+      last.current = 0;
+      marked.current = 0;
+      anchor.current = null;
+      pinned.current = true;
+      return;
+    }
+    if (!box) return;
+    if (chat.error) {
+      recovering.current ??= pinned.current;
+      initial.current = false;
+      return;
+    }
+    if (!initial.current) {
+      initial.current = true;
+      const resumeReading = recovering.current === false;
+      const arrivals = chat.messages.filter(
+        (message) => message.sequence > last.current,
+      ).length;
+      setNewCount((current) => (resumeReading ? current + arrivals : 0));
+      setAnnouncement(
+        resumeReading && arrivals
+          ? `${String(arrivals)} new messages in this conversation.`
+          : "",
+      );
+      const saved = readingPosition(user, id) ?? savedPosition;
+      const restored = saved
+        ? box.querySelector<HTMLElement>(
+            `[data-sequence="${String(saved.sequence)}"] .message-bubble`,
+          )
+        : null;
+      const unread = box.querySelector<HTMLElement>(
+        `[data-sequence="${String(chat.firstUnread)}"]`,
+      );
+      box.scrollTop =
+        recovering.current === true
+          ? box.scrollHeight
+          : ((restored && saved
+              ? box.scrollTop +
+                restored.getBoundingClientRect().top -
+                box.getBoundingClientRect().top +
+                saved.offset
+              : undefined) ??
+            (unread
+              ? box.scrollTop +
+                unread.getBoundingClientRect().top -
+                box.getBoundingClientRect().top -
+                12
+              : box.scrollHeight));
+      recovering.current = null;
+    } else if (
+      anchor.current &&
+      (chat.messages[0]?.sequence ?? 0) < anchor.current.first
+    ) {
+      const node = box.querySelector<HTMLElement>(
+        `[data-sequence="${anchor.current.sequence}"] .message-bubble`,
+      );
+      if (node)
+        box.scrollTop +=
+          node.getBoundingClientRect().top -
+          box.getBoundingClientRect().top -
+          anchor.current.offset;
+      anchor.current = null;
+    } else if (latest > last.current) {
+      const added = chat.messages.filter(
+        (message) => message.sequence > last.current,
+      ).length;
+      if (pinned.current) box.scrollTop = box.scrollHeight;
+      else setNewCount((current) => current + added);
+      setAnnouncement(
+        `${String(added)} new ${added === 1 ? "message" : "messages"} in this conversation.`,
+      );
+    }
+    last.current = latest;
+    atBottom();
+  }, [
+    chat.messages,
+    chat.thread,
+    chat.error,
+    chat.firstUnread,
+    latest,
+    id,
+    user,
+    atBottom,
+    savedPosition,
+  ]);
+  useEffect(() => {
+    const visible = () => {
+      if (document.visibilityState === "visible") atBottom();
+    };
+    document.addEventListener("visibilitychange", visible);
+    return () => {
+      document.removeEventListener("visibilitychange", visible);
+    };
+  }, [atBottom]);
+  useEffect(() => {
+    const element = room.current;
+    if (!element) return;
+    let frame = 0;
+    const measure = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const viewport = window.visualViewport;
+        const bottom = viewport
+          ? viewport.height + viewport.offsetTop
+          : window.innerHeight;
+        element.style.setProperty(
+          "--chat-height",
+          `${String(Math.max(window.innerWidth <= 600 ? Math.min(640, (viewport?.height ?? window.innerHeight) - 12) : 320, Math.min(900, bottom - element.getBoundingClientRect().top - 12)))}px`,
+        );
+      });
+    };
+    const focus = (event: FocusEvent) => {
+      if (
+        event.target instanceof HTMLTextAreaElement &&
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(max-width: 600px)").matches
+      ) {
+        if (typeof element.scrollIntoView === "function")
+          element.scrollIntoView({ block: "start" });
+        measure();
+      }
+    };
+    element.addEventListener("focusin", focus);
+    measure();
+    window.addEventListener("resize", measure);
+    window.visualViewport?.addEventListener("resize", measure);
+    window.visualViewport?.addEventListener("scroll", measure);
+    return () => {
+      cancelAnimationFrame(frame);
+      element.removeEventListener("focusin", focus);
+      window.removeEventListener("resize", measure);
+      window.visualViewport?.removeEventListener("resize", measure);
+      window.visualViewport?.removeEventListener("scroll", measure);
+    };
+  }, [chat.thread?.id]);
+  function newest() {
+    if (history.current)
+      history.current.scrollTop = history.current.scrollHeight;
+    pinned.current = true;
+    setNewCount(0);
+    markRead();
+  }
+  async function earlier() {
+    const box = history.current;
+    if (box) {
+      const node = [
+        ...box.querySelectorAll<HTMLElement>(".message-bubble"),
+      ].find(
+        (item) =>
+          item.getBoundingClientRect().bottom >
+          box.getBoundingClientRect().top + 4,
+      );
+      if (node)
+        anchor.current = {
+          first: chat.messages[0]?.sequence ?? 0,
+          sequence:
+            node.closest<HTMLElement>(".message")?.dataset.sequence ?? "",
+          offset:
+            node.getBoundingClientRect().top - box.getBoundingClientRect().top,
+        };
+    }
+    if (!(await chat.loadEarlier())) anchor.current = null;
+  }
+  const location = useLocation();
+  const inboxState = z
+    .object({ inboxSearch: z.string().max(2048) })
+    .safeParse(location.state);
+  const inboxSearch = inboxState.success
+    ? "?" + new URLSearchParams(inboxState.data.inboxSearch).toString()
+    : "";
+  const back = booster
+    ? "/booster/orders"
+    : (admin ? "/admin" : "") + "/support" + inboxSearch;
+  return (
+    <div className={"chat-workspace" + (booster ? " booster-chat" : "")}>
+      {!booster && (
+        <ConversationRail current={id} admin={admin} active={chat.thread} />
+      )}
+      {!chat.thread ? (
+        <section className="chat-access">
+          <Link to={back}>← {booster ? "Assigned work" : "Conversations"}</Link>
+          <ErrorNotice error={chat.error} />
+          <p role="status">
+            {chat.error
+              ? "Conversation access is unavailable."
+              : "Loading conversation…"}
+          </p>
+          {!!chat.error && (
+            <Action
+              onClick={() => {
+                void refresh(true);
+              }}
+            >
+              Retry conversation access
+            </Action>
+          )}
+        </section>
+      ) : (
+        <div ref={room} className="chat-room">
+          <header className="chat-room-header">
+            <Link className="chat-back" to={back}>
+              ← {booster ? "Assigned work" : "Inbox"}
+            </Link>
+            <div className="chat-title">
+              <h2>{chat.thread.subject}</h2>
+              <span>
+                {kindLabel(chat.thread.kind)} · {stateLabel(chat.thread.state)}
+              </span>
+            </div>
+            <details ref={details} className="chat-details">
+              <summary>{admin ? "Details & actions" : "Details"}</summary>
+              <div className="chat-details-panel">
+                <strong>{chat.thread.subject}</strong>
+                <ContextLinks
+                  thread={chat.thread}
+                  admin={admin}
+                  booster={booster}
+                />
+                {admin && (
+                  <StaffControls
+                    thread={chat.thread}
+                    done={() => {
+                      void refresh();
+                    }}
+                  />
+                )}
+              </div>
+            </details>
+          </header>
+          <div className="chat-connection">
+            <span role="status">
+              {chat.error
+                ? "Connection interrupted · your draft is kept"
+                : chat.live
+                  ? "Live updates connected"
+                  : "Reconnecting · automatic updates remain available"}
+            </span>
+            <button
+              className="chat-text-button"
+              onClick={() => {
+                void refresh(true);
+              }}
+            >
+              Refresh conversation
+            </button>
+          </div>
+          {/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- This history scroller must receive focus for native Arrow/Page scrolling. */}
+          <div
+            ref={history}
+            className="chat-history"
+            tabIndex={0}
+            role="region"
+            aria-label="Conversation messages"
+            onScroll={atBottom}
+          >
+            {chat.error ? (
+              <div className="chat-recovery">
+                <ErrorNotice error={chat.error} />
+                <p>
+                  Messages are hidden while access is checked. Your draft stays
+                  in memory. Reconnect or refresh to continue.
+                </p>
+              </div>
+            ) : (
+              <>
+                {!!chat.earlier && (
+                  <Action
+                    disabled={chat.olderBusy}
+                    onClick={() => {
+                      void earlier();
+                    }}
+                  >
+                    {chat.olderBusy
+                      ? "Loading earlier messages…"
+                      : "Earlier messages"}
+                  </Action>
+                )}
+                {chat.catchingUp && (
+                  <p role="status">
+                    Catching up with recent messages…{" "}
+                    <Action
+                      onClick={() => {
+                        void refresh();
+                      }}
+                    >
+                      Continue updating
+                    </Action>
+                  </p>
+                )}
+                {!chat.messages.length && (
+                  <div className="chat-empty">
+                    <strong>Start the conversation</strong>
+                    <p>
+                      Ask your question below. Replies and shared files will
+                      appear here.
+                    </p>
+                  </div>
+                )}
+                <ol className="message-list">
+                  {chat.messages.map((message, index) => {
+                    const previous = chat.messages[index - 1];
+                    const date = new Date(message.created_at);
+                    const day = date.toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    });
+                    const nextDay =
+                      !previous ||
+                      new Date(previous.created_at).toDateString() !==
+                        date.toDateString();
+                    const grouped =
+                      !nextDay &&
+                      previous.sender_label === message.sender_label &&
+                      previous.visibility === message.visibility &&
+                      date.getTime() - new Date(previous.created_at).getTime() <
+                        300000;
+                    const ownSide =
+                      admin || booster
+                        ? message.sender_role !== "customer"
+                        : message.sender_role === "customer";
+                    return (
+                      <li
+                        key={message.id}
+                        data-sequence={message.sequence}
+                        className={
+                          "message" +
+                          (message.visibility === "internal"
+                            ? " internal-note"
+                            : "") +
+                          (ownSide ? " outgoing-message" : "") +
+                          (grouped ? " grouped-message" : "")
+                        }
+                      >
+                        {nextDay && <div className="chat-day">{day}</div>}
+                        {message.sequence === chat.firstUnread && (
+                          <div className="chat-unread-divider">
+                            Unread messages
+                          </div>
+                        )}
+                        <article className="message-bubble">
+                          <div className="message-meta">
+                            <strong>{message.sender_label}</strong>
+                            {message.sender_label !== "Customer" && (
+                              <span>
+                                {message.sender_role === "customer"
+                                  ? "Customer"
+                                  : "Staff"}
+                              </span>
+                            )}
+                            {message.visibility === "internal" && (
+                              <span className="message-tag">
+                                Internal · staff only
+                              </span>
+                            )}
+                            {message.purpose === "proof" && (
+                              <span className="message-tag">
+                                Published proof
+                              </span>
+                            )}
+                            <time
+                              dateTime={message.created_at}
+                              title={date.toLocaleString()}
+                              aria-label={date.toLocaleString()}
+                            >
+                              {date.toLocaleTimeString(undefined, {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </time>
+                          </div>
+                          <p>{message.body}</p>
+                          {message.attachments?.map((file) => (
+                            <DownloadImage key={file} id={file} admin={admin} />
+                          ))}
+                        </article>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </>
+            )}
+          </div>
+          {/* eslint-enable jsx-a11y/no-noninteractive-tabindex */}
+          {!!newCount && (
+            <button className="chat-new-messages" onClick={newest}>
+              New messages ({newCount}) ↓
+            </button>
+          )}
+          <span className="sr-only" role="status">
+            {announcement}
+          </span>
+          <Composer
+            base={base}
+            admin={admin}
+            proofAllowed={
+              (admin || booster) && chat.thread.kind === "fulfillment"
+            }
+            unavailable={!!chat.error}
+            fail={fail}
+            done={() => {
+              pinned.current = true;
+              void refresh();
+            }}
+          />
+        </div>
+      )}
+    </div>
   );
 }
 export default function Thread({
@@ -462,122 +618,13 @@ export default function Thread({
   admin?: boolean;
   booster?: boolean;
 }) {
-  const { id = "" } = useParams(),
-    base = (admin ? "/admin" : "") + "/conversations/" + encodeURIComponent(id),
-    resource = useResource(base, conversationSchema),
-    thread = resource.error ? null : resource.data;
-  const retry = resource.reload;
-  useEffect(() => {
-    // Listen before any failed-request render: an online event can arrive before
-    // that render's passive effects run. Recovery also invalidates stale reads.
-    window.addEventListener("online", retry);
-    return () => {
-      window.removeEventListener("online", retry);
-    };
-  }, [retry]);
-  useEffect(() => {
-    if (!resource.error || resource.loading) return;
-    // Keep recovery outside Messages, which unmounts to conceal private data on failure.
-    const poll = setInterval(() => {
-      if (document.visibilityState === "visible") retry();
-    }, 10000);
-    return () => {
-      clearInterval(poll);
-    };
-  }, [resource.error, resource.loading, retry]);
+  const { id = "" } = useParams();
   return (
-    <div
-      className={
-        admin
-          ? "admin-conversation-workspace"
-          : !booster
-            ? "customer-conversation-workspace"
-            : undefined
-      }
-    >
-      {!booster && <ConversationRail current={id} admin={admin} />}
-      <section>
-        <Link
-          to={
-            booster ? "/booster/orders" : (admin ? "/admin" : "") + "/support"
-          }
-        >
-          ← {booster ? "Assigned work" : "Conversations"}
-        </Link>
-        <ErrorNotice error={resource.error} />
-        {!!resource.error && (
-          <Action disabled={resource.loading} onClick={retry}>
-            Retry conversation access
-          </Action>
-        )}
-        {!thread ? (
-          <p role="status">
-            {resource.error
-              ? "Conversation access is unavailable."
-              : "Loading conversation…"}
-          </p>
-        ) : (
-          <>
-            <h2>{thread.subject}</h2>
-            <p>
-              {thread.kind === "fulfillment"
-                ? "Shared boosting coordination"
-                : thread.kind === "presales"
-                  ? "Pre-sales support"
-                  : thread.kind === "submission"
-                    ? "Private seller review"
-                    : "Order support"}{" "}
-              · {thread.state} · {thread.unread} unread
-            </p>
-            {thread.submission_id && (
-              <Link
-                to={
-                  (admin ? "/admin/submissions/" : "/sell/") +
-                  thread.submission_id
-                }
-              >
-                View account submission
-              </Link>
-            )}
-            {(thread.order_id || thread.linked_order_id) && (
-              <Link
-                to={
-                  (booster ? "/booster" : admin ? "/admin" : "") +
-                  "/orders/" +
-                  (thread.order_id || thread.linked_order_id)
-                }
-              >
-                View linked order
-              </Link>
-            )}
-            {thread.kind === "fulfillment" && (
-              <p>
-                {thread.booster_shared
-                  ? "The currently assigned booster can read shared messages and proof. Internal notes stay restricted to administrators."
-                  : "Booster sharing is paused. Customer and administrator history is retained."}
-              </p>
-            )}
-            <div className={admin ? "conversation-layout" : undefined}>
-              <div>
-                <Messages
-                  key={thread.id}
-                  thread={thread}
-                  admin={admin}
-                  booster={booster}
-                  refresh={resource.reload}
-                />
-              </div>
-              {admin && (
-                <StaffControls
-                  key={`staff-${String(thread.version)}`}
-                  thread={thread}
-                  done={resource.reload}
-                />
-              )}
-            </div>
-          </>
-        )}
-      </section>
-    </div>
+    <ThreadSession
+      key={(admin ? "admin:" : "customer:") + id}
+      id={id}
+      admin={admin}
+      booster={booster}
+    />
   );
 }

@@ -92,6 +92,7 @@ func TestBrowserEnvironment(t *testing.T) {
 			fixtures[project+"_"+role+"_id"] = account.ID
 		}
 	}
+	seedBrowserChat(t, f, fixtures)
 	seedBrowserFulfillment(t, f, fixtures)
 	seedBrowserOperations(t, f, fixtures)
 	seedBrowserPayments(t, f, fixtures)

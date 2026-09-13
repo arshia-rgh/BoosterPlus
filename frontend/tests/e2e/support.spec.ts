@@ -2,6 +2,7 @@ import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { z } from "zod";
 import { fixture, signIn, enroll } from "./identity-fixtures";
+import { qualifyChat } from "./chat-ux-fixtures";
 import { messagesSchema } from "../../app/support/model";
 async function accessible(page: Page) {
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
@@ -31,6 +32,7 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
       buyer.getByText("Your next step, in one place.", { exact: true }),
     ).toBeVisible();
     await buyer.goto("/support");
+    await buyer.getByText("New conversation", { exact: true }).click();
     await buyer.getByLabel("Conversation subject").fill(subject);
     await buyer
       .getByRole("button", { name: "Start conversation", exact: true })
@@ -50,6 +52,9 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
       canvas.height = 8;
       return canvas.toDataURL("image/webp").split(",")[1] ?? "";
     });
+    await buyer
+      .getByRole("button", { name: "Attach image", exact: true })
+      .click();
     await buyer.getByLabel("Choose image").setInputFiles({
       name: "proof.webp",
       mimeType: "image/webp",
@@ -84,6 +89,9 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
     await page
       .getByLabel("Internal note", { exact: true })
       .fill("Private staff-only evaluation");
+    await page
+      .getByRole("button", { name: "Attach image", exact: true })
+      .click();
     await page
       .getByLabel("Choose image")
       .setInputFiles("tests/fixtures/proof.png");
@@ -171,26 +179,34 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
       { timeout: 20000 },
     );
     await expect(buyer.locator(".message-list li")).toHaveCount(3);
+    await page.getByText("Details & actions", { exact: true }).click();
     await page.getByLabel("Set conversation status").selectOption("resolved");
     await page
       .getByRole("button", { name: "Save conversation status", exact: true })
       .click();
-    await expect(buyer.getByText(/Pre-sales support · resolved/)).toBeVisible();
+    await expect(buyer.locator(".chat-title")).toContainText("Resolved");
     await buyer
       .getByLabel("Message", { exact: true })
       .fill("One follow-up question");
     await buyer
       .getByRole("button", { name: "Send message", exact: true })
       .click();
-    await expect(page.getByText(/Pre-sales support · open/)).toBeVisible();
+    await expect(page.locator(".chat-title")).toContainText(
+      "Needs staff reply",
+    );
     await page.screenshot({
       path: `.cache/admin-chat-${info.project.name}.png`,
       fullPage: true,
     });
     await accessible(page);
-    await expect(
-      buyer.getByRole("navigation", { name: "Recent conversations" }),
-    ).toBeVisible();
+    if ((info.project.use.viewport?.width ?? 1440) > 1150)
+      await expect(
+        buyer.getByRole("navigation", { name: "Recent conversations" }),
+      ).toBeVisible();
+    else
+      await expect(
+        buyer.getByRole("link", { name: "← Inbox", exact: true }),
+      ).toBeVisible();
     await buyer.evaluate(() => {
       window.scrollTo(0, 0);
     });
@@ -259,6 +275,7 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
     } finally {
       await strangerContext.close();
     }
+    await qualifyChat(buyer, page, info.project.name);
   } finally {
     await context.close();
   }

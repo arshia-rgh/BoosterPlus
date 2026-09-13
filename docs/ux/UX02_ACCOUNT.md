@@ -1,6 +1,6 @@
 # UX02 — Account navigation and passwordless entry
 
-Implemented for the full stage gate on 13 September 2026. UX01 is delivered as `6e852f1`. This stage preserves the green theme, font families, homepage artwork and existing animation. UX03 chat is next; R10/R11 remain held.
+Delivered as `1e3e51c9860b00619bc1300c23c3ac161860ca68` after the full stage gate on 13 September 2026. UX01 is delivered as `6e852f1`. This stage preserves the green theme, font families, homepage artwork and existing animation. UX03 chat is next; R10/R11 remain held.
 
 ## Routes and hierarchy
 
