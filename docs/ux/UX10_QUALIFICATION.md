@@ -1,6 +1,6 @@
 # UX10 — Final UI qualification and owner review
 
-Status: implementation and qualification in progress. UX01–UX09 delivery evidence is in `docs/progress.md`. R10/R11 remain held; this document does not authorize launch.
+Status: implementation and automated qualification delivered in `712828bbf9860b06c5b3dc905752f3577ffcff1d`, pushed and verified against `origin/main`. Owner acceptance and the explicit human/device reviews below remain. R10/R11 stay held; this document does not authorize launch.
 
 ## Final corrections
 
@@ -40,7 +40,7 @@ Use the pinned dependencies (`npm ci --include=dev`) and Playwright browsers (`n
 
 Safari keyboard testing uses [Apple’s documented Option-Tab](https://help.apple.com/safari/mac/8.0/en.lproj/cpsh003.html) to include links under its default keyboard policy. Dialog triggers explicitly receive focus before opening, and the focused report region supports arrow-key scrolling without intercepting child controls.
 
-Final counts, engine versions, inspected captures and full-root-gate outcome are recorded below only after running. No required failure is skipped. Image and bundle thresholds remain unchanged; the share image has its own 500 KiB bound and is not ordinary homepage transfer.
+Final counts, engine versions, inspected captures and full-root-gate outcome are recorded below. No required failure is skipped. Image and bundle thresholds remain unchanged; the share image has its own 500 KiB bound and is not ordinary homepage transfer.
 
 ## Owner acceptance still needed
 
@@ -75,7 +75,18 @@ Playwright 1.63.0 pins Chromium 153.0.8010.12 (revision 1243), Firefox 155.0 (15
 
 These are short local, unthrottled headless samples. Unsupported CLS is unavailable, not zero; Chromium's mandatory CLS budget remains in the full gate. No external resources or CSP violations were observed in these homepage checks. The optimized share image is 423850 bytes (below 500 KiB) and is metadata-only.
 
-Inspected the loaded admin desktop/mobile triage, narrow marketplace, checkout/case/seller/account/chat captures, all three character scenes, rank checkpoints and social overlay formats. The final full root gate, Chromium outcome and delivered revision are recorded after completion.
+Inspected the loaded admin desktop/mobile triage, narrow marketplace, checkout/case/seller/account/chat captures, all three character scenes, rank checkpoints and social overlay formats. The completed full root gate and Chromium outcome are recorded below.
 
 
 Review media: [desktop motion recording](media/playora-motion-desktop.webm), [narrow motion recording](media/playora-motion-mobile.webm), and [social layout preview](media/playora-social-square-preview.png). Videos are local WebKit recordings of public pages only, with fixed 1280 × 720 recording canvases; the narrow viewport is letterboxed. Native website interaction remains the main acceptance surface.
+
+
+## Final gate and delivery
+
+Implementation commit `712828bbf9860b06c5b3dc905752f3577ffcff1d` passed the complete tracked root hook (`.cache/ux10-commit.log`) and was pushed directly to `origin/main`; local HEAD, remote-tracking main and remote main matched. Go formatting/generated checks, vet, broad golangci-lint, standalone gosec, govulncheck, module verification, race tests, TiDB integration (513.748 seconds), all 25 ordered SQL migrations and production builds passed. Frontend qualification passed 180 tests in 60 files, required route coverage at 100%, all 54 Chromium journeys, strict types/lint, dependency audit, contract checks and unchanged bundle/transfer budgets. Container scans/smoke and the retained real TLS routing/authentication/CSRF/private-cache/dependency-outage/graceful-shutdown regression passed. No R10/R11 implementation occurred.
+
+Chromium measured 893691 desktop and 625636 narrow initial encoded bytes, CLS 0, and a median/p95 frame interval of 16.7 ms in both short local samples. Combined with the alternate engines, 162 browser journeys passed on the final application source. The same source remains unchanged in the documentation handoff commit. Remote CI results and deployed field performance are not claimed by these local checks.
+
+Security result scope: golangci-lint reported zero issues; standalone gosec passed; govulncheck reported zero reachable-symbol or imported-package vulnerabilities. It also reports the existing module-only [GO-2026-5932](https://pkg.go.dev/vuln/GO-2026-5932) for the unmaintained `golang.org/x/crypto/openpgp` package, which this application does not import/call, with no fixed version listed. This was also present in UX04; dependencies were not changed here. Image gates enforce their established fixable HIGH/CRITICAL policy. Passing these checks is not a claim that all dependencies or all possible behavior are vulnerability-free.
+
+Remaining review: actual iOS/Android keyboards and VoiceOver/NVDA, human task comprehension, final editorial density/microcopy preferences, and artwork acceptance/publication rights. These are explicit handoff items. No measured conversion lift, human usability score, universal platform crop or physical-device qualification is invented.

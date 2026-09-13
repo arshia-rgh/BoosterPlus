@@ -8,6 +8,8 @@ This is the retained execution plan for **all R10 and R11 work**. It consolidate
 
 `production/` remains deployment-only: Compose, gateway, runtime configuration, monitoring, release/backup scripts and runbooks. Go application code remains in `backend/`; storefront and separately built admin React code remain in `frontend/`. Preserve the owner-created `production/deploy/` directory. Do not place frontend/admin source or application business logic under `production/`.
 
+UX01–UX10 implementation and local automated qualification were delivered on 14 September 2026. [The UX handoff](docs/ux/UX10_QUALIFICATION.md) retains owner acceptance, actual mobile keyboard and human screen-reader review. Those reviews and separate authorization remain prerequisites. When a real public domain is selected, configure the frontend's optional `PUBLIC_SITE_ORIGIN` for absolute homepage share URLs and verify previews on the chosen social platforms. No production rollout was performed by the UX work.
+
 ## 1. Existing foundation versus unfinished qualification
 
 | Area | Already present at R09 | Work still required |

@@ -1,6 +1,6 @@
 # PLAYORA — UI/UX improvement roadmap
 
-Status: UX01–UX09 delivered. UX10 final polish and cross-browser qualification in progress; R10/R11 remain held. See `docs/progress.md` for gate evidence.
+Status: UX01–UX10 implementation and automated qualification delivered. Owner acceptance and real-device/screen-reader review remain. R10/R11 stay on hold. See `docs/ux/UX10_QUALIFICATION.md` and `docs/progress.md` for evidence.
 
 This is the next product-design roadmap. R10 and R11 are **on hold**, with their complete retained scope in [final-launch.md](final-launch.md). Completing this roadmap does not authorize production work or launch. The owner has authorized implementation; present representative account/chat work early for review.
 

@@ -737,3 +737,8 @@ The subsequent fixture startup exceeded its unchanged 120-second limit (`.cache/
 
 
 The clean corrected WebKit and Firefox runs both passed all 54 desktop/mobile and policy journeys, with separate screenshot/video/performance evidence retained under `.cache/ux10-evidence/`. Typed/linted frontend component coverage remains 180 tests in 60 files with 100% required route coverage. Final delivery requires the complete tracked root hook (`.cache/ux10-commit.log`), including unchanged backend/security/race/TiDB and retained deployment regressions plus Chromium. No R10/R11 implementation or launch is authorized.
+
+
+UX10 delivered as `712828bbf9860b06c5b3dc905752f3577ffcff1d`, pushed and verified against remote main. The complete tracked hook passed (`.cache/ux10-commit.log`): Go lint/vet/generated checks, standalone gosec, govulncheck with no reachable findings, modules/race tests, TiDB integration (513.748 seconds), 25 SQL migrations, backend builds/scans, 180 frontend tests in 60 files, all 54 Chromium journeys, audit/contracts/budgets/builds, frontend image/read-only smoke and retained real TLS/outage/recovery regression. Combined Firefox/WebKit/Chromium qualification totals 162 successful journeys. The existing unimported OpenPGP module-only advisory is recorded with its scope in the handoff.
+
+UX01–UX10 implementation and automated qualification are complete for owner review. `docs/ux/UX10_QUALIFICATION.md` contains route/state coverage, measured limits, reusable media, local review instructions and outstanding human/device acceptance. The following documentation-only receipt runs the tracked repository gate and changes no application source. R10/R11 remain on hold in `final-launch.md`; no live payment or deployment action was performed.
