@@ -1,0 +1,274 @@
+.marketplace .market-alerts {
+  margin: 1rem 0;
+  max-width: 44rem;
+}
+.market-filters fieldset {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  align-items: end;
+  gap: 1rem;
+  border: 1px solid #395640;
+  background: #13291e;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+.market-filters .catalog-label {
+  margin: 0;
+}
+.market-filters .button {
+  justify-self: start;
+}
+.market-result-count {
+  color: #bed1c1;
+  font-size: 0.85rem;
+  margin: 1.5rem 0 0.5rem;
+}
+.market-cards {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+}
+.market-cards .market-card {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  overflow: hidden;
+  border: 1px solid #395640;
+  border-radius: 1rem;
+  background: #13291e;
+}
+.market-card > img,
+.market-card > .account-image-placeholder {
+  width: calc(100% + 2rem);
+  max-width: none;
+  margin: -1rem -1rem 0.35rem;
+  aspect-ratio: 3/2;
+  object-fit: contain;
+  background: #09130e;
+  height: auto;
+}
+.market-card :is(h2, p) {
+  margin: 0;
+}
+.market-card h2 {
+  font-size: 1.15rem;
+  line-height: 1.4;
+}
+.market-card > .button:last-child {
+  margin-top: auto;
+  align-self: start;
+}
+.account-image-placeholder {
+  min-height: 10rem;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  color: #bdd4c3;
+  background: radial-gradient(ellipse, #274631, #0b1811);
+  text-align: center;
+}
+.account-gallery {
+  max-width: 52rem;
+  margin: 1.5rem 0;
+}
+.account-gallery figure {
+  margin: 0;
+}
+.account-gallery figure img {
+  width: 100%;
+  height: auto;
+  max-height: 32rem;
+  object-fit: contain;
+  border-radius: 0.8rem;
+  background: #09130e;
+}
+.account-gallery figcaption {
+  font-size: 0.8rem;
+  color: #b4c5b7;
+  margin: 0.6rem 0;
+}
+.gallery-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.7rem;
+}
+.gallery-thumbnails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.gallery-thumbnails button {
+  border: 1px solid #496852;
+  background: #13291e;
+  color: #d3e7d8;
+  border-radius: 0.5rem;
+  font: inherit;
+  min-width: 44px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.gallery-thumbnails [aria-pressed="true"] {
+  background: #b4e8cb;
+  color: #14231b;
+}
+.account-image-dialog {
+  border: 1px solid #496852;
+  padding: 1rem;
+  border-radius: 1rem;
+  max-width: min(95vw, 75rem);
+  max-height: 90svh;
+  background: #0d1e15;
+  color: #eeeae0;
+}
+.account-image-dialog::backdrop {
+  background: #000c;
+}
+.account-image-dialog img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 75svh;
+  object-fit: contain;
+  margin: 1rem auto 0;
+}
+.account-attributes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.4rem 0;
+}
+.account-attributes > div {
+  padding: 0.8rem;
+  background: #142c20;
+  border-radius: 0.6rem;
+}
+.account-attributes dt {
+  font-size: 0.8rem;
+  color: #bcd1c1;
+}
+.account-attributes dd {
+  margin: 0.4rem 0 0;
+  font-weight: 600;
+}
+.account-sale-terms {
+  max-width: 75ch;
+  border-top: 1px solid #395640;
+  padding-top: 1rem;
+}
+.account-purchase {
+  background: #1b3527;
+  border-color: #5d8069;
+}
+.seller-intake h4 {
+  font-size: 1rem;
+  margin: 1.6rem 0 0.9rem;
+  color: #d1e8d9;
+}
+.seller-intake-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.seller-intake-fields > :has(textarea),
+.seller-intake-fields > :has(.catalog-choices) {
+  grid-column: 1/-1;
+}
+.seller-save-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.seller-progress {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  gap: 0.6rem;
+  margin: 1.4rem 0;
+}
+.seller-progress li {
+  border: 1px solid #395640;
+  padding: 0.7rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: #bdcfbf;
+}
+.seller-progress [aria-current="step"] {
+  background: #b4e8cb;
+  color: #14231b;
+}
+.seller-next-step {
+  border-left: 3px solid #b4e8cb;
+  padding: 0.9rem 1rem;
+  background: #1a3425;
+  line-height: 1.6;
+}
+.seller-term-list {
+  max-width: 75ch;
+}
+.seller-term-list > div {
+  padding: 1rem 0;
+  border-bottom: 1px solid #395640;
+}
+.seller-term-list dt {
+  color: #c8ddce;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.seller-term-list dd {
+  margin: 0.5rem 0 0;
+}
+.offer-comparison {
+  max-width: 100%;
+  overflow: auto;
+  margin: 1rem 0;
+}
+.offer-comparison table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.offer-comparison :is(th, td) {
+  text-align: left;
+  padding: 0.8rem;
+  min-width: 8rem;
+  border-bottom: 1px solid #395640;
+}
+.submission-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.8rem;
+}
+.submission-list li {
+  padding: 1.2rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem 1rem;
+  border: 1px solid #395640;
+  background: #13291e;
+  border-radius: 0.8rem;
+}
+.submission-list a {
+  font-weight: 600;
+}
+.submission-list time {
+  color: #b8cbbb;
+  font-size: 0.8rem;
+}
+.submission-status {
+  font-size: 0.85rem;
+  color: #cce3d5;
+}
+@media (max-width: 700px) {
+  .market-filters fieldset,
+  .seller-intake-fields,
+  .account-attributes,
+  .submission-list li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .market-filters .button {
+    width: 100%;
+  }
+}

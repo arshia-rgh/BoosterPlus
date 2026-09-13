@@ -1,3 +1,4 @@
+import "../resale/marketplace.css";
 import SellerOffers from "../resale/offers";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
@@ -56,15 +57,21 @@ export function SubmissionList({ admin = false }: { admin?: boolean }) {
       {resource.loading && <p role="status">Loading private submissions…</p>}
       {!resource.error && resource.data && (
         <>
-          <ul className={admin ? undefined : "order-list"}>
+          <ul className="submission-list">
             {resource.data.items.map((row) => (
               <li key={row.id}>
                 <Link
                   to={`${admin ? "/admin/submissions" : "/sell"}/${row.id}`}
                 >
                   {row.title}
-                </Link>{" "}
-                · {row.game} · {stateLabel(row.state)}
+                </Link>
+                <span>{row.game}</span>
+                <strong className="submission-status">
+                  {stateLabel(row.state)}
+                </strong>
+                <time dateTime={row.updated_at}>
+                  Updated {new Date(row.updated_at).toLocaleDateString()}
+                </time>
               </li>
             ))}
           </ul>
@@ -376,7 +383,9 @@ export function SubmissionDetail({ admin = false }: { admin?: boolean }) {
   return (
     <section>
       <Link to={admin ? "/admin/submissions" : "/sell"}>← Submissions</Link>
-      <Action onClick={resource.reload}>Refresh submission</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh submission
+      </Action>
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Refreshing submission…</p>}
       {value && (
@@ -386,6 +395,40 @@ export function SubmissionDetail({ admin = false }: { admin?: boolean }) {
           <p>
             {value.submission.game} · {stateLabel(value.submission.state)}
           </p>
+          <ol className="seller-progress" aria-label="Selling progress">
+            <li
+              aria-current={
+                ["draft", "needs_information"].includes(value.submission.state)
+                  ? "step"
+                  : undefined
+              }
+            >
+              1. Prepare account
+            </li>
+            <li
+              aria-current={
+                value.submission.state === "submitted" ? "step" : undefined
+              }
+            >
+              2. Private review
+            </li>
+            <li
+              aria-current={
+                value.submission.state === "approved_pending_terms"
+                  ? "step"
+                  : undefined
+              }
+            >
+              3. Agree terms
+            </li>
+            <li
+              aria-current={
+                value.submission.state === "accepted" ? "step" : undefined
+              }
+            >
+              4. Transfer & payout
+            </li>
+          </ol>
           <p>{value.note}</p>
           <Link
             to={`${admin ? "/admin" : ""}/support/${value.conversation_id}`}
@@ -405,8 +448,8 @@ export function SubmissionDetail({ admin = false }: { admin?: boolean }) {
               reload={resource.reload}
             />
           ) : (
-            <section className="catalog-section">
-              <h3>Submitted account information</h3>
+            <details className="submitted-information" open={admin}>
+              <summary>Submitted account information</summary>
               <dl>
                 {value.offer.configuration.intake?.fields.map((field) => {
                   const answer = value.answers[field.key];
@@ -429,7 +472,7 @@ export function SubmissionDetail({ admin = false }: { admin?: boolean }) {
                   ? "Seller declared authority to submit this account."
                   : "Authority has not been declared."}
               </p>
-            </section>
+            </details>
           )}
           <ReviewActions
             key={`actions-${String(value.submission.version)}`}
@@ -444,11 +487,14 @@ export function SubmissionDetail({ admin = false }: { admin?: boolean }) {
             admin={admin}
             changed={resource.reload}
           />
-          <History
-            key={`history-${String(value.submission.version)}`}
-            id={id}
-            admin={admin}
-          />
+          <details>
+            <summary>Submission activity</summary>
+            <History
+              key={`history-${String(value.submission.version)}`}
+              id={id}
+              admin={admin}
+            />
+          </details>
         </fieldset>
       )}
     </section>

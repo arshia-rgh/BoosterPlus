@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "../validation";
 import { Link, useNavigate } from "react-router";
 import {
@@ -23,6 +23,7 @@ import {
 } from "./model";
 import { SecretReveal, SecretUpload } from "./secret";
 
+import "./marketplace.css";
 export const termFields = [
   ["proceeds_basis", "Seller proceeds basis"],
   ["fees", "Fees and deductions"],
@@ -268,7 +269,28 @@ function OfferRecord({
     [busy, setBusy] = useState(false),
     [history, setHistory] = useState(false),
     navigate = useNavigate();
+  const lock = useRef(false);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (offer.state !== "offered") return;
+    const timer = window.setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [offer.state]);
+  const deadline = Date.parse(offer.expires_at),
+    expired = !Number.isFinite(deadline) || deadline <= now;
   async function act(action: string) {
+    if (
+      lock.current ||
+      !accept ||
+      note.trim().length < 10 ||
+      (action === "accept" && expired)
+    )
+      return;
+    lock.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -281,10 +303,13 @@ function OfferRecord({
     } catch (cause) {
       setError(cause);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
   async function listing() {
+    if (lock.current) return;
+    lock.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -297,22 +322,34 @@ function OfferRecord({
     } catch (cause) {
       setError(cause);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
   return (
-    <article className="catalog-section">
+    <article className="catalog-section seller-offer">
       <h3>
         {offer.terms.model === "buy_first"
           ? "Buy before resale"
           : "Consignment after buyer delivery"}
       </h3>
       <p role="status">Offer: {offer.state}</p>
+      <p className="seller-next-step">
+        {offer.state === "offered"
+          ? expired
+            ? "This offer has expired. Ask the team for updated terms before accepting."
+            : "Review the exact amount, fees and timing below before making your decision."
+          : offer.state === "accepted"
+            ? offer.control_verified_at
+              ? "Ownership control is verified. Track the agreed payout below."
+              : "Your agreement is accepted. Complete protected ownership transfer; do not send access details in chat."
+            : "This offer is no longer open for acceptance. Its terms remain available for your records."}
+      </p>
       <p className="package-price">
         {offer.terms.amount} {offer.terms.currency.toUpperCase()} ·{" "}
         {offer.terms.network}
       </p>
-      <dl>
+      <dl className="seller-term-list">
         {termFields.map(([key, label]) => (
           <div key={key}>
             <dt>{label}</dt>
@@ -328,7 +365,12 @@ function OfferRecord({
           : "buyer acknowledgement and the delivery dispute window"}
         .
       </p>
-      <p>Offer expires: {new Date(offer.expires_at).toLocaleString()}</p>
+      <p>
+        Offer expires:{" "}
+        <time dateTime={offer.expires_at}>
+          {new Date(offer.expires_at).toLocaleString()}
+        </time>
+      </p>
       <ErrorNotice error={error} />
       {((offer.state === "offered" && (!admin || owner)) ||
         (offer.state === "accepted" &&
@@ -351,7 +393,7 @@ function OfferRecord({
             <>
               {!admin && (
                 <Action
-                  disabled={!accept || note.trim().length < 10}
+                  disabled={expired || !accept || note.trim().length < 10}
                   onClick={() => void act("accept")}
                 >
                   Accept seller agreement
@@ -426,7 +468,10 @@ export function SellerPayouts({
   return (
     <section>
       <h3>Direct seller payouts</h3>
-      <Action onClick={resource.reload}>Refresh seller payouts</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh seller payouts
+      </Action>
+      {resource.loading && <p role="status">Checking seller payouts…</p>}
       <ErrorNotice error={resource.error} />
       {resource.data?.transfers.map((row) => (
         <TransferRecord
@@ -470,19 +515,97 @@ export default function SellerOffers({
   return (
     <section aria-label="Seller agreements">
       <h2>Seller agreements</h2>
-      <Action onClick={resource.reload}>Refresh seller agreements</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh seller agreements
+      </Action>
+      {resource.loading && <p role="status">Checking seller agreements…</p>}
       <ErrorNotice error={resource.error} />
       {resource.data && !resource.error && (
         <fieldset disabled={resource.loading}>
-          {resource.data.offers.map((offer) => (
-            <OfferRecord
-              key={`${offer.id}:${String(offer.version)}`}
-              offer={offer}
-              admin={admin}
-              owner={owner}
-              changed={reload}
-            />
-          ))}
+          {resource.data.offers.length === 0 && (
+            <p>
+              No offer yet. Review approval does not set a price or create a
+              payout obligation.
+            </p>
+          )}
+          {resource.data.offers.length > 1 && (
+            <details>
+              <summary>Compare offer amounts and timing</summary>
+              {/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- Focus permits native keyboard scrolling of this bounded comparison table. */}
+              <div
+                className="offer-comparison"
+                role="region"
+                aria-label="Seller offer comparison"
+                tabIndex={0}
+              >
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Arrangement</th>
+                      <th scope="col">Net payout</th>
+                      <th scope="col">Network</th>
+                      <th scope="col">Delay / deadline</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {resource.data.offers.map((offer) => (
+                      <tr key={offer.id}>
+                        <td>
+                          {offer.terms.model === "buy_first"
+                            ? "Buy before resale"
+                            : "After buyer delivery"}
+                        </td>
+                        <td>
+                          {offer.terms.amount}{" "}
+                          {offer.terms.currency.toUpperCase()}
+                        </td>
+                        <td>{offer.terms.network}</td>
+                        <td>
+                          {offer.terms.payout_delay_hours} /{" "}
+                          {offer.terms.payout_deadline_hours} hours after
+                          eligibility
+                        </td>
+                        <td>{offer.state.replaceAll("_", " ")}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {/* eslint-enable jsx-a11y/no-noninteractive-tabindex */}
+            </details>
+          )}
+          {resource.data.offers
+            .filter((offer) => ["offered", "accepted"].includes(offer.state))
+            .map((offer) => (
+              <OfferRecord
+                key={`${offer.id}:${String(offer.version)}`}
+                offer={offer}
+                admin={admin}
+                owner={owner}
+                changed={reload}
+              />
+            ))}
+          {resource.data.offers.some(
+            (offer) => !["offered", "accepted"].includes(offer.state),
+          ) && (
+            <details>
+              <summary>Previous offers</summary>
+              {resource.data.offers
+                .filter(
+                  (offer) => !["offered", "accepted"].includes(offer.state),
+                )
+                .map((offer) => (
+                  <OfferRecord
+                    key={`${offer.id}:${String(offer.version)}`}
+                    offer={offer}
+                    admin={admin}
+                    owner={owner}
+                    changed={reload}
+                  />
+                ))}
+            </details>
+          )}
           {owner &&
             state === "approved_pending_terms" &&
             !resource.data.offers.some(

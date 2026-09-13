@@ -16,7 +16,7 @@ import {
 } from "../../app/catalog/model";
 import { submissionSchema } from "../../app/submissions/model";
 import { settingsSchema } from "../../app/payments/model";
-import { listingSchema } from "../../app/resale/model";
+import { listingSchema, publicListingSchema } from "../../app/resale/model";
 async function api(page: Page, path: string, body: unknown) {
   const session = sessionSchema.parse(
     await (await page.request.get("/api/v1/auth/session")).json(),
@@ -157,6 +157,10 @@ export async function resaleJourney(
     ).toBeVisible();
     await accessible(page);
     await seller.goto(`/sell/${id}`);
+    await seller.screenshot({
+      path: `.cache/seller-offer-${info.project.name}.png`,
+      fullPage: true,
+    });
     await seller
       .getByLabel("Seller agreement decision note")
       .fill("I accept the exact synthetic agreement and timing.");
@@ -244,13 +248,68 @@ export async function resaleJourney(
     ).toBeVisible();
     await accessible(page);
     await buyer.goto("/accounts");
+    await buyer.getByLabel("Search accounts", { exact: true }).fill(title);
+    await buyer.getByRole("button", { name: "Apply account filters" }).click();
+    await expect(buyer).toHaveURL(/search=/);
+    await buyer.screenshot({
+      path: `.cache/marketplace-${info.project.name}.png`,
+      fullPage: true,
+    });
+    await accessible(buyer);
     await buyer.getByRole("link", { name: title, exact: true }).click();
+    await buyer.getByRole("link", { name: "← Account marketplace" }).click();
+    await expect(
+      buyer.getByLabel("Search accounts", { exact: true }),
+    ).toHaveValue(title);
+    await buyer.getByRole("link", { name: title, exact: true }).click();
+    // Isolated reviewed-image responses qualify the native gallery without uploading private evidence.
+    const listingURL = `**/api/v1/accounts/${item.id}`;
+    await buyer.route(listingURL, async (route) => {
+      const response = await route.fetch();
+      const listing = publicListingSchema.parse(await response.json());
+      await route.fulfill({
+        response,
+        json: {
+          ...listing,
+          images: [0, 1].map(
+            (index) =>
+              `/api/v1/accounts/${item.id}/images/${String(index)}?release=${listing.release_id}`,
+          ),
+        },
+      });
+    });
+    await buyer.route(
+      `**/api/v1/accounts/${item.id}/images/*?release=*`,
+      async (route) => {
+        await route.fulfill({
+          contentType: "image/svg+xml",
+          body: '<svg xmlns="http://www.w3.org/2000/svg" width="720" height="480"><rect width="720" height="480" fill="#153c29"/><text x="90" y="240" fill="#d5edda" font-size="32">Synthetic reviewed screenshot</text></svg>',
+        });
+      },
+    );
+    await buyer.reload();
+    await buyer.getByRole("button", { name: "View screenshot 2" }).click();
+    await expect(
+      buyer.getByText("Reviewed screenshot 2 of 2", { exact: true }),
+    ).toBeVisible();
+    await buyer.getByRole("button", { name: "Enlarge screenshot" }).click();
+    await expect(
+      buyer.getByRole("dialog", { name: "Enlarged account screenshot" }),
+    ).toBeVisible();
+    await accessible(buyer);
+    await buyer.keyboard.press("Escape");
+    await expect(
+      buyer.getByRole("button", { name: "Enlarge screenshot" }),
+    ).toBeFocused();
     await buyer
       .getByRole("button", { name: "Save to favorites", exact: true })
       .click();
     await expect(
       buyer.getByText("Saved to favorites", { exact: true }),
     ).toBeVisible();
+    await buyer
+      .getByText("Availability notifications", { exact: true })
+      .click();
     await buyer
       .getByLabel(
         "Email me about matching account availability. I can unsubscribe at any time.",
@@ -261,7 +320,7 @@ export async function resaleJourney(
       .click();
     await expect(buyer.getByText(/Account alert saved/)).toBeVisible();
     await buyer.screenshot({
-      path: info.outputPath("account-additions.png"),
+      path: `.cache/account-product-${info.project.name}.png`,
       fullPage: true,
     });
     await accessible(buyer);

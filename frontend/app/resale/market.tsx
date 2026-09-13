@@ -1,7 +1,13 @@
 import AccountAlerts from "../availability/accounts";
 import { FavoriteButton } from "../orders/favorites";
-import { useState } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router";
+import { useRef, useState } from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router";
 import { Action, Check, ErrorNotice, Text } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { post, sessionSchema } from "../identity/api";
@@ -13,6 +19,8 @@ import {
   type PublicListing,
 } from "./model";
 
+import AccountGallery, { AccountImage } from "./gallery";
+import "./marketplace.css";
 export function ProductTerms({ listing }: { listing: PublicListing }) {
   const p = listing.product;
   return (
@@ -27,19 +35,8 @@ export function ProductTerms({ listing }: { listing: PublicListing }) {
           : "Price awaiting review"}
       </p>
       <p className="payment-policy">{p.description}</p>
-      <div className="package-grid">
-        {listing.images.map((src, i) => (
-          <img
-            key={src}
-            src={src}
-            alt={`${p.title} — reviewed view ${String(i + 1)}`}
-            loading="lazy"
-            width={480}
-            height={320}
-          />
-        ))}
-      </div>
-      <dl>
+      <AccountGallery images={listing.images} title={p.title} />
+      <dl className="account-attributes">
         {p.attributes.map((a) => (
           <div key={a.label}>
             <dt>{a.label}</dt>
@@ -47,34 +44,50 @@ export function ProductTerms({ listing }: { listing: PublicListing }) {
           </div>
         ))}
       </dl>
-      <h3>Sale agreement</h3>
-      <p className="payment-policy">{p.sale_terms}</p>
-      <h3>Ownership transfer</h3>
-      <p className="payment-policy">{p.transfer_requirements}</p>
-      <p>
-        Delivery estimate: {p.delivery_min_hours}–{p.delivery_max_hours} hours
-        after verified payment.
-      </p>
-      <h3>Disputes and acknowledgement</h3>
-      <p className="payment-policy">{p.dispute_terms}</p>
-      <p>Dispute window: {p.dispute_hours} hours from delivery.</p>
-      <p className="payment-policy">{p.acknowledgement_terms}</p>
+      <section className="account-sale-terms" aria-label="Sale terms">
+        <h3>Sale agreement</h3>
+        <p className="payment-policy">{p.sale_terms}</p>
+        <h3>Ownership transfer</h3>
+        <p className="payment-policy">{p.transfer_requirements}</p>
+        <p>
+          Delivery estimate: {p.delivery_min_hours}–{p.delivery_max_hours} hours
+          after verified payment.
+        </p>
+        <h3>Disputes and acknowledgement</h3>
+        <p className="payment-policy">{p.dispute_terms}</p>
+        <p>Dispute window: {p.dispute_hours} hours from delivery.</p>
+        <p className="payment-policy">{p.acknowledgement_terms}</p>
+      </section>
     </section>
   );
 }
 export function AccountMarket() {
   const [params] = useSearchParams();
-  const [search, setSearch] = useState(params.get("search") ?? ""),
-    [region, setRegion] = useState(params.get("region") ?? ""),
-    [rank, setRank] = useState(params.get("rank") ?? ""),
-    [query, setQuery] = useState(params.toString()),
-    [after, setAfter] = useState("");
-  const resource = useResource(
-    `/accounts?${query}&after=${encodeURIComponent(after)}`,
-    publicListingsSchema,
-  );
+  return <MarketResults key={params.toString()} />;
+}
+function MarketResults() {
+  const [params, setParams] = useSearchParams();
+  const [search, setSearch] = useState(
+      params.get("search")?.slice(0, 200) ?? "",
+    ),
+    [region, setRegion] = useState(params.get("region")?.slice(0, 80) ?? ""),
+    [rank, setRank] = useState(params.get("rank")?.slice(0, 80) ?? "");
+  const after = params.get("after")?.slice(0, 500) ?? "";
+  const query = new URLSearchParams({
+    search: params.get("search")?.slice(0, 200) ?? "",
+    region: params.get("region")?.slice(0, 80) ?? "",
+    rank: params.get("rank")?.slice(0, 80) ?? "",
+    slug: params.get("slug")?.slice(0, 64) ?? "",
+    after,
+  }).toString();
+  const resource = useResource(`/accounts?${query}`, publicListingsSchema);
+  function pageAfter(value: string) {
+    const next = new URLSearchParams(query);
+    next.set("after", value);
+    setParams(next);
+  }
   return (
-    <main id="main" className="page catalog-page">
+    <main id="main" className="page catalog-page marketplace">
       <p className="eyebrow">PLAYORA marketplace</p>
       <h1>Find your next account</h1>
       <p>
@@ -82,47 +95,89 @@ export function AccountMarket() {
         protected delivery.
       </p>
       <Link to="/sell">Sell an account</Link>
-      <AccountAlerts />
-      <fieldset>
-        <legend>Find an account</legend>
-        <Text label="Search accounts" value={search} change={setSearch} />
-        <Text label="Account region" value={region} change={setRegion} />
-        <Text label="Account rank" value={rank} change={setRank} />
-        <Action
-          onClick={() => {
-            setAfter("");
-            setQuery(
-              new URLSearchParams({
-                search,
-                region,
-                rank,
-                slug: params.get("slug") ?? "",
-              }).toString(),
-            );
-          }}
-        >
-          Apply account filters
-        </Action>
-      </fieldset>
+      <details className="market-alerts">
+        <summary>Get notified about accounts</summary>
+        <AccountAlerts />
+      </details>
+      <form
+        className="market-filters"
+        onSubmit={(event) => {
+          event.preventDefault();
+          setParams(
+            new URLSearchParams({
+              search,
+              region,
+              rank,
+              slug: params.get("slug") ?? "",
+            }),
+          );
+        }}
+      >
+        <fieldset>
+          <legend>Find an account</legend>
+          <Text label="Search accounts" value={search} change={setSearch} />
+          <Text label="Account region" value={region} change={setRegion} />
+          <Text label="Account rank" value={rank} change={setRank} />
+          <button className="button compact" type="submit">
+            Apply account filters
+          </button>
+          {(params.get("search") ||
+            params.get("region") ||
+            params.get("rank") ||
+            after) && (
+            <Action
+              onClick={() => {
+                setParams(
+                  params.get("slug") ? { slug: params.get("slug") ?? "" } : {},
+                );
+              }}
+            >
+              Clear account filters
+            </Action>
+          )}
+        </fieldset>
+      </form>
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Loading available accounts…</p>}
+      {!!resource.error && (
+        <Action onClick={resource.reload}>Try accounts again</Action>
+      )}
       {resource.data && !resource.error && (
         <>
-          <div className="package-grid">
+          <p className="market-result-count" role="status">
+            {resource.data.items.length} accounts in this view
+            {resource.data.next ? " · More available" : ""}
+          </p>
+          <div className="package-grid market-cards">
             {resource.data.items.map((row) => (
-              <article className="catalog-section" key={row.id}>
+              <article className="catalog-section market-card" key={row.id}>
+                {row.images[0] ? (
+                  <AccountImage
+                    key={row.images[0]}
+                    src={row.images[0]}
+                    title={`${row.product.title} — listing preview`}
+                  />
+                ) : (
+                  <div className="account-image-placeholder">{row.game}</div>
+                )}
                 <p>
                   {row.game} · {row.product.region}
                 </p>
                 <h2>
-                  <Link to={`/accounts/${row.id}`}>{row.product.title}</Link>
+                  <Link to={`/accounts/${row.id}`} state={{ market: query }}>
+                    {row.product.title}
+                  </Link>
                 </h2>
                 <p>{row.product.rank}</p>
                 <p className="package-price">
                   {row.product.currency}{" "}
                   {minorDisplay(row.product.amount_minor)}
                 </p>
-                <Link className="button compact" to={`/accounts/${row.id}`}>
+                <Link
+                  className="button compact"
+                  to={`/accounts/${row.id}`}
+                  state={{ market: query }}
+                >
                   Review account
                 </Link>
               </article>
@@ -134,7 +189,7 @@ export function AccountMarket() {
           {resource.data.next && (
             <Action
               onClick={() => {
-                setAfter(resource.data?.next ?? "");
+                pageAfter(resource.data?.next ?? "");
               }}
             >
               More accounts
@@ -145,7 +200,7 @@ export function AccountMarket() {
       {after && (
         <Action
           onClick={() => {
-            setAfter("");
+            pageAfter("");
           }}
         >
           First accounts
@@ -161,8 +216,18 @@ function Purchase({ listing }: { listing: PublicListing }) {
     [error, setError] = useState<unknown>(null),
     [key] = useState(() => crypto.randomUUID()),
     navigate = useNavigate();
+  const lock = useRef(false);
   async function reserve() {
-    if (!session.data) return;
+    if (
+      lock.current ||
+      busy ||
+      session.loading ||
+      !session.data?.user ||
+      session.data.mfa_required ||
+      !accept
+    )
+      return;
+    lock.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -182,6 +247,7 @@ function Purchase({ listing }: { listing: PublicListing }) {
     } catch (cause) {
       setError(cause);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
@@ -193,10 +259,18 @@ function Purchase({ listing }: { listing: PublicListing }) {
       </p>
     );
   return (
-    <section className="catalog-section">
+    <section className="catalog-section account-purchase">
       <ErrorNotice error={error ?? session.error} />
-      {!session.data?.user ? (
-        <Link to="/login">Sign in to reserve this account</Link>
+      {!!session.error && (
+        <Action onClick={session.reload}>Check sign-in again</Action>
+      )}
+      {session.loading && <p role="status">Checking sign-in…</p>}
+      {!session.data?.user || session.data.mfa_required ? (
+        <Link
+          to={`/login?returnTo=${encodeURIComponent(`/accounts/${listing.id}`)}`}
+        >
+          Sign in to reserve this account
+        </Link>
       ) : (
         <fieldset disabled={busy || session.loading}>
           <legend>Reserve this exact account</legend>
@@ -219,17 +293,37 @@ function Purchase({ listing }: { listing: PublicListing }) {
   );
 }
 export function AccountProduct() {
+  const location = useLocation();
+  const navigation: unknown = location.state;
+  const market =
+    typeof navigation === "object" &&
+    navigation !== null &&
+    "market" in navigation &&
+    typeof navigation.market === "string" &&
+    navigation.market.length <= 2000
+      ? navigation.market
+      : "";
   const { id = "" } = useParams(),
     resource = useResource(
       `/accounts/${encodeURIComponent(id)}`,
       publicListingSchema,
     );
   return (
-    <main id="main" className="page catalog-page">
-      <Link to="/accounts">← Account marketplace</Link>
+    <main id="main" className="page catalog-page marketplace">
+      <Link
+        to={
+          "/accounts" +
+          (market ? "?" + new URLSearchParams(market).toString() : "")
+        }
+      >
+        ← Account marketplace
+      </Link>
       <h1>Account details</h1>
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Loading account…</p>}
+      {!!resource.error && (
+        <Action onClick={resource.reload}>Try account again</Action>
+      )}
       {resource.data && !resource.error && (
         <>
           <ProductTerms listing={resource.data} />
@@ -238,10 +332,13 @@ export function AccountProduct() {
             slug={resource.data.slug}
             pack={resource.data.id}
           />
-          <AccountAlerts
-            slug={resource.data.slug}
-            listingID={resource.data.id}
-          />
+          <details className="market-alerts">
+            <summary>Availability notifications</summary>
+            <AccountAlerts
+              slug={resource.data.slug}
+              listingID={resource.data.id}
+            />
+          </details>
           <Link
             to={`/games/${resource.data.slug}/reviews?service=account_sale`}
           >

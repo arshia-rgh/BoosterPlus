@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Action, Check, ErrorNotice, Text } from "../catalog/controls";
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";
@@ -25,8 +25,18 @@ export default function AccountDelivery({
     [accept, setAccept] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
+  const lock = useRef(false);
   async function act(action = admin ? "deliver" : "acknowledge") {
-    if (!resource.data) return;
+    if (
+      !resource.data ||
+      resource.loading ||
+      lock.current ||
+      !paid ||
+      !accept ||
+      note.trim().length < 10
+    )
+      return;
+    lock.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -47,6 +57,7 @@ export default function AccountDelivery({
     } catch (cause) {
       setError(cause);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
@@ -55,11 +66,28 @@ export default function AccountDelivery({
     <section aria-label="Account ownership delivery">
       <h2>Account ownership delivery</h2>
       <ErrorNotice error={resource.error ?? error} />
-      <Action onClick={resource.reload}>Refresh account delivery</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh account delivery
+      </Action>
+      {resource.loading && <p role="status">Checking account handoff…</p>}
       {row && (
         <>
-          <ProductTerms listing={row.listing} />
           <p role="status">Handoff: {row.state}</p>
+          <p className="seller-next-step">
+            {!paid
+              ? "Payment must be verified and holds resolved before access is available."
+              : row.state === "pending"
+                ? "The team is preparing protected account access. You can return here when it is ready."
+                : row.state === "delivered"
+                  ? "Access is ready. Follow the ownership checklist, test access, then confirm receipt."
+                  : row.state === "acknowledged"
+                    ? "You confirmed receipt. Keep your account secure; the agreed dispute terms remain available."
+                    : "Contact support for the current ownership status."}
+          </p>
+          <details>
+            <summary>Accepted account and sale terms</summary>
+            <ProductTerms listing={row.listing} />
+          </details>
           {!paid && (
             <p>
               Verified payment and an order without an active hold are required

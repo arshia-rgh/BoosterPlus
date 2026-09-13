@@ -17,7 +17,7 @@ export function safeReturnPath(value: string | null) {
     const url = new URL(value, "https://playora.invalid");
     if (
       url.origin !== "https://playora.invalid" ||
-      !/^\/(account|orders|games|support|sell|privacy|favorites|availability|notifications|reviews|admin|booster)(\/|$)/.test(
+      !/^\/(account|accounts|orders|games|support|sell|privacy|favorites|availability|notifications|reviews|admin|booster)(\/|$)/.test(
         url.pathname,
       )
     )

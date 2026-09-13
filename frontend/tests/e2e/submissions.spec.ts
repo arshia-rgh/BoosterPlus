@@ -120,6 +120,10 @@ test("seller drafts, clarification and review stay private and create no commerc
         "I control this account and have authority to submit it for review",
       )
       .check();
+    await seller.screenshot({
+      path: `.cache/seller-intake-${info.project.name}.png`,
+      fullPage: true,
+    });
     await expect(submit).toBeDisabled();
     await action(seller, "Save account draft", `/submissions/${id}/edit`);
     await expect(submit).toBeEnabled();
@@ -129,7 +133,7 @@ test("seller drafts, clarification and review stay private and create no commerc
       `/submissions/${id}/submit`,
     );
     await expect(
-      seller.getByRole("heading", { name: "Submitted account information" }),
+      seller.getByText("Submitted account information", { exact: true }),
     ).toBeVisible();
     await accessible(seller);
     await page.goto("/admin/submissions");
@@ -160,7 +164,7 @@ test("seller drafts, clarification and review stay private and create no commerc
       `/submissions/${id}/submit`,
     );
     await expect(
-      seller.getByRole("heading", { name: "Submitted account information" }),
+      seller.getByText("Submitted account information", { exact: true }),
     ).toBeVisible();
     await page
       .getByRole("button", { name: "Refresh submission", exact: true })
