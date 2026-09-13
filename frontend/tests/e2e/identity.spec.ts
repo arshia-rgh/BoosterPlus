@@ -113,10 +113,19 @@ for (const role of ["booster", "administrator", "owner"] as const) {
     if (role === "booster") {
       await expect(page.getByText(/assigned-order workspace/)).toBeVisible();
     } else {
+      await expect(
+        page.getByRole("heading", { name: "Operations overview", exact: true }),
+      ).toBeVisible();
+      await page.screenshot({
+        path: `.cache/operations-${info.project.name}-${role}.png`,
+        fullPage: true,
+      });
+      await page.goto("/admin/customers");
       await page
         .getByLabel("Search email, display name or full user ID")
         .fill(email);
       await page.getByRole("button", { name: "Load users" }).click();
+      await page.locator(".staff-person > summary").first().click();
       await expect(
         page.getByRole("heading", { name: email, exact: true }),
       ).toBeVisible();
@@ -126,7 +135,8 @@ for (const role of ["booster", "administrator", "owner"] as const) {
           .getByLabel("Search email, display name or full user ID")
           .fill(target);
         await page.getByRole("button", { name: "Load users" }).click();
-        const card = page.locator("article").filter({
+        await page.locator(".staff-person > summary").first().click();
+        const card = page.locator(".staff-person").filter({
           has: page.getByRole("heading", { name: target, exact: true }),
         });
         await card
@@ -134,7 +144,12 @@ for (const role of ["booster", "administrator", "owner"] as const) {
           .selectOption("booster");
         await card.getByRole("checkbox", { name: /Apply this role/ }).check();
         await card.getByRole("button", { name: "Change role" }).click();
-        await expect(card.getByText(/booster · Active/)).toBeVisible();
+        await expect(
+          page.locator(".staff-person > summary").getByText(/booster · Active/),
+        ).toBeVisible();
+        await page
+          .getByText("Security audit and recovery review", { exact: true })
+          .click();
         await page.getByRole("button", { name: "Load audit" }).click();
         await expect(
           page

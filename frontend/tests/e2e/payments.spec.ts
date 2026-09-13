@@ -11,10 +11,19 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
   test.setTimeout(300000);
   await signIn(page, request, fixture(info.project.name, "payadmin"));
   await enroll(page);
-  await page.goto("/admin/finance");
+  await page.goto("/admin/finance?view=policy");
   await page
     .getByLabel("Policy title")
     .fill("Synthetic browser payment agreement");
+  const views = page.getByRole("navigation", { name: "Finance workspace" });
+  await views.getByRole("button", { name: "Payments", exact: true }).click();
+  await expect(page.getByLabel("Policy title")).not.toBeVisible();
+  await views
+    .getByRole("button", { name: "Payment policy", exact: true })
+    .click();
+  await expect(page.getByLabel("Policy title")).toHaveValue(
+    "Synthetic browser payment agreement",
+  );
   await page
     .getByLabel("Customer payment policy")
     .fill(
@@ -47,6 +56,10 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
   await page.getByLabel("Network identifier").fill("trx");
   await page.getByRole("button", { name: "Publish payment policy" }).click();
   await expect(page.getByText("Revision 2", { exact: true })).toBeVisible();
+  await page.screenshot({
+    path: `.cache/finance-policy-${info.project.name}.png`,
+    fullPage: true,
+  });
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   const customerContext = await browser.newContext({
     baseURL: "http://127.0.0.1:4173",
@@ -138,6 +151,10 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     expect((await customer.request.get("/api/v1/admin/finance")).status()).toBe(
       403,
     );
+    await page
+      .getByRole("navigation", { name: "Finance workspace" })
+      .getByRole("button", { name: "Payments", exact: true })
+      .click();
     await page.getByLabel("Payment filter").selectOption("");
     await expect(
       page.getByRole("link", { name: `Order ${id.slice(0, 8)}` }),

@@ -469,7 +469,7 @@ export async function resaleJourney(
         )
       ).status(),
     ).toBe(404);
-    await page.goto("/admin/finance");
+    await page.goto("/admin/finance?view=payouts");
     await expect(
       page.getByRole("heading", { name: "Seller payout obligations" }),
     ).toBeVisible();

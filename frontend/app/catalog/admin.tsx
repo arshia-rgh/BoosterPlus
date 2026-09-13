@@ -280,7 +280,7 @@ function Editor({
       <ErrorNotice error={error} />
       {!draft ? (
         <>
-          <p role="status">Loading draft…</p>
+          {!error && <p role="status">Loading draft…</p>}
           <Action
             onClick={() => {
               setReload((v) => v + 1);
@@ -319,71 +319,144 @@ function Editor({
               ? "Unsaved changes. Save your draft or discard edits before leaving this editor."
               : "Draft saved. Editing does not change published offerings."}
           </p>
+          <nav
+            className="admin-view-nav catalog-section-nav"
+            aria-label="Catalog sections"
+          >
+            {[
+              ["catalog-basics", "Game & ranks"],
+              ["catalog-intake", "Seller intake"],
+              ["catalog-services", "Boosting forms"],
+              ["catalog-packages", "Packages"],
+              ["catalog-faq", "FAQ"],
+              ["catalog-publish", "Review & publish"],
+            ].map(([target, label]) => (
+              <button
+                key={target}
+                type="button"
+                onClick={() => {
+                  const section = document.getElementById(target ?? "");
+                  section?.scrollIntoView({ block: "start" });
+                  section?.focus({ preventScroll: true });
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+          <div className="catalog-save-bar">
+            <span role="status">
+              {dirty ? "Unsaved draft changes" : "Draft saved"}
+            </span>
+            <Action disabled={busy} onClick={() => void run("save")}>
+              Save changes
+            </Action>
+            <Action
+              disabled={busy || dirty}
+              onClick={() => void run("preview")}
+            >
+              Preview saved changes
+            </Action>
+          </div>
           <fieldset disabled={busy} className="catalog-editor-fields">
             <legend>Catalog configuration</legend>
-            <div className="catalog-grid">
+            <section
+              id="catalog-basics"
+              tabIndex={-1}
+              className="catalog-edit-section"
+              aria-label="Game and rank references"
+            >
+              <h3>Game and rank references</h3>
+              <div className="catalog-grid">
+                <Text
+                  label="Game name"
+                  value={draft.configuration.name}
+                  change={(name) => {
+                    update({ name });
+                  }}
+                />
+                <Text
+                  label="Public asset path"
+                  value={draft.configuration.asset}
+                  change={(asset) => {
+                    update({ asset });
+                  }}
+                  help="Approved files under /catalog-assets/ only. Add public media to frontend/public/catalog-assets before publishing."
+                />
+                <Text
+                  label="Image alternative text"
+                  value={draft.configuration.asset_alt}
+                  change={(asset_alt) => {
+                    update({ asset_alt });
+                  }}
+                />
+              </div>
               <Text
-                label="Game name"
-                value={draft.configuration.name}
-                change={(name) => {
-                  update({ name });
+                label="Game description"
+                multiline
+                value={draft.configuration.description}
+                change={(description) => {
+                  update({ description });
                 }}
               />
-              <Text
-                label="Public asset path"
-                value={draft.configuration.asset}
-                change={(asset) => {
-                  update({ asset });
-                }}
-                help="Approved files under /catalog-assets/ only. Add public media to frontend/public/catalog-assets before publishing."
-              />
-              <Text
-                label="Image alternative text"
-                value={draft.configuration.asset_alt}
-                change={(asset_alt) => {
-                  update({ asset_alt });
+              <ReferencesEditor
+                value={draft.configuration.references}
+                change={(references) => {
+                  update({ references });
                 }}
               />
-            </div>
-            <Text
-              label="Game description"
-              multiline
-              value={draft.configuration.description}
-              change={(description) => {
-                update({ description });
-              }}
-            />
-            <ReferencesEditor
-              value={draft.configuration.references}
-              change={(references) => {
-                update({ references });
-              }}
-            />
-            <IntakeEditor
-              config={draft.configuration}
-              change={(intake) => {
-                update({ intake });
-              }}
-            />
-            <ReviewPolicyEditor
-              config={draft.configuration}
-              change={(review_policy) => {
-                update({ review_policy });
-              }}
-            />
-            <ServicesEditor
-              config={draft.configuration}
-              change={(services) => {
-                update({ services });
-              }}
-            />
-            <PackagesEditor
-              config={draft.configuration}
-              change={(packages) => {
-                update({ packages });
-              }}
-            />
-            <section>
+            </section>
+            <section
+              id="catalog-intake"
+              tabIndex={-1}
+              className="catalog-edit-section"
+              aria-label="Seller intake and review policy"
+            >
+              <h3>Seller intake and review policy</h3>
+              <IntakeEditor
+                config={draft.configuration}
+                change={(intake) => {
+                  update({ intake });
+                }}
+              />
+              <ReviewPolicyEditor
+                config={draft.configuration}
+                change={(review_policy) => {
+                  update({ review_policy });
+                }}
+              />
+            </section>
+            <section
+              id="catalog-services"
+              tabIndex={-1}
+              className="catalog-edit-section"
+              aria-label="Boosting form editor"
+            >
+              <ServicesEditor
+                config={draft.configuration}
+                change={(services) => {
+                  update({ services });
+                }}
+              />
+            </section>
+            <section
+              id="catalog-packages"
+              tabIndex={-1}
+              className="catalog-edit-section"
+              aria-label="Fixed packages editor"
+            >
+              <PackagesEditor
+                config={draft.configuration}
+                change={(packages) => {
+                  update({ packages });
+                }}
+              />
+            </section>
+            <section
+              id="catalog-faq"
+              tabIndex={-1}
+              className="catalog-edit-section"
+            >
               <h2>Frequently asked questions</h2>
               {draft.configuration.faqs.map((faq, i) => (
                 <fieldset className="catalog-item" key={i}>
@@ -443,7 +516,11 @@ function Editor({
                 Add FAQ
               </Action>
             </section>
-            <section className="catalog-publication">
+            <section
+              id="catalog-publish"
+              tabIndex={-1}
+              className="catalog-publication catalog-edit-section"
+            >
               <h2>Review and publication</h2>
               <Check
                 label="I verified the actual rank/option data, availability, prices and customer promises, including any win-rate terms."

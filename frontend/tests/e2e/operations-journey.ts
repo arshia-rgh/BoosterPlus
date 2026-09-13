@@ -14,7 +14,7 @@ export async function operationsJourney(
       name: "Account and staff administration",
       exact: true,
     }),
-  ).toBeVisible();
+  ).toHaveCount(0);
   await expect(
     page.getByRole("heading", {
       name: "Background tasks needing attention",

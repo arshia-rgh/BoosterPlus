@@ -28,7 +28,13 @@ function UserControls({
     z.infer<typeof sessionsSchema>["sessions"]
   >([]);
   return (
-    <article className="identity-card">
+    <details className="identity-card staff-person">
+      <summary>
+        <strong>{user.display_name || user.email}</strong>
+        <span>
+          {user.role} · {user.suspended ? "Suspended" : "Active"}
+        </span>
+      </summary>
       <h3>{user.email}</h3>
       <p>
         {user.display_name || "No display name"} · {user.role} ·{" "}
@@ -120,7 +126,7 @@ function UserControls({
           </label>
         </Form>
       )}
-    </article>
+    </details>
   );
 }
 function Administration({
@@ -143,7 +149,11 @@ function Administration({
       z.infer<typeof recoveriesSchema>["recoveries"]
     >([]);
   const owner = session.capabilities.includes("owner");
+  const [loaded, setLoaded] = useState(false);
   async function load(cursor: string) {
+    setUsers([]);
+    setNext("");
+    setLoaded(false);
     const page = await get(
       "/admin/users?" +
         new URLSearchParams({ search, state, after: cursor }).toString(),
@@ -152,18 +162,22 @@ function Administration({
     setUsers(page.users);
     setAfter(cursor);
     setNext(page.next);
+    setLoaded(true);
     await refresh();
   }
   async function reload() {
     await load(after);
   }
+  if (!directoryOnly) return <OperationsOverview />;
   return (
-    <section>
-      {!directoryOnly && <OperationsOverview />}
+    <section className="staff-directory">
       <h2>Account and staff administration</h2>
       <p>
         For sensitive changes, first verify your identity in{" "}
-        <a href="/account">account security</a>.
+        <a href="/account/security?returnTo=%2Fadmin%2Fcustomers">
+          account security
+        </a>
+        .
       </p>
       <Form
         title="User directory"
@@ -199,7 +213,14 @@ function Administration({
           </select>
         </label>
       </Form>
-      <div className="identity-grid">
+      {loaded && (
+        <p role="status">
+          {users.length
+            ? `${String(users.length)} identities in this page`
+            : "No matching identities. Adjust the search or account state."}
+        </p>
+      )}
+      <div className="staff-directory-results">
         {users.map((user) => (
           <UserControls
             key={user.id}
@@ -212,7 +233,8 @@ function Administration({
       {next && <Form title="Next users" submit={async () => load(next)} />}
       {after && <Form title="First users" submit={async () => load("")} />}
       {owner && (
-        <>
+        <details className="staff-security-review">
+          <summary>Security audit and recovery review</summary>
           <Form
             title="Security audit"
             label="Load audit"
@@ -288,7 +310,7 @@ function Administration({
               </label>
             </Form>
           ))}
-        </>
+        </details>
       )}
     </section>
   );

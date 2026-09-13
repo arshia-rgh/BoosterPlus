@@ -1,6 +1,7 @@
+import "./operations.css";
 import { BrandLogo } from "../brand/brand";
 import "../ui/workspace.css";
-import { useRef } from "react";
+import { useId, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router";
 import type { FrameProps } from "../identity/frame";
 
@@ -39,9 +40,50 @@ const groups = [
   },
 ] as const;
 function Navigation({ close, owner }: { close?: () => void; owner: boolean }) {
+  const [search, setSearch] = useState("");
+  const id = useId();
+  const filtered = groups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter(
+        ([href, label]) =>
+          (href !== "/admin/privacy" || owner) &&
+          label.toLowerCase().includes(search.trim().toLowerCase()),
+      ),
+    }))
+    .filter((group) => group.items.length > 0);
   return (
     <nav aria-label="Staff navigation" className="admin-navigation">
-      {groups.map((group) => (
+      <label className="admin-module-search" htmlFor={id}>
+        Find a module
+        <input
+          id={id}
+          type="search"
+          value={search}
+          maxLength={80}
+          placeholder="Orders, finance, catalog…"
+          onChange={(event) => {
+            setSearch(event.target.value);
+          }}
+        />
+      </label>
+      {filtered.length === 0 && (
+        <p role="status">
+          No matching module. Clear the search to see all tools.
+        </p>
+      )}
+      {search && (
+        <button
+          type="button"
+          className="button compact"
+          onClick={() => {
+            setSearch("");
+          }}
+        >
+          Clear module search
+        </button>
+      )}
+      {filtered.map((group) => (
         <div key={group.label}>
           <p>{group.label}</p>
           {group.items

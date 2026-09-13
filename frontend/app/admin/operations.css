@@ -1,0 +1,180 @@
+.admin-app [hidden] {
+  display: none;
+}
+.admin-module-search {
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  color: #b8cebf;
+  margin: 0 0.6rem 1.2rem;
+}
+.admin-module-search input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem;
+  min-height: 44px;
+  font: inherit;
+}
+.admin-navigation > .button {
+  margin: 0 0.6rem 1rem;
+}
+.operations-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 1.5rem 0;
+}
+.operations-shortcuts a {
+  padding: 0.8rem 1rem;
+  border: 1px solid #395640;
+  background: #1c3428;
+  border-radius: 0.65rem;
+  text-decoration: none;
+  color: #d8eadd;
+}
+.operations-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+}
+.operation-metric {
+  border: 1px solid #395640;
+  border-radius: 0.8rem;
+  padding: 1.1rem;
+  background: #14281d;
+}
+.operation-metric h3 {
+  margin: 0;
+}
+.operation-metric .operation-count {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 0.8rem 0;
+  color: #bcdfcc;
+  font-weight: 700;
+}
+.operation-metric p:last-child {
+  margin-bottom: 0;
+  color: #b3c6b8;
+  font-size: 0.8rem;
+}
+.operations-worklists {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.operations-worklists .catalog-section {
+  margin: 0;
+  padding: 1.2rem;
+}
+.operations-worklists .order-list li {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem 0;
+}
+.operations-worklists time {
+  font-size: 0.8rem;
+  color: #b7cabc;
+}
+.operations-health {
+  margin-block: 1rem;
+}
+.staff-directory-results {
+  display: grid;
+  gap: 0.7rem;
+  margin: 1.3rem 0;
+}
+.staff-person > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding: 0.7rem;
+  cursor: pointer;
+}
+.staff-person > summary::before {
+  content: "+";
+  color: #b4e8cb;
+}
+.staff-person[open] > summary::before {
+  content: "−";
+}
+.staff-person > summary strong {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.staff-person > summary span {
+  font-size: 0.8rem;
+  color: #b8cebf;
+}
+.staff-person > .identity-card {
+  max-width: 48rem;
+}
+.staff-security-review {
+  margin-top: 1.4rem;
+  padding: 1rem;
+  border: 1px solid #395640;
+  border-radius: 0.8rem;
+}
+.admin-view-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0 0 1rem;
+  margin: 0 0 1.3rem;
+  border-bottom: 1px solid #395640;
+}
+.admin-view-nav button {
+  font: inherit;
+  font-size: 0.9rem;
+  color: #c9ddd0;
+  background: #14281d;
+  border: 1px solid #395640;
+  padding: 0.7rem 1rem;
+  min-height: 44px;
+  border-radius: 0.6rem;
+  cursor: pointer;
+}
+.admin-view-nav [aria-current="page"] {
+  color: #14231b;
+  background: #b4e8cb;
+  border-color: #b4e8cb;
+}
+.catalog-save-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  border: 1px solid #395640;
+  background: #1c3428;
+  padding: 0.9rem;
+  border-radius: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+.catalog-save-bar span {
+  margin-right: auto;
+  font-size: 0.85rem;
+}
+.catalog-edit-section {
+  padding-block: 1rem;
+  border-top: 1px solid #395640;
+  scroll-margin-top: 2rem;
+}
+.catalog-edit-section:focus {
+  outline: 2px solid #b4e8cb;
+  outline-offset: 5px;
+}
+.admin-app .catalog-editor-fields > .catalog-edit-section {
+  margin: 1rem 0 2rem;
+}
+@media (max-width: 800px) {
+  .operations-worklists {
+    grid-template-columns: 1fr;
+  }
+  .admin-view-nav button {
+    flex: 1 1 9rem;
+  }
+}

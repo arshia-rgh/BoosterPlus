@@ -681,3 +681,20 @@ Marketplace filters now live in the URL, support Enter/reset, survive detail/bac
 Seller intake separates account description, ownership declaration and save/submit; review progress stays visible while submitted details/history are secondary. Active offers show the exact amount, fees and payout trigger; previous offers and a comparison table remain available. Local expiry prevents stale acceptance while backend versions remain authoritative. Both buy-before-resale and post-delivery arrangements remain supported. Ownership handoff now leads with the current step and protected access; accepted product terms are a disclosure. Payouts reuse the verified UX06 status/recipient flow. No private access data is persisted or added to ordinary fields.
 
 Verification in progress includes filter/back behavior, reviewed-image keyboard gallery, seller review/offer/handoff journeys, expiry for both arrangements and protected-secret boundaries. No backend or production change. R10/R11 remain held.
+
+
+UX07 delivered as `6a22212` and verified against `origin/main`. The tracked frontend/repository gate passed 174 tests in 57 files, all 50 desktop/mobile browser journeys, gallery Escape/focus return, filter/back and both arrangement expiry, strict types/lint, audit, contracts, unchanged budgets/builds, image scans and container smoke (`.cache/ux07-commit.log`). Seller intake and product screenshots were inspected. Final UX10 follow-ups: wait for loaded cards before the marketplace capture and quiet empty commercial panels on draft submissions.
+
+## UX08 — Admin triage, finance and editor navigation
+
+The admin home now focuses on operations, waiting orders, upcoming sessions and background-task failures. Identity management remains on Customers and staff, with compact expandable identity records and a separate audit/recovery disclosure. Searches clear old private results before fetching; failed reads cannot retain a previous directory page. The staff sidebar has module search and retains role-based visibility.
+
+Finance has URL-addressable payments/cases/payouts/policy/reconciliation views. Panels remain mounted across local view changes to preserve an unsaved policy draft; hidden panels cannot receive keyboard focus. The stale statement that payment operations are not enabled was removed in favor of links to authoritative finance/reports. Catalog editing has section shortcuts, focused jump targets, top save/preview controls and explicit unsaved/saved cues, preserving the original revision, publication, consent and navigation-blocker rules. Background tasks keep state/recovery first and place technical timing/reference in a disclosure; availability task labels now describe their function.
+
+Verification in progress: module role visibility, editor types/lint/build, owner/admin directory mutations, finance view draft preservation, existing all-admin route/security/accessibility journeys. Content, policy, privacy, media, alerts, reports and review workflows retain the shared UX01 surfaces and their existing tested authorization/consent boundaries. No backend or held production change.
+
+
+UX08 review caught a view-isolation defect: reconciliation errors were inside the now-hidden payment queue. Stopped the pending commit before delivery, moved error feedback into the reconciliation view and added a focused failure/duplicate request regression. The original gate may finish against its initial build, but only a fresh tracked gate counts for delivery.
+
+
+The interrupted UX08 browser run also identified two old navigation assertions (embedded directory on the home page and payout queue on the default finance view). Updated them to assert the focused operations page and navigate explicitly to payouts; all original authorization/mutation assertions remain. The initial output is retained as `.cache/ux08-commit-attempt1.log`.

@@ -9,11 +9,17 @@ export default function OperationsOverview() {
     <section aria-label="Operations overview" className="operations-overview">
       <h2>Operations overview</h2>
       <p>
-        Review customer requests, active work and background tasks from one
-        place. Counts describe workflow status; they are not revenue or
-        settlement reports.
+        Start with waiting requests, then check upcoming sessions and service
+        health.
       </p>
-      <Action onClick={resource.reload}>Refresh operations</Action>
+      <nav className="operations-shortcuts" aria-label="Staff quick actions">
+        <Link to="/admin/orders?state=submitted">Review orders ↗</Link>
+        <Link to="/admin/support">Open support inbox ↗</Link>
+        <Link to="/admin/submissions">Review seller submissions ↗</Link>
+      </nav>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh operations
+      </Action>
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Loading operations…</p>}
       {value && (
@@ -24,9 +30,9 @@ export default function OperationsOverview() {
               {new Date(value.observed_at).toLocaleString()}
             </time>
           </p>
-          <div className="identity-grid">
+          <div className="operations-metrics">
             {value.cards.map((card) => (
-              <section className="catalog-section" key={card.key}>
+              <section className="operation-metric" key={card.key}>
                 <h3>
                   <Link to={card.href}>{card.label}</Link>
                 </h3>
@@ -35,47 +41,49 @@ export default function OperationsOverview() {
               </section>
             ))}
           </div>
-          <section className="catalog-section">
-            <h3>Oldest requests to review</h3>
-            {value.requests.length ? (
-              <ul className="order-list">
-                {value.requests.map((row) => (
-                  <li key={row.href}>
-                    <Link to={row.href}>{row.label}</Link>
-                    <time dateTime={row.at}>
-                      {new Date(row.at).toLocaleString()}
-                    </time>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No submitted orders are waiting for review.</p>
-            )}
-            <Link to="/admin/orders">Open the complete order queue</Link>
-          </section>
-          <section className="catalog-section">
-            <h3>Next confirmed sessions</h3>
-            <p>
-              Starting within the next 24 hours. Times below use your device’s
-              timezone.
-            </p>
-            {value.sessions.length ? (
-              <ul className="order-list">
-                {value.sessions.map((row) => (
-                  <li key={`${row.href}-${row.at}`}>
-                    <Link to={row.href}>{row.label}</Link>
-                    <time dateTime={row.at}>
-                      {new Date(row.at).toLocaleString()}
-                    </time>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No confirmed sessions start in this window.</p>
-            )}
-            <Link to="/admin/calendar">Open staff calendars</Link>
-          </section>
-          <section className="catalog-section">
+          <div className="operations-worklists">
+            <section className="catalog-section">
+              <h3>Oldest requests to review</h3>
+              {value.requests.length ? (
+                <ul className="order-list">
+                  {value.requests.map((row) => (
+                    <li key={row.href}>
+                      <Link to={row.href}>{row.label}</Link>
+                      <time dateTime={row.at}>
+                        {new Date(row.at).toLocaleString()}
+                      </time>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No submitted orders are waiting for review.</p>
+              )}
+              <Link to="/admin/orders">Open the complete order queue</Link>
+            </section>
+            <section className="catalog-section">
+              <h3>Next confirmed sessions</h3>
+              <p>
+                Starting within the next 24 hours. Times below use your device’s
+                timezone.
+              </p>
+              {value.sessions.length ? (
+                <ul className="order-list">
+                  {value.sessions.map((row) => (
+                    <li key={`${row.href}-${row.at}`}>
+                      <Link to={row.href}>{row.label}</Link>
+                      <time dateTime={row.at}>
+                        {new Date(row.at).toLocaleString()}
+                      </time>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No confirmed sessions start in this window.</p>
+              )}
+              <Link to="/admin/calendar">Open staff calendars</Link>
+            </section>
+          </div>
+          <section className="catalog-section operations-health">
             <h3>Background tasks needing attention</h3>
             {value.oldest_runnable_at && (
               <p>
@@ -99,9 +107,12 @@ export default function OperationsOverview() {
             )}
             <Link to="/admin/jobs">Inspect and recover background tasks</Link>
           </section>
-          <p>
-            Payment and payout operations are not enabled. Their reports require
-            verified checkout and settlement workflows.
+          <p className="quiet">
+            Counts reflect workflow activity at the refresh time above. Review{" "}
+            <Link to="/admin/finance">finance</Link> for checkout, payment
+            exceptions and outgoing transfers; use{" "}
+            <Link to="/admin/reports">reports</Link> for recorded financial
+            totals.
           </p>
         </>
       )}

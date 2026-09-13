@@ -59,6 +59,12 @@ export function kindLabel(kind: string) {
       return "Account activity email";
     case "media.scan":
       return "Private image safety check";
+    case "availability.changed":
+      return "Availability update";
+    case "availability.fanout":
+      return "Matching availability alerts";
+    case "availability.email":
+      return "Availability email";
     default:
       return "Unsupported background task";
   }

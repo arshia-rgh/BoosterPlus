@@ -40,7 +40,10 @@ function Retry({ job, reload }: { job: Job; reload: () => void }) {
         Investigate the failure first. Another attempt may resend an email after
         an ambiguous delivery result; the handler checks current eligibility and
         expired references. Sign in again or refresh both factors in{" "}
-        <Link to="/account">account security</Link> if requested.
+        <a href="/account/security?returnTo=%2Fadmin%2Fjobs">
+          account security
+        </a>{" "}
+        if requested.
       </p>
       <ErrorNotice error={error} />
       <fieldset disabled={busy}>
@@ -119,7 +122,9 @@ export default function BackgroundJobs() {
           ].map((value) => [value, kindLabel(value)] as const),
         ]}
       />
-      <Action onClick={resource.reload}>Refresh background tasks</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh background tasks
+      </Action>
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Loading background tasks…</p>}
       {resource.data && (
@@ -137,32 +142,35 @@ export default function BackgroundJobs() {
                 automatic attempts
               </p>
               <p>{failureLabel(job.error_code)}</p>
-              <dl>
-                <dt>Task reference</dt>
-                <dd className="wrap-anywhere">{job.id}</dd>
-                <dt>Created</dt>
-                <dd>
-                  <time dateTime={job.created_at}>
-                    {new Date(job.created_at).toLocaleString()}
-                  </time>
-                </dd>
-                <dt>Scheduled</dt>
-                <dd>
-                  <time dateTime={job.available_at}>
-                    {new Date(job.available_at).toLocaleString()}
-                  </time>
-                </dd>
-                {job.lease_until && (
-                  <>
-                    <dt>Current lease ends</dt>
-                    <dd>
-                      <time dateTime={job.lease_until}>
-                        {new Date(job.lease_until).toLocaleString()}
-                      </time>
-                    </dd>
-                  </>
-                )}
-              </dl>
+              <details>
+                <summary>Task timing and reference</summary>
+                <dl>
+                  <dt>Task reference</dt>
+                  <dd className="wrap-anywhere">{job.id}</dd>
+                  <dt>Created</dt>
+                  <dd>
+                    <time dateTime={job.created_at}>
+                      {new Date(job.created_at).toLocaleString()}
+                    </time>
+                  </dd>
+                  <dt>Scheduled</dt>
+                  <dd>
+                    <time dateTime={job.available_at}>
+                      {new Date(job.available_at).toLocaleString()}
+                    </time>
+                  </dd>
+                  {job.lease_until && (
+                    <>
+                      <dt>Current lease ends</dt>
+                      <dd>
+                        <time dateTime={job.lease_until}>
+                          {new Date(job.lease_until).toLocaleString()}
+                        </time>
+                      </dd>
+                    </>
+                  )}
+                </dl>
+              </details>
               <Retry
                 key={job.retry_generation}
                 job={job}

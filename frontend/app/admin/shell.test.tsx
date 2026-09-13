@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { expect, it } from "vitest";
 import AdminShell from "./shell";
@@ -62,5 +62,30 @@ it("shows authorized modules and highlights the order detail's parent", () => {
   expect(screen.getByText("Guide")).toBeInTheDocument();
   expect(
     screen.getByRole("searchbox", { name: "Search orders" }),
+  ).toBeInTheDocument();
+});
+
+it("finds staff modules without revealing owner-only privacy tools", () => {
+  render(
+    <MemoryRouter initialEntries={["/admin"]}>
+      <AdminShell session={sessionSchema.parse(base)} title="Overview">
+        <main>Content</main>
+      </AdminShell>
+    </MemoryRouter>,
+  );
+  const search = screen.getByRole("searchbox", { name: "Find a module" });
+  fireEvent.change(search, { target: { value: "finance" } });
+  expect(screen.getByRole("link", { name: /Finance/ })).toHaveAttribute(
+    "href",
+    "/admin/finance",
+  );
+  expect(
+    screen.queryByRole("link", { name: /Catalog editor/ }),
+  ).not.toBeInTheDocument();
+  fireEvent.change(search, { target: { value: "privacy" } });
+  expect(screen.getByText(/No matching module/)).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Clear module search" }));
+  expect(
+    screen.getByRole("link", { name: /Catalog editor/ }),
   ).toBeInTheDocument();
 });
