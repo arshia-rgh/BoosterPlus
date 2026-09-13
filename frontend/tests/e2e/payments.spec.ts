@@ -114,6 +114,9 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
         })
         .first(),
     ).toBeVisible({ timeout: 25000 });
+    await customer
+      .getByRole("button", { name: "Payments", exact: true })
+      .click();
     await expect(
       customer.getByText("12.34000001 USDTTRC20", { exact: true }),
     ).toBeVisible();
@@ -132,6 +135,9 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     await expect(
       page.getByRole("link", { name: `Order ${id.slice(0, 8)}` }),
     ).toBeVisible();
+    await customer
+      .getByRole("button", { name: "Get help", exact: true })
+      .click();
     await customer.getByLabel("Review reason").selectOption("cancellation");
     await customer
       .getByLabel("Describe your case")

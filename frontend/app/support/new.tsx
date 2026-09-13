@@ -1,5 +1,6 @@
 import { useState, type SubmitEvent } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { z } from "../validation";
 import { post } from "../identity/api";
 import { Action, ErrorNotice, Text } from "../catalog/controls";
 import { conversationSchema } from "./model";
@@ -12,6 +13,10 @@ export function OrderSupport({
   name: string;
   admin?: boolean;
 }) {
+  const location = useLocation();
+  const source = z
+    .object({ orderListSearch: z.string().max(2048) })
+    .safeParse(location.state);
   const navigate = useNavigate(),
     [key] = useState(() => crypto.randomUUID()),
     [busy, setBusy] = useState(false),
@@ -31,7 +36,9 @@ export function OrderSupport({
         },
         conversationSchema,
       );
-      await navigate((admin ? "/admin" : "") + "/support/" + thread.id);
+      await navigate((admin ? "/admin" : "") + "/support/" + thread.id, {
+        state: source.success ? source.data : null,
+      });
     } catch (cause) {
       setError(cause);
     } finally {

@@ -1,3 +1,4 @@
+import { qualifyOrderWorkspace } from "./order-workspace-journey";
 import { availabilityJourney } from "./availability-journey";
 import { randomUUID } from "node:crypto";
 import { test, expect, type Page } from "@playwright/test";
@@ -313,6 +314,9 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       fullPage: true,
     });
     await buyer
+      .getByRole("button", { name: "Selections", exact: true })
+      .click();
+    await buyer
       .getByRole("button", {
         name: "Reorder with current catalog",
         exact: true,
@@ -320,6 +324,8 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       .click();
     await expect(buyer.getByLabel("Ordinary instructions")).toHaveValue("");
     await expect(buyer.getByLabel("Play mode (required)")).toHaveValue("duo");
+    await buyer.getByText("Order options", { exact: true }).click();
+    await buyer.getByText("Cancel this unpaid order", { exact: true }).click();
     await buyer
       .getByRole("button", { name: "Cancel unpaid order", exact: true })
       .click();
@@ -345,14 +351,18 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     ).toContainText("USD 12.34");
     await buyer.goto("/orders");
     await expect(buyer.locator(".order-list li")).toHaveCount(2);
-    await expect(
-      buyer.getByRole("region", { name: "Orders on this page" }),
-    ).toContainText("Counts reflect this page");
+    await expect(buyer.locator(".order-list")).toContainText(
+      "Accepted total · USD 12.34",
+    );
+    await expect(buyer.locator(".order-list")).toContainText(
+      "Check payment instructions",
+    );
     await buyer.screenshot({
       path: `.cache/r03-orders-${info.project.name}.png`,
       fullPage: true,
     });
     await accessible(buyer);
+    await qualifyOrderWorkspace(buyer, info.project.name);
     await buyer.goto("/favorites");
     await expect(
       buyer.getByRole("link", {

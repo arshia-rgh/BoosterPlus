@@ -7,8 +7,8 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 - This is one Git monorepo with independent `backend/` and `frontend/` projects. Keep their dependency graphs, builds, Dockerfiles, and Makefiles separate.
 - Work directly on `main`. Do not create feature branches or worktrees unless the owner changes this instruction.
 - Commit and push each completed, verified implementation stage directly to `origin/main`. This action is already authorized; do not ask again. Never force-push or discard remote/user work.
-- Before **every** commit, run both `make -C backend pre-commit` and `make -C frontend pre-commit`, plus the root repository checks. A root `make pre-commit` must run all of them.
-- Install the tracked Git pre-commit hook and retain the same gate in CI. Do not bypass hooks, skip failing checks, lower thresholds to hide failures, or claim checks passed when tooling/network/infrastructure blocked them.
+- Owner update: use checks proportionate to the changed stage. UI-only changes require the frontend pre-commit and root repository checks, without repeating unchanged backend/production suites. Documentation-only changes require root checks. Backend, deployment, dependency/tooling and unclassified changes retain the full gate. Root `make pre-commit` always remains the complete gate; the tracked hook selects the required scope from the staged paths.
+- Install the tracked Git pre-commit hook; retain the complete gate in CI and at final UX qualification. Do not bypass hooks, skip failing checks, lower thresholds to hide failures, or claim checks passed when tooling/network/infrastructure blocked them.
 - Review the actual staged diff, exclude secrets/generated runtime data, and check `git diff --check` before committing. Verify the pushed commit matches `origin/main` afterward.
 
 ## Quality and security

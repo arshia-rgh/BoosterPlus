@@ -14,7 +14,7 @@ const guidance = {
   ],
   awaiting_payment: [
     "Your agreement is saved",
-    "Payment has not been verified. Crypto checkout is being prepared; your order will show payment instructions when it is available.",
+    "Payment has not been verified. Review Payment & receipts for checkout availability, instructions and any existing payment.",
   ],
   queued: [
     "Your order is in the queue",
@@ -46,7 +46,19 @@ const guidance = {
   ],
 } as const;
 export default function OrderProgress({ detail }: { detail: Detail }) {
-  const [title, description] = guidance[detail.order.state];
+  let [title, description]: readonly [string, string] =
+    guidance[detail.order.state];
+  if (
+    detail.order.kind === "account" &&
+    ["queued", "in_progress", "completed"].includes(detail.order.state)
+  ) {
+    title =
+      detail.order.state === "completed"
+        ? "Your account purchase is complete"
+        : "Your account handoff is underway";
+    description =
+      "Review the ownership checklist and protected account delivery below. Keep recovery details out of chat.";
+  }
   const terminal = ["rejected", "cancelled", "expired"].includes(
     detail.order.state,
   );

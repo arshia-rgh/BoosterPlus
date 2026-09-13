@@ -4789,6 +4789,11 @@ export interface components {
       created_at: string;
       /** Format: date-time */
       updated_at: string;
+      accepted_price?: {
+        currency: string;
+        amount_minor: string;
+      };
+      unread?: boolean;
     };
     OrderCommercial: {
       quote_id: string;

@@ -1,9 +1,27 @@
-import { useState, type SubmitEvent } from "react";
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type SubmitEvent,
+} from "react";
 import { Link, useSearchParams } from "react-router";
 import { ErrorNotice, Select, Text, Action } from "../catalog/controls";
 import { listingSchema, states, stateLabel } from "./model";
+import { minorDisplay } from "../catalog/dynamic-form";
+import { nextAction, orderKind } from "./presentation";
+import "./order-workspace.css";
+import { AuthorizedIdentity } from "../identity/frame";
 import { useResource } from "./resource";
-export default function OrderList({ admin = false }: { admin?: boolean }) {
+// Only order IDs and filters, never form bodies. Clear at every identity boundary.
+const listAnchors = new Map<string, string>();
+let listEpoch = 0;
+if (typeof window !== "undefined")
+  window.addEventListener("boosterplus:session-changed", () => {
+    listEpoch++;
+    listAnchors.clear();
+  });
+function OrderListView({ admin = false }: { admin?: boolean }) {
   const [params, setParams] = useSearchParams(),
     [search, setSearch] = useState(params.get("search") ?? ""),
     [state, setState] = useState(params.get("state") ?? ""),
@@ -29,65 +47,55 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
         : {}),
     });
   const resource = useResource(base + "?" + query.toString(), listingSchema);
+  const identity = useContext(AuthorizedIdentity);
+  const cacheKey =
+    (identity?.session.user?.id ?? "isolated-view") +
+    ":" +
+    base +
+    "?" +
+    params.toString();
+  const anchor = useRef("");
+  useEffect(() => {
+    const remembered = listAnchors.get(cacheKey);
+    if (resource.data && remembered)
+      document
+        .querySelector<HTMLElement>(
+          `[data-order-id="${CSS.escape(remembered)}"]`,
+        )
+        ?.scrollIntoView({ block: "nearest" });
+  }, [cacheKey, resource.data]);
+  useEffect(() => {
+    const key = cacheKey;
+    const epoch = listEpoch;
+    const reference = anchor;
+    return () => {
+      if (reference.current && epoch === listEpoch) {
+        listAnchors.set(key, reference.current);
+        if (listAnchors.size > 20) {
+          const oldest = listAnchors.keys().next().value;
+          if (oldest) listAnchors.delete(oldest);
+        }
+      }
+    };
+  }, [cacheKey]);
   function filter(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setParams({ state, search, ...(admin ? advanced : {}) });
   }
   return (
-    <section>
-      <h2>{admin ? "Requests and active work" : "Your orders"}</h2>
+    <section className="orders-workspace-list">
+      {admin && <h2>Requests and active work</h2>}
       {!admin && (
         <>
           <p>
             Review requests, follow your progress, and keep in touch with your
             team.
           </p>
-          {resource.data && (
-            <section aria-label="Orders on this page">
-              <div className="account-summary">
-                <div>
-                  <strong>
-                    {
-                      resource.data.orders.filter((order) =>
-                        ["needs_information", "quoted"].includes(order.state),
-                      ).length
-                    }
-                  </strong>
-                  <span>Need your review</span>
-                </div>
-                <div>
-                  <strong>
-                    {
-                      resource.data.orders.filter((order) =>
-                        ["queued", "in_progress", "on_hold"].includes(
-                          order.state,
-                        ),
-                      ).length
-                    }
-                  </strong>
-                  <span>In fulfillment</span>
-                </div>
-                <div>
-                  <strong>
-                    {
-                      resource.data.orders.filter(
-                        (order) => order.state === "completed",
-                      ).length
-                    }
-                  </strong>
-                  <span>Completed</span>
-                </div>
-              </div>
-              <p className="quiet">
-                Counts reflect this page and its current filters.
-              </p>
-            </section>
-          )}
         </>
       )}
       <form
         onSubmit={filter}
-        className={admin ? "catalog-grid order-filters" : "catalog-grid"}
+        className={admin ? "catalog-grid order-filters" : "orders-filters"}
       >
         <Text
           label="Search game or full order ID"
@@ -165,7 +173,18 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
           Filter orders
         </button>
       </form>
-      <Action onClick={resource.reload}>Refresh orders</Action>
+      <div className="order-toolbar">
+        <Action onClick={resource.reload}>Refresh orders</Action>
+        {!!params.toString() && (
+          <Action
+            onClick={() => {
+              setParams({});
+            }}
+          >
+            Clear order filters
+          </Action>
+        )}
+      </div>
       <ErrorNotice error={resource.error} />
       {!resource.data ? (
         <p role="status">
@@ -177,7 +196,9 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
         <>
           {resource.data.orders.length === 0 && (
             <p>
-              No matching orders.{" "}
+              {query.get("search") || query.get("state")
+                ? "No orders match these filters. "
+                : "No orders yet. Your requests and purchases will appear here. "}
               {admin ? (
                 "Try a different search or status."
               ) : (
@@ -196,14 +217,20 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
                     <th scope="col">Game / order</th>
                     <th scope="col">Service</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Received</th>
+                    <th scope="col">Updated</th>
                   </tr>
                 </thead>
                 <tbody>
                   {resource.data.orders.map((order) => (
-                    <tr key={order.id}>
+                    <tr key={order.id} data-order-id={order.id}>
                       <td>
-                        <Link to={`${base}/${order.id}`}>
+                        <Link
+                          to={`${base}/${order.id}`}
+                          state={{ orderListSearch: params.toString() }}
+                          onClick={() => {
+                            anchor.current = order.id;
+                          }}
+                        >
                           <strong>{order.game_name}</strong>
                           <small>Order {order.id}</small>
                         </Link>
@@ -221,8 +248,8 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
                         </span>
                       </td>
                       <td>
-                        <time dateTime={order.created_at}>
-                          {new Date(order.created_at).toLocaleString()}
+                        <time dateTime={order.updated_at}>
+                          {new Date(order.updated_at).toLocaleString()}
                         </time>
                       </td>
                     </tr>
@@ -234,26 +261,46 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
             <>
               <ul className="order-list">
                 {resource.data.orders.map((order) => (
-                  <li key={order.id}>
-                    <Link to={`${base}/${order.id}`}>
+                  <li key={order.id} data-order-id={order.id}>
+                    <Link
+                      to={`${base}/${order.id}`}
+                      state={{ orderListSearch: params.toString() }}
+                      onClick={() => {
+                        anchor.current = order.id;
+                      }}
+                    >
                       <strong>{order.game_name}</strong>
                       <span>
-                        {order.kind === "package"
-                          ? "Fixed package"
-                          : order.kind === "account"
-                            ? "Account purchase"
-                            : "Custom request"}{" "}
-                        · {stateLabel(order.state)}
+                        {orderKind(order.kind)} · {stateLabel(order.state)}
                       </span>
-                      <small>Order {order.id}</small>
+                      <span className="order-next-label">
+                        {nextAction(order)}
+                      </span>
+                      {order.accepted_price && (
+                        <span className="order-list-price">
+                          Accepted total · {order.accepted_price.currency}{" "}
+                          {minorDisplay(order.accepted_price.amount_minor)}
+                        </span>
+                      )}
+                      {order.unread && (
+                        <span className="order-unread">Unread messages</span>
+                      )}
+                      <small>Reference {order.id.slice(0, 8)}</small>
                     </Link>
-                    <time dateTime={order.created_at}>
-                      {new Date(order.created_at).toLocaleString()}
+                    <time dateTime={order.updated_at}>
+                      Updated {new Date(order.updated_at).toLocaleString()}
                     </time>
                   </li>
                 ))}
               </ul>
             </>
+          )}
+          {params.get("after") && (
+            <Link
+              to={`${base}?${new URLSearchParams({ ...Object.fromEntries(query), after: "" }).toString()}`}
+            >
+              Newest orders
+            </Link>
           )}
           {resource.data.next && (
             <Link
@@ -265,5 +312,15 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
         </>
       )}
     </section>
+  );
+}
+
+export default function OrderList({ admin = false }: { admin?: boolean }) {
+  const [params] = useSearchParams();
+  return (
+    <OrderListView
+      key={(admin ? "admin:" : "customer:") + params.toString()}
+      admin={admin}
+    />
   );
 }

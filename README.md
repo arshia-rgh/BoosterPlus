@@ -5,7 +5,7 @@ Game boosting and game-account commerce, starting with Mobile Legends. Formerly 
 Planning documents:
 
 - [PLAYORA brand assets](docs/brand/playora/README.md): refined O logo, game-character social background, preserved green aurora and art/motion direction for review.
-- [UI/UX roadmap](UI_UX_ROADMAP.md): layout repairs, a simpler account workspace, chat and complete customer/staff journeys; UX01–UX02 are delivered; UX03 chat/support is implemented for verification.
+- [UI/UX roadmap](UI_UX_ROADMAP.md): layout repairs, a simpler account workspace, chat and complete customer/staff journeys; UX01–UX03 are delivered; UX04 order workspace is implemented for verification.
 - [Final launch](final-launch.md): full R10/R11 production operations and launch scope, explicitly on hold until UX review and separate authorization.
 - [Earlier delivery roadmap](REMAINING_ROADMAP.md): R00–R09 history and retained product/deployment requirements.
 

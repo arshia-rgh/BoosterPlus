@@ -70,6 +70,10 @@ function ContextLinks({
   admin: boolean;
   booster: boolean;
 }) {
+  const location = useLocation();
+  const source = z
+    .object({ orderListSearch: z.string().max(2048) })
+    .safeParse(location.state);
   return (
     <>
       <p>
@@ -84,6 +88,7 @@ function ContextLinks({
       )}
       {(thread.order_id || thread.linked_order_id) && (
         <Link
+          state={source.success ? source.data : null}
           to={
             (booster ? "/booster" : admin ? "/admin" : "") +
             "/orders/" +

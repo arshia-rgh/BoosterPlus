@@ -16,6 +16,7 @@ bootstrap:
 hooks:
 	git config --local core.hooksPath .githooks
 check-repository:
+	python3 -m unittest discover -s scripts -p 'test_commit_gate.py'
 	python3 scripts/check_repository.py
 	cmp backend/api/openapi.json frontend/contracts/openapi.json
 	.tools/actionlint

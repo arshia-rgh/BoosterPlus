@@ -97,19 +97,27 @@ type Commercial struct {
 	TermsVersion     string              `json:"terms_version"`
 }
 
+// ListPrice contains only the immutable accepted amount, never an estimate or provider data.
+type ListPrice struct {
+	Currency    string `json:"currency"`
+	AmountMinor string `json:"amount_minor"`
+}
+
 // Summary omits form snapshots and personal selections from bounded lists.
 type Summary struct {
-	ID        string    `json:"id"`
-	Version   int       `json:"version"`
-	Kind      string    `json:"kind"`
-	State     string    `json:"state"`
-	Slug      string    `json:"slug"`
-	Service   string    `json:"service"`
-	Package   string    `json:"package"`
-	Variant   string    `json:"variant"`
-	GameName  string    `json:"game_name"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	AcceptedPrice *ListPrice `json:"accepted_price,omitempty"`
+	Unread        *bool      `json:"unread,omitempty"`
+	ID            string     `json:"id"`
+	Version       int        `json:"version"`
+	Kind          string     `json:"kind"`
+	State         string     `json:"state"`
+	Slug          string     `json:"slug"`
+	Service       string     `json:"service"`
+	Package       string     `json:"package"`
+	Variant       string     `json:"variant"`
+	GameName      string     `json:"game_name"`
+	CreatedAt     time.Time  `json:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at"`
 }
 
 // QuoteView exposes the customer's agreement but excludes internal staff identity.

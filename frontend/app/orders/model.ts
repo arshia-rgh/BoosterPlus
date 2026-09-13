@@ -19,6 +19,10 @@ export const states = [
   "expired",
 ] as const;
 export const summarySchema = z.object({
+  accepted_price: z
+    .object({ currency: z.string(), amount_minor: z.string() })
+    .optional(),
+  unread: z.boolean().optional(),
   id: z.string(),
   version: z.number().int(),
   kind: z.enum(["custom", "package", "account"]),

@@ -9,4 +9,4 @@ if [ "$(git branch --show-current)" != main ]; then
   printf '%s\n' 'Repository policy requires commits on main.' >&2
   exit 1
 fi
-exec make pre-commit
+exec python3 scripts/commit_gate.py

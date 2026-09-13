@@ -40,7 +40,7 @@ func New(client *ent.Client, auth *identity.Service, now func() time.Time) *Stor
 }
 func (s *Store) instant() time.Time { return s.now().UTC().Truncate(time.Microsecond) }
 func summary(row *ent.Order) Summary {
-	return Summary{row.ID, row.Version, string(row.Kind), string(row.State), row.Slug, row.Service, row.PackageKey, row.VariantKey, row.GameName, row.CreatedAt, row.UpdatedAt}
+	return Summary{ID: row.ID, Version: row.Version, Kind: string(row.Kind), State: string(row.State), Slug: row.Slug, Service: row.Service, Package: row.PackageKey, Variant: row.VariantKey, GameName: row.GameName, CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt}
 }
 func view(ctx context.Context, client *ent.Client, row *ent.Order) (Detail, error) {
 	result := Detail{Order: summary(row), CouponCode: row.CouponCode}
@@ -164,7 +164,7 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, cur
 		}
 		q.Where(order.Or(order.CreatedAtLT(at), order.And(order.CreatedAtEQ(at), order.IDLT(parts[1]))))
 	}
-	q.Select(order.FieldID, order.FieldVersion, order.FieldKind, order.FieldState, order.FieldSlug, order.FieldService, order.FieldPackageKey, order.FieldVariantKey, order.FieldGameName, order.FieldCreatedAt, order.FieldUpdatedAt)
+	q.Select(order.FieldCurrentContract, order.FieldUserID, order.FieldID, order.FieldVersion, order.FieldKind, order.FieldState, order.FieldSlug, order.FieldService, order.FieldPackageKey, order.FieldVariantKey, order.FieldGameName, order.FieldCreatedAt, order.FieldUpdatedAt)
 	rows, err := q.All(ctx)
 	if err != nil {
 		return result, err
@@ -174,8 +174,11 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, cur
 		result.Next = base64.RawURLEncoding.EncodeToString([]byte(last.CreatedAt.Format(time.RFC3339Nano) + "\n" + last.ID))
 		rows = rows[:50]
 	}
-	for _, row := range rows {
-		result.Orders = append(result.Orders, summary(row))
+	if err = s.listContext(ctx, p, admin, rows, &result); err != nil {
+		return Listing{}, err
+	}
+	if _, err = s.auth.Recheck(ctx, p, map[bool]string{true: "admin", false: "account"}[admin]); err != nil {
+		return Listing{}, err
 	}
 	return result, nil
 }

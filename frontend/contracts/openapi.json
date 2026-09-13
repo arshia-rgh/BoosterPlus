@@ -20991,6 +20991,22 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "accepted_price": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["currency", "amount_minor"],
+            "properties": {
+              "currency": {
+                "type": "string"
+              },
+              "amount_minor": {
+                "type": "string"
+              }
+            }
+          },
+          "unread": {
+            "type": "boolean"
           }
         }
       },
