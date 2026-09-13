@@ -1,9 +1,10 @@
-# Booster Plus
+# PLAYORA
 
-Game boosting and game-account commerce, starting with Mobile Legends.
+Game boosting and game-account commerce, starting with Mobile Legends. Formerly Booster Plus; application rebranding is planned in the UI/UX roadmap.
 
 Planning documents:
 
+- [PLAYORA brand assets](docs/brand/playora/README.md): generated logo, separate social background and proposed visual direction for review.
 - [UI/UX roadmap](UI_UX_ROADMAP.md): next design plan for layout repairs, a simpler account workspace, chat and complete customer/staff journeys; implementation awaits owner authorization.
 - [Final launch](final-launch.md): full R10/R11 production operations and launch scope, explicitly on hold until UX review and separate authorization.
 - [Earlier delivery roadmap](REMAINING_ROADMAP.md): R00–R09 history and retained product/deployment requirements.

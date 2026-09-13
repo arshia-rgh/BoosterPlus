@@ -1,4 +1,4 @@
-# Booster Plus — final launch: R10 and R11
+# PLAYORA — final launch: R10 and R11
 
 **Status: ON HOLD.** The owner has deferred production-readiness implementation and launch until the [UI/UX roadmap](UI_UX_ROADMAP.md) is completed and reviewed. Neither this document nor completion of a UX phase authorizes resuming R10/R11. Separate explicit owner authorization is required.
 
@@ -125,7 +125,7 @@ R10 acceptance requires verified remote CI, signed/verified artifacts, clean-hos
 ### R11.1 Final product/content and UX sign-off
 
 - Obtain owner acceptance of UX01–UX10 and close all blocking/high defects; recheck the actual release in the production topology so routing/assets/configuration cannot invalidate local screenshots.
-- Publish approved, correctly licensed/original branding and MLBB rank/season assets. Preserve the accepted homepage animation/font/background unless explicitly changed later.
+- Publish approved, correctly licensed/original branding and MLBB rank/season assets. Use the owner-reviewed PLAYORA identity from the UI/UX roadmap and its approved derivatives, retaining the current overall green theme, fonts and website art direction. Verify the new display name, domains, email sender, Google consent screen, provider merchant identity and public metadata agree; retain historical records accurately. Keep the rank animation and its accessible fallback. This brand update does not resume R10/R11.
 - Review every configured rank progression, field/reference/condition, pricing rule, hero/role restriction, win-rate interpretation, supported mode, package scope/capacity and delivery estimate. Synthetic values and illustrative profiles must not masquerade as live offerings or outcomes.
 - Approve custom quote, fixed pack, crypto fee, cancellation/dispute/partial-work/no-show/missed-target/refund policies and account ownership/handoff/seller payout terms. Historical accepted versions remain accessible and immutable.
 - Approve legal/service/privacy/account-sale/contact text, support coverage/timezone and business identity. Avoid unqualified 24/7 service, “risk-free” or delivery guarantees. Keep private drafts out of public/email copy.

@@ -1,4 +1,4 @@
-# Booster Plus repository rules
+# PLAYORA repository rules
 
 These rules record the owner's instructions from 9 September 2026 and apply to every stage and future task in this repository.
 
@@ -40,7 +40,7 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 ## Current delivery boundary (13 September 2026)
 
 - R07, R08 and R09 are delivered. The current authorized task is UI/UX planning in `UI_UX_ROADMAP.md`; wait for owner authorization before implementing UX01–UX10.
-- Preserve the accepted fonts, background artwork, image quality and existing animations while planning improvements to layout, readability, navigation and interaction across all roles.
+- The owner renamed the brand to PLAYORA on 13 September 2026 and authorized generating a matching logo and separate social background now. The latest clarification requires preserving the current overall green website theme and changing details only; it supersedes the earlier permission for a different theme. Retain accepted fonts, website background/art direction, rank-transformation behavior, accessibility and image quality. Application rebranding remains part of UX01–UX10, awaiting authorization; brand masters live in `docs/brand/playora/`.
 - R10/R11 are on hold. Their full retained scope is in `final-launch.md`; completing the UX work does not automatically authorize production implementation or launch.
 - Continue running established production regression checks in the full pre-commit gate. This does not resume deferred R10/R11 implementation.
 
