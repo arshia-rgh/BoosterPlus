@@ -38,9 +38,12 @@ test("missing pages return 404 without reflecting malicious input", async ({
   await expect(page).toHaveURL("/");
 });
 
-test("keyboard users can skip navigation", async ({ page }) => {
+test("keyboard users can skip navigation", async ({ page }, info) => {
   await page.goto("/");
-  await page.keyboard.press("Tab");
+  // Safari's default keyboard policy uses Option-Tab to include links.
+  await page.keyboard.press(
+    info.project.use.browserName === "webkit" ? "Alt+Tab" : "Tab",
+  );
   await expect(
     page.getByRole("link", { name: "Skip to content" }),
   ).toBeFocused();

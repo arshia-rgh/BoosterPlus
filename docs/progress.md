@@ -710,3 +710,30 @@ Favorites use compact named removal controls, activity distinguishes unread rows
 
 
 The initial UX09 gate passed 48 ordinary browser journeys but stopped on both device policy journeys because the download expectation still used the old brand filename. Corrected the expectation to `playora-personal-profile.json`; the underlying export/privacy assertions remain. The failed log is `.cache/ux09-commit-attempt1.log`; a fresh complete frontend/repository hook is required.
+
+
+UX09 delivered as `9af8fb331e476633842ce5657e6668eb27f9a8ea`, pushed and verified against remote main. The fresh tracked frontend/repository gate passed 177 tests in 58 files, all 50 desktop/mobile browser journeys, types/lint, axe/reflow, audit/contracts, budgets/builds, image scans and read-only container smoke (`.cache/ux09-commit.log`). Activity and booster scheduling screenshots were inspected.
+
+## UX10 — Final polish, social kit and cross-browser qualification
+
+Implemented the final review corrections: zero admin metrics move to a secondary disclosure, accepted agreements are collapsed above checkout, empty seller commercial history/withdrawal is quieter, and account activity has one title. Actual obligations, accepted totals, current offers and protected actions remain explicit. Captures now await loaded market/admin/case states. Added square/portrait/story character masters, editable vector overlays, padded symbol avatar and a bounded 1200 × 675 share image. Homepage absolute share URLs require an optional validated HTTPS public origin; no domain or private metadata is inferred.
+
+Added a reproducible three-engine browser target using the same isolated fixture populations, extended public reflow/landscape/text sizing, motion recording and truthful unsupported performance metrics. Initial local checks caught a route type import unavailable across the two separate builds and JSDOM's role query treatment of closed details; corrected the metadata signature and used actual visibility for the disclosure test. Full cross-browser and root gate results are pending. R10/R11 remain held.
+
+
+The first Firefox setup run stopped because Playwright requires video settings at file scope; moved recording to its own spec (`.cache/ux10-firefox-attempt1.log`). The next complete run found only stale expectations for the collapsed accepted agreement and human-readable work status, on both device projects. Updated those interactions while retaining amount/state checks (`.cache/ux10-firefox-attempt2.log`). The final brand audit also renamed the staff report export and its filename assertion to PLAYORA; internal event/storage/API identifiers remain compatible.
+
+
+The next Firefox run passed all functional journeys but found that the layout probe counted retained geometry inside a closed recovery disclosure. It now checks rendered visibility and also explicitly opens the recovery panel at 320 px, strengthening real visible-control coverage (`.cache/ux10-firefox-attempt3.log`). Final roadmap review also completed the mobile marketplace filter drawer with native Escape/focus return, preserved filter values and applied-result context. Final browser reruns include this addition.
+
+
+WebKit qualification exposed real focus-return and hardware-keyboard table-scroll gaps: pointer-opened gallery/filter dialogs now explicitly focus their native trigger, and the focused report region handles left/right keys without intercepting child controls. Test corrections use Safari's documented Option-Tab link navigation, native mobile scrolling where Playwright forbids mouse wheel, and a genuine PNG canvas fixture (WebKit's WebP export fallback produced PNG bytes, correctly rejected by media validation). No media validation or keyboard assertion was removed. Initial WebKit evidence is `.cache/ux10-webkit-attempt1.log`; both alternate engines must rerun against these corrections.
+
+
+The second WebKit run suffered browser-process closures and broad page/resize timeouts after 16 ordinary desktop tests. Stopped only its identified process group with SIGINT, retaining `.cache/ux10-webkit-attempt2.log`. The test database remained within its limits, and a fresh independent WebKit 26.6 process opened/resized three local pages successfully. The full rerun keeps the same workers, timeouts and assertions; no infrastructure failure counts as qualification.
+
+
+The subsequent fixture startup exceeded its unchanged 120-second limit (`.cache/ux10-webkit-attempt3.log`). Confirmed the pinned Go toolchain starts promptly and restarted only the mount-free synthetic TiDB on port 14001. The next attempt correctly refused a stale test HTTP server on port 4173 (`.cache/ux10-webkit-attempt4.log`); identified it as PID 68900 from the interrupted run and terminated that process. The runner does not reuse existing servers. No development database or live configuration was modified.
+
+
+The clean corrected WebKit and Firefox runs both passed all 54 desktop/mobile and policy journeys, with separate screenshot/video/performance evidence retained under `.cache/ux10-evidence/`. Typed/linted frontend component coverage remains 180 tests in 60 files with 100% required route coverage. Final delivery requires the complete tracked root hook (`.cache/ux10-commit.log`), including unchanged backend/security/race/TiDB and retained deployment regressions plus Chromium. No R10/R11 implementation or launch is authorized.

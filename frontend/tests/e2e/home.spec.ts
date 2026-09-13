@@ -54,7 +54,11 @@ test("rank journey scrubs smoothly forward/backward and survives resize and navi
   }
   expect(await opacity(page, ".rank-finish")).toBe(1);
   expect(await opacity(page, ".rank-start")).toBe(0);
-  await page.mouse.wheel(0, -275);
+  if (info.project.name === "mobile")
+    await page.evaluate(() => {
+      scrollBy(0, -275);
+    });
+  else await page.mouse.wheel(0, -275);
   await expect
     .poll(async () =>
       Number(await page.locator("#rank-journey").getAttribute("data-progress")),
@@ -180,20 +184,28 @@ test("homepage respects transfer and layout-shift budgets under production CSP",
   page,
 }, info) => {
   await page.addInitScript(() => {
-    const result = { cls: 0, lcp: 0, violations: [] as string[] };
+    const supported = PerformanceObserver.supportedEntryTypes;
+    const result = {
+      cls: supported.includes("layout-shift") ? 0 : null,
+      lcp: supported.includes("largest-contentful-paint") ? 0 : null,
+      violations: [] as string[],
+    };
     Object.defineProperty(window, "homeLabMetrics", { value: result });
-    new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        const shift = entry as PerformanceEntry & {
-          hadRecentInput: boolean;
-          value: number;
-        };
-        if (!shift.hadRecentInput) result.cls += shift.value;
-      }
-    }).observe({ type: "layout-shift", buffered: true });
-    new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) result.lcp = entry.startTime;
-    }).observe({ type: "largest-contentful-paint", buffered: true });
+    if (result.cls !== null)
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          const shift = entry as PerformanceEntry & {
+            hadRecentInput: boolean;
+            value: number;
+          };
+          if (!shift.hadRecentInput && result.cls !== null)
+            result.cls += shift.value;
+        }
+      }).observe({ type: "layout-shift", buffered: true });
+    if (result.lcp !== null)
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) result.lcp = entry.startTime;
+      }).observe({ type: "largest-contentful-paint", buffered: true });
     document.addEventListener("securitypolicyviolation", (event) => {
       result.violations.push(event.violatedDirective);
     });
@@ -240,7 +252,11 @@ test("homepage respects transfer and layout-shift budgets under production CSP",
   const report = await page.evaluate(() => {
     const metrics = (
       window as unknown as Window & {
-        homeLabMetrics: { cls: number; lcp: number; violations: string[] };
+        homeLabMetrics: {
+          cls: number | null;
+          lcp: number | null;
+          violations: string[];
+        };
       }
     ).homeLabMetrics;
     const resources = performance.getEntriesByType(
@@ -261,7 +277,9 @@ test("homepage respects transfer and layout-shift budgets under production CSP",
         })),
     };
   });
-  expect(report.cls).toBeLessThanOrEqual(0.1);
+  if (info.project.use.browserName === "chromium")
+    expect(report.cls).not.toBeNull();
+  if (report.cls !== null) expect(report.cls).toBeLessThanOrEqual(0.1);
   expect(report.bytes).toBeLessThan(1024 * 1024);
   expect(report.remoteResources).toBe(0);
   expect(report.violations).toEqual([]);
@@ -280,8 +298,7 @@ test("homepage respects transfer and layout-shift budgets under production CSP",
   expect(characterBytes).toBeLessThan(200_000);
   const evidence = JSON.stringify(
     {
-      profile:
-        "Local production SSR, unthrottled Chromium; not field Web Vitals",
+      profile: `Local production SSR, unthrottled ${info.project.use.browserName ?? "chromium"}; unsupported performance metrics are null, not field Web Vitals`,
       ...report,
       frameIntervals,
     },

@@ -66,3 +66,15 @@ it("loads published homepage content through the server boundary", async () => {
   );
   expect((await homeLoader()).start_rank).toBe("Warrior");
 });
+
+it("renders homepage share metadata only with configured public origin", async () => {
+  vi.stubEnv("PUBLIC_SITE_ORIGIN", "https://playora.example");
+  try {
+    expect(homeMeta({ data: await homeLoader() })).toContainEqual({
+      property: "og:url",
+      content: "https://playora.example/",
+    });
+  } finally {
+    vi.unstubAllEnvs();
+  }
+});

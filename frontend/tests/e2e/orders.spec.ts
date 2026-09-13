@@ -304,6 +304,9 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     await buyer
       .getByRole("button", { name: "Accept quote", exact: true })
       .click();
+    await buyer
+      .locator('[data-order-section="Accepted agreement"] > summary')
+      .click();
     await expect(
       buyer.getByRole("heading", { name: "Accepted agreement", exact: true }),
     ).toBeVisible();
@@ -356,6 +359,9 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       .check();
     await buyer
       .getByRole("button", { name: "Create package order", exact: true })
+      .click();
+    await buyer
+      .locator('[data-order-section="Accepted agreement"] > summary')
       .click();
     await expect(
       buyer.getByRole("region", { name: "Accepted agreement" }),

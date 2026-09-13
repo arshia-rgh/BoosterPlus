@@ -46,19 +46,19 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
     await buyer
       .getByLabel("Message", { exact: true })
       .fill("Can you help me choose a service?");
-    const webp = await buyer.evaluate(() => {
+    const png = await buyer.evaluate(() => {
       const canvas = document.createElement("canvas");
       canvas.width = 8;
       canvas.height = 8;
-      return canvas.toDataURL("image/webp").split(",")[1] ?? "";
+      return canvas.toDataURL("image/png").split(",")[1] ?? "";
     });
     await buyer
       .getByRole("button", { name: "Attach image", exact: true })
       .click();
     await buyer.getByLabel("Choose image").setInputFiles({
-      name: "proof.webp",
-      mimeType: "image/webp",
-      buffer: Buffer.from(webp, "base64"),
+      name: "proof.png",
+      mimeType: "image/png",
+      buffer: Buffer.from(png, "base64"),
     });
     await expect(
       buyer.getByRole("button", { name: "Send message", exact: true }),

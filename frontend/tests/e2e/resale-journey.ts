@@ -248,9 +248,29 @@ export async function resaleJourney(
     ).toBeVisible();
     await accessible(page);
     await buyer.goto("/accounts");
+    const filterTrigger = buyer.getByRole("button", {
+      name: "Filter accounts",
+      exact: true,
+    });
+    if (info.project.name === "mobile") {
+      await filterTrigger.click();
+      await expect(
+        buyer.getByRole("dialog", { name: "Account filters" }),
+      ).toBeVisible();
+      await buyer.keyboard.press("Escape");
+      await expect(filterTrigger).toBeFocused();
+      await filterTrigger.click();
+    }
     await buyer.getByLabel("Search accounts", { exact: true }).fill(title);
     await buyer.getByRole("button", { name: "Apply account filters" }).click();
     await expect(buyer).toHaveURL(/search=/);
+    await expect(
+      buyer.getByRole("link", { name: title, exact: true }),
+    ).toBeVisible();
+    await expect(
+      buyer.getByRole("region", { name: "Applied account filters" }),
+    ).toContainText(title);
+    await expect(buyer.locator(".market-result-count")).toBeFocused();
     await buyer.screenshot({
       path: `.cache/marketplace-${info.project.name}.png`,
       fullPage: true,
@@ -258,9 +278,14 @@ export async function resaleJourney(
     await accessible(buyer);
     await buyer.getByRole("link", { name: title, exact: true }).click();
     await buyer.getByRole("link", { name: "← Account marketplace" }).click();
+    if (info.project.name === "mobile") await filterTrigger.click();
     await expect(
       buyer.getByLabel("Search accounts", { exact: true }),
     ).toHaveValue(title);
+    if (info.project.name === "mobile")
+      await buyer
+        .getByRole("button", { name: "Close filters", exact: true })
+        .click();
     await buyer.getByRole("link", { name: title, exact: true }).click();
     // Isolated reviewed-image responses qualify the native gallery without uploading private evidence.
     const listingURL = `**/api/v1/accounts/${item.id}`;

@@ -512,6 +512,25 @@ export default function SellerOffers({
     resource.reload();
     changed();
   };
+  if (
+    !admin &&
+    !resource.loading &&
+    !resource.error &&
+    resource.data?.offers.length === 0
+  )
+    return (
+      <section aria-label="Seller agreements">
+        <p>
+          No commercial offer yet. Review approval alone does not create a
+          payout.
+        </p>
+        <details>
+          <summary>Agreement and payout history</summary>
+          <Action onClick={resource.reload}>Refresh seller agreements</Action>
+          <SellerPayouts id={id} admin={admin} owner={owner} />
+        </details>
+      </section>
+    );
   return (
     <section aria-label="Seller agreements">
       <h2>Seller agreements</h2>
@@ -613,7 +632,15 @@ export default function SellerOffers({
             ) && <Proposal id={id} version={version} changed={reload} />}
         </fieldset>
       )}
-      <SellerPayouts id={id} admin={admin} owner={owner} />
+      {admin ||
+      resource.data?.offers.some((offer) => offer.state === "accepted") ? (
+        <SellerPayouts id={id} admin={admin} owner={owner} />
+      ) : (
+        <details>
+          <summary>Payout history</summary>
+          <SellerPayouts id={id} admin={admin} owner={owner} />
+        </details>
+      )}
       {admin && <Link to="/admin/accounts">Account inventory</Link>}
     </section>
   );

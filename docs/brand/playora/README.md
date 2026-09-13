@@ -29,3 +29,8 @@ The owner explicitly keeps the current overall green website theme, font familie
 `characters/iori.png`, `characters/illidan.png` and `characters/ahri.png` are 1024 × 1536 generated interpretations of Iori Yagami (Chou/MLBB), Illidan (WoW) and Ahri (LoL). `characters/miya.png` is a retained optional MLBB portrait, not loaded by the application. All are opaque PNGs with solid black backgrounds; attempted alpha generation did not produce real transparency. Runtime 768 × 1152 JPEG derivatives in `frontend/public/characters/` total about 537 KiB, with only Iori loaded initially (about 121 KiB). SVG luminance compositing removes black at render time, and hand-defined masks articulate garment, wing or tail separately from breathing and scroll motion. These are restrained 2D articulated illustrations, not complete skeletal rigs.
 
 The existing social composite, abstract aurora and raster logos are preserved. See [character prompts](characters/PROMPTS.md) for source provenance. The application uses only published service links; illustrative game choice does not assert catalog availability. Native masters are never downloaded by the homepage.
+
+
+## UX10 social and share kit
+
+The [social kit](social/README.md) now contains independent square, portrait and story PNG masters, editable SVG campaign overlays, a padded symbol avatar and optimized homepage share metadata. The original landscape and abstract aurora remain unchanged. The application vector identity is already delivered in `frontend/public/brand/`; statements above about opaque raster draft logos do not describe those transparent vector lockups. All final evidence and remaining owner/device review items are in `docs/ux/UX10_QUALIFICATION.md`.

@@ -274,13 +274,14 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     await customer
       .getByRole("button", { name: "Accept resolution and close case" })
       .click();
+    await expect(
+      customer.getByRole("heading", { name: "cancellation · closed" }),
+    ).toBeVisible();
     await customer.screenshot({
       path: `.cache/case-refund-${info.project.name}.png`,
       fullPage: true,
     });
-    await expect(
-      customer.getByRole("heading", { name: "cancellation · closed" }),
-    ).toBeVisible();
+
     await expect(
       customer.getByText("Transfer confirmed", { exact: true }),
     ).toBeVisible();

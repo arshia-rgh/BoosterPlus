@@ -1,6 +1,8 @@
+import MarketFilterPanel from "./filter-panel";
 import AccountAlerts from "../availability/accounts";
 import { FavoriteButton } from "../orders/favorites";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { z } from "../validation";
 import {
   Link,
   useLocation,
@@ -67,6 +69,11 @@ export function AccountMarket() {
 }
 function MarketResults() {
   const [params, setParams] = useSearchParams();
+  const navigation = useLocation();
+  const focusResults = z
+    .object({ filtersApplied: z.literal(true) })
+    .safeParse(navigation.state).success;
+  const resultSummary = useRef<HTMLParagraphElement>(null);
   const [search, setSearch] = useState(
       params.get("search")?.slice(0, 200) ?? "",
     ),
@@ -81,6 +88,10 @@ function MarketResults() {
     after,
   }).toString();
   const resource = useResource(`/accounts?${query}`, publicListingsSchema);
+  const ready = !!resource.data && !resource.error;
+  useEffect(() => {
+    if (focusResults && ready) resultSummary.current?.focus();
+  }, [focusResults, ready]);
   function pageAfter(value: string) {
     const next = new URLSearchParams(query);
     next.set("after", value);
@@ -99,44 +110,82 @@ function MarketResults() {
         <summary>Get notified about accounts</summary>
         <AccountAlerts />
       </details>
-      <form
-        className="market-filters"
-        onSubmit={(event) => {
-          event.preventDefault();
-          setParams(
-            new URLSearchParams({
-              search,
-              region,
-              rank,
-              slug: params.get("slug") ?? "",
-            }),
-          );
-        }}
-      >
-        <fieldset>
-          <legend>Find an account</legend>
-          <Text label="Search accounts" value={search} change={setSearch} />
-          <Text label="Account region" value={region} change={setRegion} />
-          <Text label="Account rank" value={rank} change={setRank} />
-          <button className="button compact" type="submit">
-            Apply account filters
-          </button>
-          {(params.get("search") ||
-            params.get("region") ||
-            params.get("rank") ||
-            after) && (
-            <Action
-              onClick={() => {
-                setParams(
-                  params.get("slug") ? { slug: params.get("slug") ?? "" } : {},
-                );
-              }}
-            >
-              Clear account filters
-            </Action>
-          )}
-        </fieldset>
-      </form>
+      <MarketFilterPanel>
+        <form
+          className="market-filters"
+          onSubmit={(event) => {
+            event.preventDefault();
+            event.currentTarget.closest("dialog")?.close();
+            resultSummary.current?.focus();
+            setParams(
+              new URLSearchParams({
+                search,
+                region,
+                rank,
+                slug: params.get("slug") ?? "",
+              }),
+              { state: { filtersApplied: true } },
+            );
+          }}
+        >
+          <fieldset>
+            <legend>Find an account</legend>
+            <Text label="Search accounts" value={search} change={setSearch} />
+            <Text label="Account region" value={region} change={setRegion} />
+            <Text label="Account rank" value={rank} change={setRank} />
+            <button className="button compact" type="submit">
+              Apply account filters
+            </button>
+            {(params.get("search") ||
+              params.get("region") ||
+              params.get("rank") ||
+              after) && (
+              <Action
+                onClick={() => {
+                  setParams(
+                    params.get("slug")
+                      ? { slug: params.get("slug") ?? "" }
+                      : {},
+                  );
+                }}
+              >
+                Clear account filters
+              </Action>
+            )}
+          </fieldset>
+        </form>
+      </MarketFilterPanel>
+      {(params.get("search") || params.get("rank") || params.get("region")) && (
+        <section
+          className="market-applied-filters"
+          aria-label="Applied account filters"
+        >
+          <ul>
+            {(["search", "rank", "region"] as const)
+              .filter((key) => params.get(key))
+              .map((key) => (
+                <li key={key}>
+                  {key === "search"
+                    ? "Search"
+                    : key === "rank"
+                      ? "Rank"
+                      : "Region"}
+                  : {params.get(key)?.slice(0, 200)}
+                </li>
+              ))}
+          </ul>
+          <Link
+            to={
+              params.get("slug")
+                ? "/accounts?slug=" +
+                  encodeURIComponent(params.get("slug") ?? "")
+                : "/accounts"
+            }
+          >
+            Clear all filters
+          </Link>
+        </section>
+      )}
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Loading available accounts…</p>}
       {!!resource.error && (
@@ -144,7 +193,12 @@ function MarketResults() {
       )}
       {resource.data && !resource.error && (
         <>
-          <p className="market-result-count" role="status">
+          <p
+            ref={resultSummary}
+            tabIndex={-1}
+            className="market-result-count"
+            role="status"
+          >
             {resource.data.items.length} accounts in this view
             {resource.data.next ? " · More available" : ""}
           </p>

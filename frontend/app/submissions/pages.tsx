@@ -355,7 +355,8 @@ function ReviewActions({
           </p>
         </>
       ) : (
-        <>
+        <details>
+          <summary>Submission options</summary>
           <p>
             You may withdraw this submission before accepting any commercial
             agreement.
@@ -368,7 +369,7 @@ function ReviewActions({
           >
             Withdraw account submission
           </Action>
-        </>
+        </details>
       )}
     </section>
   );

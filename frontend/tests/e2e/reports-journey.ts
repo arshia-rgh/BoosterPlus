@@ -56,9 +56,7 @@ export async function reportsJourney(page: Page, device: string) {
     .getByRole("button", { name: "Download this page (.json)" })
     .click();
   const download = await waiting;
-  expect(download.suggestedFilename()).toBe(
-    "boosterplus-operational-report.json",
-  );
+  expect(download.suggestedFilename()).toBe("playora-operational-report.json");
   const path = await download.path();
   if (!path) throw new Error("Missing report artifact");
   const raw = await readFile(path, "utf8");

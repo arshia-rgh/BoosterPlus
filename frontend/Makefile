@@ -89,3 +89,10 @@ test-experience: build
 	npm run test:e2e
 budget-experience:
 	npm run budget:experience
+
+.PHONY: test-cross-browser
+# Uses the same isolated TiDB/SMTP fixtures and complete route suite for every engine.
+test-cross-browser: build
+	PLAYWRIGHT_ENGINE=chromium npm run test:e2e
+	PLAYWRIGHT_ENGINE=firefox npm run test:e2e
+	PLAYWRIGHT_ENGINE=webkit npm run test:e2e

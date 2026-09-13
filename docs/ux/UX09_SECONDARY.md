@@ -1,0 +1,7 @@
+# UX09 — Secondary workflows
+
+Booster work cards show the assigned game/service, actual play mode, human-readable state, reported progress, next action and last update. Hidden-tab polling pauses; returning refreshes, and navigation removes listeners/timers. Work edits still require a freshly loaded revision. Scheduling remains an agenda with explicit calendar timezone, local offsets and the existing DST/conflict guards. Secret reveal, customer-only fields, holds and proof publication keep their existing authorization boundaries.
+
+Saved offers, account activity, review lists and availability subscriptions use compact responsive lists and distinct empty/loading/error states. Removal controls retain the offer name in their accessible label. Unread styling supplements explicit text. Cursor links are encoded, and paginated views can return to newest entries. Availability consent, unsubscribe, review eligibility and moderation/refund labels are preserved. Personal exports use PLAYORA filenames.
+
+Reproducible verification uses `make -C frontend pre-commit` plus root repository checks, with isolated TiDB/SMTP and provider fixtures. The stage adds hidden-tab/cleanup component coverage and retains the complete browser journeys. Activity and scheduling screenshots are recorded under `frontend/.cache/` and `frontend/test-results/`. UX10 performs cross-browser review and removes the duplicate activity title found during screenshot inspection. No backend or deferred production change.

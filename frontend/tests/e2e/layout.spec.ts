@@ -9,6 +9,9 @@ async function fitsViewport(page: Page) {
     for (const element of document.querySelectorAll(
       ".site-header a, main input, main select, main textarea, main button, main h1",
     )) {
+      // Firefox can retain geometry for descendants of closed details; only
+      // rendered controls participate. Open disclosures are checked below too.
+      if (!element.checkVisibility({ visibilityProperty: true })) continue;
       const rect = element.getBoundingClientRect();
       if (rect.width && (rect.left < -1 || rect.right > innerWidth + 1))
         issues.push(
@@ -43,7 +46,7 @@ test("shared layouts reflow with long labels, narrow screens and enlarged text",
     await expect(
       page.getByRole("textbox", { name: "Email address", exact: true }),
     ).toBeVisible();
-    for (const width of [320, 390, 768, 1440]) {
+    for (const width of [320, 360, 390, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       await fitsViewport(page);
       if (width < 581)
@@ -52,6 +55,15 @@ test("shared layouts reflow with long labels, narrow screens and enlarged text",
         ).toBeHidden();
     }
     await page.setViewportSize({ width: 320, height: 900 });
+    await page.getByText("Lost access to your email?", { exact: true }).click();
+    await expect(
+      page.getByRole("button", {
+        name: "Send recovery verification code",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await fitsViewport(page);
+    await page.getByText("Lost access to your email?", { exact: true }).click();
     // Synthetic copy stress only: no auth/session or business state is replaced.
     await page.locator("main h1").evaluate((e) => {
       e.textContent =
@@ -69,5 +81,29 @@ test("shared layouts reflow with long labels, narrow screens and enlarged text",
       path: `.cache/ux01-${route.slice(1)}-${info.project.name}-320.png`,
       fullPage: true,
     });
+  }
+});
+
+test("public browsing reflows through width and landscape changes", async ({
+  page,
+}) => {
+  for (const route of ["/", "/games", "/accounts", "/login"]) {
+    await page.goto(route);
+    await expect(page.locator("main")).toBeVisible();
+    for (const width of [320, 360, 390, 768, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await fitsViewport(page);
+    }
+    await page.setViewportSize({ width: 844, height: 390 });
+    await fitsViewport(page);
+    await page.setViewportSize({ width: 320, height: 900 });
+    await page.evaluate(() => {
+      document.documentElement.style.fontSize = "200%";
+    });
+    await fitsViewport(page);
+    await page.evaluate(() => {
+      document.documentElement.style.removeProperty("font-size");
+    });
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   }
 });

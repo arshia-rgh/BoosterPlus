@@ -31,16 +31,39 @@ export default function OperationsOverview() {
             </time>
           </p>
           <div className="operations-metrics">
-            {value.cards.map((card) => (
-              <section className="operation-metric" key={card.key}>
-                <h3>
-                  <Link to={card.href}>{card.label}</Link>
-                </h3>
-                <p className="operation-count">{card.count}</p>
-                <p>{card.detail}</p>
-              </section>
-            ))}
+            {value.cards
+              .filter((card) => card.count > 0)
+              .map((card) => (
+                <section className="operation-metric" key={card.key}>
+                  <h3>
+                    <Link to={card.href}>{card.label}</Link>
+                  </h3>
+                  <p className="operation-count">{card.count}</p>
+                  <p>{card.detail}</p>
+                </section>
+              ))}
           </div>
+          {!value.cards.some((card) => card.count > 0) && (
+            <p>No activity in the monitored queues at this refresh.</p>
+          )}
+          {value.cards.some((card) => card.count === 0) && (
+            <details className="operations-quiet-queues">
+              <summary>
+                Queues with no current items (
+                {value.cards.filter((card) => card.count === 0).length})
+              </summary>
+              <ul className="order-list">
+                {value.cards
+                  .filter((card) => card.count === 0)
+                  .map((card) => (
+                    <li key={card.key}>
+                      <Link to={card.href}>{card.label}: 0</Link>
+                      <span>{card.detail}</span>
+                    </li>
+                  ))}
+              </ul>
+            </details>
+          )}
           <div className="operations-worklists">
             <section className="catalog-section">
               <h3>Oldest requests to review</h3>

@@ -17,9 +17,18 @@ export async function qualifyOrderWorkspace(page: Page, project: string) {
   await expect(page).toHaveURL(/\/orders\/[a-f0-9-]+$/);
   const id = page.url().split("/").at(-1);
   if (!id) throw new Error("Missing order reference");
+  const agreement = page.locator(
+    '[data-order-section="Accepted agreement"] > summary',
+  );
+  await expect(agreement).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Accepted agreement", exact: true }),
+  ).toBeHidden();
+  await agreement.click();
   await expect(
     page.getByRole("region", { name: "Accepted agreement", exact: true }),
   ).toContainText("USD 12.34");
+  await agreement.click();
   await expect(
     page.getByRole("heading", { name: "Order timeline", exact: true }),
   ).toBeHidden();
@@ -45,7 +54,7 @@ export async function qualifyOrderWorkspace(page: Page, project: string) {
     .getByRole("link", { name: "View linked order", exact: true })
     .click();
   await expect(
-    page.getByRole("region", { name: "Accepted agreement", exact: true }),
+    page.locator('[data-order-section="Accepted agreement"] > summary'),
   ).toBeVisible();
   const viewport = page.viewportSize();
   for (const width of [320, 390, 768, 1440]) {
@@ -88,7 +97,7 @@ export async function qualifyOrderWorkspace(page: Page, project: string) {
   });
   await page.locator(".order-list").getByRole("link").click();
   await expect(
-    page.getByRole("region", { name: "Accepted agreement", exact: true }),
+    page.locator('[data-order-section="Accepted agreement"] > summary'),
   ).toBeVisible();
   await page.route(`**/api/v1/orders/${id}`, (route) =>
     route.fulfill({
@@ -111,6 +120,6 @@ export async function qualifyOrderWorkspace(page: Page, project: string) {
     .getByRole("button", { name: "Refresh order", exact: true })
     .click();
   await expect(
-    page.getByRole("region", { name: "Accepted agreement", exact: true }),
+    page.locator('[data-order-section="Accepted agreement"] > summary'),
   ).toBeVisible();
 }

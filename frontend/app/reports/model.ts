@@ -40,7 +40,7 @@ export function downloadReport(value: Export) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "boosterplus-operational-report.json";
+  link.download = "playora-operational-report.json";
   document.body.append(link);
   link.click();
   link.remove();

@@ -116,6 +116,12 @@ for (const role of ["booster", "administrator", "owner"] as const) {
       await expect(
         page.getByRole("heading", { name: "Operations overview", exact: true }),
       ).toBeVisible();
+      await expect(
+        page.getByRole("heading", {
+          name: "Background tasks needing attention",
+          exact: true,
+        }),
+      ).toBeVisible();
       await page.screenshot({
         path: `.cache/operations-${info.project.name}-${role}.png`,
         fullPage: true,

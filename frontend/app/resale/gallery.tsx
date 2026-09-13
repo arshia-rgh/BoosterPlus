@@ -67,13 +67,18 @@ export default function AccountGallery({
             </button>
           ))}
         </div>
-        <Action
-          onClick={() => {
+        <button
+          className="button compact"
+          type="button"
+          aria-haspopup="dialog"
+          onClick={(event) => {
+            // Safari does not focus a button on pointer click; establish the native dialog return target.
+            event.currentTarget.focus();
             dialog.current?.showModal();
           }}
         >
           Enlarge screenshot
-        </Action>
+        </button>
       </div>
       <dialog
         ref={dialog}

@@ -28,3 +28,10 @@ for (const [name, limit] of [
     throw new Error(`Hero artwork ${name} exceeds ${limit} bytes`);
   console.log(`Hero artwork ${name}: ${size}/${limit} bytes`);
 }
+
+const share = await stat(
+  new URL("../public/brand/playora-share.jpg", import.meta.url),
+);
+if (share.size > 500 * 1024)
+  throw new Error("Social share image exceeds 500 KiB");
+console.log(`Share image (metadata only): ${share.size}/${500 * 1024} bytes`);

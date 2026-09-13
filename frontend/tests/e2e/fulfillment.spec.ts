@@ -281,7 +281,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       .getByRole("button", { name: "Save progress", exact: true })
       .click();
     await expect(
-      staff.getByText(/Status: in_progress · Progress 80%/),
+      staff.getByText(/Status: in progress · Progress 80%/),
     ).toBeVisible();
     await staff
       .getByLabel("Customer-visible update", { exact: true })

@@ -28,7 +28,6 @@ export default function Notifications() {
   }
   return (
     <section>
-      <h2>Account activity</h2>
       <p>
         <Link to="/account/preferences">Manage email preferences</Link>. Updates
         stay here when email is disabled.

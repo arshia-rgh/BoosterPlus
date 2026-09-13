@@ -318,10 +318,7 @@ export default function CustomerWorkspace({
           </Section>
         )}
         {contract && (
-          <Section
-            title="Accepted agreement"
-            primary={state === "awaiting_payment"}
-          >
+          <Section title="Accepted agreement">
             <section aria-label="Accepted agreement">
               <h2>Accepted agreement</h2>
               <Agreement data={contract.data} />

@@ -205,6 +205,7 @@ test("seller drafts, clarification and review stay private and create no commerc
     );
     await accessible(seller);
     await seller.goto(`/sell/${id}`);
+    await seller.getByText("Submission options", { exact: true }).click();
     await action(
       seller,
       "Withdraw account submission",

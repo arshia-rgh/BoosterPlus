@@ -22,7 +22,7 @@ function Summary({ work }: { work: Work }) {
         {work.alias}
       </p>
       <p>
-        Status: {work.state} · Progress {work.progress}%
+        Status: {work.state.replaceAll("_", " ")} · Progress {work.progress}%
       </p>
       <progress
         className="work-progress"
