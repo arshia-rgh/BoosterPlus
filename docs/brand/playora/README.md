@@ -1,6 +1,6 @@
 # PLAYORA brand assets
 
-Created 13 September 2026 with the built-in image_gen tool for the owner's rebrand request. These assets establish a proposed direction for review. Application integration has not started; [the UI/UX roadmap](../../../UI_UX_ROADMAP.md#11-playora-brand-foundation-and-rollout) defines the rollout.
+Created 13 September 2026 with the built-in image_gen tool for the owner's rebrand request. These assets establish a proposed direction for review. UX01 delivered the application vector identity; UX05 adds multi-game animation assets; [the UI/UX roadmap](../../../UI_UX_ROADMAP.md#11-playora-brand-foundation-and-rollout) defines the rollout.
 
 | Asset | Native file | Intended use |
 | --- | --- | --- |
@@ -22,3 +22,10 @@ The current files were visually checked for the PLAYORA spelling, distinct O, ga
 The social PNG is a flattened image, not a rig or animation. The roadmap now requires separate character/environment layers and convincing idle/scroll movement, with native scrolling, static fallbacks and measured performance. No animation was implemented in this asset stage.
 
 The owner explicitly keeps the current overall green website theme, font families and background/art direction. PLAYORA changes its branding and interface details within that identity; the separate green background is reusable social artwork, not a mandatory homepage replacement. Account, chat, checkout and admin surfaces should remain restrained. R10/R11 deployment and launch work stays on hold in [final-launch.md](../../../final-launch.md).
+
+
+## UX05 character layers
+
+`characters/iori.png`, `characters/illidan.png` and `characters/ahri.png` are 1024 × 1536 generated interpretations of Iori Yagami (Chou/MLBB), Illidan (WoW) and Ahri (LoL). `characters/miya.png` is a retained optional MLBB portrait, not loaded by the application. All are opaque PNGs with solid black backgrounds; attempted alpha generation did not produce real transparency. Runtime 768 × 1152 JPEG derivatives in `frontend/public/characters/` total about 537 KiB, with only Iori loaded initially (about 121 KiB). SVG luminance compositing removes black at render time, and hand-defined masks articulate garment, wing or tail separately from breathing and scroll motion. These are restrained 2D articulated illustrations, not complete skeletal rigs.
+
+The existing social composite, abstract aurora and raster logos are preserved. See [character prompts](characters/PROMPTS.md) for source provenance. The application uses only published service links; illustrative game choice does not assert catalog availability. Native masters are never downloaded by the homepage.

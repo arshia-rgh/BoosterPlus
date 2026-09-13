@@ -1,0 +1,144 @@
+.configuration-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 1.6rem 0;
+}
+.configuration-steps button {
+  border: 1px solid #466751;
+  background: #10271b;
+  color: #c5dccd;
+  border-radius: 999px;
+  padding: 0.8rem 1.2rem;
+  min-height: 44px;
+  font: inherit;
+  cursor: pointer;
+}
+.configuration-steps [aria-current="step"] {
+  background: #bddf9c;
+  color: #122019;
+  border-color: #bddf9c;
+}
+.configuration-group {
+  margin: 1.25rem 0;
+  padding: 1rem 0;
+  border-top: 1px solid #39523f;
+}
+.configuration-group h2 {
+  font-size: 1.05rem;
+  line-height: 1.4;
+  margin: 0 0 0.6rem;
+  color: #dfebe0;
+}
+.configuration-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1.2rem;
+}
+.configuration-fields .catalog-input {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 0.6rem 0;
+}
+.configuration-fields .catalog-input:has(textarea),
+.configuration-fields .catalog-input:has(.catalog-choices) {
+  grid-column: 1/-1;
+}
+.configuration-fields .catalog-choices {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+}
+.configuration-fields .catalog-choices legend {
+  margin-bottom: 0.5rem;
+}
+.configuration-privacy {
+  font-size: 0.85rem;
+  color: #bfcebf;
+  margin: 0;
+  padding: 0.7rem;
+}
+.configuration-privacy summary {
+  min-height: 44px;
+  cursor: pointer;
+  align-content: center;
+}
+.configuration-resumed {
+  border-left: 3px solid #badd9b;
+  padding: 1rem;
+  background: #183324;
+  color: #dceada;
+  border-radius: 0.4rem;
+}
+.experience .guided-configuration > fieldset {
+  padding: 1.25rem;
+  background: #10271b;
+  border-color: #39523f;
+}
+.experience .guided-configuration .selection-summary {
+  background: #183324;
+  border-color: #466751;
+  max-height: calc(100svh - 3rem);
+  overflow: auto;
+}
+.experience .guided-configuration .selection-summary h2 {
+  font-size: 1.3rem;
+}
+.experience .guided-configuration .selection-summary dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.6rem;
+  padding: 0.6rem 0;
+}
+.experience .guided-configuration .selection-summary dd {
+  margin: 0;
+}
+.experience .guided-configuration > [aria-label="Price estimate"] {
+  background: #183324;
+  color: #e4ecdc;
+  border-color: #739065;
+  padding: 1.4rem;
+}
+.experience .guided-configuration > [aria-label="Price estimate"] h2 {
+  color: #dcf0c6;
+  font-size: 1.4rem;
+}
+.catalog-page .catalog-route-map {
+  margin-block: 1rem 2rem;
+}
+.catalog-page .game-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.catalog-page .game-card > .button:last-child {
+  margin-top: auto;
+  align-self: flex-start;
+}
+.catalog-page .package-overview {
+  border-color: #466751;
+  background: #183324;
+}
+@media (max-width: 750px) {
+  .configuration-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .experience .guided-configuration {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .experience .guided-configuration .selection-summary {
+    position: static;
+    grid-column: 1;
+    grid-row: auto;
+    max-height: none;
+  }
+  .configuration-steps button {
+    flex: 1 1 12rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .configuration-steps button {
+    transition:
+      background 0.18s,
+      color 0.18s;
+  }
+}

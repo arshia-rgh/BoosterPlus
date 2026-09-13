@@ -105,3 +105,15 @@ it("ignores expired return data and tolerates blocked storage", async () => {
     clearGoogleReturn();
   }).not.toThrow();
 });
+
+it("catalog sign-in returns preserve only a bounded package variant", () => {
+  expect(safeReturnPath("/games/mlbb/services/rank?email=private")).toBe(
+    "/games/mlbb/services/rank",
+  );
+  expect(
+    safeReturnPath("/games/mlbb/packages/pack?variant=elite&token=secret"),
+  ).toBe("/games/mlbb/packages/pack?variant=elite");
+  expect(
+    safeReturnPath("/games/mlbb/packages/pack?variant=https://evil.test"),
+  ).toBe("/games/mlbb/packages/pack");
+});

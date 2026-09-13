@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { clearConfigurationDraft } from "../catalog/configuration-draft";
+import { Link, useLocation, useNavigate } from "react-router";
 import { get, post, sessionSchema, type Session } from "../identity/api";
 import { Check, ErrorNotice, Action } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
@@ -16,6 +17,7 @@ export default function SubmitOrder({
   coupon,
   estimate,
   setBusy,
+  onSignIn,
 }: {
   slug: string;
   service: string;
@@ -26,8 +28,10 @@ export default function SubmitOrder({
   coupon: string;
   estimate: Estimate | null;
   setBusy: (busy: boolean) => void;
+  onSignIn?: () => void;
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [session, setSession] = useState<Session | null>(null),
     [error, setError] = useState<unknown>(null),
     [accepted, setAccepted] = useState(false),
@@ -92,6 +96,7 @@ export default function SubmitOrder({
         },
         detailSchema,
       );
+      clearConfigurationDraft();
       await navigate(`/orders/${result.order.id}`);
     } catch (cause) {
       setError(cause);
@@ -118,7 +123,7 @@ export default function SubmitOrder({
         </p>
       )}
       <p>
-        Crypto checkout is being prepared. Submitting an order does not transfer
+        Payment follows a saved agreement. Submitting an order does not transfer
         funds.
       </p>
       <ErrorNotice error={error} />
@@ -130,11 +135,22 @@ export default function SubmitOrder({
         </p>
       ) : !session.user || session.mfa_required ? (
         <p>
-          <Link to="/login" target="_blank" rel="noopener noreferrer">
+          <Link
+            to={
+              "/login?returnTo=" +
+              encodeURIComponent(
+                location.pathname +
+                  (variant
+                    ? "?variant=" + encodeURIComponent(variant.key)
+                    : ""),
+              )
+            }
+            onClick={onSignIn}
+          >
             Sign in and complete verification
           </Link>{" "}
-          in a new tab, then return here. Your selections stay in this tab until
-          you leave or reload it.
+          to continue. Your non-sensitive choices can be restored in this tab
+          for 15 minutes. Private details and acceptance are never saved.
         </p>
       ) : (
         <>

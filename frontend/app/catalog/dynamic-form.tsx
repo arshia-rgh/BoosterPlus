@@ -1,5 +1,20 @@
 import SelectionSummary from "../experience/selection-summary";
-import { useEffect, useId, useRef, useState, type SubmitEvent } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ComponentProps,
+  type SubmitEvent,
+} from "react";
+import {
+  draftSnapshot,
+  subscribeDraft,
+  restoreConfiguration,
+  saveConfigurationDraft,
+} from "./configuration-draft";
+import "./discovery.css";
 import SubmitOrder from "../orders/submit";
 import { Action } from "./controls";
 import { post } from "../identity/api";
@@ -196,7 +211,7 @@ export function Input({
     </div>
   );
 }
-export default function DynamicForm({
+function ConfigurationForm({
   config,
   service,
   releaseID,
@@ -318,7 +333,7 @@ export default function DynamicForm({
   }
   return (
     <form
-      className="dynamic-form"
+      className="dynamic-form guided-configuration"
       ref={form}
       onSubmit={(event) => void submit(event)}
       noValidate
@@ -326,48 +341,102 @@ export default function DynamicForm({
       <fieldset disabled={busy || unavailable}>
         <legend>{service.name} selections</legend>
         {service.fulfillment && (
-          <p>
-            After payment, your assigned booster can see these selected fields:{" "}
-            {service.fields
-              .filter((field) =>
-                service.fulfillment?.share_fields.includes(field.key),
-              )
-              .map((field) => field.label)
-              .join(", ") || "none"}
-            . Temporary game access is collected separately only for
-            play-on-account work.
-          </p>
+          <details className="configuration-privacy">
+            <summary>How your information is shared</summary>
+            <p>
+              After payment, your assigned booster can see these selected
+              fields:{" "}
+              {service.fields
+                .filter((field) =>
+                  service.fulfillment?.share_fields.includes(field.key),
+                )
+                .map((field) => field.label)
+                .join(", ") || "none"}
+              . Temporary game access is collected separately only for
+              play-on-account work.
+            </p>
+          </details>
         )}
-        {service.fields
-          .filter(
-            (field) =>
-              stageIndex(field.stage) <= stageIndex(stage) &&
-              matches(field.visible_when, values, service.fields),
-          )
-          .map((field) => (
-            <Input
-              key={field.key}
-              field={field}
-              config={config}
-              value={values[field.key]}
-              required={
-                field.required ||
-                (!!field.required_when &&
-                  matches(field.required_when, values, service.fields)) ||
-                (variant?.required_fields.includes(field.key) ?? false)
-              }
-              change={(value) => {
-                const next: Answers = Object.fromEntries(
-                  Object.entries(values).filter(([key]) => key !== field.key),
-                );
-                if (value !== undefined) next[field.key] = value;
-                setRaw(visibleAnswers(service, next, stage));
-                setIssues([]);
-                setValid(false);
-                setEstimate(null);
-              }}
-              error={issues.find((issue) => issue.path === field.key)?.message}
-            />
+        {[
+          {
+            title: "Your goal",
+            fields: service.fields.filter((field) => field.type === "rank"),
+          },
+          {
+            title: "Play mode",
+            fields: service.fields.filter(
+              (field) =>
+                field.type !== "rank" &&
+                service.fulfillment?.field === field.key,
+            ),
+          },
+          {
+            title: "Your preferences",
+            fields: service.fields.filter(
+              (field) =>
+                field.type !== "rank" &&
+                service.fulfillment?.field !== field.key &&
+                field.stage === "estimate",
+            ),
+          },
+          {
+            title: "Order details",
+            fields: service.fields.filter(
+              (field) =>
+                field.type !== "rank" &&
+                service.fulfillment?.field !== field.key &&
+                field.stage !== "estimate",
+            ),
+          },
+        ]
+          .map((group) => ({
+            ...group,
+            fields: group.fields.filter(
+              (field) =>
+                stageIndex(field.stage) <= stageIndex(stage) &&
+                matches(field.visible_when, values, service.fields),
+            ),
+          }))
+          .filter((group) => group.fields.length > 0)
+          .map((group) => (
+            <section
+              className="configuration-group"
+              key={group.title}
+              aria-label={group.title}
+            >
+              <h2>{group.title}</h2>
+              <div className="configuration-fields">
+                {group.fields.map((field) => (
+                  <Input
+                    key={field.key}
+                    field={field}
+                    config={config}
+                    value={values[field.key]}
+                    required={
+                      field.required ||
+                      (!!field.required_when &&
+                        matches(field.required_when, values, service.fields)) ||
+                      (variant?.required_fields.includes(field.key) ?? false)
+                    }
+                    change={(value) => {
+                      const next: Answers = Object.fromEntries(
+                        Object.entries(values).filter(
+                          ([key]) => key !== field.key,
+                        ),
+                      );
+                      if (value !== undefined) next[field.key] = value;
+                      setRaw(visibleAnswers(service, next, stage));
+                      setIssues([]);
+                      setValid(false);
+                      setEstimate(null);
+                    }}
+                    error={
+                      issues.find((issue) => issue.path === field.key)?.message
+                    }
+                  />
+                ))}
+              </div>
+            </section>
           ))}
         {!previewPath && (stage === "estimate" || stage === "order") && (
           <div className="catalog-input">
@@ -471,6 +540,16 @@ export default function DynamicForm({
           </Action>
         ) : (
           <SubmitOrder
+            onSignIn={() => {
+              saveConfigurationDraft(
+                releaseID,
+                service,
+                config,
+                pack,
+                variant?.key ?? "",
+                values,
+              );
+            }}
             slug={slug}
             service={service.key}
             releaseID={releaseID}
@@ -497,4 +576,37 @@ export function minorDisplay(value: string): string {
     negative = amount < 0n,
     absolute = negative ? -amount : amount;
   return `${negative ? "−" : ""}${String(absolute / 100n)}.${String(absolute % 100n).padStart(2, "0")}`;
+}
+
+export default function DynamicForm(
+  props: ComponentProps<typeof ConfigurationForm>,
+) {
+  const raw = useSyncExternalStore(subscribeDraft, draftSnapshot, () => null);
+  const restored =
+    !props.previewPath && !props.onCommit && !props.initialAnswers
+      ? restoreConfiguration(
+          raw,
+          props.releaseID,
+          props.service,
+          props.config,
+          props.pack ?? "",
+          props.variant?.key ?? "",
+        )
+      : null;
+  return (
+    <>
+      {restored && (
+        <p role="status" className="configuration-resumed">
+          Your saved choices are restored. Check them against the current
+          catalog before submitting. Private details and consent must be entered
+          again.
+        </p>
+      )}
+      <ConfigurationForm
+        {...props}
+        key={raw && raw.length <= 20000 ? raw : "fresh"}
+        initialAnswers={props.initialAnswers ?? restored ?? {}}
+      />
+    </>
+  );
 }

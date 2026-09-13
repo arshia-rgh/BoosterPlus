@@ -68,8 +68,9 @@ export async function signIn(
   page: Page,
   request: APIRequestContext,
   email: string,
+  entry = "/account",
 ) {
-  await page.goto("/account");
+  await page.goto(entry);
   await page.getByLabel("Email address", { exact: true }).fill(email);
   await page.getByRole("checkbox", { name: /I accept/ }).check();
   await page.getByRole("button", { name: "Send verification code" }).click();

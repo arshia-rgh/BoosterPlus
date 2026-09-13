@@ -1,3 +1,4 @@
+import { qualifyCharacters } from "./character-journey";
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { writeFile } from "node:fs/promises";
@@ -87,6 +88,7 @@ test("rank journey scrubs smoothly forward/backward and survives resize and navi
   await expect(
     page.getByRole("heading", { name: "Same player. Different league." }),
   ).toBeInViewport();
+  await qualifyCharacters(page, info.project.name);
   expect(errors).toEqual([]);
   expect(
     await page.evaluate(
@@ -264,6 +266,18 @@ test("homepage respects transfer and layout-shift budgets under production CSP",
   expect(report.remoteResources).toBe(0);
   expect(report.violations).toEqual([]);
   expect(report.image).toHaveLength(1);
+  const characterBytes = await page.evaluate(() =>
+    performance
+      .getEntriesByType("resource")
+      .filter((item) => item.name.includes("/characters/"))
+      .reduce(
+        (sum, item) =>
+          sum + (item as PerformanceResourceTiming).encodedBodySize,
+        0,
+      ),
+  );
+  expect(characterBytes).toBeGreaterThan(0);
+  expect(characterBytes).toBeLessThan(200_000);
   const evidence = JSON.stringify(
     {
       profile:

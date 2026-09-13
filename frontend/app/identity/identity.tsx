@@ -1,3 +1,4 @@
+import { clearConfigurationDraft } from "../catalog/configuration-draft";
 import {
   SignInReturn,
   VerificationLink,
@@ -757,6 +758,7 @@ export default function Identity({
               submit={async () => {
                 await command("/auth/logout");
                 clearGoogleReturn();
+                clearConfigurationDraft();
                 setCodes([]);
                 await refresh();
               }}
@@ -857,6 +859,7 @@ export default function Identity({
                     submit={async () => {
                       await command("/auth/logout");
                       clearGoogleReturn();
+                      clearConfigurationDraft();
                       setCodes([]);
                       await refresh();
                     }}

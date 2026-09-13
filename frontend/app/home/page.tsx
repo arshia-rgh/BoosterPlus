@@ -1,3 +1,4 @@
+import CharacterShowcase, { CharacterArt } from "./characters";
 import { defaultHome } from "../site/content";
 import type { HomeContent } from "../site/model";
 import { Link } from "react-router";
@@ -32,7 +33,7 @@ function RankProfile({
           <strong>YOUR NEXT CHAPTER</strong>
           <span>Same player. New possibilities.</span>
         </div>
-        <span className="profile-level">BP+</span>
+        <span className="profile-level">P+</span>
       </div>
       <div className="profile-emblem">
         <Emblem elevated={elevated} />
@@ -101,6 +102,9 @@ function RankJourney({
         </div>
         <div className="rank-visual" aria-hidden="true">
           <div className="rank-orbit" />
+          <div className="rank-character">
+            <CharacterArt character="iori" enabled={enabled} />
+          </div>
           <div className="profile-stage">
             <RankProfile content={content} />
             <RankProfile elevated content={content} />
@@ -180,6 +184,9 @@ export function HomePage({
             <span /> {content.notice}
           </p>
         </div>
+        {content.artwork === "ascension" && (
+          <CharacterArt character="iori" enabled={enabled} hero />
+        )}
         <div className="hero-coordinate" aria-hidden="true">
           MLBB
           <br />
@@ -439,6 +446,7 @@ export function HomePage({
           )}
         </section>
       )}
+      <CharacterShowcase enabled={enabled} />
       <section className="final-ascent" aria-labelledby="final-title">
         <p className="home-kicker">THE NEXT CHAPTER IS YOURS</p>
         <h2 id="final-title">

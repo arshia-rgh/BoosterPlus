@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useLoaderData, useParams, useSearchParams } from "react-router";
 import { FavoriteButton } from "../orders/favorites";
 import DynamicForm from "./dynamic-form";
+import "./discovery.css";
 import { Select } from "./controls";
 import { price, type Listing, type Release, type Package } from "./model";
 
@@ -87,8 +88,8 @@ export function GameCatalog() {
         </Link>
       )}
       <p className="quiet">
-        Submit a custom request or choose a fixed package. Crypto checkout is
-        being prepared.
+        Custom requests receive a reviewed quote. Fixed packages use their
+        published price. Both use direct payment after an agreement is saved.
       </p>
     </main>
   );
@@ -224,15 +225,26 @@ export function ServicePage() {
         Custom pricing requires an administrator’s final quote. Select your
         options to check availability and request a provisional estimate.
       </p>
-      <Select
-        label="Information to preview"
-        value={stage}
-        change={setStage}
-        options={[
-          ["estimate", "Estimate selections"],
-          ["order", "Order information"],
-        ]}
-      />
+      <nav className="configuration-steps" aria-label="Configure your boost">
+        <button
+          type="button"
+          aria-current={stage === "estimate" ? "step" : undefined}
+          onClick={() => {
+            setStage("estimate");
+          }}
+        >
+          1. Your goal & estimate
+        </button>
+        <button
+          type="button"
+          aria-current={stage === "order" ? "step" : undefined}
+          onClick={() => {
+            setStage("order");
+          }}
+        >
+          2. Review & request
+        </button>
+      </nav>
       <DynamicForm
         key={release.id + service.key}
         config={release.configuration}
@@ -297,13 +309,16 @@ function PackageDetails({
             </p>
             <p>
               {variant.capacity === undefined
-                ? "No configured capacity limit."
-                : `Configured capacity: ${String(variant.capacity)} places. Held reservations may reduce availability.`}{" "}
+                ? "Available to order."
+                : variant.capacity === 0
+                  ? "Currently unavailable."
+                  : "Availability is checked when you order."}{" "}
               Availability is not a reservation.
             </p>
             <p>
-              Fixed packages do not require an individual quote approval. Direct
-              crypto checkout is being prepared.
+              Fixed packages use the price above and do not require individual
+              quote approval. Payment is made directly after your agreement is
+              saved.
             </p>
           </div>
           {variant.capacity !== undefined && (

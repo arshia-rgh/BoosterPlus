@@ -27,6 +27,10 @@ export function useRankScene(enabled: boolean) {
       animations.push(animation);
     };
     try {
+      animate(".rank-character", [
+        { transform: "translate(35px, 28px) scale(.9)", opacity: 0.1 },
+        { transform: "translate(-12px, -16px) scale(1.04)", opacity: 0.4 },
+      ]);
       animate(".rank-start", [
         { opacity: 1, offset: 0 },
         { opacity: 1, offset: 0.4 },

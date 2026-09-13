@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { APIError } from "../identity/api";
 
 const key = "playora.google-return";
-// Store navigation only, never query values, credentials or mutation payloads.
+// Retain local navigation and a bounded public package variant, never private query values.
 export function safeReturnPath(value: string | null) {
   if (
     !value ||
@@ -17,12 +17,20 @@ export function safeReturnPath(value: string | null) {
     const url = new URL(value, "https://playora.invalid");
     if (
       url.origin !== "https://playora.invalid" ||
-      !/^\/(account|orders|support|sell|privacy|favorites|availability|notifications|reviews|admin|booster)(\/|$)/.test(
+      !/^\/(account|orders|games|support|sell|privacy|favorites|availability|notifications|reviews|admin|booster)(\/|$)/.test(
         url.pathname,
       )
     )
       return null;
-    return url.pathname;
+    const variant = url.searchParams.get("variant");
+    return (
+      url.pathname +
+      (/^\/games\/[^/]+\/packages\/[^/]+$/.test(url.pathname) &&
+      variant &&
+      /^[a-zA-Z0-9_-]{1,64}$/.test(variant)
+        ? "?variant=" + encodeURIComponent(variant)
+        : "")
+    );
   } catch {
     return null;
   }

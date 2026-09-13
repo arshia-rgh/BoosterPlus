@@ -650,3 +650,14 @@ The owner authorized continuation through UX10 and proportionate commit checks: 
 
 
 The fresh UX04 gate passed govulncheck but failed closed because Docker Desktop was stopped (test database connection refused). Started Docker Desktop and restored the existing UX04 database, mail, storage and scanner containers without deleting data. The failed attempt is `.cache/ux04-commit-attempt2.log`; a complete rerun is required.
+
+
+UX04 delivered as `a7687d01a8f5d996f6b2e140fcc0006d1c4859fd`, pushed and verified against `origin/main`. The complete tracked hook passed (`.cache/ux04-commit.log`): Go checks including standalone gosec and govulncheck, race tests, TiDB integration (445.555 seconds), all 25 SQL migrations, 154 frontend tests in 53 files, 50 browser journeys, production builds, image/security checks and retained TLS/outage regression. The worktree was clean before UX05 began.
+
+## UX05 — Discovery, configuration and multi-game motion
+
+The owner requested characters from different games, specifically Iori Yagami (Chou's MLBB skin). Added generated interpretations of Iori, Illidan (World of Warcraft) and Ahri (League of Legends), preserving the green homepage artwork and fonts. The user-selected showcase includes separately articulated garment/wing/tail and breathing layers, native-scroll travel, pause off screen/hidden tab, reduced-motion/static fallbacks and safe failed-image handling. Only published catalog services are linked; art does not publish a game. Source PNGs are opaque black-background masters, with optimized JPEGs and runtime SVG compositing; no claim of true alpha masters or 3D animation.
+
+The configurable form now groups goals, play mode, preferences and private order details, with a clear two-step navigation and adjacent estimate summary. Fixed-package availability uses readable labels. Same-tab sign-in returns to the selected service/package; optional per-tab drafts retain only bounded published configuration choices for 15 minutes. Private instructions, free text, consents and unknown fields are excluded; expired/malformed/other-release drafts are rejected and successful submission/logout clears them. Fresh validation and explicit agreement acceptance remain required.
+
+Verification in progress: unit/component tests, browser journeys, character matrix/reduced/offscreen/failure assertions, same-tab sign-in and private-data exclusion. The first browser run exposed missing SVG image error events in Chromium; an HTML Image check of the same cached source now handles failure across engines. Hero compositing was corrected after visual review to preserve opaque character materials. UX05 delivery requires the tracked frontend/repository hook. Social crop kit and extended cross-browser/device motion evidence remain in UX10; R10/R11 remain held.

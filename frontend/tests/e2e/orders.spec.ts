@@ -134,22 +134,33 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     await buyer
       .getByRole("button", { name: "Check selections", exact: true })
       .click();
-    const signInTab = buyer.waitForEvent("popup");
+    await buyer
+      .getByLabel("Ordinary instructions")
+      .fill("Private text must not survive sign-in");
+    await buyer
+      .getByRole("button", { name: "Check selections", exact: true })
+      .click();
     await buyer
       .getByRole("link", { name: "Sign in and complete verification" })
       .click();
-    const login = await signInTab;
-    await signIn(login, request, fixture(info.project.name, "orders"));
+    await expect(buyer).toHaveURL(/\/login\?returnTo=/);
+    const entry = buyer.url();
+    await signIn(buyer, request, fixture(info.project.name, "orders"), entry);
+    await expect(buyer).toHaveURL(new RegExp(`/games/${slug}/services/boost$`));
+    await expect(buyer.getByLabel("Play mode (required)")).toHaveValue("duo");
+    await buyer
+      .getByRole("button", { name: "Continue to order information →" })
+      .click();
+    await expect(buyer.getByLabel("Ordinary instructions")).toHaveValue("");
     await expect(
-      login.getByText("Your next step, in one place.", { exact: true }),
-    ).toBeVisible();
-    await login.close();
-    await buyer.bringToFront();
-    await buyer.evaluate(() => window.dispatchEvent(new Event("focus")));
+      buyer.getByRole("region", { name: "Submit order" }),
+    ).toHaveCount(0);
+    await buyer
+      .getByRole("button", { name: "Check selections", exact: true })
+      .click();
     await expect(
       buyer.getByLabel("I accept the terms and request a final quote"),
-    ).toBeVisible();
-    await expect(buyer.getByLabel("Play mode (required)")).toHaveValue("duo");
+    ).not.toBeChecked();
     await expect(
       buyer.getByRole("button", { name: "Submit quote request", exact: true }),
     ).toBeDisabled();

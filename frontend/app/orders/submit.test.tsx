@@ -115,7 +115,7 @@ it("requires completion of the staff second factor before an order can be submit
   expect(post).not.toHaveBeenCalled();
 });
 
-it("keeps selections in their tab and refreshes sign-in without allowing stale session responses", async () => {
+it("uses local sign-in return and ignores stale session responses", async () => {
   let older: ((value: Session) => void) | undefined;
   vi.mocked(get).mockResolvedValueOnce({
     ...session,
@@ -139,8 +139,8 @@ it("keeps selections in their tab and refreshes sign-in without allowing stale s
   const link = await screen.findByRole("link", {
     name: "Sign in and complete verification",
   });
-  expect(link).toHaveAttribute("target", "_blank");
-  expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  expect(link).toHaveAttribute("href", "/login?returnTo=%2F");
+  expect(link).not.toHaveAttribute("target");
   vi.mocked(get)
     .mockImplementationOnce(
       () =>
