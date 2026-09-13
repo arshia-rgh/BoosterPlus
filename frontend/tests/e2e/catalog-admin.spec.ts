@@ -1,7 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { expect, test, type Locator } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { enroll, fixture, signIn } from "./identity-fixtures";
+import {
+  enroll,
+  accountDestination,
+  fixture,
+  signIn,
+} from "./identity-fixtures";
 import { historySchema, listingSchema } from "../../app/catalog/model";
 
 async function option(
@@ -44,9 +49,10 @@ test("staff builds, previews, publishes and archives another game through the ge
   await enroll(page);
   const couponCode =
     `SAVE-${info.project.name}-${randomUUID().slice(0, 8)}`.toUpperCase();
-  await page
-    .getByRole("link", { name: "Administration ↗", exact: true })
-    .click();
+  await expect(
+    page.getByRole("button", { name: "Refresh overview" }),
+  ).toBeVisible();
+  await accountDestination(page, "Administration ↗");
   if (info.project.name === "mobile")
     await page.getByRole("button", { name: "Menu", exact: true }).click();
   await page.getByRole("link", { name: "Coupons", exact: true }).click();

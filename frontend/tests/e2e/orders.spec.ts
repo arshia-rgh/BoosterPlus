@@ -140,7 +140,7 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     const login = await signInTab;
     await signIn(login, request, fixture(info.project.name, "orders"));
     await expect(
-      login.getByRole("heading", { name: "Profile", exact: true }),
+      login.getByText("Your next step, in one place.", { exact: true }),
     ).toBeVisible();
     await login.close();
     await buyer.bringToFront();
@@ -384,7 +384,7 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       const stranger = await strangerContext.newPage();
       await signIn(stranger, request, fixture(info.project.name, "orderother"));
       await expect(
-        stranger.getByRole("heading", { name: "Profile", exact: true }),
+        stranger.getByText("Your next step, in one place.", { exact: true }),
       ).toBeVisible();
       expect(
         (await stranger.request.get(`/api/v1/orders/${orderID}`)).status(),

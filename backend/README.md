@@ -1,6 +1,6 @@
-# Booster Plus backend
+# PLAYORA backend
 
-Independent Go project in the Booster Plus monorepo. P00/P01 provide explicit SQL migrations, an API process, a durable worker, local services, containers, and mandatory quality gates. Authentication and commerce are not implemented yet.
+Independent Go project in the PLAYORA monorepo. R01–R09 include passwordless identity, catalog publication, orders, conversations, fulfillment, account resale, payment/refund/payout workflows and owner governance. Explicit SQL migrations, API/worker processes, local services and mandatory quality gates remain separate from the frontend. Go module paths, database history and executable names retain their compatible Booster Plus identifiers. UI/UX work is underway; R10/R11 production qualification and launch remain on hold.
 
 ## Requirements and setup
 
@@ -56,7 +56,7 @@ Stopping Compose preserves the named TiDB/storage volumes. Do not delete `.env` 
 
 `make build` creates `bin/server`, `bin/worker` and `bin/boosterplus`. Host processes require the identity variables in `.env.example`, `APP_ENV`, `DATABASE_DSN`, and optionally `HTTP_ADDR`; migrations use `MIGRATION_DATABASE_DSN` instead. `config validate` performs offline configuration checks. Defaults bind the host server only to loopback. Production needs a TLS gateway and a verified TLS database connection. API/worker startup checks schema version, required column types, and critical unique constraints without running DDL. The API has bounded request size, connection/header timeouts, generic errors, fresh request IDs, security headers and graceful shutdown.
 
-The distroless runtime runs as UID 65532, with no shell; Compose adds a read-only root filesystem, dropped capabilities and resource limits. `/health/live` reports process liveness, `/health/ready` validates the database/schema, and `/api/v1/status` exposes only public prelaunch metadata. The Docker healthcheck assumes the container listener uses port 8080, as configured by Compose. Passwordless identity, account security and permissioned staff endpoints are implemented in P02; commerce endpoints follow later phases.
+The distroless runtime runs as UID 65532, with no shell; Compose adds a read-only root filesystem, dropped capabilities and resource limits. `/health/live` reports process liveness, `/health/ready` validates the database/schema, and `/api/v1/status` exposes only public prelaunch metadata. The Docker healthcheck assumes the container listener uses port 8080, as configured by Compose. Identity and commerce endpoints require the capabilities and verification defined in the published API contract.
 
 See [background job guarantees and recovery](../docs/background-jobs.md). API responses are validated against [OpenAPI](api/openapi.json) in tests. The frontend consumes its own explicitly copied contract and generated types. Updating a contract requires `make -C frontend contract-update` from the repository root.
 
@@ -85,6 +85,12 @@ SQL migrations 5–6 add `catalog_releases`, a current-release pointer on `games
 
 ## Crypto provider transport
 
-The initial NOWPayments adapter is in `internal/payments/nowpayments`. It supports bounded hosted-invoice creation, exact-decimal payment observations and signed callback references. It is not enabled in the server or worker until the durable payment workflow is implemented and qualified. See [provider decision and integration boundaries](../docs/crypto-provider-decision.md). No live keys belong in Git or chat.
+The production NOWPayments adapter is in `internal/payments/nowpayments`, with durable invoice, callback, reconciliation, refund and payout workflows. `PAYMENTS_ENABLED` pauses new checkout; it never creates paid orders. Existing-payment reconciliation continues while checkout is paused, and funds movement has a separate explicit activation switch. Automated tests use isolated fixtures; real funds movement still requires controlled live qualification. See [provider decision and integration boundaries](../docs/crypto-provider-decision.md). No live keys belong in Git or chat.
+
+## Customer overview
+
+UX02 adds `GET /api/v1/me/overview`: up to five owned items in each attention, active work, unread conversation and upcoming-session category, with explicit additional-results indicators. Customer unread counts use public read markers, never internal staff notes. Authorization is rechecked before and after collection. No schema migration is required. See [account behavior and verification](../docs/ux/UX02_ACCOUNT.md).
+
+New verification emails, sender display names, authenticator enrollments, default support notifications and hosted-invoice descriptions use PLAYORA. Existing authenticator secrets, accepted records, configured sender mailboxes and provider identities remain compatible; external merchant/Google branding uses owner-provided configuration.
 
 If the canonical Go vulnerability service is unreachable, the same scan can explicitly use the Go project's official live storage endpoint: `GOVULNCHECK_DATABASE=https://storage.googleapis.com/go-vulndb make pre-commit`. The default remains `https://vuln.go.dev`; only these two HTTPS endpoints are accepted. Record the outage and database metadata in stage evidence. The command must still complete successfully; no cached/offline or arbitrary database is substituted by this target.

@@ -215,7 +215,7 @@ func (s *Service) changeEmail(ctx context.Context, tx *ent.Tx, id, email, actor,
 		return err
 	}
 	for _, destination := range []string{account.Email, email} {
-		if messageErr := s.queueMessage(ctx, tx, "", destination, "Booster Plus account email changed", "Your account email was changed. If you did not request this, contact support through the Booster Plus website. No passwords or verification codes will be requested by support.", 24*time.Hour); messageErr != nil {
+		if messageErr := s.queueMessage(ctx, tx, "", destination, "PLAYORA account email changed", "Your account email was changed. If you did not request this, contact support through the PLAYORA website. No passwords or verification codes will be requested by support.", 24*time.Hour); messageErr != nil {
 			return messageErr
 		}
 	}

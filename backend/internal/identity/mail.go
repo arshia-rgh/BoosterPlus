@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	stdmail "net/mail"
 	"time"
 
 	mail "github.com/wneessen/go-mail"
@@ -52,7 +53,7 @@ func NewSMTP(cfg Config) (*SMTP, error) {
 // Send never exposes recipient addresses or codes in returned errors.
 func (s *SMTP) Send(ctx context.Context, value Message) error {
 	message := mail.NewMsg()
-	if err := message.From(s.from); err != nil {
+	if err := message.From((&stdmail.Address{Name: "PLAYORA", Address: s.from}).String()); err != nil {
 		return errors.New("mail sender invalid")
 	}
 	if err := message.To(value.To); err != nil {

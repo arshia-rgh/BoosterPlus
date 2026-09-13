@@ -4255,6 +4255,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/me/overview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Bounded work and schedule for the signed-in customer */
+    get: operations["customerAccountOverview"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -6155,6 +6172,31 @@ export interface components {
     PrivacyProblem: {
       /** @enum {string} */
       code: "privacy_invalid" | "privacy_conflict";
+    };
+    AccountSessionSummary: {
+      id: string;
+      order_id: string;
+      /** @enum {string} */
+      state: "proposed" | "confirmed";
+      /** Format: date-time */
+      starts_at: string;
+      /** Format: date-time */
+      ends_at: string;
+      timezone: string;
+    };
+    AccountOverview: {
+      attention: components["schemas"]["OrderSummary"][];
+      active: components["schemas"]["OrderSummary"][];
+      upcoming: components["schemas"]["AccountSessionSummary"][];
+      more_attention: boolean;
+      more_active: boolean;
+      more_upcoming: boolean;
+      more_messages: boolean;
+      messages: {
+        id: string;
+        subject: string;
+        unread: number;
+      }[];
     };
   };
   responses: never;
@@ -18920,6 +18962,53 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ContentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  customerAccountOverview: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountOverview"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OrderProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OrderProblem"];
         };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */

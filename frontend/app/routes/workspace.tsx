@@ -2,10 +2,12 @@ import { Outlet } from "react-router";
 import { IdentityFrame } from "../identity/frame";
 import CustomerShell from "../experience/customer-shell";
 import Surface from "../experience/surface";
+import AccountRouteFocus from "../account/route-focus";
 import "../experience/experience.css";
 export default function Workspace() {
   return (
     <Surface kind="workspace">
+      <AccountRouteFocus />
       <IdentityFrame value={CustomerShell}>
         <Outlet />
       </IdentityFrame>

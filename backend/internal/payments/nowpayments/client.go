@@ -132,7 +132,7 @@ func (c *Client) CreateInvoice(ctx context.Context, input InvoiceRequest) (Invoi
 		Partial     string      `json:"partially_paid_url"`
 		Fixed       bool        `json:"is_fixed_rate"`
 		Fee         bool        `json:"is_fee_paid_by_user"`
-	}{json.Number(amount), strings.ToLower(input.Currency), input.PayCurrency, input.AttemptID, "Booster Plus order", c.origin + "/api/v1/webhooks/payments/nowpayments", c.origin + "/orders", c.origin + "/orders", c.origin + "/orders", input.FixedRate, input.FeePaidByUser}
+	}{json.Number(amount), strings.ToLower(input.Currency), input.PayCurrency, input.AttemptID, "PLAYORA order", c.origin + "/api/v1/webhooks/payments/nowpayments", c.origin + "/orders", c.origin + "/orders", c.origin + "/orders", input.FixedRate, input.FeePaidByUser}
 	raw, err := json.Marshal(payload)
 	if err != nil {
 		return Invoice{}, ErrInvalid

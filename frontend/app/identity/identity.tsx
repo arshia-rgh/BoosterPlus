@@ -1,3 +1,13 @@
+import {
+  SignInReturn,
+  VerificationLink,
+  VerificationReturn,
+  rememberGoogleReturn,
+  clearGoogleReturn,
+  safeReturnPath,
+} from "../account/return-path";
+import AccountNavigation from "../account/navigation";
+import AccountOverview from "../account/overview";
 import { PageHeader } from "../ui/page-header";
 import { createElement, useContext } from "react";
 import { AuthorizedIdentity, IdentityFrame } from "./frame";
@@ -29,26 +39,42 @@ export function Form({
   submit,
   label = title,
   compact = false,
+  success = "Request completed.",
 }: {
   title: string;
   children?: ReactNode;
   submit: (data: FormData) => Promise<void>;
   label?: string;
   compact?: boolean;
+  success?: string;
 }) {
   const [busy, setBusy] = useState(false),
-    [message, setMessage] = useState("");
+    [message, setMessage] = useState(""),
+    [failed, setFailed] = useState(false),
+    [problem, setProblem] = useState<unknown>(null);
+  const lock = useRef(false);
+  const feedback = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (failed) feedback.current?.focus();
+  }, [failed]);
   async function send(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (lock.current) return;
+    lock.current = true;
     const data = new FormData(event.currentTarget);
     setBusy(true);
     setMessage("");
+    setFailed(false);
+    setProblem(null);
     try {
       await submit(data);
-      setMessage("Done.");
+      setMessage(success);
     } catch (error) {
       setMessage(errorMessage(error));
+      setFailed(true);
+      setProblem(error);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
@@ -64,7 +90,10 @@ export function Form({
           {busy ? "Please wait…" : label}
         </button>
       </fieldset>
-      <p role="status">{message}</p>
+      <p ref={feedback} tabIndex={-1} role={failed ? "alert" : "status"}>
+        {message}
+      </p>
+      <VerificationLink error={problem} />
     </form>
   );
 }
@@ -75,6 +104,8 @@ export function Text({
   required = true,
   autoComplete = "off",
   maxLength = 254,
+  inputMode,
+  pattern,
 }: {
   name: string;
   label: string;
@@ -82,6 +113,8 @@ export function Text({
   required?: boolean;
   autoComplete?: string;
   maxLength?: number;
+  inputMode?: "numeric" | "text";
+  pattern?: string;
 }) {
   return (
     <label>
@@ -92,6 +125,8 @@ export function Text({
         required={required}
         autoComplete={autoComplete}
         maxLength={maxLength}
+        inputMode={inputMode}
+        pattern={pattern}
       />
     </label>
   );
@@ -112,7 +147,12 @@ function EmailForm({
   refresh: Refresh;
 }) {
   const [challenge, setChallenge] = useState(""),
-    [done, setDone] = useState(false);
+    [done, setDone] = useState(false),
+    [requestedEmail, setRequestedEmail] = useState("");
+  const codeContainer = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (challenge) codeContainer.current?.querySelector("input")?.focus();
+  }, [challenge]);
   const title =
     new Map([
       ["login", "Continue with email"],
@@ -122,93 +162,120 @@ function EmailForm({
     ]).get(purpose) ?? "Verify email";
   return (
     <section className="identity-section">
-      <Form
-        title={title}
-        label={
-          purpose === "recovery"
-            ? "Send recovery verification code"
-            : "Send verification code"
-        }
-        submit={async (data) => {
-          const result = await post(
-            "/auth/email/request",
-            {
-              email: email || value(data, "email"),
-              account_email: value(data, "account_email"),
-              purpose,
-              accept_terms: data.get("terms") === "on",
-              terms_version: termsVersion,
-            },
-            z.object({ challenge_id: z.string() }),
-          );
-          setChallenge(result.challenge_id);
-          setDone(false);
-        }}
-      >
-        {purpose === "recovery" && (
-          <>
-            <p>
-              Access to a new email address does not prove ownership of an
-              existing account. An owner must independently review your request.
-              Your authenticator remains required.
-            </p>
-            <Text
-              name="account_email"
-              label="Current account email"
-              type="email"
-            />
-          </>
-        )}
-        {email ? (
-          <p>Send a code to {email}.</p>
-        ) : (
-          <Text
-            name="email"
-            label={
-              purpose === "recovery" || purpose === "email_change"
-                ? "New email address"
-                : "Email address"
-            }
-            type="email"
-            autoComplete="email"
-          />
-        )}
-        {purpose === "login" && (
-          <label className="check">
-            <input type="checkbox" name="terms" required />I accept the{" "}
-            <Link to="/terms" target="_blank" rel="noreferrer">
-              account terms
-            </Link>
-            .
-          </label>
-        )}
-        <p>
-          Codes expire after 10 minutes. Wait at least 60 seconds before
-          requesting another.
-        </p>
-      </Form>
-      {challenge && !done && (
+      {!challenge && (
         <Form
-          title="Check your inbox"
-          label="Verify email code"
+          title={title}
+          success="Check your inbox for the verification code."
+          label={
+            purpose === "recovery"
+              ? "Send recovery verification code"
+              : "Send verification code"
+          }
           submit={async (data) => {
-            await post(
-              "/auth/email/verify",
-              { challenge_id: challenge, code: value(data, "code") },
-              z.object({ purpose: z.string() }),
+            const result = await post(
+              "/auth/email/request",
+              {
+                email: email || value(data, "email"),
+                account_email: value(data, "account_email"),
+                purpose,
+                accept_terms: data.get("terms") === "on",
+                terms_version: termsVersion,
+              },
+              z.object({ challenge_id: z.string() }),
             );
-            setDone(true);
-            await refresh();
+            setRequestedEmail(email || value(data, "email"));
+            setChallenge(result.challenge_id);
+            setDone(false);
           }}
         >
-          <p>If the request is eligible, a code will arrive shortly.</p>
-          <Text
-            name="code"
-            label="Email verification code"
-            autoComplete="one-time-code"
-            maxLength={6}
-          />
+          {purpose === "recovery" && (
+            <>
+              <p>
+                Access to a new email address does not prove ownership of an
+                existing account. An owner must independently review your
+                request. Your authenticator remains required.
+              </p>
+              <Text
+                name="account_email"
+                label="Current account email"
+                type="email"
+              />
+            </>
+          )}
+          {email ? (
+            <p>Send a code to {email}.</p>
+          ) : (
+            <Text
+              name="email"
+              label={
+                purpose === "recovery" || purpose === "email_change"
+                  ? "New email address"
+                  : "Email address"
+              }
+              type="email"
+              autoComplete="email"
+            />
+          )}
+          {purpose === "login" && (
+            <label className="check">
+              <input type="checkbox" name="terms" required />I accept the{" "}
+              <Link to="/terms" target="_blank" rel="noreferrer">
+                account terms
+              </Link>
+              .
+            </label>
+          )}
+          <p>
+            Codes expire after 10 minutes. Wait at least 60 seconds before
+            requesting another.
+          </p>
         </Form>
+      )}
+      {challenge && !done && (
+        <div ref={codeContainer}>
+          <Form
+            key={challenge}
+            title="Check your inbox"
+            success="Email verified."
+            label="Verify email code"
+            submit={async (data) => {
+              await post(
+                "/auth/email/verify",
+                { challenge_id: challenge, code: value(data, "code") },
+                z.object({ purpose: z.string() }),
+              );
+              setDone(true);
+              await refresh();
+            }}
+          >
+            <p>
+              If the request is eligible, a code will arrive at {requestedEmail}{" "}
+              shortly.
+            </p>
+            <Text
+              name="code"
+              label="Email verification code"
+              autoComplete="one-time-code"
+              maxLength={6}
+              inputMode="numeric"
+              pattern="[0-9]{6}"
+            />
+            <p>
+              Codes expire after 10 minutes. You can request another after 60
+              seconds.
+            </p>
+          </Form>
+          <button
+            className="account-text-action"
+            type="button"
+            onClick={() => {
+              setChallenge("");
+              setDone(false);
+            }}
+          >
+            Change email or request another code
+          </button>
+        </div>
       )}
       {done && (
         <p role="status">
@@ -217,6 +284,18 @@ function EmailForm({
             : purpose === "email_change"
               ? "Email changed. Sign in again with your new email address."
               : "Email verified."}
+          {purpose === "reauth" && (
+            <button
+              className="account-text-action"
+              type="button"
+              onClick={() => {
+                setChallenge("");
+                setDone(false);
+              }}
+            >
+              Verify again
+            </button>
+          )}
         </p>
       )}
     </section>
@@ -254,6 +333,15 @@ function Google({
         if (target.origin !== "https://accounts.google.com")
           throw new Error("Unexpected provider");
         await refresh();
+        const requested = safeReturnPath(
+          new URLSearchParams(window.location.search).get("returnTo"),
+        );
+        rememberGoogleReturn(
+          purpose === "login"
+            ? (requested ?? window.location.pathname)
+            : "/account/security",
+          purpose === "login" ? undefined : (requested ?? undefined),
+        );
         window.location.assign(target.href);
       }}
     >
@@ -432,36 +520,55 @@ function Account({
   session,
   refresh,
   onCodes,
+  section = "profile",
 }: {
   session: Session;
   refresh: Refresh;
   onCodes: (codes: string[]) => void;
+  section?: "profile" | "security" | "preferences";
 }) {
   const user = session.user;
+  const [name, setName] = useState(user?.display_name ?? "");
+  const [alias, setAlias] = useState(user?.staff_alias ?? "");
   if (!user) return null;
   return (
-    <div className="identity-grid">
-      <section>
+    <div className="account-settings">
+      {section === "security" && <VerificationReturn />}
+      <nav className="settings-navigation" aria-label="Account settings">
+        <NavLink to="/account/settings">Profile</NavLink>
+        <NavLink to="/account/security">Security</NavLink>
+        <NavLink to="/account/preferences">Preferences</NavLink>
+        <Link to="/privacy">Privacy</Link>
+      </nav>
+      {section === "profile" && (
         <Form
           title="Profile"
           label="Save profile"
+          success="Profile saved."
           submit={async (data) => {
             await command("/me/profile", {
               display_name: value(data, "display_name"),
               staff_alias: value(data, "staff_alias"),
-              notify_updates: data.get("notify_updates") === "on",
+              notify_updates: user.notify_updates,
             });
             await refresh();
+            setName(value(data, "display_name").trim());
+            setAlias(value(data, "staff_alias").trim());
           }}
         >
-          <p>{user.email}</p>
-          <p className="muted">Account ID: {user.id}</p>
+          <p className="quiet">
+            Choose the name you want to use in your account.
+          </p>
           <label>
             Display name
             <input
               name="display_name"
-              defaultValue={user.display_name}
+              value={name}
+              onChange={(event) => {
+                setName(event.target.value);
+              }}
               maxLength={100}
+              autoComplete="nickname"
             />
           </label>
           {user.role !== "customer" && (
@@ -469,58 +576,96 @@ function Account({
               Customer-facing staff alias
               <input
                 name="staff_alias"
-                defaultValue={user.staff_alias}
+                value={alias}
+                onChange={(event) => {
+                  setAlias(event.target.value);
+                }}
                 maxLength={80}
               />
             </label>
           )}
+          <p>{user.email} · Verified email</p>
+          <Link to="/account/security">Manage email and sign-in methods</Link>
+          <details>
+            <summary>Account reference</summary>
+            <p className="quiet">{user.id}</p>
+          </details>
+        </Form>
+      )}
+      {section === "preferences" && (
+        <Form
+          title="Email preferences"
+          label="Save preferences"
+          success="Email preferences saved."
+          submit={async (data) => {
+            await command("/me/profile", {
+              display_name: user.display_name,
+              staff_alias: user.staff_alias,
+              notify_updates: data.get("notify_updates") === "on",
+            });
+            await refresh();
+          }}
+        >
           <label className="check">
             <input
               type="checkbox"
               name="notify_updates"
               defaultChecked={user.notify_updates}
             />
-            Email me order updates when orders are available
+            Email me order updates
           </label>
           <p>Security emails are always sent.</p>
+          <p>
+            <Link to="/availability">Manage package availability alerts</Link>{" "}
+            separately.
+          </p>
         </Form>
-        <SessionList refresh={refresh} />
-      </section>
-      <section>
-        <details>
-          <summary>Verify identity for sensitive changes</summary>
-          <EmailForm purpose="reauth" email={user.email} refresh={refresh} />
-          {session.google_enabled && session.google_linked && (
-            <Google session={session} purpose="reauth" refresh={refresh} />
-          )}
-        </details>
-        <Security session={session} refresh={refresh} onCodes={onCodes} />
-        <details>
-          <summary>Email and linked Google account</summary>
-          <EmailForm purpose="email_change" refresh={refresh} />
-          <Link to="/privacy">Download your data or request deletion</Link>
-          {session.google_enabled && !session.google_linked && (
-            <Google session={session} purpose="link" refresh={refresh} />
-          )}{" "}
-          {session.google_linked && (
-            <Form
-              title="Disconnect Google"
-              submit={async () => {
-                await command("/me/google/unlink");
-                await refresh();
-              }}
-            >
-              <p>
-                Your verified email remains available. All sessions will end.
-              </p>
-              <label className="check">
-                <input type="checkbox" required />
-                Disconnect Google and sign out
-              </label>
-            </Form>
-          )}
-        </details>
-      </section>
+      )}
+      {section === "security" && (
+        <>
+          <section className="account-panel">
+            <h2>Verify a sensitive change</h2>
+            <p>
+              Verify your email or Google account and a fresh authenticator code
+              before sensitive changes. Then return to the original action and
+              review it again.
+            </p>
+            <EmailForm purpose="reauth" email={user.email} refresh={refresh} />
+            {session.google_enabled && session.google_linked && (
+              <Google session={session} purpose="reauth" refresh={refresh} />
+            )}
+          </section>
+          <Security session={session} refresh={refresh} onCodes={onCodes} />
+          <details>
+            <summary>Active sessions and sign-out options</summary>
+            <SessionList refresh={refresh} />
+          </details>
+          <details>
+            <summary>Email and linked Google account</summary>
+            <EmailForm purpose="email_change" refresh={refresh} />
+            {session.google_enabled && !session.google_linked && (
+              <Google session={session} purpose="link" refresh={refresh} />
+            )}
+            {session.google_linked && (
+              <Form
+                title="Disconnect Google"
+                submit={async () => {
+                  await command("/me/google/unlink");
+                  await refresh();
+                }}
+              >
+                <p>
+                  Your verified email remains available. All sessions will end.
+                </p>
+                <label className="check">
+                  <input type="checkbox" required />
+                  Disconnect Google and sign out
+                </label>
+              </Form>
+            )}
+          </details>
+        </>
+      )}
     </div>
   );
 }
@@ -528,8 +673,10 @@ export default function Identity({
   title,
   capability = "account",
   children,
+  view = "profile",
 }: {
   title: string;
+  view?: "overview" | "profile" | "security" | "preferences";
   capability?: "account" | "admin" | "booster" | "owner";
   children?: React.ReactNode;
 }) {
@@ -598,8 +745,35 @@ export default function Identity({
   return createElement(Frame, {
     session,
     title,
+    navigation:
+      session?.user && capability !== "admin" && capability !== "owner" ? (
+        <AccountNavigation
+          key={session.user.id}
+          session={session}
+          action={
+            <Form
+              compact
+              title="Sign out"
+              submit={async () => {
+                await command("/auth/logout");
+                clearGoogleReturn();
+                setCodes([]);
+                await refresh();
+              }}
+            />
+          }
+        />
+      ) : null,
     children: (
       <main id="main" className="page identity-page">
+        <SignInReturn
+          ready={
+            !!session?.user &&
+            !session.mfa_required &&
+            session.capabilities.includes(capability) &&
+            codes.length === 0
+          }
+        />
         <title>{`${title} | PLAYORA`}</title>
         <PageHeader
           title={title}
@@ -676,56 +850,18 @@ export default function Identity({
               </>
             ) : (
               <>
-                {capability !== "admin" && (
-                  <nav className="account-nav" aria-label="Account navigation">
-                    <NavLink end to="/account">
-                      Profile and security
-                    </NavLink>
-                    <NavLink end to="/orders">
-                      My orders
-                    </NavLink>
-                    <NavLink end to="/sell">
-                      Sell an account
-                    </NavLink>
-                    <NavLink end to="/reviews">
-                      My reviews
-                    </NavLink>
-                    <NavLink end to="/favorites">
-                      Favorites
-                    </NavLink>
-                    <NavLink end to="/availability">
-                      Package alerts
-                    </NavLink>
-                    <NavLink end to="/support">
-                      Support
-                    </NavLink>
-                    <NavLink end to="/notifications">
-                      Activity
-                    </NavLink>
-                    {session.capabilities.includes("admin") && (
-                      <a href="/admin">Administration ↗</a>
-                    )}
-                    {session.capabilities.includes("booster") && (
-                      <>
-                        <NavLink end to="/booster/orders">
-                          Assigned work
-                        </NavLink>{" "}
-                        <NavLink end to="/booster/calendar">
-                          My calendar
-                        </NavLink>
-                      </>
-                    )}
-                  </nav>
+                {(capability === "admin" || capability === "owner") && (
+                  <Form
+                    compact
+                    title="Sign out"
+                    submit={async () => {
+                      await command("/auth/logout");
+                      clearGoogleReturn();
+                      setCodes([]);
+                      await refresh();
+                    }}
+                  />
                 )}
-                <Form
-                  compact
-                  title="Sign out"
-                  submit={async () => {
-                    await command("/auth/logout");
-                    setCodes([]);
-                    await refresh();
-                  }}
-                />
                 {session.mfa_required ? (
                   <>
                     <p role="alert">
@@ -749,7 +885,10 @@ export default function Identity({
                 ) : !session.capabilities.includes(capability) ? (
                   <p role="alert">You do not have access to this portal.</p>
                 ) : children ? (
-                  <AuthorizedIdentity value={{ session, refresh }}>
+                  <AuthorizedIdentity
+                    key={session.user.id}
+                    value={{ session, refresh }}
+                  >
                     {children}
                   </AuthorizedIdentity>
                 ) : capability === "booster" ? (
@@ -786,8 +925,12 @@ export default function Identity({
                       </Link>
                     </div>
                   </section>
+                ) : view === "overview" ? (
+                  <AccountOverview key={session.user.id} />
                 ) : (
                   <Account
+                    key={session.user.id}
+                    section={view}
                     session={session}
                     refresh={refresh}
                     onCodes={setCodes}

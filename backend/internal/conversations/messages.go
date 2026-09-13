@@ -124,7 +124,7 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 		if staffSender {
 			label = current.User.StaffAlias
 			if label == "" {
-				label = "Booster Plus support"
+				label = "PLAYORA support"
 			}
 			role = current.User.Role
 		}

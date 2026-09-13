@@ -28,7 +28,7 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
   try {
     await signIn(buyer, request, fixture(info.project.name, "supportbuyer"));
     await expect(
-      buyer.getByRole("heading", { name: "Profile", exact: true }),
+      buyer.getByText("Your next step, in one place.", { exact: true }),
     ).toBeVisible();
     await buyer.goto("/support");
     await buyer.getByLabel("Conversation subject").fill(subject);
@@ -237,7 +237,7 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
       const other = await strangerContext.newPage();
       await signIn(other, request, fixture(info.project.name, "supportother"));
       await expect(
-        other.getByRole("heading", { name: "Profile", exact: true }),
+        other.getByText("Your next step, in one place.", { exact: true }),
       ).toBeVisible();
       expect(
         (

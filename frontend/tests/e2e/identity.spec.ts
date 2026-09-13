@@ -3,13 +3,23 @@ import { randomUUID } from "node:crypto";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { z } from "zod";
-import { fixture, signIn, enroll } from "./identity-fixtures";
+import {
+  fixture,
+  signIn,
+  enroll,
+  accountDestination,
+  signOut,
+} from "./identity-fixtures";
 test("email signup, profile, sessions, MFA enrollment and logout", async ({
   page,
   request,
 }) => {
   const email = "signup-" + randomUUID() + "@example.test";
   await signIn(page, request, email);
+  await expect(
+    page.getByRole("button", { name: "Refresh overview" }),
+  ).toBeVisible();
+  await accountDestination(page, "Profile");
   await expect(
     page.getByRole("button", { name: "Save profile" }),
   ).toBeVisible();
@@ -23,7 +33,7 @@ test("email signup, profile, sessions, MFA enrollment and logout", async ({
       .locator("..")
       .locator("..")
       .getByRole("status"),
-  ).toContainText("Done.");
+  ).toContainText("Profile saved.");
   await page.reload();
   await expect(page.getByLabel("Display name", { exact: true })).toHaveValue(
     "Test <script>alert(1)</script>",
@@ -35,7 +45,11 @@ test("email signup, profile, sessions, MFA enrollment and logout", async ({
       .locator("..")
       .locator("..")
       .getByRole("status"),
-  ).toContainText("Done.");
+  ).toContainText("Profile saved.");
+  await accountDestination(page, "Security");
+  await page
+    .getByText("Active sessions and sign-out options", { exact: true })
+    .click();
   await page.getByRole("button", { name: "Load sessions" }).click();
   await expect(
     page.getByRole("heading", { name: "This session" }),
@@ -53,7 +67,7 @@ test("email signup, profile, sessions, MFA enrollment and logout", async ({
   expect((await page.request.get("/api/v1/me")).status()).toBe(200);
   await page.getByRole("button", { name: "I saved my recovery codes" }).click();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await signOut(page);
   await expect(
     page.getByRole("button", { name: "Send verification code" }),
   ).toBeVisible();
@@ -75,14 +89,27 @@ for (const role of ["booster", "administrator", "owner"] as const) {
     expect((await page.request.get("/api/v1/admin/users")).status()).toBe(403);
     expect((await page.request.get("/api/v1/admin/jobs")).status()).toBe(403);
     expect((await page.request.get("/api/v1/me/sessions")).status()).toBe(403);
+    expect((await page.request.get("/api/v1/me/overview")).status()).toBe(403);
     await enroll(page);
+    expect((await page.request.get("/api/v1/me/overview")).status()).toBe(200);
     expect((await page.request.get("/api/v1/admin/users")).status()).toBe(
       role === "booster" ? 403 : 200,
     );
     expect((await page.request.get("/api/v1/admin/audit")).status()).toBe(
       role === "owner" ? 200 : 403,
     );
-    await page.goto(role === "booster" ? "/booster" : "/admin");
+    if (role === "booster") await page.goto("/booster");
+    else {
+      // Exercise the consumed navigation state without simulating authentication.
+      await page.evaluate(() => {
+        sessionStorage.setItem(
+          "playora.google-return",
+          JSON.stringify({ path: "/admin", expires: Date.now() + 60_000 }),
+        );
+      });
+      await page.goto("/account");
+      await expect(page).toHaveURL(/\/admin$/);
+    }
     if (role === "booster") {
       await expect(page.getByText(/assigned-order workspace/)).toBeVisible();
     } else {
@@ -158,9 +185,10 @@ for (const role of ["booster", "administrator", "owner"] as const) {
         fullPage: true,
       });
       await page.goto("/account");
-      await page
-        .getByRole("link", { name: "Administration ↗", exact: true })
-        .click();
+      await expect(
+        page.getByRole("button", { name: "Refresh overview" }),
+      ).toBeVisible();
+      await accountDestination(page, "Administration ↗");
       await expect(
         page.getByRole("heading", { name: "Operations overview", exact: true }),
       ).toBeVisible();

@@ -1,4 +1,4 @@
 import Identity from "../identity/identity";
 export default function Login() {
-  return <Identity title="Sign in" />;
+  return <Identity title="Sign in" view="overview" />;
 }

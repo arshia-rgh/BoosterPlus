@@ -39,8 +39,8 @@ it("provides the customer frame without replacing the identity boundary", () => 
     </MemoryRouter>,
   );
   expect(
-    screen.getByRole("region", { name: "Account introduction" }),
-  ).toBeVisible();
+    screen.queryByRole("region", { name: "Account introduction" }),
+  ).not.toBeInTheDocument();
   expect(
     screen.getByRole("heading", { name: "Private route boundary" }),
   ).toBeVisible();

@@ -112,7 +112,7 @@ func TestConversationVisibilityIdempotencyAndReads(t *testing.T) {
 		t.Fatal(err)
 	}
 	messages, err = store.Messages(ctx, f.buyer, thread.ID, false, 1)
-	if err != nil || len(messages.Messages) != 1 || messages.Messages[0].Sequence != 2 || messages.Messages[0].ID != reply.ID || messages.Messages[0].SenderID != "" || messages.Messages[0].SenderLabel != "Booster Plus support" {
+	if err != nil || len(messages.Messages) != 1 || messages.Messages[0].Sequence != 2 || messages.Messages[0].ID != reply.ID || messages.Messages[0].SenderID != "" || messages.Messages[0].SenderLabel != "PLAYORA support" {
 		t.Fatal(messages, err)
 	}
 	after, err = store.Get(ctx, f.buyer, thread.ID, false)

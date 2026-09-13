@@ -47,7 +47,15 @@ async function mailCode(request: APIRequestContext, email: string) {
         const detail = await request.get(
           "http://127.0.0.1:8025/api/v1/message/" + message.ID,
         );
-        const body = z.object({ Text: z.string() }).parse(await detail.json());
+        const body = z
+          .object({
+            Text: z.string(),
+            Subject: z.string(),
+            From: z.object({ Name: z.string() }),
+          })
+          .parse(await detail.json());
+        expect(body.Subject).toContain("PLAYORA");
+        expect(body.From.Name).toBe("PLAYORA");
         code = body.Text.match(/\b[0-9]{6}\b/)?.[0] ?? "";
         return code;
       },
@@ -70,8 +78,69 @@ export async function signIn(
     .fill(await mailCode(request, email));
   await page.getByRole("button", { name: "Verify email code" }).click();
 }
+export async function accountDestination(page: Page, label: string) {
+  if (["Profile", "Security", "Preferences", "Privacy"].includes(label)) {
+    const settings = page.getByRole("navigation", {
+      name: "Account settings",
+      exact: true,
+    });
+    if (!(await settings.isVisible()))
+      await accountDestination(page, "Settings");
+    await settings.getByRole("link", { name: label, exact: true }).click();
+    return;
+  }
+  const more = page.getByRole("button", { name: "More", exact: true });
+  if (await more.isVisible()) {
+    await more.click();
+    await page
+      .getByRole("dialog", { name: "Account menu" })
+      .getByRole("link", { name: label, exact: true })
+      .click();
+  } else
+    await page
+      .getByRole("navigation", { name: "Account navigation", exact: true })
+      .getByRole("link", { name: label, exact: true })
+      .click();
+}
+export async function signOut(page: Page) {
+  await expect(
+    page
+      .getByRole("navigation", { name: /^Account (shortcuts|navigation)$/ })
+      .filter({ visible: true }),
+  ).toBeVisible();
+  const more = page.getByRole("button", { name: "More", exact: true });
+  if (await more.isVisible()) await more.click();
+  const result = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/v1/auth/logout") &&
+      response.request().method() === "POST",
+  );
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  expect((await result).status()).toBe(204);
+}
 export async function enroll(page: Page) {
+  await expect(
+    page
+      .getByRole("button", { name: "Set up authenticator", exact: true })
+      .or(page.getByRole("button", { name: "Refresh overview", exact: true }))
+      .or(page.getByRole("button", { name: "Save profile", exact: true })),
+  ).toBeVisible();
+  if (
+    !(await page
+      .getByRole("button", { name: "Set up authenticator", exact: true })
+      .isVisible())
+  )
+    await accountDestination(page, "Security");
+  const enrollment = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/v1/auth/mfa/enroll") &&
+      response.request().method() === "POST",
+  );
   await page.getByRole("button", { name: "Set up authenticator" }).click();
+  const payload = z
+    .object({ url: z.string() })
+    .parse(await (await enrollment).json());
+  expect(new URL(payload.url).searchParams.get("issuer")).toBe("PLAYORA");
   const secret = await page.locator(".secret code").textContent();
   if (!secret) throw new Error("Missing setup key");
   await page.getByLabel("Authenticator or recovery code").fill(totp(secret));

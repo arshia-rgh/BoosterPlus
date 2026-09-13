@@ -141,7 +141,7 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 		if createErr != nil {
 			return createErr
 		}
-		return s.queueMessage(ctx, tx, id, email, "Your Booster Plus verification code", fmt.Sprintf("Your code is %s. It expires in 10 minutes. Use it only for the %s request you started. If you did not request this code, ignore this email.", code, input.Purpose), 10*time.Minute)
+		return s.queueMessage(ctx, tx, id, email, "Your PLAYORA verification code", fmt.Sprintf("Your code is %s. It expires in 10 minutes. Use it only for the %s request you started. If you did not request this code, ignore this email.", code, input.Purpose), 10*time.Minute)
 	})
 	return id, err
 }

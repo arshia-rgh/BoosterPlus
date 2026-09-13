@@ -58,7 +58,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
   try {
     await signIn(customer, request, fixture(info.project.name, "paybuyer"));
     await expect(
-      customer.getByRole("heading", { name: "Profile", exact: true }),
+      customer.getByText("Your next step, in one place.", { exact: true }),
     ).toBeVisible();
     const id = fixture(info.project.name, "pay_order");
     await customer.goto(`/orders/${id}`);

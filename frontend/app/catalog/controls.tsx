@@ -1,5 +1,6 @@
 import { useId, type ReactNode } from "react";
 import { APIError, errorMessage } from "../identity/api";
+import { VerificationLink } from "../account/return-path";
 import type { Issue, Option, Condition, Field } from "./model";
 
 export function Text({
@@ -163,6 +164,7 @@ export function ErrorNotice({ error }: { error: unknown }) {
   return error ? (
     <>
       <p role="alert">{errorMessage(error)}</p>
+      <VerificationLink error={error} />
       <Issues issues={error instanceof APIError ? error.issues : []} />
     </>
   ) : null;

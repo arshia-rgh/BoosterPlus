@@ -83,7 +83,7 @@ test("seller drafts, clarification and review stay private and create no commerc
     const seller = await context.newPage();
     await signIn(seller, request, fixture(info.project.name, "seller"));
     await expect(
-      seller.getByRole("heading", { name: "Profile", exact: true }),
+      seller.getByText("Your next step, in one place.", { exact: true }),
     ).toBeVisible();
     await seller.goto("/sell");
     await accessible(seller);
@@ -220,7 +220,7 @@ test("seller drafts, clarification and review stay private and create no commerc
         fixture(info.project.name, "sellerother"),
       );
       await expect(
-        stranger.getByRole("heading", { name: "Profile", exact: true }),
+        stranger.getByText("Your next step, in one place.", { exact: true }),
       ).toBeVisible();
       expect(
         (await stranger.request.get(`/api/v1/submissions/${id}`)).status(),

@@ -101,7 +101,7 @@ test("@global-policy owner publishes content and retention, customer exports dat
       "privacy-" + randomUUID() + "@example.test",
     );
     await expect(
-      customer.getByRole("button", { name: "Save profile", exact: true }),
+      customer.getByRole("button", { name: "Refresh overview", exact: true }),
     ).toBeVisible();
     await customer.goto("/privacy");
     await expect(

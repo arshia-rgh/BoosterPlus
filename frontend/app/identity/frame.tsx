@@ -4,9 +4,15 @@ export interface FrameProps {
   session: Session | null;
   title: string;
   children: ReactNode;
+  navigation?: ReactNode;
 }
 export const IdentityFrame = createContext<ComponentType<FrameProps>>(
-  ({ children }) => <>{children}</>,
+  ({ children, navigation }) => (
+    <>
+      {navigation}
+      {children}
+    </>
+  ),
 );
 
 export const AuthorizedIdentity = createContext<{

@@ -59,7 +59,7 @@ function Navigation({ close, owner }: { close?: () => void; owner: boolean }) {
             ))}
         </div>
       ))}
-      <a className="admin-external" href="/account">
+      <a className="admin-external" href="/account/security">
         Profile and security ↗
       </a>
       <a className="admin-external" href="/">
@@ -156,30 +156,11 @@ export default function AdminShell({ session, title, children }: FrameProps) {
         </header>
         {!authorized && (
           <section className="admin-welcome" aria-label="Staff sign-in guide">
-            <p className="eyebrow">Behind every great climb</p>
-            <h2>
-              Your team.
-              <br />
-              One workspace.
-            </h2>
+            <p className="eyebrow">PLAYORA STAFF</p>
             <p>
-              Review requests, coordinate with customers, and keep every order
-              moving.
+              Use your verified staff email or linked Google account, then your
+              authenticator. This page opens after both steps are complete.
             </p>
-            <ol>
-              <li>
-                <strong>Verify your identity</strong>
-                <span>Use your staff email or linked Google account.</span>
-              </li>
-              <li>
-                <strong>Unlock with your authenticator</strong>
-                <span>Every staff sign-in requires a second factor.</span>
-              </li>
-              <li>
-                <strong>Pick up where you left off</strong>
-                <span>This page opens after your access is verified.</span>
-              </li>
-            </ol>
             <details>
               <summary>Setting up your first owner?</summary>
               <p>

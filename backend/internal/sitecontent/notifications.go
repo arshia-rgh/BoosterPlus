@@ -17,7 +17,7 @@ type Notifications struct {
 
 // NotificationCopy retains required product instructions in each caller, outside editable copy.
 func NotificationCopy(ctx context.Context, client *ent.Client) (Notifications, error) {
-	n := Notifications{ActivitySubject: "New activity on Booster Plus", ActivityIntro: "There is an update in your Booster Plus account.", AvailabilitySubject: "An offer you follow has availability", AvailabilityIntro: "An offer matching your subscription is available."}
+	n := Notifications{ActivitySubject: "New activity on PLAYORA", ActivityIntro: "There is an update in your PLAYORA account.", AvailabilitySubject: "An offer you follow has availability", AvailabilityIntro: "An offer matching your subscription is available."}
 	v, e := Published(ctx, client, "notifications")
 	if e != nil {
 		return n, e

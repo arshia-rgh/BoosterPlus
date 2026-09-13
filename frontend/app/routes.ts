@@ -33,6 +33,11 @@ export default [
     route("notifications", "routes/notifications.tsx"),
     route("privacy", "routes/privacy.tsx"),
     route("account", "routes/portal.tsx", { id: "account" }),
+    route("account/settings", "routes/portal.tsx", { id: "account-settings" }),
+    route("account/security", "routes/portal.tsx", { id: "account-security" }),
+    route("account/preferences", "routes/portal.tsx", {
+      id: "account-preferences",
+    }),
     route("booster/support/:id", "routes/conversation-booster.tsx"),
     route("booster/calendar", "routes/booster-calendar.tsx"),
     route("booster/orders", "routes/booster-orders.tsx"),

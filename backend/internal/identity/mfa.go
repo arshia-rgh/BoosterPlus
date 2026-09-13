@@ -35,7 +35,7 @@ func (s *Service) EnrollMFA(ctx context.Context, p *Principal) (Enrollment, erro
 		if actor.User.MfaEnabled {
 			return ErrConflict
 		}
-		key, keyErr := totp.Generate(totp.GenerateOpts{Issuer: "Booster Plus", AccountName: actor.User.Email, SecretSize: 32, Period: 30, Digits: otp.DigitsSix})
+		key, keyErr := totp.Generate(totp.GenerateOpts{Issuer: "PLAYORA", AccountName: actor.User.Email, SecretSize: 32, Period: 30, Digits: otp.DigitsSix})
 		if keyErr != nil {
 			return keyErr
 		}

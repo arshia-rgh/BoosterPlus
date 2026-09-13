@@ -56,3 +56,5 @@ Administrators and owners can open `/admin/catalog` after both sign-in factors. 
 R03 applies the storefront design to the catalog, live selection summary, order guidance, customer conversations, account tools and booster workspace. See [routes, behavior and verification](../docs/customer-experience.md). `make test-experience` runs the complete real-service browser suite; `make budget-experience` checks the incremental route assets. Both remain included in the required `pre-commit` gate.
 
 UX01 adds the vector PLAYORA identity, shared task headers/reflow rules and reusable scroll/motion foundation. See [the foundation and storyboard](../docs/ux/UX01_FOUNDATION.md).
+
+UX02 makes `/account` the current-work overview, with separate `/account/settings` (profile), `/account/security` and `/account/preferences` pages and a privacy destination. Desktop navigation and the mobile Overview/Orders/Messages/More menu retain role-appropriate access. Passwordless verification returns users to validated local tasks without replaying sensitive actions. See [account behavior and verification](../docs/ux/UX02_ACCOUNT.md).

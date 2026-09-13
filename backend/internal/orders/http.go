@@ -50,7 +50,8 @@ func (s *Store) Register(mux *http.ServeMux) {
 		capability string
 		handler    func(http.ResponseWriter, *http.Request, *identity.Principal) error
 	}{
-		"GET /api/v1/orders": {"account", s.list(false)}, "POST /api/v1/orders": {"account", s.create}, "GET /api/v1/orders/{id}": {"account", s.detail(false)},
+		"GET /api/v1/me/overview": {"account", s.overview},
+		"GET /api/v1/orders":      {"account", s.list(false)}, "POST /api/v1/orders": {"account", s.create}, "GET /api/v1/orders/{id}": {"account", s.detail(false)},
 		"GET /api/v1/orders/{id}/events": {"account", s.events(false)}, "GET /api/v1/orders/{id}/quotes": {"account", s.quotes(false)}, "POST /api/v1/orders/{id}/revise": {"account", s.revise}, "POST /api/v1/orders/{id}/validate": {"account", s.validateRevision}, "GET /api/v1/orders/{id}/reorder": {"account", s.reorder}, "POST /api/v1/orders/{id}/{action}": {"account", s.transition(false)},
 		"GET /api/v1/admin/orders": {"admin", s.list(true)}, "GET /api/v1/admin/orders/{id}": {"admin", s.detail(true)}, "GET /api/v1/admin/orders/{id}/events": {"admin", s.events(true)}, "GET /api/v1/admin/orders/{id}/quotes": {"admin", s.quotes(true)}, "POST /api/v1/admin/orders/{id}/quote": {"admin", s.quote}, "POST /api/v1/admin/orders/{id}/{action}": {"admin", s.transition(true)},
 		"GET /api/v1/me/favorites": {"account", s.favorites}, "POST /api/v1/me/favorites": {"account", s.saveFavorite}, "POST /api/v1/me/favorites/{id}/remove": {"account", s.removeFavorite},

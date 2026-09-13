@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Booster Plus API",
+    "title": "PLAYORA API",
     "version": "0.3.0",
     "description": "Operational and passwordless identity API. Staff require a second factor on every sign-in. Mutations require browser/session cookies, same-origin Origin, and a fresh CSRF header. Configurable catalog drafts and immutable publications use revision checks. Numeric form values and monetary minor units are exact strings."
   },
@@ -19032,6 +19032,59 @@
           }
         }
       }
+    },
+    "/api/v1/me/overview": {
+      "get": {
+        "operationId": "customerAccountOverview",
+        "summary": "Bounded work and schedule for the signed-in customer",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountOverview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -25975,6 +26028,111 @@
           }
         },
         "required": ["code"]
+      },
+      "AccountSessionSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "order_id",
+          "state",
+          "starts_at",
+          "ends_at",
+          "timezone"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["proposed", "confirmed"]
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timezone": {
+            "type": "string"
+          }
+        }
+      },
+      "AccountOverview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "attention",
+          "active",
+          "upcoming",
+          "more_attention",
+          "more_active",
+          "more_upcoming",
+          "messages",
+          "more_messages"
+        ],
+        "properties": {
+          "attention": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/OrderSummary"
+            }
+          },
+          "active": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/OrderSummary"
+            }
+          },
+          "upcoming": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/AccountSessionSummary"
+            }
+          },
+          "more_attention": {
+            "type": "boolean"
+          },
+          "more_active": {
+            "type": "boolean"
+          },
+          "more_upcoming": {
+            "type": "boolean"
+          },
+          "more_messages": {
+            "type": "boolean"
+          },
+          "messages": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "subject", "unread"],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "subject": {
+                  "type": "string"
+                },
+                "unread": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        }
       }
     },
     "securitySchemes": {
