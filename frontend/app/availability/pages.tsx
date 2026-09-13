@@ -1,3 +1,4 @@
+import "../ui/secondary.css";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { Action, Check, ErrorNotice } from "../catalog/controls";
@@ -103,7 +104,7 @@ function SubscriptionCard({
     }
   }
   return (
-    <li className="panel">
+    <li className="panel availability-card">
       <h3>
         <Link to={destination(item)}>{item.label}</Link>
       </h3>
@@ -143,7 +144,9 @@ export function Subscriptions() {
         package or guarantee its price, eligibility or delivery time. Changing
         your account email requires fresh consent for future alerts.
       </p>
-      <Action onClick={resource.reload}>Refresh alerts</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh alerts
+      </Action>
       <ErrorNotice error={resource.error} />
       {!resource.data ? (
         <p role="status">
@@ -153,7 +156,7 @@ export function Subscriptions() {
         </p>
       ) : (
         <>
-          <ul className="order-list">
+          <ul className="secondary-list availability-list">
             {resource.data.subscriptions.map((item) => (
               <SubscriptionCard
                 key={`${item.id}:${String(item.version)}`}
@@ -168,11 +171,16 @@ export function Subscriptions() {
             </p>
           )}
           {resource.data.next && (
-            <Link to={`/availability?after=${resource.data.next}`}>
+            <Link
+              to={`/availability?after=${encodeURIComponent(resource.data.next)}`}
+            >
               Next availability alerts
             </Link>
           )}
         </>
+      )}
+      {params.get("after") && (
+        <Link to="/availability">Newest availability alerts</Link>
       )}
     </section>
   );

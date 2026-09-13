@@ -220,6 +220,10 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
       buyer.getByRole("link", { name: "New support reply · Unread" }),
     ).toHaveCount(2);
     await accessible(buyer);
+    await buyer.screenshot({
+      path: `.cache/activity-${info.project.name}.png`,
+      fullPage: true,
+    });
     await buyer
       .getByRole("button", { name: "Mark read", exact: true })
       .first()

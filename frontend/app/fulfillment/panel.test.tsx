@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { expect, it, vi } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import { get } from "../identity/api";
 import { BoosterOrder } from "./panel";
 import type { Work } from "./model";
@@ -63,4 +63,62 @@ it("disables booster edits until the refreshed work revision is ready", async ()
     target: { value: "Ready after current revision loaded" },
   });
   expect(screen.getByRole("button", { name: "Start work" })).toBeEnabled();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.clearAllMocks();
+  vi.useRealTimers();
+});
+it("pauses hidden-tab work polling and cleans up visibility listeners", async () => {
+  vi.useFakeTimers();
+  const hidden = vi.spyOn(document, "hidden", "get").mockReturnValue(false);
+  const work: Work = {
+    coordination_id: "",
+    coordination_shared: false,
+    order_id: "work",
+    order_version: 1,
+    access_version: 1,
+    version: 1,
+    game: "Test",
+    service: "Boost",
+    state: "queued",
+    mode: "account",
+    secret_hours: 1,
+    alias: "Guide",
+    progress: 0,
+    completion_pending: false,
+    note: "Ready",
+    estimated_start: null,
+    estimated_finish: null,
+    forecast_review: false,
+    shared: [],
+    updated_at: "2026-09-13T00:00:00Z",
+  };
+  vi.mocked(get).mockReset().mockResolvedValue(work);
+  const view = render(
+    <MemoryRouter>
+      <BoosterOrder />
+    </MemoryRouter>,
+  );
+  await act(async () => {
+    await Promise.resolve();
+  });
+  const initial = vi.mocked(get).mock.calls.length;
+  hidden.mockReturnValue(true);
+  await act(async () => {
+    vi.advanceTimersByTime(30000);
+    await Promise.resolve();
+  });
+  expect(get).toHaveBeenCalledTimes(initial);
+  hidden.mockReturnValue(false);
+  await act(async () => {
+    fireEvent(document, new Event("visibilitychange"));
+    await Promise.resolve();
+  });
+  expect(get).toHaveBeenCalledTimes(initial + 1);
+  view.unmount();
+  fireEvent(document, new Event("visibilitychange"));
+  vi.advanceTimersByTime(30000);
+  expect(get).toHaveBeenCalledTimes(initial + 1);
 });

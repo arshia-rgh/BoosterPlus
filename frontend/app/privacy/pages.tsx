@@ -74,7 +74,7 @@ function Export() {
         );
         const link = document.createElement("a");
         link.href = url;
-        link.download = "boosterplus-personal-" + section + ".json";
+        link.download = "playora-personal-" + section + ".json";
         document.body.append(link);
         link.click();
         link.remove();

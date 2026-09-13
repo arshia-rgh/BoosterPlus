@@ -1,0 +1,136 @@
+.secondary-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.4rem 0;
+  display: grid;
+  gap: 0.7rem;
+}
+.secondary-list > li {
+  min-width: 0;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid #395640;
+  background: #13291e;
+  border-radius: 0.8rem;
+  overflow-wrap: anywhere;
+}
+.favorite-list > li,
+.activity-list > li,
+.review-list > li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem 1rem;
+}
+.secondary-list time {
+  font-size: 0.8rem;
+  color: #bed0c2;
+}
+.activity-list > li[data-unread="true"] {
+  border-left: 3px solid #b4e8cb;
+  background: #1b3526;
+}
+.activity-list > li[data-unread="false"] {
+  background: transparent;
+}
+.activity-list > li > button {
+  grid-column: 2;
+}
+.secondary-list .secondary-action {
+  color: #c8dbce;
+  background: transparent;
+  border: 1px solid #496852;
+}
+.availability-list > .availability-card {
+  display: block;
+}
+.availability-card h3 {
+  font-size: 1.1rem;
+  line-height: 1.4;
+  margin: 0 0 0.75rem;
+}
+.availability-card p {
+  max-width: 65ch;
+}
+.booster-queue {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.booster-queue .booster-work-card {
+  padding: 1.3rem;
+  background: #13291e;
+  border: 1px solid #395640;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.booster-work-card > a {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.booster-work-card > p {
+  margin: 0;
+  line-height: 1.6;
+}
+.booster-work-card .status {
+  align-self: start;
+}
+.booster-work-card time {
+  margin-top: auto;
+  color: #b5cabb;
+  font-size: 0.8rem;
+}
+.work-next-step {
+  padding: 0.9rem 1rem;
+  border-left: 3px solid #b4e8cb;
+  background: #1c3527;
+  line-height: 1.6;
+}
+.availability-windows {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+.availability-windows > li {
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: #152d20;
+  border: 1px solid #395640;
+  border-radius: 0.65rem;
+}
+.availability-windows > li > span {
+  max-width: 70ch;
+  overflow-wrap: anywhere;
+}
+.availability-windows > li[data-active="false"] {
+  background: transparent;
+  color: #b6c9bc;
+}
+.calendar-timezone {
+  padding: 0.8rem 1rem;
+  background: #1b3526;
+  border-radius: 0.65rem;
+}
+@media (max-width: 600px) {
+  .favorite-list > li,
+  .activity-list > li,
+  .review-list > li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .activity-list > li > button {
+    grid-column: 1;
+    justify-self: start;
+  }
+  .favorite-list .secondary-action {
+    justify-self: start;
+  }
+}

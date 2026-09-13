@@ -1,3 +1,4 @@
+import "../ui/secondary.css";
 import { useState } from "react";
 import { z } from "../validation";
 import { Action, Check, ErrorNotice, Select, Text } from "../catalog/controls";
@@ -197,7 +198,10 @@ function Calendar({ base }: { base: string }) {
   return (
     <section>
       <h2>Staff calendar</h2>
-      <Action onClick={resource.reload}>Refresh calendar</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh calendar
+      </Action>
+      {resource.loading && <p role="status">Checking calendar…</p>}
       <ErrorNotice error={resource.error ?? error} />
       {data && (
         <fieldset disabled={resource.loading || busy}>
@@ -217,17 +221,23 @@ function Calendar({ base }: { base: string }) {
             />
           )}
           <h3>Published availability</h3>
+          <p className="calendar-timezone">
+            Calendar timezone: <strong>{data.profile.timezone}</strong>. Review
+            local dates and offsets before publishing or removing a window.
+          </p>
           <p>
             A window with a future confirmed session cannot be removed until
             that session is explicitly cancelled.
           </p>
           {!data.windows.length && <p>No dated windows yet.</p>}
-          <ul>
+          <ul className="availability-windows">
             {data.windows.map((window) => (
-              <li key={window.id}>
-                {timeLabel(window.starts_at, window.timezone)} –{" "}
-                {timeLabel(window.ends_at, window.timezone)} ·{" "}
-                {window.active ? "Available" : "Removed"}{" "}
+              <li key={window.id} data-active={window.active}>
+                <span>
+                  {timeLabel(window.starts_at, window.timezone)} –{" "}
+                  {timeLabel(window.ends_at, window.timezone)} ·{" "}
+                  {window.active ? "Available" : "Removed"}
+                </span>
                 {window.active && (
                   <Action
                     onClick={() => {

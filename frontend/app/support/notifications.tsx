@@ -1,3 +1,4 @@
+import "../ui/secondary.css";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { Action, ErrorNotice } from "../catalog/controls";
@@ -29,10 +30,12 @@ export default function Notifications() {
     <section>
       <h2>Account activity</h2>
       <p>
-        Email preferences are available in your profile. Updates stay here when
-        email is disabled.
+        <Link to="/account/preferences">Manage email preferences</Link>. Updates
+        stay here when email is disabled.
       </p>
-      <Action onClick={resource.reload}>Refresh activity</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh activity
+      </Action>
       <ErrorNotice error={resource.error ?? error} />
       {!resource.data ? (
         <p role="status">
@@ -45,9 +48,9 @@ export default function Notifications() {
           {resource.data.notifications.length === 0 && (
             <p>No activity notices yet.</p>
           )}
-          <ul className="order-list">
+          <ul className="secondary-list activity-list">
             {resource.data.notifications.map((notice) => (
-              <li key={notice.id}>
+              <li key={notice.id} data-unread={!notice.read}>
                 <Link to={notice.href}>
                   {notice.kind === "review_customer"
                     ? "Purchase review updated"
@@ -62,7 +65,10 @@ export default function Notifications() {
                   {new Date(notice.created_at).toLocaleString()}
                 </time>
                 {!notice.read && (
-                  <Action disabled={busy} onClick={() => void read(notice.id)}>
+                  <Action
+                    disabled={busy || resource.loading}
+                    onClick={() => void read(notice.id)}
+                  >
                     Mark read
                   </Action>
                 )}
@@ -70,12 +76,17 @@ export default function Notifications() {
             ))}
           </ul>
           {resource.data.next && (
-            <Link to={"/notifications?after=" + resource.data.next}>
+            <Link
+              to={
+                "/notifications?after=" + encodeURIComponent(resource.data.next)
+              }
+            >
               Next notices
             </Link>
           )}
         </>
       )}
+      {params.get("after") && <Link to="/notifications">Newest activity</Link>}
     </section>
   );
 }

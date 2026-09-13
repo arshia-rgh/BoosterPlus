@@ -1,3 +1,4 @@
+import "../ui/secondary.css";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { command, post } from "../identity/api";
@@ -78,7 +79,9 @@ export default function Favorites() {
     <section>
       <h2>Your saved offers</h2>
       <p>Favorites do not reserve availability or prices.</p>
-      <Action onClick={resource.reload}>Refresh favorites</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh favorites
+      </Action>
       <ErrorNotice error={resource.error ?? error} />
       {!resource.data ? (
         <p role="status">
@@ -93,7 +96,7 @@ export default function Favorites() {
               No saved offers yet. <Link to="/games">Explore games</Link>.
             </p>
           )}
-          <ul className="order-list">
+          <ul className="secondary-list favorite-list">
             {resource.data.favorites.map((item) => (
               <li key={item.id}>
                 {item.available ? (
@@ -101,19 +104,28 @@ export default function Favorites() {
                 ) : (
                   <span>{item.name} · Currently unavailable</span>
                 )}{" "}
-                <Action disabled={busy} onClick={() => void remove(item.id)}>
-                  Remove {item.name}
-                </Action>
+                <button
+                  className="button compact secondary-action"
+                  type="button"
+                  aria-label={`Remove ${item.name}`}
+                  disabled={busy || resource.loading}
+                  onClick={() => void remove(item.id)}
+                >
+                  Remove
+                </button>
               </li>
             ))}
           </ul>
           {resource.data.next && (
-            <Link to={`/favorites?after=${resource.data.next}`}>
+            <Link
+              to={`/favorites?after=${encodeURIComponent(resource.data.next)}`}
+            >
               Next favorites
             </Link>
           )}
         </>
       )}
+      {params.get("after") && <Link to="/favorites">Newest favorites</Link>}
     </section>
   );
 }

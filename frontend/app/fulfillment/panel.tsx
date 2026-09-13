@@ -1,3 +1,5 @@
+import "../ui/secondary.css";
+import { workNextStep } from "./work-presentation";
 import Bookings from "./bookings";
 import Coordination from "./coordination";
 import ForecastControls, { ForecastRange } from "./forecast";
@@ -28,7 +30,8 @@ function Summary({ work }: { work: Work }) {
         max={100}
         aria-label="Reported fulfillment progress"
       />
-      <p>{work.note}</p>
+      <p className="work-next-step">{workNextStep(work)}</p>
+      <p className="preserve-lines">{work.note}</p>
       {work.completion_pending && (
         <p>Completion submitted for administrator review.</p>
       )}
@@ -92,7 +95,9 @@ export default function FulfillmentPanel({
   return (
     <section className="catalog-section">
       <h2>Fulfillment</h2>
-      <Action onClick={refresh}>Refresh fulfillment</Action>
+      <Action disabled={resource.loading} onClick={refresh}>
+        Refresh fulfillment
+      </Action>
       {resource.loading && <p role="status">Refreshing fulfillment…</p>}
       <fieldset disabled={resource.loading}>
         <legend>Fulfillment controls</legend>
@@ -174,9 +179,9 @@ export default function FulfillmentPanel({
               <p>Waiting for staff assignment.</p>
             )}
           </>
-        ) : (
+        ) : resource.loading ? (
           <p role="status">Loading fulfillment…</p>
-        )}
+        ) : null}
       </fieldset>
     </section>
   );
@@ -197,18 +202,34 @@ export function BoosterQueue() {
       <Link className="button" to="/booster/calendar">
         Plan your availability
       </Link>
-      <Action onClick={resource.reload}>Refresh queue</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh queue
+      </Action>
       {resource.loading && <p role="status">Loading assigned work…</p>}
       <ErrorNotice error={resource.error} />
       {!resource.error && resource.data && (
         <>
-          <ul className="order-list">
+          <p className="quiet">
+            {resource.data.items.length} assignments in this page. Progress is
+            reported by staff; it is not live game telemetry.
+          </p>
+          <ul className="booster-queue">
             {resource.data.items.map((work) => (
               <li key={work.order_id} className="booster-work-card">
                 <Link to={`/booster/orders/${work.order_id}`}>
                   {work.game} · {work.service}
                 </Link>{" "}
-                <span className="status">{work.state}</span>
+                <span className="status">
+                  {work.completion_pending
+                    ? "Awaiting completion review"
+                    : work.state.replaceAll("_", " ")}
+                </span>
+                <p className="quiet">
+                  {work.mode === "together"
+                    ? "Play together"
+                    : "Play on account"}
+                </p>
+                <p>{workNextStep(work)}</p>
                 <progress
                   className="work-progress"
                   value={work.progress}
@@ -216,10 +237,18 @@ export function BoosterQueue() {
                   aria-label={`${work.game} reported progress`}
                 />
                 <p>Reported progress: {work.progress}%</p>
+                <time dateTime={work.updated_at}>
+                  Updated {new Date(work.updated_at).toLocaleString()}
+                </time>
               </li>
             ))}
           </ul>
-          {!resource.data.items.length && <p>No assigned work.</p>}
+          {!resource.data.items.length && (
+            <p>
+              No assigned work. Keep your calendar current; new assignments will
+              appear here after the team assigns them to you.
+            </p>
+          )}
           {resource.data.next && (
             <Action
               onClick={() => {
@@ -250,16 +279,25 @@ export function BoosterOrder() {
       workSchema,
     ),
     work = resource.error ? null : resource.data;
+  const reload = resource.reload;
   useEffect(() => {
-    const timer = window.setInterval(resource.reload, 30000);
+    const refresh = () => {
+      if (!document.hidden) reload();
+    };
+    const timer = window.setInterval(refresh, 30000);
+    document.addEventListener("visibilitychange", refresh);
     return () => {
       window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", refresh);
     };
-  }, [resource.reload]);
+  }, [reload]);
   return (
     <section>
       <Link to="/booster/orders">← Assigned work</Link>
-      <Action onClick={resource.reload}>Refresh fulfillment</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh fulfillment
+      </Action>
+      {resource.loading && <p role="status">Checking assigned work…</p>}
       <ErrorNotice error={resource.error} />
       {work && (
         <fieldset disabled={resource.loading}>

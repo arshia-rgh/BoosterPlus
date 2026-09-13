@@ -1,6 +1,6 @@
 # PLAYORA — UI/UX improvement roadmap
 
-Status: UX01–UX07 delivered. UX08 admin operations implemented for verification. UX09–UX10 follow; R10/R11 remain held. See `docs/progress.md` for gate evidence.
+Status: UX01–UX08 delivered. UX09 secondary workflows implemented for verification. UX10 follows; R10/R11 remain held. See `docs/progress.md` for gate evidence.
 
 This is the next product-design roadmap. R10 and R11 are **on hold**, with their complete retained scope in [final-launch.md](final-launch.md). Completing this roadmap does not authorize production work or launch. The owner has authorized implementation; present representative account/chat work early for review.
 

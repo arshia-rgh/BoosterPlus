@@ -115,7 +115,7 @@ test("@global-policy owner publishes content and retention, customer exports dat
       .getByRole("button", { name: "Download selected category", exact: true })
       .click();
     expect((await download).suggestedFilename()).toBe(
-      "boosterplus-personal-profile.json",
+      "playora-personal-profile.json",
     );
     await customer
       .getByLabel(

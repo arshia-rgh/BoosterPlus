@@ -1,3 +1,4 @@
+import "../ui/secondary.css";
 import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { Action, Check, ErrorNotice, Select, Text } from "../catalog/controls";
@@ -42,12 +43,14 @@ export function ReviewList({ admin = false }: { admin?: boolean }) {
           ),
         ]}
       />
-      <Action onClick={resource.reload}>Refresh reviews</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh reviews
+      </Action>
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Loading reviews…</p>}
       {resource.data && (
         <>
-          <ul className="order-list">
+          <ul className="secondary-list review-list">
             {resource.data.items.map((row) => (
               <li key={row.id}>
                 <Link to={`${base}/${row.id}`}>
@@ -59,7 +62,16 @@ export function ReviewList({ admin = false }: { admin?: boolean }) {
               </li>
             ))}
           </ul>
-          {!resource.data.items.length && <p>No reviews in this view.</p>}
+          {!resource.data.items.length && (
+            <p>
+              No reviews in this view.{" "}
+              {!admin && (
+                <Link to="/orders">
+                  Open an eligible completed order to leave feedback
+                </Link>
+              )}
+            </p>
+          )}
           {resource.data.next && (
             <Action
               onClick={() => {

@@ -698,3 +698,15 @@ UX08 review caught a view-isolation defect: reconciliation errors were inside th
 
 
 The interrupted UX08 browser run also identified two old navigation assertions (embedded directory on the home page and payout queue on the default finance view). Updated them to assert the focused operations page and navigate explicitly to payouts; all original authorization/mutation assertions remain. The initial output is retained as `.cache/ux08-commit-attempt1.log`.
+
+
+UX08 delivered as `c7e9c3bce203f95bb6d6f178c27f9227dd4bd0a5`, pushed and verified against remote main. The fresh tracked frontend/repository gate passed 176 tests in 58 files, all 50 desktop/mobile browser journeys, strict types/lint, accessibility/reflow, audit, contracts, budgets/builds, image scans and container smoke (`.cache/ux08-commit.log`). Final UX10 review will quiet the many zero-value dashboard metrics.
+
+## UX09 — Booster work and secondary account flows
+
+Assigned work now uses readable cards with the actual mode, reported progress, next action and update time. Detail refresh pauses in hidden tabs, resumes on return and removes its timer/listener on unmount; failed reads do not leave an endless loading message. Calendar availability is a readable agenda with its explicit timezone and separate removal actions. Existing schedule conflicts, holds, proof approval and protected credential rules remain unchanged.
+
+Favorites use compact named removal controls, activity distinguishes unread rows with text plus an accent, and review/availability lists share responsive spacing and clear empty states. Paginated links encode cursors and offer a return to newest entries. Email consent and review eligibility remain explicit. Personal export filenames now use PLAYORA. Unit/component verification passed 177 tests in 58 files, including hidden-tab polling and cleanup; types and lint passed. Delivery requires the tracked frontend/repository gate, recorded in `.cache/ux09-commit.log`. No backend or production implementation change. UX10 is next; R10/R11 remain held.
+
+
+The initial UX09 gate passed 48 ordinary browser journeys but stopped on both device policy journeys because the download expectation still used the old brand filename. Corrected the expectation to `playora-personal-profile.json`; the underlying export/privacy assertions remain. The failed log is `.cache/ux09-commit-attempt1.log`; a fresh complete frontend/repository hook is required.
