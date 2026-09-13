@@ -76,6 +76,13 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     ).toHaveAttribute("href", "https://nowpayments.io/payment/?iid=1", {
       timeout: 20000,
     });
+    await customer.screenshot({
+      path: `.cache/checkout-${info.project.name}.png`,
+      fullPage: true,
+    });
+    expect(
+      (await new AxeBuilder({ page: customer }).analyze()).violations,
+    ).toEqual([]);
     const invalid = await request.post(
       "/api/v1/webhooks/payments/nowpayments",
       {
@@ -138,6 +145,9 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     await customer
       .getByRole("button", { name: "Get help", exact: true })
       .click();
+    await customer
+      .getByText("Request a service review", { exact: true })
+      .click();
     await customer.getByLabel("Review reason").selectOption("cancellation");
     await customer
       .getByLabel("Describe your case")
@@ -168,7 +178,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       .getByRole("button", { name: "Propose refund", exact: true })
       .click();
     await expect(
-      page.getByText("Status: recipient pending", { exact: true }),
+      page.getByText("Your destination is needed", { exact: true }),
     ).toBeVisible();
     await customer
       .getByRole("button", { name: "Refresh refunds", exact: true })
@@ -188,13 +198,13 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       .getByRole("button", { name: "Confirm refund recipient" })
       .click();
     await expect(
-      customer.getByText("Status: verified", { exact: true }),
+      customer.getByText("Waiting for owner approval", { exact: true }),
     ).toBeVisible();
     await page
       .getByRole("button", { name: "Refresh refunds", exact: true })
       .click();
     await expect(
-      page.getByText("Status: verified", { exact: true }),
+      page.getByText("Waiting for owner approval", { exact: true }),
     ).toBeVisible();
     await page
       .getByLabel("Refund authorization reason")
@@ -229,7 +239,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
             .getByRole("button", { name: "Refresh refunds", exact: true })
             .click();
           return await page
-            .getByText("Status: confirmed", { exact: true })
+            .getByText("Transfer confirmed", { exact: true })
             .count();
         },
         { timeout: 20000 },
@@ -247,11 +257,15 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     await customer
       .getByRole("button", { name: "Accept resolution and close case" })
       .click();
+    await customer.screenshot({
+      path: `.cache/case-refund-${info.project.name}.png`,
+      fullPage: true,
+    });
     await expect(
       customer.getByRole("heading", { name: "cancellation · closed" }),
     ).toBeVisible();
     await expect(
-      customer.getByText("Status: confirmed", { exact: true }),
+      customer.getByText("Transfer confirmed", { exact: true }),
     ).toBeVisible();
     expect(
       (await new AxeBuilder({ page: customer }).analyze()).violations,

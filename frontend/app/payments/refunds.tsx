@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { z } from "../validation";
 import { Action, Check, ErrorNotice, Select, Text } from "../catalog/controls";
 import { post } from "../identity/api";
@@ -6,6 +6,8 @@ import { useResource } from "../orders/resource";
 import { transferSchema, transfersSchema, type Transfer } from "./cases-model";
 import { historySchema } from "./model";
 
+import { transferPresentation } from "./presentation";
+import "./workspace.css";
 export function TransferRecord({
   record,
   admin,
@@ -29,7 +31,11 @@ export function TransferRecord({
   const seller = record.kind === "seller_payout",
     noun = seller ? "Seller payout" : "Refund",
     endpoint = seller ? "payouts" : "refunds";
+  const lock = useRef(false);
+  const status = transferPresentation(record.state);
   async function recipient() {
+    if (lock.current || refreshing || !accepted || address.length < 8) return;
+    lock.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -43,10 +49,14 @@ export function TransferRecord({
     } catch (cause) {
       setError(cause);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
   async function act(action: string) {
+    if (lock.current || refreshing || !owner || reason.trim().length < 10)
+      return;
+    lock.current = true;
     setBusy(true);
     setError(null);
     const ephemeral = code;
@@ -74,19 +84,23 @@ export function TransferRecord({
     } catch (cause) {
       setError(cause);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
   return (
-    <article className="catalog-section">
+    <article className="catalog-section transfer-record">
       <h3>
         {noun} · {record.amount} {record.currency.toUpperCase()} ·{" "}
         {record.network}
       </h3>
       <p role="status">
-        Status: {record.state.replaceAll("_", " ")}
-        {record.issue ? ` · ${record.issue.replaceAll("_", " ")}` : ""}
+        <strong>{status.title}</strong> — {status.description}
+        {record.issue
+          ? " Staff are reviewing an issue with this transfer."
+          : ""}
       </p>
+      <h4>Agreed transfer terms</h4>
       <p className="payment-policy">{record.terms}</p>
       {record.recipient.address && (
         <p className="payment-policy">
@@ -214,7 +228,18 @@ function Proposal({
     [key, setKey] = useState(() => crypto.randomUUID()),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
+  const lock = useRef(false);
   async function propose() {
+    if (
+      lock.current ||
+      history.loading ||
+      !history.data ||
+      !receipt ||
+      !amount ||
+      terms.trim().length < 20
+    )
+      return;
+    lock.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -230,11 +255,12 @@ function Proposal({
     } catch (cause) {
       setError(cause);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
   return (
-    <fieldset disabled={busy}>
+    <fieldset disabled={busy || history.loading || !history.data}>
       <legend>Propose a refund from received funds</legend>
       <p>
         Enter the exact crypto amount and approved terms, including fees and any
@@ -308,9 +334,13 @@ export default function Refunds({
     <section aria-label="Refund history">
       <h3>Refund history</h3>
       <ErrorNotice error={resource.error} />
-      <Action onClick={resource.reload}>Refresh refunds</Action>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh refunds
+      </Action>
       {!resource.data ? (
-        <p role="status">Loading refunds…</p>
+        resource.loading ? (
+          <p role="status">Loading refunds…</p>
+        ) : null
       ) : (
         <>
           {resource.data.transfers.length === 0 && (

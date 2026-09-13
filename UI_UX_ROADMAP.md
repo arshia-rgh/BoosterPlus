@@ -1,6 +1,6 @@
 # PLAYORA — UI/UX improvement roadmap
 
-Status: UX01–UX04 delivered. UX05 discovery and multi-game character motion implemented for verification. UX06–UX10 follow; R10/R11 remain held. See `docs/progress.md` for gate evidence.
+Status: UX01–UX05 delivered. UX06 checkout and service review implemented for verification. UX07–UX10 follow; R10/R11 remain held. See `docs/progress.md` for gate evidence.
 
 This is the next product-design roadmap. R10 and R11 are **on hold**, with their complete retained scope in [final-launch.md](final-launch.md). Completing this roadmap does not authorize production work or launch. The owner has authorized implementation; present representative account/chat work early for review.
 
@@ -190,7 +190,7 @@ Booster navigation stays focused on assigned work, messages and availability. Se
 
 ## 5. Ordered implementation phases
 
-**UX01–UX04 are delivered; UX05 is implemented for verification; UX06–UX10 follow.** See [UX01 conventions and storyboard](docs/ux/UX01_FOUNDATION.md) and [UX02 account behavior and verification](docs/ux/UX02_ACCOUNT.md), [UX03 chat behavior and verification](docs/ux/UX03_CHAT.md), and [UX04 order workspace behavior and verification](docs/ux/UX04_ORDERS.md). UX00 is the delivered audit/plan; UX00B delivered the initial green identity; UX00C refines the O, adds character social artwork and specifies rich motion before implementation. Implementation scope includes desktop/mobile layouts, text, all relevant states, backend compatibility, visual evidence and the full repository gate. Implementation was authorized on 13 September 2026. The owner authorized continuing through UX10. UI-only commits use frontend and repository checks; backend/infrastructure changes and final UX qualification retain the full gate. Phases may use smaller verified commits without merging unrelated work or bypassing the applicable checks.
+**UX01–UX05 are delivered; UX06 is implemented for verification; UX07–UX10 follow.** See [UX01 conventions and storyboard](docs/ux/UX01_FOUNDATION.md) and [UX02 account behavior and verification](docs/ux/UX02_ACCOUNT.md), [UX03 chat behavior and verification](docs/ux/UX03_CHAT.md), and [UX04 order workspace behavior and verification](docs/ux/UX04_ORDERS.md). UX00 is the delivered audit/plan; UX00B delivered the initial green identity; UX00C refines the O, adds character social artwork and specifies rich motion before implementation. Implementation scope includes desktop/mobile layouts, text, all relevant states, backend compatibility, visual evidence and the full repository gate. Implementation was authorized on 13 September 2026. The owner authorized continuing through UX10. UI-only commits use frontend and repository checks; backend/infrastructure changes and final UX qualification retain the full gate. Phases may use smaller verified commits without merging unrelated work or bypassing the applicable checks.
 
 | Phase | Deliverables | Completion evidence / dependency |
 | --- | --- | --- |
@@ -323,3 +323,5 @@ The owner has reviewed the brand direction and authorized implementation. The fi
 Typing indicators, read receipts, chat search requiring new indexing, canned staff replies, persistent server drafts, voice/video and public interactive demos are optional future decisions. They are not silently added to this roadmap's committed scope. The core redesign must stand on its own without them.
 
 After UX10, provide the route/state evidence matrix, remaining lower-priority issues and review instructions. Stop for owner acceptance. Then, and only with separate authorization, resume the preserved [R10/R11 final launch plan](final-launch.md).
+
+Owner clarification: character selection may change where another character better fits the green theme. Keep characters from different games; Iori/Illidan/Ahri are the current interpreted choices.

@@ -116,3 +116,150 @@ it("does not let staff create customer checkout", () => {
     screen.queryByRole("button", { name: "Create secure checkout" }),
   ).not.toBeInTheDocument();
 });
+it("recovers a failed read without claiming to still be loading", () => {
+  const { reload, changed } = setup();
+  vi.mocked(useResource).mockReturnValue({
+    data: null,
+    error: new Error("offline"),
+    loading: false,
+    reload,
+  });
+  render(<Checkout detail={detail} admin={false} changed={changed} />);
+  expect(
+    screen.queryByText("Loading payment information…"),
+  ).not.toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Try payment information again" }),
+  );
+  expect(reload).toHaveBeenCalledOnce();
+  expect(
+    screen.queryByRole("button", { name: "Create secure checkout" }),
+  ).not.toBeInTheDocument();
+});
+it("locks repeated checkout requests while the provider request is pending", async () => {
+  const { changed } = setup();
+  let finish: (value: unknown) => void = () => {};
+  vi.mocked(post).mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  render(<Checkout detail={detail} admin={false} changed={changed} />);
+  fireEvent.change(screen.getByLabelText("Payment asset and network"), {
+    target: { value: "usdttrc20" },
+  });
+  fireEvent.click(
+    screen.getByLabelText(
+      "I accept this payment policy and the agreed order price",
+    ),
+  );
+  const button = screen.getByRole("button", { name: "Create secure checkout" });
+  fireEvent.click(button);
+  fireEvent.click(button);
+  expect(post).toHaveBeenCalledOnce();
+  finish({});
+  await waitFor(() => {
+    expect(changed).toHaveBeenCalledOnce();
+  });
+});
+it("withdraws consent when the selected network changes and blocks stale reads", () => {
+  const { data, reload, changed } = setup();
+  const view = render(
+    <Checkout detail={detail} admin={false} changed={changed} />,
+  );
+  const route = screen.getByLabelText("Payment asset and network");
+  fireEvent.change(route, { target: { value: "usdttrc20" } });
+  fireEvent.click(
+    screen.getByLabelText(
+      "I accept this payment policy and the agreed order price",
+    ),
+  );
+  fireEvent.change(route, { target: { value: "" } });
+  expect(
+    screen.getByLabelText(
+      "I accept this payment policy and the agreed order price",
+    ),
+  ).not.toBeChecked();
+  vi.mocked(useResource).mockReturnValue({
+    data,
+    loading: true,
+    error: null,
+    reload,
+  });
+  view.rerender(<Checkout detail={detail} admin={false} changed={changed} />);
+  expect(
+    screen.getByRole("button", { name: "Create secure checkout" }),
+  ).toBeDisabled();
+});
+it.each(["uncertain", "confirming", "settled", "closed", "exception"])(
+  "does not offer a new or payable link for %s",
+  (state) => {
+    const { data, reload, changed } = setup();
+    vi.mocked(useResource).mockReturnValue({
+      data: {
+        ...data,
+        attempts: [
+          {
+            id: "attempt",
+            order_id: "order",
+            state,
+            issue: "",
+            currency: "USD",
+            amount_minor: "1234",
+            route: policy.data.routes[0],
+            policy,
+            checkout_url: "https://nowpayments.io/payment/?iid=1",
+            created_at: "2026-01-01T00:00:00Z",
+            expires_at: "2099-01-01T00:00:00Z",
+          },
+        ],
+      },
+      loading: false,
+      error: null,
+      reload,
+    });
+    render(<Checkout detail={detail} admin={false} changed={changed} />);
+    expect(
+      screen.queryByRole("link", { name: /Continue to NOWPayments/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Create secure checkout" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText(/No received funds recorded/)).toBeVisible();
+  },
+);
+it("hides an expired link without fabricating provider failure or settlement", () => {
+  const { data, reload, changed } = setup();
+  vi.mocked(useResource).mockReturnValue({
+    data: {
+      ...data,
+      attempts: [
+        {
+          id: "attempt",
+          order_id: "order",
+          state: "awaiting_payment",
+          issue: "",
+          currency: "USD",
+          amount_minor: "1234",
+          route: policy.data.routes[0],
+          policy,
+          checkout_url: "https://nowpayments.io/payment/?iid=1",
+          created_at: "2020-01-01T00:00:00Z",
+          expires_at: "2020-01-02T00:00:00Z",
+        },
+      ],
+    },
+    loading: false,
+    error: null,
+    reload,
+  });
+  render(<Checkout detail={detail} admin={false} changed={changed} />);
+  expect(
+    screen.getByRole("heading", { name: "Checkout window ended" }),
+  ).toBeVisible();
+  expect(
+    screen.queryByRole("link", { name: /Continue to NOWPayments/ }),
+  ).not.toBeInTheDocument();
+  expect(changed).not.toHaveBeenCalled();
+});
