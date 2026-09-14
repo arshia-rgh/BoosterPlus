@@ -1,6 +1,8 @@
 # PLAYORA — UI/UX improvement roadmap
 
-Status: UX01–UX10 implementation and automated qualification delivered. Owner acceptance and real-device/screen-reader review remain. R10/R11 stay on hold. See `docs/ux/UX10_QUALIFICATION.md` and `docs/progress.md` for evidence.
+Status: UX01–UX10 implementation and automated qualification delivered. Owner review reopened the homepage hero and character showcase on 14 September 2026. The new [homepage refinement roadmap](docs/ux/HOMEPAGE_REFINEMENT_ROADMAP.md) contains research and proposed HF01–HF05 work; its implementation awaits owner approval. Homepage visual acceptance and real-device/screen-reader review remain open. R10/R11 stay on hold. See `docs/ux/UX10_QUALIFICATION.md` and `docs/progress.md` for historical evidence.
+
+The new refinement proposal takes precedence over this document's earlier hero-character and showcase composition recommendations only after approval. It recommends restoring the original hero artwork alone, removing showcase character biographies and delivering coherent soft internal character motion. It does not reopen the accepted overall green theme or authorize production work.
 
 This is the next product-design roadmap. R10 and R11 are **on hold**, with their complete retained scope in [final-launch.md](final-launch.md). Completing this roadmap does not authorize production work or launch. The owner has authorized implementation; present representative account/chat work early for review.
 

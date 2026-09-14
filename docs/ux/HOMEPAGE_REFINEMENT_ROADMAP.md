@@ -1,0 +1,209 @@
+# PLAYORA homepage refinement roadmap
+
+Restore the original ascension artwork as the hero's only illustration, and turn “Find your fighting spirit.” into a quieter, genuinely animated game showcase. Preserve PLAYORA's green identity, accepted fonts and rank transformation. The improvement should come from composition, convincing character motion and less competing content.
+
+**Status: research and design proposal, 14 September 2026. Awaiting owner approval before implementation.** UX01–UX10's previous automated qualification remains recorded, but homepage visual acceptance is reopened. HF01 below is delivered; HF02–HF05 are proposed. R10/R11 remain on hold with their full scope in [final-launch.md](../../final-launch.md).
+
+## 1. Design decision
+
+The recommended opening is the existing landscape and winged crest, without Iori or a substitute character over it. “YOUR NEXT LEVEL.” and the action group should have a clear shared left alignment and a quiet backdrop. The artwork already supplies the fantasy atmosphere; it does not need another foreground subject.
+
+The character section should contain the heading, a compact manual game selector, one animated character and one catalog action. Remove character names, slogans and descriptive paragraphs. Retain several games through recognizable artwork and game names, without suggesting that illustration selection makes an unpublished service available.
+
+Motion should remain visible when scrolling stops. Require coherent internal movement—breathing and a small appropriate cloth, hair, wing or tail movement—with an optional restrained shift of the whole figure. A rigid painting bobbing up and down is a useful prototype baseline, but is not the completed animation. Text and controls stay still.
+
+These are art-direction judgments supported by the inspection below, not a claim that research proves a particular design will convert better. The final appearance must be judged in context and at normal playback speed.
+
+## 2. Evidence and research findings
+
+The review combines an independent senior visual-design audit, an independent UX research review, current PLAYORA screenshots and source inspection, rendered desktop observation of the requested reference, and primary accessibility/rendering guidance. The detailed working findings are in [the visual review](research/HOMEPAGE_DESIGN_REVIEW.md) and [the UX research](research/HOMEPAGE_UX_RESEARCH.md).
+
+### Current PLAYORA findings
+
+| Finding | Evidence | Consequence | Design response |
+| --- | --- | --- | --- |
+| Two foreground subjects collide | The desktop hero capture shows Iori covering the winged crest; `page.tsx` renders both the ascension picture and a separate hero character | The crest appears attached to Iori, and white clothing/red trousers/purple fire dominate the accepted green landscape | Remove the hero character and rebalance the original crop |
+| Character detail competes with the section's purpose | `CharacterShowcase` renders eyebrow, heading, description, selectors, name, slogan, action and availability copy | Too many text levels for an atmospheric scene; the name does not help choose a service | Keep heading, controls and one action; remove biography and its reserved caption space |
+| Idle motion is too weak to establish the requested effect | `characters.css` scales the upper slice by 0.6%; whole-rig movement is primarily driven by scroll | Passing transform assertions does not establish a softly living character at rest | Prototype a coherent organic loop; judge it with stationary recordings |
+| Current asset treatment is fragile | SVG filters derive transparency from opaque black-backed paintings, with overlapping body clips and a masked appendage | Hard anatomy cuts and dark edges need close visual review; more amplitude may expose defects | Prepare clean independent layers or qualify a proper loop; do not just increase existing mask deformation |
+| Mobile puts decoration before context | `.world-stage` is 31rem tall and has `order: -1` below 750px | The section title and scene controls arrive after a large decorative image | Put heading and selectors first, then a bounded art stage and action |
+| The stage is visually heavy | Black background, oval radius and a large radial mask in `.world-stage` | The character can feel contained in a separate black shape instead of belonging to the page | Blend the figure into a restrained green atmosphere and inspect all silhouette edges |
+
+Local captures inspected include `frontend/.cache/home-desktop.png`, `home-mobile.png`, and desktop/mobile character captures. These are prior synthetic qualification evidence, not a new usability study. Capture crops alone do not establish that an image is clipped in every live state; the implementation must inspect the entire frame and motion envelope.
+
+### Reference comparison
+
+| Reference | Verified observation | Apply to PLAYORA | Exclude from the proposal |
+| --- | --- | --- | --- |
+| [Boosting.pro homepage][1] | Rendered desktop scene has dark green game artwork, a horned character on the right and service text on the left. Its character scene uses a muted autoplaying looped WebM; observed intrinsic size 1920×600 and duration 5 seconds, with advancing playback time | Treat it as a reference for calm animated artwork with stable text. Evaluate actual internal character motion, not only scroll displacement | Its auto-advancing hero carousel, branding, media, product claims and dense storefront taxonomy |
+| [Elo-Boost homepage][2] | Retrieved public content leads with an outcome and primary rank action, then groups services by game | Keep the first decision simple and put explanation where it helps a transaction | Its commercial promises, wallet/subscription mechanics and unverified performance claims |
+| [Boosting Factory homepage][3] | Retrieved content emphasizes choosing a game and game destinations | Use game names for recognizable controls and keep actual catalog navigation clear | A large catalog menu that exceeds PLAYORA's published offering scope |
+
+The five-second reference duration is measured media metadata, not a recommended PLAYORA timing. The observation does not establish the source animation's rig, authorship, easing, mobile behavior or frame rate. Competitor text retrieval cannot prove visual quality or conversion performance. Their private dashboards and checkout outcomes are outside this focused review.
+
+### Primary guidance translated into design requirements
+
+Continuous automatic motion needs an accessible stop mechanism when WCAG's conditions apply. Place a discoverable “Pause animation” control beside the scene and connect it to the existing motion preference. System reduced motion should show a resolved still before any moving frame. Nonessential scroll animation must also be suppressible; this is distinct from the automatic-motion criterion. [W3C automatic motion][4], [W3C interaction animation][5], [MDN reduced motion][6]
+
+Keep native, named buttons with a visible selected state for decorative scene choice. The existing `aria-pressed` approach is sufficient; an ARIA tab interface is unnecessary unless the design becomes an actual set of content panels. Retain keyboard activation and focus, and remove the biography live region. [W3C button pattern][7], [W3C tab pattern][8]
+
+Preserve 44px minimum control targets as the project's design standard, allow labels to wrap, and verify narrow reflow and text-spacing overrides. Use restrained transform/opacity animation where appropriate, then measure actual painting and frame behavior; an SVG filter is not automatically cheap because it uses a transform. [W3C target size][9], [W3C reflow][10], [W3C text spacing][11], [web.dev animation guidance][12]
+
+## 3. Hero composition specification
+
+### Preferred composition: original artwork alone
+
+- Remove the hero's Iori overlay on desktop and mobile, including its ghosted narrow-screen variation. Do not delete the source character assets, which may still serve the showcase or other approved artwork.
+- Preserve the ascension landscape, crest, current green/gold atmosphere, fonts, headline and primary catalog action. Keep the existing secondary rank-journey link when that scene is enabled.
+- Use the shared content rail for the eyebrow, headline, body and primary action. On wide screens, start with approximately 46% of the content width for copy and the remaining space for the crest/landscape. Tune the background crop rather than moving the crest into the text.
+- Keep the current large type, but tune maximum width and breakpoint wrapping. Neither headline line nor italic accent should collide with the focal crest, controls or viewport edge.
+- Use a localized left contrast veil. Preserve depth and detail in the right-hand landscape rather than darkening the entire image until it disappears.
+- Quiet or remove coordinate ornaments if they compete with the main action. Preserve owner-published notices and meaningful content; this is not permission to hide commercial terms or replace governed homepage content with invented promises.
+- On mobile, prioritize headline, short explanation and primary action. Choose a deliberate landscape crop for each width; do not impose a fixed viewport height that clips enlarged text or forces decorative metadata ahead of navigation.
+- When the configured background is absent, keep a clean green surface with the same useful hierarchy. Both background states need screenshots.
+
+### Alternatives considered
+
+| Option | Assessment | Decision |
+| --- | --- | --- |
+| Original background alone | Directly addresses the reported mismatch, reduces competing focal points and retains accepted artwork | Recommended default |
+| Replace Iori with Miya or another MLBB cutout in the hero | Could improve thematic fit, but still competes with the crest and requires another composition review | Keep as an alternative only if the background-only review fails |
+| Add a full animated hero video | Adds another moving scene and media cost before the existing rank journey | Excluded from this refinement |
+
+The opening should establish the brand calmly, the rank scene should demonstrate progression, and the later showcase should provide character life. Avoid making all three scenes compete for attention at once.
+
+## 4. Character showcase specification
+
+### Content and layout
+
+Keep “Find your fighting spirit.” as the single major heading. Remove the current eyebrow, introductory paragraph, character name and slogan. Keep a small “Game showcase” label with the controls where needed to distinguish art selection from service navigation. Use one “Browse available games” link to the real published catalog; it remains the same destination when a different character is selected. This explicit wording is intentional while the illustrated games exceed purchasable games.
+
+On desktop, start with a 42/58 copy-to-art split inside the existing content rail. The controls should be close to the heading, and the action should have clear breathing room without the old caption's empty minimum height. On mobile, use **heading → game selectors → artwork → catalog action**, matching DOM order. Labels remain complete; controls wrap instead of becoming a horizontal scroll strip.
+
+Start the mobile art stage at 18–24rem, then tune against each complete silhouette. Reserve a stable stage for selection changes. Faces, important hands and identifying features stay inside the safe area at both movement extremes. Wings and tails can extend toward the art boundary if intentional, but must not cut through text or controls. A soft grounded shadow or green atmosphere may connect the character to the page; avoid a visible black oval.
+
+### Character direction
+
+| Game | Recommended prototype direction | Required quality review |
+| --- | --- | --- |
+| Mobile Legends | Compare the existing Miya master with Iori in the showcase only; Miya is the leading candidate for the forest/green art direction | Recognizable MLBB identity, convincing face/hands, coherent lighting, uncluttered silhouette; do not merely move the rejected hero cutout elsewhere and call it fixed |
+| World of Warcraft | Retain Illidan as the leading candidate, with restrained breathing and wing-edge movement | Horn/wing clearance, stable anatomy, controlled green glow |
+| League of Legends | Retain Ahri as the leading candidate, with restrained hair/tail movement | Clean tail overlap, no warped face or detached limb, controlled red/white accents |
+
+Character identity is an internal art-direction choice, not visible biography copy. Preserve multiple-game representation. Final selection depends on a rendered contact sheet at actual desktop/mobile sizes; no replacement should be declared superior solely from its name. Reuse approved masters where they pass quality review; prepare new layers only where necessary. Keep provenance and editable sources with brand assets, and ship optimized derivatives rather than social masters.
+
+### Interaction states
+
+Selection is manual. The clicked button updates its selected state immediately; the latest requested scene wins even when images load out of order. Keep the previous resolved artwork until the replacement is ready, then crossfade in the same frame. If an incoming asset fails, preserve navigation and selected game context with a quiet decorative fallback. No error toast or retry wall is needed for optional art.
+
+Do not auto-advance games, move keyboard focus, announce character lore or turn artwork into an unexpected link. Decorative art remains outside the accessibility tree. Test rapid selection, clicking the already-selected game, selection during pause, selection during loading, route changes, back navigation and resource failure.
+
+## 5. Motion design and delivery choice
+
+### Required visual result
+
+The character should feel alive while a visitor reads a stationary page. The loop must have a coherent body/shoulder breath and one small secondary movement suited to the figure. Keep the head and face stable enough to avoid a rubbery or floating-sticker effect. Cloth, hair, wing or tail should settle with a slight delay relative to the body, rather than all moving on the same axis at the same time.
+
+The following values are **initial PLAYORA tuning ranges**, not measurements from competitors or final acceptance by themselves:
+
+| Layer or event | Starting direction | Constraint |
+| --- | --- | --- |
+| Organic idle | A seamless 6–8 second breathing cycle; 7–10 second secondary detail cycle | No visible anatomy cut, deformation, jump at the loop seam or unnaturally flapping appendage |
+| Optional whole-figure support | 0–6px total travel desktop; 0–3px mobile; ease gently at reversals | Not the complete animation; grounded poses may need no whole-body drift |
+| Entrance | 300–450ms opacity settle; optional translation no more than 6px | Content/action available immediately; no dramatic fly-in or repeated reveal on small scroll reversals |
+| Native-scroll depth | At most 4–8px additional total scene travel as a starting range | Separate from idle motion; no scroll capture, sticky trap, forced speed or timeline-dependent navigation |
+| Game switch | 180–260ms crossfade after asset readiness | Stable stage, no white flash, no lingering double silhouette; reduced mode can switch instantly |
+| Atmosphere | Static radial light, or very restrained detail opacity | No flashing aura, full-screen particle storm, animated large blur or glow over text |
+
+Motion envelopes combine: verify the worst case when idle and scroll offsets coincide. Copy, controls, focus indicators and stage dimensions never move with the artwork. Pause offscreen and in hidden tabs; resuming must not fast-forward or override explicit user pause. Honor reduced motion from the first render and during a running session.
+
+### Prototype before choosing the rendering method
+
+| Method | Benefits | Risks and qualification | Decision |
+| --- | --- | --- | --- |
+| Prepared independent character layers with CSS/SVG transforms | Fine control, editable timing, can fit the existing frontend without a new runtime | Needs clean alpha, overlap beneath moving parts and believable pivots; reject hard horizontal slices through anatomy | Preferred first prototype |
+| Original seamless animated video loop with poster | Can produce the organic appearance observed in the reference | Must have an actual authored asset; qualify muted inline playback, codec support, denied autoplay, reduced motion, lifecycle, decoding and bytes | Alternative if layers fail the visual standard; do not assume a video-generation tool or usable clip already exists |
+| Whole still-image translation | Cheap and useful to compare movement amplitude | Does not supply internal character life | Supporting effect or explicit fallback only |
+| Full 3D engine / large animation framework | Greater capability than needed here | Additional dependency, assets and runtime complexity | Excluded unless the narrow prototype proves a concrete need and the plan is revised |
+
+Prepare one polished MLBB loop first and review it alongside the static pose before producing all three. Do not repeat a flawed mask treatment across the entire set. A fallback still keeps the site usable when animation cannot run; it must not be presented as completion of the normal-motion brief.
+
+## 6. Performance and accessibility constraints
+
+Retain the existing homepage gates: homepage JavaScript at most 12KiB gzip, homepage CSS at most 8KiB gzip, shared root CSS at most 4KiB gzip; ascension assets at most 400,000 bytes desktop and 120,000 bytes mobile. These limits come from `frontend/scripts/check-home-budget.mjs`. Do not raise them merely to fit new motion.
+
+Lazy-load below-fold character assets near the showcase. Removing the hero overlay must not be followed by eagerly loading all showcase layers elsewhere. Only the active scene should animate or decode continuously. Keep a poster/static state, explicit dimensions and responsive source selection. Compare initial-page and scene-entry transfers separately so deferred media is not hidden from the report.
+
+For the first layered prototype, use the current three-character raster total of approximately 550KB as a comparison baseline, not a silently expanded budget. If a video alternative is needed, add an explicit incremental media budget and benchmark in the prototype report before adopting that pipeline; existing gates do not automatically qualify a new video. A tooling/dependency change invokes the full repository gate under repository policy.
+
+Measure the same viewport, browser, cache and throttling conditions before and after. Record layout shift, loading cost, paint/compositing behavior and frame consistency during at least 20 seconds of active idle and a scroll pass. Maintain no scene-switch layout shift in deterministic tests. Previous local CLS 0 and short frame samples do not certify this changed animation or all devices.
+
+Use a visible pause/resume action near the showcase, synchronized with the existing global motion controls. Explicit pause must survive scene changes according to the existing preference model; resuming must respect a system reduced-motion preference. Pausing cannot require holding focus or hovering. No flicker or rapid flashing is allowed. Native scrolling, keyboard interaction, readable contrast and focus remain primary behaviors.
+
+## 7. Implementation phases after approval
+
+| Phase | Scope and concrete deliverables | Exit condition | Status |
+| --- | --- | --- | --- |
+| **HF01 — Research and design direction** | Current-state audit, reference comparison, hero decision, content structure, motion storyboard and qualification plan | New roadmap and independent reviews available for owner review | Delivered as documentation; approval pending |
+| **HF02 — Hero and showcase composition** | Remove hero overlay, tune original artwork crop/alignment, simplify showcase content, fix mobile order and stable stage; prepare game-art contact sheet | Same-size before/after stills at desktop/mobile/short landscape; no clipped copy or missing navigation; frontend and root gates pass | Not started |
+| **HF03 — Character motion prototype** | One properly prepared MLBB character with organic loop, static pose, pause/reduced/lifecycle states; compare layered method against the reference's visual intent | 20-second stationary and scroll recordings, seamless/internal motion review, budget report; use the result to select the rendering method | Not started |
+| **HF04 — Multi-game motion and state polish** | Extend the qualified method to WoW and LoL, refine scene switching, contrast/edges/atmosphere, failed/slow media handling | Each game passes the same visual standard and state tests; no automatic rotation or unavailable checkout implication | Not started |
+| **HF05 — Qualification and owner review** | Cross-browser/state matrix, responsive stills, normal-speed clips, resource traces and review handoff | Required gates and scoped visual checks pass; report actual human/device coverage; owner explicitly accepts the result | Not started |
+
+The prototype milestone supplies reviewable evidence early; it is not permission to stop after a rough animation and mark the roadmap complete. Implementation begins only after the owner approves this plan. Once authorized, use the established main-branch delivery rules and commit/push completed verified stages. UI-only commits use frontend pre-commit plus root checks; backend/deployment/tooling changes retain their full gate, and final UX qualification retains the complete repository gate. Do not resume R10/R11 through regression testing.
+
+## 8. Acceptance matrix
+
+| Area | Required checks and evidence |
+| --- | --- |
+| Hero alignment | 320, 360, 390, 768, 1024 and 1440px captures; short landscape; 200% text enlargement; accepted background visible, no foreground Iori, no overlap, usable primary/secondary actions |
+| Showcase hierarchy | Heading and selectors precede artwork on mobile; no character biography/slogan/name block or leftover caption gap; one explicit catalog destination |
+| Character quality | Actual-size and 2× edge review of each face, hand, cloth, wing/tail; no black halo, severed silhouette, double edge or anatomy seam at any extreme |
+| Stationary motion | At least 20 seconds at normal speed per character, covering two or more full cycles; internal movement perceptible, calm and seamless without scrolling |
+| Scroll behavior | Slow/fast/reverse scroll; combined idle/scroll extremes; rank transformation retains labels and low-to-high checkpoints; navigation never waits for motion |
+| Switching | Every game by pointer, touch and keyboard; rapid A→B→C, duplicate selection, slow decode, failed asset, pause while loading, and route cleanup; latest choice wins with stable layout/focus |
+| Accessibility | Named native controls, selected state, visible focus, 44px targets, contrast, 320px reflow, text spacing, no repeated decorative announcements; first-load and live-change reduced motion; persistent pause behavior |
+| Resource lifecycle | No offscreen/hidden-tab continuous animation; no replay storm on return; no leaked listeners or stale scene updates after unmount; denied media playback keeps a usable still |
+| Performance | Existing budgets pass; initial and lazy transfers reported separately; fixed stage prevents switch-induced layout shift; idle/scroll traces compared on identical conditions |
+| Content and security regression | Real catalog destination remains authoritative; governed homepage text/background-off states preserved; no new service claims or personal information in media/telemetry; existing auth/payment behavior unchanged |
+| Browser and device review | Chromium, Firefox and WebKit screenshots and motion checks; physical phone and human screen-reader task results recorded only if actually performed |
+
+Human review should answer three practical questions: Is the service and next action obvious on the opening screen? Does the character look gently alive while the page is still? Does selecting WoW artwork imply a purchasable WoW service? Record misunderstandings and adjust hierarchy or labels. These are usability tasks, not claims that a few opinions establish conversion uplift.
+
+The handoff must include before/after hero stills, a short mobile page walkthrough, three stationary character clips, a scroll clip and a reduced-motion still. Passing automated checks alone does not close visual acceptance. Do not claim “best ever,” universal 60fps, real-device coverage or final launch readiness without evidence.
+
+## 9. Scope retained and held
+
+This refinement covers the opening hero, character showcase, necessary shared motion integration and regression evidence. Preserve the approved rank-progression behavior; if the shared character component changes, verify its rank-scene usage rather than silently breaking or expanding that scene. Account/chat/admin workflows retain their prior implementation and qualification. A newly discovered regression can be recorded and corrected within its authorized scope, but this is not another unrestricted site redesign.
+
+The original artwork, green theme, fonts, PLAYORA logo and social masters remain accepted inputs. Payment/provider integration, production gateways, deployment activation and R10/R11 are not resumed. [The original UX roadmap](../../UI_UX_ROADMAP.md) remains the historical delivery record; this document governs the newly requested homepage refinement after approval.
+
+## Sources
+
+All pages were accessed on 14 September 2026. Live pages can change. The competitor findings above distinguish rendered observation from retrieved content; local implementation evidence is identified separately.
+
+1. Boosting.pro, [homepage and rendered character scene][1].
+2. Elo-Boost.net, [homepage][2].
+3. Boosting Factory, [homepage][3].
+4. W3C WAI, [Understanding SC 2.2.2: Pause, Stop, Hide][4], Level A.
+5. W3C WAI, [Understanding SC 2.3.3: Animation from Interactions][5], Level AAA.
+6. MDN Web Docs, [prefers-reduced-motion][6].
+7. W3C WAI, [ARIA Authoring Practices: Button Pattern][7].
+8. W3C WAI, [ARIA Authoring Practices: Tabs Pattern][8].
+9. W3C WAI, [Understanding SC 2.5.8: Target Size (Minimum)][9].
+10. W3C WAI, [Understanding SC 1.4.10: Reflow][10].
+11. W3C WAI, [Understanding SC 1.4.12: Text Spacing][11].
+12. web.dev, [How to create high-performance CSS animations][12].
+
+[1]: https://boosting.pro/
+[2]: https://elo-boost.net/
+[3]: https://www.boostingfactory.com/
+[4]: https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html
+[5]: https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html
+[6]: https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion
+[7]: https://www.w3.org/WAI/ARIA/apg/patterns/button/
+[8]: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/
+[9]: https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html
+[10]: https://www.w3.org/WAI/WCAG22/Understanding/reflow.html
+[11]: https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html
+[12]: https://web.dev/articles/animations-guide

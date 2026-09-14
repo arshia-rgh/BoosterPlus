@@ -2,6 +2,8 @@
 
 Status: implementation and automated qualification delivered in `712828bbf9860b06c5b3dc905752f3577ffcff1d`, pushed and verified against `origin/main`. Owner acceptance and the explicit human/device reviews below remain. R10/R11 stay held; this document does not authorize launch.
 
+Owner review on 14 September 2026 reopened the hero composition and character showcase. See [the homepage refinement roadmap](HOMEPAGE_REFINEMENT_ROADMAP.md) for the researched proposal awaiting implementation approval. The results below qualify the recorded implementation, not the proposed changes or final visual acceptance.
+
 ## Final corrections
 
 - Accepted order agreements are collapsed after acceptance; exact totals remain in the order header and checkout stays prominent. Quote/terms acceptance is still explicit.
