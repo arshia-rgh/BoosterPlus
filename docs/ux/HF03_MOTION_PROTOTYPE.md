@@ -1,6 +1,6 @@
 # HF03 — Miya motion prototype
 
-14 September 2026. Implementation is ready for the tracked frontend/root gate; delivery requires that gate and a verified push. R10/R11 remain held. This prototype does not complete the multi-game, cameo or sound stages.
+14 September 2026. Delivered as `22f7afc68266505ec58f5b888678f910f128b047`, pushed and verified against origin/main after the tracked frontend/root gate. R10/R11 remain held. This prototype does not complete the multi-game, cameo or sound stages.
 
 ## Delivered design
 
@@ -47,6 +47,11 @@ The browser spec records 20 seconds of stationary animation, a native down/up sc
 
 Component coverage includes waiting for media, missing poster/field failures, visible/offscreen/hidden lifecycle, one-time SVG starts, cleanup, reduced mode and unchanged game selection semantics. Browser coverage includes lazy transfer, the 210KB media limit, advancing internal motion, stable stage size, pause persistence through game switches, restored scroll anchor, native scroll, OS reduction, missing media, usable navigation and axe accessibility checks.
 
-Local evidence is under `.cache/hf03-evidence/{chromium,firefox,webkit}/`: desktop/mobile normal and static screenshots, pose pairs, performance JSON and recorded browser videos. Required full frontend regression evidence will be `.cache/hf03-commit.log`; the gate uses isolated TiDB/SMTP/payment fixtures. No live account/payment change is involved. The final pass counts and commit receipt belong in `docs/progress.md`.
+Local evidence is under `.cache/hf03-evidence/{chromium,firefox,webkit}/`: desktop/mobile normal and static screenshots, pose pairs, performance JSON and recorded browser videos. `.cache/hf03-evidence/chromium/miya-desktop.webm` and `miya-mobile.webm` are the final Chromium review clips. Required full frontend regression evidence is `.cache/hf03-commit.log`; the gate uses isolated TiDB/SMTP/payment fixtures. No live account/payment change is involved. The final pass counts and commit receipt belong in `docs/progress.md`.
 
 Rendered desktop/mobile stills were reviewed. A pixel comparison of the Firefox pose pair localized changes to the torso/hair; the face and feet outside those regions remained unchanged. Normal-speed recordings are available for owner review. Physical iOS/Android, human screen-reader and final visual acceptance remain HF05 work; passing automated checks does not complete those reviews.
+
+
+Final qualification: 186 component tests in 62 files, all 60 Chromium route/policy journeys, both frontend builds and unchanged budgets, audit/contracts, root repository/secret checks, image scans and read-only container smoke passed. The final application also passed the focused Firefox and WebKit desktop/mobile motion scenarios. Final RAF p95 samples were about 18.3ms in Chromium, 10ms in Firefox, and 41ms desktop / 29ms mobile in WebKit; these are local recorded scheduling samples with the limitations above. WebKit has the highest measured rendering cost and remains a focus for physical-device review.
+
+The first gate's email failures were not ignored: a captured synthetic email arrived 53 seconds after its request. The complete rerun retained the 20-second delivery check and passed; read-only 15-second aggregate queue samples showed no sustained email backlog during that rerun. The specific cause of the earlier delay was not established. No backend logic, email budget or timeout was changed to obtain a pass.
