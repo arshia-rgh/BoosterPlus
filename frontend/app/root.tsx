@@ -7,6 +7,7 @@ import {
   ScrollRestoration,
   Link,
   useRouteLoaderData,
+  useLocation,
 } from "react-router";
 import type { ReactNode } from "react";
 import type { LoaderFunctionArgs } from "react-router";
@@ -18,6 +19,44 @@ export function loader({ request }: LoaderFunctionArgs) {
 }
 export function shouldRevalidate() {
   return false;
+}
+
+function MainNavigation() {
+  const location = useLocation();
+  return (
+    <nav aria-label="Main navigation">
+      {[
+        ["/games", "Games"],
+        ["/accounts", "Game accounts"],
+        ["/#how-it-works", "How it works"],
+        ["/account", "My account"],
+      ].map(([to, label]) => {
+        if (!to) return null;
+        const [pathname, hash] = to.split("#");
+        const exact =
+          location.pathname === pathname &&
+          (!hash || location.hash === `#${hash}`);
+        const parent = !hash && location.pathname.startsWith(`${to}/`);
+        return (
+          <Link
+            key={to}
+            to={to}
+            aria-current={
+              exact
+                ? hash
+                  ? "location"
+                  : "page"
+                : parent
+                  ? "location"
+                  : undefined
+            }
+          >
+            {label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
 }
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -43,14 +82,7 @@ export function Layout({ children }: { children: ReactNode }) {
           <Link className="brand" to="/" aria-label="PLAYORA home">
             <BrandLogo />
           </Link>
-          <nav aria-label="Main navigation">
-            <Link to="/games">Games</Link>
-            <Link to="/accounts">Accounts</Link>
-            <Link className="desktop-nav-link" to="/#how-it-works">
-              How it works
-            </Link>
-            <Link to="/account">Account</Link>
-          </nav>
+          <MainNavigation />
         </header>
         {children}
         <footer>

@@ -35,7 +35,8 @@
 .activity-list > li > button {
   grid-column: 2;
 }
-.secondary-list .secondary-action {
+.secondary-list .secondary-action,
+.favorite-actions .secondary-action {
   color: #c8dbce;
   background: transparent;
   border: 1px solid #496852;

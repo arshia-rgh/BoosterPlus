@@ -34,7 +34,11 @@ describe("prelaunch catalog", () => {
     });
   });
   it("shows an unavailable catalog without invented prices", () => {
-    render(<Games />);
+    render(
+      <MemoryRouter>
+        <Games />
+      </MemoryRouter>,
+    );
     expect(
       screen.getByRole("heading", { name: "Mobile Legends" }),
     ).toBeVisible();

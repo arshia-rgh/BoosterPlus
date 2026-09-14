@@ -36,10 +36,15 @@ export function FavoriteButton({
     }
   }
   return (
-    <div className="catalog-actions">
-      <Action disabled={busy || saved} onClick={() => void save()}>
+    <div className="catalog-actions favorite-actions">
+      <button
+        className="button compact secondary-action"
+        type="button"
+        disabled={busy || saved}
+        onClick={() => void save()}
+      >
         {saved ? "Saved to favorites" : "Save to favorites"}
-      </Action>
+      </button>
       <ErrorNotice error={error} />
       {saved && <Link to="/favorites">View favorites</Link>}
     </div>

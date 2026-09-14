@@ -738,11 +738,6 @@ footer {
   background: #0c1511;
   border-color: #304237;
 }
-@media (max-width: 700px) {
-  .site-header .desktop-nav-link {
-    display: none;
-  }
-}
 
 .payment-policy {
   overflow-wrap: anywhere;
@@ -800,5 +795,23 @@ footer {
   }
   .brand-logo {
     width: 9.5rem;
+  }
+}
+
+.site-header nav a[aria-current] {
+  color: #b4e8cb;
+  text-decoration: underline;
+  text-underline-offset: 0.4em;
+  text-decoration-thickness: 2px;
+}
+@media (max-width: 580px) {
+  .site-header nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.25rem 1rem;
+  }
+  .site-header nav a {
+    justify-content: center;
+    padding: 0.4rem;
   }
 }

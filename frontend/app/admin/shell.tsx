@@ -196,6 +196,7 @@ export default function AdminShell({ session, title, children }: FrameProps) {
             </>
           )}
         </header>
+        {children}
         {!authorized && (
           <section className="admin-welcome" aria-label="Staff sign-in guide">
             <p className="eyebrow">PLAYORA STAFF</p>
@@ -215,7 +216,6 @@ export default function AdminShell({ session, title, children }: FrameProps) {
             </details>
           </section>
         )}
-        {children}
       </div>
       {authorized && (
         <dialog ref={drawer} className="admin-drawer" aria-label="Staff menu">

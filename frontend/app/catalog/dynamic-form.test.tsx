@@ -91,6 +91,9 @@ it("renders stages/visibility and submits no hidden stale answers", async () => 
   expect(await screen.findByRole("status")).toHaveTextContent(
     "No order has been created",
   );
+  expect(
+    screen.getByRole("complementary", { name: "Selection summary" }),
+  ).toHaveTextContent("These selections need a manual price review");
 });
 it("surfaces authoritative field errors and stale releases without a success claim", async () => {
   vi.mocked(post)
@@ -115,8 +118,14 @@ it("surfaces authoritative field errors and stale releases without a success cla
     ),
   );
   expect(screen.getByLabelText("One hero")).toHaveFocus();
+  expect(
+    screen.getByRole("complementary", { name: "Selection summary" }),
+  ).toHaveTextContent("Some selections need attention");
   fireEvent.click(screen.getByRole("button", { name: "Check selections" }));
   expect(await screen.findByText("Catalog changed. Reload.")).toBeVisible();
+  expect(
+    screen.getByRole("complementary", { name: "Selection summary" }),
+  ).toHaveTextContent("We couldn't finish checking");
   expect(screen.queryByText(/Selections are valid/)).not.toBeInTheDocument();
 });
 it("prevents validation for paused or exhausted offerings", () => {
@@ -162,6 +171,9 @@ it("renders a server estimate and clears it when selections change", async () =>
   expect(
     await screen.findByRole("heading", { name: "Estimated price: USD 3.01" }),
   ).toBeVisible();
+  expect(
+    screen.getByRole("complementary", { name: "Selection summary" }),
+  ).toHaveTextContent("Your provisional estimate is below");
   expect(post).toHaveBeenLastCalledWith(
     "/catalog/games/test/estimate",
     { release_id: "release", service: "boost", answers: { one: false } },
@@ -173,6 +185,9 @@ it("renders a server estimate and clears it when selections change", async () =>
   expect(
     screen.queryByRole("heading", { name: /Estimated price/ }),
   ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("complementary", { name: "Selection summary" }),
+  ).toHaveTextContent("Your selections have changed");
 });
 
 it("does not retain validation success when pricing detects a stale release", async () => {

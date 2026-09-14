@@ -238,7 +238,15 @@ function MarketResults() {
             ))}
           </div>
           {!resource.data.items.length && (
-            <p>No available accounts match these filters.</p>
+            <p>
+              {["search", "region", "rank", "slug"].some((key) =>
+                params.get(key)?.trim(),
+              )
+                ? "No available accounts match these filters."
+                : after
+                  ? "There are no more accounts in this view."
+                  : "No accounts are available right now."}
+            </p>
           )}
           {resource.data.next && (
             <Action

@@ -276,7 +276,7 @@ export function HomePage({
                 Set your target rank, play mode and preferences. Get an
                 estimate, then review your final quote with the team.
               </p>
-              <Link className="home-text-link" to="/games">
+              <Link className="home-text-link" to="/games?path=custom">
                 Explore custom boosting <Arrow />
               </Link>
             </article>
@@ -290,7 +290,7 @@ export function HomePage({
                 Browse published packages with a defined scope and price. No
                 separate admin quote before checkout.
               </p>
-              <Link className="home-text-link" to="/games">
+              <Link className="home-text-link" to="/games?path=packages">
                 Browse published packages <Arrow />
               </Link>
             </article>

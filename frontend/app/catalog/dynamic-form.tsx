@@ -247,9 +247,11 @@ function ConfigurationForm({
     [valid, setValid] = useState(false),
     [estimate, setEstimate] = useState<Estimate | null>(null),
     [coupon, setCoupon] = useState(initialCoupon);
+  const [changed, setChanged] = useState(false);
   const [lastStage, setLastStage] = useState(stage);
   if (lastStage !== stage) {
     setLastStage(stage);
+    setChanged(false);
     setValid(false);
     setEstimate(null);
     setIssues([]);
@@ -273,6 +275,7 @@ function ConfigurationForm({
     setIssues([]);
     setValid(false);
     setEstimate(null);
+    setChanged(false);
     try {
       const result = await post(
         validationPath ??
@@ -338,139 +341,169 @@ function ConfigurationForm({
       onSubmit={(event) => void submit(event)}
       noValidate
     >
-      <fieldset disabled={busy || unavailable}>
-        <legend>{service.name} selections</legend>
-        {service.fulfillment && (
-          <details className="configuration-privacy">
-            <summary>How your information is shared</summary>
-            <p>
-              After payment, your assigned booster can see these selected
-              fields:{" "}
-              {service.fields
-                .filter((field) =>
-                  service.fulfillment?.share_fields.includes(field.key),
-                )
-                .map((field) => field.label)
-                .join(", ") || "none"}
-              . Temporary game access is collected separately only for
-              play-on-account work.
-            </p>
-          </details>
+      <div className="configuration-layout">
+        <fieldset disabled={busy || unavailable}>
+          <legend>{service.name} selections</legend>
+          {service.fulfillment && (
+            <details className="configuration-privacy">
+              <summary>How your information is shared</summary>
+              <p>
+                After payment, your assigned booster can see these selected
+                fields:{" "}
+                {service.fields
+                  .filter((field) =>
+                    service.fulfillment?.share_fields.includes(field.key),
+                  )
+                  .map((field) => field.label)
+                  .join(", ") || "none"}
+                . Temporary game access is collected separately only for
+                play-on-account work.
+              </p>
+            </details>
+          )}
+          {[
+            {
+              title: "Your goal",
+              fields: service.fields.filter((field) => field.type === "rank"),
+            },
+            {
+              title: "Play mode",
+              fields: service.fields.filter(
+                (field) =>
+                  field.type !== "rank" &&
+                  service.fulfillment?.field === field.key,
+              ),
+            },
+            {
+              title: "Your preferences",
+              fields: service.fields.filter(
+                (field) =>
+                  field.type !== "rank" &&
+                  service.fulfillment?.field !== field.key &&
+                  field.stage === "estimate",
+              ),
+            },
+            {
+              title: "Order details",
+              fields: service.fields.filter(
+                (field) =>
+                  field.type !== "rank" &&
+                  service.fulfillment?.field !== field.key &&
+                  field.stage !== "estimate",
+              ),
+            },
+          ]
+            .map((group) => ({
+              ...group,
+              fields: group.fields.filter(
+                (field) =>
+                  stageIndex(field.stage) <= stageIndex(stage) &&
+                  matches(field.visible_when, values, service.fields),
+              ),
+            }))
+            .filter((group) => group.fields.length > 0)
+            .map((group) => (
+              <section
+                className="configuration-group"
+                key={group.title}
+                aria-label={group.title}
+              >
+                <h2>{group.title}</h2>
+                <div className="configuration-fields">
+                  {group.fields.map((field) => (
+                    <Input
+                      key={field.key}
+                      field={field}
+                      config={config}
+                      value={values[field.key]}
+                      required={
+                        field.required ||
+                        (!!field.required_when &&
+                          matches(
+                            field.required_when,
+                            values,
+                            service.fields,
+                          )) ||
+                        (variant?.required_fields.includes(field.key) ?? false)
+                      }
+                      change={(value) => {
+                        const next: Answers = Object.fromEntries(
+                          Object.entries(values).filter(
+                            ([key]) => key !== field.key,
+                          ),
+                        );
+                        if (value !== undefined) next[field.key] = value;
+                        setRaw(visibleAnswers(service, next, stage));
+                        setChanged(true);
+                        setError(null);
+                        setIssues([]);
+                        setValid(false);
+                        setEstimate(null);
+                      }}
+                      error={
+                        issues.find((issue) => issue.path === field.key)
+                          ?.message
+                      }
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          {!previewPath && (stage === "estimate" || stage === "order") && (
+            <div className="catalog-input">
+              <label htmlFor={couponID}>Coupon code (optional)</label>
+              <input
+                id={couponID}
+                value={coupon}
+                maxLength={40}
+                onChange={(event) => {
+                  setCoupon(event.target.value);
+                  setChanged(true);
+                  setIssues([]);
+                  setEstimate(null);
+                  setValid(false);
+                  setError(null);
+                }}
+              />
+              <p className="quiet">
+                One code per order. Eligibility is rechecked when you accept the
+                final price.
+              </p>
+            </div>
+          )}
+          <button className="button" type="submit">
+            {busy ? "Checking…" : "Check selections"}
+          </button>
+        </fieldset>
+        {!previewPath && !onCommit && (
+          <SelectionSummary
+            config={config}
+            service={service}
+            values={values}
+            stage={stage}
+            fixed={!!variant}
+            state={
+              unavailable
+                ? "unavailable"
+                : busy
+                  ? "checking"
+                  : error
+                    ? "error"
+                    : issues.length
+                      ? "invalid"
+                      : estimate?.outcome === "manual_review"
+                        ? "manual"
+                        : estimate?.outcome === "estimated"
+                          ? "estimated"
+                          : valid
+                            ? "valid"
+                            : changed
+                              ? "changed"
+                              : "unchecked"
+            }
+          />
         )}
-        {[
-          {
-            title: "Your goal",
-            fields: service.fields.filter((field) => field.type === "rank"),
-          },
-          {
-            title: "Play mode",
-            fields: service.fields.filter(
-              (field) =>
-                field.type !== "rank" &&
-                service.fulfillment?.field === field.key,
-            ),
-          },
-          {
-            title: "Your preferences",
-            fields: service.fields.filter(
-              (field) =>
-                field.type !== "rank" &&
-                service.fulfillment?.field !== field.key &&
-                field.stage === "estimate",
-            ),
-          },
-          {
-            title: "Order details",
-            fields: service.fields.filter(
-              (field) =>
-                field.type !== "rank" &&
-                service.fulfillment?.field !== field.key &&
-                field.stage !== "estimate",
-            ),
-          },
-        ]
-          .map((group) => ({
-            ...group,
-            fields: group.fields.filter(
-              (field) =>
-                stageIndex(field.stage) <= stageIndex(stage) &&
-                matches(field.visible_when, values, service.fields),
-            ),
-          }))
-          .filter((group) => group.fields.length > 0)
-          .map((group) => (
-            <section
-              className="configuration-group"
-              key={group.title}
-              aria-label={group.title}
-            >
-              <h2>{group.title}</h2>
-              <div className="configuration-fields">
-                {group.fields.map((field) => (
-                  <Input
-                    key={field.key}
-                    field={field}
-                    config={config}
-                    value={values[field.key]}
-                    required={
-                      field.required ||
-                      (!!field.required_when &&
-                        matches(field.required_when, values, service.fields)) ||
-                      (variant?.required_fields.includes(field.key) ?? false)
-                    }
-                    change={(value) => {
-                      const next: Answers = Object.fromEntries(
-                        Object.entries(values).filter(
-                          ([key]) => key !== field.key,
-                        ),
-                      );
-                      if (value !== undefined) next[field.key] = value;
-                      setRaw(visibleAnswers(service, next, stage));
-                      setIssues([]);
-                      setValid(false);
-                      setEstimate(null);
-                    }}
-                    error={
-                      issues.find((issue) => issue.path === field.key)?.message
-                    }
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        {!previewPath && (stage === "estimate" || stage === "order") && (
-          <div className="catalog-input">
-            <label htmlFor={couponID}>Coupon code (optional)</label>
-            <input
-              id={couponID}
-              value={coupon}
-              maxLength={40}
-              onChange={(event) => {
-                setCoupon(event.target.value);
-                setEstimate(null);
-                setValid(false);
-                setError(null);
-              }}
-            />
-            <p className="quiet">
-              One code per order. Eligibility is rechecked when you accept the
-              final price.
-            </p>
-          </div>
-        )}
-        <button className="button" type="submit">
-          {busy ? "Checking…" : "Check selections"}
-        </button>
-      </fieldset>
-      {!previewPath && !onCommit && (
-        <SelectionSummary
-          config={config}
-          service={service}
-          values={values}
-          stage={stage}
-          fixed={!!variant}
-        />
-      )}
+      </div>
       <Issues issues={issues} />
       <ErrorNotice error={error} />
       {valid && (

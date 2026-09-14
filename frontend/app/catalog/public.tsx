@@ -1,5 +1,5 @@
 import { Subscribe } from "../availability/pages";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLoaderData, useParams, useSearchParams } from "react-router";
 import { FavoriteButton } from "../orders/favorites";
 import DynamicForm from "./dynamic-form";
@@ -7,8 +7,69 @@ import "./discovery.css";
 import { Select } from "./controls";
 import { price, type Listing, type Release, type Package } from "./model";
 
+export function offeringPath(params: URLSearchParams) {
+  const value = params.get("path");
+  return value === "custom" || value === "packages" ? value : "all";
+}
+function pathQuery(path: string) {
+  return path === "all" ? "" : `?path=${path}`;
+}
+function PathPicker() {
+  const [params, setParams] = useSearchParams();
+  const current = offeringPath(params);
+  return (
+    <nav className="offering-paths" aria-label="Boosting type">
+      {[
+        ["all", "All services"],
+        ["custom", "Custom boosting"],
+        ["packages", "Fixed packages"],
+      ].map(([key, label]) => (
+        <button
+          type="button"
+          key={key}
+          aria-pressed={key === current}
+          onClick={() => {
+            const next = new URLSearchParams(params);
+            next.delete("after");
+            if (key === "all") next.delete("path");
+            else if (key) next.set("path", key);
+            setParams(next);
+          }}
+        >
+          {label}
+        </button>
+      ))}
+    </nav>
+  );
+}
+function GameHero({ release }: { release: Release }) {
+  const [failed, setFailed] = useState(false);
+  const source = release.configuration.asset;
+  return (
+    <div
+      className={`game-hero ${!source || failed ? "game-hero-compact" : ""}`}
+    >
+      <div>
+        <Intro release={release} />
+      </div>
+      {source && !failed && (
+        <img
+          src={source}
+          alt={release.configuration.asset_alt}
+          width="640"
+          height="400"
+          onError={() => {
+            setFailed(true);
+          }}
+        />
+      )}
+    </div>
+  );
+}
 export function GameCatalog() {
   const listing = useLoaderData<Listing>();
+  const [params] = useSearchParams();
+  const path = offeringPath(params);
   return (
     <main id="main" className="page catalog-page">
       <div className="catalog-introduction">
@@ -37,6 +98,7 @@ export function GameCatalog() {
           <strong>03 · Stay in the loop</strong>Private updates, chat and proof.
         </li>
       </ol>
+      <PathPicker />
       {listing.games.length === 0 ? (
         <section className="game-card">
           <span className="status">Coming soon</span>
@@ -69,10 +131,15 @@ export function GameCatalog() {
                 {game.paused ? "Ordering paused" : "Published catalog"}
               </span>
               <h2>
-                <Link to={`/games/${game.slug}`}>{game.name}</Link>
+                <Link to={`/games/${game.slug}${pathQuery(path)}`}>
+                  {game.name}
+                </Link>
               </h2>
               <p>{game.description}</p>
-              <Link className="button" to={`/games/${game.slug}`}>
+              <Link
+                className="button"
+                to={`/games/${game.slug}${pathQuery(path)}`}
+              >
                 Explore services
               </Link>
             </article>
@@ -82,7 +149,7 @@ export function GameCatalog() {
       {listing.next && (
         <Link
           className="button"
-          to={`/games?after=${encodeURIComponent(listing.next)}`}
+          to={`/games?after=${encodeURIComponent(listing.next)}${path === "all" ? "" : `&path=${path}`}`}
         >
           Next games
         </Link>
@@ -108,86 +175,91 @@ function Intro({ release }: { release: Release }) {
 }
 export function GamePage() {
   const release = useLoaderData<Release>();
+  const [params] = useSearchParams();
+  const path = offeringPath(params);
   return (
     <main id="main" className="page catalog-page">
-      <Link to="/games">← All games</Link>
-      <div className="game-hero">
-        <div>
-          <Intro release={release} />
-        </div>
-        {release.configuration.asset ? (
-          <img
-            src={release.configuration.asset}
-            alt={release.configuration.asset_alt}
-            width="640"
-            height="400"
-          />
-        ) : (
-          <div className="game-hero-art" aria-hidden="true">
-            <span>{release.configuration.name.slice(0, 1)}</span>
-          </div>
-        )}
-      </div>
+      <Link to={`/games${pathQuery(path)}`}>← All games</Link>
+      <GameHero
+        key={release.id + release.configuration.asset}
+        release={release}
+      />
       <FavoriteButton kind="game" slug={release.slug} />
-      <Offerings release={release} />
+      <PathPicker />
+      <Offerings release={release} path={path} />
       <Link to={`/games/${release.slug}/reviews`}>
         Read verified customer reviews
       </Link>
     </main>
   );
 }
-export function Offerings({ release }: { release: Release }) {
+export function Offerings({
+  release,
+  path = "all",
+}: {
+  release: Release;
+  path?: string;
+}) {
   const config = release.configuration;
   return (
     <>
-      <section>
-        <h2>Custom boosting</h2>
-        <div className="catalog-cards">
-          {config.services.map((service) => (
-            <article className="game-card" key={service.key}>
-              <span className="status">Built around you</span>
-              <h3>{service.name}</h3>
-              <p>{service.description}</p>
-              <p className="quiet">Final price follows administrator review.</p>
-              <Link
-                className="button"
-                to={`/games/${release.slug}/services/${service.key}`}
-              >
-                Configure {service.name}
-              </Link>
-            </article>
-          ))}
-        </div>
-      </section>
-      <section>
-        <h2>Fixed packages</h2>
-        {config.packages.length === 0 && (
-          <p>No fixed packages are published yet.</p>
-        )}
-        <div className="catalog-cards">
-          {config.packages.map((pack) => (
-            <article className="game-card" key={pack.key}>
-              <span className="status">Fixed scope · fixed price</span>
-              <h3>{pack.name}</h3>
-              <p>{pack.description}</p>
-              <ul>
-                {pack.variants.map((variant) => (
-                  <li key={variant.key}>
-                    {variant.name} · {price(variant)}
-                    {variant.capacity === 0 ? " · Unavailable" : ""}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                className="button"
-                to={`/games/${release.slug}/packages/${pack.key}`}
-              >
-                View {pack.name}
-              </Link>
-            </article>
-          ))}
-        </div>
-      </section>
+      {path !== "packages" && (
+        <section>
+          <h2>Custom boosting</h2>
+          {config.services.length === 0 && (
+            <p>No custom boosting services are published yet.</p>
+          )}
+          <div className="catalog-cards">
+            {config.services.map((service) => (
+              <article className="game-card" key={service.key}>
+                <span className="status">Built around you</span>
+                <h3>{service.name}</h3>
+                <p>{service.description}</p>
+                <p className="quiet">
+                  Final price follows administrator review.
+                </p>
+                <Link
+                  className="button"
+                  to={`/games/${release.slug}/services/${service.key}`}
+                >
+                  Configure {service.name}
+                </Link>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+      {path !== "custom" && (
+        <section>
+          <h2>Fixed packages</h2>
+          {config.packages.length === 0 && (
+            <p>No fixed packages are published yet.</p>
+          )}
+          <div className="catalog-cards">
+            {config.packages.map((pack) => (
+              <article className="game-card" key={pack.key}>
+                <span className="status">Fixed scope · fixed price</span>
+                <h3>{pack.name}</h3>
+                <p>{pack.description}</p>
+                <ul>
+                  {pack.variants.map((variant) => (
+                    <li key={variant.key}>
+                      {variant.name} · {price(variant)}
+                      {variant.capacity === 0 ? " · Unavailable" : ""}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  className="button"
+                  to={`/games/${release.slug}/packages/${pack.key}`}
+                >
+                  View {pack.name}
+                </Link>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
       {config.faqs.length > 0 && (
         <section>
           <h2>Frequently asked questions</h2>
@@ -209,10 +281,20 @@ export function ServicePage() {
     (s) => s.key === params.service,
   );
   const [stage, setStage] = useState("estimate");
+  const stepTitle = useRef<HTMLHeadingElement>(null);
+  const previousStage = useRef(stage);
+  useEffect(() => {
+    if (previousStage.current !== stage) {
+      previousStage.current = stage;
+      stepTitle.current?.focus();
+    }
+  }, [stage]);
   if (!service) throw new Error("Catalog offering is unavailable");
   return (
     <main id="main" className="page catalog-page">
-      <Link to={`/games/${release.slug}`}>← {release.configuration.name}</Link>
+      <Link to={`/games/${release.slug}?path=custom`}>
+        ← {release.configuration.name}
+      </Link>
       <p className="eyebrow">CUSTOM BOOSTING</p>
       <h1>{service.name}</h1>
       <FavoriteButton
@@ -245,6 +327,18 @@ export function ServicePage() {
           2. Review & request
         </button>
       </nav>
+      <h2 ref={stepTitle} tabIndex={-1} className="configuration-step-title">
+        {stage === "estimate"
+          ? "1. Your goal & estimate"
+          : "2. Review & request"}
+      </h2>
+      {stage === "order" && (
+        <p>
+          Review your choices and any order details below, then check selections
+          to continue to your quote request. No order is created until you
+          submit it.
+        </p>
+      )}
       <DynamicForm
         key={release.id + service.key}
         config={release.configuration}
@@ -356,7 +450,9 @@ export function PackagePage() {
   if (!pack) throw new Error("Catalog offering is unavailable");
   return (
     <main id="main" className="page catalog-page">
-      <Link to={`/games/${release.slug}`}>← {release.configuration.name}</Link>
+      <Link to={`/games/${release.slug}?path=packages`}>
+        ← {release.configuration.name}
+      </Link>
       <PackageDetails
         key={release.id + pack.key}
         release={release}

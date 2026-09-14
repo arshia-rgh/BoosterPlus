@@ -29,12 +29,23 @@ export default function SelectionSummary({
   values,
   stage,
   fixed,
+  state = "unchecked",
 }: {
   config: Configuration;
   service: Service;
   values: Answers;
   stage: string;
   fixed: boolean;
+  state?:
+    | "unchecked"
+    | "checking"
+    | "estimated"
+    | "manual"
+    | "valid"
+    | "changed"
+    | "invalid"
+    | "unavailable"
+    | "error";
 }) {
   const fields = service.fields.filter(
     (field) =>
@@ -89,14 +100,32 @@ export default function SelectionSummary({
           </div>
         ))}
       </dl>
-      <p>
-        {fixed
-          ? "The published package price applies to this variant. Review it before creating your order."
-          : "Check your selections for a provisional estimate. Our team reviews your request before you accept a final quote."}
+      <p className="selection-guidance">
+        {state === "unavailable"
+          ? "This offering is unavailable. You can review the options, but cannot request an order."
+          : state === "checking"
+            ? "Checking your current selections…"
+            : state === "error"
+              ? "We couldn't finish checking. Try again before continuing."
+              : state === "invalid"
+                ? "Some selections need attention. Resolve the highlighted issues and check again."
+                : state === "changed"
+                  ? "Your selections have changed. Check again for an updated result."
+                  : state === "manual"
+                    ? "These selections need a manual price review. Continue to request a quote from our team."
+                    : state === "estimated"
+                      ? fixed
+                        ? "Your provisional package discount is below. Eligibility is checked again at checkout."
+                        : "Your provisional estimate is below. Our team confirms the final quote before you pay."
+                      : state === "valid"
+                        ? "Your selections are checked. Review the request and consent below before submitting."
+                        : fixed
+                          ? "Review the published variant price and check your selections before creating your order."
+                          : "Check your selections for a provisional estimate. Our team reviews your request before you accept a final quote."}
       </p>
       <p>
-        Private order details stay in the form. Nothing is saved until you
-        submit.
+        Private order details stay in the form. Selected non-private choices can
+        be restored after sign-in.
       </p>
     </aside>
   );

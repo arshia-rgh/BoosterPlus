@@ -319,20 +319,26 @@
 .experience .dynamic-form {
   max-width: none;
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(250px, 0.8fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
   margin: 2rem 0;
   align-items: start;
 }
-.experience .dynamic-form > fieldset {
+.experience .configuration-layout > fieldset {
   grid-column: 1;
   background: #172b1f;
   padding: clamp(1rem, 3vw, 2rem);
 }
-.experience .dynamic-form > :not(fieldset):not(.selection-summary) {
-  grid-column: 1 / -1;
+.experience .configuration-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(250px, 0.8fr);
+  gap: 1.5rem;
+  align-items: start;
 }
-.experience .dynamic-form > fieldset > legend {
+.experience .configuration-layout:not(:has(.selection-summary)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.experience .configuration-layout > fieldset > legend {
   font-size: 1.2rem;
   font-weight: 600;
   padding: 0 0.5rem;
@@ -729,7 +735,7 @@
   scroll-behavior: auto;
 }
 @media (max-width: 900px) {
-  .experience .dynamic-form {
+  .experience .configuration-layout {
     max-width: none;
     grid-template-columns: minmax(0, 1fr);
   }
