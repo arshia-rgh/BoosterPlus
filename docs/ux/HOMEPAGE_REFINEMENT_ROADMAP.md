@@ -2,7 +2,7 @@
 
 Restore the original ascension artwork as the hero's only illustration, and turn “Find your fighting spirit.” into a quieter, genuinely animated game showcase. Preserve PLAYORA's green identity, accepted fonts and rank transformation. The improvement should come from composition, convincing character motion and less competing content.
 
-**Status: research and design proposal, 14 September 2026. Awaiting owner approval before implementation.** UX01–UX10's previous automated qualification remains recorded, but homepage visual acceptance is reopened. HF01 below is delivered; HF02–HF05 are proposed. R10/R11 remain on hold with their full scope in [final-launch.md](../../final-launch.md).
+**Status: research and design proposal, 14 September 2026. Awaiting owner approval before implementation.** UX01–UX10's previous automated qualification remains recorded, but homepage visual acceptance is reopened. HF01 below is delivered; HF02–HF05, including the added HF04A character cameo and HF04B site-wide button audio, are proposed. R10/R11 remain on hold with their full scope in [final-launch.md](../../final-launch.md).
 
 ## 1. Design decision
 
@@ -13,6 +13,8 @@ The character section should contain the heading, a compact manual game selector
 Motion should remain visible when scrolling stops. Require coherent internal movement—breathing and a small appropriate cloth, hair, wing or tail movement—with an optional restrained shift of the whole figure. A rigid painting bobbing up and down is a useful prototype baseline, but is not the completed animation. Text and controls stay still.
 
 These are art-direction judgments supported by the inspection below, not a claim that research proves a particular design will convert better. The final appearance must be judged in context and at normal playback speed.
+
+The expanded brief adds a small character cameo after an early downward scroll: enter from the right, perform a recognizable skill, speak one short line in the character's voice, then move softly across the page and disappear left. It also adds an Iori Yagami/Chou punch sound to enabled button activations throughout the website. The recommended presentation is a brief, infrequent cameo and an opt-in sound theme, with separate voice/effects controls. These additions do not put a large character back over the opening hero.
 
 ## 2. Evidence and research findings
 
@@ -128,7 +130,81 @@ Motion envelopes combine: verify the worst case when idle and scroll offsets coi
 
 Prepare one polished MLBB loop first and review it alongside the static pose before producing all three. Do not repeat a flawed mask treatment across the entire set. A fallback still keeps the site usable when animation cannot run; it must not be presented as completion of the normal-motion brief.
 
-## 6. Performance and accessibility constraints
+## 6. Small character cameo and site-wide sound theme
+
+### Specialist assessment
+
+The cameo can make PLAYORA more distinctive if it behaves like a short game moment rather than a persistent assistant. Keep the skill, spoken line and full-width exit; constrain its size and frequency so it does not interrupt shopping or reading. Repeated punch audio is more likely to become tiring than a single cameo, so make it quiet, optional and easy to stop. The detailed specialist opinions are recorded in [the cameo design review](research/CAMEO_DESIGN_REVIEW.md) and [the audio UX research](research/CAMEO_AUDIO_UX_RESEARCH.md).
+
+The following controls and timing are proposed design decisions for approval, not implemented features. This consolidated specification resolves the specialists' alternative tuning suggestions. The all-buttons sound scope includes storefront, customer, seller, booster, administrator and owner interfaces across both React builds. The visual cameo is a homepage experience; it should not wander through checkout, chat, sign-in or staff workspaces.
+
+### Character, placement and trigger
+
+Prototype a miniature MLBB character first. Miya is the leading green-theme candidate; retain an Iori/Chou variant for comparison if its silhouette and skill read more clearly at small size. Use the actual selected character's recognizable ability and matching voice asset. Do not combine Miya artwork with an Iori voice or invent a lore-specific skill to fill an asset gap. The button punch theme remains Iori/Chou regardless of the cameo character.
+
+Start at approximately 80–112 CSS px character height on desktop and 56–80px on narrow phones. Keep its head, hands and ability readable, and confine the particle/skill envelope to roughly 1.5 times the figure's footprint. Use a green/sage rim light to connect the figure with PLAYORA, preserving identifying character colors. A thumbnail-sized contact sheet and normal-speed skill clip decide the final character; details that look good in a large poster may disappear here.
+
+Use a dedicated shallow stage at the lower hero/next-section boundary, reserved in layout before loading. Arm the cameo after a modest downward scroll—initial tuning target 160–240 CSS px—and start only when that safe stage is visible. This avoids tying the event to a fragile exact scroll pixel or drawing over the hero actions. The stage spans the available page width, clips only the decorative entrance/exit, and cannot create horizontal page scrolling. On small screens, scale the figure and speech treatment to that width while retaining the right-to-left journey.
+
+The art is noninteractive and must not capture pointer events. Pause/dismiss controls sit outside the moving layer, remain keyboard-accessible and have proper touch targets. Do not fly over focused controls, dialogs, menus, cookie notices, chat overlays or form fields. If no safe area is available, defer the cameo rather than playing behind a modal or covering a task. If the visitor scrolls past the stage, end the cameo quietly instead of attaching it to the viewport and chasing them.
+
+### Proposed one-shot storyboard
+
+| Beat | Starting timing | Visual and audio design |
+| --- | --- | --- |
+| Enter | 0–0.8s | Character walks/glides from just beyond the right edge to around 80% of stage width; soft ease, no pop-in |
+| Anticipate | 0.8–1.3s | Small stance change and a readable wind-up; keep feet/body coherent |
+| Use ability | 1.3–2.2s | One recognizable skill into a small decorative target or effect inside the stage; no attack on actual buttons, no fake order damage, no screen shake or full-page flash |
+| Speak and recover | About 2.2–4.5s | One short character line, ideally 1–2.5 seconds, with a matching small speech caption; separate voice from the loudest impact so both remain clear |
+| Cross and leave | About 4.5–8s | Move softly left across the stage and disappear beyond its left edge; a restrained trail fades with the figure |
+
+Timings may shift to fit the real voice and skill asset. The crossing needs coherent walk/run motion synchronized with displacement, or genuine character-appropriate flight; translating a rigid sprite with skating feet fails the brief. This is a time-based sequence triggered by scroll, not speech repeatedly scrubbed forward/backward with wheel movement. Reversing the page must not repeat the attack or restart the line. One cameo per browsing session by default, with an explicit replay action; no timer-based recurrence or new cameo on each route return. Define this as the current tab's session, retaining consumption across reload/navigation where session storage is available; use an in-memory guard when storage fails. Mark the automatic event consumed when it starts or is deliberately dismissed. Only one cameo may run, and other decorative character activity should quiet while it is in view.
+
+Keep captions within the stage, near the speaking character during the stationary speaking beat. Do not drag a paragraph across the screen with the exit. The line is available as text even with sound disabled; retain an accessible transcript/replay control without an unsolicited live-region announcement over a screen reader. Reduced-motion mode omits the automatic traversal and attack; offer the still character and optional line playback without requiring animation. Dismissal stops the whole event immediately and does not steal focus. Leaving the stage, hiding the tab or navigating ends and consumes the event; return does not unexpectedly resume a spoken sentence. Explicit replay starts a fresh sequence.
+
+### Audio behavior and visitor controls
+
+Start silent. Provide a discoverable “Enable game sounds” action with a brief preview, then expose a master mute/volume control plus independent “Button sounds” and “Character voice” settings. Enable audio only through an explicit visitor action; a saved preference records intent but does not guarantee the browser has permitted playback on a new page. Scrolling is not a reliable audio-unlock gesture. Handle suspended audio contexts and rejected playback without delaying navigation or displaying a blocking error. [MDN autoplay][13], [MDN user activation][14], [Chrome autoplay policy][15]
+
+With audio off or denied, run the permitted visual cameo with its caption. Do not queue the missed line and unexpectedly play it on a later unrelated click. An explicit replay/voice action may request playback again. Mute must stop active voice and effects, cancel pending clips and remain silent itself. Motion and audio are independent preferences: reduced motion does not mean that a person cannot choose to hear the line.
+
+Audio control is a user-experience requirement even for short clips; do not design around being just under a duration threshold. Keep site-level audio control available independently of device volume. WCAG specifically addresses automatically playing audio longer than three seconds; a longer continuous combination of effects and dialogue needs consideration, not only each file in isolation. [W3C audio control][16]
+
+Preferences should survive ordinary navigation and work when local storage is blocked using an in-memory fallback. Both frontend builds need the same preference behavior; if served on separate origins, they each need their own explicit opt-in because browser storage is origin-scoped. An optional staff quiet preset is useful, but do not silently omit admin buttons from the requested sound feature.
+
+### Every-button punch feedback
+
+Use a short, clean Iori/Chou-inspired impact as the preview direction: approximately 60–140ms, low-volume attack with a quick decay and no repeated voice grunt. If a usable exact game sample is supplied or sourced for the project, compare it with the brief and document that asset. An original impact can be auditioned as an alternative; it must not be presented as the original game's sound. The requested Iori/Chou punch identity remains the target: an original replacement needs explicit owner acceptance in the audio prototype review, not a silent substitution at completion.
+
+When button sounds are enabled, apply the selected punch to every eligible enabled button action in both builds, including icon buttons, dialogs, pagination, scene selectors, chat send and staff actions. Include links styled and used as buttons. Text selection, typing, hover, scrolling, disabled/inert controls, programmatic state updates and clicks on blank page space are not button activations. Audio settings that mute or reduce sound are silent exceptions; sound preview is explicit.
+
+Play once for the semantic activation, including keyboard and assistive-technology activation. Avoid separate pointer-down and click sounds, nested-icon duplicates and a second sound when form submission follows a click. The sound means “button activated,” never “payment succeeded” or “message delivered”; validation and operation results keep their existing visible/accessibility feedback. Never await audio before executing an action, changing routes or opening provider checkout.
+
+Use a shared effect service with limited concurrent playback and a short cooldown, initially 70–100ms, to prevent rapid-click bursts from stacking or clipping. Actions still execute according to their own existing guards; only excess sounds are dropped. Keep voice intelligible by reducing effects during the short line, and stop all playback when the tab is hidden or the experience unmounts. Do not collect button labels, entered text, payment details or account data for this decorative feature.
+
+### Asset and prototype requirements
+
+The current public/brand asset inventory contains character stills but no game voice, punch audio or skill video files. The requested “own voice” and exact punch sound are therefore asset work, not something already delivered. Before implementation claims completion, record the chosen character/skin, skill, line language and transcript, exact source or commissioned original, permitted project use, formats, duration and size. Preview the real clip with the animation; no placeholder beep, generic speech synthesis or unidentified voice substitute counts as the requested character voice.
+
+The final spoken line and exact sample remain to be selected during the media prototype. This does not block the hero/layout implementation. Keep audio assets local to the application rather than embedding a third-party player, and add explicit lazy-media transfer/decode budgets before the new assets are adopted. Prepare both a static fallback and a proper moving skill sequence; an idle float with a generic glowing circle does not qualify as a recognizable ability.
+
+### Added acceptance scenarios
+
+| Scenario | Required result |
+| --- | --- |
+| Early scroll, reverse scroll, restore/back | Starts only in its visible safe stage; one event, one attack, one line; no unexpected replay after restored scroll or route return |
+| Full-width exit and small screens | Clear right-to-left path and disappearance at 320/390/768/1440px and landscape; no horizontal overflow, covered text or unreachable controls |
+| Speech and ability | Real selected-character asset, matching transcript, readable skill at actual size, intelligible dialogue, no flashing or abrupt exit |
+| Silent first visit and denied audio | Captioned experience works; no unhandled playback rejection, repeated permission prompt, delayed sound or blocked action |
+| Pause, dismiss, mute and reduced motion | Stop immediately; no continued sound after dismissal, hidden tab or navigation; static accessible option remains available |
+| Button coverage | Inventory/test enabled native, custom, icon, submit and button-link controls across public/account/seller/booster/admin/owner routes; pointer, touch, keyboard and screen-reader activation produce exactly one effect for each ordinary eligible activation when audio is ready/on, and at most one under fallback/burst limits |
+| Button errors and bursts | Validation failure still has clear feedback; async failure never sounds like success; disabled controls stay silent; rapid clicks do not stack audio or change action idempotency |
+| Voice/click mix and preference persistence | Separate categories work, effects do not mask speech, mute cancels queued work; navigation, reload, multiple tabs, storage denial and separate frontend origins handled explicitly |
+| Performance | No new eager media burden on the hero; measure cameo art plus active voice/effect bytes, decode time, memory and frame behavior; failed media leaves tasks usable |
+
+Human listening review should include both a first discovery visit and five minutes of repetitive chat/admin use. Record whether the punch becomes tiring, the voice stays intelligible and mute is easy to find. Test physical iOS/Android playback and interruption behavior when devices are available; desktop browser emulation alone cannot qualify those audio conditions.
+
+## 7. Performance and accessibility constraints
 
 Retain the existing homepage gates: homepage JavaScript at most 12KiB gzip, homepage CSS at most 8KiB gzip, shared root CSS at most 4KiB gzip; ascension assets at most 400,000 bytes desktop and 120,000 bytes mobile. These limits come from `frontend/scripts/check-home-budget.mjs`. Do not raise them merely to fit new motion.
 
@@ -140,7 +216,7 @@ Measure the same viewport, browser, cache and throttling conditions before and a
 
 Use a visible pause/resume action near the showcase, synchronized with the existing global motion controls. Explicit pause must survive scene changes according to the existing preference model; resuming must respect a system reduced-motion preference. Pausing cannot require holding focus or hovering. No flicker or rapid flashing is allowed. Native scrolling, keyboard interaction, readable contrast and focus remain primary behaviors.
 
-## 7. Implementation phases after approval
+## 8. Implementation phases after approval
 
 | Phase | Scope and concrete deliverables | Exit condition | Status |
 | --- | --- | --- | --- |
@@ -148,11 +224,13 @@ Use a visible pause/resume action near the showcase, synchronized with the exist
 | **HF02 — Hero and showcase composition** | Remove hero overlay, tune original artwork crop/alignment, simplify showcase content, fix mobile order and stable stage; prepare game-art contact sheet | Same-size before/after stills at desktop/mobile/short landscape; no clipped copy or missing navigation; frontend and root gates pass | Not started |
 | **HF03 — Character motion prototype** | One properly prepared MLBB character with organic loop, static pose, pause/reduced/lifecycle states; compare layered method against the reference's visual intent | 20-second stationary and scroll recordings, seamless/internal motion review, budget report; use the result to select the rendering method | Not started |
 | **HF04 — Multi-game motion and state polish** | Extend the qualified method to WoW and LoL, refine scene switching, contrast/edges/atmosphere, failed/slow media handling | Each game passes the same visual standard and state tests; no automatic rotation or unavailable checkout implication | Not started |
+| **HF04A — Small character cameo** | Choose/prototype the miniature character, recognizable skill, captioned voice beat and full-width right-to-left exit; safe stage, one-shot lifecycle, replay/dismiss/reduced states | Real skill and voice assets integrated and reviewed in the actual-size desktop/mobile sequence; trigger, interruption and fallback matrix passes | Not started |
+| **HF04B — Site-wide punch audio** | Shared opt-in audio preferences/service in both frontend builds, auditioned Iori/Chou punch feedback for all eligible buttons, voice/effects mixing and blocked-playback recovery | Cross-route button inventory and keyboard/touch checks, silent-first/mute/persistence/burst tests, real media budget and listening review pass | Not started |
 | **HF05 — Qualification and owner review** | Cross-browser/state matrix, responsive stills, normal-speed clips, resource traces and review handoff | Required gates and scoped visual checks pass; report actual human/device coverage; owner explicitly accepts the result | Not started |
 
 The prototype milestone supplies reviewable evidence early; it is not permission to stop after a rough animation and mark the roadmap complete. Implementation begins only after the owner approves this plan. Once authorized, use the established main-branch delivery rules and commit/push completed verified stages. UI-only commits use frontend pre-commit plus root checks; backend/deployment/tooling changes retain their full gate, and final UX qualification retains the complete repository gate. Do not resume R10/R11 through regression testing.
 
-## 8. Acceptance matrix
+## 9. Acceptance matrix
 
 | Area | Required checks and evidence |
 | --- | --- |
@@ -170,11 +248,11 @@ The prototype milestone supplies reviewable evidence early; it is not permission
 
 Human review should answer three practical questions: Is the service and next action obvious on the opening screen? Does the character look gently alive while the page is still? Does selecting WoW artwork imply a purchasable WoW service? Record misunderstandings and adjust hierarchy or labels. These are usability tasks, not claims that a few opinions establish conversion uplift.
 
-The handoff must include before/after hero stills, a short mobile page walkthrough, three stationary character clips, a scroll clip and a reduced-motion still. Passing automated checks alone does not close visual acceptance. Do not claim “best ever,” universal 60fps, real-device coverage or final launch readiness without evidence.
+The handoff must include before/after hero stills, a short mobile page walkthrough, three stationary character clips, a scroll clip and a reduced-motion still. Also include one complete cameo recording with its voice/caption, a silent version and a button-sound preview plus cross-route coverage results. Passing automated checks alone does not close visual acceptance. Do not claim “best ever,” universal 60fps, real-device coverage or final launch readiness without evidence.
 
-## 9. Scope retained and held
+## 10. Scope retained and held
 
-This refinement covers the opening hero, character showcase, necessary shared motion integration and regression evidence. Preserve the approved rank-progression behavior; if the shared character component changes, verify its rank-scene usage rather than silently breaking or expanding that scene. Account/chat/admin workflows retain their prior implementation and qualification. A newly discovered regression can be recorded and corrected within its authorized scope, but this is not another unrestricted site redesign.
+This refinement covers the opening hero, character showcase, homepage cameo, shared button audio/preferences across both frontend builds, necessary motion/audio integration and regression evidence. Preserve the approved rank-progression behavior; if the shared character component changes, verify its rank-scene usage rather than silently breaking or expanding that scene. Account/chat/admin workflows retain their business behavior; their new button feedback and preference controls require fresh scoped regression checks. A newly discovered regression can be recorded and corrected within its authorized scope, but this is not another unrestricted site redesign.
 
 The original artwork, green theme, fonts, PLAYORA logo and social masters remain accepted inputs. Payment/provider integration, production gateways, deployment activation and R10/R11 are not resumed. [The original UX roadmap](../../UI_UX_ROADMAP.md) remains the historical delivery record; this document governs the newly requested homepage refinement after approval.
 
@@ -194,6 +272,10 @@ All pages were accessed on 14 September 2026. Live pages can change. The competi
 10. W3C WAI, [Understanding SC 1.4.10: Reflow][10].
 11. W3C WAI, [Understanding SC 1.4.12: Text Spacing][11].
 12. web.dev, [How to create high-performance CSS animations][12].
+13. MDN Web Docs, [Autoplay guide for media and Web Audio APIs][13].
+14. MDN Web Docs, [User activation][14].
+15. Chrome for Developers, [Autoplay policy in Chrome][15].
+16. W3C WAI, [Understanding SC 1.4.2: Audio Control][16], Level A.
 
 [1]: https://boosting.pro/
 [2]: https://elo-boost.net/
@@ -207,3 +289,7 @@ All pages were accessed on 14 September 2026. Live pages can change. The competi
 [10]: https://www.w3.org/WAI/WCAG22/Understanding/reflow.html
 [11]: https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html
 [12]: https://web.dev/articles/animations-guide
+[13]: https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay
+[14]: https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/User_activation
+[15]: https://developer.chrome.com/blog/autoplay/
+[16]: https://www.w3.org/WAI/WCAG22/Understanding/audio-control.html
