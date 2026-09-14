@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536">
+  <!-- A continuous falloff anchors the ponytail root and avoids a cut edge. -->
+  <defs>
+    <radialGradient id="sway">
+      <stop stop-color="rgb(100%,65%,50%)"/>
+      <stop offset="1" stop-color="rgb(50%,50%,50%)"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1536" fill="rgb(50%,50%,50%)"/>
+  <ellipse cx="652" cy="369" rx="109" ry="156" fill="url(#sway)"/>
+</svg>

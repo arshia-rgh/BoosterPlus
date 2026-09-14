@@ -8,7 +8,7 @@ export async function qualifyCharacters(page: Page, project: string) {
   );
   await expect(showcase.getByRole("heading")).toHaveCount(1);
   for (const [game, key] of [
-    ["Mobile Legends", "iori"],
+    ["Mobile Legends", "miya"],
     ["World of Warcraft", "illidan"],
     ["League of Legends", "ahri"],
   ]) {
@@ -16,23 +16,29 @@ export async function qualifyCharacters(page: Page, project: string) {
     await showcase.getByRole("button", { name: game, exact: true }).click();
     const art = showcase.locator(`.character-art[data-character=${key}]`);
     await expect(art).toHaveAttribute("data-active", "true");
-    const snapshots = await art.evaluate((element) => {
-      const part = element.querySelector(".character-cloth");
-      if (!part) throw new Error("Missing articulated layer");
-      const animations = part.getAnimations();
-      if (animations.length !== 1)
-        throw new Error("Expected cloth/wing/tail idle motion");
-      const animation = animations[0];
-      if (!animation) throw new Error("Missing animation");
-      animation.pause();
-      animation.currentTime = 0;
-      const first = getComputedStyle(part).transform;
-      animation.currentTime = 2400;
-      const second = getComputedStyle(part).transform;
-      animation.play();
-      return [first, second];
-    });
-    expect(snapshots[0]).not.toBe(snapshots[1]);
+    if (key === "miya") {
+      // Continuous fields replace the old horizontal anatomy slices for MLBB.
+      await expect(art.locator("clipPath")).toHaveCount(0);
+      await expect(art.locator("animate")).toHaveCount(2);
+    } else {
+      const snapshots = await art.evaluate((element) => {
+        const part = element.querySelector(".character-cloth");
+        if (!part) throw new Error("Missing articulated layer");
+        const animations = part.getAnimations();
+        if (animations.length !== 1)
+          throw new Error("Expected cloth/wing/tail idle motion");
+        const animation = animations[0];
+        if (!animation) throw new Error("Missing animation");
+        animation.pause();
+        animation.currentTime = 0;
+        const first = getComputedStyle(part).transform;
+        animation.currentTime = 2400;
+        const second = getComputedStyle(part).transform;
+        animation.play();
+        return [first, second];
+      });
+      expect(snapshots[0]).not.toBe(snapshots[1]);
+    }
     expect(
       await showcase.evaluate(
         (element) => element.getBoundingClientRect().height,

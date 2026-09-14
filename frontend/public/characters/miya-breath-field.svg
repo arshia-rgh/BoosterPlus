@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536">
+  <!-- Neutral outside the torso: the face, bow and feet stay anchored. -->
+  <defs>
+    <radialGradient id="lift">
+      <stop stop-color="rgb(50%,100%,50%)"/>
+      <stop offset="1" stop-color="rgb(50%,50%,50%)"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1536" fill="rgb(50%,50%,50%)"/>
+  <ellipse cx="432" cy="459" rx="220" ry="218" fill="url(#lift)"/>
+</svg>

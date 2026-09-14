@@ -1,6 +1,10 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router";
 import "./characters.css";
+import MiyaArt from "./miya";
+import { useCharacterMotion } from "./character-motion";
+import { setMotionPreference, useMotionPreference } from "./motion";
+export { viewportProgress } from "./character-motion";
 
 const characters = [
   {
@@ -20,16 +24,6 @@ const characters = [
   },
 ] as const;
 export type CharacterKey = (typeof characters)[number]["key"];
-export function viewportProgress(
-  top: number,
-  height: number,
-  viewport: number,
-) {
-  return Math.min(
-    1,
-    Math.max(0, (viewport - top) / Math.max(1, height + viewport)),
-  );
-}
 export function CharacterArt({
   character,
   enabled,
@@ -37,9 +31,9 @@ export function CharacterArt({
   character: CharacterKey;
   enabled: boolean;
 }) {
-  const root = useRef<HTMLDivElement>(null);
-  const uid = useId().replaceAll(":", "");
   const [failed, setFailed] = useState(false);
+  const root = useCharacterMotion(enabled && !failed);
+  const uid = useId().replaceAll(":", "");
   const item =
     characters.find((value) => value.key === character) ?? characters[0];
   useEffect(() => {
@@ -56,63 +50,6 @@ export function CharacterArt({
       image.onerror = null;
     };
   }, [character]);
-  useEffect(() => {
-    const element = root.current;
-    if (
-      !element ||
-      !enabled ||
-      failed ||
-      typeof IntersectionObserver === "undefined"
-    )
-      return;
-    let visible = false,
-      frame = 0;
-    const sync = () => {
-      frame = 0;
-      const active = visible && !document.hidden;
-      element.dataset.active = String(active);
-      if (!active) return;
-      const rect = element.getBoundingClientRect();
-      const progress = viewportProgress(rect.top, rect.height, innerHeight);
-      element.style.setProperty(
-        "--character-travel",
-        `${String((progress - 0.5) * 28)}px`,
-      );
-      element.style.setProperty(
-        "--character-turn",
-        `${String((progress - 0.5) * 2)}deg`,
-      );
-      element.dataset.progress = String(Math.round(progress * 100));
-    };
-    const schedule = () => {
-      if (document.hidden) {
-        cancelAnimationFrame(frame);
-        frame = 0;
-        sync();
-      } else if (!frame) frame = requestAnimationFrame(sync);
-    };
-    const observer = new IntersectionObserver(([entry]) => {
-      visible = entry?.isIntersecting ?? false;
-      schedule();
-    });
-    observer.observe(element);
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    window.addEventListener("pageshow", schedule);
-    document.addEventListener("visibilitychange", schedule);
-    return () => {
-      observer.disconnect();
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      window.removeEventListener("pageshow", schedule);
-      document.removeEventListener("visibilitychange", schedule);
-      delete element.dataset.active;
-      delete element.dataset.progress;
-      element.style.removeProperty("--character-travel");
-      element.style.removeProperty("--character-turn");
-    };
-  }, [enabled, failed]);
   if (failed) return <div className="character-fallback" aria-hidden="true" />;
   const source = `/characters/${character}-768.jpg`;
   return (
@@ -198,6 +135,41 @@ export function CharacterArt({
 }
 export default function CharacterShowcase({ enabled }: { enabled: boolean }) {
   const [selected, setSelected] = useState<CharacterKey>("iori");
+  const stage = useRef<HTMLDivElement>(null);
+  const anchorFrame = useRef(0);
+  useEffect(
+    () => () => {
+      cancelAnimationFrame(anchorFrame.current);
+    },
+    [],
+  );
+  const [nearby, setNearby] = useState(false);
+  const preference = useMotionPreference();
+  useEffect(() => {
+    const element = stage.current;
+    if (!element) return;
+    if (typeof IntersectionObserver !== "function") {
+      const frame = requestAnimationFrame(() => {
+        setNearby(true);
+      });
+      return () => {
+        cancelAnimationFrame(frame);
+      };
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setNearby(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
   return (
     <section
       className="world-showcase home-section"
@@ -229,10 +201,49 @@ export default function CharacterShowcase({ enabled }: { enabled: boolean }) {
           ))}
         </div>
       </div>
-      <div className="world-stage">
-        <CharacterArt key={selected} character={selected} enabled={enabled} />
+      <div
+        className="world-stage"
+        data-scene={selected === "iori" ? "miya" : selected}
+        ref={stage}
+      >
+        {nearby &&
+          (selected === "iori" ? (
+            <MiyaArt enabled={enabled} />
+          ) : (
+            <CharacterArt
+              key={selected}
+              character={selected}
+              enabled={enabled}
+            />
+          ))}
       </div>
       <div className="world-action">
+        <button
+          className="world-motion"
+          type="button"
+          disabled={preference === "system-reduced"}
+          onClick={(event) => {
+            const button = event.currentTarget;
+            const top = button.getBoundingClientRect().top;
+            setMotionPreference(enabled);
+            cancelAnimationFrame(anchorFrame.current);
+            // The rank scene above changes height with the shared preference.
+            // Preserve this explicit control's viewport position after that layout.
+            anchorFrame.current = requestAnimationFrame(() => {
+              if (button.isConnected)
+                window.scrollBy({
+                  top: Math.round(button.getBoundingClientRect().top - top),
+                  behavior: "instant",
+                });
+            });
+          }}
+        >
+          {preference === "system-reduced"
+            ? "System motion reduced"
+            : enabled
+              ? "Pause motion"
+              : "Resume motion"}
+        </button>
         <Link className="home-text-link" to="/games">
           Browse available games <span aria-hidden="true">↗</span>
         </Link>

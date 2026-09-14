@@ -1,10 +1,20 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { expect, it } from "vitest";
+import { beforeEach, afterEach, expect, it, vi } from "vitest";
 import CharacterShowcase, {
   CharacterArt,
   viewportProgress,
 } from "./characters";
+beforeEach(() => {
+  vi.stubGlobal("matchMedia", () => ({
+    matches: false,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }));
+});
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 it("clamps native viewport progress including abrupt reverse jumps", () => {
   expect(viewportProgress(1000, 500, 1000)).toBe(0);
   expect(viewportProgress(250, 500, 1000)).toBe(0.5);
@@ -12,7 +22,7 @@ it("clamps native viewport progress including abrupt reverse jumps", () => {
   expect(viewportProgress(-10000, 500, 1000)).toBe(1);
   expect(viewportProgress(10000, 500, 1000)).toBe(0);
 });
-it("offers different game characters without inventing purchasable services", () => {
+it("offers different game characters without inventing purchasable services", async () => {
   render(
     <MemoryRouter>
       <CharacterShowcase enabled={false} />
@@ -21,7 +31,7 @@ it("offers different game characters without inventing purchasable services", ()
   expect(screen.getAllByRole("heading")).toHaveLength(1);
   expect(screen.getByRole("group", { name: "Game showcase" })).toBeVisible();
   for (const [game, key] of [
-    ["Mobile Legends", "iori"],
+    ["Mobile Legends", "miya"],
     ["World of Warcraft", "illidan"],
     ["League of Legends", "ahri"],
   ] as const) {
@@ -29,9 +39,11 @@ it("offers different game characters without inventing purchasable services", ()
     fireEvent.click(button);
     expect(button).toHaveAttribute("aria-pressed", "true");
     expect(document.querySelectorAll('[aria-pressed="true"]')).toHaveLength(1);
-    expect(
-      document.querySelector(".world-stage > .character-art"),
-    ).toHaveAttribute("data-character", key);
+    await waitFor(() => {
+      expect(
+        document.querySelector(".world-stage > .character-art"),
+      ).toHaveAttribute("data-character", key);
+    });
   }
   expect(screen.getAllByRole("link")).toHaveLength(1);
   expect(screen.getByRole("link")).toHaveAttribute("href", "/games");
