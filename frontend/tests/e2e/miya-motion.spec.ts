@@ -86,24 +86,96 @@ test("qualifies Miya stationary motion, pause, lazy media and graceful failures"
   });
   const initial = await svg.evaluate((element) => {
     if (!(element instanceof SVGSVGElement)) throw new Error("Missing SVG rig");
+    const animation = element.querySelector("animate");
+    if (!animation) throw new Error("Missing weight-shift loop");
     element.pauseAnimations();
-    return element.getCurrentTime();
+    const peak = animation.getStartTime() + 1.6;
+    element.setCurrentTime(peak);
+    return peak;
   });
-  await art.screenshot({ path: `.cache/hf03-${info.project.name}-pose-a.png` });
+  const poseA = await art.screenshot({
+    path: `.cache/hf03-${info.project.name}-pose-a.png`,
+  });
   await svg.evaluate((element, time) => {
     if (!(element instanceof SVGSVGElement)) throw new Error("Missing SVG rig");
-    element.setCurrentTime(time + 3.6);
+    element.setCurrentTime(time + 3.2);
   }, initial);
-  await art.screenshot({ path: `.cache/hf03-${info.project.name}-pose-b.png` });
+  const poseB = await art.screenshot({
+    path: `.cache/hf03-${info.project.name}-pose-b.png`,
+  });
+  // Measure rendered pixels at the real display size. An advancing animation
+  // clock previously passed even though the owner could barely see any motion.
+  const displacement = await svg.evaluate(
+    async (element, shots) => {
+      if (!(element instanceof SVGSVGElement)) throw new Error("Missing rig");
+      const matrix = element.getScreenCTM(),
+        rect = element.parentElement?.getBoundingClientRect();
+      if (!matrix || !rect) throw new Error("Missing visible scene transform");
+      const poses = await Promise.all(
+        shots.map(async (shot) => {
+          const bytes = Uint8Array.from(atob(shot), (char) =>
+              char.charCodeAt(0),
+            ),
+            bitmap = await createImageBitmap(new Blob([bytes])),
+            canvas = document.createElement("canvas");
+          canvas.width = bitmap.width;
+          canvas.height = bitmap.height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) throw new Error("Missing pixel reader");
+          ctx.drawImage(bitmap, 0, 0);
+          bitmap.close();
+          const ratio = canvas.width / rect.width;
+          const center = (x1: number, y1: number, x2: number, y2: number) => {
+            const left = Math.round(
+                (matrix.a * x1 + matrix.e - rect.left) * ratio,
+              ),
+              top = Math.round((matrix.d * y1 + matrix.f - rect.top) * ratio),
+              width = Math.round(matrix.a * (x2 - x1) * ratio),
+              height = Math.round(matrix.d * (y2 - y1) * ratio),
+              pixels = ctx.getImageData(left, top, width, height).data;
+            let mass = 0,
+              x = 0,
+              y = 0;
+            for (let i = 0; i < pixels.length; i += 4) {
+              const weight = Math.max(
+                pixels[i] ?? 0,
+                pixels[i + 1] ?? 0,
+                pixels[i + 2] ?? 0,
+              );
+              if (weight < 70) continue;
+              mass += weight;
+              x += ((i / 4) % width) * weight;
+              y += Math.floor(i / 4 / width) * weight;
+            }
+            if (!mass) throw new Error("Expected visible character pixels");
+            return { x: x / mass / ratio, y: y / mass / ratio };
+          };
+          return {
+            head: center(260, 90, 640, 270),
+            feet: center(180, 1280, 780, 1510),
+          };
+        }),
+      );
+      const [a, b] = poses;
+      if (!a || !b) throw new Error("Missing opposite poses");
+      return {
+        headTravel: Math.abs(a.head.x - b.head.x),
+        feetTravel: Math.hypot(a.feet.x - b.feet.x, a.feet.y - b.feet.y),
+      };
+    },
+    [poseA.toString("base64"), poseB.toString("base64")],
+  );
+  expect(displacement.headTravel).toBeGreaterThan(6);
+  expect(displacement.feetTravel).toBeLessThan(0.75);
   await svg.evaluate((element) => {
     if (!(element instanceof SVGSVGElement)) throw new Error("Missing SVG rig");
     element.unpauseAnimations();
   });
-  expect(measurement.min).toBeLessThan(0.5);
-  expect(measurement.max).toBeGreaterThan(11.5);
+  expect(measurement.min).toBeLessThan(-47);
+  expect(measurement.max).toBeGreaterThan(47);
   await writeFile(
     `.cache/hf03-${info.project.name}-performance.json`,
-    JSON.stringify(measurement, null, 2),
+    JSON.stringify({ ...measurement, ...displacement }, null, 2),
   );
   const height = await stage.evaluate(
     (element) => element.getBoundingClientRect().height,

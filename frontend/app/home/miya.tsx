@@ -55,46 +55,57 @@ export default function MiyaArt({ enabled }: { enabled: boolean }) {
       data-motion={animated ? "full" : "reduced"}
       aria-hidden="true"
     >
-      <svg viewBox="0 0 1024 1536" focusable="false" className="character-rig">
+      <svg
+        viewBox="-32 -24 1088 1584"
+        focusable="false"
+        className="character-rig"
+      >
         <defs>
           <filter
             id={`${uid}-idle`}
-            x="0"
-            y="0"
-            width="1024"
-            height="1536"
+            x="-32"
+            y="-16"
+            width="1088"
+            height="1568"
             filterUnits="userSpaceOnUse"
             primitiveUnits="userSpaceOnUse"
             colorInterpolationFilters="sRGB"
           >
+            {/* Extend the black matte so a shifted bow edge cannot reveal an
+                unmoved copy through transparent pixels at the image boundary. */}
+            <feFlood floodColor="#000" result="matte" />
+            <feMerge result="padded-art">
+              <feMergeNode in="matte" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
             <feImage
               href={fields[0]}
-              x="0"
-              y="0"
-              width="1024"
-              height="1536"
+              x="-32"
+              y="-16"
+              width="1088"
+              height="1568"
               result="breath"
             />
             <feDisplacementMap
-              in="SourceGraphic"
+              in="padded-art"
               in2="breath"
               xChannelSelector="R"
               yChannelSelector="G"
               scale="0"
-              result="torso"
-              x="205"
-              y="235"
-              width="455"
-              height="450"
+              result="weight-shift"
+              x="-32"
+              y="-16"
+              width="1088"
+              height="1256"
             >
               {animated && (
                 <animate
                   attributeName="scale"
-                  values="0;12;0"
-                  keyTimes="0;0.5;1"
-                  keySplines=".42 0 .58 1;.42 0 .58 1"
+                  values="0;48;0;-48;0"
+                  keyTimes="0;0.25;0.5;0.75;1"
+                  keySplines=".33 .52 .67 1;.33 0 .67 .48;.33 .52 .67 1;.33 0 .67 .48"
                   calcMode="spline"
-                  dur="7.2s"
+                  dur="6.4s"
                   repeatCount="indefinite"
                   begin="indefinite"
                 />
@@ -102,7 +113,7 @@ export default function MiyaArt({ enabled }: { enabled: boolean }) {
             </feDisplacementMap>
             <feMerge result="body">
               <feMergeNode in="SourceGraphic" />
-              <feMergeNode in="torso" />
+              <feMergeNode in="weight-shift" />
             </feMerge>
             <feImage
               href={fields[1]}
@@ -115,10 +126,10 @@ export default function MiyaArt({ enabled }: { enabled: boolean }) {
             <feDisplacementMap
               in="body"
               in2="hair"
-              x="535"
-              y="205"
-              width="235"
-              height="330"
+              x="505"
+              y="180"
+              width="290"
+              height="380"
               result="hair-motion"
               xChannelSelector="R"
               yChannelSelector="G"
@@ -127,11 +138,11 @@ export default function MiyaArt({ enabled }: { enabled: boolean }) {
               {animated && (
                 <animate
                   attributeName="scale"
-                  values="0;18;0;-8;0"
+                  values="0;52;0;-38;0"
                   keyTimes="0;0.3;0.6;0.8;1"
                   keySplines=".42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1"
                   calcMode="spline"
-                  dur="9.6s"
+                  dur="6.4s"
                   repeatCount="indefinite"
                   begin="indefinite"
                 />

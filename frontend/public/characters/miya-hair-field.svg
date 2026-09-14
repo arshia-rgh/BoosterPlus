@@ -7,5 +7,5 @@
     </radialGradient>
   </defs>
   <rect width="1024" height="1536" fill="rgb(50%,50%,50%)"/>
-  <ellipse cx="652" cy="369" rx="109" ry="156" fill="url(#sway)"/>
+  <ellipse cx="652" cy="369" rx="132" ry="178" fill="url(#sway)"/>
 </svg>

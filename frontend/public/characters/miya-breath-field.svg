@@ -1,11 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536">
-  <!-- Neutral outside the torso: the face, bow and feet stay anchored. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1088" height="1568" viewBox="-32 -16 1088 1568">
+  <!-- Coherent upper-body weight shift; falloff through the hips plants both feet.
+       Head and shoulders share a field so the face does not ripple independently. -->
   <defs>
-    <radialGradient id="lift">
-      <stop stop-color="rgb(50%,100%,50%)"/>
+    <linearGradient id="lift" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="1536">
+      <stop stop-color="rgb(100%,70%,50%)"/>
+      <stop offset=".28" stop-color="rgb(100%,70%,50%)"/>
+      <stop offset=".44" stop-color="rgb(90%,64%,50%)"/>
+      <stop offset=".62" stop-color="rgb(67%,54%,50%)"/>
+      <stop offset=".79" stop-color="rgb(50%,50%,50%)"/>
       <stop offset="1" stop-color="rgb(50%,50%,50%)"/>
-    </radialGradient>
+    </linearGradient>
   </defs>
-  <rect width="1024" height="1536" fill="rgb(50%,50%,50%)"/>
-  <ellipse cx="432" cy="459" rx="220" ry="218" fill="url(#lift)"/>
+  <rect x="-32" y="-16" width="1088" height="1568" fill="url(#lift)"/>
 </svg>
