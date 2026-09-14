@@ -3,6 +3,10 @@ import AxeBuilder from "@axe-core/playwright";
 export async function qualifyCharacters(page: Page, project: string) {
   const showcase = page.locator(".world-showcase");
   await showcase.scrollIntoViewIfNeeded();
+  const initialHeight = await showcase.evaluate(
+    (element) => element.getBoundingClientRect().height,
+  );
+  await expect(showcase.getByRole("heading")).toHaveCount(1);
   for (const [game, key] of [
     ["Mobile Legends", "iori"],
     ["World of Warcraft", "illidan"],
@@ -29,6 +33,28 @@ export async function qualifyCharacters(page: Page, project: string) {
       return [first, second];
     });
     expect(snapshots[0]).not.toBe(snapshots[1]);
+    expect(
+      await showcase.evaluate(
+        (element) => element.getBoundingClientRect().height,
+      ),
+    ).toBe(initialHeight);
+    if ((page.viewportSize()?.width ?? 1280) <= 750) {
+      const positions = await showcase.evaluate((element) => {
+        const bounds = (selector: string) => {
+          const child = element.querySelector(selector);
+          if (!child) throw new Error("Missing showcase region");
+          return child.getBoundingClientRect();
+        };
+        return {
+          copyBottom: bounds(".world-copy").bottom,
+          artTop: bounds(".world-stage").top,
+          artBottom: bounds(".world-stage").bottom,
+          actionTop: bounds(".world-action").top,
+        };
+      });
+      expect(positions.copyBottom).toBeLessThanOrEqual(positions.artTop);
+      expect(positions.artBottom).toBeLessThanOrEqual(positions.actionTop);
+    }
     await page.screenshot({ path: `.cache/character-${project}-${key}.png` });
   }
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);

@@ -3,6 +3,73 @@ import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { writeFile } from "node:fs/promises";
 
+test("hero and showcase reflow without overlapping actions", async ({
+  page,
+}, info) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  for (const [width, height] of [
+    [320, 640],
+    [360, 740],
+    [390, 844],
+    [768, 1024],
+    [1024, 768],
+    [1440, 900],
+    [844, 390],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await page.evaluate(() => {
+      scrollTo(0, 0);
+    });
+    const hero = page.locator(".ascend-hero");
+    await expect(hero.locator(".character-art")).toHaveCount(0);
+    const geometry = await hero.evaluate((element) => {
+      const content = element.querySelector(".hero-content");
+      const bottom = element
+        .querySelector(".hero-bottom")
+        ?.getBoundingClientRect();
+      if (!content || !bottom) throw new Error("Missing hero regions");
+      return {
+        contentBottom:
+          content.getBoundingClientRect().bottom -
+          parseFloat(getComputedStyle(content).paddingBottom),
+        footerTop: bottom.top,
+        bottom: element.getBoundingClientRect().bottom,
+      };
+    });
+    expect(geometry.contentBottom).toBeLessThanOrEqual(geometry.footerTop);
+    expect(geometry.footerTop).toBeLessThan(geometry.bottom);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+    await hero.screenshot({
+      path: `.cache/hf02-hero-${info.project.name}-${String(width)}.png`,
+    });
+    const showcase = page.locator(".world-showcase");
+    await showcase.scrollIntoViewIfNeeded();
+    await expect(
+      showcase.getByRole("link", { name: "Browse available games" }),
+    ).toBeVisible();
+    await showcase.screenshot({
+      path: `.cache/hf02-showcase-${info.project.name}-${String(width)}.png`,
+    });
+  }
+  // Text-only enlargement must expand the hero instead of clipping governed copy.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = "200%";
+  });
+  await expect(
+    page.getByRole("link", { name: "Explore games", exact: true }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(390);
+  await page
+    .locator(".ascend-hero")
+    .screenshot({ path: `.cache/hf02-hero-${info.project.name}-text200.png` });
+});
+
 async function seek(page: Page, progress: number) {
   await page.locator("#rank-journey").evaluate((scene, value) => {
     const rect = scene.getBoundingClientRect();
@@ -39,6 +106,8 @@ test("rank journey scrubs smoothly forward/backward and survives resize and navi
     "transform",
     "matrix(1, 0, 0, 1, 0, 0)",
   );
+  await expect(page.locator(".ascend-hero .character-art")).toHaveCount(0);
+  await expect(page.locator(".hero-art img")).toBeVisible();
   await page.screenshot({
     path: `.cache/home-${info.project.name}.png`,
     fullPage: false,

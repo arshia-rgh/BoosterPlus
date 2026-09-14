@@ -76,26 +76,32 @@
 .character-motes i:nth-child(3) {
   animation-delay: -2.7s !important;
 }
+/* Copy and controls precede the decorative stage in reading and focus order. */
 .world-showcase {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: center;
-  gap: 3rem;
+  grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr);
+  grid-template-areas: "copy art" "action art";
+  align-items: end;
+  gap: 1.5rem 3rem;
   overflow: hidden;
 }
 .world-copy {
-  position: relative;
-  z-index: 2;
+  grid-area: copy;
+  min-width: 0;
 }
-.world-copy > p {
-  max-width: 45ch;
-  color: #bfd0c1;
-  line-height: 1.7;
+.world-copy h2 {
+  max-width: 10ch;
+}
+.plus-home .world-label {
+  margin: 2rem 0 0.75rem;
+  color: #a7b8ab;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
 }
 .world-stage {
-  height: clamp(28rem, 70vw, 44rem);
+  grid-area: art;
+  height: clamp(28rem, 48vw, 38rem);
   background: #000;
-  border-radius: 45% 45% 12% 12%;
   overflow: hidden;
   mask-image: radial-gradient(
     ellipse 73% 68% at center,
@@ -107,7 +113,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin: 1.5rem 0;
 }
 .world-selector button {
   border: 1px solid #496852;
@@ -125,33 +130,10 @@
   color: #14231b;
   border-color: #bddf9c;
 }
-.world-caption {
-  min-height: 6.5rem;
-}
-.world-caption h3 {
-  margin: 0.4rem 0;
-  font-size: 1.2rem;
-  color: #d5e7c8;
-}
-.world-caption p {
-  color: #aebdae;
-}
-.character-hero {
-  position: absolute;
-  z-index: 1;
-  right: 3%;
-  bottom: 4%;
-  width: 38%;
-  height: 80%;
-  max-width: 36rem;
-  opacity: 1;
-  mix-blend-mode: normal;
-  mask-image: linear-gradient(
-    transparent,
-    black 9%,
-    black 70%,
-    transparent 96%
-  );
+.world-action {
+  grid-area: action;
+  align-self: start;
+  padding-bottom: 3rem;
 }
 .character-fallback {
   min-height: 15rem;
@@ -188,22 +170,21 @@
 }
 @media (max-width: 750px) {
   .world-showcase {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "copy" "art" "action";
+    gap: 1rem;
+  }
+  .world-copy h2 {
+    max-width: 14ch;
+  }
+  .plus-home .world-label {
+    margin-top: 1.5rem;
   }
   .world-stage {
-    height: 31rem;
-    order: -1;
+    height: clamp(18rem, 78vw, 24rem);
   }
-  .character-hero {
-    width: 46%;
-    height: 58%;
-    right: -5%;
-    bottom: 8%;
-    opacity: 0.28;
-  }
-  .world-caption {
-    min-height: 5.5rem;
+  .world-action {
+    padding-bottom: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {

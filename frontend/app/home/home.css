@@ -49,9 +49,8 @@
 }
 .ascend-hero {
   position: relative;
-  min-height: 740px;
-  height: calc(100svh - 85px);
-  max-height: 1050px;
+  min-height: max(740px, calc(100svh - 85px));
+  height: auto;
   isolation: isolate;
   display: flex;
   align-items: center;
@@ -71,7 +70,7 @@
 }
 .hero-art img {
   object-fit: cover;
-  object-position: 65% 53%;
+  object-position: 62% 53%;
 }
 .hero-veil {
   z-index: -2;
@@ -842,7 +841,7 @@
 @media (max-width: 700px) {
   .ascend-hero {
     height: auto;
-    min-height: 810px;
+    min-height: 760px;
     align-items: flex-start;
   }
   .hero-content {
@@ -1098,6 +1097,10 @@
   .rank-journey .rank-label {
     opacity: 1 !important;
   }
+}
+
+.hero-content h1 {
+  overflow-wrap: anywhere;
 }
 
 .hero-content h1,

@@ -184,9 +184,6 @@ export function HomePage({
             <span /> {content.notice}
           </p>
         </div>
-        {content.artwork === "ascension" && (
-          <CharacterArt character="iori" enabled={enabled} hero />
-        )}
         <div className="hero-coordinate" aria-hidden="true">
           MLBB
           <br />

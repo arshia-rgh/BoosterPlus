@@ -2,7 +2,7 @@
 
 Restore the original ascension artwork as the hero's only illustration, and turn “Find your fighting spirit.” into a quieter, genuinely animated game showcase. Preserve PLAYORA's green identity, accepted fonts and rank transformation. The improvement should come from composition, convincing character motion and less competing content.
 
-**Status: research and design proposal, 14 September 2026. Awaiting owner approval before implementation.** UX01–UX10's previous automated qualification remains recorded, but visual acceptance is reopened. HF01 includes two fresh running-site specialist reviews; HF02–HF05, including the added HF02A catalog/configuration corrections, HF04A character cameo and HF04B site-wide button audio, are proposed. R10/R11 remain on hold with their full scope in [final-launch.md](../../final-launch.md).
+**Status: implementation approved by the owner on 14 September 2026; HF02 composition implemented; staged qualification in progress.** UX01–UX10's previous automated qualification remains recorded, but visual acceptance is reopened. HF01 includes two fresh running-site specialist reviews; HF02–HF05, including the added HF02A catalog/configuration corrections, HF04A character cameo and HF04B site-wide button audio, are authorized. R10/R11 remain on hold with their full scope in [final-launch.md](../../final-launch.md).
 
 ## 1. Design decision
 
@@ -163,7 +163,7 @@ Prepare one polished MLBB loop first and review it alongside the static pose bef
 
 The cameo can make PLAYORA more distinctive if it behaves like a short game moment rather than a persistent assistant. Keep the skill, spoken line and full-width exit; constrain its size and frequency so it does not interrupt shopping or reading. Repeated punch audio is more likely to become tiring than a single cameo, so make it quiet, optional and easy to stop. The detailed specialist opinions are recorded in [the cameo design review](research/CAMEO_DESIGN_REVIEW.md) and [the audio UX research](research/CAMEO_AUDIO_UX_RESEARCH.md).
 
-The following controls and timing are proposed design decisions for approval, not implemented features. This consolidated specification resolves the specialists' alternative tuning suggestions. The all-buttons sound scope includes storefront, customer, seller, booster, administrator and owner interfaces across both React builds. The visual cameo is a homepage experience; it should not wander through checkout, chat, sign-in or staff workspaces.
+The following controls and timing are approved design targets, not yet implemented features. This consolidated specification resolves the specialists' alternative tuning suggestions. The all-buttons sound scope includes storefront, customer, seller, booster, administrator and owner interfaces across both React builds. The visual cameo is a homepage experience; it should not wander through checkout, chat, sign-in or staff workspaces.
 
 ### Character, placement and trigger
 
@@ -247,8 +247,8 @@ Use a visible pause/resume action near the showcase, synchronized with the exist
 
 | Phase | Scope and concrete deliverables | Exit condition | Status |
 | --- | --- | --- | --- |
-| **HF01 — Research and design direction** | Current-state audit, reference comparison, hero decision, content structure, motion storyboard and qualification plan | New roadmap and independent reviews available for owner review | Delivered as documentation; approval pending |
-| **HF02 — Hero and showcase composition** | Remove hero overlay, tune original artwork crop/alignment, simplify showcase content, fix mobile order and stable stage; prepare game-art contact sheet | Same-size before/after stills at desktop/mobile/short landscape; no clipped copy or missing navigation; frontend and root gates pass | Not started |
+| **HF01 — Research and design direction** | Current-state audit, reference comparison, hero decision, content structure, motion storyboard and qualification plan | New roadmap and independent reviews available for owner review | Delivered; implementation approved |
+| **HF02 — Hero and showcase composition** | Remove hero overlay, tune original artwork crop/alignment, simplify showcase content, fix mobile order and stable stage; prepare game-art contact sheet | Same-size before/after stills at desktop/mobile/short landscape; no clipped copy or missing navigation; frontend and root gates pass | Implemented; tracked gate required for delivery |
 | **HF02A — Catalog and configuration clarity** | Reproduce/fix LR01–LR10: summary/result containment and current-state copy, preserved custom/package intent, secondary favorites, compact missing-art layout, clear responsive navigation, explicit form handoff, accurate empty states and quieter staff setup guidance | Measured-viewport before/after evidence and short/long/error/manual-review/estimated/changed-state tests; path intent survives game choice/back/reload; public sign-in/MFA entry preserved; frontend/root gates pass | Not started |
 | **HF03 — Character motion prototype** | One properly prepared MLBB character with organic loop, static pose, pause/reduced/lifecycle states; compare layered method against the reference's visual intent | 20-second stationary and scroll recordings, seamless/internal motion review, budget report; use the result to select the rendering method | Not started |
 | **HF04 — Multi-game motion and state polish** | Extend the qualified method to WoW and LoL, refine scene switching, contrast/edges/atmosphere, failed/slow media handling | Each game passes the same visual standard and state tests; no automatic rotation or unavailable checkout implication | Not started |
@@ -256,7 +256,7 @@ Use a visible pause/resume action near the showcase, synchronized with the exist
 | **HF04B — Site-wide punch audio** | Shared opt-in audio preferences/service in both frontend builds, auditioned Iori/Chou punch feedback for all eligible buttons, voice/effects mixing and blocked-playback recovery | Cross-route button inventory and keyboard/touch checks, silent-first/mute/persistence/burst tests, real media budget and listening review pass | Not started |
 | **HF05 — Qualification and owner review** | Cross-browser/state matrix, responsive stills, normal-speed clips, resource traces and review handoff | Required gates and scoped visual checks pass; report actual human/device coverage; owner explicitly accepts the result | Not started |
 
-The prototype milestone supplies reviewable evidence early; it is not permission to stop after a rough animation and mark the roadmap complete. Implementation begins only after the owner approves this plan. Once authorized, use the established main-branch delivery rules and commit/push completed verified stages. UI-only commits use frontend pre-commit plus root checks; backend/deployment/tooling changes retain their full gate, and final UX qualification retains the complete repository gate. Do not resume R10/R11 through regression testing.
+The prototype milestone supplies reviewable evidence early; it is not permission to stop after a rough animation and mark the roadmap complete. The owner has approved implementation. Use the established main-branch delivery rules and commit/push completed verified stages. UI-only commits use frontend pre-commit plus root checks; backend/deployment/tooling changes retain their full gate, and final UX qualification retains the complete repository gate. Do not resume R10/R11 through regression testing.
 
 ## 9. Acceptance matrix
 
@@ -283,7 +283,7 @@ The handoff must include before/after hero stills, a short mobile page walkthrou
 
 This refinement covers the opening hero, character showcase, the observed catalog/configuration/navigation corrections LR01–LR10, homepage cameo, shared button audio/preferences across both frontend builds, necessary motion/audio integration and regression evidence. Preserve the approved rank-progression behavior; if the shared character component changes, verify its rank-scene usage rather than silently breaking or expanding that scene. Account/chat/admin workflows retain their business behavior; their new button feedback and preference controls require fresh scoped regression checks. A newly discovered regression can be recorded and corrected within its authorized scope, but this is not another unrestricted site redesign.
 
-The original artwork, green theme, fonts, PLAYORA logo and social masters remain accepted inputs. Payment/provider integration, production gateways, deployment activation and R10/R11 are not resumed. [The original UX roadmap](../../UI_UX_ROADMAP.md) remains the historical delivery record; this document governs the newly requested homepage refinement after approval.
+The original artwork, green theme, fonts, PLAYORA logo and social masters remain accepted inputs. Payment/provider integration, production gateways, deployment activation and R10/R11 are not resumed. [The original UX roadmap](../../UI_UX_ROADMAP.md) remains the historical delivery record; this document governs the approved homepage refinement.
 
 ## Sources
 
@@ -322,3 +322,9 @@ All pages were accessed on 14 September 2026. Live pages can change. The competi
 [14]: https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/User_activation
 [15]: https://developer.chrome.com/blog/autoplay/
 [16]: https://www.w3.org/WAI/WCAG22/Understanding/audio-control.html
+
+## HF02 implementation evidence
+
+The hero now uses the original ascension scene alone. The showcase has one heading, labeled game selectors and a catalog action; character biographies are removed. Its mobile reading order is heading/selectors, stable 18–24rem art stage, then action. Desktop uses a 42/58 composition. See [the existing-art contact sheet](HF02_ART_CONTACT_SHEET.md) for HF03 candidates.
+
+Regression captures cover 320, 360, 390, 768, 1024, 1440 and 844×390 viewports and 200% root text sizing; `.cache/hf02-hero-*` and `.cache/hf02-showcase-*` under frontend hold the local evidence. Earlier matching desktop/mobile stills are preserved in root `.cache/hf02-before/`; there are no invented baseline captures at the other widths. The tracked hook must qualify the final staged source before delivery; see `docs/progress.md`. Existing internal-motion rendering remains provisional for HF03/HF04. No cameo, voice or punch asset is delivered by HF02.

@@ -18,15 +18,21 @@ it("offers different game characters without inventing purchasable services", ()
       <CharacterShowcase enabled={false} />
     </MemoryRouter>,
   );
-  expect(
-    screen.getByRole("heading", { name: "Iori Yagami · Chou" }),
-  ).toBeVisible();
-  fireEvent.click(screen.getByRole("button", { name: "World of Warcraft" }));
-  expect(
-    screen.getByRole("heading", { name: "Illidan Stormrage" }),
-  ).toBeVisible();
-  fireEvent.click(screen.getByRole("button", { name: "League of Legends" }));
-  expect(screen.getByRole("heading", { name: "Ahri" })).toBeVisible();
+  expect(screen.getAllByRole("heading")).toHaveLength(1);
+  expect(screen.getByRole("group", { name: "Game showcase" })).toBeVisible();
+  for (const [game, key] of [
+    ["Mobile Legends", "iori"],
+    ["World of Warcraft", "illidan"],
+    ["League of Legends", "ahri"],
+  ] as const) {
+    const button = screen.getByRole("button", { name: game });
+    fireEvent.click(button);
+    expect(button).toHaveAttribute("aria-pressed", "true");
+    expect(document.querySelectorAll('[aria-pressed="true"]')).toHaveLength(1);
+    expect(
+      document.querySelector(".world-stage > .character-art"),
+    ).toHaveAttribute("data-character", key);
+  }
   expect(screen.getAllByRole("link")).toHaveLength(1);
   expect(screen.getByRole("link")).toHaveAttribute("href", "/games");
 });

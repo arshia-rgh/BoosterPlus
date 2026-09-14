@@ -6,22 +6,16 @@ const characters = [
   {
     key: "iori",
     game: "Mobile Legends",
-    name: "Iori Yagami · Chou",
-    detail: "The fighter. The flame. Your next chapter.",
     part: "M 444 497 C 425 583 335 659 306 792 C 346 765 395 722 458 651 L 500 533 Z",
   },
   {
     key: "illidan",
     game: "World of Warcraft",
-    name: "Illidan Stormrage",
-    detail: "A world worth venturing into.",
     part: "M 672 0 L 1024 0 L 1024 812 L 901 850 L 817 724 L 706 612 L 671 357 Z",
   },
   {
     key: "ahri",
     game: "League of Legends",
-    name: "Ahri",
-    detail: "A little magic. A different possibility.",
     part: "M 718 51 L 1024 51 L 1024 539 L 856 488 L 702 462 L 690 291 Z",
   },
 ] as const;
@@ -39,11 +33,9 @@ export function viewportProgress(
 export function CharacterArt({
   character,
   enabled,
-  hero = false,
 }: {
   character: CharacterKey;
   enabled: boolean;
-  hero?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const uid = useId().replaceAll(":", "");
@@ -121,18 +113,12 @@ export function CharacterArt({
       element.style.removeProperty("--character-turn");
     };
   }, [enabled, failed]);
-  if (failed)
-    return (
-      <div
-        className={`character-fallback ${hero ? "character-hero" : ""}`}
-        aria-hidden="true"
-      />
-    );
+  if (failed) return <div className="character-fallback" aria-hidden="true" />;
   const source = `/characters/${character}-768.jpg`;
   return (
     <div
       ref={root}
-      className={`character-art ${hero ? "character-hero" : ""}`}
+      className="character-art"
       data-motion={enabled ? "full" : "reduced"}
       data-character={character}
       aria-hidden="true"
@@ -212,26 +198,22 @@ export function CharacterArt({
 }
 export default function CharacterShowcase({ enabled }: { enabled: boolean }) {
   const [selected, setSelected] = useState<CharacterKey>("iori");
-  const item =
-    characters.find((value) => value.key === selected) ?? characters[0];
   return (
     <section
       className="world-showcase home-section"
       aria-labelledby="worlds-title"
     >
       <div className="world-copy">
-        <p className="home-kicker">DIFFERENT WORLDS. YOUR NEXT CHAPTER.</p>
         <h2 id="worlds-title">
           Find your <em>fighting spirit.</em>
         </h2>
-        <p>
-          From the Land of Dawn to Azeroth and the Rift. A little inspiration
-          from the games you love.
+        <p className="world-label" id="showcase-label">
+          Game showcase
         </p>
         <div
           className="world-selector"
           role="group"
-          aria-label="Character showcase"
+          aria-labelledby="showcase-label"
         >
           {characters.map((value) => (
             <button
@@ -246,20 +228,14 @@ export default function CharacterShowcase({ enabled }: { enabled: boolean }) {
             </button>
           ))}
         </div>
-        <div className="world-caption" aria-live="polite">
-          <h3>{item.name}</h3>
-          <p>{item.detail}</p>
-        </div>
-        <Link className="home-button" to="/games">
-          Explore published services ↗
-        </Link>
-        <p className="scene-disclaimer">
-          Character art is illustrative. Services are available only for games
-          in our published catalog.
-        </p>
       </div>
       <div className="world-stage">
         <CharacterArt key={selected} character={selected} enabled={enabled} />
+      </div>
+      <div className="world-action">
+        <Link className="home-text-link" to="/games">
+          Browse available games <span aria-hidden="true">↗</span>
+        </Link>
       </div>
     </section>
   );
