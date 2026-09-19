@@ -56,3 +56,5 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 ## Future character scenes
 
 For fighting-spirit game artwork, motion or backgrounds, read `frontend/app/home/README.motion.md` and `docs/ux/CHARACTER_MOTION_AGENT_GUIDE.md`. Reuse the shared scene renderer and preserve perceptibility, planted-foot, loading/failure, accessibility and transfer checks.
+
+HF04 three-game scene implementation and automated qualification are delivered as `3537aa5` (20 September 2026). See `docs/ux/HF04_SCENE_QUALIFICATION.md` for the verification scope and macOS Firefox limitation. Owner visual/physical-device acceptance remains open; do not infer acceptance or resume held launch work.

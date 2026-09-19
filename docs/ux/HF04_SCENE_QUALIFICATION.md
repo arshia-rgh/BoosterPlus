@@ -1,5 +1,7 @@
 # HF04 scene qualification
 
+Implementation delivered as `3537aa563c149952e69a84420bcd2e9bc56880f1` and verified on origin/main. Required frontend/root gate: 186 component tests and 68 Chromium journeys passed, along with security, build, budget and container checks. Focused WebKit and isolated Linux Firefox: 10 cases each passed. Owner/physical-device review remains open.
+
 ## Implementation
 
 All fighting-spirit choices use the same continuous-field renderer: Miya (Mobile Legends), Illidan (World of Warcraft), and Ahri (League of Legends). Separate woodland, ruined-temple and spirit-grove environments frame each character. The accepted green theme, fonts, hero and rank scene are retained. No character biographies, automatic carousel, game-availability implication or new rendering dependency.
