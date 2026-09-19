@@ -6,6 +6,18 @@ import CharacterShowcase, {
   viewportProgress,
 } from "./characters";
 beforeEach(() => {
+  vi.stubGlobal(
+    "Image",
+    class {
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      set src(_value: string) {
+        queueMicrotask(() => {
+          this.onload?.();
+        });
+      }
+    },
+  );
   vi.stubGlobal("matchMedia", () => ({
     matches: false,
     addEventListener: vi.fn(),
@@ -41,7 +53,9 @@ it("offers different game characters without inventing purchasable services", as
     expect(document.querySelectorAll('[aria-pressed="true"]')).toHaveLength(1);
     await waitFor(() => {
       expect(
-        document.querySelector(".world-stage > .character-art"),
+        document.querySelector(
+          '.world-stage .scene-layer[data-visible="true"] > .character-art',
+        ),
       ).toHaveAttribute("data-character", key);
     });
   }

@@ -1,7 +1,8 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router";
 import "./characters.css";
-import MiyaArt from "./miya";
+import SceneCharacter from "./scene-character";
+import { scenes, sceneByKey, type SceneKey } from "./scene-catalog";
 import { useCharacterMotion } from "./character-motion";
 import { setMotionPreference, useMotionPreference } from "./motion";
 export { viewportProgress } from "./character-motion";
@@ -134,7 +135,29 @@ export function CharacterArt({
   );
 }
 export default function CharacterShowcase({ enabled }: { enabled: boolean }) {
-  const [selected, setSelected] = useState<CharacterKey>("iori");
+  const [selected, setSelected] = useState<SceneKey>("miya");
+  const [displayed, setDisplayed] = useState<SceneKey>("miya");
+  const [previous, setPrevious] = useState<SceneKey | null>(null);
+  const acceptScene = useCallback(
+    (id: string) => {
+      if (id !== selected || id === displayed) return;
+      setPrevious(displayed);
+      setDisplayed(selected);
+    },
+    [displayed, selected],
+  );
+  useEffect(() => {
+    if (!previous) return;
+    const timer = setTimeout(() => {
+      setPrevious(null);
+    }, 600);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [previous, displayed]);
+  const layers = [
+    ...new Set([...(previous ? [previous] : []), displayed, selected]),
+  ];
   const stage = useRef<HTMLDivElement>(null);
   const anchorFrame = useRef(0);
   useEffect(
@@ -174,7 +197,26 @@ export default function CharacterShowcase({ enabled }: { enabled: boolean }) {
     <section
       className="world-showcase home-section"
       aria-labelledby="worlds-title"
+      data-motion={enabled ? "full" : "reduced"}
+      data-scene={displayed}
     >
+      <div className="world-backdrops" aria-hidden="true">
+        {nearby &&
+          layers.map((id) => (
+            <img
+              key={id}
+              src={`/scenes/${id}.jpg`}
+              alt=""
+              width="1024"
+              height="683"
+              className="world-backdrop"
+              data-visible={id === displayed}
+              onError={(event) => {
+                event.currentTarget.hidden = true;
+              }}
+            />
+          ))}
+      </div>
       <div className="world-copy">
         <h2 id="worlds-title">
           Find your <em>fighting spirit.</em>
@@ -187,13 +229,13 @@ export default function CharacterShowcase({ enabled }: { enabled: boolean }) {
           role="group"
           aria-labelledby="showcase-label"
         >
-          {characters.map((value) => (
+          {scenes.map((value) => (
             <button
-              key={value.key}
+              key={value.id}
               type="button"
-              aria-pressed={selected === value.key}
+              aria-pressed={selected === value.id}
               onClick={() => {
-                setSelected(value.key);
+                setSelected(value.id);
               }}
             >
               {value.game}
@@ -203,18 +245,24 @@ export default function CharacterShowcase({ enabled }: { enabled: boolean }) {
       </div>
       <div
         className="world-stage"
-        data-scene={selected === "iori" ? "miya" : selected}
+        data-scene={displayed}
+        aria-busy={selected !== displayed}
         ref={stage}
       >
         {nearby &&
-          (selected === "iori" ? (
-            <MiyaArt enabled={enabled} />
-          ) : (
-            <CharacterArt
-              key={selected}
-              character={selected}
-              enabled={enabled}
-            />
+          layers.map((id) => (
+            <div
+              key={id}
+              className="scene-layer"
+              data-visible={id === displayed}
+            >
+              <SceneCharacter
+                scene={sceneByKey(id)}
+                enabled={enabled}
+                active={id === displayed}
+                onReady={acceptScene}
+              />
+            </div>
           ))}
       </div>
       <div className="world-action">

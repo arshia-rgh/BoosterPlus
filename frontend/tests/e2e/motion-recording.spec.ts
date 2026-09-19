@@ -33,10 +33,14 @@ test("records native scroll and multi-game articulated motion", async ({
     "League of Legends",
   ]) {
     await showcase.getByRole("button", { name: game, exact: true }).click();
-    await expect(showcase.locator(".character-art")).toHaveAttribute(
-      "data-active",
-      "true",
+    await expect(showcase.locator(".world-stage")).toHaveAttribute(
+      "aria-busy",
+      "false",
     );
+    await expect(showcase.locator(".scene-layer")).toHaveCount(1);
+    await expect(
+      showcase.locator('.scene-layer[data-visible="true"] .character-art'),
+    ).toHaveAttribute("data-active", "true");
     // A complete deterministic recording interval, not a wait used to make an assertion pass.
     await page.evaluate(
       async () =>
@@ -51,10 +55,7 @@ test("records native scroll and multi-game articulated motion", async ({
     );
   }
   await page.getByRole("button", { name: "Reduced", exact: true }).click();
-  await expect(showcase.locator(".character-cloth")).toHaveCSS(
-    "animation-name",
-    "none",
-  );
+  await expect(showcase.locator("animate")).toHaveCount(0);
   await page.getByRole("link", { name: "Games", exact: true }).first().click();
   await expect(page.locator(".character-art")).toHaveCount(0);
 });

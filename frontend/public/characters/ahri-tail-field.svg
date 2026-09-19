@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536">
+  <!-- Soft opposed tail falloff, away from the face, hand, orb and feet. -->
+  <defs>
+    <radialGradient id="right"><stop stop-color="rgb(100%,65%,50%)"/><stop offset="1" stop-color="rgb(50%,50%,50%)"/></radialGradient>
+    <radialGradient id="left"><stop stop-color="rgb(0%,65%,50%)"/><stop offset="1" stop-color="rgb(50%,50%,50%)"/></radialGradient>
+  </defs>
+  <rect width="1024" height="1536" fill="rgb(50%,50%,50%)"/>
+  <ellipse cx="840" cy="610" rx="175" ry="465" fill="url(#right)"/>
+  <ellipse cx="170" cy="820" rx="155" ry="330" fill="url(#left)"/>
+</svg>

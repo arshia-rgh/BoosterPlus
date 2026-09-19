@@ -52,3 +52,7 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 
 - Customer deletion must stay disabled until the owner publishes and enables an explicit retention policy. Do not infer minimum periods or backup promises.
 - Preserve active-order/dispute holds and financial/audit evidence. Erasure completion must distinguish live-data cleanup from pending file purges and retained backups/evidence.
+
+## Future character scenes
+
+For fighting-spirit game artwork, motion or backgrounds, read `frontend/app/home/README.motion.md` and `docs/ux/CHARACTER_MOTION_AGENT_GUIDE.md`. Reuse the shared scene renderer and preserve perceptibility, planted-foot, loading/failure, accessibility and transfer checks.

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536">
+  <!-- Opposed wing-tip flex; neutral roots protect shoulders and face. -->
+  <defs>
+    <radialGradient id="right"><stop stop-color="rgb(100%,55%,50%)"/><stop offset="1" stop-color="rgb(50%,50%,50%)"/></radialGradient>
+    <radialGradient id="left"><stop stop-color="rgb(0%,55%,50%)"/><stop offset="1" stop-color="rgb(50%,50%,50%)"/></radialGradient>
+  </defs>
+  <rect width="1024" height="1536" fill="rgb(50%,50%,50%)"/>
+  <ellipse cx="850" cy="520" rx="170" ry="420" fill="url(#right)"/>
+  <ellipse cx="150" cy="560" rx="140" ry="350" fill="url(#left)"/>
+</svg>
