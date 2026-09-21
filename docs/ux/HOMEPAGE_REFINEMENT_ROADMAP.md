@@ -1,5 +1,7 @@
 # PLAYORA homepage refinement roadmap
 
+> **Superseded as the active plan — 21 September 2026.** The owner paused development and requested a complete design-first redesign. Use [the new design package](../redesign/README.md). The material below is historical; it does not authorize continuing implementation. R10/R11 remain held.
+
 Restore the original ascension artwork as the hero's only illustration, and turn “Find your fighting spirit.” into a quieter, genuinely animated game showcase. Preserve PLAYORA's green identity, accepted fonts and rank transformation. The improvement should come from composition, convincing character motion and less competing content.
 
 **Status: implementation approved by the owner on 14 September 2026; HF02 and HF02A delivered; HF03 initial prototype delivered as `22f7afc`, then reopened by the owner because the motion was too hard to perceive. The motion correction is delivered as `0ac3450`; the owner subsequently authorized the three-game HF04 extension, delivered as `3537aa5` with automated qualification; owner visual acceptance remains open.** UX01–UX10's previous automated qualification remains recorded, but visual acceptance is reopened. HF01 includes two fresh running-site specialist reviews; HF02–HF05, including the added HF02A catalog/configuration corrections, HF04A character cameo and HF04B site-wide button audio, are authorized. R10/R11 remain on hold with their full scope in [final-launch.md](../../final-launch.md).

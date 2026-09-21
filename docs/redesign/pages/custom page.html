@@ -1,0 +1,1168 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>PLAYORA // Universal Custom Package Builder Studio - All Games Escrow 2.0</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-container-highest": "#273830",
+          "inverse-surface": "#d3e7db",
+          "error": "#ffb4ab",
+          "on-error": "#690005",
+          "on-error-container": "#ffdad6",
+          "surface-container-lowest": "#02110b",
+          "on-secondary": "#003827",
+          "tertiary-fixed-dim": "#7bd8b1",
+          "surface": "#061610",
+          "on-primary-fixed": "#002113",
+          "surface-container": "#12231c",
+          "outline": "#86948a",
+          "on-primary-fixed-variant": "#005236",
+          "surface-container-low": "#0e1f18",
+          "on-tertiary": "#003827",
+          "secondary-fixed-dim": "#62dcad",
+          "tertiary": "#7bd8b1",
+          "on-secondary-container": "#003121",
+          "primary": "#4edea3",
+          "surface-tint": "#4edea3",
+          "on-secondary-fixed": "#002115",
+          "on-secondary-fixed-variant": "#00513a",
+          "surface-container-high": "#1d2d26",
+          "on-tertiary-fixed": "#002115",
+          "surface-variant": "#273830",
+          "inverse-primary": "#006c49",
+          "primary-container": "#10b981",
+          "outline-variant": "#3c4a42",
+          "on-tertiary-container": "#00422e",
+          "secondary": "#62dcad",
+          "secondary-fixed": "#80f9c8",
+          "background": "#061610",
+          "surface-bright": "#2c3d35",
+          "on-primary-container": "#00422b",
+          "primary-fixed-dim": "#4edea3",
+          "error-container": "#93000a",
+          "on-surface-variant": "#bbcabf",
+          "surface-dim": "#061610",
+          "primary-fixed": "#6ffbbe",
+          "secondary-container": "#18a479",
+          "on-background": "#d3e7db",
+          "tertiary-fixed": "#97f5cc",
+          "on-primary": "#003824",
+          "tertiary-container": "#57b48f",
+          "on-surface": "#d3e7db",
+          "inverse-on-surface": "#23342c",
+          "on-tertiary-fixed-variant": "#00513a"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "gutter-mobile": "0.75rem",
+          "margin-mobile": "1rem",
+          "space-lg": "1.5rem",
+          "gutter": "1.5rem",
+          "space-sm": "0.5rem",
+          "space-xs": "0.25rem",
+          "margin": "2rem",
+          "space-md": "1rem",
+          "space-xl": "2.5rem"
+        },
+        "fontFamily": {
+          "label-caps": ["JetBrains Mono", "monospace"],
+          "display-hero": ["Space Grotesk", "sans-serif"],
+          "title-md": ["Plus Jakarta Sans", "sans-serif"],
+          "body-lg": ["Plus Jakarta Sans", "sans-serif"],
+          "display-hero-mobile": ["Space Grotesk", "sans-serif"],
+          "headline-lg": ["Space Grotesk", "sans-serif"],
+          "headline-sm": ["Space Grotesk", "sans-serif"],
+          "label-data": ["JetBrains Mono", "monospace"],
+          "headline-lg-mobile": ["Space Grotesk", "sans-serif"],
+          "headline-md": ["Space Grotesk", "sans-serif"],
+          "body-sm": ["Plus Jakarta Sans", "sans-serif"],
+          "body-md": ["Plus Jakarta Sans", "sans-serif"]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 18px;
+    width: 18px;
+    border-radius: 4px;
+    background: #4edea3;
+    cursor: pointer;
+    border: 2px solid #02110b;
+    box-shadow: 0 0 10px rgba(78, 222, 163, 0.6);
+  }
+  input[type=range]::-moz-range-thumb {
+    height: 18px;
+    width: 18px;
+    border-radius: 4px;
+    background: #4edea3;
+    cursor: pointer;
+    border: 2px solid #02110b;
+  }
+  /* Tactical HUD Scrollbar Progress Rail on right edge */
+  .hud-rail {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: rgba(2, 17, 11, 0.7);
+    border-left: 1px solid rgba(60, 74, 66, 0.5);
+    z-index: 100;
+  }
+  .hud-rail-thumb {
+    position: absolute;
+    top: 15%;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(180deg, #4edea3 0%, #10b981 100%);
+    box-shadow: 0 0 8px #4edea3;
+  }
+  .hud-rail-marker {
+    position: absolute;
+    right: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: #4edea3;
+    transform: rotate(90deg);
+    transform-origin: right top;
+    white-space: nowrap;
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen selection:bg-primary selection:text-surface-container-lowest font-body-md" style="width: 1280px; min-height: 100vh; position: relative; background-image: linear-gradient(rgba(6, 22, 16, 0.65), rgba(2, 17, 11, 0.82)), url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCjnrwGLnUmBPPiX2SXP1uOhW815Diuo5dhNqN9Li2LPfyUiSLSDQ5Mb_OQcU3L4zD1wCJci9hug5d0p8P3ClNJs7ocU17ER_kSeTvFOz999fyeYgeFyHxEQsVX9WVBU_fltPwGCWmmVEcDDlRpifg00E_CmczzrT7B_Sr8iL-yoL1lxlPImoXhSjtHixL9jKB-HcsTcOPpOk6u8MU4S9LSPyV_NbFoVMmmK4qsPgT-9q51KHbcmaTDI_MxYHnWRRv_EhM&quot;); background-size: cover; background-position: center top; background-attachment: fixed;">
+<!-- Vertical Tactical HUD Scrollbar Progress Rail -->
+<aside aria-hidden="true" class="hidden md:flex flex-col justify-between fixed right-0 top-0 bottom-0 w-2.5 z-50 pointer-events-none bg-surface-container-lowest/80 border-l border-outline-variant/40 backdrop-blur-sm"><div class="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-primary/30 to-transparent"></div><div class="hud-rail-thumb absolute left-0 right-0 rounded-sm bg-gradient-to-b from-primary via-secondary to-primary-container shadow-[0_0_12px_rgba(78,222,163,0.8)]" style="top: 18%; height: 96px;"><span class="absolute -left-12 top-1/2 -translate-y-1/2 px-1 py-0.5 rounded bg-surface-container-lowest border border-primary/60 text-[9px] font-mono text-primary shadow-[0_0_8px_rgba(78,222,163,0.4)] tracking-tighter">18%</span><span class="absolute -left-1.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary animate-ping opacity-75"></span></div><div class="flex flex-col justify-between h-full py-8 items-center"><div class="w-1.5 h-0.5 bg-outline-variant"></div><div class="hud-rail-marker top-24">SEC::CANVAS_01</div><div class="w-1.5 h-0.5 bg-primary/40"></div><div class="hud-rail-marker top-[50%]">CONFIG_ENGINE</div><div class="w-1.5 h-0.5 bg-outline-variant"></div><div class="hud-rail-marker top-[80%]">ESCROW_SEAL</div><div class="w-1.5 h-0.5 bg-primary/40"></div></div><div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-primary/30 to-transparent"></div></aside>
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 w-full bg-surface-container-lowest/90 backdrop-blur-md border-b border-outline-variant">
+<div class="flex justify-between items-center w-full px-4 sm:px-8 lg:px-12 h-16">
+<!-- Brand & Search -->
+<div class="flex items-center gap-6">
+<a class="flex items-center gap-3" href="#">
+<img alt="Playora Official Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrllpe2oJ0gyp0MVO47QTImCHQzQdtsGPrnQLZuDIkTQTL3MnaKbB1JGhwy0o_Txi9iMW_sRJE8JQR3wMFz2woTMv4HOtq99KFltEqNHzOxKLNU29KsjCA30yiAjqj3FWs15a1Uet4TScrvZiKln0LLlGm4B2-85k2fqv6BPGC-wjFIaAo-1dn6csd5Ydw8myzaE2UZt9Mzubk9BPrTOWuJJw_yAs3xjDCzOxf0x_q4eYxTZTVJESFbQVagrfuZu0KiEA">
+<span class="hidden xl:inline text-xs font-label-caps px-2 py-0.5 rounded border border-outline-variant bg-surface-container-low text-primary uppercase">Studio v4.9</span>
+</a>
+<div class="hidden xl:flex items-center bg-surface-container-low border border-outline-variant px-3 py-1.5 rounded">
+<span class="material-symbols-outlined text-outline text-[18px] mr-2">search</span>
+<input class="bg-transparent text-on-surface placeholder:text-outline text-xs font-label-caps focus:outline-none w-72 border-none p-0 focus:ring-0" placeholder="Universal match ID, booster handle or contract..." type="text">
+<span class="text-[10px] font-label-caps text-outline border border-outline-variant px-1 rounded">⌘K</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center space-x-6 h-full pt-1">
+<a class="text-on-surface-variant hover:text-primary transition-colors text-xs font-label-caps uppercase" href="#">Marketplace</a>
+<a class="text-primary border-b-2 border-primary pb-1 text-xs font-label-caps uppercase font-bold" href="#">Custom Studio</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-xs font-label-caps uppercase" href="#">Rank Boosting</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-xs font-label-caps uppercase" href="#">Account Vault</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-xs font-label-caps uppercase flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+        Escrow 2.0
+      </a>
+</nav>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-4">
+<div class="hidden lg:flex items-center gap-2 px-2.5 py-1 bg-surface-container rounded border border-outline-variant text-xs font-label-caps text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="">ESCROW PROTOCOL: ACTIVE</span>
+</div>
+<button aria-label="Notifications" class="p-2 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary rounded-full"></span>
+</button>
+<button class="px-3 py-1.5 border border-outline-variant bg-surface-container-low hover:bg-surface-container text-on-surface text-xs font-label-caps uppercase tracking-wider rounded transition-colors">
+        0x7F8C...9B31
+      </button>
+<!-- Official Avatar -->
+<div class="flex items-center gap-2 pl-1">
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-primary/60 object-cover shadow-[0_0_8px_rgba(78,222,163,0.3)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBR4MS-eDZFcpmaF0dCW4QLvzqdvOdqhuTKIK-vdi7bWBbyuu3zVS0a09nXdeQc8x_rtizK3S43hF8ImKPx4MDK3wIqgQEqFSjJvcZ1AHyEGnHcTIezZ_qBQJne37_3_5aJW7EjvHAsxSsXqPFn83ERysRrM7vF50HWB_YTMcwtEY9eV-jicnRBBuKTSEFOTd_i1b2vd2-GkBtpXlB7mo1YEooZoIvMIPNTTCRWGaqe83QW59L7rkQ2xqR1fjTEc_pe5_Y">
+</div>
+</div>
+</div>
+</header>
+<!-- Telemetry & Arbiter SLA Ribbon -->
+<div class="bg-surface-container-lowest/80 border-b border-outline-variant px-4 sm:px-8 lg:px-12 py-1.5 text-xs font-label-caps flex flex-wrap items-center justify-between text-on-surface-variant gap-2">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5 text-primary">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+<span class="">SMART ESCROW 2.0 // NON-CUSTODIAL HARDENED</span>
+</span>
+<span class="hidden md:inline text-outline">•</span>
+<span class="hidden md:inline">ARBITER RESPONSE SLA: <strong class="text-on-surface">&lt; 15 MINS GUARANTEED</strong></span>
+<span class="hidden lg:inline text-outline">•</span>
+<span class="hidden lg:inline">DISPATCH NODE: <strong class="text-on-surface">FRANKFURT &amp; US-EAST</strong></span>
+</div>
+<div class="flex items-center gap-4">
+<span class="">SYSTEM RESIDUAL SLIPPAGE: <span class="text-primary">0.00%</span></span>
+<span class="">AVAILABLE PRO ROSTER: <span class="text-on-surface">142 ONLINE</span></span>
+</div>
+</div>
+<!-- Main Grid Canvas Layout -->
+<main class="w-full px-4 sm:px-8 lg:px-12 py-8 max-w-[1640px] mx-auto">
+<!-- Header Banner -->
+<section class="mb-8 pb-6 border-b border-outline-variant">
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+<div class="max-w-4xl">
+<div class="inline-flex items-center gap-2 px-2.5 py-1 bg-surface-container border border-outline-variant rounded mb-3 text-xs font-label-caps text-primary uppercase">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+          Universal Custom Package Builder Studio
+        </div>
+<h1 class="font-headline-lg text-2xl sm:text-4xl text-on-surface font-bold tracking-tight">
+          Modular Order Configuration Engine
+        </h1>
+<p class="text-on-surface-variant text-sm sm:text-base mt-2 max-w-3xl font-body-md">
+          Configure a bespoke competitive campaign across any supported title. Calibrate rank trajectories, enforce win-rate thresholds, lock signature champions, and assign verified Tier-1 pros with full smart escrow collateral.
+        </p>
+</div>
+<!-- Live Escrow Collateral Pool Badge -->
+<div class="flex items-center gap-3">
+<div class="bg-surface-container-low/90 backdrop-blur border border-outline-variant p-3.5 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[30px]">lock_clock</span>
+<div>
+<div class="text-[11px] font-label-caps text-outline uppercase tracking-wider">Escrow Liquidity Guarantee</div>
+<div class="font-headline-sm text-lg font-bold text-on-surface font-label-caps text-primary">$2,418,650.00 USDC</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. Universal Game Selector Bar -->
+<div class="mt-6 pt-4 border-t border-outline-variant">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-label-caps text-outline uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary">sports_esports</span>
+          Select Supported Esports Protocol (Universal Multi-Title Engine)
+        </span>
+<span class="text-xs font-label-caps text-primary" id="game-active-label">Active: Mobile Legends: Bang Bang</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5" id="game-selector-group">
+<!-- Game 1: MLBB (Active) -->
+<button class="game-btn active p-3 bg-surface-container border-2 border-primary text-on-surface rounded-lg text-left transition-all relative overflow-hidden group shadow-[0_0_12px_rgba(78,222,163,0.2)]" type="button">
+<div class="flex justify-between items-center mb-1">
+<span class="material-symbols-outlined text-primary text-[20px]">phone_android</span>
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+</div>
+<div class="font-headline-sm font-bold text-sm text-on-surface">MLBB</div>
+<div class="text-[10px] font-label-caps text-on-surface-variant truncate">S32 Mobile Legends</div>
+</button>
+<!-- Game 2: VALORANT -->
+<button class="game-btn p-3 bg-surface-container-lowest/80 border border-outline-variant hover:border-primary/50 text-on-surface rounded-lg text-left transition-all group" type="button">
+<div class="flex justify-between items-center mb-1">
+<span class="material-symbols-outlined text-outline group-hover:text-primary text-[20px]">crosshair</span>
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+</div>
+<div class="font-headline-sm font-bold text-sm text-on-surface">VALORANT</div>
+<div class="text-[10px] font-label-caps text-outline truncate">Riot Vanguard Guarded</div>
+</button>
+<!-- Game 3: Dota 2 -->
+<button class="game-btn p-3 bg-surface-container-lowest/80 border border-outline-variant hover:border-primary/50 text-on-surface rounded-lg text-left transition-all group" type="button">
+<div class="flex justify-between items-center mb-1">
+<span class="material-symbols-outlined text-outline group-hover:text-primary text-[20px]">swords</span>
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+</div>
+<div class="font-headline-sm font-bold text-sm text-on-surface">Dota 2</div>
+<div class="text-[10px] font-label-caps text-outline truncate">Immortal Leaderboard</div>
+</button>
+<!-- Game 4: League of Legends -->
+<button class="game-btn p-3 bg-surface-container-lowest/80 border border-outline-variant hover:border-primary/50 text-on-surface rounded-lg text-left transition-all group" type="button">
+<div class="flex justify-between items-center mb-1">
+<span class="material-symbols-outlined text-outline group-hover:text-primary text-[20px]">military_tech</span>
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+</div>
+<div class="font-headline-sm font-bold text-sm text-on-surface">League of Legends</div>
+<div class="text-[10px] font-label-caps text-outline truncate">Summoner's Rift PC</div>
+</button>
+<!-- Game 5: Wild Rift -->
+<button class="game-btn p-3 bg-surface-container-lowest/80 border border-outline-variant hover:border-primary/50 text-on-surface rounded-lg text-left transition-all group" type="button">
+<div class="flex justify-between items-center mb-1">
+<span class="material-symbols-outlined text-outline group-hover:text-primary text-[20px]">bolt</span>
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+</div>
+<div class="font-headline-sm font-bold text-sm text-on-surface">Wild Rift</div>
+<div class="text-[10px] font-label-caps text-outline truncate">Sovereign Protocol</div>
+</button>
+<!-- Game 6: World of Warcraft -->
+<button class="game-btn p-3 bg-surface-container-lowest/80 border border-outline-variant hover:border-primary/50 text-on-surface rounded-lg text-left transition-all group" type="button">
+<div class="flex justify-between items-center mb-1">
+<span class="material-symbols-outlined text-outline group-hover:text-primary text-[20px]">shield</span>
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+</div>
+<div class="font-headline-sm font-bold text-sm text-on-surface">WoW (TWW)</div>
+<div class="text-[10px] font-label-caps text-outline truncate">Mythic+ &amp; Arena 3v3</div>
+</button>
+</div>
+</div>
+</section>
+<!-- Core Builder & Sticky Order Manifest Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Interactive Left Canvas: Detailed Configuration Engine (8 Columns) -->
+<div class="lg:col-span-8 space-y-6">
+<!-- PARAMETER 1: Baseline Rank Stepper with Crests -->
+<section class="bg-surface-container-low/90 backdrop-blur border border-outline-variant rounded-xl p-6">
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant mb-5">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded bg-primary text-surface-container-lowest font-headline-sm flex items-center justify-center font-bold text-xs">1</span>
+<div>
+<h2 class="font-headline-sm text-base sm:text-lg font-bold text-on-surface">Baseline Rank Progression Stepper</h2>
+<p class="text-xs text-on-surface-variant font-body-sm">Select baseline starting bracket and calibrated destination rank milestone.</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-xs font-label-caps text-primary" id="rank-base-price-tag">Base: $84.00</span>
+</div>
+</div>
+<!-- Rank Stepper Visual Comparison -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<!-- Starting Rank -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-label-caps text-outline uppercase">Current Starting Rank</span>
+<span class="text-xs px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-caps">VERIFIED BY API</span>
+</div>
+<div class="flex items-center gap-3.5 mb-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container border border-outline-variant flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[28px]">stars</span>
+</div>
+<div class="flex-1">
+<label class="sr-only" for="start-rank-select">Starting Division</label>
+<select class="w-full bg-surface-container border border-outline-variant rounded p-2 text-sm text-on-surface font-title-md focus:border-primary focus:ring-0" id="start-rank-select">
+<option value="40">Epic II (3 Stars)</option>
+<option value="55">Legend V (0 Stars)</option>
+<option selected="" value="70">Legend II (4 Stars)</option>
+<option value="85">Mythic (10 Stars)</option>
+</select>
+<div class="text-[11px] font-label-caps text-outline mt-1">Placement MMR: ~1,840 MMR</div>
+</div>
+</div>
+</div>
+<!-- Target Goal Rank -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border border-primary/40 relative">
+<div class="absolute -top-2.5 right-4 bg-primary text-surface-container-lowest text-[10px] font-label-caps font-bold px-2 py-0.5 rounded uppercase">
+              DESTINATION TARGET
+            </div>
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-label-caps text-primary uppercase">Desired Destination Rank</span>
+<span class="text-xs font-label-caps text-primary">+18 Stars Net Jump</span>
+</div>
+<div class="flex items-center gap-3.5 mb-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container border border-primary/50 flex items-center justify-center text-primary shadow-[0_0_10px_rgba(78,222,163,0.3)]">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<div class="flex-1">
+<label class="sr-only" for="target-rank-select">Target Goal Division</label>
+<select class="w-full bg-surface-container border border-primary/60 rounded p-2 text-sm text-on-surface font-title-md focus:border-primary focus:ring-0" id="target-rank-select">
+<option value="110">Mythic Honor (25 Stars)</option>
+<option selected="" value="154">Mythic Glory (50 Stars) - Calibrated</option>
+<option value="220">Mythical Immortal (100+ Stars)</option>
+<option value="310">Regional Top 100 Leaderboard</option>
+</select>
+<div class="text-[11px] font-label-caps text-primary mt-1">Destination MMR: 2,600+ Glory Pool</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slider Micro Adjuster -->
+<div class="mt-4 pt-4 border-t border-outline-variant">
+<div class="flex justify-between items-center text-xs font-label-caps mb-2 text-on-surface-variant">
+<span class="">Granular Stars / LP Calibration Adjustment:</span>
+<span class="text-primary font-bold" id="stars-display">+18 Additional Calibration Stars</span>
+</div>
+<label class="sr-only" for="stars-slider">Stars Calibration Slider</label>
+<input class="w-full h-1.5 bg-surface-container-highest rounded appearance-none cursor-pointer accent-primary" id="stars-slider" max="50" min="5" type="range" value="18">
+<div class="flex justify-between text-[10px] font-label-caps text-outline mt-1">
+<span class="">+5 Stars Minimum</span>
+<span class="">+25 Stars Standard Jump</span>
+<span class="">+50 Stars Hard Grind</span>
+</div>
+</div>
+</section>
+<!-- PARAMETER 2: Booster Selection Level (Automated vs Elite Pro) -->
+<section class="bg-surface-container-low/90 backdrop-blur border border-outline-variant rounded-xl p-6">
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant mb-5">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded bg-primary text-surface-container-lowest font-headline-sm flex items-center justify-center font-bold text-xs">2</span>
+<div>
+<h2 class="font-headline-sm text-base sm:text-lg font-bold text-on-surface">Booster Assignment &amp; Player Tier</h2>
+<p class="text-xs text-on-surface-variant font-body-sm">Choose automated queue allocation or reserve a verified sovereign pro.</p>
+</div>
+</div>
+<span class="text-xs font-label-caps text-primary" id="booster-addon-tag">+25% Selected</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="booster-tier-group">
+<!-- Option A: Automated Queue Matching -->
+<label class="booster-option flex flex-col justify-between p-4 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-outline cursor-pointer transition-all">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-headline-sm font-semibold text-sm text-on-surface">Automated Queue Matching</span>
+<input class="text-primary focus:ring-0 bg-surface-container border-outline-variant" name="booster_tier" type="radio" value="0">
+</div>
+<p class="text-xs text-on-surface-variant font-body-sm">
+                Dispatched to the next available vetted challenger booster in your region. Fast pickup, zero markup.
+              </p>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant flex justify-between items-center text-xs font-label-caps">
+<span class="text-outline">Assignment Fee:</span>
+<span class="text-on-surface font-bold">Included (+0%)</span>
+</div>
+</label>
+<!-- Option B: Specific Pro Booster Selection (Active) -->
+<label class="booster-option active flex flex-col justify-between p-4 bg-surface-container rounded-lg border-2 border-primary cursor-pointer transition-all shadow-[0_0_12px_rgba(78,222,163,0.15)]">
+<div>
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm font-semibold text-sm text-on-surface">Specific Pro Booster Selection</span>
+<span class="text-[10px] font-label-caps px-1.5 py-0.5 rounded bg-primary text-surface-container-lowest font-bold">VERIFIED</span>
+</div>
+<input checked="" class="text-primary focus:ring-0 bg-surface-container border-outline-variant" name="booster_tier" type="radio" value="0.25">
+</div>
+<p class="text-xs text-on-surface-variant font-body-sm">
+                Hand-pick from top 0.01% elite tournament roster with documented match history and 88%+ win rate.
+              </p>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant flex justify-between items-center text-xs font-label-caps">
+<span class="text-primary">Pro Contractor Markup:</span>
+<span class="text-primary font-bold">+25% Base Premium</span>
+</div>
+</label>
+</div>
+<!-- Pro Booster Picker Selector (Conditional details) -->
+<div class="mt-4 bg-surface-container-lowest p-3.5 rounded-lg border border-outline-variant flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded bg-surface-container-high border border-outline flex items-center justify-center text-primary font-bold font-label-caps text-xs">
+              VX
+            </div>
+<div>
+<label class="text-xs font-label-caps text-on-surface font-semibold block" for="pro-booster-select">Designated Contractor:</label>
+<select class="bg-surface-container border border-outline-variant rounded px-2 py-1 text-xs text-primary font-label-caps mt-0.5 focus:ring-0" id="pro-booster-select">
+<option selected="">VortexPro (Rank #4 Global, 92.4% Win Rate, 412 Orders)</option>
+<option>SilentScope (Immortal Leaderboard #18, 89.1% Win Rate)</option>
+<option>ApexHunter (Ex-Pro League Challenger, 94.0% Win Rate)</option>
+</select>
+</div>
+</div>
+<span class="text-xs font-label-caps text-on-surface-variant bg-surface-container px-2.5 py-1 rounded border border-outline-variant">
+            ⚡ Avg Dispatch: 4 Mins
+          </span>
+</div>
+</section>
+<!-- PARAMETER 3: Win Rate Commitment (Standard vs 85% vs Flawless 100%) -->
+<section class="bg-surface-container-low/90 backdrop-blur border border-outline-variant rounded-xl p-6">
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant mb-5">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded bg-primary text-surface-container-lowest font-headline-sm flex items-center justify-center font-bold text-xs">3</span>
+<div>
+<h2 class="font-headline-sm text-base sm:text-lg font-bold text-on-surface">Win Rate Guarantee &amp; Downfall Shield</h2>
+<p class="text-xs text-on-surface-variant font-body-sm">Smart escrow automatically triggers refunds if agreed win rate threshold is missed.</p>
+</div>
+</div>
+<span class="text-xs font-label-caps text-primary" id="winrate-addon-tag">+18% Selected</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3.5" id="winrate-group">
+<!-- WR Option 1: Standard Target -->
+<label class="p-3.5 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-outline cursor-pointer transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-headline-sm text-xs font-bold text-on-surface">Standard Target</span>
+<input class="text-primary focus:ring-0 bg-surface-container border-outline-variant" name="winrate_guarantee" type="radio" value="0">
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">
+                Target bracket completion guaranteed. Most economical baseline route.
+              </p>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-right">
+<span class="text-xs font-label-caps text-outline">+0% (Baseline)</span>
+</div>
+</label>
+<!-- WR Option 2: 85%+ High Win Rate (Selected) -->
+<label class="p-3.5 bg-surface-container rounded-lg border-2 border-primary cursor-pointer transition-all flex flex-col justify-between shadow-[0_0_10px_rgba(78,222,163,0.15)]">
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-headline-sm text-xs font-bold text-on-surface">85%+ Win Guarantee</span>
+<input checked="" class="text-primary focus:ring-0 bg-surface-container border-outline-variant" name="winrate_guarantee" type="radio" value="0.18">
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">
+                Preserves pristine account stats. Automatic smart escrow compensation on deviations.
+              </p>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-right">
+<span class="text-xs font-label-caps text-primary font-bold">+18% Premium</span>
+</div>
+</label>
+<!-- WR Option 3: 100% Flawless -->
+<label class="p-3.5 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-outline cursor-pointer transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-headline-sm text-xs font-bold text-on-surface">100% Flawless Zero-Loss</span>
+<input class="text-primary focus:ring-0 bg-surface-container border-outline-variant" name="winrate_guarantee" type="radio" value="0.45">
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">
+                Zero losses tolerated. Requires Tier-1 duo smurfing with match cancellation insurance.
+              </p>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-right">
+<span class="text-xs font-label-caps text-secondary font-bold">+45% Premium</span>
+</div>
+</label>
+</div>
+</section>
+<!-- PARAMETER 4: Hero & Role Specialization Locking -->
+<section class="bg-surface-container-low/90 backdrop-blur border border-outline-variant rounded-xl p-6">
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant mb-5">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded bg-primary text-surface-container-lowest font-headline-sm flex items-center justify-center font-bold text-xs">4</span>
+<div>
+<h2 class="font-headline-sm text-base sm:text-lg font-bold text-on-surface">Hero &amp; Role Specialization Lock</h2>
+<p class="text-xs text-on-surface-variant font-body-sm">Restrict booster play to your personal signature hero pool and lane positions.</p>
+</div>
+</div>
+<span class="text-xs font-label-caps text-primary" id="hero-addon-tag">+20% Champion Lock</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-4" id="role-lock-group">
+<!-- Role Option 1: Any Role -->
+<label class="p-3.5 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-outline cursor-pointer transition-all">
+<div class="flex items-center justify-between mb-1">
+<span class="font-headline-sm text-xs font-bold text-on-surface">Any Role / Any Hero</span>
+<input class="text-primary focus:ring-0 bg-surface-container border-outline-variant" name="role_specialization" type="radio" value="0">
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Booster discretion based on draft optimization.</p>
+<div class="text-[11px] font-label-caps text-outline mt-2">+0% Fee</div>
+</label>
+<!-- Role Option 2: Specific Role Locked -->
+<label class="p-3.5 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-outline cursor-pointer transition-all">
+<div class="flex items-center justify-between mb-1">
+<span class="font-headline-sm text-xs font-bold text-on-surface">Specific Role Locked</span>
+<input class="text-primary focus:ring-0 bg-surface-container border-outline-variant" name="role_specialization" type="radio" value="0.10">
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Locked to Jungle, Mid, Duelist, or Tank role.</p>
+<div class="text-[11px] font-label-caps text-primary mt-2">+10% Specialization</div>
+</label>
+<!-- Role Option 3: Specific Hero / Champion Locked (Selected) -->
+<label class="p-3.5 bg-surface-container rounded-lg border-2 border-primary cursor-pointer transition-all shadow-[0_0_10px_rgba(78,222,163,0.15)]">
+<div class="flex items-center justify-between mb-1">
+<span class="font-headline-sm text-xs font-bold text-on-surface">Hero Locked (+Mastery)</span>
+<input checked="" class="text-primary focus:ring-0 bg-surface-container border-outline-variant" name="role_specialization" type="radio" value="0.20">
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Specific signature champion mastery funnel.</p>
+<div class="text-[11px] font-label-caps text-primary font-bold mt-2">+20% Mastery Lock</div>
+</label>
+</div>
+<!-- Dynamic Hero Selection Chips -->
+<div class="bg-surface-container-lowest p-3.5 rounded-lg border border-outline-variant">
+<div class="text-xs font-label-caps text-outline mb-2 flex items-center justify-between">
+<span class="">SELECTED HERO POOL (MAX 3 SIGNATURES):</span>
+<span class="text-primary text-[11px]">3 of 3 Selected</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-2.5 py-1 bg-surface-container border border-primary text-primary text-xs font-label-caps rounded flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Fanny (Assassin/Jungle)
+              <button aria-label="Remove Fanny" class="hover:text-error text-outline">×</button>
+</span>
+<span class="px-2.5 py-1 bg-surface-container border border-primary text-primary text-xs font-label-caps rounded flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Ling (Assassin/Hyper)
+              <button aria-label="Remove Ling" class="hover:text-error text-outline">×</button>
+</span>
+<span class="px-2.5 py-1 bg-surface-container border border-primary text-primary text-xs font-label-caps rounded flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Hayabusa (Shadow Striker)
+              <button aria-label="Remove Hayabusa" class="hover:text-error text-outline">×</button>
+</span>
+<button class="px-2.5 py-1 bg-surface-container-high border border-outline-variant hover:border-outline text-on-surface-variant text-xs font-label-caps rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">add</span> Add Alternate Champion
+            </button>
+</div>
+</div>
+</section>
+<!-- PARAMETER 5: Delivery Speed Multiplier (Urgency vs Economy) -->
+<section class="bg-surface-container-low/90 backdrop-blur border border-outline-variant rounded-xl p-6">
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant mb-5">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded bg-primary text-surface-container-lowest font-headline-sm flex items-center justify-center font-bold text-xs">5</span>
+<div>
+<h2 class="font-headline-sm text-base sm:text-lg font-bold text-on-surface">Delivery Speed Multiplier</h2>
+<p class="text-xs text-on-surface-variant font-body-sm">Balance dispatch urgency against tactical organic scheduling discounts.</p>
+</div>
+</div>
+<span class="text-xs font-label-caps text-secondary" id="speed-addon-tag">+35% Lightning Rush</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3.5" id="speed-group">
+<!-- Speed 1: Lightning Rush (Active) -->
+<label class="p-4 bg-surface-container rounded-lg border-2 border-primary cursor-pointer transition-all flex flex-col justify-between shadow-[0_0_10px_rgba(78,222,163,0.15)]">
+<div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-headline-sm text-xs font-bold text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[16px]">bolt</span>
+                  Lightning Rush
+                </span>
+<input checked="" class="text-primary focus:ring-0 bg-surface-container border-outline-variant" name="delivery_speed" type="radio" value="0.35">
+</div>
+<div class="text-xs font-label-caps text-primary font-bold my-1">24 - 48 Hours</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">
+                Instant contractor assignment. Consecutive play cycles until target achieved.
+              </p>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-right">
+<span class="text-xs font-label-caps text-primary font-bold">+35% Express Surge</span>
+</div>
+</label>
+<!-- Speed 2: Standard Pace -->
+<label class="p-4 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-outline cursor-pointer transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-headline-sm text-xs font-bold text-on-surface">Standard Pace</span>
+<input class="text-primary focus:ring-0 bg-surface-container border-outline-variant" name="delivery_speed" type="radio" value="0">
+</div>
+<div class="text-xs font-label-caps text-on-surface font-semibold my-1">3 - 5 Days</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">
+                Default balanced progression matching realistic daily player playtime patterns.
+              </p>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-right">
+<span class="text-xs font-label-caps text-outline">+0% (Standard)</span>
+</div>
+</label>
+<!-- Speed 3: Economy Extended -->
+<label class="p-4 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-outline cursor-pointer transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-headline-sm text-xs font-bold text-on-surface">Economy Extended</span>
+<input class="text-primary focus:ring-0 bg-surface-container border-outline-variant" name="delivery_speed" type="radio" value="-0.20">
+</div>
+<div class="text-xs font-label-caps text-primary font-semibold my-1">10 - 14 Days</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">
+                Relaxed off-peak pacing. Highest stealth profile and maximum financial savings.
+              </p>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-right">
+<span class="text-xs font-label-caps text-primary font-bold">-20% DISCOUNT</span>
+</div>
+</label>
+</div>
+</section>
+<!-- PARAMETER 6: Extra Security & Live Monitoring Add-ons -->
+<section class="bg-surface-container-low/90 backdrop-blur border border-outline-variant rounded-xl p-6">
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant mb-5">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded bg-primary text-surface-container-lowest font-headline-sm flex items-center justify-center font-bold text-xs">6</span>
+<div>
+<h2 class="font-headline-sm text-base sm:text-lg font-bold text-on-surface">Security &amp; Live Monitoring Add-Ons</h2>
+<p class="text-xs text-on-surface-variant font-body-sm">Select stealth hardware cloaking, encrypted streaming, and voice party execution.</p>
+</div>
+</div>
+<span class="text-xs font-label-caps text-primary">Zero-Ban Guarantee</span>
+</div>
+<div class="space-y-3">
+<!-- Addon 1: Hardware VPN (Free) -->
+<div class="p-3.5 bg-surface-container rounded-lg border border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[22px]">vpn_lock</span>
+<div>
+<div class="font-headline-sm text-xs font-bold text-on-surface">Zero-Ban Hardware VPN Stealth</div>
+<div class="text-[11px] text-on-surface-variant font-body-sm">Geo-matched residential IP from your local jurisdiction. Zero Riot/Moonton flags.</div>
+</div>
+</div>
+<span class="text-xs font-label-caps px-2 py-0.5 rounded bg-surface-container-highest text-primary font-bold uppercase">
+              INCLUDED FREE
+            </span>
+</div>
+<!-- Addon 2: Live Discord Stream (+$12) -->
+<label class="p-3.5 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-outline cursor-pointer flex items-center justify-between transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[22px]">videocam</span>
+<div>
+<div class="font-headline-sm text-xs font-bold text-on-surface">Live Discord 1080p 60fps Encrypted Stream</div>
+<div class="text-[11px] text-on-surface-variant font-body-sm">Private unlisted stream link with zero latency to observe gameplay in real time.</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-label-caps text-primary font-mono">+$12.00</span>
+<input checked="" class="w-4 h-4 rounded bg-surface-container border-outline-variant text-primary focus:ring-0" id="addon-stream-check" type="checkbox">
+</div>
+</label>
+<!-- Addon 3: Duo-Queue Voice Party (+$20) -->
+<label class="p-3.5 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-outline cursor-pointer flex items-center justify-between transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[22px]">record_voice_over</span>
+<div>
+<div class="font-headline-sm text-xs font-bold text-on-surface">Duo-Queue Voice Party (No Account Sharing)</div>
+<div class="text-[11px] text-on-surface-variant font-body-sm">Play on your own device in lobby party with pro contractor on Discord voice comms.</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-label-caps text-primary font-mono">+$20.00</span>
+<input checked="" class="w-4 h-4 rounded bg-surface-container border-outline-variant text-primary focus:ring-0" id="addon-duo-check" type="checkbox">
+</div>
+</label>
+</div>
+</section>
+</div>
+<!-- 4. Live Interactive Order Manifest (Sticky 4 Columns) -->
+<aside class="lg:col-span-4 sticky top-20 space-y-4">
+<div class="bg-surface-container-low/95 backdrop-blur-md border border-outline-variant rounded-xl p-6 shadow-2xl relative overflow-hidden">
+<!-- Mint glowing top accent line -->
+<div class="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary-container"></div>
+<!-- Manifest Header -->
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant mb-4">
+<div>
+<div class="text-[11px] font-label-caps text-outline uppercase tracking-wider">Dynamic Escrow Manifest</div>
+<h3 class="font-headline-sm text-base font-bold text-on-surface">Custom Campaign Contract</h3>
+</div>
+<span class="px-2 py-0.5 bg-surface-container border border-primary text-primary text-xs font-label-caps rounded uppercase font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+            LIVE QUOTE
+          </span>
+</div>
+<!-- Estimated Completion Badge -->
+<div class="mb-4 bg-surface-container-lowest p-3 rounded-lg border border-outline-variant flex items-center justify-between text-xs font-label-caps">
+<span class="text-outline flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">timer</span>
+            Est. Fulfillment Window:
+          </span>
+<span class="text-primary font-bold" id="manifest-delivery-badge">24 - 48 Hours (Express)</span>
+</div>
+<!-- Manifest Line Items Calculation Breakdown -->
+<div class="space-y-2.5 text-xs font-label-caps pb-4 border-b border-outline-variant">
+<!-- Item 1: Base Rank -->
+<div class="flex justify-between items-center text-on-surface">
+<span class="flex items-center gap-1.5 truncate max-w-[200px]" title="MLBB: Legend II → Mythic Glory">
+<span class="material-symbols-outlined text-[15px] text-primary">check_circle</span>
+<span id="manifest-rank-line" class="">MLBB: Legend II → Glory</span>
+</span>
+<span class="font-mono text-on-surface font-semibold" id="manifest-base-val">$84.00</span>
+</div>
+<!-- Item 2: Booster Tier -->
+<div class="flex justify-between items-center text-on-surface">
+<span class="flex items-center gap-1.5 truncate max-w-[200px]">
+<span class="material-symbols-outlined text-[15px] text-primary">person_check</span>
+<span id="manifest-booster-line" class="">Pro Booster (VortexPro)</span>
+</span>
+<span class="font-mono text-primary" id="manifest-booster-val">+$21.00</span>
+</div>
+<!-- Item 3: Win Rate Commitment -->
+<div class="flex justify-between items-center text-on-surface">
+<span class="flex items-center gap-1.5 truncate max-w-[200px]">
+<span class="material-symbols-outlined text-[15px] text-primary">verified</span>
+<span id="manifest-winrate-line" class="">85%+ Win-Rate Guarantee</span>
+</span>
+<span class="font-mono text-primary" id="manifest-winrate-val">+$15.12</span>
+</div>
+<!-- Item 4: Hero & Role Lock -->
+<div class="flex justify-between items-center text-on-surface">
+<span class="flex items-center gap-1.5 truncate max-w-[200px]">
+<span class="material-symbols-outlined text-[15px] text-primary">lock</span>
+<span id="manifest-hero-line" class="">Hero Lock (Fanny/Ling/Haya)</span>
+</span>
+<span class="font-mono text-primary" id="manifest-hero-val">+$16.80</span>
+</div>
+<!-- Item 5: Delivery Speed Adjuster -->
+<div class="flex justify-between items-center text-on-surface">
+<span class="flex items-center gap-1.5 truncate max-w-[200px]">
+<span class="material-symbols-outlined text-[15px] text-secondary">bolt</span>
+<span id="manifest-speed-line" class="">Lightning Rush Speed (+35%)</span>
+</span>
+<span class="font-mono text-secondary" id="manifest-speed-val">+$29.40</span>
+</div>
+<!-- Item 6: Live Stream Addon -->
+<div class="flex justify-between items-center text-on-surface" id="manifest-stream-row" style="display: flex;">
+<span class="flex items-center gap-1.5 truncate max-w-[200px]">
+<span class="material-symbols-outlined text-[15px] text-primary">videocam</span>
+<span class="">Discord 1080p Stream</span>
+</span>
+<span class="font-mono text-on-surface">+$12.00</span>
+</div>
+<!-- Item 7: Duo Queue Addon -->
+<div class="flex justify-between items-center text-on-surface" id="manifest-duo-row" style="display: flex;">
+<span class="flex items-center gap-1.5 truncate max-w-[200px]">
+<span class="material-symbols-outlined text-[15px] text-primary">group</span>
+<span class="">Duo-Queue Voice Party</span>
+</span>
+<span class="font-mono text-on-surface">+$20.00</span>
+</div>
+<!-- Item 8: Hardware VPN (Free) -->
+<div class="flex justify-between items-center text-on-surface-variant">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary">vpn_lock</span>
+<span class="">Geo-Matched Hardware VPN</span>
+</span>
+<span class="font-mono text-primary font-bold">FREE</span>
+</div>
+</div>
+<!-- Calculation Subtotal & Escrow Mint Fee -->
+<div class="py-3 space-y-1.5 border-b border-outline-variant text-xs font-label-caps text-on-surface-variant">
+<div class="flex justify-between">
+<span class="">Cumulative Service Sum:</span>
+<span class="font-mono text-on-surface" id="manifest-subtotal">$198.32</span>
+</div>
+<div class="flex justify-between text-primary">
+<span class="">Multi-Parameter Package Discount:</span>
+<span class="font-mono">-$15.00</span>
+</div>
+<div class="flex justify-between">
+<span class="">Smart Escrow Protocol Fee (0%):</span>
+<span class="font-mono text-primary font-bold">WAIVED / 0.00</span>
+</div>
+</div>
+<!-- Total Price Display (USD & Crypto) -->
+<div class="pt-4 pb-5">
+<div class="flex justify-between items-end">
+<div>
+<span class="text-[11px] font-label-caps text-outline uppercase block">Total Escrow Vault Lock</span>
+<span class="text-[11px] font-body-sm text-on-surface-variant">Non-custodial smart contract</span>
+</div>
+<div class="text-right">
+<div class="font-headline-lg text-3xl text-primary font-bold font-mono tracking-tight" id="manifest-grand-total">$183.32</div>
+<div class="text-[11px] font-label-caps text-outline font-mono" id="manifest-crypto-total">≈ 183.32 USDC // USDT</div>
+</div>
+</div>
+</div>
+<!-- Action CTAs -->
+<div class="space-y-2.5">
+<button class="w-full py-3.5 bg-primary hover:bg-surface-tint text-surface-container-lowest font-label-caps text-xs font-bold uppercase tracking-wider rounded-lg transition-all shadow-[0_0_15px_rgba(78,222,163,0.4)] flex items-center justify-center gap-2 active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+            Initialize Escrow Contract
+          </button>
+<button class="w-full py-2.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant text-on-surface font-label-caps text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+            Export Encrypted Blueprint Specs
+          </button>
+</div>
+<!-- Escrow 2.0 SLA & Security Footer in Sidebar -->
+<div class="mt-4 pt-3 border-t border-outline-variant flex items-center gap-2 text-[11px] font-label-caps text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[18px]">gavel</span>
+<span class="">Escrow 2.0 Arbiter SLA: 15-Min Response Guarantee</span>
+</div>
+</div>
+<!-- Quick Dispatch Telemetry Info Widget -->
+<div class="bg-surface-container-low/90 backdrop-blur border border-outline-variant rounded-lg p-3.5 flex items-center justify-between text-xs font-label-caps">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="text-on-surface">NODE DISPATCH:</span>
+<span class="text-primary font-mono">READY TO ENGAGE</span>
+</div>
+<span class="text-outline">LATENCY: 11.2ms</span>
+</div>
+</aside>
+</div>
+<!-- 5. 12 Strategic Pillars & Escrow 2.0 Safety Grid -->
+<section class="mt-16 pt-8 border-t border-outline-variant">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-6">
+<div>
+<div class="inline-flex items-center gap-1 text-primary text-xs font-label-caps uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+          Institutional Architecture &amp; Escrow 2.0
+        </div>
+<h2 class="font-headline-md text-xl sm:text-2xl font-bold text-on-surface">The 12 Strategic Safety Pillars</h2>
+<p class="text-xs sm:text-sm text-on-surface-variant font-body-sm mt-1">Zero counterparty risk, hardened cryptographic arbitration, and enterprise hardware isolation.</p>
+</div>
+<div class="mt-3 md:mt-0 flex items-center gap-2">
+<span class="text-xs font-label-caps text-outline">AUDITED BY CERTİK // SECURE CONTRACT v2.9</span>
+</div>
+</div>
+<!-- 12 Strategic Pillars Cards Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Pillar 1 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">1. Non-Custodial Smart Escrow</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Collateral locked on-chain. Funds cannot be released until customer verifies match telemetry recordings.</p>
+</div>
+<!-- Pillar 2 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">support_agent</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">2. &lt;15 Min Arbiter Desk SLA</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Dedicated human adjudicators evaluate disputes with raw server replay logs and statistical deviation audits.</p>
+</div>
+<!-- Pillar 3 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">fingerprint</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">3. Hardware Signature Masking</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Dynamic MAC spoofing and matched residential IP eliminate anti-cheat automated detection signals.</p>
+</div>
+<!-- Pillar 4 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">shield_person</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">4. Zero-Loss Win Protection</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Agreed win-rate commitments are enforced by algorithmic smart contracts with automatic compensation.</p>
+</div>
+<!-- Pillar 5 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">badge</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">5. Pro Contractor Vetting</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Top 0.01% tier requirement. Identity-verified players with signed NDAs and bonded security deposits.</p>
+</div>
+<!-- Pillar 6 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">visibility_off</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">6. Ghosting &amp; Chat Neutrality</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Friends list stealth mode enabled. Strictly zero in-game chatter to maintain flawless account camouflage.</p>
+</div>
+<!-- Pillar 7 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">history_edu</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">7. Public Proof of Reserves</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">All escrow liquidity collateral is cryptographically verifiably solvent in real-time on public ledger feeds.</p>
+</div>
+<!-- Pillar 8 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">speed</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">8. SLA Dispatch Guarantees</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Lightning orders begin within 8 minutes of confirmation with continuous status telemetry updates.</p>
+</div>
+<!-- Pillar 9 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">group_work</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">9. Self-Play &amp; Duo Protocols</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">No account credentials required for duo queues. Join pro lobbies directly through protected voice relays.</p>
+</div>
+<!-- Pillar 10 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">key</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">10. Zero Stored Credentials</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Ephemerally encrypted session tokens expire automatically once order parameters are completed.</p>
+</div>
+<!-- Pillar 11 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">cast_connected</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">11. High-Bitrate Live Auditing</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Optional 60fps streaming allows real-time viewing with zero latency and full mechanical transparency.</p>
+</div>
+<!-- Pillar 12 -->
+<div class="bg-surface-container-low/80 border border-outline-variant hover:border-primary/60 transition-colors p-4 rounded-lg">
+<div class="flex items-center gap-2.5 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">autorenew</span>
+<h3 class="font-headline-sm text-xs font-bold text-on-surface">12. Instant Smart Escrow Refund</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant font-body-sm">If contractor fails milestone criteria, funds revert back to the client wallet without friction or delay.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant mt-20">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-4 sm:px-8 lg:px-12 py-6 gap-4">
+<!-- Brand & Copyright -->
+<div class="flex flex-col sm:flex-row items-center gap-4">
+<img alt="Playora Official Logo" class="h-6 w-auto object-contain opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASEpCJtxqJSEjCPAyzwjVjBQD5QUVFtyX_BDqQCPXxxGtb1Thd8A2-_SSAT-2xAnZPvMVsXz-8SROCHDD3CCXs5Pt9eaCBNenyOvgJG9kY3mrnHbJUMcjw0zSZeEBLVT9SV-mE_2j2CkKQrPe0kaVxhM4YJlXlX5VtC3ImDfWsiF3rb7MNRtEvYKFEPcOdKDGLukJOgfj996KRxK5ej7LBVl6U0IGA8gftmC8ks5huUjdu5Y2Hh2RQybLlTDcs08eOp7c">
+<span class="text-outline hidden sm:inline">|</span>
+<span class="text-xs font-label-caps text-on-surface-variant text-center sm:text-left">
+        © 2025 PLAYORA ARENA. UNIVERSAL PACKAGE BUILDER STUDIO. NON-CUSTODIAL ESCROW ACTIVE.
+      </span>
+</div>
+<!-- Telemetry & Links -->
+<div class="flex flex-wrap items-center justify-center gap-5 text-xs font-label-caps text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Smart Escrow Terms</a>
+<a class="hover:text-primary transition-colors" href="#">Anti-Cheat Protocol</a>
+<a class="hover:text-primary transition-colors" href="#">Proof of Reserves</a>
+<span class="text-primary flex items-center gap-1 font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+        Node Status: 11.2ms
+      </span>
+<a class="hover:text-primary transition-colors" href="#">Security Disclosures</a>
+</div>
+</div>
+</footer>
+<!-- Interactive Calculation Engine Script -->
+<script>
+  (function() {
+    // Dynamic price calculation state
+    const state = {
+      game: 'MLBB',
+      basePrice: 84.00,
+      boosterMultiplier: 0.25,
+      winrateMultiplier: 0.18,
+      heroMultiplier: 0.20,
+      speedMultiplier: 0.35,
+      streamAddon: 12.00,
+      duoAddon: 20.00,
+      packageDiscount: 15.00
+    };
+
+    // DOM Elements
+    const gameButtons = document.querySelectorAll('.game-btn');
+    const gameLabel = document.getElementById('game-active-label');
+    const rankSelect = document.getElementById('target-rank-select');
+    const starsSlider = document.getElementById('stars-slider');
+    const starsDisplay = document.getElementById('stars-display');
+    const boosterTierInputs = document.querySelectorAll('input[name="booster_tier"]');
+    const winrateInputs = document.querySelectorAll('input[name="winrate_guarantee"]');
+    const roleInputs = document.querySelectorAll('input[name="role_specialization"]');
+    const speedInputs = document.querySelectorAll('input[name="delivery_speed"]');
+    const streamCheck = document.getElementById('addon-stream-check');
+    const duoCheck = document.getElementById('addon-duo-check');
+
+    // Sidebar manifest elements
+    const manifestBaseVal = document.getElementById('manifest-base-val');
+    const manifestBoosterVal = document.getElementById('manifest-booster-val');
+    const manifestWinrateVal = document.getElementById('manifest-winrate-val');
+    const manifestHeroVal = document.getElementById('manifest-hero-val');
+    const manifestSpeedVal = document.getElementById('manifest-speed-val');
+    const manifestSubtotal = document.getElementById('manifest-subtotal');
+    const manifestGrandTotal = document.getElementById('manifest-grand-total');
+    const manifestCryptoTotal = document.getElementById('manifest-crypto-total');
+    const manifestDeliveryBadge = document.getElementById('manifest-delivery-badge');
+    const manifestStreamRow = document.getElementById('manifest-stream-row');
+    const manifestDuoRow = document.getElementById('manifest-duo-row');
+
+    function calculateOrder() {
+      // 1. Base price
+      const base = state.basePrice;
+      const boosterFee = +(base * state.boosterMultiplier).toFixed(2);
+      const winrateFee = +(base * state.winrateMultiplier).toFixed(2);
+      const heroFee = +(base * state.heroMultiplier).toFixed(2);
+      const speedFee = +(base * state.speedMultiplier).toFixed(2);
+      const streamFee = streamCheck.checked ? 12.00 : 0.00;
+      const duoFee = duoCheck.checked ? 20.00 : 0.00;
+
+      const subtotal = +(base + boosterFee + winrateFee + heroFee + speedFee + streamFee + duoFee).toFixed(2);
+      const grandTotal = Math.max(25, +(subtotal - state.packageDiscount).toFixed(2));
+
+      // Update manifest UI
+      manifestBaseVal.textContent = '$' + base.toFixed(2);
+      manifestBoosterVal.textContent = boosterFee > 0 ? '+$' + boosterFee.toFixed(2) : '+$0.00';
+      manifestWinrateVal.textContent = winrateFee > 0 ? '+$' + winrateFee.toFixed(2) : '+$0.00';
+      manifestHeroVal.textContent = heroFee > 0 ? '+$' + heroFee.toFixed(2) : '+$0.00';
+
+      if (speedFee < 0) {
+        manifestSpeedVal.textContent = '-$' + Math.abs(speedFee).toFixed(2);
+      } else {
+        manifestSpeedVal.textContent = speedFee > 0 ? '+$' + speedFee.toFixed(2) : '+$0.00';
+      }
+
+      manifestStreamRow.style.display = streamCheck.checked ? 'flex' : 'none';
+      manifestDuoRow.style.display = duoCheck.checked ? 'flex' : 'none';
+
+      manifestSubtotal.textContent = '$' + subtotal.toFixed(2);
+      manifestGrandTotal.textContent = '$' + grandTotal.toFixed(2);
+      manifestCryptoTotal.textContent = '≈ ' + grandTotal.toFixed(2) + ' USDC // USDT';
+    }
+
+    // Game Switcher Click Handler
+    gameButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        gameButtons.forEach(b => {
+          b.classList.remove('active', 'border-2', 'border-primary', 'bg-surface-container', 'shadow-[0_0_12px_rgba(78,222,163,0.2)]');
+          b.classList.add('bg-surface-container-lowest/80', 'border', 'border-outline-variant');
+        });
+        btn.classList.remove('bg-surface-container-lowest/80', 'border-outline-variant');
+        btn.classList.add('active', 'border-2', 'border-primary', 'bg-surface-container', 'shadow-[0_0_12px_rgba(78,222,163,0.2)]');
+
+        const name = btn.querySelector('.font-headline-sm').textContent.trim();
+        gameLabel.textContent = 'Active: ' + name;
+        state.game = name;
+        calculateOrder();
+      });
+    });
+
+    // Rank selector
+    rankSelect.addEventListener('change', (e) => {
+      state.basePrice = parseFloat(e.target.value) || 84.00;
+      document.getElementById('rank-base-price-tag').textContent = 'Base: $' + state.basePrice.toFixed(2);
+      calculateOrder();
+    });
+
+    // Slider
+    starsSlider.addEventListener('input', (e) => {
+      starsDisplay.textContent = '+' + e.target.value + ' Additional Calibration Stars';
+    });
+
+    // Booster Tier Radio
+    boosterTierInputs.forEach(input => {
+      input.addEventListener('change', (e) => {
+        state.boosterMultiplier = parseFloat(e.target.value);
+        document.getElementById('booster-addon-tag').textContent = state.boosterMultiplier > 0 ? '+25% Selected' : '+0% Automated';
+        calculateOrder();
+      });
+    });
+
+    // Winrate Radio
+    winrateInputs.forEach(input => {
+      input.addEventListener('change', (e) => {
+        state.winrateMultiplier = parseFloat(e.target.value);
+        const percent = Math.round(state.winrateMultiplier * 100);
+        document.getElementById('winrate-addon-tag').textContent = percent > 0 ? '+' + percent + '% Selected' : '+0% Standard';
+        calculateOrder();
+      });
+    });
+
+    // Role Radio
+    roleInputs.forEach(input => {
+      input.addEventListener('change', (e) => {
+        state.heroMultiplier = parseFloat(e.target.value);
+        const percent = Math.round(state.heroMultiplier * 100);
+        document.getElementById('hero-addon-tag').textContent = percent > 0 ? '+' + percent + '% Lock' : '+0% Any Hero';
+        calculateOrder();
+      });
+    });
+
+    // Speed Radio
+    speedInputs.forEach(input => {
+      input.addEventListener('change', (e) => {
+        state.speedMultiplier = parseFloat(e.target.value);
+        if (state.speedMultiplier === 0.35) {
+          manifestDeliveryBadge.textContent = '24 - 48 Hours (Express)';
+          document.getElementById('speed-addon-tag').textContent = '+35% Lightning Rush';
+        } else if (state.speedMultiplier === 0) {
+          manifestDeliveryBadge.textContent = '3 - 5 Days (Standard)';
+          document.getElementById('speed-addon-tag').textContent = '+0% Standard Pace';
+        } else {
+          manifestDeliveryBadge.textContent = '10 - 14 Days (Economy Stealth)';
+          document.getElementById('speed-addon-tag').textContent = '-20% Economy Discount';
+        }
+        calculateOrder();
+      });
+    });
+
+    // Addons checkboxes
+    streamCheck.addEventListener('change', calculateOrder);
+    duoCheck.addEventListener('change', calculateOrder);
+
+    // Initial Calculation Run
+    calculateOrder();
+  })();
+</script>
+
+
+</body></html>

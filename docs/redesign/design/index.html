@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>PLAYORA · Design atlas</title>
+    <link rel="stylesheet" href="atlas.css" />
+    <script src="data.js" defer></script>
+    <script src="atlas.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#canvas">Skip design controls</a>
+    <header class="reviewbar">
+      <div class="reviewbrand">
+        <strong>PLAYORA</strong><span>DESIGN ATLAS / 01</span>
+      </div>
+      <label
+        >View<select id="screenSelect" aria-label="Design screen"></select
+      ></label>
+      <label
+        >State<select id="stateSelect" aria-label="Design state"></select
+      ></label>
+      <button id="inspect" aria-expanded="false" aria-controls="inspector">
+        Specifications
+      </button>
+    </header>
+    <div class="journeybar">
+      <label
+        >Journey<select id="flowSelect" aria-label="Journey">
+          <option value="">Explore freely</option>
+        </select></label
+      >
+      <div
+        id="journeySteps"
+        class="journeySteps"
+        aria-label="Journey steps"
+      ></div>
+      <div class="widths" aria-label="Canvas width">
+        <button data-width="full" aria-pressed="true">Fluid</button
+        ><button data-width="768" aria-pressed="false">Tablet</button
+        ><button data-width="390" aria-pressed="false">Phone</button>
+      </div>
+    </div>
+    <div class="designnotice">
+      REVIEW PROTOTYPE · Fictional data. No real sign-in, messages or payments.
+      <a href="../README.md">Read the brief ↗</a>
+    </div>
+    <div id="stage"><div id="canvas" tabindex="-1"></div></div>
+    <aside id="inspector" hidden aria-label="Screen specification"></aside>
+    <div id="announce" class="sr-only" role="status"></div>
+  </body>
+</html>

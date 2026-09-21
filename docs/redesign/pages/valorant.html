@@ -1,0 +1,766 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Playora - VALORANT Dedicated Game Hub (Marketplace, Boosting, Points &amp; Vandal Skins)</title>
+<!-- Fonts: Space Grotesk & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-fixed": "#00201c",
+            "tertiary-container": "#4ce8d2",
+            "on-tertiary-fixed-variant": "#005047",
+            "outline-variant": "#3d4a43",
+            "secondary-fixed-dim": "#c4c6d2",
+            "on-tertiary": "#003731",
+            "surface-container": "#1e2024",
+            "on-primary-fixed-variant": "#00513a",
+            "surface-tint": "#62dcad",
+            "on-secondary-fixed": "#181b24",
+            "tertiary-fixed": "#62fae3",
+            "on-tertiary-container": "#00655a",
+            "on-error-container": "#ffdad6",
+            "error-container": "#93000a",
+            "surface-container-highest": "#333539",
+            "tertiary": "#9fffee",
+            "inverse-primary": "#006c4e",
+            "on-secondary": "#2d303a",
+            "on-secondary-fixed-variant": "#444651",
+            "primary-container": "#6ee7b7",
+            "surface": "#111317",
+            "on-secondary-container": "#b3b4c1",
+            "outline": "#86948c",
+            "on-error": "#690005",
+            "background": "#111317",
+            "primary": "#aaffd8",
+            "primary-fixed-dim": "#62dcad",
+            "on-background": "#e2e2e8",
+            "surface-bright": "#37393e",
+            "primary-fixed": "#80f9c8",
+            "on-primary-fixed": "#002115",
+            "inverse-on-surface": "#2f3035",
+            "secondary": "#c4c6d2",
+            "surface-variant": "#333539",
+            "error": "#ffb4ab",
+            "surface-container-lowest": "#0c0e12",
+            "on-primary-container": "#006649",
+            "on-surface-variant": "#bccac1",
+            "surface-container-high": "#282a2e",
+            "secondary-container": "#444651",
+            "surface-dim": "#111317",
+            "on-primary": "#003827",
+            "on-surface": "#e2e2e8",
+            "secondary-fixed": "#e0e2ef",
+            "tertiary-fixed-dim": "#3cddc7",
+            "surface-container-low": "#1a1c20",
+            "inverse-surface": "#e2e2e8"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin-lg": "3rem",
+            "space-sm": "0.5rem",
+            "margin": "1rem",
+            "space-lg": "1rem",
+            "space-xs": "0.25rem",
+            "space-md": "0.75rem",
+            "gutter-md": "1.5rem",
+            "gutter": "1rem",
+            "space-xl": "1.5rem",
+            "gutter-lg": "2rem",
+            "margin-md": "2rem"
+          },
+          "fontFamily": {
+            "display-lg-mobile": ["Space Grotesk"],
+            "display-lg": ["Space Grotesk"],
+            "body-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-md": ["Space Grotesk"],
+            "headline-sm": ["Space Grotesk"],
+            "headline-xl": ["Space Grotesk"],
+            "label-md": ["Space Grotesk"],
+            "label-sm": ["Space Grotesk"],
+            "label-lg": ["Space Grotesk"],
+            "headline-lg": ["Space Grotesk"],
+            "body-sm": ["Inter"],
+            "headline-xl-mobile": ["Space Grotesk"]
+          },
+          "fontSize": {
+            "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-xl-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    /* Custom scrollbar and technical hairline styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0c0e12;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #272e3d;
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3d4a43;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md antialiased min-h-screen flex flex-col selection:bg-primary selection:text-on-primary"><!-- Global Deep Emerald Aurora Ambient Backdrop -->
+<div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzFqI4K9l3fqpTGj-9C4GWqs4B6wULteGfV5oj6whT1OruFDrfH-8Pf8-8HsNbrhWVYQv0GQXqYgTwNUrBT4gRPA7yfcXGm03zBKbIGJUbScKwZdMoVF-vrUMSnyeNMKQuS1YmUyR4IJ4QFCADxnU3VaV2VtS2Foqj0IDzfie-UTgmxF23lg-aBVkoqxni2int-TswBfWXXSNaz9gsBxW0Nehv8_YXKQ3Tl5vSey5-Bg-fl_3O87VrDbwHvZq23Yc-i9c" alt="Deep Emerald Aurora Horizon" class="w-full h-full object-cover object-center opacity-85 transform scale-105"><div class="absolute inset-0 bg-gradient-to-b from-[#061610]/50 via-[#061610]/50 to-[#02110b]/90"></div><div class="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:24px_24px] opacity-15"></div></div>
+
+<!-- Vertical Tactical HUD Scrollbar / Telemetry Indicator -->
+<aside class="fixed right-0 top-0 bottom-0 w-8 z-50 pointer-events-none hidden md:flex flex-col items-center justify-between py-6 border-l border-[#10b981]/20 bg-[#061610]/50 backdrop-blur-md"><div class="flex flex-col items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#4edea3] shadow-[0_0_12px_rgba(78,222,163,0.9)] animate-pulse"></span><span class="text-[8px] font-mono text-[#4edea3]">ACT-3</span></div><div class="h-48 w-1.5 bg-[#132820] border border-[#10b981]/30 rounded-full relative overflow-hidden flex flex-col justify-start shadow-[0_0_10px_rgba(110,231,183,0.15)]"><div class="w-full h-14 bg-gradient-to-b from-[#4edea3] to-[#10b981] rounded-full shadow-[0_0_12px_rgba(78,222,163,0.8)] animate-pulse"></div></div><div class="[writing-mode:vertical-rl] text-[9px] tracking-widest text-[#4edea3] font-mono rotate-180 uppercase">SYS-TELEMETRY // 1.4ms</div><div class="flex flex-col items-center gap-1 text-[9px] font-mono text-[#6ee7b7]"><span class="material-symbols-outlined text-[16px] text-[#4edea3] animate-spin">radar</span><span class="font-bold">98%</span></div></aside>
+<!-- TOP NAVIGATION BAR (Exact adherence to Shared Components JSON & Requirements) -->
+<header class="sticky top-0 z-40 flex justify-between items-center w-full px-6 py-3 border-b border-[#10b981]/20 bg-[#061610]/85 backdrop-blur-md shadow-[0_4px_20px_rgba(2,17,11,0.6)]">
+<!-- Left: Brand Logo & Game Switcher -->
+<div class="flex items-center gap-6">
+<a class="flex items-center gap-3 active:scale-[0.99] transition-transform duration-100" href="#">
+<img alt="Playora Esports Official Logo" class="h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCw7PbpMGofVmuj_o5H7vwYyJZuSArT-jk9OjZkYF8wr66jbe-BHxu78eRNLlY814Q1Ch7bfnCE8t_oesC4DvhhSeiSANwNzVyo6wRMmcOAWazoqvmMDs1LuGlxdy3anu8MDHFbgM0Go9PlLSQ6GOypVlkezQbbfV1noFRbW7Y83ExouNlAe6rS3KXij_Wt47owxshhcamS0K1wGpqHc6j7fcIphp8CyVp0caYlwIgnk20kEG85DqVsh6zTyQFTSHZjrK4">
+</a>
+<!-- Game Selector Switcher Tabs -->
+<div class="hidden lg:flex items-center bg-surface-container-low p-1 border border-outline-variant rounded-lg gap-1 text-label-sm font-label-sm">
+<button class="px-2.5 py-1 text-on-surface-variant hover:text-on-surface transition-colors">MLBB</button>
+<button class="px-3 py-1 bg-surface-container border border-primary text-primary font-bold rounded flex items-center gap-1.5 shadow-[0_0_12px_rgba(110,231,183,0.15)]">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+          VALORANT
+        </button>
+<button class="px-2.5 py-1 text-on-surface-variant hover:text-on-surface transition-colors">Dota 2</button>
+<button class="px-2.5 py-1 text-on-surface-variant hover:text-on-surface transition-colors">LoL</button>
+<button class="px-2.5 py-1 text-on-surface-variant hover:text-on-surface transition-colors">Wild Rift</button>
+</div>
+</div>
+<!-- Center Navigation Links -->
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-on-surface transition-colors duration-150" href="#marketplace">Marketplace</a>
+<a class="border-b-2 border-primary text-primary font-label-md text-label-md pb-1" href="#boosting">Boosting</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-on-surface transition-colors duration-150" href="#packages">Packages</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-on-surface transition-colors duration-150" href="#diamond-shop">Diamond Shop</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-on-surface transition-colors duration-150" href="#escrow">Escrow</a>
+</nav>
+<!-- Right Trailing Actions & Profile -->
+<div class="flex items-center gap-3">
+<!-- Icon Actions -->
+<button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-150 rounded" title="Notifications">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-150 rounded" title="Shield Verification">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+</button>
+<!-- Secondary & Primary CTA -->
+<a class="hidden sm:inline-flex px-3 py-1.5 border border-outline-variant hover:border-outline text-on-surface font-label-sm text-label-sm uppercase rounded transition-colors duration-150" href="#support">
+        Support
+      </a>
+<button class="px-3.5 py-1.5 bg-primary-container text-on-primary-container hover:bg-primary font-label-sm text-label-sm uppercase rounded tracking-wider transition-colors duration-150 active:scale-[0.99] font-bold">
+        Connect Wallet
+      </button>
+<!-- User Avatar -->
+<div class="relative ml-1 pl-2 border-l border-outline-variant flex items-center">
+<img alt="Verified Pro Trader Profile Avatar" class="w-8 h-8 rounded-full border border-primary/40 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHsf4VhDiprIuN0ILXLrPWZrKUzA36AHaTtXXGZyY_XKE2bwuX0e4uhysHFy4nsF2j94mXe015-ukpkOW6BmBFVpA_Jb4-4Gj6hy_2W0KfPpP_7gET5xKesAjt5LQQ01_AAI7K8uJjBVEoZ3iGu2wsx1RfccfJAhzepGxmScPQ71jXhydwdVume89k2RyihI8MXe45QI-j7G8vug0pp3eN1qTbaEo6LeXATYPF5pTaDPDpPHS0LcLPVvv9vutCUwvMD5Y">
+<span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-primary border-2 border-surface"></span>
+</div>
+</div>
+</header>
+<!-- MAIN WRAPPER WITH FIXED/DEDICATED SIDEBAR & STAGE CANVAS -->
+<div class="flex flex-1 relative w-full">
+<!-- DEDICATED VALORANT SIDEBAR (Preserving SideNavBar structure from Shared Components) -->
+<aside class="hidden xl:flex flex-col justify-between w-64 border-r border-[#10b981]/20 bg-[#061610]/75 backdrop-blur-md shrink-0 min-h-[calc(100vh-57px)] sticky top-[57px]">
+<!-- Header -->
+<div class="p-4 border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">military_tech</span>
+</div>
+<div>
+<h2 class="text-headline-sm font-headline-sm text-on-surface leading-tight">VALORANT Hub</h2>
+<p class="text-label-sm font-label-sm text-outline flex items-center gap-1 mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
+              Riot Vanguard Monitored
+            </p>
+</div>
+</div>
+<!-- Primary Side CTA -->
+<button class="w-full mt-4 py-2 px-3 bg-primary-container text-on-primary-container hover:bg-primary font-label-md text-label-md uppercase tracking-wider rounded font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+          Instant Order
+        </button>
+</div>
+<!-- Tab Navigation Cluster -->
+<nav class="flex-1 py-3 px-2 space-y-1 overflow-y-auto">
+<a class="border-l-2 border-primary bg-surface-container text-primary font-label-md text-label-md flex items-center gap-3 px-4 py-3 rounded-r transition-all duration-100" href="#boosting">
+<span class="material-symbols-outlined text-[20px]">military_tech</span>
+<span class="">Rank &amp; RR Boosting</span>
+</a>
+<a class="text-on-surface-variant font-label-md text-label-md flex items-center gap-3 px-4 py-3 hover:bg-surface-container hover:text-on-surface transition-colors duration-150 rounded" href="#packages">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span class="">Fixed Value Packages</span>
+</a>
+<a class="text-on-surface-variant font-label-md text-label-md flex items-center gap-3 px-4 py-3 hover:bg-surface-container hover:text-on-surface transition-colors duration-150 rounded" href="#custom-queue">
+<span class="material-symbols-outlined text-[20px]">group_add</span>
+<span class="">Custom Packages (Duo)</span>
+</a>
+<a class="text-on-surface-variant font-label-md text-label-md flex items-center gap-3 px-4 py-3 hover:bg-surface-container hover:text-on-surface transition-colors duration-150 rounded" href="#marketplace">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+<span class="">Accounts Vault &amp; Skins</span>
+</a>
+<a class="text-on-surface-variant font-label-md text-label-md flex items-center gap-3 px-4 py-3 hover:bg-surface-container hover:text-on-surface transition-colors duration-150 rounded" href="#diamond-shop">
+<span class="material-symbols-outlined text-[20px]">diamond</span>
+<span class="">VP &amp; Radianite Shop</span>
+</a>
+<a class="text-on-surface-variant font-label-md text-label-md flex items-center gap-3 px-4 py-3 hover:bg-surface-container hover:text-on-surface transition-colors duration-150 rounded" href="#escrow">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+<span class="">Escrow Verification</span>
+</a>
+</nav>
+<!-- Footer Telemetry in Sidebar -->
+<div class="p-4 border-t border-outline-variant bg-surface-container-lowest">
+<div class="space-y-2">
+<div class="flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+              System Telemetry
+            </span>
+<span class="text-primary font-mono">1.4ms</span>
+</div>
+<div class="flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+              HWID Shield
+            </span>
+<span class="text-primary font-bold uppercase">Online</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- CONTENT CANVAS -->
+<main class="flex-1 min-w-0 pb-16">
+<!-- HERO BANNER SECTION (Atmospheric backdrop matching visual tone) -->
+<section class="relative overflow-hidden border-b border-[#10b981]/20 bg-gradient-to-b from-[#061610]/80 via-[#061610]/50 to-[#02110b]/90 backdrop-blur-sm px-6 py-10 lg:px-12 lg:py-14"><div class="absolute inset-0 pointer-events-none overflow-hidden"><img alt="Deep Emerald Aurora Atmosphere" class="w-full h-full object-cover opacity-25 object-top mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4g_ElrD9GPkYkuWZbRTL2E5mNAFKO-jBmNf9AtmVQfWkb2HXQ0yl2DJYrlIAW6c-OweBfFB7m9VwUK05AQv9fncMMWHnujS0vlIL6S6jah7jTeL3gza15PEqaN7uQ4oRRG7ucHFLzeKhjjTHKNY4YibSc8499zeO6hIqsYATpN-RY-WcOnKwPnMnm-EFi9ZBljUSBC1himqjdX6DXXQie_NdIutKo-qB0gi1d4ScB3ZfFw30ifi1FPOTJRD2c8sw95nw"><div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/70 to-transparent"></div></div><div class="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#6ee7b7_1px,transparent_1px)] [background-size:24px_24px]"></div><div class="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-primary/5 blur-[120px] pointer-events-none"></div><div class="relative max-w-6xl mx-auto"><div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8"><div class="flex-1"><div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-low border border-outline-variant rounded mb-4"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="text-label-sm font-label-sm text-primary uppercase tracking-wider">Episode 09 // Act 03 Active</span><span class="text-outline-variant">|</span><span class="text-label-sm font-label-sm text-on-surface-variant">Official Esports Partner Terminal</span></div><h1 class="text-headline-xl font-headline-xl text-on-surface tracking-tight max-w-3xl">Tactical VALORANT Asset &amp; Service Exchange</h1><p class="text-body-lg font-body-lg text-on-surface-variant mt-3 max-w-2xl">Zero-markup VALORANT Points top-ups, HWID-protected RR Star Boosting by verified Radiant &amp; Immortal 3 players, and Tier-1 Riot bound account escrow.</p></div><!-- Authentic VALORANT Agent Showcase Mini Cards --><div class="flex items-center gap-3 shrink-0 overflow-x-auto pb-2 lg:pb-0"><div class="relative w-28 h-40 rounded bg-surface-container-low border border-outline-variant overflow-hidden group hover:border-primary/60 transition-colors shrink-0"><img alt="Jett Dualist Agent" class="w-full h-full object-cover object-top opacity-85 group-hover:scale-105 transition-transform duration-150" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMpYUgG7X2L4DPH4_BC1aT4iy4LGuJyNKjXCOabJDzMH2KKw6fO7Cc1Q_Mb5koIgIlvim6heQVkYESrt3F2lBTZUFeNLoN1k52f6BmzEuKZqsuaYr780tG6y5HYy-P8e4dPo7j9Bfl9Tl9TX5J-G00uEGX5-gdrFHBrSGeuOjzOQqp5lOBsjo8TaPxKblvWKDk2HVxGlSLUGt4ep6rPw1UVogrVFczm9E-5BjouV2la0hC-rVjOOK5xg"><div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div><div class="absolute bottom-2 left-2 right-2"><span class="text-[9px] font-mono text-primary block leading-none">DUELIST</span><span class="text-label-sm font-label-sm font-bold text-on-surface leading-tight">Jett</span></div></div><div class="relative w-28 h-40 rounded bg-surface-container-low border border-outline-variant overflow-hidden group hover:border-primary/60 transition-colors shrink-0"><img alt="Reyna Duelist Agent" class="w-full h-full object-cover object-top opacity-85 group-hover:scale-105 transition-transform duration-150" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7eEqANqeZ8Crhb_xMHOSmj5KcSqUgyGZ2UN77fA-I1lw_kHcjszeL-cJ577zyPXH8wt7J5PZqGMNbFNiSDNDM61uEVw2Xfjzi3NkwGjrDx3K1SO_NL2u25YKIIGHBPmjQquwYdG2ObjPM4rf2K1EtSyaaOpc6lyb9L5HE5MzeVqrpsADOvlUEhTou8PvqT6RsckBd_pwSPJrU4NetuGMgT7A6B087vqQia5AMJ_BgAAzOl1cTnXtJPA"><div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div><div class="absolute bottom-2 left-2 right-2"><span class="text-[9px] font-mono text-primary block leading-none">DUELIST</span><span class="text-label-sm font-label-sm font-bold text-on-surface leading-tight">Reyna</span></div></div><div class="relative w-36 h-40 rounded bg-surface-container-low border border-primary/40 overflow-hidden group shrink-0 shadow-[0_0_12px_rgba(110,231,183,0.1)]"><img alt="Phoenix Competitive Match" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-150" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3ky_o49t_VC-zGIUi_haebu-Q8JRflInYHYALfeFIasjDHNJnYn4oxkE9uFn0EMCdlQUENkcuBvnOgGZmSTbkeBXcEbeiNEUctkwfLc2bLJKL020RTgDrhyizT02QXXYpAtNfnK_C7q5yOxf9zvKtlRqZibNjcSs2RR3o9uRwXIQKn2fAUhcR_Pld-XnKAthquoZd3VxlbCVNW19WXob-Mcg-G9zKXkjlqeaTXCNStmAH-VGlv4hwHQ"><div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div><div class="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-primary text-on-primary text-[9px] font-bold uppercase rounded-sm">COMPETITIVE</div><div class="absolute bottom-2 left-2 right-2"><span class="text-[9px] font-mono text-primary block leading-none">OPERATOR</span><span class="text-label-sm font-label-sm font-bold text-on-surface leading-tight">Phoenix Vandal</span></div></div></div></div><!-- Telemetry Statistics Bento Grid Strip --><div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8 pt-6 border-t border-outline-variant"><div class="p-3 bg-surface-container-low border border-outline-variant rounded"><span class="text-label-sm font-label-sm text-outline uppercase block">Active Radiant Boosters</span><div class="text-headline-lg font-headline-lg text-primary mt-1 font-mono">118 <span class="text-label-sm text-on-surface font-sans">Verified</span></div></div><div class="p-3 bg-surface-container-low border border-outline-variant rounded"><span class="text-label-sm font-label-sm text-outline uppercase block">Vaulted Accounts</span><div class="text-headline-lg font-headline-lg text-on-surface mt-1 font-mono">412 <span class="text-label-sm text-primary font-sans">100% Unbind</span></div></div><div class="p-3 bg-surface-container-low border border-outline-variant rounded"><span class="text-label-sm font-label-sm text-outline uppercase block">Riot Direct Latency</span><div class="text-headline-lg font-headline-lg text-primary mt-1 font-mono">1.4s <span class="text-label-sm text-outline font-sans">API</span></div></div><div class="p-3 bg-surface-container-low border border-outline-variant rounded"><span class="text-label-sm font-label-sm text-outline uppercase block">Total Escrow Held</span><div class="text-headline-lg font-headline-lg text-primary mt-1 font-mono">$58,400 <span class="text-label-sm text-outline font-sans">USD</span></div></div></div></div></section>
+<!-- OFFICIAL VALORANT RANK LADDER PROGRESSION ROW -->
+<section class="border-b border-[#10b981]/20 bg-[#0e1f18]/60 backdrop-blur-md px-6 py-6 lg:px-12 shadow-[inset_0_1px_0_rgba(110,231,183,0.1)]">
+<div class="max-w-6xl mx-auto">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Competitive Tier Progression Matrix</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Standardized skill tier escalation with direct MMR injection verification</p>
+</div>
+<span class="text-label-sm font-label-sm text-outline mt-2 sm:mt-0 font-mono">ACT 03 CALIBRATION</span>
+</div>
+<div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 items-center"><!-- Iron --><div class="flex flex-col items-center text-center p-2.5 bg-surface border border-outline-variant rounded hover:border-outline transition-colors"><div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"><img alt="VALORANT Iron 3 Rank Emblem" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGBivY9497ZytNd_kyLMw_HEAePdQJBK-k54ZpXZTMcqCMVfg2bEqFZsEfoUZJbEK7QbP-B4vEgIQR1btYs0iNdDfiEj8vMQIpP6pgtjvNsDa2dUyZwkQGUu3PmGZAfZM9aP9zxv1fMFfqdGC_RCXKgX8qmcUQLkbCWlns-t2NEChfuWH6LU6WOPYLRHQwP8F0tWz7d997b6W31PW2MR8qsuZJkIc0-IhO8uO26WqguGekckj4uOHXTw"></div><span class="text-[11px] font-label-sm text-on-surface mt-1.5 font-bold">Iron 3</span><span class="text-[9px] text-outline font-mono">300 MMR</span></div><!-- Bronze --><div class="flex flex-col items-center text-center p-2.5 bg-surface border border-outline-variant rounded hover:border-outline transition-colors"><div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"><img alt="VALORANT Bronze 3 Rank Emblem" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHwsh4RZ5YxCT5hV_CCC--o6ydk0V0lxZ1CdCMYA18HM2dxkMuiKdvahOQ2O_mZIRLxmKk5dRTE4GgGlLLbd0mAMSRCJNzaSwtbTTt3eRmeg1KGlANfc2zm5Te62VgdQ3hRTwZUuyvcnkhRAJWauGNFl-g4KZgJzSb7fYqScEo_BoLbkrbGSUok82o4Nohd_iGcx-M53Glbz2K1F4Q422o5pXpmsh-QXZn0e4ukFQuewa4svsMm33yFg"></div><span class="text-[11px] font-label-sm text-on-surface mt-1.5 font-bold">Bronze 3</span><span class="text-[9px] text-outline font-mono">600 MMR</span></div><!-- Silver --><div class="flex flex-col items-center text-center p-2.5 bg-surface border border-outline-variant rounded hover:border-outline transition-colors"><div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"><img alt="VALORANT Silver 3 Rank Emblem" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6nP-ZBPCS9yv_o5-gxAi4u-OkS5vs11unNsUYXl0_6lpVrP_8AS5nlg0MciYv7VNENh4vdVDzcMi9IbNBkTK0YXgyKou_adtxwfyNG55XaK-UkTtsyQXQ80Wp_i-OF-0Nu_PlVCtxmSvC8CSdG8xhq-EEkB5NxB3k-KUVnwOCLtKN3_QMExHnSlgKzwJKipxcJ8ZXTUEPRENM_2Os9g16kcm89twVqQHgc_vMQZQBRsrl6TGdbQUOqg"></div><span class="text-[11px] font-label-sm text-on-surface mt-1.5 font-bold">Silver 3</span><span class="text-[9px] text-outline font-mono">850 MMR</span></div><!-- Gold --><div class="flex flex-col items-center text-center p-2.5 bg-surface border border-outline-variant rounded hover:border-outline transition-colors"><div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"><img alt="VALORANT Gold 3 Rank Emblem" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCUteq2cwqwdiKwsxK0QU-pjMBYtB76T1SAPhNxXL-aevzD4XE6llSODDccDP7xe8XenMDshKLo12B04CGC9i6J7OZKpASYmv7OvmWfsLwWd95rXEHMdJmHTYpDBqKwleVZ3_WE0iXITEVRePXIbR-0Eh-xI_kdYBxYOO7P0RYoNuo30nfIenXuFmMNP1ixLAbVJ8B0PIuiSydLPoLrM-MxdKt5ZCvrnxL0AHm5Nmevbl-mL-1oCv1DQ"></div><span class="text-[11px] font-label-sm text-on-surface mt-1.5 font-bold">Gold 3</span><span class="text-[9px] text-outline font-mono">1,000 MMR</span></div><!-- Platinum --><div class="flex flex-col items-center text-center p-2.5 bg-surface border border-outline-variant rounded hover:border-outline transition-colors"><div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"><img alt="VALORANT Platinum 3 Rank Emblem" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7T475bY0A-UOvohDsw0sO-T4gNrTDsAXbqGpANDCIUxqyrULHnCmM1huMUfyrgME8DUmWk4SKb-EOJe0crpwKCT9Ppm869cv9U0Yo_z_WU4dHfKd_0aywtqyS8GfLak2UAG503vDoz45FF6DfoN3fOSsKcQBEQh0G01YFG0YguzAQK38sAy9jdFYTne6ZDq8B5VNlnpFegjuFCfx_ibrtN8U4HKjFSzKyaz1bB5CamkmRZGjmDOeL4Q"></div><span class="text-[11px] font-label-sm text-on-surface mt-1.5 font-bold">Platinum 3</span><span class="text-[9px] text-outline font-mono">1,150 MMR</span></div><!-- Diamond --><div class="flex flex-col items-center text-center p-2.5 bg-surface border border-outline-variant rounded hover:border-outline transition-colors"><div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"><img alt="VALORANT Diamond 3 Rank Emblem" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4gpoxykhz41ekH3aOzKB5DYj92wtvL6lf_fXed40Z2Yz4hIAaiEam7wGQbhG4bR43wEWm64ZcrgssqKzUVL9pTRXEBFj8fNi8RlJJ_v-R8-wu8jMFaWKUfhTF15kgQvzNNpUSutQUT3ElZsNVNGvwpJaNArBJuAl3oTLdzyEXNpUp6eNbwRn_bBGxWmC0wzwTbTahRgXSZ2KnUa5uEKOcCZN9qx-L5NVao7HltjQqjsQDdv64N7M0gQ"></div><span class="text-[11px] font-label-sm text-on-surface mt-1.5 font-bold">Diamond 3</span><span class="text-[9px] text-outline font-mono">1,350 MMR</span></div><!-- Ascendant --><div class="flex flex-col items-center text-center p-2.5 bg-surface border border-outline-variant rounded hover:border-outline transition-colors"><div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"><img alt="VALORANT Ascendant 3 Rank Emblem" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdoIY4I8yhfcYd0GE-wfHwyFOVgPJEJA3sizV4KrkabEzr-uWvoxQ8o6ZD67qLzgMpib8CEY6TfI4DCoX2JJfojwHxZcvVEXw0jBiZxg8Xbo7jJ8jmilvTNpqVy3rAMV6gPUpIyAujtWP7zWnwK_us6yQO36jw4iCpoFazs7IroHl1iySHn3xIw6xit4VbVG4jtPAJFz4DdtC9eQfpdJg1J0dJYsVdjTcIv9boKxdiCcTnyseJSh0abQ"></div><span class="text-[11px] font-label-sm text-on-surface mt-1.5 font-bold">Ascendant 3</span><span class="text-[9px] text-outline font-mono">1,600 MMR</span></div><!-- Immortal --><div class="flex flex-col items-center text-center p-2.5 bg-surface border border-outline-variant rounded hover:border-outline transition-colors"><div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"><img alt="VALORANT Immortal 3 Rank Emblem" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB45KCH_MwvZdcB9YAXSBA9BSPsHMF_ht1he9dgxiVEDGTD_rRCyj0_yCkt_iTQCLxbmG00ip869a00VJSag-sTc9t_DLk1BfEb6pqS1ksID9O_t7XF9rDsC0uD9eFtoUsbw7COqwiD-a0RqhILrsz8YEAdXjWbneDj2oNOL1TNt_pcBvPOC6T5lpiHJzxQfpIW_h3F2aJMNfmyi_88ymRs6mHzbmQjyETnkfjUNj3J579hG0iKBRslA"></div><span class="text-[11px] font-label-sm text-on-surface mt-1.5 font-bold">Immortal 3</span><span class="text-[9px] text-outline font-mono">1,900 MMR</span></div><!-- Radiant Apex --><div class="flex flex-col items-center text-center p-2.5 bg-surface border border-primary/60 rounded relative shadow-[0_0_15px_rgba(110,231,183,0.15)]"><div class="absolute -top-2 px-1.5 py-0.2 bg-primary text-on-primary text-[8px] font-bold uppercase rounded-sm">Top 500</div><div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"><img alt="VALORANT Radiant Apex Rank Emblem" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYBmguVjWrvz-rpQh7ibONArVUHA5yj-Z0ChHgMEmDYof5nAbd7Dzt2nkauXVeSuBIuNrxKFLoVp5l_b7AgwX52pG-N3DNfcXvLKz6tVbHOplvGjv8Oq6qmOeHXogVNms3c0gpkaU04G-HOLGH4cOYsDBl87tCz9e0OMnXUW1aCOyFevp-2RB0vCDJrWpbjUiFUr02GzRiHAlLOA8C0o7eyPX1GaVaowm6wiGtVhxAsSklMGmYTNpIXQ"></div><span class="text-[11px] font-label-sm text-primary font-bold mt-1.5">Radiant</span><span class="text-[9px] text-primary/80 font-mono">Apex Tier</span></div></div>
+</div>
+</section>
+<!-- MAIN STAGE SECTIONS -->
+<div class="max-w-6xl mx-auto px-6 lg:px-12 py-10 space-y-12">
+<!-- SECTION 1: INSTITUTIONAL RANK & RR BOOSTING ENGINE (Interactive Calibrator) -->
+<section class="space-y-6" id="boosting">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+                Verified Radiant Roster
+              </div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Institutional Rank &amp; RR Boosting Engine</h2>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 border border-outline-variant rounded text-label-sm font-label-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="text-on-surface">Live Match Ingestion: <strong>Active</strong></span>
+</div>
+</div>
+<!-- The Boosting Calibrator Card Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-[#0e1f18]/70 backdrop-blur-md border border-[#10b981]/30 rounded-lg p-6 shadow-[0_8px_32px_rgba(2,17,11,0.7)]">
+<!-- Left: Tier Selector & Parameters (8 Cols) -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Tier Path Visualizer -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Current Tier Input -->
+<div class="p-4 bg-surface border border-outline-variant rounded">
+<label class="block text-label-sm font-label-sm text-outline uppercase mb-2">Current Starting Rank</label>
+<div class="flex items-center gap-3">
+<img alt="Starting Tier Diamond 3 Rank" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVZdw5jU9SXd7BIC6oHYN_wUxqQdDG-QOVVUAc4mFc5Z7-vZgBFfeSqvGqiFjjYEU8dYJsEENTqIhXZr5pPKYwCb8UDSfckMu9xHNEgy2eaVFD879JjhfEuEyjYqxLdoNIFiZRm9djHquu5g2jf8tSLupQ5ixFaH76kFdbXeiYbOpZhvjgHv35jRvcWKfYjZWJ0_lU75aXMk46gb9Es1cTH6uDKB9Cp6852oTJxpSvpaas3a6cXYTksw">
+<div class="flex-1">
+<select class="w-full bg-surface-container-low border border-outline-variant text-on-surface text-label-md font-label-md rounded p-2 focus:border-primary focus:ring-0">
+<option selected="">Diamond 3 (75 RR)</option>
+<option>Diamond 2 (40 RR)</option>
+<option>Diamond 1 (10 RR)</option>
+<option>Platinum 3 (90 RR)</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Desired Destination Rank -->
+<div class="p-4 bg-surface border border-primary/40 rounded">
+<label class="block text-label-sm font-label-sm text-primary uppercase mb-2">Target Destination</label>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-high border border-primary flex items-center justify-center p-1 shadow-[0_0_10px_rgba(110,231,183,0.15)]"><img alt="Target Radiant Apex Badge" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3GOqpP2TMTXpP6gLFKXPCgDzxOdq-_wbpe5sCdz2wwrEq5xIsSTjAWZFXgaGTnpRVUQe3oVcCCNE72XjkNJRbXJMn3vhsPhDVJvXkB5r5PY5bLaeIuciDJ35WBeEqVPrqcGlIWo0JLTmPQYc6SNqLO4XoBeG7hKTZvq4Dvu8QCl7-Epg-XRkW7XIn2z1VPiQU1Sk_etHwtlseKZPEhdS0Pc75h-O9vX4ypNAJGspV-ZtGW8p6UDPApA"></div>
+<div class="flex-1">
+<select class="w-full bg-surface-container-low border border-outline-variant text-on-surface text-label-md font-label-md rounded p-2 focus:border-primary focus:ring-0">
+<option selected="">Radiant (Top 500 Lock)</option>
+<option>Immortal 3 (350 RR)</option>
+<option>Immortal 2 (150 RR)</option>
+<option>Immortal 1 (50 RR)</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Operational Protocols & Security Checkboxes -->
+<div>
+<label class="block text-label-sm font-label-sm text-outline uppercase mb-3">Operational Protocols &amp; Vanguard Security Add-Ons</label>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<label class="flex items-start gap-3 p-3 bg-surface border border-outline-variant rounded cursor-pointer hover:border-outline transition-colors">
+<input checked="" class="mt-1 rounded bg-surface-container border-outline-variant text-primary focus:ring-0 focus:ring-offset-0" type="checkbox">
+<div>
+<div class="text-label-md font-label-md text-on-surface">Clean HWID &amp; Local VPN</div>
+<div class="text-body-sm font-body-sm text-outline">Virtual network matched to your city node</div>
+</div>
+</label>
+<label class="flex items-start gap-3 p-3 bg-surface border border-outline-variant rounded cursor-pointer hover:border-outline transition-colors">
+<input checked="" class="mt-1 rounded bg-surface-container border-outline-variant text-primary focus:ring-0 focus:ring-offset-0" type="checkbox">
+<div>
+<div class="text-label-md font-label-md text-on-surface">Duo Queue with Radiant Pro</div>
+<div class="text-body-sm font-body-sm text-outline">Self-play mode; zero account sharing</div>
+</div>
+</label>
+<label class="flex items-start gap-3 p-3 bg-surface border border-outline-variant rounded cursor-pointer hover:border-outline transition-colors">
+<input class="mt-1 rounded bg-surface-container border-outline-variant text-primary focus:ring-0 focus:ring-offset-0" type="checkbox">
+<div>
+<div class="text-label-md font-label-md text-on-surface">Agent Lock Policy</div>
+<div class="text-body-sm font-body-sm text-outline">Jett, Reyna, Omen, Iso or Viper</div>
+</div>
+</label>
+<label class="flex items-start gap-3 p-3 bg-surface border border-outline-variant rounded cursor-pointer hover:border-outline transition-colors">
+<input checked="" class="mt-1 rounded bg-surface-container border-outline-variant text-primary focus:ring-0 focus:ring-offset-0" type="checkbox">
+<div>
+<div class="text-label-md font-label-md text-on-surface">Appear Offline Protocol</div>
+<div class="text-body-sm font-body-sm text-outline">Deceive API friend &amp; lobby chat suppression</div>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Right: Order Telemetry Summary Box (4 Cols) -->
+<div class="lg:col-span-4 p-5 bg-surface border border-outline-variant rounded flex flex-col justify-between">
+<div class="space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-3">
+<span class="text-label-md font-label-md text-on-surface uppercase">Order Telemetry</span>
+<span class="px-2 py-0.5 bg-primary/10 border border-primary/30 text-primary text-[10px] font-bold rounded">ESCROW VERIFIED</span>
+</div>
+<div class="space-y-2 text-body-sm font-body-sm">
+<div class="flex justify-between">
+<span class="text-outline">Queue Type:</span>
+<span class="text-on-surface font-mono">Duo Competitive</span>
+</div>
+<div class="flex justify-between">
+<span class="text-outline">Calculated RR delta:</span>
+<span class="text-primary font-mono font-bold">+280 RR</span>
+</div>
+<div class="flex justify-between">
+<span class="text-outline">Anti-Vanguard Risk:</span>
+<span class="text-primary font-mono">0.00% (Clean HWID)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-outline">Est. Turnaround:</span>
+<span class="text-on-surface font-mono">24 - 36 Hours</span>
+</div>
+<div class="flex justify-between">
+<span class="text-outline">Escrow Fee (0%):</span>
+<span class="text-primary font-mono">$0.00 Free</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant">
+<div class="flex items-baseline justify-between mb-4">
+<span class="text-label-md font-label-md text-outline uppercase">Total Escrow Price</span>
+<span class="text-headline-xl font-headline-xl text-primary font-mono">$94.00</span>
+</div>
+<button class="w-full py-3 bg-primary-container text-on-primary-container hover:bg-primary font-label-md text-label-md uppercase tracking-wider rounded font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+                  Instant Escrow Order
+                </button>
+<p class="text-center text-[10px] text-outline mt-2">Funds locked in Playora smart contract until order completion</p>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: AUDITED VALORANT ACCOUNTS VAULT -->
+<section class="space-y-6" id="marketplace">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-[18px]">shield</span>
+                Clean Ownership Audit
+              </div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Audited VALORANT Accounts Vault</h2>
+</div>
+<a class="text-primary text-label-md font-label-md flex items-center gap-1 hover:underline" href="#view-all">
+              View All 412 Accounts
+              <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<!-- 3 Verified Account Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1: Radiant Top 250 Account -->
+<div class="bg-surface-container-low border border-outline-variant hover:border-primary/40 transition-colors rounded p-5 flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between">
+<div class="px-2.5 py-1 bg-surface-container border border-primary/30 text-primary text-label-sm font-label-sm font-bold uppercase rounded">
+                    Radiant Top 250
+                  </div>
+<span class="text-label-sm font-label-sm text-outline font-mono">NA - 0039</span>
+</div>
+<div class="flex items-center gap-4 my-5">
+<div class="w-14 h-14 rounded bg-surface-container-high border border-primary flex items-center justify-center p-1 shadow-[0_0_12px_rgba(110,231,183,0.2)]"><img alt="Radiant Rank Crest" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAF3G6M9lKydAQ27jIHd_J0iml9r1ZqojTo2I2UJeaHksNGK5R62jbLHK3Xd3rRtVnLjK1HDavaE2OzPV99liwzFi6-QCGiVGCr1un3u_A9YdRXo4qrVgWMfDs9tgtyYfa2L3W_nwFfkha0uGtT6RpvSIqUSw6Jk1os-ienOrbuI9KkximRRrK_8B7ymfv9QIUqFNRft43jCLubPnc7rsAZWAueqS9WODA3wl9hwPv-g645PgtzGnxQQQ"></div>
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Radiant 450 RR Peak</h3>
+<p class="text-body-sm font-body-sm text-outline">First Email Included (OGE)</p>
+</div>
+</div>
+<!-- Weapon Skins tags -->
+<div class="space-y-2 border-t border-outline-variant pt-3">
+<span class="text-label-sm font-label-sm text-outline uppercase block">Notable Skins</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 bg-surface border border-outline-variant text-[11px] text-on-surface rounded font-mono">Kuronami Vandal</span>
+<span class="px-2 py-0.5 bg-surface border border-outline-variant text-[11px] text-on-surface rounded font-mono">Prime Karambit</span>
+<span class="px-2 py-0.5 bg-surface border border-outline-variant text-[11px] text-on-surface rounded font-mono">Recon Spectre</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant flex items-center justify-between">
+<div>
+<span class="text-[10px] text-outline uppercase block">Escrow Protected</span>
+<span class="text-headline-md font-headline-md text-primary font-mono font-bold">$420.00</span>
+</div>
+<button class="px-4 py-2 bg-surface hover:bg-surface-container border border-outline-variant text-on-surface hover:text-primary font-label-md text-label-md uppercase rounded transition-colors">
+                  Inspect Account
+                </button>
+</div>
+</div>
+<!-- Card 2: Immortal 3 Peak -->
+<div class="bg-surface-container-low border border-outline-variant hover:border-primary/40 transition-colors rounded p-5 flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between">
+<div class="px-2.5 py-1 bg-surface-container border border-outline-variant text-error text-label-sm font-label-sm font-bold uppercase rounded">
+                    Immortal 3 Peak
+                  </div>
+<span class="text-label-sm font-label-sm text-outline font-mono">EU - 8102</span>
+</div>
+<div class="flex items-center gap-4 my-5">
+<div class="w-14 h-14 rounded bg-surface-container-high border border-error/50 flex items-center justify-center p-1"><img alt="Immortal 3 Rank Crest" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCYAz59h0xUgd1bk6YWLWuLhNkp3rOymjKpxl4Fp5nKdtjqgTV9vA4ekXSKTfQD5tjZ3qUIFKZFrEqu6nVS37MWK4CvZHPhTHfLaO3K-csR_RHsAry2FEEUgLuyzyunmWlSkuz1KSR8imhMKwSfHe6adjO-vxoBY3H-NzU1Qs4SKd9l82xmthe1CplwDp3K4ap5VROePypl8u7Jx9hRlmyXYqlqqVOSPVuTL81o9isCpUIMVWN2cK2Yg"></div>
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Immortal 3 // 310 RR</h3>
+<p class="text-body-sm font-body-sm text-outline">Unverified Phone Lock</p>
+</div>
+</div>
+<div class="space-y-2 border-t border-outline-variant pt-3">
+<span class="text-label-sm font-label-sm text-outline uppercase block">Notable Skins</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 bg-surface border border-outline-variant text-[11px] text-on-surface rounded font-mono">Reaver Vandal</span>
+<span class="px-2 py-0.5 bg-surface border border-outline-variant text-[11px] text-on-surface rounded font-mono">Champions 2024 Butterfly</span>
+<span class="px-2 py-0.5 bg-surface border border-outline-variant text-[11px] text-on-surface rounded font-mono">Glitchpop Phantom</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant flex items-center justify-between">
+<div>
+<span class="text-[10px] text-outline uppercase block">Escrow Protected</span>
+<span class="text-headline-md font-headline-md text-primary font-mono font-bold">$260.00</span>
+</div>
+<button class="px-4 py-2 bg-surface hover:bg-surface-container border border-outline-variant text-on-surface hover:text-primary font-label-md text-label-md uppercase rounded transition-colors">
+                  Inspect Account
+                </button>
+</div>
+</div>
+<!-- Card 3: Ascendant 2 Smurf Ready -->
+<div class="bg-surface-container-low border border-outline-variant hover:border-primary/40 transition-colors rounded p-5 flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between">
+<div class="px-2.5 py-1 bg-surface-container border border-outline-variant text-on-surface text-label-sm font-label-sm font-bold uppercase rounded">
+                    Ascendant 2 Smurf
+                  </div>
+<span class="text-label-sm font-label-sm text-outline font-mono">APAC - 4019</span>
+</div>
+<div class="flex items-center gap-4 my-5">
+<div class="w-14 h-14 rounded bg-surface-container-high border border-outline-variant flex items-center justify-center p-1"><img alt="Ascendant Rank Crest" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJFxO6FeqKrzvJV8CyYEn8wr4hhfRNx3ZA1lKRRkBZe_lFKhA7m_gVGz94k7apQJI1HtShMJphT_wPjhCZk3Rp805TLpWNy6Y6WtROc7H-uBlSnGV8lb4zxgdD1dervGPPBgXrBi2YgNALcovM__JCitjR5IOwSY_Rm7SXIUjCdVnFvKkQHYkk6FMkykHjkrcMW5e_oFuTtGQ5uofgrucPapxyhYZQaBaDmsfyAejweTo4xbo44Pp91A"></div>
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Ascendant 2 MMR</h3>
+<p class="text-body-sm font-body-sm text-outline">Clean Riot Unbind</p>
+</div>
+</div>
+<div class="space-y-2 border-t border-outline-variant pt-3">
+<span class="text-label-sm font-label-sm text-outline uppercase block">Notable Skins</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 bg-surface border border-outline-variant text-[11px] text-on-surface rounded font-mono">Oni Phantom</span>
+<span class="px-2 py-0.5 bg-surface border border-outline-variant text-[11px] text-on-surface rounded font-mono">Ion Sheriff</span>
+<span class="px-2 py-0.5 bg-surface border border-outline-variant text-[11px] text-on-surface rounded font-mono">Xenohunter Knife</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant flex items-center justify-between">
+<div>
+<span class="text-[10px] text-outline uppercase block">Escrow Protected</span>
+<span class="text-headline-md font-headline-md text-primary font-mono font-bold">$135.00</span>
+</div>
+<button class="px-4 py-2 bg-surface hover:bg-surface-container border border-outline-variant text-on-surface hover:text-primary font-label-md text-label-md uppercase rounded transition-colors">
+                  Inspect Account
+                </button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: TURNKEY FIXED VALUE PACKAGES -->
+<section class="space-y-6" id="packages">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+              Preset Deployments
+            </div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Turnkey Fixed Value Packages</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-5 bg-surface-container-low border border-outline-variant rounded relative flex flex-col justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-primary uppercase block mb-2">Package 01</span>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-2">Season 5/5 Placement Calibration</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-4">Ascendant placement guarantee with 80%+ winrate record. Clean HWID session.</p>
+<div class="space-y-1.5 border-t border-outline-variant pt-3 text-body-sm font-body-sm text-outline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+<span class="">5 of 5 Unrated / Placement matches</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+<span class="">Guaranteed minimum Ascendant 1</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant flex items-center justify-between">
+<span class="text-headline-md font-headline-md text-primary font-mono font-bold">$38.00</span>
+<button class="px-3 py-1.5 bg-primary-container text-on-primary-container hover:bg-primary font-label-sm text-label-sm uppercase rounded font-bold transition-all">
+                  Select
+                </button>
+</div>
+</div>
+<div class="p-5 bg-surface-container-low border border-primary/40 rounded relative flex flex-col justify-between">
+<div class="absolute -top-2.5 right-4 px-2 py-0.5 bg-primary text-on-primary text-[10px] font-bold uppercase rounded">
+                Most Popular
+              </div>
+<div>
+<span class="text-label-sm font-label-sm text-primary uppercase block mb-2">Package 02</span>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-2">Hardstuck MMR Reset &amp; Jump</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-4">Complete MMR calibration from Diamond to Immortal with +26 RR gain injection per match.</p>
+<div class="space-y-1.5 border-t border-outline-variant pt-3 text-body-sm font-body-sm text-outline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+<span class="">Fixed tier leap into Immortal 1</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+<span class="">Private 1080p 60fps Discord Stream</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant flex items-center justify-between">
+<span class="text-headline-md font-headline-md text-primary font-mono font-bold">$85.00</span>
+<button class="px-3 py-1.5 bg-primary-container text-on-primary-container hover:bg-primary font-label-sm text-label-sm uppercase rounded font-bold transition-all">
+                  Select
+                </button>
+</div>
+</div>
+<div class="p-5 bg-surface-container-low border border-outline-variant rounded relative flex flex-col justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-primary uppercase block mb-2">Package 03</span>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-2">Agent Mastery 30 Matches</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-4">Duo queue along with a Radiant coach dedicated to your preferred agent pool.</p>
+<div class="space-y-1.5 border-t border-outline-variant pt-3 text-body-sm font-body-sm text-outline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+<span class="">30 Full Competitive Games Duo</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+<span class="">Live comms coaching &amp; VOD reviews</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant flex items-center justify-between">
+<span class="text-headline-md font-headline-md text-primary font-mono font-bold">$68.00</span>
+<button class="px-3 py-1.5 bg-primary-container text-on-primary-container hover:bg-primary font-label-sm text-label-sm uppercase rounded font-bold transition-all">
+                  Select
+                </button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: RIOT DIRECT GATEWAY (VP & RADIANITE SHOP) -->
+<section class="space-y-6" id="diamond-shop">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-[18px]">diamond</span>
+                Direct API Top-Up
+              </div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Riot Direct Gateway: VP &amp; Radianite Terminal</h2>
+</div>
+<span class="text-label-sm font-label-sm text-outline font-mono">1.4s INJECTION LATENCY</span>
+</div>
+<div class="bg-surface-container-low border border-outline-variant rounded p-6">
+<!-- Account Destination Inputs -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<div class="md:col-span-2">
+<label class="block text-label-sm font-label-sm text-outline uppercase mb-2">Riot ID (Username#Tagline)</label>
+<div class="flex">
+<span class="inline-flex items-center px-3 bg-surface border border-r-0 border-outline-variant text-outline rounded-l">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</span>
+<input class="w-full bg-surface border border-outline-variant text-on-surface placeholder:text-outline rounded-r text-body-md font-body-md focus:border-primary focus:ring-0" placeholder="e.g. TenZ#SEN" type="text">
+</div>
+</div>
+<div>
+<label class="block text-label-sm font-label-sm text-outline uppercase mb-2">Region Server</label>
+<select class="w-full bg-surface border border-outline-variant text-on-surface text-body-md font-body-md rounded p-2 focus:border-primary focus:ring-0">
+<option>North America (NA)</option>
+<option>Europe (EU)</option>
+<option>Asia Pacific (APAC)</option>
+<option>Latin America (LATAM)</option>
+</select>
+</div>
+</div>
+<!-- VP Denominations Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<div class="p-4 bg-surface border border-outline-variant hover:border-primary cursor-pointer rounded text-center transition-colors">
+<div class="text-label-sm font-label-sm text-outline mb-1">STANDARD</div>
+<div class="text-headline-md font-headline-md text-on-surface font-mono font-bold">1,000 VP</div>
+<div class="text-label-md font-label-md text-primary font-mono mt-2">$9.99 USD</div>
+<button class="w-full mt-3 py-1 bg-surface-container hover:bg-primary-container hover:text-on-primary-container text-on-surface text-[11px] font-bold uppercase rounded transition-colors">
+                  Select
+                </button>
+</div>
+<div class="p-4 bg-surface border border-outline-variant hover:border-primary cursor-pointer rounded text-center transition-colors">
+<div class="text-label-sm font-label-sm text-outline mb-1">+50 BONUS</div>
+<div class="text-headline-md font-headline-md text-on-surface font-mono font-bold">2,050 VP</div>
+<div class="text-label-md font-label-md text-primary font-mono mt-2">$19.99 USD</div>
+<button class="w-full mt-3 py-1 bg-surface-container hover:bg-primary-container hover:text-on-primary-container text-on-surface text-[11px] font-bold uppercase rounded transition-colors">
+                  Select
+                </button>
+</div>
+<div class="p-4 bg-surface border border-primary/40 rounded text-center relative shadow-[0_0_12px_rgba(110,231,183,0.1)]">
+<div class="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.2 bg-primary text-on-primary text-[9px] font-bold uppercase rounded">POPULAR</div>
+<div class="text-label-sm font-label-sm text-primary mb-1">+350 BONUS</div>
+<div class="text-headline-md font-headline-md text-on-surface font-mono font-bold">5,350 VP</div>
+<div class="text-label-md font-label-md text-primary font-mono mt-2">$49.99 USD</div>
+<button class="w-full mt-3 py-1 bg-primary text-on-primary text-[11px] font-bold uppercase rounded transition-colors">
+                  Select
+                </button>
+</div>
+<div class="p-4 bg-surface border border-outline-variant hover:border-primary cursor-pointer rounded text-center transition-colors">
+<div class="text-label-sm font-label-sm text-outline mb-1">+1,000 BONUS</div>
+<div class="text-headline-md font-headline-md text-on-surface font-mono font-bold">11,000 VP</div>
+<div class="text-label-md font-label-md text-primary font-mono mt-2">$99.99 USD</div>
+<button class="w-full mt-3 py-1 bg-surface-container hover:bg-primary-container hover:text-on-primary-container text-on-surface text-[11px] font-bold uppercase rounded transition-colors">
+                  Select
+                </button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5: INSTITUTIONAL ESCROW GUARANTEE PROTOCOL -->
+<section class="space-y-6" id="escrow">
+<div class="p-6 bg-[#0e1f18]/70 backdrop-blur-md border border-[#10b981]/20 rounded-lg shadow-[0_4px_24px_rgba(2,17,11,0.5)]">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-outline-variant pb-6 mb-6">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+                  Playora Escrow Architecture
+                </div>
+<h2 class="text-headline-md font-headline-md text-on-surface">Institutional Escrow Guarantee Protocol</h2>
+</div>
+<div class="text-label-sm font-label-sm text-outline">
+                Smart Contract ID: <span class="text-primary font-mono">0x7F2...91DA</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-4 bg-surface border border-outline-variant rounded">
+<span class="material-symbols-outlined text-primary text-[28px] mb-2">lock</span>
+<h4 class="text-headline-sm font-headline-sm text-on-surface mb-1">3rd-Party Riot Unbind Audit</h4>
+<p class="text-body-sm font-body-sm text-outline">Automated API verification guaranteeing the primary original email (OGE) and 2FA unbinding prior to transaction clearance.</p>
+</div>
+<div class="p-4 bg-surface border border-outline-variant rounded">
+<span class="material-symbols-outlined text-primary text-[28px] mb-2">security</span>
+<h4 class="text-headline-sm font-headline-sm text-on-surface mb-1">30-Day Anti-Reclaim Bond</h4>
+<p class="text-body-sm font-body-sm text-outline">Seller collateral is held in cold storage escrow for 30 full days to guarantee against malicious account reclamation or Vanguard flags.</p>
+</div>
+<div class="p-4 bg-surface border border-outline-variant rounded">
+<span class="material-symbols-outlined text-primary text-[28px] mb-2">gavel</span>
+<h4 class="text-headline-sm font-headline-sm text-on-surface mb-1">24/7 Human Arbiter Desk</h4>
+<p class="text-body-sm font-body-sm text-outline">Dedicated dispute resolution team staffed with verified high-tier competitive players to inspect match telemetry and chat logs.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- FOOTER (Exact adherence to Shared Components JSON) -->
+<footer class="w-full border-t border-[#10b981]/20 bg-[#02110b]/90 backdrop-blur-md px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<!-- Brand & Copyright -->
+<div class="flex flex-col md:flex-row items-center gap-3">
+<span class="text-label-lg font-label-lg uppercase tracking-wider text-on-surface">PLAYORA</span>
+<span class="hidden md:inline text-outline-variant">|</span>
+<span class="text-body-sm font-body-sm text-outline text-center md:text-left">
+        © 2025 Playora Escrow Technologies Ltd. High-Performance Esports Terminal. All Rights Reserved.
+      </span>
+</div>
+<!-- Compliant Links -->
+<div class="flex flex-wrap justify-center items-center gap-5">
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors duration-150" href="#terms">Terms of Escrow</a>
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors duration-150" href="#aml">AML/KYC Policy</a>
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors duration-150" href="#telemetry">MLBB API Telemetry</a>
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors duration-150" href="#dispute">Dispute Protocol</a>
+<a class="text-primary font-label-sm text-label-sm flex items-center gap-1.5" href="#status">
+<span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
+        System Status
+      </a>
+</div>
+</footer>
+
+
+
+
+</body></html>

@@ -1,0 +1,583 @@
+[
+  {
+    "id": "F01",
+    "title": "Custom boost: browse to completion",
+    "path": [
+      "P01",
+      "P16",
+      "P02",
+      "G01",
+      "P04",
+      "P05",
+      "I01",
+      "I02",
+      "P05",
+      "P06",
+      "C02",
+      "C03",
+      "P09",
+      "P10",
+      "P11",
+      "C04",
+      "C06",
+      "C05",
+      "C16"
+    ],
+    "branches": [
+      "Invalid ranks stay in P04 with field errors.",
+      "Manual estimate can submit without a numeric promise.",
+      "Clarification returns to C03/C12.",
+      "Quote change or expiry requires fresh review.",
+      "Staff approval is required for quote and completion."
+    ],
+    "done": "Verified payment, fulfilled scope, evidence and eligible review; not success from a browser redirect."
+  },
+  {
+    "id": "F02",
+    "title": "Fixed package purchase",
+    "path": [
+      "G01",
+      "P07",
+      "P08",
+      "I01",
+      "I02",
+      "P08",
+      "P09",
+      "P10",
+      "P11",
+      "C04",
+      "C05"
+    ],
+    "branches": [
+      "Ineligible package offers compatible/custom alternatives.",
+      "Sold-out/paused package blocks new purchase.",
+      "Version or price changes return to explicit review."
+    ],
+    "done": "Package snapshot accepted and verified payment; no per-order quote approval."
+  },
+  {
+    "id": "F03",
+    "title": "Account purchase & secure receipt",
+    "path": [
+      "P12",
+      "P13",
+      "P14",
+      "I01",
+      "I02",
+      "P14",
+      "P09",
+      "P10",
+      "P11",
+      "C23",
+      "A26",
+      "I08",
+      "C23"
+    ],
+    "branches": [
+      "Reservation conflict means no invoice.",
+      "Expired reservation requires availability recheck.",
+      "Late paid reservation enters a case, never steals sold inventory."
+    ],
+    "done": "Verified payment, audited transfer and required acknowledgement."
+  },
+  {
+    "id": "F04",
+    "title": "Invoice recovery & exceptions",
+    "path": [
+      "P09",
+      "P10",
+      "P11",
+      "C07",
+      "C08",
+      "C09"
+    ],
+    "branches": [
+      "Paused checkout stays unpaid.",
+      "Uncertain invoice creation reconciles before retry.",
+      "Under/over/late/wrong-network/duplicate funds remain separate states.",
+      "Expired invoice with detected funds cannot release inventory blindly."
+    ],
+    "done": "Authoritative evidence resolves payment or explicit refund review."
+  },
+  {
+    "id": "F05",
+    "title": "Cancellation, dispute & refund",
+    "path": [
+      "C05",
+      "C08",
+      "C09",
+      "A16",
+      "I06",
+      "A19",
+      "C07"
+    ],
+    "branches": [
+      "Unpaid cancellation retires eligible invoice.",
+      "Paid cancellation is a request, not an immediate refund.",
+      "Recipient changes require review; outgoing disabled blocks transfer.",
+      "Denied remedy exposes approved appeal terms."
+    ],
+    "done": "Recorded decision and verified outgoing evidence where applicable."
+  },
+  {
+    "id": "F06",
+    "title": "Seller consignment",
+    "path": [
+      "S01",
+      "S02",
+      "S03",
+      "S07",
+      "A20",
+      "A37",
+      "A21",
+      "S04",
+      "S05",
+      "A22",
+      "A23",
+      "P13",
+      "C23",
+      "A17",
+      "S06"
+    ],
+    "branches": [
+      "More proof returns to S03.",
+      "Changed offer requires new acceptance.",
+      "Payout waits for agreed delivery/dispute conditions.",
+      "Related refunds/disputes can hold payout."
+    ],
+    "done": "Direct payout confirmed under the accepted consignment terms."
+  },
+  {
+    "id": "F07",
+    "title": "Buy-first acquisition",
+    "path": [
+      "S02",
+      "S03",
+      "A21",
+      "S04",
+      "S05",
+      "A17",
+      "S06",
+      "A23"
+    ],
+    "branches": [
+      "Choose Buy first explicitly in A21 and display it in S04.",
+      "Payment becomes due after verified seller-to-PLAYORA transfer, before resale."
+    ],
+    "done": "One verified payout obligation; unsold inventory does not change agreed seller terms."
+  },
+  {
+    "id": "F08",
+    "title": "Passwordless return to draft",
+    "path": [
+      "P05",
+      "I01",
+      "I02",
+      "P05"
+    ],
+    "branches": [
+      "Google cancellation returns to I01.",
+      "Expired/used code needs a new challenge.",
+      "Catalog/terms changes require revalidation after login."
+    ],
+    "done": "Same intended custom/package/listing flow restored without secrets in local storage."
+  },
+  {
+    "id": "F09",
+    "title": "Staff enrollment, sign-in & recovery",
+    "path": [
+      "I01",
+      "I02",
+      "I04",
+      "I03",
+      "A01",
+      "I05",
+      "C17"
+    ],
+    "branches": [
+      "Enrollment required only when missing; authenticator required at every staff sign-in.",
+      "Recovery code substitutes only second factor.",
+      "Owner-reviewed recovery never bypasses identity verification."
+    ],
+    "done": "Authorized staff session; last-owner and recovery safeguards retained."
+  },
+  {
+    "id": "F10",
+    "title": "Profile, identity linking & session revocation",
+    "path": [
+      "C01",
+      "C22",
+      "C17",
+      "I07",
+      "I02",
+      "C17"
+    ],
+    "branches": [
+      "Google linking verifies both existing and new identities.",
+      "Email conflicts do not reveal account ownership.",
+      "Revoke-all confirmation explains current session will end."
+    ],
+    "done": "Verified identity changes and accurate session state."
+  },
+  {
+    "id": "F11",
+    "title": "Pre-sales and order support",
+    "path": [
+      "G01",
+      "C13",
+      "I01",
+      "I02",
+      "C11",
+      "C12"
+    ],
+    "branches": [
+      "Draft survives reconnect and failed send.",
+      "New messages do not move a reader looking at history.",
+      "Rejected files keep the text draft.",
+      "Access revocation clears private thread content."
+    ],
+    "done": "One accessible conversation with known audience and reliable send status."
+  },
+  {
+    "id": "F12",
+    "title": "Booster fulfillment & admin completion",
+    "path": [
+      "B01",
+      "B02",
+      "B03",
+      "B04",
+      "B05",
+      "B03",
+      "A03",
+      "C05"
+    ],
+    "branches": [
+      "Unpaid/missing prerequisites block start.",
+      "Assignment revocation removes access immediately.",
+      "Proof scanning blocks completion submission.",
+      "Booster submits completion; admin approves final completion."
+    ],
+    "done": "Scoped fulfillment and customer-visible evidence with no pricing/refund authority."
+  },
+  {
+    "id": "F13",
+    "title": "Scheduling & rescheduling",
+    "path": [
+      "C06",
+      "B04",
+      "A07",
+      "C06"
+    ],
+    "branches": [
+      "Conflicts reject stale slot; chosen timezone remains.",
+      "DST ambiguity presents explicit offsets.",
+      "Reschedule keeps previous booking until replacement accepted according to backend."
+    ],
+    "done": "One valid confirmed booking and visible change history."
+  },
+  {
+    "id": "F14",
+    "title": "Catalog, forms, rules & packages",
+    "path": [
+      "A10",
+      "A11",
+      "A12",
+      "A13",
+      "A24",
+      "A25",
+      "A14",
+      "G01"
+    ],
+    "branches": [
+      "Invalid references/condition cycles block publication.",
+      "Unsaved navigation prompts retain drafts.",
+      "Stale preview/version conflict requires fresh review.",
+      "Archive/pause affect new purchases, not historical snapshots."
+    ],
+    "done": "A validated versioned release with customer previews."
+  },
+  {
+    "id": "F15",
+    "title": "Staff triage, quotes and holds",
+    "path": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "C03",
+      "A03"
+    ],
+    "branches": [
+      "Clarify/reject needs a customer-visible reason.",
+      "Accepted contract cannot be silently repriced.",
+      "Concurrent status update requires reload/compare."
+    ],
+    "done": "Correct next action and audited state transition."
+  },
+  {
+    "id": "F16",
+    "title": "Staff message vs internal note",
+    "path": [
+      "A05",
+      "A06",
+      "A03"
+    ],
+    "branches": [
+      "Audience stays visible through attachment and keyboard states.",
+      "Switching mode with an unsent draft asks where to keep it.",
+      "Buyer and seller conversations remain separate."
+    ],
+    "done": "Message reaches only its selected authorized audience."
+  },
+  {
+    "id": "F17",
+    "title": "Payment and seller-payout operations",
+    "path": [
+      "A15",
+      "A16",
+      "A17",
+      "I06",
+      "A19",
+      "A31"
+    ],
+    "branches": [
+      "No manual paid toggle.",
+      "Uncertain transfer reconciles before retry.",
+      "Separate outgoing activation and verified recipient required."
+    ],
+    "done": "Provider-backed result without duplicate transfer or mixed currencies."
+  },
+  {
+    "id": "F18",
+    "title": "Favorites, reorder & availability",
+    "path": [
+      "P13",
+      "C10",
+      "P04",
+      "C20",
+      "C21"
+    ],
+    "branches": [
+      "Reorder validates current options and prices.",
+      "Sold/archived saved item remains understandable.",
+      "Unsubscribe token affects only its intended alert."
+    ],
+    "done": "Fresh eligible order or explicit alert consent; no reservation from a favorite."
+  },
+  {
+    "id": "F19",
+    "title": "Reviews & moderation",
+    "path": [
+      "C05",
+      "C15",
+      "C16",
+      "A28",
+      "A29",
+      "P15"
+    ],
+    "branches": [
+      "Eligibility, duplicate and moderation states explicit.",
+      "Customer text is not rewritten to improve sentiment.",
+      "Refund labels remain where required."
+    ],
+    "done": "Published eligible review or reasoned moderation outcome."
+  },
+  {
+    "id": "F20",
+    "title": "Notifications & preferences",
+    "path": [
+      "C14",
+      "C03",
+      "C19",
+      "C20"
+    ],
+    "branches": [
+      "Read notification does not complete its action.",
+      "Unavailable deep link returns safely.",
+      "Sound is opt-in; reduced motion is honored."
+    ],
+    "done": "Preferences saved and destination/context preserved."
+  },
+  {
+    "id": "F21",
+    "title": "Privacy export and deletion",
+    "path": [
+      "C18",
+      "A36",
+      "A35",
+      "I06",
+      "C18"
+    ],
+    "branches": [
+      "Owner policy must be published/enabled.",
+      "Active order/dispute holds block erasure.",
+      "Cancellation ends when irreversible erasure begins.",
+      "Live erasure, pending files, retained evidence/backups are distinct."
+    ],
+    "done": "Truthful deletion/export status under explicit policy."
+  },
+  {
+    "id": "F22",
+    "title": "Role, suspension and recovery governance",
+    "path": [
+      "A08",
+      "I06",
+      "A09",
+      "A08"
+    ],
+    "branches": [
+      "Last owner cannot be removed.",
+      "Role/suspension change revokes affected sessions as required.",
+      "No public role selection or automatic email-based role grant."
+    ],
+    "done": "Audited access change and exact affected-session outcome."
+  },
+  {
+    "id": "F23",
+    "title": "Policy/coupon publication",
+    "path": [
+      "A27",
+      "A34",
+      "A18",
+      "I06",
+      "P17"
+    ],
+    "branches": [
+      "Historical agreements stay immutable.",
+      "Incomplete commercial terms block related purchases.",
+      "Coupons cannot produce invalid totals or unsupported scope."
+    ],
+    "done": "Published explicit version; preview and customer terms agree."
+  },
+  {
+    "id": "F24",
+    "title": "Reports, media, alerts and job recovery",
+    "path": [
+      "A30",
+      "A32",
+      "A33",
+      "A31"
+    ],
+    "branches": [
+      "Stale report preview needs regeneration.",
+      "Rejected/quarantined files never render public previews.",
+      "Retry queues a job, not a payment success."
+    ],
+    "done": "Scoped evidence/export and truthful recovery status."
+  },
+  {
+    "id": "F25",
+    "title": "Global recovery",
+    "path": [
+      "X01",
+      "I01",
+      "C01"
+    ],
+    "branches": [
+      "404 and access denial do not disclose private object existence.",
+      "Offline recovery retains only safe drafts.",
+      "Rate limits use server-provided retry information."
+    ],
+    "done": "Safe navigation without leaking private content or losing permitted drafts."
+  },
+  {
+    "id": "F26",
+    "title": "World of Warcraft configurable-service template",
+    "path": [
+      "P02",
+      "G02",
+      "G07",
+      "G12",
+      "I01",
+      "I02",
+      "G12"
+    ],
+    "branches": [
+      "This is a future-game design template, not launch availability.",
+      "Use the game-specific fields shown in this template; no hard-coded season or live price.",
+      "After successful submission, use F01 order/quote/payment/fulfillment screens with this game context retained.",
+      "Invalid or unpublished configuration blocks new ordering, without affecting history."
+    ],
+    "done": "Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published."
+  },
+  {
+    "id": "F27",
+    "title": "League of Legends configurable-service template",
+    "path": [
+      "P02",
+      "G03",
+      "G08",
+      "G13",
+      "I01",
+      "I02",
+      "G13"
+    ],
+    "branches": [
+      "This is a future-game design template, not launch availability.",
+      "Use the game-specific fields shown in this template; no hard-coded season or live price.",
+      "After successful submission, use F01 order/quote/payment/fulfillment screens with this game context retained.",
+      "Invalid or unpublished configuration blocks new ordering, without affecting history."
+    ],
+    "done": "Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published."
+  },
+  {
+    "id": "F28",
+    "title": "VALORANT configurable-service template",
+    "path": [
+      "P02",
+      "G04",
+      "G09",
+      "G14",
+      "I01",
+      "I02",
+      "G14"
+    ],
+    "branches": [
+      "This is a future-game design template, not launch availability.",
+      "Use the game-specific fields shown in this template; no hard-coded season or live price.",
+      "After successful submission, use F01 order/quote/payment/fulfillment screens with this game context retained.",
+      "Invalid or unpublished configuration blocks new ordering, without affecting history."
+    ],
+    "done": "Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published."
+  },
+  {
+    "id": "F29",
+    "title": "Dota 2 configurable-service template",
+    "path": [
+      "P02",
+      "G05",
+      "G10",
+      "G15",
+      "I01",
+      "I02",
+      "G15"
+    ],
+    "branches": [
+      "This is a future-game design template, not launch availability.",
+      "Use the game-specific fields shown in this template; no hard-coded season or live price.",
+      "After successful submission, use F01 order/quote/payment/fulfillment screens with this game context retained.",
+      "Invalid or unpublished configuration blocks new ordering, without affecting history."
+    ],
+    "done": "Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published."
+  },
+  {
+    "id": "F30",
+    "title": "Wild Rift configurable-service template",
+    "path": [
+      "P02",
+      "G06",
+      "G11",
+      "G16",
+      "I01",
+      "I02",
+      "G16"
+    ],
+    "branches": [
+      "This is a future-game design template, not launch availability.",
+      "Use the game-specific fields shown in this template; no hard-coded season or live price.",
+      "After successful submission, use F01 order/quote/payment/fulfillment screens with this game context retained.",
+      "Invalid or unpublished configuration blocks new ordering, without affecting history."
+    ],
+    "done": "Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published."
+  }
+]

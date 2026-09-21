@@ -1,0 +1,894 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Playora - World of Warcraft: The War Within Dedicated Terminal</title>
+<!-- Google Fonts: Space Grotesk, Plus Jakarta Sans & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS with configuration -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "background": "#061610",
+          "surface-tint": "#4edea3",
+          "tertiary-fixed": "#97f5cc",
+          "on-secondary-container": "#003121",
+          "on-tertiary-fixed-variant": "#00513a",
+          "surface-bright": "#2c3d35",
+          "on-background": "#d3e7db",
+          "surface-container-lowest": "#02110b",
+          "on-primary-fixed": "#002113",
+          "on-secondary-fixed": "#002115",
+          "surface-variant": "#273830",
+          "tertiary-container": "#57b48f",
+          "primary-container": "#10b981",
+          "surface-container-low": "#0e1f18",
+          "on-tertiary-fixed": "#002115",
+          "primary": "#4edea3",
+          "inverse-primary": "#006c49",
+          "secondary-container": "#18a479",
+          "surface-container": "#12231c",
+          "inverse-on-surface": "#23342c",
+          "on-primary-fixed-variant": "#005236",
+          "secondary-fixed-dim": "#62dcad",
+          "secondary": "#62dcad",
+          "surface-dim": "#061610",
+          "primary-fixed-dim": "#4edea3",
+          "on-primary": "#003824",
+          "on-tertiary-container": "#00422e",
+          "tertiary": "#7bd8b1",
+          "surface": "#061610",
+          "outline": "#86948a",
+          "on-surface": "#d3e7db",
+          "surface-container-high": "#1d2d26",
+          "surface-container-highest": "#273830",
+          "on-primary-container": "#00422b",
+          "primary-fixed": "#6ffbbe",
+          "on-error-container": "#ffdad6",
+          "on-tertiary": "#003827",
+          "error": "#ffb4ab",
+          "outline-variant": "#3c4a42",
+          "on-secondary-fixed-variant": "#00513a",
+          "tertiary-fixed-dim": "#7bd8b1",
+          "on-error": "#690005",
+          "on-secondary": "#003827",
+          "on-surface-variant": "#bbcabf",
+          "inverse-surface": "#d3e7db",
+          "error-container": "#93000a",
+          "secondary-fixed": "#80f9c8"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "gutter": "1.5rem",
+          "space-sm": "0.5rem",
+          "margin-mobile": "1rem",
+          "gutter-mobile": "0.75rem",
+          "space-xs": "0.25rem",
+          "space-md": "1rem",
+          "space-xl": "2.5rem",
+          "space-lg": "1.5rem",
+          "margin": "2rem"
+        },
+        "fontFamily": {
+          "headline-sm": ["Space Grotesk", "sans-serif"],
+          "display-hero-mobile": ["Space Grotesk", "sans-serif"],
+          "body-lg": ["Plus Jakarta Sans", "sans-serif"],
+          "label-data": ["JetBrains Mono", "monospace"],
+          "headline-lg-mobile": ["Space Grotesk", "sans-serif"],
+          "headline-md": ["Space Grotesk", "sans-serif"],
+          "title-md": ["Plus Jakarta Sans", "sans-serif"],
+          "body-md": ["Plus Jakarta Sans", "sans-serif"],
+          "label-caps": ["JetBrains Mono", "monospace"],
+          "body-sm": ["Plus Jakarta Sans", "sans-serif"],
+          "display-hero": ["Space Grotesk", "sans-serif"],
+          "headline-lg": ["Space Grotesk", "sans-serif"]
+        },
+        "fontSize": {
+          "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+          "display-hero-mobile": ["38px", { "lineHeight": "44px", "fontWeight": "700" }],
+          "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+          "label-data": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+          "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+          "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+          "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+          "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+          "label-caps": ["11px", { "lineHeight": "16px", "fontWeight": "600" }],
+          "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+          "display-hero": ["56px", { "lineHeight": "64px", "fontWeight": "700" }],
+          "headline-lg": ["36px", { "lineHeight": "44px", "fontWeight": "700" }]
+        }
+      },
+    },
+  }
+</script>
+</head>
+<body class="bg-[#061610] text-on-surface font-body-md antialiased relative min-h-screen selection:bg-primary/30 selection:text-primary-fixed overflow-x-hidden">
+<!-- ========================================================================= -->
+<!-- AURORA ATMOSPHERE BACKGROUND (Matched to Screen 5 & 6)                   -->
+<!-- ========================================================================= -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<img alt="Playora Aurora Atmosphere" class="w-full h-full object-cover opacity-60 filter saturate-150 contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbtTKZb7ZBQLEG3RuOCrdYoNWfr9TixeP2Yt8VsbeVYCQ8F9lZA7dsvDHX_91zjv3TgNf0n3L9NitR9_nL2DTniNKj62LvgIawByVr0nZ2HCC6vC9mg_QvGwTdK8Wdr9-kMNp3m1vF7dhs5F8591wJbSVuxOhRYPnGrl_mX7peDZWkWwBw51WtMcgxiujmSaBVAZe-bz2RueZQv6VTa8EO4DR6MGHNcPav_4enu5NBCZqp9lRlxvo7Bw">
+<div class="absolute inset-0 bg-gradient-to-b from-[#061610]/40 via-[#061610]/20 to-[#02110b]/70"></div>
+</div>
+<!-- ========================================================================= -->
+<!-- TOP GLOBAL APP BAR (Shared Component: TopNavBar Anchor)                   -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center w-full px-6 py-3 border-b border-outline-variant/30 backdrop-blur-md bg-[#061610]/80">
+<!-- Left: Brand Logo & Game Switcher Cluster -->
+<div class="flex items-center gap-6">
+<a class="flex items-center gap-2" href="#">
+<img alt="Playora" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3iJK9sU23P0u0cUb9yp1HK6CSHG6prSfpoltdwDd1hz-wsx7rmgmlUv2tYMRSVLU6W8BlKzIF26zkVxpVDyBAd5IucMPweRhim9A9JTvhyXN0zTayK5lAtwhmVHuzvnr0rHUAeX-wPWlghUA65eJaIG237xo2IJT9JZP-nUXapm8LIE7mQ5LS2z-pTN_YB4QHzLFGbPu6HAM8wOSeji-g0x_6Bv3ImGhoVqgFyNC9WXvFlKSzzFNopA">
+</a>
+<!-- Esports Game Selector Matrix -->
+<div class="hidden xl:flex items-center gap-1.5 pl-4 border-l border-outline-variant/40">
+<button class="px-2.5 py-1 rounded bg-[#0e1f18]/60 border border-outline-variant/40 text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface hover:border-primary/50 transition-all flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span> MLBB
+</button>
+<button class="px-2.5 py-1 rounded bg-[#0e1f18]/60 border border-outline-variant/40 text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface hover:border-primary/50 transition-all flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span> VALORANT
+</button>
+<button class="px-2.5 py-1 rounded bg-[#0e1f18]/60 border border-outline-variant/40 text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface hover:border-primary/50 transition-all flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span> Dota 2
+</button>
+<!-- Active WoW Badge -->
+<button class="px-3 py-1 rounded bg-surface-container/70 border border-primary text-primary font-label-caps text-label-caps flex items-center gap-2 shadow-[0_0_12px_rgba(78,222,163,0.15)]">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> WoW The War Within
+</button>
+</div>
+</div>
+<!-- Center Navigation Links -->
+<nav class="hidden lg:flex items-center gap-6">
+<a class="border-b-2 border-primary text-primary font-label-data text-label-data pb-1" href="#marketplace">Marketplace</a>
+<a class="text-on-surface-variant font-label-data text-label-data hover:text-primary transition-colors duration-150" href="#boosting">Boosting</a>
+<a class="text-on-surface-variant font-label-data text-label-data hover:text-primary transition-colors duration-150" href="#packages">Packages</a>
+<a class="text-on-surface-variant font-label-data text-label-data hover:text-primary transition-colors duration-150" href="#gold">Gold Escrow</a>
+<a class="text-on-surface-variant font-label-data text-label-data hover:text-primary transition-colors duration-150" href="#escrow">Escrow</a>
+</nav>
+<!-- Right Controls: Telemetry, Ping & Authenticate -->
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded bg-[#0e1f18]/70 border border-outline-variant/40">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-primary tracking-wide">8ms US/EU BNet</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded bg-[#0e1f18]/70 hover:bg-surface-container border border-outline-variant/40 text-on-surface-variant hover:text-primary transition-colors" title="Telemetry Shield">
+<span class="material-symbols-outlined text-[18px]">shield</span>
+</button>
+<button class="p-2 rounded bg-[#0e1f18]/70 hover:bg-surface-container border border-outline-variant/40 text-on-surface-variant hover:text-primary transition-colors relative" title="Notifications">
+<span class="material-symbols-outlined text-[18px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary"></span>
+</button>
+</div>
+<button class="bg-primary hover:bg-primary-fixed text-on-primary font-label-caps text-label-caps px-4 py-2 rounded uppercase tracking-wider font-bold shadow-[0_0_15px_rgba(78,222,163,0.25)] active:scale-[0.98] transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+Connect Wallet
+</button>
+<div class="w-8 h-8 rounded-full border border-primary/40 overflow-hidden shrink-0">
+<img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpcAVCF7miBRSTJIjOSBhcwx5xo6EcVKengjOBTj8ynrVQ3MSQMdrEWO0wx4l6GZIxxNcPgWkSiq0WTWDjVDT5SF7Qw3s2HCCtO7pSd9M7uIU5GNJAwzgBE-HuRjvDNSWZjsTbmZ09SDSLEeOOVP8uHGaqtCXqxk8LauUIkdeUB5w4Nw73lbp5HGateBN8FRSbzWjKTmkrQMHVd-SuxY4OpuiSwo0wt1IfG44bCIQZHFJmQB2IcQQ3lmXZPlqfMxVeec4">
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- DEDICATED LEFT SIDE NAVBAR (Shared Component: SideNavBar)                 -->
+<!-- ========================================================================= -->
+<aside class="fixed left-0 top-14 bottom-0 w-64 z-40 hidden md:flex flex-col justify-between border-r border-outline-variant/30 backdrop-blur-md overflow-y-auto bg-[#061610]/80">
+<!-- Header Block -->
+<div>
+<div class="p-4 border-b border-outline-variant/30">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">sports_esports</span>
+<span class="font-headline-sm text-[16px] leading-[22px] text-primary font-bold tracking-tight">WoW Terminal</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-surface-container/70 text-primary font-label-caps text-[10px] border border-outline-variant/30">v11.1</span>
+</div>
+<p class="text-on-surface-variant font-label-caps text-[11px] flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+Tier-1 Verified Exchange
+</p>
+</div>
+<!-- Quick Action CTA -->
+<div class="p-4 pb-2">
+<button class="w-full bg-primary hover:bg-primary-fixed text-on-primary font-label-caps text-label-caps py-2.5 px-3 rounded uppercase font-bold text-center active:scale-[0.98] transition-all shadow-[0_0_12px_rgba(78,222,163,0.2)] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">flash_on</span>
+Instant Carry Order
+</button>
+</div>
+<!-- Main Navigation Links -->
+<nav class="mt-2 space-y-0.5 px-2">
+<a class="border-l-2 border-primary bg-surface-container/80 text-primary font-label-data text-label-data flex items-center gap-3 px-3 py-2.5 rounded-r" href="#boosting">
+<span class="material-symbols-outlined text-[18px]">military_tech</span>
+<span class="">M+ &amp; Raid Boosting</span>
+</a>
+<a class="text-on-surface-variant font-label-data text-label-data flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container-low/60 hover:text-primary rounded-r transition-colors" href="#marketplace">
+<span class="material-symbols-outlined text-[18px]">storefront</span>
+<span class="">Audited Accounts Vault</span>
+</a>
+<a class="text-on-surface-variant font-label-data text-label-data flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container-low/60 hover:text-primary rounded-r transition-colors" href="#packages">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+<span class="">Turnkey Packages</span>
+</a>
+<a class="text-on-surface-variant font-label-data text-label-data flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container-low/60 hover:text-primary rounded-r transition-colors" href="#gold">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span class="">Gold Escrow Exchange</span>
+</a>
+<a class="text-on-surface-variant font-label-data text-label-data flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container-low/60 hover:text-primary rounded-r transition-colors" href="#escrow">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span class="">Escrow Verification</span>
+</a>
+</nav>
+</div>
+<!-- Telemetry Status & Footer Tabs -->
+<div class="p-4 border-t border-outline-variant/30 bg-[#061610]/90">
+<div class="mb-3 space-y-1">
+<div class="flex items-center justify-between text-on-surface-variant font-label-caps text-[10px]">
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Warden Cloak</span>
+<span class="text-primary font-semibold">0 Bans / 100% Safe</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-caps text-[10px]">
+<span class="">Latency Sync</span>
+<span class="text-on-surface">0.8s Telemetry</span>
+</div>
+</div>
+<div class="flex flex-col gap-1 border-t border-outline-variant/30 pt-3">
+<a class="text-on-surface-variant hover:text-primary font-label-caps text-[10px] flex items-center gap-2 py-1" href="#">
+<span class="material-symbols-outlined text-[14px]">tune</span> System Telemetry
+</a>
+<a class="text-on-surface-variant hover:text-primary font-label-caps text-[10px] flex items-center gap-2 py-1" href="#">
+<span class="material-symbols-outlined text-[14px]">lock</span> Protocol Security
+</a>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- MAIN CONTENT CANVAS                                                       -->
+<!-- ========================================================================= -->
+<main class="md:ml-64 pt-14 flex-1 backdrop-blur-sm relative z-10">
+<!-- SECTION 1: HERO HEADER BANNER & ACTIVE TELEMETRY -->
+<section class="border-b border-outline-variant/30 p-6 md:p-10 relative overflow-hidden bg-[#061610]/40 backdrop-blur-sm">
+<!-- Atmospheric emerald hairline grid background -->
+<div class="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:24px_24px]"></div>
+<div class="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Left Column: High-Stakes Institutional Pitch -->
+<div class="lg:col-span-7 space-y-5">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#0e1f18]/70 border border-outline-variant/40 backdrop-blur-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-primary tracking-wide">SEASON 1 THE WAR WITHIN // MYTHIC KEYSTONE &amp; RAID TELEMETRY LIVE</span>
+</div>
+<h1 class="font-display-hero-mobile md:font-display-hero text-display-hero-mobile md:text-display-hero text-on-surface tracking-tight leading-tight font-bold">
+Institutional World of Warcraft <span class="text-primary">Mythic+, Raid &amp; Gold</span> Service Exchange
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+Zero-markup WoW PvE/PvP progression, Blizzard Warden-cloaked boosting by verified Hall of Fame raiders and R1 Gladiators, vetted Cutting Edge characters, and Tier-1 Gold Trade Escrow.
+</p>
+<!-- Metrics Bento Ticker -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+<div class="p-3 bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 rounded hover:border-primary/40 transition-colors">
+<span class="block font-label-caps text-[10px] text-on-surface-variant uppercase">Verified Boosters</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">184 R1/HoF</span>
+</div>
+<div class="p-3 bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 rounded hover:border-primary/40 transition-colors">
+<span class="block font-label-caps text-[10px] text-on-surface-variant uppercase">Vaulted Accounts</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">480 CE/Glad</span>
+</div>
+<div class="p-3 bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 rounded hover:border-primary/40 transition-colors">
+<span class="block font-label-caps text-[10px] text-on-surface-variant uppercase">Token Gateway</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">0.8s Instant</span>
+</div>
+<div class="p-3 bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 rounded hover:border-primary/40 transition-colors">
+<span class="block font-label-caps text-[10px] text-on-surface-variant uppercase">Escrow Held</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">$94,500.00</span>
+</div>
+</div>
+</div>
+<!-- Right Column: WoW The War Within Hero Feature Art -->
+<div class="lg:col-span-5 relative">
+<div class="relative rounded-lg border border-outline-variant/40 bg-[#0e1f18]/70 backdrop-blur-sm overflow-hidden group shadow-[0_0_30px_rgba(78,222,163,0.15)]">
+<img alt="World of Warcraft: The War Within Expansion Hero Art" class="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AEtjO1X9v8l6va6XEqLk9vj40j3318Vgp96U9fcvn3_hTFImGFy79TjFSHbkVb_jpezVnZNRwiWvmb6bsXOrLWglWLEzQE4VIk22vblhbsqcZ5vJsvn0mZGy_FWoCs31oRiFOEYra6MvoGi9hfeNyz1D_5OeAMwK5rw_jCtCNJ7IEQgaZytPDFKrrV62-S2Tal7F_x8-pQPu6cHhUY-nHubhuWT8V4JSfdaAaW-VlZvVBZD5K5KfoaqolGkwmZmE">
+<div class="absolute inset-0 bg-gradient-to-t from-[#061610] via-[#061610]/20 to-transparent"></div>
+<!-- Metadata overlay pills -->
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest/90 border border-outline-variant/40 text-[11px] font-label-caps text-primary">Death Knight S-Tier</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest/90 border border-outline-variant/40 text-[11px] font-label-caps text-on-surface">Aug Evoker</span>
+</div>
+<div class="px-2 py-0.5 rounded bg-surface-container-high/90 border border-primary/50 text-[11px] font-label-caps text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">timer</span> +12 Grim Batol Live
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: OFFICIAL WOW ENDGAME PROGRESSION MATRIX -->
+<section class="p-6 md:p-10 border-b border-outline-variant/30 bg-[#061610]/50 backdrop-blur-sm">
+<div class="max-w-7xl mx-auto space-y-6">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="inline-flex items-center gap-2 text-primary font-label-caps text-label-caps mb-1">
+<span class="material-symbols-outlined text-[14px]">military_tech</span> ENDGAME VERIFICATION PROTOCOL
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">The War Within Competitive Pillars</h2>
+</div>
+<p class="text-on-surface-variant font-body-sm text-body-sm max-w-md">
+Directly interface with automated clearing parties. Verified keystones, seasonal titles, and gladiator mounts executed via Blizzard Warden-safe telemetry.
+</p>
+</div>
+<!-- 4 Premier Pillars Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Pillar 1: Keystone Hero -->
+<div class="bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 p-5 rounded relative hover:border-primary transition-all duration-200 group flex flex-col justify-between hover:shadow-[0_0_20px_rgba(78,222,163,0.15)]">
+<div>
+<div class="relative w-full aspect-square mb-4 rounded bg-surface-container/60 flex items-center justify-center p-3 border border-outline-variant/30 overflow-hidden">
+<img alt="Keystone Hero Mythic+ Badge" class="w-full h-full object-contain filter drop-shadow-md group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1W9J5hCMUveJ5bnxMToFavweSa0x7SsG5AVxdtxDRjjix-mdJjU9zCkOPf1o0rQHa8UO9xChO7GTZVNzXcH3pKvkGChOXpl5lnuyvtPWyheS4qv2CR3-x8zv6j4uwOrIjC09Sau0NDw9qwmlB_4Qu1rowJ-36qT_xhU9XzpXZKmKYyJOkkLuk6saq__Xy1LLzsKZEE7WCcARd--Sw7uAUYY_ItSAq3gpzxMsF2mktgCGmJThuG2iRurm43A">
+<span class="absolute top-2 right-2 px-2 py-0.5 rounded bg-surface-container-lowest/90 text-[10px] font-label-caps text-primary border border-outline-variant/30">3000+ IO</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Mythic+ Keystone Hero</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm mt-1 leading-relaxed">
+Titan cosmic portal crest. Complete all Season 1 dungeons timed at +10 and +12. Unlocks dungeon teleport gateways directly.
+</p>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<span class="font-label-data text-label-data text-primary font-bold">From $64.00</span>
+<button class="text-on-surface hover:text-primary font-label-caps text-[11px] flex items-center gap-1 transition-colors">
+Configure <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Pillar 2: Gladiator & R1 Arena -->
+<div class="bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 p-5 rounded relative hover:border-primary transition-all duration-200 group flex flex-col justify-between hover:shadow-[0_0_20px_rgba(78,222,163,0.15)]">
+<div>
+<div class="relative w-full aspect-square mb-4 rounded bg-surface-container/60 flex items-center justify-center p-3 border border-outline-variant/30 overflow-hidden">
+<img alt="Gladiator Sinister Rating Crest" class="w-full h-full object-contain filter drop-shadow-md group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1XGMl9zl9230x7EgA3i5IzRc7t5GCN0Qb4Vdw5lP1VaScljA9MhOdHxRiANLYDmsSe4Ta39pj4Na3XpCueAc6_Za76Tvrq-hRTQ485GqpUHG2qt-dA6qtBTliK9o1e-us3j7YvbWInyonTUWmHVzbHn3J5so4kGnyrjE3MQMFZdg3GyfsZmignx0oyDieCQFmfkU9kD0UdP3Wjow74mBQMlK1qMWjp-A9kmtCce864VoVAdWsOkJ11AGzMk">
+<span class="absolute top-2 right-2 px-2 py-0.5 rounded bg-surface-container-lowest/90 text-[10px] font-label-caps text-error border border-outline-variant/30">2400+ 3v3</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Gladiator &amp; R1 Arena</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm mt-1 leading-relaxed">
+Barbed fel green dragon wings. 50 wins above 2400 in 3v3 Arena. Guarantees the exclusive Sinister Gladiator seasonal drake mount.
+</p>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<span class="font-label-data text-label-data text-primary font-bold">From $320.00</span>
+<button class="text-on-surface hover:text-primary font-label-caps text-[11px] flex items-center gap-1 transition-colors">
+Configure <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Pillar 3: Elite 2400 Rating -->
+<div class="bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 p-5 rounded relative hover:border-primary transition-all duration-200 group flex flex-col justify-between hover:shadow-[0_0_20px_rgba(78,222,163,0.15)]">
+<div>
+<div class="relative w-full aspect-square mb-4 rounded bg-surface-container/60 flex items-center justify-center p-3 border border-outline-variant/30 overflow-hidden">
+<img alt="Elite 2400 Rating Shield" class="w-full h-full object-contain filter drop-shadow-md group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1VXIctauQt0oSX5oLLrrpRbzvWP-D5Lt11bBJBTZ0QI001mv8HwuCRe5Qi1pYPn--XAk_spLZHtSO0sPaCgUz_EXOpMM9StjELW6tibq3OCN4SqJ7qk334tm_o-CX7nD9t1b9XCbL0ZTovIlbQtVTyq62dNBnavsMZEAAhPG7JsxMPL_p9l1ST6Wrv4Aa2q21mbi3JVN6TJib19CoDWPzmb3fceOo9iDZlrN5nxtxL4KgRkcMW1Y7vroK-h">
+<span class="absolute top-2 right-2 px-2 py-0.5 rounded bg-surface-container-lowest/90 text-[10px] font-label-caps text-primary border border-outline-variant/30">Solo / 3s</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Elite 2400 Rating</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm mt-1 leading-relaxed">
+Majestic platinum gold lion shield. Full seasonal PvP Elite transmog weapon enchant, tabard, cloak, and achievement unlock.
+</p>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<span class="font-label-data text-label-data text-primary font-bold">From $180.00</span>
+<button class="text-on-surface hover:text-primary font-label-caps text-[11px] flex items-center gap-1 transition-colors">
+Configure <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Pillar 4: Cutting Edge Mythic Raid -->
+<div class="bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 p-5 rounded relative hover:border-primary transition-all duration-200 group flex flex-col justify-between hover:shadow-[0_0_20px_rgba(78,222,163,0.15)]">
+<div>
+<div class="relative w-full aspect-square mb-4 rounded bg-surface-container/60 flex items-center justify-center p-3 border border-outline-variant/30 overflow-hidden">
+<img alt="Cutting Edge Mythic Raid Celestial Crest" class="w-full h-full object-contain filter drop-shadow-md group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1WUMc41qyOA1VBry_U8ryfFE36uM0o77_9KIZdzYto2O_ST-0_5wEEq5UzbayGZAxj8--dR86rXuCO1VOz6YSbBH8YhmFTSNEI8kIVJ4URkrwg2FTJY0GqlgkB_kN3o7HoScDP7quII-b6RrLRPUJjzbPN1zfdqbs8IoEoVz_8DvmFj9hkENppPaqsAJNJ3pkDP0Y4iFJptcEzNaRLFFnIXHFPJIa0RiKLYojodQt2ejfXVOHLx4uZegWRG">
+<span class="absolute top-2 right-2 px-2 py-0.5 rounded bg-surface-container-lowest/90 text-[10px] font-label-caps text-tertiary border border-outline-variant/30">Nerub-ar CE</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Cutting Edge Raid</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm mt-1 leading-relaxed">
+Void celestial crest. 8/8 Mythic Nerub-ar Palace &amp; Queen Ansurek kill. Includes Hall of Fame title and Ascendant Skyrazor mount.
+</p>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<span class="font-label-data text-label-data text-primary font-bold">From $290.00</span>
+<button class="text-on-surface hover:text-primary font-label-caps text-[11px] flex items-center gap-1 transition-colors">
+Configure <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: INTERACTIVE MYTHIC+ & PVP BOOSTING CONFIGURATOR -->
+<section class="p-6 md:p-10 border-b border-outline-variant/30 backdrop-blur-md bg-[#061610]/60" id="boosting">
+<div class="max-w-7xl mx-auto space-y-6">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase">Direct Allocation Engine</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">Configure Custom WoW Carry Protocol</h2>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Interactive Selector Matrix (Left 8 Cols) -->
+<div class="lg:col-span-8 bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 rounded p-6 space-y-6">
+<!-- Service Mode Switcher -->
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Select Campaign Mode</label>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+<button class="p-3 rounded bg-primary text-on-primary font-label-data text-label-data font-bold text-left flex items-center justify-between shadow-[0_0_12px_rgba(78,222,163,0.2)]">
+<span class="">Mythic+ Dungeon Run</span>
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+</button>
+<button class="p-3 rounded bg-[#061610]/70 border border-outline-variant/40 text-on-surface-variant hover:text-on-surface hover:border-primary/50 font-label-data text-label-data font-bold text-left flex items-center justify-between transition-colors">
+<span class="">3v3 Solo Shuffle / Arena</span>
+<span class="material-symbols-outlined text-[18px]">swords</span>
+</button>
+<button class="p-3 rounded bg-[#061610]/70 border border-outline-variant/40 text-on-surface-variant hover:text-on-surface hover:border-primary/50 font-label-data text-label-data font-bold text-left flex items-center justify-between transition-colors">
+<span class="">Mythic Raid Full Clear</span>
+<span class="material-symbols-outlined text-[18px]">shield</span>
+</button>
+</div>
+</div>
+<!-- Starting and Target Rating Sliders / Inputs -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-[#061610]/70 p-4 rounded border border-outline-variant/30">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Current M+ Score</span>
+<span class="font-label-data text-label-data text-on-surface font-bold">1,800 IO</span>
+</div>
+<input class="w-full accent-primary bg-surface-container h-2 rounded cursor-pointer" max="2800" min="0" type="range" value="1800">
+<div class="flex justify-between text-[11px] text-outline mt-1 font-label-caps">
+<span class="">0 (Fresh)</span>
+<span class="">1,500</span>
+<span class="">2,000 (KSM)</span>
+</div>
+</div>
+<div class="bg-[#061610]/70 p-4 rounded border border-outline-variant/30">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-label-caps text-primary uppercase">Target Destination</span>
+<span class="font-label-data text-label-data text-primary font-bold">3,000 IO (Keystone Hero)</span>
+</div>
+<input class="w-full accent-primary bg-surface-container h-2 rounded cursor-pointer" max="3400" min="2000" type="range" value="3000">
+<div class="flex justify-between text-[11px] text-outline mt-1 font-label-caps">
+<span class="">2,000</span>
+<span class="">2,500</span>
+<span class="">3,200+ (0.1% Title)</span>
+</div>
+</div>
+</div>
+<!-- Class & Role Specification -->
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Character Specialization &amp; Role</label>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+<button class="p-2.5 rounded bg-[#061610]/70 border border-outline-variant/30 hover:border-primary text-on-surface flex items-center gap-2 font-label-caps text-label-caps transition-colors">
+<span class="material-symbols-outlined text-primary text-[18px]">security</span> Tank
+</button>
+<button class="p-2.5 rounded bg-[#061610]/70 border border-outline-variant/30 hover:border-primary text-on-surface flex items-center gap-2 font-label-caps text-label-caps transition-colors">
+<span class="material-symbols-outlined text-primary text-[18px]">health_and_safety</span> Healer
+</button>
+<button class="p-2.5 rounded bg-[#061610]/70 border border-primary text-primary flex items-center gap-2 font-label-caps text-label-caps shadow-[0_0_10px_rgba(78,222,163,0.15)]">
+<span class="material-symbols-outlined text-primary text-[18px]">swords</span> Melee DPS
+</button>
+<button class="p-2.5 rounded bg-[#061610]/70 border border-outline-variant/30 hover:border-primary text-on-surface flex items-center gap-2 font-label-caps text-label-caps transition-colors">
+<span class="material-symbols-outlined text-primary text-[18px]">magic_button</span> Ranged DPS
+</button>
+</div>
+</div>
+<!-- Tactical Security Checkboxes -->
+<div class="space-y-3 pt-2">
+<span class="block font-label-caps text-label-caps text-on-surface-variant uppercase">Tactical Security &amp; Custom Options</span>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+<label class="flex items-center gap-3 p-3 rounded bg-[#061610]/70 border border-outline-variant/30 cursor-pointer hover:bg-surface-container/60 transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary bg-surface-container border-outline-variant/40 focus:ring-0" type="checkbox">
+<div class="text-xs">
+<span class="text-on-surface font-semibold block">Clean HWID &amp; Local VPN</span>
+<span class="text-on-surface-variant text-[11px]">Matched to user IP region (FREE)</span>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded bg-[#061610]/70 border border-outline-variant/30 cursor-pointer hover:bg-surface-container/60 transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary bg-surface-container border-outline-variant/40 focus:ring-0" type="checkbox">
+<div class="text-xs">
+<span class="text-on-surface font-semibold block">Self-Play / Play With Boosters</span>
+<span class="text-primary text-[11px]">No account sharing (+$28.00)</span>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded bg-[#061610]/70 border border-outline-variant/30 cursor-pointer hover:bg-surface-container/60 transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary bg-surface-container border-outline-variant/40 focus:ring-0" type="checkbox">
+<div class="text-xs">
+<span class="text-on-surface font-semibold block">Loot Funnel 4x Armor Stack</span>
+<span class="text-on-surface-variant text-[11px]">All non-locked tradeable gear (FREE)</span>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded bg-[#061610]/70 border border-outline-variant/30 cursor-pointer hover:bg-surface-container/60 transition-colors">
+<input checked="" class="w-4 h-4 rounded text-primary bg-surface-container border-outline-variant/40 focus:ring-0" type="checkbox">
+<div class="text-xs">
+<span class="text-on-surface font-semibold block">Stream Private 1080p 60fps</span>
+<span class="text-on-surface-variant text-[11px]">Encrypted Discord Link (FREE)</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Order Telemetry Summary & Instant Escrow Order (Right 4 Cols) -->
+<div class="lg:col-span-4 bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 rounded p-6 space-y-6">
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant/30">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Escrow Telemetry</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Execution Receipt</h3>
+</div>
+<img alt="Destination Badge" class="w-12 h-12 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1W9J5hCMUveJ5bnxMToFavweSa0x7SsG5AVxdtxDRjjix-mdJjU9zCkOPf1o0rQHa8UO9xChO7GTZVNzXcH3pKvkGChOXpl5lnuyvtPWyheS4qv2CR3-x8zv6j4uwOrIjC09Sau0NDw9qwmlB_4Qu1rowJ-36qT_xhU9XzpXZKmKYyJOkkLuk6saq__Xy1LLzsKZEE7WCcARd--Sw7uAUYY_ItSAq3gpzxMsF2mktgCGmJThuG2iRurm43A">
+</div>
+<div class="space-y-3 font-body-sm text-body-sm">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Target Metric</span>
+<span class="text-on-surface font-semibold">Keystone Hero (3,000 IO)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Execution Mode</span>
+<span class="text-primary font-semibold">Self-Play (Duo/Trio)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">ETA Window</span>
+<span class="text-on-surface font-semibold">12 - 24 Hours</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Assigned Booster</span>
+<span class="text-on-surface font-semibold text-right">Echo / Method Caliber HoF</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Warden Detection Risk</span>
+<span class="text-primary font-semibold">0.00% Zero Anomaly</span>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/30">
+<div class="flex items-baseline justify-between mb-4">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Escrow Locked Total</span>
+<span class="font-headline-lg text-headline-lg text-primary font-bold">$89.00</span>
+</div>
+<button class="w-full py-3 px-4 rounded bg-primary hover:bg-primary-fixed text-on-primary font-label-caps text-label-caps font-bold uppercase tracking-wider text-center active:scale-[0.98] transition-all shadow-[0_0_16px_rgba(78,222,163,0.25)] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+INSTANT ESCROW ORDER
+</button>
+<p class="text-center font-label-caps text-[11px] text-outline mt-2">
+Funds held in smart contract escrow until rating is verified on Armory.
+</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: AUDITED SMURF, CHARACTERS & RARE MOUNT VAULT -->
+<section class="p-6 md:p-10 border-b border-outline-variant/30 bg-[#061610]/50 backdrop-blur-sm" id="marketplace">
+<div class="max-w-7xl mx-auto space-y-6">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="inline-flex items-center gap-2 text-primary font-label-caps text-label-caps mb-1">
+<span class="material-symbols-outlined text-[14px]">lock_open</span> BATTLE.NET PROVENANCE AUDIT
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">Audited Mythic Accounts &amp; Rare Characters</h2>
+</div>
+<a class="text-primary hover:underline font-label-data text-label-data flex items-center gap-1" href="#">
+View All 480 Audited Vault Listings <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1: Cutting Edge Warlock -->
+<div class="bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 rounded p-5 hover:border-primary transition-all flex flex-col justify-between hover:shadow-[0_0_20px_rgba(78,222,163,0.15)]">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 rounded bg-surface-container/70 text-primary font-label-caps text-[11px] border border-outline-variant/30">639 ilvl BiS</span>
+<span class="font-label-caps text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Clean OGE Email
+</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Cutting Edge 639 ilvl Warlock</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm mt-1 leading-relaxed">
+Mythic Queen Ansurek Kill, Ascendant Skyrazor mount in bags, 4-piece Tier Set BiS mythic sockets.
+</p>
+</div>
+<div class="space-y-1 text-xs border-t border-outline-variant/30 pt-3">
+<div class="flex justify-between text-on-surface-variant"><span class="">Server &amp; Faction</span> <span class="text-on-surface">Tarren Mill [EU Horde]</span></div>
+<div class="flex justify-between text-on-surface-variant"><span class="">Warranty Bond</span> <span class="text-primary">30-Day Anti-Revoke</span></div>
+</div>
+</div>
+<div class="mt-5 pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<div>
+<span class="text-outline text-[11px] block font-label-caps">ESCROW PRICE</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">$490.00</span>
+</div>
+<button class="px-4 py-2 rounded bg-surface-container/70 border border-outline-variant/40 hover:border-primary text-on-surface hover:text-primary font-label-caps text-[11px] font-semibold transition-colors">
+Inspect Armory
+</button>
+</div>
+</div>
+<!-- Card 2: Sinister Gladiator Paladin -->
+<div class="bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 rounded p-5 hover:border-primary transition-all flex flex-col justify-between hover:shadow-[0_0_20px_rgba(78,222,163,0.15)]">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 rounded bg-surface-container/70 text-error font-label-caps text-[11px] border border-outline-variant/30">2700 CR PvP</span>
+<span class="font-label-caps text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Instant Transfer
+</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Sinister Gladiator Paladin</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm mt-1 leading-relaxed">
+Gladiator Mount in bags, Sinister Tabard &amp; Glorious Tyranny weapon illusions, 636 PvP ilvl.
+</p>
+</div>
+<div class="space-y-1 text-xs border-t border-outline-variant/30 pt-3">
+<div class="flex justify-between text-on-surface-variant"><span class="">Server &amp; Faction</span> <span class="text-on-surface">Illidan [US Horde]</span></div>
+<div class="flex justify-between text-on-surface-variant"><span class="">Warranty Bond</span> <span class="text-primary">Lifetime Provenance</span></div>
+</div>
+</div>
+<div class="mt-5 pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<div>
+<span class="text-outline text-[11px] block font-label-caps">ESCROW PRICE</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">$380.00</span>
+</div>
+<button class="px-4 py-2 rounded bg-surface-container/70 border border-outline-variant/40 hover:border-primary text-on-surface hover:text-primary font-label-caps text-[11px] font-semibold transition-colors">
+Inspect Armory
+</button>
+</div>
+</div>
+<!-- Card 3: Keystone Hero Evoker -->
+<div class="bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 rounded p-5 hover:border-primary transition-all flex flex-col justify-between hover:shadow-[0_0_20px_rgba(78,222,163,0.15)]">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 rounded bg-surface-container/70 text-primary font-label-caps text-[11px] border border-outline-variant/30">3100 IO Score</span>
+<span class="font-label-caps text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> First Owner
+</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Keystone Hero 626 Evoker</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm mt-1 leading-relaxed">
+Augmentation spec optimized. 8/8 Dungeon Teleport portals, Diamond Mech Suit Mount unlocked.
+</p>
+</div>
+<div class="space-y-1 text-xs border-t border-outline-variant/30 pt-3">
+<div class="flex justify-between text-on-surface-variant"><span class="">Server &amp; Faction</span> <span class="text-on-surface">Silvermoon [EU Alliance]</span></div>
+<div class="flex justify-between text-on-surface-variant"><span class="">Warranty Bond</span> <span class="text-primary">30-Day Anti-Revoke</span></div>
+</div>
+</div>
+<div class="mt-5 pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<div>
+<span class="text-outline text-[11px] block font-label-caps">ESCROW PRICE</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">$145.00</span>
+</div>
+<button class="px-4 py-2 rounded bg-surface-container/70 border border-outline-variant/40 hover:border-primary text-on-surface hover:text-primary font-label-caps text-[11px] font-semibold transition-colors">
+Inspect Armory
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5: TURNKEY FIXED VALUE PACKAGES -->
+<section class="p-6 md:p-10 border-b border-outline-variant/30 bg-[#061610]/40 backdrop-blur-sm" id="packages">
+<div class="max-w-7xl mx-auto space-y-6">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase">Guaranteed Loot &amp; Vault Output</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">Turnkey Fixed Value Packages</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 p-6 rounded space-y-4 hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-center">
+<span class="text-xs font-label-caps text-primary uppercase">Vault Optimizer</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">$64.00</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">8x Mythic +10 Timed Runs</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+Guarantees all 3 Great Vault raid slots with 623/636 max item level gear. Loot funnelers included.
+</p>
+<ul class="text-xs text-on-surface space-y-2 border-t border-outline-variant/30 pt-3">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[14px]">check</span> Guaranteed In-Time Clear</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[14px]">check</span> Gilded Crests Farm</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[14px]">check</span> Self-Play or Pilot Option</li>
+</ul>
+<button class="w-full py-2.5 rounded bg-surface-container/80 hover:bg-surface-container-high border border-outline-variant/40 hover:border-primary/50 text-primary font-label-caps text-label-caps uppercase font-bold transition-all">
+Instant Reserve Slot
+</button>
+</div>
+<div class="bg-[#0e1f18]/80 backdrop-blur-sm border border-primary p-6 rounded space-y-4 relative shadow-[0_0_24px_rgba(78,222,163,0.15)]">
+<span class="absolute -top-2.5 right-4 px-2 py-0.5 rounded bg-primary text-on-primary font-label-caps text-[10px] font-bold uppercase">Popular Choice</span>
+<div class="flex justify-between items-center">
+<span class="text-xs font-label-caps text-primary uppercase">Full Raid Clear</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">$45.00</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Heroic Nerub-ar Palace Full</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+8/8 Heroic Boss clear including Queen Ansurek Ahead of the Curve achievement and tradeable loot distribution.
+</p>
+<ul class="text-xs text-on-surface space-y-2 border-t border-outline-variant/30 pt-3">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[14px]">check</span> AOTC: Queen Ansurek Feat</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[14px]">check</span> 610-619 Heroic Gear Drops</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[14px]">check</span> Starts in under 45 mins</li>
+</ul>
+<button class="w-full py-2.5 rounded bg-primary text-on-primary font-label-caps text-label-caps uppercase font-bold hover:bg-primary-fixed transition-all shadow-[0_0_12px_rgba(78,222,163,0.2)]">
+Instant Reserve Slot
+</button>
+</div>
+<div class="bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 p-6 rounded space-y-4 hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-center">
+<span class="text-xs font-label-caps text-primary uppercase">PvP Skill Coaching</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">$58.00</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">0 to 1800 Rating Solo Shuffle</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+Targeted Solo Shuffle rating push with Discord screen-share review by Multi-Rank 1 Gladiator gladiators.
+</p>
+<ul class="text-xs text-on-surface space-y-2 border-t border-outline-variant/30 pt-3">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[14px]">check</span> Full 1800 Transmog Set</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[14px]">check</span> Live Positional Co-Pilot</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[14px]">check</span> Conquest Cap Completed</li>
+</ul>
+<button class="w-full py-2.5 rounded bg-surface-container/80 hover:bg-surface-container-high border border-outline-variant/40 hover:border-primary/50 text-primary font-label-caps text-label-caps uppercase font-bold transition-all">
+Instant Reserve Slot
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 6: DIRECT WOW GOLD & TOKEN GATEWAY -->
+<section class="p-6 md:p-10 border-b border-outline-variant/30 bg-[#061610]/50 backdrop-blur-sm" id="gold">
+<div class="max-w-7xl mx-auto space-y-6">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="inline-flex items-center gap-2 text-primary font-label-caps text-label-caps mb-1">
+<span class="material-symbols-outlined text-[14px]">payments</span> 0.8S DISBURSEMENT ENGINE
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">Direct WoW Gold &amp; Token Gateway</h2>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Instant AH Buyout / Guild Bank Transfer Safe
+</span>
+</div>
+<div class="bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 rounded p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Realm & Character Input (Left 6 Cols) -->
+<div class="lg:col-span-6 space-y-4">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase">1. Select Target Realm &amp; Faction</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="p-3 rounded bg-[#061610]/70 border border-primary text-primary font-label-caps text-label-caps text-left flex justify-between items-center shadow-[0_0_10px_rgba(78,222,163,0.15)]">
+<span class="">Tarren Mill - EU Horde</span>
+<span class="material-symbols-outlined text-[14px]">check</span>
+</button>
+<button class="p-3 rounded bg-[#061610]/70 border border-outline-variant/30 text-on-surface-variant font-label-caps text-label-caps text-left hover:border-primary transition-colors">
+Illidan - US Horde
+</button>
+<button class="p-3 rounded bg-[#061610]/70 border border-outline-variant/30 text-on-surface-variant font-label-caps text-label-caps text-left hover:border-primary transition-colors">
+Silvermoon - EU Alliance
+</button>
+<button class="p-3 rounded bg-[#061610]/70 border border-outline-variant/30 text-on-surface-variant font-label-caps text-label-caps text-left hover:border-primary transition-colors">
+Stormrage - US Alliance
+</button>
+</div>
+<div class="space-y-2 pt-2">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase">2. Character Name for Delivery</label>
+<input class="w-full bg-[#061610]/70 border border-outline-variant/30 rounded px-3 py-2.5 text-on-surface placeholder:text-outline/60 text-sm focus:border-primary focus:ring-0" placeholder="e.g. Frostblade-TarrenMill" type="text">
+</div>
+<div class="space-y-2">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase">3. Preferred Safe Delivery Method</label>
+<div class="space-y-1.5 text-xs">
+<label class="flex items-center gap-2 p-2 rounded bg-[#061610]/70 border border-outline-variant/30 cursor-pointer hover:bg-surface-container/60 transition-colors">
+<input checked="" class="text-primary bg-surface-container border-outline-variant/40 focus:ring-0" name="delivery" type="radio">
+<span class="text-on-surface font-semibold">Guild Bank Deposit (Instant 0-Risk Audit)</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded bg-[#061610]/70 border border-outline-variant/30 cursor-pointer hover:bg-surface-container/60 transition-colors">
+<input class="text-primary bg-surface-container border-outline-variant/40 focus:ring-0" name="delivery" type="radio">
+<span class="text-on-surface font-semibold">Auction House Buyout (5% AH Fee Covered by Us)</span>
+</label>
+<label class="flex items-center gap-2 p-2 rounded bg-[#061610]/70 border border-outline-variant/30 cursor-pointer hover:bg-surface-container/60 transition-colors">
+<input class="text-primary bg-surface-container border-outline-variant/40 focus:ring-0" name="delivery" type="radio">
+<span class="text-on-surface font-semibold">Face-to-Face Trade (Valdrakken / Dornogal Bank)</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Pack Selector & Checkout (Right 6 Cols) -->
+<div class="lg:col-span-6 flex flex-col justify-between space-y-4">
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">4. Select Liquidity Amount</label>
+<div class="grid grid-cols-2 gap-3">
+<div class="p-4 rounded bg-[#061610]/70 border border-outline-variant/30 hover:border-primary cursor-pointer transition-all">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold block">1,000,000 Gold</span>
+<span class="text-primary font-label-data text-label-data">$18.50 USD</span>
+</div>
+<div class="p-4 rounded bg-[#061610]/70 border border-primary cursor-pointer transition-all relative shadow-[0_0_15px_rgba(78,222,163,0.12)]">
+<span class="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-primary/20 text-primary font-label-caps text-[10px]">Best Value</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold block">5,000,000 Gold</span>
+<span class="text-primary font-label-data text-label-data">$85.00 USD</span>
+</div>
+<div class="p-4 rounded bg-[#061610]/70 border border-outline-variant/30 hover:border-primary cursor-pointer transition-all">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold block">10,000,000 Gold</span>
+<span class="text-primary font-label-data text-label-data">$160.00 USD</span>
+</div>
+<div class="p-4 rounded bg-[#061610]/70 border border-outline-variant/30 hover:border-primary cursor-pointer transition-all">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold block">60-Day WoW Token</span>
+<span class="text-primary font-label-data text-label-data">$24.99 USD</span>
+</div>
+</div>
+</div>
+<!-- Instant Checkout Trigger -->
+<div class="p-4 bg-[#061610]/70 rounded border border-outline-variant/30 flex items-center justify-between">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase block">Calculated Total</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">$85.00 USD</span>
+</div>
+<button class="py-2.5 px-6 rounded bg-primary hover:bg-primary-fixed text-on-primary font-label-caps text-label-caps font-bold uppercase shadow-[0_0_12px_rgba(78,222,163,0.2)] transition-all">
+BUY NOW (0.8s ESCROW)
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 7: INSTITUTIONAL ESCROW PROTOCOL -->
+<section class="p-6 md:p-10 border-b border-outline-variant/30 bg-[#061610]/50 backdrop-blur-sm" id="escrow">
+<div class="max-w-7xl mx-auto space-y-6">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase">Risk Mitigation Framework</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">Institutional Escrow &amp; Security Protocol</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-5 rounded bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 space-y-2 hover:border-primary/50 transition-colors">
+<div class="w-10 h-10 rounded bg-surface-container-high/80 border border-outline-variant/30 flex items-center justify-center text-primary mb-3">
+<span class="material-symbols-outlined">gavel</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">3rd-Party Battle.net Unbind &amp; OGE Audit</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+Original Owner Identity verification, phone unbind verification, and IP history sanitation before disbursement release.
+</p>
+</div>
+<div class="p-5 rounded bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 space-y-2 hover:border-primary/50 transition-colors">
+<div class="w-10 h-10 rounded bg-surface-container-high/80 border border-outline-variant/30 flex items-center justify-center text-primary mb-3">
+<span class="material-symbols-outlined">shield</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">30-Day Anti-Revocation &amp; Ban Warranty</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+Full monetary restitution backed by the Playora Reserve Pool in the event of Blizzard disciplinary action or character dispute.
+</p>
+</div>
+<div class="p-5 rounded bg-[#0e1f18]/70 backdrop-blur-sm border border-outline-variant/30 space-y-2 hover:border-primary/50 transition-colors">
+<div class="w-10 h-10 rounded bg-surface-container-high/80 border border-outline-variant/30 flex items-center justify-center text-primary mb-3">
+<span class="material-symbols-outlined">support_agent</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">24/7 Human Arbiter Desk</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+Disputes resolved in under 15 minutes by former World First Hall of Fame raid leaders and Multi-Rank 1 competitive referees.
+</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- ========================================================================= -->
+<!-- FOOTER (Shared Component: Footer Anchor)                                  -->
+<!-- ========================================================================= -->
+<footer class="md:ml-64 w-full md:w-[calc(100%-16rem)] border-t border-outline-variant/30 px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4 bg-[#061610]/80 backdrop-blur-md relative z-10">
+<div class="flex flex-col sm:flex-row items-center gap-4">
+<span class="font-label-caps text-label-data uppercase tracking-wider text-primary font-bold">Playora</span>
+<p class="text-body-sm font-body-sm text-on-surface-variant text-center sm:text-left">
+© 2025 Playora Escrow Technologies Ltd. High-Performance Esports Terminal. All Rights Reserved.
+</p>
+</div>
+<!-- Mandatory Footer Links -->
+<div class="flex flex-wrap items-center justify-center gap-4">
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors duration-150" href="#">Terms of Escrow</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors duration-150" href="#">AML/KYC Policy</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors duration-150" href="#">BNet API Telemetry</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors duration-150" href="#">Dispute Protocol</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors duration-150" href="#">System Status</a>
+</div>
+</footer>
+<div class="fixed right-0 top-0 bottom-0 w-[14px] z-50 hidden lg:flex flex-col items-center justify-between py-16 select-none pointer-events-none group bg-[#02110b]/40 border-l border-primary/20 backdrop-blur-[2px]" id="hud-scroll-telemetry"><div class="font-label-caps text-[9px] text-primary tracking-widest uppercase -rotate-90 origin-center whitespace-nowrap mb-6 font-bold drop-shadow-[0_0_8px_rgba(78,222,163,0.8)]" id="hud-percent-text">HUD // 84%</div><div class="w-1.5 flex-1 rounded-full bg-surface-container-lowest/80 border border-primary/30 relative overflow-hidden backdrop-blur-md shadow-[0_0_12px_rgba(78,222,163,0.2)] my-4"><div class="absolute top-10 left-0 right-0 w-full h-24 rounded-full bg-gradient-to-b from-primary-fixed via-primary to-secondary-container shadow-[0_0_15px_rgba(78,222,163,0.9)]" id="hud-scroll-thumb"></div></div><div class="text-[8px] font-label-data text-primary/80 tracking-wider font-semibold flex flex-col items-center gap-1 mt-6"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(78,222,163,0.9)]"></span><span class="-rotate-90 origin-center text-[8px] uppercase tracking-widest text-primary">SYNC</span></div></div>
+
+
+</body></html>

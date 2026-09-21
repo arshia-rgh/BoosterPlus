@@ -1,6 +1,8 @@
 # PLAYORA — final launch: R10 and R11
 
-**Status: ON HOLD.** The owner has deferred production-readiness implementation and launch until the [UI/UX roadmap](UI_UX_ROADMAP.md) is completed and reviewed. Neither this document nor completion of a UX phase authorizes resuming R10/R11. Separate explicit owner authorization is required.
+> **Hold reaffirmed — 21 September 2026.** The design-first work in [docs/redesign/](docs/redesign/README.md) does not resume R10/R11. All retained scope and launch prerequisites below remain applicable after design acceptance and separate authorization.
+
+**Status: ON HOLD.** The owner has deferred production-readiness implementation and launch while the [design-first redesign](docs/redesign/README.md) is completed and reviewed. Neither this document nor completion of a UX phase authorizes resuming R10/R11. Separate explicit owner authorization is required.
 
 Updated: 13 September 2026. R08 is delivered as `6da4bd592e94e4f85ec87b1e2be8ccf2b8d126d6`; R09 is delivered as `7f9b7e00d9f0a6025b46bfb7cb33372bc27f987f`. These are implementation deliveries with local qualification, not production-launch certification.
 

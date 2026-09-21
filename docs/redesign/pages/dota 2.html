@@ -1,0 +1,1012 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Playora - Dota 2 Dedicated Game Hub</title>
+<!-- Google Fonts: Space Grotesk, Plus Jakarta Sans & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration verbatim (Design System 1: Playora Emerald Dynamic) -->
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-primary-container": "#00422b",
+          "on-primary-fixed": "#002113",
+          "inverse-primary": "#006c49",
+          "on-background": "#d3e7db",
+          "outline": "#86948a",
+          "surface-container-low": "#0e1f18",
+          "on-primary": "#003824",
+          "on-surface-variant": "#bbcabf",
+          "surface-tint": "#4edea3",
+          "on-tertiary-fixed": "#002115",
+          "primary": "#4edea3",
+          "on-tertiary-container": "#00422e",
+          "on-secondary": "#003827",
+          "error": "#ffb4ab",
+          "surface-container-lowest": "#02110b",
+          "on-error": "#690005",
+          "inverse-on-surface": "#23342c",
+          "primary-container": "#10b981",
+          "secondary-fixed": "#80f9c8",
+          "tertiary-fixed-dim": "#7bd8b1",
+          "secondary-container": "#18a479",
+          "primary-fixed-dim": "#4edea3",
+          "error-container": "#93000a",
+          "surface-container-high": "#1d2d26",
+          "background": "#061610",
+          "secondary": "#62dcad",
+          "secondary-fixed-dim": "#62dcad",
+          "on-secondary-container": "#003121",
+          "tertiary": "#7bd8b1",
+          "outline-variant": "#3c4a42",
+          "on-tertiary-fixed-variant": "#00513a",
+          "on-error-container": "#ffdad6",
+          "on-secondary-fixed-variant": "#00513a",
+          "surface-dim": "#061610",
+          "inverse-surface": "#d3e7db",
+          "on-secondary-fixed": "#002115",
+          "surface-container-highest": "#273830",
+          "primary-fixed": "#6ffbbe",
+          "surface-variant": "#273830",
+          "tertiary-fixed": "#97f5cc",
+          "tertiary-container": "#57b48f",
+          "on-primary-fixed-variant": "#005236",
+          "surface": "#061610",
+          "on-surface": "#d3e7db",
+          "on-tertiary": "#003827",
+          "surface-container": "#12231c",
+          "surface-bright": "#2c3d35"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "gutter-mobile": "0.75rem",
+          "space-xs": "0.25rem",
+          "space-md": "1rem",
+          "space-lg": "1.5rem",
+          "margin-mobile": "1rem",
+          "margin": "2rem",
+          "space-xl": "2.5rem",
+          "space-sm": "0.5rem",
+          "gutter": "1.5rem"
+        },
+        "fontFamily": {
+          "headline-md": ["Space Grotesk", "sans-serif"],
+          "body-lg": ["Plus Jakarta Sans", "sans-serif"],
+          "body-sm": ["Plus Jakarta Sans", "sans-serif"],
+          "headline-sm": ["Space Grotesk", "sans-serif"],
+          "display-hero": ["Space Grotesk", "sans-serif"],
+          "display-hero-mobile": ["Space Grotesk", "sans-serif"],
+          "title-md": ["Plus Jakarta Sans", "sans-serif"],
+          "body-md": ["Plus Jakarta Sans", "sans-serif"],
+          "headline-lg": ["Space Grotesk", "sans-serif"],
+          "label-data": ["JetBrains Mono", "monospace"],
+          "label-caps": ["JetBrains Mono", "monospace"],
+          "headline-lg-mobile": ["Space Grotesk", "sans-serif"]
+        },
+        "fontSize": {
+          "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+          "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+          "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+          "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+          "display-hero": ["56px", { "lineHeight": "64px", "fontWeight": "700" }],
+          "display-hero-mobile": ["38px", { "lineHeight": "44px", "fontWeight": "700" }],
+          "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+          "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+          "headline-lg": ["36px", { "lineHeight": "44px", "fontWeight": "700" }],
+          "label-data": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+          "label-caps": ["11px", { "lineHeight": "16px", "fontWeight": "600" }],
+          "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }]
+        }
+      },
+    },
+  }
+</script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Custom sleek emerald scrollbar for browser */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #02110b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1d2d26;
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #10b981;
+    }
+</style>
+</head>
+<body class="bg-[#061610] text-on-surface antialiased selection:bg-primary/30 selection:text-primary-fixed min-h-screen flex flex-col font-body-md overflow-x-hidden relative">
+<!-- ========================================================================= -->
+<!-- AURORA ATMOSPHERE BACKGROUND (Matched to WoW Hub https://lh3.googleusercontent.com/aida-public/AB6AXuCLujVO4ebBoRjzRDcnvLmjM7VKzeS0kn6-dQ3KEGQdUtJ8-JIEkRSBLWEyFCDSSwHX4KAMcLF5HPk3b6WqcnvmSrWydvhw2JMqZDWINZcNNPqqXcohdnlTX5mv_rHai_qErAXAuPQ-9yDbxzcr4k6Aao6Q16LBVYzkWlhKamCHyJNPkObNqjfGCDeVnvO84nvVnE9ZbVWq3_spKp8VC3w_fSiObCVlILfYZPvgKBQOe5EXrnXCvZnda23jYkV3KMIbZQc) -->
+<!-- ========================================================================= -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden"><img alt="Playora Aurora Atmosphere" class="w-full h-full object-cover opacity-60 filter saturate-150 contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbtTKZb7ZBQLEG3RuOCrdYoNWfr9TixeP2Yt8VsbeVYCQ8F9lZA7dsvDHX_91zjv3TgNf0n3L9NitR9_nL2DTniNKj62LvgIawByVr0nZ2HCC6vC9mg_QvGwTdK8Wdr9-kMNp3m1vF7dhs5F8591wJbSVuxOhRYPnGrl_mX7peDZWkWwBw51WtMcgxiujmSaBVAZe-bz2RueZQv6VTa8EO4DR6MGHNcPav_4enu5NBCZqp9lRlxvo7Bw"><div class="absolute inset-0 bg-gradient-to-b from-[#061610]/60 via-[#061610]/40 to-[#02110b]/80"></div></div>
+<!-- ========================================================================= -->
+<!-- TOP GLOBAL APP BAR                                                        -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-2.5 border-b border-outline-variant/30 bg-[#061610]/80 backdrop-blur-md">
+<!-- Brand + Game Hub Swapper -->
+<div class="flex items-center gap-6">
+<a class="flex items-center gap-2 group" href="#">
+<img alt="Playora Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3iJK9sU23P0u0cUb9yp1HK6CSHG6prSfpoltdwDd1hz-wsx7rmgmlUv2tYMRSVLU6W8BlKzIF26zkVxpVDyBAd5IucMPweRhim9A9JTvhyXN0zTayK5lAtwhmVHuzvnr0rHUAeX-wPWlghUA65eJaIG237xo2IJT9JZP-nUXapm8LIE7mQ5LS2z-pTN_YB4QHzLFGbPu6HAM8wOSeji-g0x_6Bv3ImGhoVqgFyNC9WXvFlKSzzFNopA">
+</a>
+<!-- Network Games Tabs -->
+<nav class="hidden lg:flex items-center gap-1.5 border-l border-outline-variant/30 pl-5 text-label-caps font-label-caps">
+<a class="px-2.5 py-1 rounded bg-[#0e1f18]/60 border border-outline-variant/40 text-on-surface-variant hover:text-on-surface hover:border-primary/50 transition-all flex items-center gap-1.5" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span> MLBB
+      </a>
+<a class="px-2.5 py-1 rounded bg-[#0e1f18]/60 border border-outline-variant/40 text-on-surface-variant hover:text-on-surface hover:border-primary/50 transition-all flex items-center gap-1.5" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span> VALORANT
+      </a>
+<a class="px-3 py-1 rounded bg-surface-container/70 text-primary font-bold flex items-center gap-1.5 border border-primary/50 shadow-[0_0_12px_rgba(78,222,163,0.15)]" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+        Dota 2
+      </a>
+<a class="px-2.5 py-1 rounded bg-[#0e1f18]/60 border border-outline-variant/40 text-on-surface-variant hover:text-on-surface hover:border-primary/50 transition-all flex items-center gap-1.5" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span> LoL
+      </a>
+<a class="px-2.5 py-1 rounded bg-[#0e1f18]/60 border border-outline-variant/40 text-on-surface-variant hover:text-on-surface hover:border-primary/50 transition-all flex items-center gap-1.5" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span> Wild Rift
+      </a>
+<span class="h-4 w-px bg-outline-variant/40 mx-2"></span>
+<a class="text-on-surface-variant font-label-data text-label-data hover:text-primary transition-colors" href="#marketplace">Marketplace</a>
+<a class="text-on-surface-variant font-label-data text-label-data hover:text-primary transition-colors ml-3" href="#boosting">Boosting</a>
+<a class="text-on-surface-variant font-label-data text-label-data hover:text-primary transition-colors ml-3" href="#packages">Packages</a>
+<a class="text-on-surface-variant font-label-data text-label-data hover:text-primary transition-colors ml-3" href="#steam-gateway">Steam Item Vault</a>
+<a class="text-on-surface-variant font-label-data text-label-data hover:text-primary transition-colors ml-3" href="#escrow-protocol">Escrow</a>
+</nav>
+</div>
+<!-- Right Telemetry & Actions -->
+<div class="flex items-center gap-4">
+<!-- Latency Ping Badge -->
+<div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded bg-[#0e1f18]/70 border border-outline-variant/40">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-primary tracking-wide">14ms SGP</span>
+</div>
+<!-- Escrow Guarantee Pill -->
+<div class="hidden sm:flex items-center gap-1.5 text-label-caps font-label-caps text-primary px-2.5 py-1 rounded bg-surface-container/70 border border-primary/30">
+<span class="material-symbols-outlined text-primary text-[15px]">shield</span>
+<span class="">Escrow Guaranteed</span>
+</div>
+<!-- Support Link -->
+<a class="hidden md:flex items-center gap-1 text-label-data font-label-data text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">headset_mic</span>
+      Support
+    </a>
+<!-- Trailing Primary Action -->
+<button class="bg-primary hover:bg-primary-fixed text-on-primary font-label-caps text-label-caps px-4 py-2 rounded uppercase font-bold tracking-wider flex items-center gap-2 transition-all active:scale-[0.98] shadow-[0_0_15px_rgba(78,222,163,0.25)]">
+<span class="material-symbols-outlined text-[18px]">sports_esports</span>
+<span class="">Connect Wallet / Steam</span>
+</button>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN WRAPPER WITH PERSISTENT SIDEBAR                                      -->
+<!-- ========================================================================= -->
+<div class="flex pt-[53px] flex-1 relative z-10">
+<!-- LEFT SIDEBAR: DOTA 2 DEDICATED TERMINAL -->
+<aside class="fixed left-0 top-[53px] h-[calc(100vh-53px)] w-64 z-40 flex flex-col justify-between border-r border-outline-variant/30 backdrop-blur-md bg-[#061610]/85">
+<!-- Hub Header & Category Nav -->
+<div class="p-4 space-y-4 overflow-y-auto">
+<!-- Game Hub Badge -->
+<div class="p-3 bg-surface-container-low/80 rounded border border-outline-variant/40 flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-[#12231c] border border-primary/30 flex items-center justify-center overflow-hidden p-1.5 flex-shrink-0 shadow-[0_0_10px_rgba(78,222,163,0.15)]">
+<img alt="Dota 2 Official Logo" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(255,80,0,0.3)]" src="https://lh3.googleusercontent.com/aida/AEtjO1WLDpvnhuQ369pZ8r7nVbX4wftKjmsEjRrz0QBnsESJCT3UJIigwk-fFiEWxjMeUm1EWODePyesBlBR9tCzHjEIMBmvJ4FytP3A7Y6GTj6WMBhPcMZ_fJ9XCruMeB7CgjNgM_dgr1xoGwbbD-Ze8Gjad15hOPUCPx86Z8MKFUy8pQ0yY99pMNf8AVzJu1tddBxABhNki8k5UZl_X9PcZfu8SjZhL6IAjxN2_f9kVvZUPVMQ11oVugfVLoE">
+</div>
+<div class="overflow-hidden">
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-sm text-[16px] leading-[22px] text-primary font-bold tracking-tight truncate">Dota 2 Hub</h2>
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+</div>
+<p class="font-label-caps text-[10px] text-on-surface-variant truncate">Steam VAC &amp; 10K Behavior</p>
+</div>
+</div>
+<!-- Instant CTA -->
+<button class="w-full bg-primary hover:bg-primary-fixed text-on-primary font-label-caps text-label-caps py-2.5 px-4 rounded font-bold uppercase tracking-wider flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-[0_0_12px_rgba(78,222,163,0.2)]">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span class="">Instant Order</span>
+</button>
+<!-- Navigation Links -->
+<div class="pt-2 space-y-1">
+<span class="px-3 text-[10px] font-label-caps text-outline uppercase tracking-wider block mb-1">Terminal Routing</span>
+<!-- Item 1: Active -->
+<a class="border-l-2 border-primary bg-surface-container/80 text-primary font-label-data text-label-data flex items-center gap-3 px-3.5 py-2.5 rounded-r shadow-[0_0_10px_rgba(78,222,163,0.1)]" href="#boosting">
+<span class="material-symbols-outlined text-[18px] text-primary">military_tech</span>
+<span class="">MMR &amp; Medal Calibration</span>
+</a>
+<!-- Item 2 -->
+<a class="text-on-surface-variant font-label-data text-label-data flex items-center gap-3 px-3.5 py-2.5 rounded-r hover:bg-surface-container-low/60 hover:text-primary transition-colors" href="#packages">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+<span class="">Fixed Value Packages</span>
+</a>
+<!-- Item 3 -->
+<a class="text-on-surface-variant font-label-data text-label-data flex items-center gap-3 px-3.5 py-2.5 rounded-r hover:bg-surface-container-low/60 hover:text-primary transition-colors" href="#boosting">
+<span class="material-symbols-outlined text-[18px]">group</span>
+<span class="">Duo Coaching &amp; Carry</span>
+</a>
+<!-- Item 4 -->
+<a class="text-on-surface-variant font-label-data text-label-data flex items-center gap-3 px-3.5 py-2.5 rounded-r hover:bg-surface-container-low/60 hover:text-primary transition-colors" href="#accounts">
+<span class="material-symbols-outlined text-[18px]">shield_person</span>
+<span class="">Audited Accounts &amp; Arcana</span>
+</a>
+<!-- Item 5 -->
+<a class="text-on-surface-variant font-label-data text-label-data flex items-center gap-3 px-3.5 py-2.5 rounded-r hover:bg-surface-container-low/60 hover:text-primary transition-colors" href="#steam-gateway">
+<span class="material-symbols-outlined text-[18px]">wallet</span>
+<span class="">Dota Plus &amp; Steam Gateway</span>
+</a>
+<!-- Item 6 -->
+<a class="text-on-surface-variant font-label-data text-label-data flex items-center gap-3 px-3.5 py-2.5 rounded-r hover:bg-surface-container-low/60 hover:text-primary transition-colors" href="#escrow-protocol">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span class="">Escrow Verification</span>
+</a>
+</div>
+</div>
+<!-- Telemetry Footer Status -->
+<div class="p-3 border-t border-outline-variant/30 bg-[#061610]/95">
+<div class="px-3 py-2 bg-surface-container-low/80 rounded border border-outline-variant/40 flex items-center justify-between text-label-caps font-label-caps">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="text-on-surface font-semibold text-[11px]">VAC Safeguard</span>
+</div>
+<span class="text-primary uppercase tracking-tight font-label-data text-[11px]">Active</span>
+</div>
+<div class="mt-2 px-1 flex items-center justify-between text-[11px] font-label-data text-outline">
+<span class="">VALVE API GATEWAY</span>
+<span class="text-primary">1.1s Ping</span>
+</div>
+</div>
+</aside>
+<!-- CONTENT STAGE (Left Margin offset for Sidebar) -->
+<main class="ml-64 flex-1 p-6 lg:p-8 space-y-10 max-w-[1500px]">
+<!-- HERO SHOWCASE SECTION -->
+<section class="relative rounded-lg border border-outline-variant/30 bg-gradient-to-r from-surface-container-low/80 via-surface-container/60 to-surface-container-low/80 p-6 lg:p-8 overflow-hidden backdrop-blur-md shadow-[0_0_30px_rgba(78,222,163,0.08)]">
+<!-- Subtle Grid Matrix Texture -->
+<div class="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:20px_20px] opacity-15 pointer-events-none"></div>
+<div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Left Info Col -->
+<div class="lg:col-span-8 space-y-4">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#0e1f18]/80 border border-outline-variant/40 text-label-caps font-label-caps text-primary uppercase tracking-wider backdrop-blur-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="">Dota 2 Seasonal Leaderboards // Steam VAC Encrypted</span>
+</div>
+<h1 class="text-headline-lg md:text-display-hero-mobile font-headline-lg text-on-surface tracking-tight leading-tight font-bold">
+            Institutional Dota 2 <span class="text-primary">Asset &amp; MMR</span> Service Exchange
+          </h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+            Zero-markup Dota 2 MMR calibration, HWID-cloaked boosting by verified Top 100 Immortal players, Arcana skin trading, and Tier-1 Steam Trade Escrow.
+          </p>
+<!-- 4 Key Metrics Bar -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3">
+<div class="p-3 bg-[#0e1f18]/80 rounded border border-outline-variant/30 backdrop-blur-sm hover:border-primary/40 transition-colors">
+<span class="text-[10px] font-label-caps text-outline uppercase block">Active Boosters</span>
+<span class="text-headline-sm font-headline-sm text-primary font-label-data font-bold">94 Verified</span>
+</div>
+<div class="p-3 bg-[#0e1f18]/80 rounded border border-outline-variant/30 backdrop-blur-sm hover:border-primary/40 transition-colors">
+<span class="text-[10px] font-label-caps text-outline uppercase block">Vaulted Accounts</span>
+<span class="text-headline-sm font-headline-sm text-on-surface font-label-data font-bold">318 Clean OGE</span>
+</div>
+<div class="p-3 bg-[#0e1f18]/80 rounded border border-outline-variant/30 backdrop-blur-sm hover:border-primary/40 transition-colors">
+<span class="text-[10px] font-label-caps text-outline uppercase block">Valve Direct Ping</span>
+<span class="text-headline-sm font-headline-sm text-primary-container font-label-data font-bold">1.1s Direct</span>
+</div>
+<div class="p-3 bg-[#0e1f18]/80 rounded border border-outline-variant/30 backdrop-blur-sm hover:border-primary/40 transition-colors">
+<span class="text-[10px] font-label-caps text-outline uppercase block">Total Escrow Held</span>
+<span class="text-headline-sm font-headline-sm text-tertiary font-label-data font-bold">$62,850 USD</span>
+</div>
+</div>
+</div>
+<!-- Right Visual Graphic Col -->
+<div class="lg:col-span-4 flex items-center justify-center">
+<div class="w-full flex flex-col gap-3 p-4 bg-[#0e1f18]/80 border border-outline-variant/40 rounded-lg shadow-xl relative overflow-hidden backdrop-blur-md">
+<div class="flex items-center justify-between border-b border-outline-variant/40 pb-2">
+<div class="flex items-center gap-2">
+<img alt="Dota 2" class="h-6 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WLDpvnhuQ369pZ8r7nVbX4wftKjmsEjRrz0QBnsESJCT3UJIigwk-fFiEWxjMeUm1EWODePyesBlBR9tCzHjEIMBmvJ4FytP3A7Y6GTj6WMBhPcMZ_fJ9XCruMeB7CgjNgM_dgr1xoGwbbD-Ze8Gjad15hOPUCPx86Z8MKFUy8pQ0yY99pMNf8AVzJu1tddBxABhNki8k5UZl_X9PcZfu8SjZhL6IAjxN2_f9kVvZUPVMQ11oVugfVLoE">
+<span class="text-label-caps text-[11px] font-bold uppercase tracking-wider text-on-surface">Meta Pool Heroes</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-primary/20 text-primary text-[10px] font-label-data font-bold uppercase">Apex Calibrated</span>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="relative rounded overflow-hidden border border-outline-variant/40 bg-surface-container group">
+<img alt="Invoker" class="w-full h-20 object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGW7aB80DGAIcpbclq_SKGL9ZZN6-F1uEAXcw0jmp2o0x3tLCNBZnUHQutYd_eiQvDDjeFgHDbFUp-Hh_92PjZMZZ0etZw20MUBwp760jsJDlFg-okLye8UtWRePzHKpr3v8gNXQNHBvhXAVXc_5wqmFgn7rAC8q6Ob7MyY5EEtvw1ukeyWt5zpmolPBjDUhZlMGbowkQL3WM7ANMwJbFNn3h1wCzFIZYVVs4pIhQfBEv6mLDJExpCxw">
+<div class="absolute inset-0 bg-gradient-to-t from-[#02110b] via-transparent to-transparent"></div>
+<div class="absolute bottom-1 left-1 right-1">
+<span class="text-[10px] font-bold text-on-surface truncate block">Invoker</span>
+<span class="text-[8px] text-tertiary font-label-data block">Arsenal Magus</span>
+</div>
+</div>
+<div class="relative rounded overflow-hidden border border-outline-variant/40 bg-surface-container group">
+<img alt="Juggernaut" class="w-full h-20 object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdQdgNpyjLFctb-Z9ACQH9E12lgv3W4ccSJWWG22ZAGkqWooRYrafxTtQfhHYxklfBNa5WXsWHshkoK2SgX7y4nNyS_B2r9sOABUlVINYfmjZsQS0DuvrFjHw2aD-AipJnO8jyPzZmt7Uf008wW6Fa-iy34adzSJ5LpSCfJ9xHeHGGUyYFkyPvBoZsxJzjCs7lf75hWJV1hdnSeRb_qksrosDW_eg0wzblE4TTL4r14EaDBD7IjbqW2A">
+<div class="absolute inset-0 bg-gradient-to-t from-[#02110b] via-transparent to-transparent"></div>
+<div class="absolute bottom-1 left-1 right-1">
+<span class="text-[10px] font-bold text-on-surface truncate block">Juggernaut</span>
+<span class="text-[8px] text-primary-container font-label-data block">Bladekeeper</span>
+</div>
+</div>
+<div class="relative rounded overflow-hidden border border-outline-variant/40 bg-surface-container group">
+<img alt="Pudge" class="w-full h-20 object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAb2o9cKOO7wWNdHHvYl9pyWY2_gQYB9tJZkU6u-QrTk5w5xbrUaXsafdtrATlvpk4auwHZlpgCl6ghiku-pYRV1WoLU9HKcYiFnqdAmuEXLu51IQFSQva0tXqGUxRyxqQM4O5jDNgzTGctfp2jOiQ5f0CXQ5WDPP2yoqFJ2xiuBx6vt8hWzKfFgvQzafjJMiQSdUsHLk97BcPs0A2nRZnuYKT9VzHVcARQvXjwqt8pirm554p5MAknDA">
+<div class="absolute inset-0 bg-gradient-to-t from-[#02110b] via-transparent to-transparent"></div>
+<div class="absolute bottom-1 left-1 right-1">
+<span class="text-[10px] font-bold text-on-surface truncate block">Pudge</span>
+<span class="text-[8px] text-error font-label-data block">Butcher</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 p-2 rounded bg-[#061610]/70 border border-primary/30 mt-1">
+<div class="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+<img alt="Immortal Apex" class="w-12 h-12 object-contain drop-shadow-[0_0_10px_rgba(78,222,163,0.5)]" src="https://lh3.googleusercontent.com/aida/AEtjO1UURlftB1FpU61CzUlVvD6emjZUNJIvrQkI20nuKmA99Y7kN9dExOlyinWRUKVpgBxUqFoJlW5REyI8epUa3pYO2FyBIiLnSFmkTuTD6hhjGNaX9VzTyZdKoEuDZlpyjkSWWaDIgR-35bcoZ3enjcBquwg5xHVJ0hkOiTnG2heiYrKNhyzfHlrrhGflNIC4adR9UJdasMc-ejitXM6-gCbIguniNXMUscrzxiPPJ_XeuhxeKKiEbwtme54Y">
+</div>
+<div class="overflow-hidden">
+<div class="text-[11px] font-bold text-primary uppercase font-label-caps">Immortal &amp; Divine Pool</div>
+<p class="text-[10px] text-on-surface-variant truncate">Top 100 MMR Calibration Engine Active</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- OFFICIAL DOTA 2 SEASONAL MEDAL PROGRESSION MATRIX -->
+<section class="space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface flex items-center gap-2 font-bold">
+<span class="material-symbols-outlined text-primary text-[24px]">format_list_numbered</span>
+            Official Dota 2 Seasonal Medal Progression Matrix
+          </h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Real-time MMR thresholds, artifact insignias, and ladder telemetry</p>
+</div>
+<span class="text-label-caps font-label-caps text-[11px] px-2.5 py-1 rounded bg-surface-container/70 border border-outline-variant/40 text-outline">
+          CALIBRATION PATCH 7.37e
+        </span>
+</div>
+<!-- 8-Tier Horizontal Scroller / Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-3">
+<!-- 1. Herald -->
+<div class="p-3.5 bg-[#0e1f18]/70 backdrop-blur-sm rounded border border-outline-variant/30 hover:border-primary/50 transition-all flex flex-col items-center text-center group">
+<div class="w-16 h-16 mb-2 flex items-center justify-center relative">
+<img alt="Herald" class="w-16 h-16 object-contain mx-auto group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida/AEtjO1UN88B9sGdz8ZKvw0xDjZBsZXYCFe_yAFMviMbOsAQC6HHcB2iVdT9-rEA5J20MxE5hk4rJJF6NHdv0tHKbhICW5xwziRnCFYxFFdU-pryKS6lrk5JINg0A7BFbrSB1STIPnsT5MTzHDrZl8Prfy324FX0bgovvXwseIKolK29daLpD-JS-HpLGKAzCqfJYf2dbTDLHrRqCJhuxLfvPQn7iKdvm3rJ5UZSUC980QbafKnh5BZc2BDvA60V4">
+</div>
+<span class="text-label-caps font-label-caps text-on-surface font-bold">Herald</span>
+<span class="text-[11px] font-label-data text-outline">0 - 600 MMR</span>
+<span class="mt-2 text-[10px] font-label-caps text-on-surface-variant px-1.5 py-0.5 rounded bg-surface-container/60 border border-outline-variant/30">Tango Badge</span>
+</div>
+<!-- 2. Guardian -->
+<div class="p-3.5 bg-[#0e1f18]/70 backdrop-blur-sm rounded border border-outline-variant/30 hover:border-primary/50 transition-all flex flex-col items-center text-center group">
+<div class="w-16 h-16 mb-2 flex items-center justify-center relative">
+<img alt="Guardian" class="w-16 h-16 object-contain mx-auto group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida/AEtjO1UAwq45i0OdXWDtThueiOPQd4T4VDkTVIKVshgbSoK-DsmfM--h58X0GBpOHTyh3tmHGvJ-3UxYry8M1Gd2a1qMtyF1nG-_7dla6wt61plCClhO5O9-NZnqwwoiPt1Q3FHFuWRTuA0SI-Juj1YvHCoY-3uWNCBMbk1qMdg0h6IVlo2d_0MugQsrTjWQKtzC2o3ZZ95e5jKyS3U4pFZkgndvLYCylIzf-S-X-UYD_ezrPMB3aBpgsRZfLpvs">
+</div>
+<span class="text-label-caps font-label-caps text-on-surface font-bold">Guardian</span>
+<span class="text-[11px] font-label-data text-outline">770 - 1380</span>
+<span class="mt-2 text-[10px] font-label-caps text-on-surface-variant px-1.5 py-0.5 rounded bg-surface-container/60 border border-outline-variant/30">Buckler Badge</span>
+</div>
+<!-- 3. Crusader -->
+<div class="p-3.5 bg-[#0e1f18]/70 backdrop-blur-sm rounded border border-outline-variant/30 hover:border-primary/50 transition-all flex flex-col items-center text-center group">
+<div class="w-16 h-16 mb-2 flex items-center justify-center relative">
+<img alt="Crusader" class="w-16 h-16 object-contain mx-auto group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida/AEtjO1V74ZAS4TOAqNoMYgPtp_AHdQzmQxrm99FRRS8fEKt_WwxZCVQnN9LlWjD_8s-y4GPfhXQGB7DjWu-0MgsKU0AdarY6plnJ_l66jgn_0bcnSJt-QHADIlm2vc5FJ9HqQLbrEoB6tZgQI4gL-rjZBfnjFC4ciK1AYzGv7fxszQeHc_e-5Ej3_S-Fkk3n77Vy-NW1cv6vAPzmSfjv8gp7YVeV-YlfczT2-szrKRjB0DV26Tzki77fG08-RMFQ">
+</div>
+<span class="text-label-caps font-label-caps text-on-surface font-bold">Crusader</span>
+<span class="text-[11px] font-label-data text-outline">1540 - 2150</span>
+<span class="mt-2 text-[10px] font-label-caps text-on-surface-variant px-1.5 py-0.5 rounded bg-surface-container/60 border border-outline-variant/30">Ring of Aquila</span>
+</div>
+<!-- 4. Archon -->
+<div class="p-3.5 bg-[#0e1f18]/70 backdrop-blur-sm rounded border border-outline-variant/30 hover:border-primary/50 transition-all flex flex-col items-center text-center group">
+<div class="w-16 h-16 mb-2 flex items-center justify-center">
+<img alt="Archon" class="w-16 h-16 object-contain mx-auto group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida/AEtjO1VXEso2gjnCqKQ5l3VI9z9E-yXWS_2CxSk9-z5iMg3GMigalcTZEtY-qnDZWSWnN24zynTmYuO8W-GeUUMeszDJjtN9R8HYnbw-ap0W4Zkf5pdKrnqCRjSM2em5j9FhP0kFLocBJ6DZe-gxRS_2KrU4JE3SjQvNXsBUtgsivpzFGuzSCWerJeubCQwJSvIt6Fv8woLJcmYgHZ3BLCqHZZGD0ysitreZlDignd_rPJzAqImfUaDk_ZRWQaE">
+</div>
+<span class="text-label-caps font-label-caps text-on-surface font-bold">Archon</span>
+<span class="text-[11px] font-label-data text-outline">2310 - 2920</span>
+<span class="mt-2 text-[10px] font-label-caps text-on-surface-variant px-1.5 py-0.5 rounded bg-surface-container/60 border border-outline-variant/30">Eul's Scepter</span>
+</div>
+<!-- 5. Legend -->
+<div class="p-3.5 bg-[#0e1f18]/70 backdrop-blur-sm rounded border border-outline-variant/30 hover:border-primary/50 transition-all flex flex-col items-center text-center group">
+<div class="w-16 h-16 mb-2 flex items-center justify-center">
+<img alt="Legend" class="w-16 h-16 object-contain mx-auto group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida/AEtjO1XwzPHRccQS7cmLz_bi0fUgLng_LMncg00SdddvtctxtL8p3G88EaBsnxrdCeECuoRa2hFCU94Fvh8IdobgsZkSQ3pZq4W24cSHufDzazqsCEQNrd_N5O2E0ZA3xJgQVvIUNLAdORwHySaYxFuk0fyqKfw2mLUsZOCDsQ3Nu9BGFO5OM_NtKKx3v4rMMt9u8711zJzwtGQVugjvdZIXXJS3jI7ekJUzKB2GXLWK8Z3jIJXiYBRK-i0uCYIS">
+</div>
+<span class="text-label-caps font-label-caps text-on-surface font-bold">Legend</span>
+<span class="text-[11px] font-label-data text-outline">3080 - 3690</span>
+<span class="mt-2 text-[10px] font-label-caps text-on-surface-variant px-1.5 py-0.5 rounded bg-surface-container/60 border border-outline-variant/30">Black King Bar</span>
+</div>
+<!-- 6. Ancient -->
+<div class="p-3.5 bg-[#0e1f18]/70 backdrop-blur-sm rounded border border-outline-variant/30 hover:border-primary/50 transition-all flex flex-col items-center text-center group">
+<div class="w-16 h-16 mb-2 flex items-center justify-center">
+<img alt="Ancient" class="w-16 h-16 object-contain mx-auto group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida/AEtjO1Uw_oJlcWIbqidLr4gobnCk-deo5o6f-aBzTxJQRCyQ-GiX9JDNHIY1i1qZ5nhRAcD75eAQVPZEwD-c6vNifVw7Ys7SxjaEWb7BpEoHcOWFpYHHFdzw1EY2pmrlHGzv_c-CUQlRl-UwREe-7_8dBd4mcPuJ48M5OGy8Eyxd4KtTmYyPzpZ4WKcYxxL0JwrVYTJSDmyaQneKCqWwSzZL-RAHQGiZrPawVsQEtsiIQoHv5uVeFeZrfixX4GzS">
+</div>
+<span class="text-label-caps font-label-caps text-on-surface font-bold">Ancient</span>
+<span class="text-[11px] font-label-data text-outline">3850 - 4460</span>
+<span class="mt-2 text-[10px] font-label-caps text-on-surface-variant px-1.5 py-0.5 rounded bg-surface-container/60 border border-outline-variant/30">Manta Style</span>
+</div>
+<!-- 7. Divine -->
+<div class="p-3.5 bg-[#0e1f18]/70 backdrop-blur-sm rounded border border-outline-variant/30 hover:border-primary/50 transition-all flex flex-col items-center text-center group">
+<div class="w-16 h-16 mb-2 flex items-center justify-center">
+<img alt="Divine" class="w-16 h-16 object-contain mx-auto group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida/AEtjO1UnaBGZTajx1smRmvEqROopzJ5ldXogMNX-9bguA2kr6oxVIY9UXsFygvGByAMzpZ3IaV0HuyWHUCV_Xr-SL1oblymtrcPxXk2NhzCTD_948TFzp0BhSkBo2LQCUQ0IoJHiW9gqKZ-aAGUgBU-ogm0l2qUKs0e6rlE2O8t26s0GJPuuzJUy3txkjvCEfGG0zb2hNk-GxAYLsX1MEDZCQCOopSW-yU3rvwjt6i_tasmIh8hgs4YsdvlDbBI">
+</div>
+<span class="text-label-caps font-label-caps text-on-surface font-bold">Divine</span>
+<span class="text-[11px] font-label-data text-outline">4620 - 5420</span>
+<span class="mt-2 text-[10px] font-label-caps text-primary px-1.5 py-0.5 rounded bg-surface-container/70 border border-primary/30">Divine Rapier</span>
+</div>
+<!-- 8. Immortal (Highlighted Apex) -->
+<div class="p-3.5 bg-surface-container/80 backdrop-blur-sm rounded border-2 border-primary/60 relative flex flex-col items-center text-center shadow-[0_0_20px_rgba(78,222,163,0.2)] group">
+<div class="absolute -top-2.5 px-2 py-0.5 rounded bg-primary text-on-primary text-[9px] font-label-caps font-bold uppercase shadow-sm">
+            Apex Tier
+          </div>
+<div class="w-16 h-16 mb-2 flex items-center justify-center relative">
+<div class="absolute inset-0 bg-primary/20 rounded-full blur-md"></div>
+<img alt="Immortal" class="w-20 h-20 object-contain mx-auto relative z-10 drop-shadow-[0_0_15px_rgba(78,222,163,0.6)] group-hover:scale-110 transition-transform" src="https://lh3.googleusercontent.com/aida/AEtjO1UURlftB1FpU61CzUlVvD6emjZUNJIvrQkI20nuKmA99Y7kN9dExOlyinWRUKVpgBxUqFoJlW5REyI8epUa3pYO2FyBIiLnSFmkTuTD6hhjGNaX9VzTyZdKoEuDZlpyjkSWWaDIgR-35bcoZ3enjcBquwg5xHVJ0hkOiTnG2heiYrKNhyzfHlrrhGflNIC4adR9UJdasMc-ejitXM6-gCbIguniNXMUscrzxiPPJ_XeuhxeKKiEbwtme54Y">
+</div>
+<span class="text-label-caps font-label-caps text-primary font-bold">Immortal</span>
+<span class="text-[11px] font-label-data text-primary-container font-bold">6000+ MMR</span>
+<span class="mt-2 text-[10px] font-label-caps text-primary font-bold px-1.5 py-0.5 rounded bg-primary/10 border border-primary/40">Aegis Leaderboard</span>
+</div>
+</div>
+</section>
+<!-- INSTITUTIONAL MMR & MEDAL BOOSTING ENGINE -->
+<section class="space-y-4" id="boosting">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface flex items-center gap-2 font-bold">
+<span class="material-symbols-outlined text-primary text-[24px]">tune</span>
+            Institutional MMR &amp; Medal Boosting Engine
+          </h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Configure starting coordinates, target rating, and operational security safeguards</p>
+</div>
+<div class="flex items-center gap-2 text-label-caps font-label-caps text-[11px] text-outline">
+<span class="material-symbols-outlined text-primary text-[16px]">lock</span>
+<span class="">HWID Masking Protected</span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Configurator Parameters (Left 8 Cols) -->
+<div class="lg:col-span-8 p-6 bg-[#0e1f18]/70 backdrop-blur-md rounded-lg border border-outline-variant/30 space-y-6">
+<!-- Rank Selector Split -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+<!-- Current Rank -->
+<div class="p-4 bg-[#061610]/80 rounded border border-outline-variant/40 space-y-3">
+<label class="text-[11px] font-label-caps text-outline uppercase block">Current Rank Coordinate</label>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded bg-surface-container-low border border-outline-variant/40 flex items-center justify-center p-1">
+<img alt="Legend" class="w-14 h-14 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XwzPHRccQS7cmLz_bi0fUgLng_LMncg00SdddvtctxtL8p3G88EaBsnxrdCeECuoRa2hFCU94Fvh8IdobgsZkSQ3pZq4W24cSHufDzazqsCEQNrd_N5O2E0ZA3xJgQVvIUNLAdORwHySaYxFuk0fyqKfw2mLUsZOCDsQ3Nu9BGFO5OM_NtKKx3v4rMMt9u8711zJzwtGQVugjvdZIXXJS3jI7ekJUzKB2GXLWK8Z3jIJXiYBRK-i0uCYIS">
+</div>
+<div class="flex-1">
+<select class="w-full bg-surface-container-low text-on-surface border border-outline-variant/40 rounded p-2 text-label-data font-label-data focus:border-primary focus:ring-0">
+<option>Legend III (~3,300 MMR)</option>
+<option selected="">Legend V (~3,500 MMR)</option>
+<option>Ancient I (~3,850 MMR)</option>
+<option>Ancient III (~4,200 MMR)</option>
+<option>Crusader V (~2,150 MMR)</option>
+</select>
+</div>
+</div>
+<div class="flex justify-between text-body-sm font-body-sm text-outline pt-1">
+<span class="">Current MMR: ~3,500</span>
+<span class="text-on-surface-variant font-label-caps text-[11px]">Archon/Legend Pool</span>
+</div>
+</div>
+<!-- Target Rank -->
+<div class="p-4 bg-[#061610]/80 rounded border border-primary/40 space-y-3 relative">
+<div class="absolute -top-2.5 right-4 px-2 py-0.5 rounded bg-primary text-on-primary text-[10px] font-label-caps font-bold uppercase shadow-sm">
+                Target Destination
+              </div>
+<label class="text-[11px] font-label-caps text-primary uppercase block">Target Calibration</label>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded bg-surface-container-low border border-primary/40 flex items-center justify-center p-1">
+<img alt="Immortal" class="w-16 h-16 object-contain drop-shadow-[0_0_12px_rgba(78,222,163,0.5)]" src="https://lh3.googleusercontent.com/aida/AEtjO1UURlftB1FpU61CzUlVvD6emjZUNJIvrQkI20nuKmA99Y7kN9dExOlyinWRUKVpgBxUqFoJlW5REyI8epUa3pYO2FyBIiLnSFmkTuTD6hhjGNaX9VzTyZdKoEuDZlpyjkSWWaDIgR-35bcoZ3enjcBquwg5xHVJ0hkOiTnG2heiYrKNhyzfHlrrhGflNIC4adR9UJdasMc-ejitXM6-gCbIguniNXMUscrzxiPPJ_XeuhxeKKiEbwtme54Y">
+</div>
+<div class="flex-1">
+<select class="w-full bg-surface-container-low text-on-surface border border-outline-variant/40 rounded p-2 text-label-data font-label-data focus:border-primary focus:ring-0">
+<option>Divine V (~5,420 MMR)</option>
+<option selected="">Immortal Top 500 (~6,200 MMR)</option>
+<option>Immortal Top 100 Apex (~7,500 MMR)</option>
+<option>Divine I (~4,620 MMR)</option>
+</select>
+</div>
+</div>
+<div class="flex justify-between text-body-sm font-body-sm text-outline pt-1">
+<span class="">Target MMR: ~6,200</span>
+<span class="text-primary font-semibold font-label-caps text-[11px]">+2,700 Net Elevation</span>
+</div>
+</div>
+</div>
+<!-- Tactical Add-ons Toggle Stack -->
+<div class="space-y-3">
+<span class="text-[11px] font-label-caps text-outline uppercase block">Tactical Add-ons &amp; Security Controls</span>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<!-- Add-on 1 -->
+<label class="flex items-start gap-3 p-3 bg-[#061610]/70 rounded border border-outline-variant/30 hover:border-primary/50 cursor-pointer transition-colors">
+<input checked="" class="mt-1 rounded bg-surface-container-low border-outline-variant/40 text-primary focus:ring-0" type="checkbox">
+<div class="text-body-sm font-body-sm">
+<span class="font-semibold text-on-surface block font-label-caps text-[12px]">Clean HWID &amp; Local Steam VPN</span>
+<span class="text-on-surface-variant text-[11px] block">Matches your localized regional IP node with VAC telemetry spoofing.</span>
+</div>
+</label>
+<!-- Add-on 2 -->
+<label class="flex items-start gap-3 p-3 bg-[#061610]/70 rounded border border-outline-variant/30 hover:border-primary/50 cursor-pointer transition-colors">
+<input checked="" class="mt-1 rounded bg-surface-container-low border-outline-variant/40 text-primary focus:ring-0" type="checkbox">
+<div class="text-body-sm font-body-sm">
+<span class="font-semibold text-on-surface block font-label-caps text-[12px]">Duo Queue with Top 100 Immortal</span>
+<span class="text-on-surface-variant text-[11px] block">Play on your own account alongside verified pro carry.</span>
+</div>
+</label>
+<!-- Add-on 3 -->
+<label class="flex items-start gap-3 p-3 bg-[#061610]/70 rounded border border-outline-variant/30 hover:border-primary/50 cursor-pointer transition-colors">
+<input checked="" class="mt-1 rounded bg-surface-container-low border-outline-variant/40 text-primary focus:ring-0" type="checkbox">
+<div class="text-body-sm font-body-sm">
+<span class="font-semibold text-on-surface block font-label-caps text-[12px]">Role &amp; Hero Lock</span>
+<span class="text-on-surface-variant text-[11px] block">Locked pool: Mid/Carry (Invoker, Morphling, Pudge, Shadow Fiend).</span>
+</div>
+</label>
+<!-- Add-on 4 -->
+<label class="flex items-start gap-3 p-3 bg-[#061610]/70 rounded border border-outline-variant/30 hover:border-primary/50 cursor-pointer transition-colors">
+<input checked="" class="mt-1 rounded bg-surface-container-low border-outline-variant/40 text-primary focus:ring-0" type="checkbox">
+<div class="text-body-sm font-body-sm">
+<span class="font-semibold text-on-surface block font-label-caps text-[12px]">Appear Offline on Steam</span>
+<span class="text-on-surface-variant text-[11px] block">Steam Community chat masked; booster never replies to friend pings.</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Order Telemetry Summary Box (Right 4 Cols) -->
+<div class="lg:col-span-4 p-6 bg-[#0e1f18]/70 backdrop-blur-md rounded-lg border border-outline-variant/30 flex flex-col justify-between space-y-6">
+<div class="space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-2">
+<span class="text-label-caps font-label-caps text-on-surface font-bold uppercase tracking-wide">Order Telemetry</span>
+<span class="text-[11px] font-label-data text-primary">DOTA2-ES-7821</span>
+</div>
+<!-- Line Items -->
+<div class="space-y-2.5 text-body-sm font-body-sm">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Elevation Delta</span>
+<span class="text-on-surface font-label-data">+2,700 MMR</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Estimated Delivery</span>
+<span class="text-on-surface font-label-data">48 - 72 Hours</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Booster Assignment</span>
+<span class="text-primary font-label-data font-semibold">Rank #64 EU Pro</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">VAC Zero-Anomaly Bond</span>
+<span class="text-on-surface font-label-data">100% Insured</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Escrow Fee (Tier-1)</span>
+<span class="text-primary-container font-label-data">$0.00 (Zero-Markup)</span>
+</div>
+</div>
+<!-- Divider -->
+<div class="border-t border-outline-variant/30 pt-3">
+<div class="flex items-baseline justify-between">
+<span class="text-label-caps font-label-caps text-on-surface uppercase">Instant Escrow Total</span>
+<span class="text-headline-lg font-headline-lg text-primary font-label-data font-bold">$88.00 <span class="text-body-sm font-body-sm text-outline">USD</span></span>
+</div>
+<p class="text-[11px] font-body-sm text-outline mt-1 leading-relaxed">Funds locked in multi-sig cold escrow until target rank is validated by Valve API.</p>
+</div>
+</div>
+<!-- CTA -->
+<button class="w-full bg-primary hover:bg-primary-fixed text-on-primary font-label-caps text-label-caps py-3 px-4 rounded font-bold uppercase tracking-wider flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-[0_0_15px_rgba(78,222,163,0.25)]">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+<span class="">Instant Escrow Order</span>
+</button>
+</div>
+</div>
+</section>
+<!-- AUDITED DOTA 2 ACCOUNTS & ARCANA VAULT -->
+<section class="space-y-4" id="accounts">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface flex items-center gap-2 font-bold">
+<span class="material-symbols-outlined text-primary text-[24px]">shield_person</span>
+            Audited Dota 2 Accounts &amp; Arcana Vault
+          </h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">100% first-owner email (OGE), unbind warranty, and non-revocable trade escrow</p>
+</div>
+<button class="text-label-caps font-label-caps text-[11px] text-primary hover:underline uppercase flex items-center gap-1">
+<span class="">Explore All 318 Vaulted Accounts</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+<!-- Card 1: Immortal Top 800 -->
+<div class="bg-[#0e1f18]/70 backdrop-blur-md rounded-lg border border-outline-variant/30 p-5 space-y-4 hover:border-primary/50 transition-all flex flex-col justify-between group hover:shadow-[0_0_20px_rgba(78,222,163,0.15)]">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="px-2.5 py-0.5 rounded bg-primary/15 text-primary text-label-caps font-label-caps text-[10px] border border-primary/30 uppercase">
+                Top 800 Leaderboard
+              </span>
+<span class="text-label-caps font-label-caps text-[10px] text-outline">Region: EU West</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative flex items-center flex-shrink-0">
+<div class="w-14 h-14 rounded bg-surface-container border border-outline-variant/40 p-0.5 flex items-center justify-center overflow-hidden">
+<img alt="Immortal Account" class="w-14 h-14 object-contain drop-shadow-[0_0_8px_rgba(78,222,163,0.5)]" src="https://lh3.googleusercontent.com/aida/AEtjO1UURlftB1FpU61CzUlVvD6emjZUNJIvrQkI20nuKmA99Y7kN9dExOlyinWRUKVpgBxUqFoJlW5REyI8epUa3pYO2FyBIiLnSFmkTuTD6hhjGNaX9VzTyZdKoEuDZlpyjkSWWaDIgR-35bcoZ3enjcBquwg5xHVJ0hkOiTnG2heiYrKNhyzfHlrrhGflNIC4adR9UJdasMc-ejitXM6-gCbIguniNXMUscrzxiPPJ_XeuhxeKKiEbwtme54Y">
+</div>
+<div class="w-8 h-8 rounded border border-outline-variant/40 overflow-hidden absolute -bottom-1 -right-2 bg-surface-container shadow-sm">
+<img alt="Invoker" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAat-YlT_8XS0RXZmfCHjKhjf8XqXLxlAbi2mMf1YmZr29XbFSxHzdLKZjt_meHWvTC9L9ubxC3Urs9W22Xn5aZx321OnrPJ7tbTh6Rlg30mvuPkAHzNGsNT72FNt-9t6oFrl7QFikWBxOB0nuqz7YAdbnJ2Kx07Cc1xtjGsHW_WjQh0CAaeZRrFF2ItuQphb_YaLuJg2Pe4xNIp7dOcMpKgjWp0xsRN5x3kj4_ga1P1p2YRv7uRoBgXQ">
+</div>
+</div>
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Immortal Top 800</h3>
+<div class="flex items-center gap-2 text-[11px] font-label-caps">
+<span class="text-primary font-label-data font-bold">7,450 MMR</span>
+<span class="text-outline">•</span>
+<span class="text-on-surface-variant">12,000 Behavior Score</span>
+</div>
+</div>
+</div>
+<!-- Key Inventory Badges -->
+<div class="pt-2 border-t border-outline-variant/30 space-y-1.5 text-body-sm font-body-sm">
+<div class="text-[10px] font-label-caps text-outline uppercase">Exclusive Arcana Items:</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 bg-surface-container/70 rounded text-[11px] font-label-data text-tertiary border border-outline-variant/30">Wraith King Arcana</span>
+<span class="px-2 py-0.5 bg-surface-container/70 rounded text-[11px] font-label-data text-tertiary border border-outline-variant/30">Windranger Arcana</span>
+<span class="px-2 py-0.5 bg-surface-container/70 rounded text-[11px] font-label-data text-tertiary border border-outline-variant/30">Queen of Pain</span>
+</div>
+</div>
+</div>
+<div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<div>
+<span class="text-[10px] font-label-caps text-outline block uppercase">Clean OGE Unbind</span>
+<span class="text-headline-md font-headline-md text-primary font-label-data font-bold">$390.00</span>
+</div>
+<button class="px-4 py-2 bg-surface-container/70 hover:bg-primary hover:text-on-primary text-on-surface border border-outline-variant/40 font-label-caps text-label-caps rounded font-bold uppercase transition-all">
+              Purchase Vault
+            </button>
+</div>
+</div>
+<!-- Card 2: Divine 5 Smurf -->
+<div class="bg-[#0e1f18]/70 backdrop-blur-md rounded-lg border border-outline-variant/30 p-5 space-y-4 hover:border-primary/50 transition-all flex flex-col justify-between group hover:shadow-[0_0_20px_rgba(78,222,163,0.15)]">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="px-2.5 py-0.5 rounded bg-surface-container/70 text-on-surface text-label-caps font-label-caps text-[10px] border border-outline-variant/40 uppercase">
+                Verified Smurf
+              </span>
+<span class="text-label-caps font-label-caps text-[10px] text-outline">Region: NA East</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative flex items-center flex-shrink-0">
+<div class="w-14 h-14 rounded bg-surface-container border border-outline-variant/40 p-1 flex items-center justify-center overflow-hidden">
+<img alt="Divine 5 Account" class="w-12 h-12 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UnaBGZTajx1smRmvEqROopzJ5ldXogMNX-9bguA2kr6oxVIY9UXsFygvGByAMzpZ3IaV0HuyWHUCV_Xr-SL1oblymtrcPxXk2NhzCTD_948TFzp0BhSkBo2LQCUQ0IoJHiW9gqKZ-aAGUgBU-ogm0l2qUKs0e6rlE2O8t26s0GJPuuzJUy3txkjvCEfGG0zb2hNk-GxAYLsX1MEDZCQCOopSW-yU3rvwjt6i_tasmIh8hgs4YsdvlDbBI">
+</div>
+<div class="w-8 h-8 rounded border border-outline-variant/40 overflow-hidden absolute -bottom-1 -right-2 bg-surface-container shadow-sm">
+<img alt="Juggernaut" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1nU7Zfx3Rk4Q0jjdTffaK_XpGM7ZZFz0tmo1v562XOOu-zlDSzVfVhVGHyVwR-H97fJhyL2-Y7ldBNjBu2qTiL7-TSrLDqaIQhGnqWJOabeVcgGtHCj8mt1v-r41C-LNdvwSk2XxHcdL4IRDwLHCJ3iw0WIeqnRI2jk3w4VL9ZsZoe_F7WIlfawlyR_L6s0XNanyyrwN71fLLEw0FBs_3UYLE7rcmg8gWGI2O_s_SWnopU63Fb6hoJg">
+</div>
+</div>
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Divine 5 Smurf</h3>
+<div class="flex items-center gap-2 text-[11px] font-label-caps">
+<span class="text-primary font-label-data font-bold">5,600 MMR</span>
+<span class="text-outline">•</span>
+<span class="text-on-surface-variant">10,000 Behavior Score</span>
+</div>
+</div>
+</div>
+<!-- Key Inventory Badges -->
+<div class="pt-2 border-t border-outline-variant/30 space-y-1.5 text-body-sm font-body-sm">
+<div class="text-[10px] font-label-caps text-outline uppercase">Exclusive Arcana Items:</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 bg-surface-container/70 rounded text-[11px] font-label-data text-tertiary border border-outline-variant/30">Juggernaut Arcana</span>
+<span class="px-2 py-0.5 bg-surface-container/70 rounded text-[11px] font-label-data text-tertiary border border-outline-variant/30">Phantom Assassin</span>
+</div>
+</div>
+</div>
+<div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<div>
+<span class="text-[10px] font-label-caps text-outline block uppercase">Clean First Email</span>
+<span class="text-headline-md font-headline-md text-primary font-label-data font-bold">$185.00</span>
+</div>
+<button class="px-4 py-2 bg-surface-container/70 hover:bg-primary hover:text-on-primary text-on-surface border border-outline-variant/40 font-label-caps text-label-caps rounded font-bold uppercase transition-all">
+              Purchase Vault
+            </button>
+</div>
+</div>
+<!-- Card 3: Ancient 3 Starter -->
+<div class="bg-[#0e1f18]/70 backdrop-blur-md rounded-lg border border-outline-variant/30 p-5 space-y-4 hover:border-primary/50 transition-all flex flex-col justify-between group hover:shadow-[0_0_20px_rgba(78,222,163,0.15)]">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="px-2.5 py-0.5 rounded bg-surface-container/70 text-on-surface text-label-caps font-label-caps text-[10px] border border-outline-variant/40 uppercase">
+                Calibration Complete
+              </span>
+<span class="text-label-caps font-label-caps text-[10px] text-outline">Region: SEA / SGP</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-14 h-14 rounded bg-surface-container border border-outline-variant/40 p-1 flex items-center justify-center">
+<img alt="Ancient 3 Account" class="w-12 h-12 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Uw_oJlcWIbqidLr4gobnCk-deo5o6f-aBzTxJQRCyQ-GiX9JDNHIY1i1qZ5nhRAcD75eAQVPZEwD-c6vNifVw7Ys7SxjaEWb7BpEoHcOWFpYHHFdzw1EY2pmrlHGzv_c-CUQlRl-UwREe-7_8dBd4mcPuJ48M5OGy8Eyxd4KtTmYyPzpZ4WKcYxxL0JwrVYTJSDmyaQneKCqWwSzZL-RAHQGiZrPawVsQEtsiIQoHv5uVeFeZrfixX4GzS">
+</div>
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Ancient 3 Starter</h3>
+<div class="flex items-center gap-2 text-[11px] font-label-caps">
+<span class="text-primary font-label-data font-bold">4,200 MMR</span>
+<span class="text-outline">•</span>
+<span class="text-on-surface-variant">10K Behavior Score</span>
+</div>
+</div>
+</div>
+<!-- Key Inventory Badges -->
+<div class="pt-2 border-t border-outline-variant/30 space-y-1.5 text-body-sm font-body-sm">
+<div class="text-[10px] font-label-caps text-outline uppercase">Exclusive Arcana Items:</div>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 bg-surface-container/70 rounded text-[11px] font-label-data text-tertiary border border-outline-variant/30">Rubick Magus Cypher</span>
+<span class="px-2 py-0.5 bg-surface-container/70 rounded text-[11px] font-label-data text-outline border border-outline-variant/30">Unranked Phone Unbound</span>
+</div>
+</div>
+</div>
+<div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+<div>
+<span class="text-[10px] font-label-caps text-outline block uppercase">100% Phone Unbind</span>
+<span class="text-headline-md font-headline-md text-primary font-label-data font-bold">$95.00</span>
+</div>
+<button class="px-4 py-2 bg-surface-container/70 hover:bg-primary hover:text-on-primary text-on-surface border border-outline-variant/40 font-label-caps text-label-caps rounded font-bold uppercase transition-all">
+              Purchase Vault
+            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- TURNKEY FIXED VALUE PACKAGES -->
+<section class="space-y-4" id="packages">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface flex items-center gap-2 font-bold">
+<span class="material-symbols-outlined text-primary text-[24px]">inventory_2</span>
+            Turnkey Fixed Value Packages
+          </h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Pre-audited packages with fixed turn-around execution guarantees</p>
+</div>
+<span class="text-label-caps font-label-caps text-[11px] text-primary uppercase">Guaranteed 85%+ Winrate</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+<!-- Package 1 -->
+<div class="p-6 bg-[#0e1f18]/70 backdrop-blur-md rounded-lg border border-outline-variant/30 flex flex-col justify-between space-y-4 hover:border-primary/50 transition-colors">
+<div class="space-y-3">
+<div class="flex justify-between items-start">
+<span class="px-2 py-0.5 rounded bg-surface-container/70 text-primary font-label-caps text-[10px] border border-outline-variant/40 uppercase">
+                Seasonal Calibration
+              </span>
+<span class="text-headline-md font-headline-md text-primary font-label-data font-bold">$42.00</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">10/10 MMR Calibration &amp; Rank Placement</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+              Full 10-match calibrated placement played by a Top 100 Immortal carry. Guaranteed 8+ wins to secure the peak seasonal bracket.
+            </p>
+<ul class="space-y-1.5 text-body-sm font-body-sm text-on-surface-variant pt-1 border-t border-outline-variant/30">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span class="">10/10 Matches Solo or Duo</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span class="">Full Match ID &amp; Replay Dossier</span>
+</li>
+</ul>
+</div>
+<button class="w-full py-2.5 bg-surface-container/70 hover:bg-primary hover:text-on-primary text-on-surface border border-outline-variant/40 font-label-caps text-label-caps rounded font-bold uppercase transition-all">
+            Order Placement ($42.00)
+          </button>
+</div>
+<!-- Package 2: Most Popular -->
+<div class="p-6 bg-[#0e1f18]/85 backdrop-blur-md rounded-lg border-2 border-primary/60 flex flex-col justify-between space-y-4 shadow-[0_0_24px_rgba(78,222,163,0.15)] relative">
+<div class="absolute -top-3 left-6 px-3 py-0.5 rounded bg-primary text-on-primary text-label-caps text-[10px] font-bold uppercase shadow-sm">
+            High Velocity
+          </div>
+<div class="space-y-3 pt-1">
+<div class="flex justify-between items-start">
+<span class="px-2 py-0.5 rounded bg-surface-container-low text-primary font-label-caps text-[10px] border border-outline-variant/40 uppercase">
+                Hardstuck Relief
+              </span>
+<span class="text-headline-md font-headline-md text-primary font-label-data font-bold">$92.00</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Hardstuck MMR Jump (+1,000 MMR Fast Track)</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+              Direct net gain of +1,000 rating points regardless of current MMR. Rapidly overrides shadow-pool matchmaking bias.
+            </p>
+<ul class="space-y-1.5 text-body-sm font-body-sm text-on-surface-variant pt-1 border-t border-outline-variant/30">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span class="">+1,000 Net Calibration Points</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span class="">HWID Cloak &amp; Hero Pool Customizer</span>
+</li>
+</ul>
+</div>
+<button class="w-full py-2.5 bg-primary hover:bg-primary-fixed text-on-primary font-label-caps text-label-caps rounded font-bold uppercase transition-all shadow-[0_0_12px_rgba(78,222,163,0.2)]">
+            Deploy Jump ($92.00)
+          </button>
+</div>
+<!-- Package 3 -->
+<div class="p-6 bg-[#0e1f18]/70 backdrop-blur-md rounded-lg border border-outline-variant/30 flex flex-col justify-between space-y-4 hover:border-primary/50 transition-colors">
+<div class="space-y-3">
+<div class="flex justify-between items-start">
+<span class="px-2 py-0.5 rounded bg-surface-container/70 text-primary font-label-caps text-[10px] border border-outline-variant/40 uppercase">
+                Live Mentorship
+              </span>
+<span class="text-headline-md font-headline-md text-primary font-label-data font-bold">$75.00</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Pro Carry 25 Matches with Discord Live VOD</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+              Queue 25 competitive ranked games with an active Tier-1 tournament competitor. Includes live Discord voice coaching and replay breakdown.
+            </p>
+<ul class="space-y-1.5 text-body-sm font-body-sm text-on-surface-variant pt-1 border-t border-outline-variant/30">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span class="">25 Ranked Duo Matches</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span class="">1-on-1 VOD Analysis &amp; Micro Telemetry</span>
+</li>
+</ul>
+</div>
+<button class="w-full py-2.5 bg-surface-container/70 hover:bg-primary hover:text-on-primary text-on-surface border border-outline-variant/40 font-label-caps text-label-caps rounded font-bold uppercase transition-all">
+            Book Pro Duo ($75.00)
+          </button>
+</div>
+</div>
+</section>
+<!-- DOTA PLUS & STEAM DIRECT GATEWAY -->
+<section class="space-y-4" id="steam-gateway">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface flex items-center gap-2 font-bold">
+<span class="material-symbols-outlined text-primary text-[24px]">wallet</span>
+            Dota Plus &amp; Steam Direct Gateway
+          </h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Instant SteamID64 direct deposit without credential exposure</p>
+</div>
+<div class="flex items-center gap-2 text-label-caps font-label-caps text-[11px] text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="">Steam API Direct Deposit Online</span>
+</div>
+</div>
+<div class="p-6 bg-[#0e1f18]/70 backdrop-blur-md rounded-lg border border-outline-variant/30 space-y-6">
+<!-- Steam ID Input Field -->
+<div class="max-w-2xl space-y-2">
+<label class="text-[11px] font-label-caps text-outline uppercase block">Enter SteamID64 or Friend Code</label>
+<div class="flex gap-2">
+<input class="flex-1 bg-[#061610]/80 text-on-surface border border-outline-variant/40 rounded p-2.5 text-body-md font-label-data focus:border-primary focus:ring-0" placeholder="e.g. 76561198082914281 or Friend Code" type="text" value="76561198082914281">
+<button class="px-5 bg-surface-container/70 hover:bg-primary hover:text-on-primary text-primary border border-outline-variant/40 font-label-caps text-label-caps rounded font-bold uppercase flex items-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="">Validate ID</span>
+</button>
+</div>
+<div class="flex items-center gap-2 text-[11px] text-primary font-label-data">
+<span class="material-symbols-outlined text-[14px]">check</span>
+<span class="">Steam profile resolved: "Excalibur_Apex" (12,000 Behavior Score / 0 Bans)</span>
+</div>
+</div>
+<!-- Subscription & Credit Tiers -->
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+<div class="p-3 bg-[#061610]/70 rounded border border-outline-variant/30 hover:border-primary cursor-pointer transition-colors text-center space-y-1">
+<span class="text-[10px] font-label-caps text-outline block">Dota Plus</span>
+<span class="text-headline-sm font-headline-sm text-on-surface font-bold">1 Month</span>
+<span class="text-label-data font-label-data text-primary block">$3.99</span>
+</div>
+<div class="p-3 bg-[#061610]/70 rounded border border-outline-variant/30 hover:border-primary cursor-pointer transition-colors text-center space-y-1">
+<span class="text-[10px] font-label-caps text-outline block">Dota Plus</span>
+<span class="text-headline-sm font-headline-sm text-on-surface font-bold">6 Months</span>
+<span class="text-label-data font-label-data text-primary block">$22.99</span>
+</div>
+<div class="p-3 bg-[#061610]/70 rounded border border-primary/50 bg-primary/5 cursor-pointer text-center space-y-1 shadow-[0_0_12px_rgba(78,222,163,0.12)]">
+<span class="text-[10px] font-label-caps text-primary font-bold block">Dota Plus</span>
+<span class="text-headline-sm font-headline-sm text-on-surface font-bold">1 Year</span>
+<span class="text-label-data font-label-data text-primary block">$41.99</span>
+</div>
+<div class="p-3 bg-[#061610]/70 rounded border border-outline-variant/30 hover:border-primary cursor-pointer transition-colors text-center space-y-1">
+<span class="text-[10px] font-label-caps text-outline block">Wallet Top-up</span>
+<span class="text-headline-sm font-headline-sm text-on-surface font-bold">$20 Credit</span>
+<span class="text-label-data font-label-data text-primary block">$20.00</span>
+</div>
+<div class="p-3 bg-[#061610]/70 rounded border border-outline-variant/30 hover:border-primary cursor-pointer transition-colors text-center space-y-1">
+<span class="text-[10px] font-label-caps text-outline block">Wallet Top-up</span>
+<span class="text-headline-sm font-headline-sm text-on-surface font-bold">$50 Credit</span>
+<span class="text-label-data font-label-data text-primary block">$50.00</span>
+</div>
+<div class="p-3 bg-[#061610]/70 rounded border border-outline-variant/30 hover:border-primary cursor-pointer transition-colors text-center space-y-1">
+<span class="text-[10px] font-label-caps text-outline block">Wallet Top-up</span>
+<span class="text-headline-sm font-headline-sm text-on-surface font-bold">$100 Credit</span>
+<span class="text-label-data font-label-data text-primary block">$100.00</span>
+</div>
+</div>
+</div>
+</section>
+<!-- INSTITUTIONAL ESCROW GUARANTEE PROTOCOL -->
+<section class="space-y-4" id="escrow-protocol">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface flex items-center gap-2 font-bold">
+<span class="material-symbols-outlined text-primary text-[24px]">verified_user</span>
+            Institutional Escrow Guarantee Protocol
+          </h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Triple-layer cryptographic and procedural safeguards for competitive Dota 2 transactions</p>
+</div>
+<span class="text-label-caps font-label-caps text-[11px] px-2 py-1 rounded bg-surface-container/70 text-outline border border-outline-variant/40">
+          ISO-27001 AUDITED
+        </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+<!-- Pillar 1 -->
+<div class="p-5 bg-[#0e1f18]/70 backdrop-blur-md rounded-lg border border-outline-variant/30 space-y-3 hover:border-primary/50 transition-colors">
+<div class="w-10 h-10 rounded bg-surface-container/70 border border-outline-variant/40 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">key</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">3rd-Party Steam Unbind Audit</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+            Every traded account undergoes mandatory inspection to confirm complete removal of Steam Guard mobile authenticators, recovery phone numbers, and verify first created original emails (OGE).
+          </p>
+</div>
+<!-- Pillar 2 -->
+<div class="p-5 bg-[#0e1f18]/70 backdrop-blur-md rounded-lg border border-outline-variant/30 space-y-3 hover:border-primary/50 transition-colors">
+<div class="w-10 h-10 rounded bg-surface-container/70 border border-outline-variant/40 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">security</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">30-Day Anti-Revocation Bond</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+            Transaction capital is held in cold storage escrow for up to 30 calendar days. If Valve issues an account lock or community ban due to previous seller negligence, full compensation is guaranteed.
+          </p>
+</div>
+<!-- Pillar 3 -->
+<div class="p-5 bg-[#0e1f18]/70 backdrop-blur-md rounded-lg border border-outline-variant/30 space-y-3 hover:border-primary/50 transition-colors">
+<div class="w-10 h-10 rounded bg-surface-container/70 border border-outline-variant/40 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">gavel</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">24/7 Human Arbiter Desk</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+            Staffed exclusively by former tournament referees and verified high-MMR arbiters. Any match anomaly or booster dispute is analyzed frame-by-frame via Dota 2 API telemetry replays.
+          </p>
+</div>
+</div>
+</section>
+<!-- FOOTER COMPONENT -->
+<footer class="w-full border-t border-outline-variant/30 bg-[#061610]/80 backdrop-blur-md px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4 mt-12 rounded-lg">
+<div class="space-y-1 text-center md:text-left">
+<div class="text-label-caps font-label-caps uppercase tracking-wider text-primary font-bold">PLAYORA ESCROW</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+          © 2025 Playora Escrow Technologies Ltd. High-Performance Esports Terminal. All Rights Reserved.
+        </p>
+</div>
+<!-- Immutable JSON Links -->
+<div class="flex flex-wrap gap-4 text-label-caps font-label-caps text-on-surface-variant justify-center text-[11px]">
+<a class="hover:text-primary transition-colors duration-150" href="#">Terms of Escrow</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">AML/KYC Policy</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">Steam API Telemetry</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">Dispute Protocol</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">System Status</a>
+</div>
+</footer>
+</main>
+</div>
+<!-- ========================================================================= -->
+<!-- VERTICAL TACTICAL GAMING HUD SCROLLBAR (Exact Alignment with WoW Hub)     -->
+<!-- ========================================================================= -->
+<div class="fixed right-0 top-0 bottom-0 w-[14px] z-50 hidden lg:flex flex-col items-center justify-between py-16 select-none pointer-events-none group bg-[#02110b]/40 border-l border-primary/20 backdrop-blur-[2px]" id="hud-scroll-telemetry"><div class="font-label-caps text-[9px] text-primary tracking-widest uppercase -rotate-90 origin-center whitespace-nowrap mb-6 font-bold drop-shadow-[0_0_8px_rgba(78,222,163,0.8)]" id="hud-percent-text">HUD // 84%</div><div class="w-1.5 flex-1 rounded-full bg-[#02110b]/80 border border-primary/40 relative overflow-hidden backdrop-blur-md shadow-[0_0_12px_rgba(78,222,163,0.25)] my-4"><div class="absolute top-10 left-0 right-0 w-full h-24 rounded-full bg-gradient-to-b from-primary-fixed via-primary to-secondary-container shadow-[0_0_15px_rgba(78,222,163,0.9)] animate-pulse" id="hud-scroll-thumb"></div></div><div class="text-[8px] font-label-data text-primary tracking-wider font-semibold flex flex-col items-center gap-1 mt-6"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping shadow-[0_0_8px_rgba(78,222,163,0.9)]"></span><span class="-rotate-90 origin-center text-[8px] uppercase tracking-widest text-primary font-bold">SYNC</span></div></div>
+
+
+
+
+
+
+</body></html>

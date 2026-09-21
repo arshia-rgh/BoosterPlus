@@ -1,0 +1,993 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Playora - League of Legends Dedicated Hub</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "primary": "#4edea3",
+          "primary-fixed-dim": "#4edea3",
+          "secondary-container": "#18a479",
+          "surface": "#05130d",
+          "on-secondary-fixed": "#002115",
+          "on-tertiary-fixed-variant": "#00513a",
+          "surface-dim": "#05130d",
+          "on-tertiary-fixed": "#002115",
+          "surface-container": "#0c241b",
+          "surface-tint": "#4edea3",
+          "on-error": "#690005",
+          "inverse-surface": "#d3e7db",
+          "surface-container-low": "#081a13",
+          "on-primary": "#003824",
+          "inverse-primary": "#006c49",
+          "on-tertiary-container": "#00422e",
+          "outline-variant": "rgba(19, 58, 43, 0.6)",
+          "on-secondary": "#003827",
+          "tertiary": "#7bd8b1",
+          "secondary-fixed-dim": "#62dcad",
+          "tertiary-container": "#57b48f",
+          "background": "#05130d",
+          "on-primary-fixed": "#002113",
+          "surface-bright": "#1d382d",
+          "on-primary-container": "#00422b",
+          "primary-fixed": "#6ffbbe",
+          "error": "#ffb4ab",
+          "tertiary-fixed-dim": "#7bd8b1",
+          "on-surface-variant": "#bbcabf",
+          "on-background": "#d3e7db",
+          "tertiary-fixed": "#97f5cc",
+          "surface-container-lowest": "#030c08",
+          "inverse-on-surface": "#23342c",
+          "on-primary-fixed-variant": "#005236",
+          "secondary-fixed": "#80f9c8",
+          "primary-container": "#10b981",
+          "on-tertiary": "#003827",
+          "secondary": "#62dcad",
+          "on-secondary-container": "#003121",
+          "on-secondary-fixed-variant": "#00513a",
+          "on-error-container": "#ffdad6",
+          "outline": "#86948a",
+          "on-surface": "#d3e7db",
+          "surface-container-high": "#122f23",
+          "surface-variant": "#143327",
+          "surface-container-highest": "#183e30",
+          "error-container": "#93000a"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "fontFamily": {
+          "headline-sm": ["Space Grotesk"],
+          "display-hero-mobile": ["Space Grotesk"],
+          "body-lg": ["Plus Jakarta Sans"],
+          "label-data": ["JetBrains Mono"],
+          "headline-lg-mobile": ["Space Grotesk"],
+          "headline-md": ["Space Grotesk"],
+          "title-md": ["Plus Jakarta Sans"],
+          "body-md": ["Plus Jakarta Sans"],
+          "label-caps": ["JetBrains Mono"],
+          "body-sm": ["Plus Jakarta Sans"],
+          "display-hero": ["Space Grotesk"],
+          "headline-lg": ["Space Grotesk"]
+        }
+      },
+    },
+  }
+</script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #030c08;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #143327;
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #1d382d;
+    }
+</style>
+</head>
+<body class="bg-surface text-on-surface antialiased selection:bg-primary selection:text-on-primary min-h-screen flex flex-col font-body-md text-body-md overflow-x-hidden" style="background-image: linear-gradient(rgba(6, 22, 16, 0.62), rgba(6, 22, 16, 0.8)), url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCPJ6NV6E0p6019kbyIYtwSUmwT1VjlHRRvVeOpCATyQ6fS96vkW-G0ltdpBAHrrabEOtTT0zAQBowlTbFjjl589kboxh332Q7lft1NFOyMZtU3zXb95aHAc89iSckWTsRZ0oyt1ctI4UAd2g8PBXF0oNyLlR69v51x6uameV2P64g940Y2_nnX44CbS8liJjGTYY98Sg2Czd3fzzQVjnFJvbU5NMAA5cco_AYC_ZfTcN-XHF2LBP07xNPLbiUeauDNGBA&quot;); background-size: cover; background-position: center center; background-attachment: fixed;">
+<!-- TOP APP BAR -->
+<header class="sticky top-0 z-50 flex justify-between items-center w-full px-6 py-3 border-b border-outline-variant bg-surface-container-lowest/90 backdrop-blur-md">
+<!-- Left brand & Game selector -->
+<div class="flex items-center gap-6">
+<a class="flex items-center gap-3" href="#">
+<img alt="Playora Official Brand Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiqbfYcuf5zwrdI9_4eICO9wA3gOFuOTCyGAKRjYuC2oFsT4hnCKUpZevt1pgkYs4RQGH1q1REQvT8pnKiumBdSWXjPS-K8BO3ckTVP24kDodM1UbM9SyHJhyodXUbQKV91FrRIsjXGLur8N7e2xQE75_rncplX-Cyd1Mm5CQC8WaHagIyaWGZwNYOf-lEu34OIOWTLMI06I4eyvxG9AaK9mkXW6O5nGPn5ppW2pRsxu9i65YG12rBooA-HE0QvgO6j7Y">
+</a>
+<div class="h-5 w-px bg-outline-variant hidden lg:block"></div>
+<!-- Live Games Hub Switching Pill Bar -->
+<nav class="hidden lg:flex items-center gap-1.5 text-[13px] font-label-data">
+<a class="px-2.5 py-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-150 rounded" href="#">MLBB</a>
+<a class="px-2.5 py-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-150 rounded" href="#">VALORANT</a>
+<a class="px-2.5 py-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-150 rounded" href="#">Dota 2</a>
+<a class="px-3 py-1 bg-surface-container text-primary font-semibold border-b-2 border-primary flex items-center gap-1.5 rounded-t" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+          League of Legends
+          <span class="text-[9px] uppercase px-1 py-0.5 bg-primary/15 text-primary border border-primary/30 rounded font-label-caps">LIVE HUB</span>
+</a>
+<a class="px-2.5 py-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-150 rounded" href="#">Wild Rift</a>
+</nav>
+</div>
+<!-- Center Search -->
+<div class="hidden xl:flex items-center flex-1 max-w-xs mx-6">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-[18px]">search</span>
+<input class="w-full pl-8 pr-3 py-1.5 bg-surface-container-low border border-outline-variant rounded text-body-sm font-body-sm text-on-surface placeholder:text-outline focus:border-primary focus:ring-0 transition-colors" placeholder="Search Summoner, Skin, Booster ID..." type="text">
+</div>
+</div>
+<!-- Right Utility Links & Connect Wallet -->
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-4 text-body-sm font-title-md">
+<a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" href="#marketplace">Marketplace</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" href="#boosting">Boosting</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" href="#packages">Packages</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" href="#rpshop">RP Shop</a>
+<span class="flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+          Escrow Protected
+        </span>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150" href="#">Support</a>
+</div>
+<div class="flex items-center gap-2.5">
+<button class="p-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-150 relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary"></span>
+</button>
+<div class="flex items-center gap-2 pl-1 pr-2 py-1 rounded bg-surface-container-low border border-outline-variant">
+<img alt="Playora User Profile Avatar" class="w-6 h-6 rounded-full object-cover border border-primary/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKtOLzrbV9cEosBUv8c8GDkB_f6zb2EVLRSlRtAO7XGaB985wv0RhxFgmaFG5VSSaz3TCGOVj49n8nD9BJjLrgJE6m11IbxAJgtXtIBh1ZX0KETBAEAfEZRmObIKnX7RUz0Ja1tRLlYxOtbwX5OyeHlSmZPclcE_T0W8qB-5QcHs8k4knJvu1ySTzjto81aiGRvtNqayKDiFC1qxP1QgpDv0Yb_3pIBcPieLTAHd81PwNJVZKz3UCzGPYrO_HvwWuqSV0">
+<span class="text-label-caps text-on-surface hidden sm:inline">PRO_042</span>
+</div>
+<button class="px-3.5 py-1.5 rounded bg-primary text-on-primary font-headline-sm text-[12px] uppercase tracking-wider font-bold hover:bg-primary-fixed transition-colors active:scale-[0.98] flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+          Connect Wallet
+        </button>
+</div>
+</div></header>
+<div class="flex flex-1 w-full">
+<!-- DEDICATED SIDEBAR (Sticky w-64) -->
+<aside class="hidden lg:flex flex-col justify-between w-64 shrink-0 bg-surface-container-low border-r border-outline-variant p-4 sticky top-[57px] h-[calc(100vh-57px)]">
+<div>
+<!-- Terminal Header Info -->
+<div class="p-3 bg-surface-container-lowest border border-outline-variant rounded mb-4">
+<div class="flex items-center justify-between">
+<span class="text-headline-sm font-headline-sm text-primary font-bold tracking-tight">LoL Hub</span>
+<span class="inline-flex items-center gap-1.5 text-label-caps text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+              ONLINE
+            </span>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-1 font-label-data">Riot Vanguard &amp; MMR Encrypted</p>
+</div>
+<!-- Side Nav Action Button -->
+<a class="block w-full text-center py-2.5 mb-5 rounded bg-primary text-on-primary font-headline-sm font-bold text-[13px] tracking-wider uppercase hover:bg-primary-fixed transition-all active:scale-[0.98]" href="#boosting">
+          INSTANT ORDER
+        </a>
+<!-- LoL Dedicated Tabs -->
+<nav class="space-y-1">
+<a class="border-l-2 border-primary bg-surface-container text-primary font-title-md text-body-sm flex items-center gap-3 px-3 py-2.5 rounded-r transition-colors" href="#boosting">
+<span class="material-symbols-outlined text-[20px]">military_tech</span>
+            Solo/Duo &amp; Flex Boosting
+          </a>
+<a class="text-on-surface-variant font-title-md text-body-sm flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container hover:text-on-surface rounded transition-colors" href="#packages">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+            Fixed Value Packages
+          </a>
+<a class="text-on-surface-variant font-title-md text-body-sm flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container hover:text-on-surface rounded transition-colors" href="#boosting">
+<span class="material-symbols-outlined text-[20px]">sports_esports</span>
+            Duo Coaching &amp; Pro Carry
+          </a>
+<a class="text-on-surface-variant font-title-md text-body-sm flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container hover:text-on-surface rounded transition-colors" href="#vault">
+<span class="material-symbols-outlined text-[20px]">lock_clock</span>
+            Audited Smurf &amp; Skin Vault
+          </a>
+<a class="text-on-surface-variant font-title-md text-body-sm flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container hover:text-on-surface rounded transition-colors" href="#rpshop">
+<span class="material-symbols-outlined text-[20px]">diamond</span>
+            Riot Direct RP Gateway
+          </a>
+<a class="text-on-surface-variant font-title-md text-body-sm flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container hover:text-on-surface rounded transition-colors" href="#escrow">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+            Escrow Guarantee
+          </a>
+</nav>
+</div>
+<!-- Bottom Telemetry Card -->
+<div class="border-t border-outline-variant pt-3 text-body-sm space-y-2">
+<div class="flex items-center justify-between text-[11px] text-on-surface-variant">
+<span class="">HWID Spoofing:</span>
+<span class="text-primary font-label-data font-semibold">ACTIVE (Ring-0)</span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-on-surface-variant">
+<span class="">LCU Gateway:</span>
+<span class="text-primary font-label-data font-semibold">1.2s Direct</span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-on-surface-variant">
+<span class="">Protocol Security:</span>
+<span class="text-tertiary font-label-data font-semibold">TLS 1.3 Riot Auth</span>
+</div>
+</div>
+</aside>
+<!-- MAIN CANVAS -->
+<main class="flex-1 min-w-0 p-6 lg:p-8 space-y-12">
+<!-- HERO BANNER SECTION -->
+<section class="relative rounded-lg overflow-hidden border border-outline-variant bg-surface-container-low p-6 lg:p-10">
+<!-- Background Atmospheric Backdrop -->
+<div class="absolute inset-0 opacity-30 mix-blend-screen pointer-events-none">
+<img alt="Esports Aurora Deep Atmosphere" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCo5YYDSVy9w12Gc_9d1SiPciTZQKfC8w9CaerXGpjeVYODgopF4S8yqP9ymterrG9bDVZwsltnzhIpx3MD2WRcp-8CCYJ3j0iYZKmRQ8CS3EUCRUhPVU313KeQui4_5a62vsol7gbnRINWXlXJffegcar-bAEG4UrLns38epoAnKF97PBnXKBH8kyTp85869EpdVNFlZIDBOCp7PVCAHrI_M15x-tNt08_KYK9ZsLDLbDau6I1z5h8KsY-HgDbdRV_aEc">
+</div>
+<div class="relative z-10 grid grid-cols-1 xl:grid-cols-12 gap-8 items-center">
+<div class="xl:col-span-7 space-y-4">
+<div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-surface-container border border-primary/40 text-primary text-label-caps">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+              SEASON 2024 / 2025 APEX TELEMETRY LIVE
+            </div>
+<h1 class="font-headline-xl text-headline-lg lg:text-headline-xl text-on-surface font-bold tracking-tight">
+              Institutional League of Legends MMR &amp; LP Service Exchange
+            </h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+              Zero-markup LoL Solo/Duo rank elevation, Vanguard-cloaked boosting by verified Challenger &amp; Grandmaster players, Master smurf accounts with Prestige skins, and Tier-1 Riot Trade Escrow.
+            </p>
+<!-- Stats Bar -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-outline-variant">
+<div class="p-2.5 bg-surface-container-lowest/85 rounded border border-outline-variant">
+<span class="text-label-caps text-outline block uppercase">Active Boosters</span>
+<span class="text-headline-sm font-headline-sm font-bold text-primary">142</span>
+<span class="text-[10px] text-on-surface-variant block font-label-data">Challenger/GM</span>
+</div>
+<div class="p-2.5 bg-surface-container-lowest/85 rounded border border-outline-variant">
+<span class="text-label-caps text-outline block uppercase">Vaulted Accounts</span>
+<span class="text-headline-sm font-headline-sm font-bold text-primary">520</span>
+<span class="text-[10px] text-on-surface-variant block font-label-data">Hand-leveled 30+</span>
+</div>
+<div class="p-2.5 bg-surface-container-lowest/85 rounded border border-outline-variant">
+<span class="text-label-caps text-outline block uppercase">Riot Direct Ping</span>
+<span class="text-headline-sm font-headline-sm font-bold text-tertiary">1.2s</span>
+<span class="text-[10px] text-on-surface-variant block font-label-data">Injection Gateway</span>
+</div>
+<div class="p-2.5 bg-surface-container-lowest/85 rounded border border-outline-variant">
+<span class="text-label-caps text-outline block uppercase">Total Escrow Held</span>
+<span class="text-headline-sm font-headline-sm font-bold text-primary">$84,350</span>
+<span class="text-[10px] text-on-surface-variant block font-label-data">USD Bonded</span>
+</div>
+</div>
+</div>
+<!-- Hero Right: Meta Apex Champions Showcase -->
+<div class="xl:col-span-5 bg-surface-container-lowest/90 border border-outline-variant p-5 rounded-lg space-y-4">
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant">
+<div>
+<span class="text-label-caps uppercase tracking-wider text-outline">Meta Apex Champions</span>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Top 300 EUW/NA Calibration</h3>
+</div>
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-label-caps">PATCH 14.X READY</span>
+</div>
+<!-- Champion Cards Row -->
+<div class="space-y-2.5">
+<div class="flex items-center justify-between p-2.5 bg-surface-container rounded border border-outline-variant hover:border-primary/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center font-bold text-primary border border-outline-variant">
+<span class="material-symbols-outlined text-primary">swords</span>
+</div>
+<div>
+<h4 class="text-body-md font-title-md text-on-surface">Aatrox <span class="text-body-sm text-on-surface-variant font-normal">· The Darkin Blade</span></h4>
+<span class="text-[11px] text-outline font-label-data">Top Lane · 54.2% Winrate @ Apex</span>
+</div>
+</div>
+<span class="text-label-caps font-label-data text-primary bg-surface-container-low px-2 py-1 rounded border border-outline-variant">TIER S+</span>
+</div>
+<div class="flex items-center justify-between p-2.5 bg-surface-container rounded border border-outline-variant hover:border-primary/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center font-bold text-primary border border-outline-variant">
+<span class="material-symbols-outlined text-tertiary">sports_martial_arts</span>
+</div>
+<div>
+<h4 class="text-body-md font-title-md text-on-surface">Lee Sin <span class="text-body-sm text-on-surface-variant font-normal">· The Blind Monk</span></h4>
+<span class="text-[11px] text-outline font-label-data">Jungle · High Mobility Macro Carry</span>
+</div>
+</div>
+<span class="text-label-caps font-label-data text-primary bg-surface-container-low px-2 py-1 rounded border border-outline-variant">TIER S+</span>
+</div>
+<div class="flex items-center justify-between p-2.5 bg-surface-container rounded border border-outline-variant hover:border-primary/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center font-bold text-primary border border-outline-variant">
+<span class="material-symbols-outlined text-primary-fixed">target</span>
+</div>
+<div>
+<h4 class="text-body-md font-title-md text-on-surface">Jinx <span class="text-body-sm text-on-surface-variant font-normal">· The Loose Cannon</span></h4>
+<span class="text-[11px] text-outline font-label-data">Bot ADC · Hypercarry Scaling</span>
+</div>
+</div>
+<span class="text-label-caps font-label-data text-primary bg-surface-container-low px-2 py-1 rounded border border-outline-variant">TIER S</span>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between text-body-sm text-on-surface-variant border-t border-outline-variant">
+<span class="">Apex Seat Availability:</span>
+<span class="font-label-data text-primary font-bold">300/300 Challenger Monitored</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 1: 10-TIER RANKED PROGRESSION MATRIX (WITH OFFICIAL CRESTS) -->
+<section class="space-y-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<div class="inline-flex items-center gap-1.5 text-label-caps text-primary uppercase">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+              Official League System Architecture
+            </div>
+<h2 class="text-headline-md sm:text-headline-lg font-headline-lg font-bold text-on-surface">10-Tier Ranked Progression Ladder</h2>
+</div>
+<div class="flex items-center gap-2 text-body-sm text-outline">
+<span class="">Split Soft-Reset: <strong class="text-on-surface">~4 Divisions</strong></span>
+<span class="">·</span>
+<span class="">Decay: <strong class="text-on-surface">Diamond (28d) / Apex (14d)</strong></span>
+</div>
+</div>
+<!-- 10-Tier Cards Grid with Crest Images -->
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-10 gap-2.5">
+<!-- 1. Iron -->
+<div class="p-3 rounded bg-surface-container-low border border-outline-variant flex flex-col justify-between hover:border-primary/40 transition-colors group">
+<div class="space-y-2">
+<div class="w-full flex justify-center py-1">
+<img alt="LoL Iron Crest" class="w-12 h-12 object-contain drop-shadow" src="https://lh3.googleusercontent.com/aida/AEtjO1VR17Zu7SqXNTnCPaGNVIlwx24ki6rNmbHfyr8yEfqRoyZTQAiFQlniW9Wc_OTOaak0AYd90rj5wTE-TlE4ZHsVGM2y1LBTiOpOnfoQPG0b5dNpaIiw8H4_7xap-KwqMUg9cx_tGhp_s6xP7sxq-TSwzYgoyelyPzH8m94hqtVkGBIEkLn_dGW6OIILEoyuJeK0z1zmqpL06LAMwi2y7NV-m5Q6Nj0EcDg9wvVgKlHL2w_uCH4jJXpI1YE9">
+</div>
+<span class="text-[10px] font-label-caps text-stone-400 uppercase tracking-wider block text-center">01 · Bilgewater</span>
+<h4 class="text-title-md font-headline-sm font-bold text-on-surface text-center">Iron</h4>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline space-y-0.5 text-center">
+<div class="">0 - 100 LP</div>
+<div class="">Divisions IV - I</div>
+<div class="text-stone-400">Baseline ±25 LP</div>
+</div>
+</div>
+<!-- 2. Bronze -->
+<div class="p-3 rounded bg-surface-container-low border border-outline-variant flex flex-col justify-between hover:border-primary/40 transition-colors group">
+<div class="space-y-2">
+<div class="w-full flex justify-center py-1">
+<img alt="LoL Bronze Crest" class="w-12 h-12 object-contain drop-shadow" src="https://lh3.googleusercontent.com/aida/AEtjO1X58A0jAH0ZWgJjyhUSVX_23GGlnOKL9L9KsDW8t6Jk-9akJmqaAFKkhd8ZQ-Cma4xIqq9Np-radOR6vjTBUincauzysQFqpMZlPo0Uach5gpcRWlzxFhora7kE11M4jxPafZzhCOYWHkmJN6Fj1Z-r1KCfKLKcMx9VjndrUDnTlbXAxm2GV2eN-Xl9OpuWdgYtLBbWt8ynE0nQyWXDsy6v9XxlyxyVKPg0icsTIrcIvjJRSSf2jvdBtUJB">
+</div>
+<span class="text-[10px] font-label-caps text-amber-500 uppercase tracking-wider block text-center">02 · Zaunite</span>
+<h4 class="text-title-md font-headline-sm font-bold text-on-surface text-center">Bronze</h4>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline space-y-0.5 text-center">
+<div class="">100 - 400 LP</div>
+<div class="">Divisions IV - I</div>
+<div class="text-amber-500">Shield: 10 games</div>
+</div>
+</div>
+<!-- 3. Silver -->
+<div class="p-3 rounded bg-surface-container-low border border-outline-variant flex flex-col justify-between hover:border-primary/40 transition-colors group">
+<div class="space-y-2">
+<div class="w-full flex justify-center py-1">
+<img alt="LoL Silver Crest" class="w-12 h-12 object-contain drop-shadow" src="https://lh3.googleusercontent.com/aida/AEtjO1VuywjVDLj4s3CCwLKvizr_KAqkaeri9fDwH7aMsbV8fwwTTFKqNZfyhHlUCd8NW6-sGkD4-y62aev7VP12NYxs0ZNfe-9MwBJdi69dDvNxtFuflHmnbRsnJ_McVPx3eaU5tsC5UNwavvLRhwaUIsB3oEvZYNLFhqPq7t-lrV6zNYiveIlw3YyIO6cca2dZ-8PzjH-CL6i2fFJTRHUWV_TLfQ8FhXaVWtq8UvyLl5r7SkT6axV0KrrQ_B0">
+</div>
+<span class="text-[10px] font-label-caps text-slate-300 uppercase tracking-wider block text-center">03 · Piltover</span>
+<h4 class="text-title-md font-headline-sm font-bold text-on-surface text-center">Silver</h4>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline space-y-0.5 text-center">
+<div class="">400 - 800 LP</div>
+<div class="">Divisions IV - I</div>
+<div class="text-slate-300">1600 SP Victorious</div>
+</div>
+</div>
+<!-- 4. Gold -->
+<div class="p-3 rounded bg-surface-container-low border border-outline-variant flex flex-col justify-between hover:border-primary/40 transition-colors group">
+<div class="space-y-2">
+<div class="w-full flex justify-center py-1">
+<img alt="LoL Gold Crest" class="w-12 h-12 object-contain drop-shadow" src="https://lh3.googleusercontent.com/aida/AEtjO1Wicajico3qPvpkxXFrhvmvWoTYhAToep0j8HryxKI2mW0-PggBBeZR_Uuez8S0wnwlQy8HWQZCb5kIzvnbnBZX5Pvfdk3JMLzkThjVcNQ3NplHD7AIvdKUax-5Wa_UQTvwCfAxjPpavS4q7VGVtrR7Wi3Dw6DznUMujlWEtgap1UW1XbJksPwP24_hYU_Ra1yp7Aq4hHI9O8OkpKYcCPmtIsYfp6VzcVfCAOvS67cTCBwwYAPJkpffEIiW">
+</div>
+<span class="text-[10px] font-label-caps text-yellow-400 uppercase tracking-wider block text-center">04 · Shuriman</span>
+<h4 class="text-title-md font-headline-sm font-bold text-on-surface text-center">Gold</h4>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline space-y-0.5 text-center">
+<div class="">800 - 1200 LP</div>
+<div class="">Divisions IV - I</div>
+<div class="text-yellow-400">80 SP Victorious</div>
+</div>
+</div>
+<!-- 5. Platinum -->
+<div class="p-3 rounded bg-surface-container-low border border-outline-variant flex flex-col justify-between hover:border-primary/40 transition-colors group">
+<div class="space-y-2">
+<div class="w-full flex justify-center py-1">
+<img alt="LoL Platinum Crest" class="w-12 h-12 object-contain drop-shadow" src="https://lh3.googleusercontent.com/aida/AEtjO1VpDsbgrNL3plVZp266IhRvQeKBOyMHe66isw82Fhchhxhw9qRol2f58U3luLdPesO0N_znLIw7xxJnTypupq67HBeJrT74v8FZuHmbNAdNXBDjt3w9lfXtpYuyRs2O7N0_3Npwr7fGMq2qgLvXvl_wSj3gwy4DhFNVJM1_ef5VqOwibcoevztzduP3lwCc290R_cuYAqUI-KiL48fO1bkmm__vvc9ZEl4BKQI8zv030Pat-52tssW9HUN9">
+</div>
+<span class="text-[10px] font-label-caps text-teal-300 uppercase tracking-wider block text-center">05 · Ionian</span>
+<h4 class="text-title-md font-headline-sm font-bold text-on-surface text-center">Platinum</h4>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline space-y-0.5 text-center">
+<div class="">1200 - 1600 LP</div>
+<div class="">Divisions IV - I</div>
+<div class="text-teal-300">Skilled Bracket</div>
+</div>
+</div>
+<!-- 6. Emerald -->
+<div class="p-3 rounded bg-surface-container-low border border-primary/50 flex flex-col justify-between hover:border-primary transition-colors group bg-surface-container/40">
+<div class="space-y-2">
+<div class="w-full flex justify-center py-1">
+<img alt="LoL Emerald Crest" class="w-12 h-12 object-contain drop-shadow-[0_0_8px_rgba(78,222,163,0.5)]" src="https://lh3.googleusercontent.com/aida/AEtjO1UmpU1stXDIWeGtT9BKGnR954GR8TyyPCmJSyaY01fwf5TGieOgv23gewlWALZxKhDwqBpYqoHQl3XPaShrwT1omAEIW-y7Vue0qoS4D7vzPEk0o1E38yHl67g-2Q_zC_Js57OFFbsTWXoBC2XsH6TEg5QOPTnV-06sQ7f4lc8T01R1jcsIx8VGRN53JyYpTVabP_MYCEgFbwNydwxgkwtw5xYEGtbo8GsPsK3H-EmUUlUXwOeRLF2h2X2A">
+</div>
+<span class="text-[10px] font-label-caps text-primary uppercase tracking-wider block text-center">06 · Jade</span>
+<h4 class="text-title-md font-headline-sm font-bold text-primary text-center">Emerald</h4>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline space-y-0.5 text-center">
+<div class="">1600 - 2000 LP</div>
+<div class="">Divisions IV - I</div>
+<div class="text-primary font-semibold">MMR Tuning Gate</div>
+</div>
+</div>
+<!-- 7. Diamond -->
+<div class="p-3 rounded bg-surface-container-low border border-outline-variant flex flex-col justify-between hover:border-primary/40 transition-colors group">
+<div class="space-y-2">
+<div class="w-full flex justify-center py-1">
+<img alt="LoL Diamond Crest" class="w-12 h-12 object-contain drop-shadow" src="https://lh3.googleusercontent.com/aida/AEtjO1X1Ld_ogm4dKyQXFYKk1Qw8QbLQK9VJhnwmLEm9vYGrpKDtf-RtaWAqSxWg86hUqiBjGM29zq943kVrCBCd863-GPN5qcC1zNZg-x_n2-JMzXOS0QzjQ_0Gt2yQOfYBrtq3QSbhsUrpHkISS-fP8d5aTlEubo7sP2RNIn-mVH621Wfua-RE1vFMP5mfeWSF9Xw4tuTO727QL3p6oiyiAlL_kIYL83DkkIZMsdo9qnsWWHVjLPCtOxd_Rj4I">
+</div>
+<span class="text-[10px] font-label-caps text-cyan-400 uppercase tracking-wider block text-center">07 · Targon</span>
+<h4 class="text-title-md font-headline-sm font-bold text-on-surface text-center">Diamond</h4>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline space-y-0.5 text-center">
+<div class="">2000 - 2400 LP</div>
+<div class="">Max Seed D3</div>
+<div class="text-cyan-400">Decay: 50 LP/day</div>
+</div>
+</div>
+<!-- 8. Master -->
+<div class="p-3 rounded bg-surface-container-low border border-purple-500/40 flex flex-col justify-between hover:border-purple-400 transition-colors group">
+<div class="space-y-2">
+<div class="w-full flex justify-center py-1">
+<img alt="LoL Master Crest" class="w-12 h-12 object-contain drop-shadow" src="https://lh3.googleusercontent.com/aida/AEtjO1XfKuwEibMU-6-vbL_xreWPC31V3VpPU7N9rcn9J8UKuP4ZYAo9I5Vpm8MQJSNsZS_xAiELuzvtaZJC-v0xBT2Hjo2RuUOIL89Of7KYIqCQLF0GMFH5gKhb5mTA3w-nZ6NZamC_-T7e6B2hB__lWKa-gWglx9ydePhstFRdKmtVWT8qLcQR5-sb9SYMzUZ0OSzTHjYbJNAALJU4IdZB2ed0vrVwX7GiuP4B947rOPf8Hy8IpqidCGmgk5wu">
+</div>
+<span class="text-[10px] font-label-caps text-purple-400 uppercase tracking-wider block text-center">08 · Void</span>
+<h4 class="text-title-md font-headline-sm font-bold text-purple-300 text-center">Master</h4>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline space-y-0.5 text-center">
+<div class="">Apex Tier</div>
+<div class="">1 Division (200+ LP)</div>
+<div class="text-purple-400">Master Duo Active</div>
+</div>
+</div>
+<!-- 9. Grandmaster -->
+<div class="p-3 rounded bg-surface-container-low border border-red-500/40 flex flex-col justify-between hover:border-red-400 transition-colors group">
+<div class="space-y-2">
+<div class="w-full flex justify-center py-1">
+<img alt="LoL Grandmaster Crest" class="w-12 h-12 object-contain drop-shadow" src="https://lh3.googleusercontent.com/aida/AEtjO1XlYeV1p85KddUo05kx_H7lw9DvCmVd693buWmzIHlomolGyjEuQgKFk8pNlKAc5Iuo4eyTfxaBfKjRvJlajwh3-LVCsgMJLGsKDpgXPDl1abDhLhNZ4cT-YEHzumD91P0Vfgmadmr2fGWGpt-RnwzbDzjEWAg7Vben6IZrcNdQfPkQhX3ch9lktbue2VNSrIoFeKBMIKNhfd8DoGB4vCPlj-V3AvTbSm1R3bonJxWOtcRmK8SHGEWOKul0">
+</div>
+<span class="text-[10px] font-label-caps text-red-400 uppercase tracking-wider block text-center">09 · Noxian</span>
+<h4 class="text-title-md font-headline-sm font-bold text-red-300 text-center">Grandmaster</h4>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline space-y-0.5 text-center">
+<div class="">Apex Tier</div>
+<div class="">500+ LP Cutoff</div>
+<div class="text-red-400">Top 700 EUW/NA</div>
+</div>
+</div>
+<!-- 10. Challenger -->
+<div class="p-3 rounded bg-surface-container-low border border-primary/60 flex flex-col justify-between hover:border-primary transition-colors group bg-primary/5">
+<div class="space-y-2">
+<div class="w-full flex justify-center py-1">
+<img alt="LoL Challenger Crest" class="w-12 h-12 object-contain drop-shadow-[0_0_10px_rgba(78,222,163,0.6)]" src="https://lh3.googleusercontent.com/aida/AEtjO1Vcx-jsnSnjrKfImuuHQjoa3mYruqonPwkStEWesVCWi3BFH9TPD_OQDs2QDoN5V47L8tCGJ35t7Vr1ywl_hjWzzY_lCPZNM-W5-Q_vBnFp3B_Fn6sM5nWnfegLuHcOG5ohGNsKy97g92ZakXfAJaszfWut4P_kgJMMBgG0GW0utZKrwqcozrQK0p1G1A_tJ1G2OhBrk5MyEaWyIh-j0vAfkncMTOpdRQ_HMuBhP5JbG7QG0ybyD2RBf3Kn">
+</div>
+<span class="text-[10px] font-label-caps text-primary uppercase tracking-wider block text-center">10 · Sovereign</span>
+<h4 class="text-title-md font-headline-sm font-bold text-primary text-center">Challenger</h4>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline space-y-0.5 text-center">
+<div class="">Apex Pinnacle</div>
+<div class="">Top 300 Seats</div>
+<div class="text-primary font-bold">Exclusive Recall</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: INSTITUTIONAL MMR & LP BOOSTING ENGINE (CONFIGURATOR) -->
+<section class="rounded-lg border border-outline-variant bg-surface-container-low p-6 space-y-6" id="boosting">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-outline-variant">
+<div>
+<div class="inline-flex items-center gap-1 text-label-caps text-primary uppercase">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+              Institutional Calibration Tool
+            </div>
+<h2 class="text-headline-md sm:text-headline-lg font-headline-lg font-bold text-on-surface">MMR &amp; LP Boosting Engine (Season 2024 / 2025)</h2>
+<p class="text-body-sm text-on-surface-variant">Live calculations calibrated directly with Riot's ±25 LP baseline demotion protections.</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-3 py-1 rounded bg-surface-container border border-outline-variant text-body-sm text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+              142 Challengers In Queue
+            </span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Configuration Form (7 cols) -->
+<div class="lg:col-span-7 space-y-5">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Current Rank -->
+<div class="space-y-1.5">
+<label class="text-title-md text-on-surface-variant block text-body-sm">Current Starting Rank</label>
+<div class="relative">
+<select class="w-full bg-surface-container border border-outline-variant rounded px-3 py-2 text-on-surface text-body-md focus:border-primary focus:ring-0">
+<option>Platinum II (~1,450 MMR)</option>
+<option>Gold I (~1,180 MMR)</option>
+<option>Emerald IV (~1,620 MMR)</option>
+<option>Emerald I (~1,950 MMR)</option>
+<option>Diamond IV (~2,020 MMR)</option>
+</select>
+</div>
+</div>
+<!-- Role Selection -->
+<div class="space-y-1.5">
+<label class="text-title-md text-on-surface-variant block text-body-sm">Role Preference (Main Lane)</label>
+<div class="grid grid-cols-5 gap-1 text-center">
+<button class="py-1.5 bg-surface-container border border-outline-variant rounded text-label-caps hover:border-primary text-on-surface" type="button">TOP</button>
+<button class="py-1.5 bg-primary text-on-primary border border-primary rounded text-label-caps font-bold" type="button">JGL</button>
+<button class="py-1.5 bg-surface-container border border-outline-variant rounded text-label-caps hover:border-primary text-on-surface" type="button">MID</button>
+<button class="py-1.5 bg-surface-container border border-outline-variant rounded text-label-caps hover:border-primary text-on-surface" type="button">ADC</button>
+<button class="py-1.5 bg-surface-container border border-outline-variant rounded text-label-caps hover:border-primary text-on-surface" type="button">SUP</button>
+</div>
+</div>
+</div>
+<!-- Target Destination -->
+<div class="space-y-1.5">
+<label class="text-title-md text-on-surface-variant flex items-center justify-between text-body-sm">
+<span class="">Target Destination Rank</span>
+<span class="text-primary font-label-data text-[11px]">+650 LP Net Elevation</span>
+</label>
+<div class="p-3 bg-surface-container-lowest border border-primary/50 rounded flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded bg-purple-950/60 border border-purple-500/40 text-purple-300">
+<span class="material-symbols-outlined">stars</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-title-md text-on-surface font-bold">Master / Grandmaster Entry</h4>
+<p class="text-body-sm text-outline">Apex Tier Activation · Demotion Shield (3 Games) Granted</p>
+</div>
+</div>
+<span class="text-label-caps text-primary px-2.5 py-1 rounded bg-primary/10 border border-primary/30 uppercase">APEX TARGET</span>
+</div>
+</div>
+<!-- Tactical Security Add-ons (Checkboxes) -->
+<div class="space-y-2.5 pt-2">
+<label class="text-title-md text-on-surface block text-body-sm">Tactical Security &amp; Execution Options</label>
+<div class="space-y-2">
+<label class="flex items-center gap-3 p-2.5 rounded bg-surface-container border border-outline-variant hover:border-primary/40 cursor-pointer">
+<input checked="" class="w-4 h-4 rounded border-outline-variant text-primary bg-surface-container-lowest focus:ring-0" type="checkbox">
+<div class="flex-1">
+<span class="text-title-md text-on-surface block text-body-sm">Clean HWID &amp; Local Server VPN (Matches your geo-ISP)</span>
+<span class="text-body-sm text-outline">Zero Vanguard anomaly telemetry trigger</span>
+</div>
+<span class="text-label-caps text-primary font-label-data">FREE</span>
+</label>
+<label class="flex items-center gap-3 p-2.5 rounded bg-surface-container border border-outline-variant hover:border-primary/40 cursor-pointer">
+<input checked="" class="w-4 h-4 rounded border-outline-variant text-primary bg-surface-container-lowest focus:ring-0" type="checkbox">
+<div class="flex-1">
+<span class="text-title-md text-on-surface block text-body-sm">Duo Queue with Verified Challenger Pro (Voice chat option)</span>
+<span class="text-body-sm text-outline">Play along directly; master-duo compliant under Patch 14.12+</span>
+</div>
+<span class="text-label-caps text-on-surface font-label-data">+$24.00</span>
+</label>
+<label class="flex items-center gap-3 p-2.5 rounded bg-surface-container border border-outline-variant hover:border-primary/40 cursor-pointer">
+<input checked="" class="w-4 h-4 rounded border-outline-variant text-primary bg-surface-container-lowest focus:ring-0" type="checkbox">
+<div class="flex-1">
+<span class="text-title-md text-on-surface block text-body-sm">Champion Pool Lock (Custom 3-5 champions e.g. Lee Sin, Yasuo, Ahri)</span>
+<span class="text-body-sm text-outline">Maintains organic match history K/D ratio &amp; flash placement</span>
+</div>
+<span class="text-label-caps text-primary font-label-data">FREE</span>
+</label>
+<label class="flex items-center gap-3 p-2.5 rounded bg-surface-container border border-outline-variant hover:border-primary/40 cursor-pointer">
+<input class="w-4 h-4 rounded border-outline-variant text-primary bg-surface-container-lowest focus:ring-0" type="checkbox">
+<div class="flex-1">
+<span class="text-title-md text-on-surface block text-body-sm">Appear Offline via Deceive / LCU Protocol</span>
+<span class="text-body-sm text-outline">Friends list and in-game lobby show ghost status</span>
+</div>
+<span class="text-label-caps text-primary font-label-data">FREE</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Right Telemetry Box & Price Card (5 cols) -->
+<div class="lg:col-span-5 flex flex-col justify-between p-5 rounded-lg bg-surface-container-lowest border border-outline-variant">
+<div class="space-y-4">
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant">
+<span class="text-label-caps uppercase tracking-wider text-outline">Order Telemetry Breakdown</span>
+<span class="text-label-caps text-primary font-label-data">INSTANT ESCROW LOCK</span>
+</div>
+<!-- Metrics -->
+<div class="space-y-2 text-body-sm">
+<div class="flex justify-between py-1 border-b border-outline-variant">
+<span class="text-on-surface-variant">Elevation Delta:</span>
+<span class="font-label-data text-on-surface font-semibold">+650 LP (2 Full Tiers)</span>
+</div>
+<div class="flex justify-between py-1 border-b border-outline-variant">
+<span class="text-on-surface-variant">Estimated Delivery:</span>
+<span class="font-label-data text-primary font-semibold">36 - 48 Hours</span>
+</div>
+<div class="flex justify-between py-1 border-b border-outline-variant">
+<span class="text-on-surface-variant">Assigned Booster:</span>
+<span class="font-label-data text-on-surface font-semibold">Challenger #42 EUW (Top 0.01%)</span>
+</div>
+<div class="flex justify-between py-1 border-b border-outline-variant">
+<span class="text-on-surface-variant">Vanguard Anomaly Risk:</span>
+<span class="font-label-data text-primary font-semibold">0.00% (Zero-Ban Insured)</span>
+</div>
+<div class="flex justify-between py-1 border-b border-outline-variant">
+<span class="text-on-surface-variant">Escrow Intermediary Fee:</span>
+<span class="font-label-data text-tertiary font-semibold">$0.00 (Playora Subsidized)</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container rounded border border-outline-variant">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<p class="text-[11px] text-on-surface-variant">
+                    Funds remain securely held in institutional smart-escrow. Booster only receives payout when your Summoner Profile is verified at the requested tier via Riot LCU API telemetry.
+                  </p>
+</div>
+</div>
+</div>
+<!-- Price & Button -->
+<div class="pt-6 border-t border-outline-variant space-y-3">
+<div class="flex items-baseline justify-between">
+<div>
+<span class="text-label-caps text-outline block uppercase">Total Locked Price</span>
+<span class="text-headline-lg sm:text-headline-xl font-headline-xl font-bold text-on-surface">$96.00</span>
+<span class="text-body-sm text-outline ml-1">USD</span>
+</div>
+<span class="text-label-caps px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">EST. +28 LP PER WIN</span>
+</div>
+<button class="w-full py-3 rounded bg-primary text-on-primary font-headline-sm font-bold text-[13px] tracking-wider uppercase hover:bg-primary-fixed transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+                INSTANT ESCROW ORDER
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: AUDITED LEAGUE OF LEGENDS ACCOUNTS & SMURF VAULT -->
+<section class="space-y-4" id="vault">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<div class="inline-flex items-center gap-1.5 text-label-caps text-primary uppercase">
+<span class="material-symbols-outlined text-[14px]">inventory_2</span>
+              Audited Account Telemetry
+            </div>
+<h2 class="text-headline-md sm:text-headline-lg font-headline-lg font-bold text-on-surface">Audited Smurf &amp; Prestige Skin Vault</h2>
+</div>
+<a class="text-title-md text-primary hover:underline flex items-center gap-1 text-body-sm" href="#">
+            View All 520 Audited Accounts
+            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+<!-- Card 1 -->
+<div class="rounded-lg border border-outline-variant bg-surface-container-low p-5 flex flex-col justify-between hover:border-primary/50 transition-colors">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 rounded bg-primary/15 text-primary border border-primary/30 text-label-caps uppercase">PEAK CHL 650 LP</span>
+<span class="text-body-sm font-label-data text-outline">EUW Server</span>
+</div>
+<h3 class="text-title-md font-headline-sm font-bold text-on-surface">Challenger 650 LP (Season Peak)</h3>
+<p class="text-body-sm text-on-surface-variant">Original owner email unbind guarantee with full creation telemetry dossier.</p>
+<div class="space-y-1.5 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline">
+<div class="flex justify-between">
+<span class="">Skins:</span>
+<span class="text-on-surface font-semibold">145 Skins (Prestige K/DA Ahri, PAX TF)</span>
+</div>
+<div class="flex justify-between">
+<span class="">Champions:</span>
+<span class="text-on-surface font-semibold">All 168 Champions Unlocked</span>
+</div>
+<div class="flex justify-between">
+<span class="">Hand-Leveled:</span>
+<span class="text-primary font-semibold">Yes (Clean No-Botting Audit)</span>
+</div>
+</div>
+</div>
+<div class="pt-4 mt-4 border-t border-outline-variant flex items-center justify-between">
+<div>
+<span class="text-headline-sm font-headline-sm font-bold text-primary">$440.00</span>
+<span class="text-body-sm text-outline ml-1">USD</span>
+</div>
+<button class="px-4 py-1.5 rounded bg-surface-container hover:bg-primary hover:text-on-primary text-on-surface border border-outline-variant text-label-caps uppercase tracking-wider font-bold transition-all">
+                PURCHASE VAULT
+              </button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="rounded-lg border border-outline-variant bg-surface-container-low p-5 flex flex-col justify-between hover:border-primary/50 transition-colors">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 rounded bg-purple-500/15 text-purple-300 border border-purple-500/30 text-label-caps uppercase">MASTER 200 LP</span>
+<span class="text-body-sm font-label-data text-outline">NA Server</span>
+</div>
+<h3 class="text-title-md font-headline-sm font-bold text-on-surface">Master 200 LP Smurf</h3>
+<p class="text-body-sm text-on-surface-variant">High MMR smurf account with 78% winrate in ranked solo queue.</p>
+<div class="space-y-1.5 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline">
+<div class="flex justify-between">
+<span class="">Skins:</span>
+<span class="text-on-surface font-semibold">Unchained Alistar, Elementalist Lux</span>
+</div>
+<div class="flex justify-between">
+<span class="">Winrate:</span>
+<span class="text-primary font-semibold">78% (34W - 9L) High MMR Gains</span>
+</div>
+<div class="flex justify-between">
+<span class="">Unbind Status:</span>
+<span class="text-primary font-semibold">Clean Fresh Mail · Unlinked</span>
+</div>
+</div>
+</div>
+<div class="pt-4 mt-4 border-t border-outline-variant flex items-center justify-between">
+<div>
+<span class="text-headline-sm font-headline-sm font-bold text-primary">$195.00</span>
+<span class="text-body-sm text-outline ml-1">USD</span>
+</div>
+<button class="px-4 py-1.5 rounded bg-surface-container hover:bg-primary hover:text-on-primary text-on-surface border border-outline-variant text-label-caps uppercase tracking-wider font-bold transition-all">
+                PURCHASE VAULT
+              </button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="rounded-lg border border-outline-variant bg-surface-container-low p-5 flex flex-col justify-between hover:border-primary/50 transition-colors">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 rounded bg-emerald-500/15 text-primary border border-emerald-500/30 text-label-caps uppercase">EMERALD 4 STARTER</span>
+<span class="text-body-sm font-label-data text-outline">EUW / NA</span>
+</div>
+<h3 class="text-title-md font-headline-sm font-bold text-on-surface">Emerald 4 Fresh MMR Starter</h3>
+<p class="text-body-sm text-on-surface-variant">Ideal fresh ranked springboard. Earning +32 LP per win under Patch 14 tuning.</p>
+<div class="space-y-1.5 pt-2 border-t border-outline-variant text-[11px] font-label-data text-outline">
+<div class="flex justify-between">
+<span class="">Currency:</span>
+<span class="text-on-surface font-semibold">45,000 Blue Essence Unspent</span>
+</div>
+<div class="flex justify-between">
+<span class="">Provisional:</span>
+<span class="text-primary font-semibold">5/5 Completed · Clean History</span>
+</div>
+<div class="flex justify-between">
+<span class="">Security:</span>
+<span class="text-primary font-semibold">100% Phone Unbind Ready</span>
+</div>
+</div>
+</div>
+<div class="pt-4 mt-4 border-t border-outline-variant flex items-center justify-between">
+<div>
+<span class="text-headline-sm font-headline-sm font-bold text-primary">$48.00</span>
+<span class="text-body-sm text-outline ml-1">USD</span>
+</div>
+<button class="px-4 py-1.5 rounded bg-surface-container hover:bg-primary hover:text-on-primary text-on-surface border border-outline-variant text-label-caps uppercase tracking-wider font-bold transition-all">
+                PURCHASE VAULT
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: TURNKEY FIXED VALUE PACKAGES -->
+<section class="rounded-lg border border-outline-variant bg-surface-container-low p-6 space-y-4" id="packages">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<div class="inline-flex items-center gap-1 text-label-caps text-primary uppercase">
+<span class="material-symbols-outlined text-[14px]">card_membership</span>
+              Turnkey Competitive Bundles
+            </div>
+<h2 class="text-headline-md sm:text-headline-lg font-headline-lg font-bold text-on-surface">Pre-Audited Fixed Value Packages</h2>
+</div>
+<span class="text-label-caps text-outline">Automated Booster Matchmaking &lt; 3 Minutes</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+<div class="p-5 rounded bg-surface-container border border-outline-variant flex flex-col justify-between hover:border-primary/40 transition-colors">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-label-caps font-label-data text-primary bg-primary/10 px-2 py-0.5 rounded">HIGH DEMAND</span>
+<span class="text-body-sm text-outline font-label-data">5 Matches</span>
+</div>
+<h3 class="text-title-md font-headline-sm font-bold text-on-surface">5/5 Placement Matches Victory Guarantee</h3>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">
+                Guarantees 5-0 placement run or instant pro-rata refund. Seed up to Diamond III maximum possible starting threshold.
+              </p>
+<ul class="text-[12px] text-outline space-y-1 pt-2 border-t border-outline-variant">
+<li class="flex items-center gap-1.5 text-on-surface"><span class="material-symbols-outlined text-primary text-[14px]">check</span> 85%+ winrate booster allocated</li>
+<li class="flex items-center gap-1.5 text-on-surface"><span class="material-symbols-outlined text-primary text-[14px]">check</span> Zero LP loss provisional coverage</li>
+</ul>
+</div>
+<div class="pt-4 mt-4 border-t border-outline-variant flex items-center justify-between">
+<span class="text-headline-sm font-headline-sm font-bold text-on-surface">$44.00</span>
+<button class="px-4 py-1.5 rounded bg-primary text-on-primary text-label-caps uppercase tracking-wider font-bold hover:bg-primary-fixed transition-colors">
+                ORDER PACKAGE
+              </button>
+</div>
+</div>
+<div class="p-5 rounded bg-surface-container border border-primary/40 flex flex-col justify-between bg-surface-container/80">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-label-caps font-label-data text-primary bg-primary/10 px-2 py-0.5 rounded">MMR REPAIR</span>
+<span class="text-body-sm text-outline font-label-data">+1 Division</span>
+</div>
+<h3 class="text-title-md font-headline-sm font-bold text-primary">Hardstuck MMR Reset &amp; +1 Division Jump</h3>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">
+                Direct net gain of +100 LP. Fixes ruined negative LP gains (+18/-28 into +26/-19) by crushing opponent hidden MMR rating.
+              </p>
+<ul class="text-[12px] text-outline space-y-1 pt-2 border-t border-outline-variant">
+<li class="flex items-center gap-1.5 text-on-surface"><span class="material-symbols-outlined text-primary text-[14px]">check</span> High MVP / KDA match performance</li>
+<li class="flex items-center gap-1.5 text-on-surface"><span class="material-symbols-outlined text-primary text-[14px]">check</span> Clean streak MMR re-indexing</li>
+</ul>
+</div>
+<div class="pt-4 mt-4 border-t border-outline-variant flex items-center justify-between">
+<span class="text-headline-sm font-headline-sm font-bold text-primary">$88.00</span>
+<button class="px-4 py-1.5 rounded bg-primary text-on-primary text-label-caps uppercase tracking-wider font-bold hover:bg-primary-fixed transition-colors">
+                ORDER PACKAGE
+              </button>
+</div>
+</div>
+<div class="p-5 rounded bg-surface-container border border-outline-variant flex flex-col justify-between hover:border-primary/40 transition-colors">
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-label-caps font-label-data text-tertiary bg-tertiary/10 px-2 py-0.5 rounded">DUO + COACHING</span>
+<span class="text-body-sm text-outline font-label-data">20 Matches</span>
+</div>
+<h3 class="text-title-md font-headline-sm font-bold text-on-surface">Pro Carry 20 Matches with Discord VOD Review</h3>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">
+                Queue duo with a high Challenger coach. Live tactical Discord call, lane wave management breakdown, and macro rotation reviews.
+              </p>
+<ul class="text-[12px] text-outline space-y-1 pt-2 border-t border-outline-variant">
+<li class="flex items-center gap-1.5 text-on-surface"><span class="material-symbols-outlined text-primary text-[14px]">check</span> 1-on-1 private Discord channel</li>
+<li class="flex items-center gap-1.5 text-on-surface"><span class="material-symbols-outlined text-primary text-[14px]">check</span> 20 recorded match vod breakdowns</li>
+</ul>
+</div>
+<div class="pt-4 mt-4 border-t border-outline-variant flex items-center justify-between">
+<span class="text-headline-sm font-headline-sm font-bold text-on-surface">$79.00</span>
+<button class="px-4 py-1.5 rounded bg-primary text-on-primary text-label-caps uppercase tracking-wider font-bold hover:bg-primary-fixed transition-colors">
+                ORDER PACKAGE
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5: RIOT DIRECT GATEWAY: RP & HEXTECH TERMINAL -->
+<section class="rounded-lg border border-outline-variant bg-surface-container-low p-6 space-y-5" id="rpshop">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-outline-variant">
+<div>
+<div class="inline-flex items-center gap-1 text-label-caps text-primary uppercase">
+<span class="material-symbols-outlined text-[14px]">diamond</span>
+              Direct LCU API Injection
+            </div>
+<h2 class="text-headline-md sm:text-headline-lg font-headline-lg font-bold text-on-surface">Riot Points (RP) &amp; Hextech Terminal</h2>
+</div>
+<span class="text-label-caps text-primary font-label-data flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+            INSTANT DELIVERY &lt; 30 SECONDS
+          </span>
+</div>
+<!-- Input Summoner / Region -->
+<div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+<div class="sm:col-span-8">
+<label class="text-label-caps text-on-surface-variant block mb-1">Riot ID / Summoner Tagline</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[18px]">badge</span>
+<input class="w-full pl-9 pr-3 py-2 bg-surface-container border border-outline-variant rounded text-on-surface text-body-md focus:border-primary focus:ring-0" placeholder="e.g. Faker#LCK1 or Caps#EUW" type="text">
+</div>
+</div>
+<div class="sm:col-span-4">
+<label class="text-label-caps text-on-surface-variant block mb-1">Server Region</label>
+<select class="w-full py-2 px-3 bg-surface-container border border-outline-variant rounded text-on-surface text-body-md focus:border-primary focus:ring-0">
+<option>Europe West (EUW)</option>
+<option>North America (NA)</option>
+<option>Europe Nordic &amp; East (EUNE)</option>
+<option>Korea (KR)</option>
+</select>
+</div>
+</div>
+<!-- RP Packages Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+<div class="p-3.5 rounded bg-surface-container border border-outline-variant hover:border-primary cursor-pointer transition-colors text-center space-y-1">
+<span class="text-label-caps text-outline block uppercase">Standard</span>
+<div class="text-headline-sm font-headline-md font-bold text-on-surface">1,000 RP</div>
+<span class="text-[11px] text-on-surface-variant font-label-data block">Direct Riot Top-Up</span>
+<div class="pt-2 text-primary font-bold text-headline-sm">$9.99</div>
+</div>
+<div class="p-3.5 rounded bg-surface-container border border-outline-variant hover:border-primary cursor-pointer transition-colors text-center space-y-1">
+<span class="text-label-caps text-tertiary block uppercase">+12% BONUS</span>
+<div class="text-headline-sm font-headline-md font-bold text-primary">2,800 RP</div>
+<span class="text-[11px] text-on-surface-variant font-label-data block">Includes 280 Bonus RP</span>
+<div class="pt-2 text-primary font-bold text-headline-sm">$24.99</div>
+</div>
+<div class="p-3.5 rounded bg-surface-container border border-primary/50 hover:border-primary cursor-pointer transition-colors text-center space-y-1 bg-surface-container/90">
+<span class="text-label-caps text-primary block uppercase font-bold">BEST VALUE (+18%)</span>
+<div class="text-headline-sm font-headline-md font-bold text-primary">5,000 RP</div>
+<span class="text-[11px] text-on-surface-variant font-label-data block">Pass + 2 Epic Skins</span>
+<div class="pt-2 text-primary font-bold text-headline-sm">$44.99</div>
+</div>
+<div class="p-3.5 rounded bg-surface-container border border-outline-variant hover:border-primary cursor-pointer transition-colors text-center space-y-1">
+<span class="text-label-caps text-tertiary block uppercase">WHALE PACK (+25%)</span>
+<div class="text-headline-sm font-headline-md font-bold text-on-surface">10,500 RP</div>
+<span class="text-[11px] text-on-surface-variant font-label-data block">Max Hextech Bundle</span>
+<div class="pt-2 text-primary font-bold text-headline-sm">$89.99</div>
+</div>
+</div>
+</section>
+<!-- SECTION 6: INSTITUTIONAL ESCROW GUARANTEE PROTOCOL -->
+<section class="rounded-lg border border-outline-variant bg-surface-container-lowest p-6 lg:p-8 space-y-6" id="escrow">
+<div class="max-w-3xl">
+<div class="inline-flex items-center gap-1.5 text-label-caps text-primary uppercase">
+<span class="material-symbols-outlined text-[14px]">gavel</span>
+            Smart Settlement Framework
+          </div>
+<h2 class="text-headline-md sm:text-headline-lg font-headline-lg font-bold text-on-surface mt-1">Playora Institutional Escrow Guarantee Protocol</h2>
+<p class="text-body-md font-body-md text-on-surface-variant mt-2 leading-relaxed">
+            Eliminating peer-to-peer default risks, account recovery disputes, and unauthorized chargebacks through triple-layered cryptographic trade security.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+<div class="p-4 rounded bg-surface-container-low border border-outline-variant space-y-2">
+<div class="w-9 h-9 rounded bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">lock_reset</span>
+</div>
+<h4 class="text-title-md font-headline-sm font-bold text-on-surface">3rd-Party Riot Unbind &amp; OGE Audit</h4>
+<p class="text-body-sm text-outline leading-relaxed">
+              Every vaulted account undergoes deep automated email unbinding verification. Creation logs, ticket history, and billing identities are wiped and transferred directly into buyer custody.
+            </p>
+</div>
+<div class="p-4 rounded bg-surface-container-low border border-outline-variant space-y-2">
+<div class="w-9 h-9 rounded bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">verified_user</span>
+</div>
+<h4 class="text-title-md font-headline-sm font-bold text-on-surface">30-Day Anti-Revocation &amp; Ban Warranty Bond</h4>
+<p class="text-body-sm text-outline leading-relaxed">
+              In the unlikely event of an account rollback, Vanguard flag, or seller reclamation attempt, Playora’s collateral pool instantly issues 100% full financial restitution.
+            </p>
+</div>
+<div class="p-4 rounded bg-surface-container-low border border-outline-variant space-y-2">
+<div class="w-9 h-9 rounded bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">support_agent</span>
+</div>
+<h4 class="text-title-md font-headline-sm font-bold text-on-surface">24/7 Human Arbiter Desk</h4>
+<p class="text-body-sm text-outline leading-relaxed">
+              Disputes are handled within 15 minutes by ex-Challenger referees and Riot LCU telemetry analysts. Payouts remain strictly frozen until both parties confirm fulfillment.
+            </p>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- FOOTER -->
+<footer class="w-full border-t border-outline-variant bg-surface-container-lowest px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-body-sm text-on-surface-variant">
+<div class="flex flex-col sm:flex-row items-center gap-3">
+<span class="text-title-md font-headline-sm uppercase tracking-wider text-on-surface font-bold">Playora</span>
+<span class="hidden sm:inline text-outline">|</span>
+<span class="text-center sm:text-left text-body-sm">© 2025 Playora Escrow Technologies Ltd. High-Performance Esports Terminal. All Rights Reserved.</span>
+</div>
+<!-- Links -->
+<div class="flex flex-wrap items-center justify-center gap-6 text-body-sm">
+<a class="hover:text-primary transition-colors" href="#">Terms of Escrow</a>
+<a class="hover:text-primary transition-colors" href="#">AML/KYC Policy</a>
+<a class="hover:text-primary transition-colors" href="#">LoL API Telemetry</a>
+<a class="hover:text-primary transition-colors" href="#">Dispute Protocol</a>
+<a class="hover:text-primary transition-colors flex items-center gap-1.5" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+        System Status: Normal
+      </a>
+</div>
+</footer>
+
+
+<div class="fixed right-2 top-20 bottom-8 w-6 z-50 flex flex-col items-center pointer-events-none hidden md:flex"><div id="hud-percent" class="text-[9px] font-label-data text-primary font-bold tracking-tight mb-1 select-none">00%</div><div class="text-[9px] font-label-data text-primary opacity-70 tracking-tighter uppercase whitespace-nowrap mb-1 -rotate-90 origin-bottom select-none">HUD // SYS</div><div class="w-1.5 h-full bg-surface-container-lowest/90 rounded-full backdrop-blur-md relative border border-primary/30 overflow-hidden shadow-sm"><div id="hud-scroll-thumb" class="w-full bg-primary drop-shadow-[0_0_10px_rgba(78,222,163,0.6)] rounded-full transition-all duration-75" style="height: 15%; margin-top: 0%;"></div></div></div><script>window.addEventListener('scroll', function() { var el = document.getElementById('hud-scroll-thumb'); if (!el) return; var maxScroll = document.documentElement.scrollHeight - window.innerHeight; if (maxScroll <= 0) return; var progress = window.scrollY / maxScroll; var thumbHeight = Math.max(10, Math.min(30, (window.innerHeight / document.documentElement.scrollHeight) * 100)); el.style.height = thumbHeight + '%'; el.style.marginTop = (progress * (100 - thumbHeight)) + '%'; });</script>
+
+</body></html>

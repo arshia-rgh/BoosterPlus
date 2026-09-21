@@ -37,6 +37,15 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 - Reconciliation continues for existing payments while new checkout is paused. Refunds/payouts have a separate explicit activation switch. Provider failure or missing credentials never grants payment success.
 - Automated payment tests use isolated fixtures. Controlled live transaction qualification replaces unavailable sandbox qualification; fixtures cannot qualify real funds movement.
 
+## Design-first boundary (21 September 2026) — current owner direction
+
+- Pause all application development, including the unfinished homepage cameo/audio work. Preserve that work without shipping it.
+- The owner superseded the old UI/UX and homepage-refinement roadmaps. Their historical records remain, but do not resume them as the active implementation queue.
+- Design all pages, details, states and end-to-end flows before resuming implementation. The active review package is [docs/redesign/README.md](docs/redesign/README.md), with its local design atlas, screen/flow specifications and route coverage.
+- The 13 owner-provided HTML exports in `docs/redesign/pages/` are the full reference set and visual suggestions only, not the target quality. Create an independently improved design; do not copy their structure or unsupported claims blindly.
+- The owner explicitly confirmed existing business rules remain: no wallet/escrow/tournament/top-up/automatic booster payout scope from the exports. Preserve the green brand direction.
+- Design review does not authorize product implementation or launch. R10/R11 stay held with full detail in `final-launch.md`. Owner visual acceptance remains open.
+
 ## Current delivery boundary (13 September 2026)
 
 - R07, R08 and R09 are delivered. UX01–UX10 implementation and automated qualification are delivered as of 14 September 2026; see `docs/ux/UX10_QUALIFICATION.md` for the route/state matrix, media and explicit remaining human/device review. Stop for owner acceptance. R10/R11 still require separate authorization.

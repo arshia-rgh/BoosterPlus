@@ -1,0 +1,1537 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Playora - Pro Booster Hub, Career Terminal &amp; Public Talent Showcase</title>
+<!-- Google Fonts: Space Grotesk & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration verbatim as specified -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-container": "#b3b4c1",
+            "on-surface": "#e2e2e8",
+            "secondary-container": "#444651",
+            "secondary-fixed": "#e0e2ef",
+            "on-secondary-fixed-variant": "#444651",
+            "surface-container": "#1e2024",
+            "inverse-primary": "#006c4e",
+            "primary": "#aaffd8",
+            "primary-container": "#6ee7b7",
+            "surface-container-low": "#1a1c20",
+            "tertiary-container": "#4ce8d2",
+            "on-secondary-fixed": "#181b24",
+            "surface-container-highest": "#333539",
+            "on-primary-fixed-variant": "#00513a",
+            "tertiary": "#9fffee",
+            "surface-container-lowest": "#0c0e12",
+            "secondary-fixed-dim": "#c4c6d2",
+            "on-background": "#e2e2e8",
+            "error-container": "#93000a",
+            "on-tertiary": "#003731",
+            "outline-variant": "#3d4a43",
+            "primary-fixed": "#80f9c8",
+            "on-primary-container": "#006649",
+            "surface-dim": "#111317",
+            "on-surface-variant": "#bccac1",
+            "surface-tint": "#62dcad",
+            "on-tertiary-fixed-variant": "#005047",
+            "on-primary-fixed": "#002115",
+            "surface-container-high": "#282a2e",
+            "surface-variant": "#333539",
+            "on-tertiary-container": "#00655a",
+            "outline": "#86948c",
+            "secondary": "#c4c6d2",
+            "inverse-surface": "#e2e2e8",
+            "on-error": "#690005",
+            "background": "#111317",
+            "tertiary-fixed-dim": "#3cddc7",
+            "on-error-container": "#ffdad6",
+            "error": "#ffb4ab",
+            "inverse-on-surface": "#2f3035",
+            "primary-fixed-dim": "#62dcad",
+            "on-primary": "#003827",
+            "on-secondary": "#2d303a",
+            "surface-bright": "#37393e",
+            "tertiary-fixed": "#62fae3",
+            "surface": "#111317",
+            "on-tertiary-fixed": "#00201c"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin-lg": "3rem",
+            "gutter-lg": "2rem",
+            "margin": "1rem",
+            "space-lg": "1rem",
+            "space-md": "0.75rem",
+            "space-xl": "1.5rem",
+            "gutter-md": "1.5rem",
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "margin-md": "2rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Space Grotesk"],
+            "label-md": ["Space Grotesk"],
+            "body-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-sm": ["Space Grotesk"],
+            "body-sm": ["Inter"],
+            "headline-xl": ["Space Grotesk"],
+            "label-lg": ["Space Grotesk"],
+            "headline-md": ["Space Grotesk"],
+            "label-sm": ["Space Grotesk"],
+            "display-lg-mobile": ["Space Grotesk"],
+            "display-lg": ["Space Grotesk"],
+            "headline-xl-mobile": ["Space Grotesk"]
+          },
+          "fontSize": {
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }],
+            "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "headline-xl-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #0c0e12;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #282a2e;
+      border-radius: 2px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #6ee7b7;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen relative selection:bg-primary-container selection:text-on-primary-container">
+<!-- Fixed Atmospheric Aurora Backdrop with Matte Dark Layer verbatim as specified -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden"><div class="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105 transition-transform duration-1000" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC2sdgwrCVvXIN2XEvMoMO_2-xa2m2v6msZxhrrKaF4T2SdFWg5yC_cp5zOOcRmlfbAbNLM4sSq4wtxCmnV4xk2VzjFfPk0YVB-Rj1A_0Czm-S_VLxlcKvqh4bJ8nhDVH_Sgm0kh_X9vy-JBej8tPSh5YZIN3u3zLnSKr69LLbiEHJ4WCi7X5sAlErZxk6bOO5skpjEaAE0lE3nHW8PLI8MkW-6kVT5JmYJ56DUQmRpr1ZOfYwghfEmru0mrgpPvB1yiIk');"></div><div class="absolute inset-0 bg-gradient-to-b from-[#061610]/40 via-[#061e14]/30 to-[#061610]/70 backdrop-blur-[1px]"></div><div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(78,222,163,0.12),transparent_70%)] pointer-events-none"></div></div>
+<!-- App Wrapper -->
+<div class="relative z-10 flex flex-col min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-surface-container-lowest/90 backdrop-blur-md border-b border-outline-variant fixed top-0 left-0 right-0 z-50 h-16">
+<div class="flex justify-between items-center w-full px-margin-md lg:px-margin-lg h-16">
+<!-- Left: Brand Logo & Search -->
+<div class="flex items-center gap-space-lg">
+<a class="flex items-center gap-space-sm group" href="#">
+<img alt="Playora Arena Logo" class="h-8 w-auto object-contain drop-shadow-[0_0_8px_rgba(78,222,163,0.35)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChI9vB0PIMUWT-MDWprKsguvmmouobMM8qHJQsitPqDmIx2RNhvTJEWMz_8BxhGSwaLAtwFFOwjD4-gg1xDjT6XBrHr1CnxJB4V7RMRIqm725MbAPymkwv5--th3tfh5XcpsdzV6H3HkKMQTvdmFxi7APz-kdHktOr5hnxuaLLx3PDvVwMgtBfVFfaLz_u2rf6sAUTQ7o788f-BfK0kVhr3tt-ODd1Ne5-u8bEpvpmNGI66nuiGkFl7tENLcL-j3UDQ_A">
+<span class="font-label-sm text-label-sm tracking-wider px-space-xs py-0.5 rounded bg-surface-container border border-outline-variant text-primary font-mono hidden xl:inline-block">ESCROW://v2.4</span>
+</a>
+<!-- Search Bar (on_left) -->
+<div class="relative hidden md:flex items-center">
+<span class="absolute left-space-md text-on-surface-variant flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</span>
+<input class="bg-surface-container-low border border-outline-variant rounded-lg pl-9 pr-space-md py-1.5 font-body-sm text-body-sm text-on-surface placeholder:text-outline w-64 lg:w-80 focus:outline-none focus:border-primary-container focus:ring-0 transition-colors duration-150" placeholder="Search verified pilot, hero winrate, or order #..." type="text">
+</div>
+</div>
+<!-- Center: Top Navigation Links -->
+<nav class="hidden lg:flex items-center gap-space-xl">
+<a class="text-on-surface-variant hover:text-on-surface pb-2 font-label-md text-label-md transition-colors duration-150" href="#">Tournaments</a>
+<a class="text-on-surface-variant hover:text-on-surface pb-2 font-label-md text-label-md transition-colors duration-150" href="#">Matches</a>
+<a class="text-on-surface-variant hover:text-on-surface pb-2 font-label-md text-label-md transition-colors duration-150" href="#">Scrims</a>
+<a class="text-on-surface-variant hover:text-on-surface pb-2 font-label-md text-label-md transition-colors duration-150" href="#">Escrow Leaderboard</a>
+<a class="text-primary border-b-2 border-primary pb-2 font-label-md text-label-md transition-colors duration-150 flex items-center gap-1" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container inline-block animate-pulse"></span>
+            Pro Booster Hub
+          </a>
+</nav>
+<!-- Right: Trailing Actions -->
+<div class="flex items-center gap-space-md">
+<!-- Role: Admin badge -->
+<div class="hidden sm:flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container border border-outline-variant text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+            Role: Admin
+          </div>
+<!-- Deploy Boost CTA -->
+<button class="px-space-md py-1.5 bg-primary-container text-on-primary-fixed font-label-md text-label-md rounded-lg flex items-center gap-space-xs hover:bg-tertiary-container transition-colors duration-150 active:scale-[0.98]">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+            Deploy Boost
+          </button>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center gap-1 border-l border-outline-variant pl-space-md">
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded transition-colors duration-150" title="Notifications">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded transition-colors duration-150" title="Esports Matches">
+<span class="material-symbols-outlined text-[20px]">sports_esports</span>
+</button>
+<button class="p-1 text-on-surface-variant hover:text-primary rounded transition-colors duration-150" title="Tactical Profile">
+<img alt="Tactical User Avatar Profile" class="w-7 h-7 rounded border border-primary/40 object-cover bg-surface-container shadow-[0_0_6px_rgba(78,222,163,0.3)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMaFh2qOLDBz1WF9c2IditaRmU9A6YNRq-KRWN-OW_aaCW_pKNI2z6wi1TpwaU8dasXqJ4KnqjXTEVWHwFGbxhqWwMZa2o1jdTzWolqvzyGiizS9pso2GiB0PGACBeSfLksqlfWi8iKLwu9MlKNV2QM7gi_InK_cgzoXMoPMpRirFKQKCaGGhu0ckr-rRjSlof67ty9ebp8cXAmpSJ0WhNd_jO99C0R3-txOBhbkgkjgyrT2SmneaDnzHvP7rKeOZ8HV8">
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- Body Layout: SideNavBar + Main Canvas -->
+<div class="flex flex-1 pt-16">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-surface-container-lowest/95 backdrop-blur-md border-r border-outline-variant hidden md:block z-40">
+<div class="flex flex-col justify-between h-full p-space-md w-64">
+<!-- Top Section -->
+<div>
+<!-- Header Identity with Brand Logo -->
+<div class="flex items-center gap-space-md px-space-sm pb-space-lg mb-space-md border-b border-outline-variant">
+<img alt="Tactical Arena Badge Symbol" class="w-8 h-8 rounded border border-primary/50 object-contain p-0.5 bg-[#061e14] shadow-[0_0_8px_rgba(78,222,163,0.35)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOZqoZgI5eSnDe4sVu7WFt0GiT2s4rNNk85imXVWZERH2xMzDxUCpoSJrc6MeHBxZy19z0sImCJDSii1VZ4J6eosqc1kejsZBDla4xGNcxBp2aIZGvC5RnaDLGJ6DnwVKA07dt7wPY1BbMRPnTqDZhrDiZWYQ82oX5LSZRASaK3X5wzrzt2Rry9QfgRKs0iZDI6IxhifcI0IGG5FKQEVbo4UdTIoaLdZmQsxyWh1cD3cOQjb0EbvK-jqFl-n784aIQPDI">
+<div class="overflow-hidden">
+<div class="font-headline-sm text-headline-sm font-bold tracking-tight text-primary truncate">PLAYORA ARENA</div>
+<div class="font-label-sm text-[10px] text-on-surface-variant tracking-wider truncate">SYSTEM: ENGAGED [ESCROW SECURE]</div>
+</div>
+</div>
+<!-- Primary Navigation Tabs -->
+<nav class="space-y-1">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-colors duration-150 rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                Command Center
+              </a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-colors duration-150 rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">military_tech</span>
+                Tournament Brackets
+              </a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-colors duration-150 rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">swords</span>
+                Live Scrims
+              </a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-colors duration-150 rounded" href="#">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+                Escrow Vault
+              </a>
+<!-- Active Tab: Pro Booster Terminal & Telemetry -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm bg-surface-container text-primary border-l-2 border-primary font-label-md text-label-md transition-colors duration-150 rounded-r" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                Tactical Telemetry
+              </a>
+</nav>
+<!-- Booster Sub-Section Highlight -->
+<div class="mt-space-lg pt-space-md border-t border-outline-variant">
+<div class="px-space-md mb-2 flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Pilot Operations</span>
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+</div>
+<div class="space-y-1">
+<a class="flex items-center justify-between px-space-md py-1.5 text-body-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded transition-colors" href="#talent-showcase">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">groups</span>
+                    Talent Showcase
+                  </span>
+<span class="text-[10px] font-mono px-1 rounded bg-surface-container text-primary">LIVE</span>
+</a>
+<a class="flex items-center justify-between px-space-md py-1.5 text-body-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded transition-colors" href="#pilot-dossier-inspector">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">manage_search</span>
+                    Career Dossier Hub
+                  </span>
+<span class="text-[10px] font-mono px-1 rounded bg-primary/20 text-primary">DEEP LOGS</span>
+</a>
+<a class="flex items-center justify-between px-space-md py-1.5 text-body-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded transition-colors" href="#onboarding-portal">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+                    Booster Portal
+                  </span>
+<span class="text-[10px] font-mono px-1 rounded bg-surface-container text-tertiary">JOIN</span>
+</a>
+</div>
+</div>
+<!-- Launch Matchmaker CTA -->
+<div class="mt-space-lg px-space-sm">
+<button class="w-full py-2 bg-surface-container-low border border-outline-variant hover:border-primary text-primary font-label-md text-label-md rounded flex items-center justify-center gap-space-xs transition-colors duration-150">
+<span class="material-symbols-outlined text-[16px]">gamepad</span>
+                Launch Matchmaker
+              </button>
+</div>
+</div>
+<!-- Bottom Footer Tabs in SideNav -->
+<div class="border-t border-outline-variant pt-space-md space-y-1">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-colors duration-150 rounded" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+              Settings
+            </a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-colors duration-150 rounded" href="#">
+<span class="material-symbols-outlined text-[18px]">shield_person</span>
+              Support Protocol
+            </a>
+</div>
+</div>
+</aside>
+<!-- Main Canvas Stage -->
+<main class="flex-1 md:ml-64 px-4 sm:px-6 lg:px-8 py-6 pb-20 max-w-7xl mx-auto w-full">
+<!-- SECTION 1: TOP BANNER & DUAL-MODE SWITCHER -->
+<section class="mb-8">
+<!-- Terminal Header Banner -->
+<div class="bg-surface-container-low/90 border border-outline-variant rounded-xl p-space-lg lg:p-space-xl relative overflow-hidden backdrop-blur-md">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+<!-- Left: Title & Context -->
+<div class="space-y-2">
+<div class="inline-flex items-center gap-2 px-space-sm py-1 rounded bg-surface-container border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Playora Pro Talent Registry // HWID Clean</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl font-bold tracking-tight text-on-surface">
+                  PRO BOOSTER ECOSYSTEM &amp; TALENT REGISTRY
+                </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+                  Institutional esports talent network. Commission audited Radiant and Challenger pilots protected by non-custodial smart escrow, inspect full historical season winrates and match-by-match cryptographic telemetry.
+                </p>
+</div>
+<!-- Right: Perspective Dual Toggle -->
+<div class="bg-surface-container-lowest border border-outline-variant p-1 rounded-lg flex items-center self-start lg:self-center shrink-0">
+<button class="px-space-md py-2 rounded font-label-md text-label-md transition-colors duration-150 flex items-center gap-2 bg-primary-container text-on-primary-fixed" id="toggle-directory" onclick="switchView('directory')">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">person_search</span>
+                  Public Talent Directory
+                  <span class="text-[10px] px-1 rounded bg-surface-container-lowest text-on-surface font-mono">CLIENT</span>
+</button>
+<button class="px-space-md py-2 rounded font-label-md text-label-md transition-colors duration-150 flex items-center gap-2 text-on-surface-variant hover:text-on-surface" id="toggle-portal" onclick="switchView('portal')">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+                  Booster Terminal &amp; Portal
+                  <span class="text-[10px] px-1 rounded bg-surface-container text-primary font-mono">APPLY</span>
+</button>
+</div>
+</div>
+<!-- Quick Stats Strip (Fintech-grade metrics) -->
+<div class="mt-6 pt-6 border-t border-outline-variant grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="bg-surface-container/60 border border-outline-variant/60 rounded p-space-md">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase">Active Pilot Pool</span>
+<span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+</div>
+<div class="font-headline-md text-headline-md text-primary font-mono">1,420+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Verified Apex Pilots</div>
+</div>
+<div class="bg-surface-container/60 border border-outline-variant/60 rounded p-space-md">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase">Integrity Index</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary">shield_lock</span>
+</div>
+<div class="font-headline-md text-headline-md text-on-surface font-mono">99.4%</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Dispute-Free Completion</div>
+</div>
+<div class="bg-surface-container/60 border border-outline-variant/60 rounded p-space-md">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase">Settled Escrow</span>
+<span class="material-symbols-outlined text-[16px] text-primary">payments</span>
+</div>
+<div class="font-headline-md text-headline-md text-primary font-mono">$840K+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Escrow Payouts Dispatched</div>
+</div>
+<div class="bg-surface-container/60 border border-outline-variant/60 rounded p-space-md">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase">Queue Velocity</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary">speed</span>
+</div>
+<div class="font-headline-md text-headline-md text-on-surface font-mono">22 Mins</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Average Turnaround</div>
+</div>
+</div>
+</div>
+</section>
+<!-- DYNAMIC CONTAINER: PUBLIC DIRECTORY VIEW -->
+<div class="space-y-8" id="view-directory-content">
+<!-- SECTION 2: SEARCH, FILTER & REPUTATION CONTROLS -->
+<section class="bg-surface-container-low/90 backdrop-blur-md border border-outline-variant rounded-xl p-space-lg">
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+<!-- Game Selectors -->
+<div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 custom-scroll">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase mr-1">Game:</span>
+<button class="px-space-md py-1 rounded bg-primary-container text-on-primary-fixed font-label-md text-label-md shrink-0">All Disciplines</button>
+<button class="px-space-md py-1 rounded bg-surface-container border border-outline-variant text-on-surface-variant hover:text-on-surface font-label-md text-label-md shrink-0">Valorant</button>
+<button class="px-space-md py-1 rounded bg-surface-container border border-outline-variant text-on-surface-variant hover:text-on-surface font-label-md text-label-md shrink-0">MLBB</button>
+<button class="px-space-md py-1 rounded bg-surface-container border border-outline-variant text-on-surface-variant hover:text-on-surface font-label-md text-label-md shrink-0">League of Legends</button>
+<button class="px-space-md py-1 rounded bg-surface-container border border-outline-variant text-on-surface-variant hover:text-on-surface font-label-md text-label-md shrink-0">Dota 2</button>
+<button class="px-space-md py-1 rounded bg-surface-container border border-outline-variant text-on-surface-variant hover:text-on-surface font-label-md text-label-md shrink-0">World of Warcraft</button>
+</div>
+<!-- Secondary Filters: Service Type & Online Status -->
+<div class="flex flex-wrap items-center gap-3">
+<select class="bg-surface-container border border-outline-variant text-on-surface rounded font-body-sm text-body-sm px-space-md py-1.5 focus:border-primary-container focus:ring-0">
+<option>Service: Solo Pilot</option>
+<option>Service: Duo Voice Carry</option>
+<option>Service: Rank Calibration</option>
+<option>Service: Hourly Coaching</option>
+</select>
+<select class="bg-surface-container border border-outline-variant text-on-surface rounded font-body-sm text-body-sm px-space-md py-1.5 focus:border-primary-container focus:ring-0">
+<option>Rating: 4.9+ Stars Only</option>
+<option>Rating: 4.8+ Stars</option>
+<option>All Ratings</option>
+</select>
+<div class="flex items-center gap-2 px-space-md py-1.5 rounded bg-surface-container border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Available Now</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: FEATURED PRO TALENT SHOWCASE CARDS -->
+<section class="space-y-4" id="talent-showcase">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Apex Certified Pilot Rosters</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">HWID clean, anti-cheat inspected, and backed by instant Playora smart contract settlement.</p>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-mono">ORDER PROTECTION: 100% REVERSIBLE</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- PILOT CARD 1: Valkyrie_X -->
+<div class="bg-surface-container-low/90 backdrop-blur-md border border-outline-variant rounded-xl p-space-lg flex flex-col justify-between hover:border-primary/60 transition-colors duration-200 group">
+<div>
+<!-- Header: Avatar, Name, Status -->
+<div class="flex items-start justify-between pb-space-md border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Valkyrie_X Tactical User Avatar" class="w-12 h-12 rounded border border-primary object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBg5E57wAZwdnXUuXaSAosaf11HCqDV3qLc4g0NK2MKN1TYR23kLhD8yLdHsNa-1PmYrUDazZ6cmTbSt4yepGhq-6rfMSUBVwMt6PgmLq6tUFuok8XCpQIaKaucoIG0T3jeAft3wUONRrA9b-T6TbPT_ehWhLSQrjOvtooSWfKzmpS3B0ujQt_wMeuZ9BtfN_Gkj5FCiH9YOQnk1A77E1dJSKDNScgKQsTrW99bMAKI8fGD2HF2yPSHJJqvsexS7XzXPWA">
+<span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-primary-container border-2 border-surface-container-low" title="Pilot Online"></span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Valkyrie_X</span>
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="font-label-sm text-label-sm text-primary font-mono">Apex Radiant Pilot</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-headline-sm text-headline-sm text-primary font-mono font-bold">$28.00<span class="text-xs text-on-surface-variant font-normal">/hr</span></div>
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase">Fixed Escrow</span>
+</div>
+</div>
+<!-- Games & Badges -->
+<div class="py-space-md space-y-3">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm border border-outline-variant flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                      Valorant // Radiant #42
+                    </span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm border border-outline-variant flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                      MLBB // Mythic 184★
+                    </span>
+</div>
+<!-- Trust Stats -->
+<div class="grid grid-cols-3 gap-2 bg-surface-container-lowest/80 p-2.5 rounded border border-outline-variant text-center font-mono">
+<div>
+<div class="font-label-sm text-on-surface-variant text-[10px]">RATING</div>
+<div class="text-primary font-bold text-sm">4.99 ★</div>
+<div class="text-[9px] text-on-surface-variant">642 reviews</div>
+</div>
+<div class="border-x border-outline-variant">
+<div class="font-label-sm text-on-surface-variant text-[10px]">COMPLETED</div>
+<div class="text-on-surface font-bold text-sm">814</div>
+<div class="text-[9px] text-primary">100% finished</div>
+</div>
+<div>
+<div class="font-label-sm text-on-surface-variant text-[10px]">SANCTIONS</div>
+<div class="text-on-surface font-bold text-sm">0 BANS</div>
+<div class="text-[9px] text-tertiary">Zero incidents</div>
+</div>
+</div>
+<!-- Specialty & Verification Tags -->
+<div class="space-y-1.5 pt-1">
+<div class="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">Operational Specialties</div>
+<div class="text-body-sm text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">headset_mic</span>
+                        Duo Queue Voice Coaching, Duelist Execution
+                      </div>
+<div class="flex flex-wrap gap-1 pt-1">
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant border border-outline-variant font-mono">HWID Clean</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant border border-outline-variant font-mono">Anti-Cheat Certified</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant border border-outline-variant font-mono">POV Stream Live</span>
+</div>
+</div>
+<!-- Recent Orders Manifest -->
+<div class="pt-2 border-t border-outline-variant space-y-1.5">
+<div class="font-label-sm text-[10px] text-on-surface-variant uppercase">Recent Order Deliveries</div>
+<div class="bg-surface-container/50 p-2 rounded text-body-sm space-y-1 font-mono">
+<div class="flex justify-between text-[11px]">
+<span class="text-on-surface">Ascendant 1 ➔ Immortal 3</span>
+<span class="text-primary font-bold">38 M / 89% WR</span>
+</div>
+<div class="flex justify-between text-[11px]">
+<span class="text-on-surface">Mythic 50 ➔ Immortal 100★</span>
+<span class="text-tertiary font-bold">5-Day Sprint</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer CTAs: Deep Dossier Button + Hire -->
+<div class="pt-space-md border-t border-outline-variant space-y-2">
+<button class="w-full py-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant hover:border-primary text-primary font-label-md text-label-md rounded flex items-center justify-center gap-2 transition-all duration-150" onclick="inspectPilot('valkyrie')">
+<span class="material-symbols-outlined text-[18px]">manage_search</span>
+                    View Full Gaming Dossier &amp; Match Logs
+                  </button>
+<button class="w-full py-2.5 bg-primary-container text-on-primary-fixed font-label-md text-label-md rounded flex items-center justify-center gap-2 hover:bg-tertiary-container transition-colors duration-150">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+                    Hire via Escrow ($28.00/hr)
+                  </button>
+</div>
+</div>
+<!-- PILOT CARD 2: ShadowBlade_99 -->
+<div class="bg-surface-container-low/90 backdrop-blur-md border border-outline-variant rounded-xl p-space-lg flex flex-col justify-between hover:border-primary/60 transition-colors duration-200 group">
+<div>
+<!-- Header -->
+<div class="flex items-start justify-between pb-space-md border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="ShadowBlade_99 Tactical User Avatar" class="w-12 h-12 rounded border border-tertiary object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB803exzanfz0NjYNQJHNSPqBtlKsH3MhwfeGKqSRmC4B6UDB7JUz06zZWy4Im_qxajnk0iA9hdW2hJwq2-GSBOx5tzz5oeKqEz34vkt_GmfkUaD2fdewRlL9356k6aCtuf3UVIHFpoWSPfOGeaEN__kVYpyqpCTc9sxjAZGk1KVKX_xmYnywR4a0rkk5tr5FoT7Pykx4PQReojevtsKOuiXpqnv4ILU6-VjXvwZZ6O01kjKUtG4OyRlEIlFw1L1SQTS1w">
+<span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-primary-container border-2 border-surface-container-low"></span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">ShadowBlade_99</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="font-label-sm text-label-sm text-tertiary font-mono">MOBA Specialist</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-headline-sm text-headline-sm text-primary font-mono font-bold">$34.00<span class="text-xs text-on-surface-variant font-normal">/hr</span></div>
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase">Fast-Track</span>
+</div>
+</div>
+<!-- Games & Badges -->
+<div class="py-space-md space-y-3">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm border border-outline-variant flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                      LoL // Challenger 940 LP
+                    </span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm border border-outline-variant flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                      Dota 2 // Immortal #240
+                    </span>
+</div>
+<!-- Trust Stats -->
+<div class="grid grid-cols-3 gap-2 bg-surface-container-lowest/80 p-2.5 rounded border border-outline-variant text-center font-mono">
+<div>
+<div class="font-label-sm text-on-surface-variant text-[10px]">RATING</div>
+<div class="text-primary font-bold text-sm">4.96 ★</div>
+<div class="text-[9px] text-on-surface-variant">418 reviews</div>
+</div>
+<div class="border-x border-outline-variant">
+<div class="font-label-sm text-on-surface-variant text-[10px]">ESCROW DEL.</div>
+<div class="text-on-surface font-bold text-sm">530</div>
+<div class="text-[9px] text-primary">100% on-time</div>
+</div>
+<div>
+<div class="font-label-sm text-on-surface-variant text-[10px]">TOXICITY</div>
+<div class="text-on-surface font-bold text-sm">ZERO CHAT</div>
+<div class="text-[9px] text-tertiary">Mute-mode</div>
+</div>
+</div>
+<!-- Specialties -->
+<div class="space-y-1.5 pt-1">
+<div class="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">Operational Specialties</div>
+<div class="text-body-sm text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary">route</span>
+                        Mid / Jungle Macro Routing, Wave Stacking
+                      </div>
+<div class="flex flex-wrap gap-1 pt-1">
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant border border-outline-variant font-mono">Fast Track Pilot</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant border border-outline-variant font-mono">Hardware Verified</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant border border-outline-variant font-mono">Stealth VPN</span>
+</div>
+</div>
+<!-- Customer Testimonial Feed -->
+<div class="pt-2 border-t border-outline-variant space-y-1.5">
+<div class="font-label-sm text-[10px] text-on-surface-variant uppercase">Latest Client Verification</div>
+<div class="bg-surface-container/50 p-2.5 rounded text-body-sm border border-outline-variant/60">
+<p class="text-[11px] text-on-surface italic font-body-sm">
+                          "Insane macro knowledge, went 12-0 without a single close round. Kept live map markers on Discord audio."
+                        </p>
+<div class="text-[10px] text-primary font-mono mt-1 text-right">— Verified LoL Order #88219 (Diamond➔Master)</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer CTAs -->
+<div class="pt-space-md border-t border-outline-variant space-y-2">
+<button class="w-full py-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant hover:border-tertiary text-tertiary font-label-md text-label-md rounded flex items-center justify-center gap-2 transition-all duration-150" onclick="inspectPilot('shadowblade')">
+<span class="material-symbols-outlined text-[18px]">manage_search</span>
+                    View Full Gaming Dossier &amp; Match Logs
+                  </button>
+<button class="w-full py-2.5 bg-primary-container text-on-primary-fixed font-label-md text-label-md rounded flex items-center justify-center gap-2 hover:bg-tertiary-container transition-colors duration-150">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+                    Hire via Escrow ($34.00/hr)
+                  </button>
+</div>
+</div>
+<!-- PILOT CARD 3: IronAegis -->
+<div class="bg-surface-container-low/90 backdrop-blur-md border border-outline-variant rounded-xl p-space-lg flex flex-col justify-between hover:border-primary/60 transition-colors duration-200 group">
+<div>
+<!-- Header -->
+<div class="flex items-start justify-between pb-space-md border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="IronAegis Tactical User Avatar" class="w-12 h-12 rounded border border-outline-variant object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1hehoJKgVwVmHmbqIrTkCn4Y_kjhDIXlOYS1sTNCyCyRpsFuKKYsJXVTuVhdrFa-y5QuGgoQi29tCKfiPBCpidlxDnT7jolT8tZ6XjZNJ62-Q5x44eeu2NM1oBq_exk87lplupQL-97a2QSITDMMkRplEIyQ1urCS16DEs3x7G_a2x3bLPFsvRFJCLXptTn_QCHwKl-S03PG0L4SiXrzHFBe2SD_FosOQckzWYFkduHBa_stpB8bA-POMwvBCfNdKpNw">
+<span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-primary-container border-2 border-surface-container-low"></span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">IronAegis</span>
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant font-mono">Mythic Raid Leader</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-headline-sm text-headline-sm text-primary font-mono font-bold">$40.00<span class="text-xs text-on-surface-variant font-normal">/key</span></div>
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase">Dungeon Contract</span>
+</div>
+</div>
+<!-- Games & Badges -->
+<div class="py-space-md space-y-3">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm border border-outline-variant flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                      WoW // Keystone Hero 3200+ IO
+                    </span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm border border-outline-variant flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                      Cutting Edge Raids
+                    </span>
+</div>
+<!-- Trust Stats -->
+<div class="grid grid-cols-3 gap-2 bg-surface-container-lowest/80 p-2.5 rounded border border-outline-variant text-center font-mono">
+<div>
+<div class="font-label-sm text-on-surface-variant text-[10px]">RATING</div>
+<div class="text-primary font-bold text-sm">5.00 ★</div>
+<div class="text-[9px] text-on-surface-variant">290 reviews</div>
+</div>
+<div class="border-x border-outline-variant">
+<div class="font-label-sm text-on-surface-variant text-[10px]">COMPLETED KEYS</div>
+<div class="text-on-surface font-bold text-sm">380</div>
+<div class="text-[9px] text-primary">100% in-time</div>
+</div>
+<div>
+<div class="font-label-sm text-on-surface-variant text-[10px]">LOOT SHARE</div>
+<div class="text-on-surface font-bold text-sm">4x STACK</div>
+<div class="text-[9px] text-tertiary">Direct armor pass</div>
+</div>
+</div>
+<!-- Specialties -->
+<div class="space-y-1.5 pt-1">
+<div class="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">Operational Specialties</div>
+<div class="text-body-sm text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">shield</span>
+                        Vengeance DH / Blood DK Route Master, +20/+22 Carries
+                      </div>
+<div class="flex flex-wrap gap-1 pt-1">
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant border border-outline-variant font-mono">Loot Guarantee</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant border border-outline-variant font-mono">Self-Play Friendly</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant border border-outline-variant font-mono">Audio Lead</span>
+</div>
+</div>
+<!-- Recent Orders -->
+<div class="pt-2 border-t border-outline-variant space-y-1.5">
+<div class="font-label-sm text-[10px] text-on-surface-variant uppercase">Recent Order Deliveries</div>
+<div class="bg-surface-container/50 p-2 rounded text-body-sm space-y-1 font-mono">
+<div class="flex justify-between text-[11px]">
+<span class="text-on-surface">+20 Dawn of Infinite (Timed)</span>
+<span class="text-primary font-bold">+2 Chest / 24m</span>
+</div>
+<div class="flex justify-between text-[11px]">
+<span class="text-on-surface">Full Heroic Raid Clear w/ Armor</span>
+<span class="text-tertiary font-bold">1h 40m Total</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer CTAs -->
+<div class="pt-space-md border-t border-outline-variant space-y-2">
+<button class="w-full py-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant hover:border-primary text-primary font-label-md text-label-md rounded flex items-center justify-center gap-2 transition-all duration-150" onclick="inspectPilot('valkyrie')">
+<span class="material-symbols-outlined text-[18px]">manage_search</span>
+                    View Full Gaming Dossier &amp; Match Logs
+                  </button>
+<button class="w-full py-2.5 bg-primary-container text-on-primary-fixed font-label-md text-label-md rounded flex items-center justify-center gap-2 hover:bg-tertiary-container transition-colors duration-150">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+                    Hire via Escrow ($40.00/key)
+                  </button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3.5: EXPANDED PRO GAMING HISTORY & TELEMETRY DOSSIER INSPECTOR (NEW) -->
+<section class="bg-surface-container-low/95 backdrop-blur-md border-2 border-primary/40 rounded-xl p-space-lg lg:p-space-xl shadow-2xl relative scroll-mt-20" id="pilot-dossier-inspector">
+<!-- Dossier Header & Pilot Selector -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between pb-space-lg border-b border-outline-variant gap-4">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Inspected Pilot Avatar" class="w-16 h-16 rounded-lg border-2 border-primary object-cover p-0.5 bg-surface-container-lowest" id="dossier-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-w2EO1FHUjFTP2Xpxp0YHG3ZizJ7DjrGtjbC9kzPqjL-Vz_JSmgWnB15eSvLhpdCyw8gdGEAhbggcxkcojzPHT-5WYx5gnpm4ADnnwt4wkuXhu5r4KpQ7z3umkj1Lv1R0zDSKmuU4QlfnwkIDey8fiUTN6rVFzGnWGKQHYDWyPcICdhR-P8vkWPGUuU4kh6chUDJ3EB1pcxqvPrMTR1IZxNWeUSSd5CoaVEWdWhqSfhotbvt3_apMVgRO4nsk3B9hyqk">
+<span class="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded bg-primary text-on-primary-fixed text-[9px] font-bold font-mono">VERIFIED</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold" id="dossier-name">Valkyrie_X</h2>
+<span class="px-2 py-0.5 rounded bg-primary/10 border border-primary/40 text-primary font-mono text-xs">PILOT ID: #VX-8891-PRO</span>
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2 mt-1">
+<span class="">Deep Career Dossier &amp; Cryptographic Match Ledger</span>
+<span class="text-outline">•</span>
+<span class="text-primary font-mono" id="dossier-title">Apex Radiant #42 / MLBB Mythic 184★</span>
+</p>
+</div>
+</div>
+<!-- Switch Active Pilot Dossier -->
+<div class="flex items-center gap-2">
+<span class="text-xs font-mono uppercase text-on-surface-variant">Switch Pilot Dossier:</span>
+<div class="bg-surface-container-lowest border border-outline-variant p-1 rounded-lg flex items-center">
+<button class="px-3 py-1.5 rounded text-xs font-label-md transition-colors bg-primary-container text-on-primary-fixed" id="dossier-btn-valk" onclick="inspectPilot('valkyrie')">Valkyrie_X</button>
+<button class="px-3 py-1.5 rounded text-xs font-label-md transition-colors text-on-surface-variant hover:text-on-surface" id="dossier-btn-shadow" onclick="inspectPilot('shadowblade')">ShadowBlade_99</button>
+</div>
+</div>
+</div>
+<!-- Dossier Sub-Navigation Tabs -->
+<div class="flex items-center gap-2 border-b border-outline-variant py-3 overflow-x-auto custom-scroll">
+<button class="px-3 py-1.5 rounded font-label-md text-xs bg-surface-container border border-primary/50 text-primary flex items-center gap-1.5 shrink-0" id="tab-matches-btn" onclick="showDossierTab('matches')">
+<span class="material-symbols-outlined text-[16px]">sports_esports</span>
+              Match-by-Match Telemetry Logs
+            </button>
+<button class="px-3 py-1.5 rounded font-label-md text-xs bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 shrink-0" id="tab-seasons-btn" onclick="showDossierTab('seasons')">
+<span class="material-symbols-outlined text-[16px]">history_edu</span>
+              Historical Seasons Track Record
+            </button>
+<button class="px-3 py-1.5 rounded font-label-md text-xs bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 shrink-0" id="tab-tournaments-btn" onclick="showDossierTab('tournaments')">
+<span class="material-symbols-outlined text-[16px]">emoji_events</span>
+              LAN &amp; Competitive Achievements
+            </button>
+<button class="px-3 py-1.5 rounded font-label-md text-xs bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 shrink-0" id="tab-hardware-btn" onclick="showDossierTab('hardware')">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+              HWID &amp; Anti-Cheat Telemetry
+            </button>
+<button class="px-3 py-1.5 rounded font-label-md text-xs bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 shrink-0" id="tab-vouches-btn" onclick="showDossierTab('vouches')">
+<span class="material-symbols-outlined text-[16px]">reviews</span>
+              Client Vouches &amp; Order Feedback
+            </button>
+</div>
+<!-- TAB 1: DEEP MATCH-BY-MATCH TELEMETRY INSPECTOR -->
+<div class="space-y-4 pt-4" id="dossier-tab-matches">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Recent Order Match Telemetry Ledger</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Every completed round is hashed, verified through Riot Vanguard / Server API, and stored for client audit.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[11px] font-mono px-2 py-1 rounded bg-primary/10 border border-primary/30 text-primary">LIVE API REFRESH: OK</span>
+<span class="text-[11px] font-mono px-2 py-1 rounded bg-surface-container border border-outline-variant text-on-surface">LATENCY: 14ms</span>
+</div>
+</div>
+<!-- Clickable Detailed Matches Table -->
+<div class="overflow-x-auto custom-scroll border border-outline-variant rounded-lg">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm uppercase border-b border-outline-variant">
+<tr>
+<th class="py-2.5 px-4">Date / Match ID</th>
+<th class="py-2.5 px-4">Map / Arena</th>
+<th class="py-2.5 px-4">Agent / Hero</th>
+<th class="py-2.5 px-4 text-center">Scoreline</th>
+<th class="py-2.5 px-4 text-center">K / D / A (ACS)</th>
+<th class="py-2.5 px-4 text-center">Performance Rating</th>
+<th class="py-2.5 px-4 text-right">Server &amp; Anti-Cheat Hash</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant font-mono text-xs" id="dossier-match-rows">
+<!-- Match 1 -->
+<tr class="hover:bg-surface-container/60 transition-colors bg-surface-container-low/50">
+<td class="py-3 px-4">
+<div class="font-bold text-on-surface">2025-05-18 // 19:42 UTC</div>
+<div class="text-[10px] text-on-surface-variant font-sans">Queue: Competitive (Radiant Elo)</div>
+</td>
+<td class="py-3 px-4 font-sans font-medium text-on-surface">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[16px]">location_on</span>
+                          Ascent (Frankfurt 1)
+                        </div>
+</td>
+<td class="py-3 px-4 font-sans">
+<span class="px-2 py-1 rounded bg-surface-container border border-outline-variant text-on-surface font-semibold flex items-center gap-1 w-fit">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                          Jett (Duelist)
+                        </span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 rounded bg-primary/20 text-primary font-bold">13 - 5 [VICTORY]</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="text-primary font-bold">28 / 7 / 4</span>
+<span class="text-on-surface-variant block text-[10px]">ACS: 394 (72% HS)</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 rounded bg-surface-container text-primary font-bold border border-primary/30">MATCH MVP</span>
+</td>
+<td class="py-3 px-4 text-right text-[10px] text-on-surface-variant">
+<div class="text-primary truncate">0x9d4a...e71c</div>
+<div class="text-on-surface-variant font-sans text-[9px]">Vanguard Clean Handshake</div>
+</td>
+</tr>
+<!-- Match 2 -->
+<tr class="hover:bg-surface-container/60 transition-colors">
+<td class="py-3 px-4">
+<div class="font-bold text-on-surface">2025-05-18 // 18:20 UTC</div>
+<div class="text-[10px] text-on-surface-variant font-sans">Queue: Competitive (Radiant Elo)</div>
+</td>
+<td class="py-3 px-4 font-sans font-medium text-on-surface">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[16px]">location_on</span>
+                          Haven (London)
+                        </div>
+</td>
+<td class="py-3 px-4 font-sans">
+<span class="px-2 py-1 rounded bg-surface-container border border-outline-variant text-on-surface font-semibold flex items-center gap-1 w-fit">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                          Reyna (Duelist)
+                        </span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 rounded bg-primary/20 text-primary font-bold">13 - 8 [VICTORY]</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="text-primary font-bold">24 / 11 / 6</span>
+<span class="text-on-surface-variant block text-[10px]">ACS: 312 (58% HS)</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 rounded bg-surface-container text-tertiary font-bold border border-tertiary/30">TEAM MVP</span>
+</td>
+<td class="py-3 px-4 text-right text-[10px] text-on-surface-variant">
+<div class="text-primary truncate">0x3b8f...a109</div>
+<div class="text-on-surface-variant font-sans text-[9px]">Vanguard Clean Handshake</div>
+</td>
+</tr>
+<!-- Match 3 -->
+<tr class="hover:bg-surface-container/60 transition-colors bg-surface-container-low/50">
+<td class="py-3 px-4">
+<div class="font-bold text-on-surface">2025-05-18 // 17:05 UTC</div>
+<div class="text-[10px] text-on-surface-variant font-sans">Queue: MLBB Ranked Mythic</div>
+</td>
+<td class="py-3 px-4 font-sans font-medium text-on-surface">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">location_on</span>
+                          Land of Dawn (SEA 1)
+                        </div>
+</td>
+<td class="py-3 px-4 font-sans">
+<span class="px-2 py-1 rounded bg-surface-container border border-outline-variant text-on-surface font-semibold flex items-center gap-1 w-fit">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                          Fanny (Assassin)
+                        </span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 rounded bg-primary/20 text-primary font-bold">18 - 4 [VICTORY]</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="text-primary font-bold">14 / 1 / 8</span>
+<span class="text-on-surface-variant block text-[10px]">GPM: 890 (KDA: 22.0)</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 rounded bg-surface-container text-primary font-bold border border-primary/30">MVP 14.8</span>
+</td>
+<td class="py-3 px-4 text-right text-[10px] text-on-surface-variant">
+<div class="text-primary truncate">0xaa42...99ff</div>
+<div class="text-on-surface-variant font-sans text-[9px]">Moonton Server API Sync</div>
+</td>
+</tr>
+<!-- Match 4 -->
+<tr class="hover:bg-surface-container/60 transition-colors">
+<td class="py-3 px-4">
+<div class="font-bold text-on-surface">2025-05-17 // 22:15 UTC</div>
+<div class="text-[10px] text-on-surface-variant font-sans">Queue: Competitive (Radiant Elo)</div>
+</td>
+<td class="py-3 px-4 font-sans font-medium text-on-surface">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[16px]">location_on</span>
+                          Bind (Frankfurt 2)
+                        </div>
+</td>
+<td class="py-3 px-4 font-sans">
+<span class="px-2 py-1 rounded bg-surface-container border border-outline-variant text-on-surface font-semibold flex items-center gap-1 w-fit">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                          Raze (Duelist)
+                        </span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 rounded bg-primary/20 text-primary font-bold">13 - 6 [VICTORY]</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="text-primary font-bold">22 / 8 / 9</span>
+<span class="text-on-surface-variant block text-[10px]">ACS: 288 (49% HS)</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 rounded bg-surface-container text-primary font-bold border border-primary/30">MATCH MVP</span>
+</td>
+<td class="py-3 px-4 text-right text-[10px] text-on-surface-variant">
+<div class="text-primary truncate">0x7c21...bb14</div>
+<div class="text-on-surface-variant font-sans text-[9px]">Vanguard Clean Handshake</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- TAB 2: HISTORICAL SEASONS TRACK RECORD (Initially Hidden or Switchable) -->
+<div class="hidden space-y-4 pt-4" id="dossier-tab-seasons">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface">Multi-Season Performance &amp; Consistency Timeline</h3>
+<span class="font-mono text-xs text-primary">AUDITED ACROSS 3 YEARS (2023 - 2025)</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Season 2025 -->
+<div class="bg-surface-container p-4 rounded-lg border border-primary/40 space-y-3">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<span class="font-label-md text-primary font-bold">Episode 8 / Season 2025</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-mono">ACTIVE PEAK</span>
+</div>
+<div class="space-y-1 font-mono text-xs">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Peak Rating:</span>
+<span class="text-primary font-bold">Radiant #42 (820 RR)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Season Winrate:</span>
+<span class="text-on-surface font-bold">89.4% (143W - 17L)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Average K/D:</span>
+<span class="text-tertiary font-bold">2.18 K/D</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Headshot Ratio:</span>
+<span class="text-on-surface font-bold">64.2% HS</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Disputed Orders:</span>
+<span class="text-primary font-bold">0 Disputes (100% SMR)</span>
+</div>
+</div>
+<div class="pt-2">
+<div class="text-[10px] text-on-surface-variant uppercase font-sans mb-1">Winrate Trajectory</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full w-[89.4%]"></div>
+</div>
+</div>
+</div>
+<!-- Season 2024 -->
+<div class="bg-surface-container p-4 rounded-lg border border-outline-variant space-y-3">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<span class="font-label-md text-on-surface font-bold">Episode 7 / Season 2024</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container-low text-on-surface-variant font-mono">CONCLUDED</span>
+</div>
+<div class="space-y-1 font-mono text-xs">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Peak Rating:</span>
+<span class="text-on-surface font-bold">Radiant #118 (710 RR)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Season Winrate:</span>
+<span class="text-on-surface font-bold">86.2% (288W - 46L)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Average K/D:</span>
+<span class="text-tertiary font-bold">1.98 K/D</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Headshot Ratio:</span>
+<span class="text-on-surface font-bold">59.8% HS</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Completed Escrow:</span>
+<span class="text-primary font-bold">412 Contracts</span>
+</div>
+</div>
+<div class="pt-2">
+<div class="text-[10px] text-on-surface-variant uppercase font-sans mb-1">Winrate Trajectory</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-tertiary-container h-full w-[86.2%]"></div>
+</div>
+</div>
+</div>
+<!-- Season 2023 -->
+<div class="bg-surface-container p-4 rounded-lg border border-outline-variant space-y-3">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<span class="font-label-md text-on-surface font-bold">Episode 6 / Season 2023</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container-low text-on-surface-variant font-mono">ARCHIVED</span>
+</div>
+<div class="space-y-1 font-mono text-xs">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Peak Rating:</span>
+<span class="text-on-surface font-bold">Radiant #204 (640 RR)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Season Winrate:</span>
+<span class="text-on-surface font-bold">84.1% (310W - 58L)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Average K/D:</span>
+<span class="text-tertiary font-bold">1.89 K/D</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Headshot Ratio:</span>
+<span class="text-on-surface font-bold">56.4% HS</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Completed Escrow:</span>
+<span class="text-primary font-bold">259 Contracts</span>
+</div>
+</div>
+<div class="pt-2">
+<div class="text-[10px] text-on-surface-variant uppercase font-sans mb-1">Winrate Trajectory</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-primary/50 h-full w-[84.1%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 3: LAN & COMPETITIVE ACHIEVEMENTS -->
+<div class="hidden space-y-4 pt-4" id="dossier-tab-tournaments">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface">Verified Competitive &amp; Tournament Credentials</h3>
+<span class="font-mono text-xs text-primary">TIER-1 ESPORTS BACKGROUND</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-surface-container p-4 rounded-lg border border-outline-variant flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary text-[28px]">military_tech</span>
+<div class="space-y-1">
+<div class="font-label-md text-on-surface font-bold">VCT Challengers EMEA - Open Qualifier Top 8</div>
+<div class="text-xs text-on-surface-variant font-mono">Team: Ex-Apex Gaming // Duelist Entry fragger</div>
+<p class="text-xs text-on-surface-variant">Achieved top 8 finish in official Riot VCT Stage 1 qualifiers with a 1.28 tournament rating across 14 official maps.</p>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-lg border border-outline-variant flex gap-3 items-start">
+<span class="material-symbols-outlined text-tertiary text-[28px]">emoji_events</span>
+<div class="space-y-1">
+<div class="font-label-md text-on-surface font-bold">MLBB Regional Masters Championship 2024 - Champion</div>
+<div class="text-xs text-on-surface-variant font-mono">Grand Finals MVP // Clean 4-1 Sweep</div>
+<p class="text-xs text-on-surface-variant">Led roster to 1st place in regional tier-2 tournament, netting $15,000 prize pool with zero hero pool bans breached.</p>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-lg border border-outline-variant flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary text-[28px]">workspace_premium</span>
+<div class="space-y-1">
+<div class="font-label-md text-on-surface font-bold">FACEIT Valorant Pro Hub - Level 10 (3140 ELO)</div>
+<div class="text-xs text-on-surface-variant font-mono">Server ID: EU-NORTH // 0.89 KPR</div>
+<p class="text-xs text-on-surface-variant">Consistently maintained top 0.05% elo ranking on private competitive scrim hubs, peer-vouched by 18 semi-pro captains.</p>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-lg border border-outline-variant flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary text-[28px]">gavel</span>
+<div class="space-y-1">
+<div class="font-label-md text-on-surface font-bold">Zero Sanctions / 100% Anti-Cheat Record</div>
+<div class="text-xs text-on-surface-variant font-mono">HWID Hash: SECURE_HW_39201 // 0 Bans</div>
+<p class="text-xs text-on-surface-variant">Never subjected to warnings, matchmaking cooldowns, chat penalties, or Vanguard integrity disputes since registry induction.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 4: HWID & ANTI-CHEAT TELEMETRY -->
+<div class="hidden space-y-4 pt-4" id="dossier-tab-hardware">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface">Hardware Integrity &amp; Anti-Cheat Security Profile</h3>
+<span class="font-mono text-xs text-primary">AUDITED HARDWARE PROFILE</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="bg-surface-container p-3.5 rounded border border-outline-variant">
+<div class="text-[10px] text-on-surface-variant uppercase font-mono">Vanguard Kernel Check</div>
+<div class="text-primary font-mono font-bold mt-1">CLEAN SIGNATURE</div>
+<div class="text-[11px] text-on-surface-variant mt-1">Driver 0.98.4 Hash Matched</div>
+</div>
+<div class="bg-surface-container p-3.5 rounded border border-outline-variant">
+<div class="text-[10px] text-on-surface-variant uppercase font-mono">Hardware ID (HWID)</div>
+<div class="text-on-surface font-mono font-bold mt-1">VERIFIED CLEAN</div>
+<div class="text-[11px] text-on-surface-variant mt-1">Zero VM or Spoof Signatures</div>
+</div>
+<div class="bg-surface-container p-3.5 rounded border border-outline-variant">
+<div class="text-[10px] text-on-surface-variant uppercase font-mono">Dedicated Geo-VPN Routing</div>
+<div class="text-tertiary font-mono font-bold mt-1">RESIDENTIAL IP</div>
+<div class="text-[11px] text-on-surface-variant mt-1">0% Packet Loss / No Flagging</div>
+</div>
+<div class="bg-surface-container p-3.5 rounded border border-outline-variant">
+<div class="text-[10px] text-on-surface-variant uppercase font-mono">Stream POV Option</div>
+<div class="text-primary font-mono font-bold mt-1">DISCORD 1080p 60FPS</div>
+<div class="text-[11px] text-on-surface-variant mt-1">Available on all live runs</div>
+</div>
+</div>
+</div>
+<!-- TAB 5: CLIENT VOUCHES & ORDER FEEDBACK -->
+<div class="hidden space-y-4 pt-4" id="dossier-tab-vouches">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface">Client Order Vouch Archive &amp; Reviews</h3>
+<span class="font-mono text-xs text-primary">100% CRYPTOGRAPHICALLY SETTLED ESCROW REVIEWS</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-surface-container p-4 rounded-lg border border-outline-variant space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-bold text-on-surface text-xs font-mono">Order #ORD-9821-VAL</span>
+<span class="text-primary text-xs font-mono">5.0 ★★★★★</span>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant">2 days ago</span>
+</div>
+<p class="text-xs text-on-surface italic font-body-sm">
+                  "Valkyrie carried our duo queue from Ascendant 1 straight into Immortal 3 in under 4 days. Unbelievable comms, coached my positioning on Haven and Ascent every match."
+                </p>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/60 text-[11px] text-on-surface-variant font-mono">
+<span class="">Service: Duo Voice Carry</span>
+<span class="text-primary">Settled: $280 USDC</span>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-lg border border-outline-variant space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-bold text-on-surface text-xs font-mono">Order #ORD-9755-MLBB</span>
+<span class="text-primary text-xs font-mono">5.0 ★★★★★</span>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant">5 days ago</span>
+</div>
+<p class="text-xs text-on-surface italic font-body-sm">
+                  "Insane Fanny jungle gameplay. 18 game win streak straight to Mythic Glory 100 stars without dropped games. Super stealth VPN routing used as requested."
+                </p>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/60 text-[11px] text-on-surface-variant font-mono">
+<span class="">Service: Solo Pilot</span>
+<span class="text-primary">Settled: $195 USDC</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: DETAILED BOOSTER WORK HISTORY & REPUTATION LEDGER -->
+<section class="bg-surface-container-low/90 backdrop-blur-md border border-outline-variant rounded-xl p-space-lg">
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-space-md border-b border-outline-variant gap-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Telemetry Ledger &amp; Live Pilot Performance</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real-time audited match win rates by hero/agent, response times, and zero-leak compliance audit.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Data Sync:</span>
+<span class="font-label-sm text-label-sm text-primary font-mono bg-surface-container px-2 py-1 rounded border border-outline-variant">BLOCK #18,924,102 [FINALIZED]</span>
+</div>
+</div>
+<!-- Bento Metrics Strip -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 py-space-md">
+<div class="bg-surface-container p-space-md rounded border border-outline-variant">
+<div class="font-label-sm text-[10px] text-on-surface-variant uppercase">Hero Specialization: Jett</div>
+<div class="flex items-baseline justify-between mt-1">
+<span class="font-headline-md text-headline-md text-primary font-mono">84% WR</span>
+<span class="text-xs text-on-surface-variant font-mono">248 Matches</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary-container h-full w-[84%]"></div>
+</div>
+</div>
+<div class="bg-surface-container p-space-md rounded border border-outline-variant">
+<div class="font-label-sm text-[10px] text-on-surface-variant uppercase">Hero Specialization: Fanny</div>
+<div class="flex items-baseline justify-between mt-1">
+<span class="font-headline-md text-headline-md text-primary font-mono">92% WR</span>
+<span class="text-xs text-on-surface-variant font-mono">190 Matches</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary-container h-full w-[92%]"></div>
+</div>
+</div>
+<div class="bg-surface-container p-space-md rounded border border-outline-variant">
+<div class="font-label-sm text-[10px] text-on-surface-variant uppercase">Hero Specialization: Invoker</div>
+<div class="flex items-baseline justify-between mt-1">
+<span class="font-headline-md text-headline-md text-tertiary font-mono">79% WR</span>
+<span class="text-xs text-on-surface-variant font-mono">142 Matches</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
+<div class="bg-tertiary-container h-full w-[79%]"></div>
+</div>
+</div>
+<div class="bg-surface-container p-space-md rounded border border-outline-variant">
+<div class="font-label-sm text-[10px] text-on-surface-variant uppercase">Zero-Leak Compliance</div>
+<div class="flex items-baseline justify-between mt-1">
+<span class="font-headline-md text-headline-md text-primary font-mono">100%</span>
+<span class="text-xs text-on-surface-variant font-mono">4m Dispatch</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary-container h-full w-full"></div>
+</div>
+</div>
+</div>
+<!-- Ledger Table -->
+<div class="overflow-x-auto custom-scroll">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm uppercase border-y border-outline-variant">
+<tr>
+<th class="py-2.5 px-4">Order ID &amp; Game</th>
+<th class="py-2.5 px-4">Assigned Pilot</th>
+<th class="py-2.5 px-4">Service Tier</th>
+<th class="py-2.5 px-4">Hero / Agent</th>
+<th class="py-2.5 px-4 text-center">Score / WR</th>
+<th class="py-2.5 px-4 text-right">Escrow Settlement</th>
+<th class="py-2.5 px-4 text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant font-mono">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container/60 transition-colors">
+<td class="py-3 px-4">
+<div class="font-bold text-on-surface font-headline-sm text-sm">#ORD-9821-VAL</div>
+<div class="text-[11px] text-on-surface-variant font-sans">Valorant Competitive</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<img alt="Pilot Avatar" class="w-5 h-5 rounded object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-MEey-8LvU-PH0UmYJPvUodlO5z_mxfe4j_sbLnKrYrf5ceUzg2At51xJ8naM--5eZMyWX1sTFXkvvxwi50mDctTYqjI9iZyqwo0VGnUuAtrsVd-nQVOyklUnlugo6s7TxSsumCJeGqEI_htsQSz1ZCE1c-tdXTLEv9Fctr5S4ZWs55Pg7gZUKjnCxCq4iFBLU2BceSMpzdjhc08pRn7FNsQJIBS2HDmmTS3iwPZS62su1v8elajHGWR0_WvKPWDZFGE">
+<span class="text-primary font-sans font-medium">Valkyrie_X</span>
+</div>
+</td>
+<td class="py-3 px-4 font-sans text-on-surface-variant text-xs">
+                      Solo Pilot [Ascendant ➔ Immo 3]
+                    </td>
+<td class="py-3 px-4 font-sans">
+<span class="px-2 py-0.5 rounded bg-surface-container border border-outline-variant text-xs text-on-surface">Jett / Reyna</span>
+</td>
+<td class="py-3 px-4 text-center font-bold text-primary">
+                      89.4% (38-4)
+                    </td>
+<td class="py-3 px-4 text-right text-on-surface">
+                      $280.00 USDC
+                    </td>
+<td class="py-3 px-4 text-right">
+<span class="px-2 py-0.5 rounded bg-primary/10 border border-primary/30 text-primary text-[10px] uppercase font-sans">Dispatched</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container/60 transition-colors">
+<td class="py-3 px-4">
+<div class="font-bold text-on-surface font-headline-sm text-sm">#ORD-9788-LOL</div>
+<div class="text-[11px] text-on-surface-variant font-sans">League of Legends</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<img alt="Pilot Avatar" class="w-5 h-5 rounded object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKz1kPz-0BG2mWd4o6Y91_3VtADOHmJR85ajLBPjESktMjOjVK8MhECIjSkInXZenXqbai6L2_hjqPKoJ--ReNnjBfS76ghhJoE3TL1F5QvX50ZF0R7MV-ca5_szrkbrjnhvroKhm0vt1bhRHwiAF5RGLh9Bkof7bUPa8OpYUIC-exSteIebJzDqYjG7fJnAloKQ8i7x1W-G2Z5wqMEzHPvPErgSMdqeoCXCC7R4osZdHTrgQnhMdcGqWITDwnSncp70o">
+<span class="text-tertiary font-sans font-medium">ShadowBlade_99</span>
+</div>
+</td>
+<td class="py-3 px-4 font-sans text-on-surface-variant text-xs">
+                      Duo Queue Voice [Diamond ➔ Master]
+                    </td>
+<td class="py-3 px-4 font-sans">
+<span class="px-2 py-0.5 rounded bg-surface-container border border-outline-variant text-xs text-on-surface">Zed / LeBlanc</span>
+</td>
+<td class="py-3 px-4 text-center font-bold text-primary">
+                      100% (12-0)
+                    </td>
+<td class="py-3 px-4 text-right text-on-surface">
+                      $408.00 USDC
+                    </td>
+<td class="py-3 px-4 text-right">
+<span class="px-2 py-0.5 rounded bg-primary/10 border border-primary/30 text-primary text-[10px] uppercase font-sans">Dispatched</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container/60 transition-colors">
+<td class="py-3 px-4">
+<div class="font-bold text-on-surface font-headline-sm text-sm">#ORD-9750-WOW</div>
+<div class="text-[11px] text-on-surface-variant font-sans">World of Warcraft</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<img alt="Pilot Avatar" class="w-5 h-5 rounded object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKNPK_S1p1PazzJr3FCLs5jllMUCXSZcE-glhRMy7Wo9hkKhcc2wn6zWCzKR6-J1U5u5DT1EVsWQmLFdOXkZLGIi3i01CezZjKVvX03fVoeX1j7qcnwnpMOHLprNMCEc1TIYBO8vo3lEvqHaOy9bZhPQmCaIFNgeoGyZyFTbqYqyZTNGnHRMj8nDfgf3VdIdHcMkYDJJ0ZOosKuIp2f9IDneMWMsYo9ANhucr6pjlbwxki13IfJVpMaAiwiHsevnhtzcc">
+<span class="text-on-surface font-sans font-medium">IronAegis</span>
+</div>
+</td>
+<td class="py-3 px-4 font-sans text-on-surface-variant text-xs">
+                      Mythic +20 Dungeon Run
+                    </td>
+<td class="py-3 px-4 font-sans">
+<span class="px-2 py-0.5 rounded bg-surface-container border border-outline-variant text-xs text-on-surface">Vengeance DH</span>
+</td>
+<td class="py-3 px-4 text-center font-bold text-tertiary">
+                      Timed (+2 Chest)
+                    </td>
+<td class="py-3 px-4 text-right text-on-surface">
+                      $160.00 USDC
+                    </td>
+<td class="py-3 px-4 text-right">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] uppercase font-sans">Finalizing</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- DYNAMIC CONTAINER: BOOSTER PORTAL & APPLICATION VIEW (Initially hidden/shown via tab) -->
+<div class="hidden space-y-8" id="view-portal-content">
+<!-- Callout Take-Rate Banner -->
+<section class="bg-gradient-to-r from-surface-container-low via-surface-container to-surface-container-low border border-primary-container/40 rounded-xl p-space-lg relative overflow-hidden">
+<div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+<div class="space-y-1">
+<div class="inline-flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">monetization_on</span>
+                  Institutional Compensation Model
+                </div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">
+                  Earn Up to 88% Take Rate — Industry-Highest Payouts
+                </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+                  Automated non-custodial smart escrow settlement released instantaneously upon customer order sign-off. Zero waiting periods, zero chargeback liabilities.
+                </p>
+</div>
+<div class="shrink-0 text-center md:text-right">
+<div class="font-headline-xl text-headline-xl text-primary font-mono font-bold">88.0%</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">PILOT NET REVENUE</div>
+</div>
+</div>
+</section>
+<!-- Onboarding 3-Step Process Protocol -->
+<section class="space-y-6" id="onboarding-portal">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">APPLY FOR VERIFIED BOOSTER ACCREDITATION</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Complete the three-phase tactical audit to unlock verified pilot badges and private order queues.</p>
+</div>
+<!-- Steps Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Step 1 -->
+<div class="bg-surface-container-low/90 backdrop-blur-md border border-outline-variant rounded-xl p-space-lg relative">
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-2.5 py-1 rounded bg-surface-container border border-outline-variant font-label-sm text-label-sm text-primary font-mono">PHASE 01</span>
+<span class="material-symbols-outlined text-primary text-[24px]">workspace_premium</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold mb-2">Competitive Credential Submission</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Submit high-tier tracker proof (Radiant / Challenger / Mythic Immortal). Peak rank hash audit and seasonal proof required for admission.
+                </p>
+<div class="mt-4 pt-4 border-t border-outline-variant/60 space-y-1">
+<div class="text-[11px] text-on-surface flex items-center gap-1.5 font-mono">
+<span class="material-symbols-outlined text-[14px] text-primary">check_circle</span>
+                    API Tracker Verification
+                  </div>
+<div class="text-[11px] text-on-surface flex items-center gap-1.5 font-mono">
+<span class="material-symbols-outlined text-[14px] text-primary">check_circle</span>
+                    Seasonal Proof Screenshot
+                  </div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-low/90 backdrop-blur-md border border-outline-variant rounded-xl p-space-lg relative">
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-2.5 py-1 rounded bg-surface-container border border-outline-variant font-label-sm text-label-sm text-tertiary font-mono">PHASE 02</span>
+<span class="material-symbols-outlined text-tertiary text-[24px]">verified_user</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold mb-2">Zero-Trust Hardware &amp; Security</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Riot Vanguard / Easy Anti-Cheat HWID clean log audit. Mandatory Stealth Geo-VPN protocol to prevent IP anomaly lockouts.
+                </p>
+<div class="mt-4 pt-4 border-t border-outline-variant/60 space-y-1">
+<div class="text-[11px] text-on-surface flex items-center gap-1.5 font-mono">
+<span class="material-symbols-outlined text-[14px] text-tertiary">check_circle</span>
+                    Clean HWID Log Confirmation
+                  </div>
+<div class="text-[11px] text-on-surface flex items-center gap-1.5 font-mono">
+<span class="material-symbols-outlined text-[14px] text-tertiary">check_circle</span>
+                    Stealth Geo-VPN Agreement
+                  </div>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-low/90 backdrop-blur-md border border-outline-variant rounded-xl p-space-lg relative">
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-2.5 py-1 rounded bg-surface-container border border-outline-variant font-label-sm text-label-sm text-primary font-mono">PHASE 03</span>
+<span class="material-symbols-outlined text-primary text-[24px]">account_balance_wallet</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold mb-2">Identity &amp; Escrow Payout Binding</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Bind your EVM wallet (USDC/USDT), PayPal, or direct SEPA routing. Instant escrow release upon customer sign-off.
+                </p>
+<div class="mt-4 pt-4 border-t border-outline-variant/60 space-y-1">
+<div class="text-[11px] text-on-surface flex items-center gap-1.5 font-mono">
+<span class="material-symbols-outlined text-[14px] text-primary">check_circle</span>
+                    Instant EVM Smart Contract Payout
+                  </div>
+<div class="text-[11px] text-on-surface flex items-center gap-1.5 font-mono">
+<span class="material-symbols-outlined text-[14px] text-primary">check_circle</span>
+                    Arbiter Escrow Protection
+                  </div>
+</div>
+</div>
+</div>
+<!-- Quick Interactive Application Form -->
+<div class="bg-surface-container-low/90 backdrop-blur-md border border-outline-variant rounded-xl p-space-lg lg:p-space-xl">
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant mb-6">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Submit Credentials for Tier-2 Arbiter Audit</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Applications are reviewed within 4 hours by certified platform arbiters.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[28px]">terminal</span>
+</div>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-6" onsubmit="event.preventDefault(); alert('Application encrypted and dispatched to Arbiter Node.');">
+<div>
+<label class="block font-label-sm text-label-sm uppercase text-on-surface-variant mb-2">Primary Competitive Game</label>
+<select class="w-full bg-surface-container border border-outline-variant text-on-surface rounded p-space-sm font-body-sm text-body-sm focus:border-primary-container focus:ring-0">
+<option>Valorant (Radiant / Immortal 3)</option>
+<option>Mobile Legends: Bang Bang (Mythical Immortal)</option>
+<option>League of Legends (Challenger / Grandmaster)</option>
+<option>Dota 2 (Immortal Ranked)</option>
+<option>World of Warcraft (3000+ IO / CE)</option>
+</select>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm uppercase text-on-surface-variant mb-2">Peak Rank Hash / Tracker URL</label>
+<input class="w-full bg-surface-container border border-outline-variant text-on-surface rounded p-space-sm font-body-sm text-body-sm focus:border-primary-container focus:ring-0 placeholder:text-outline font-mono" placeholder="https://tracker.gg/valorant/profile/pilot#0001" type="text">
+</div>
+<div>
+<label class="block font-label-sm text-label-sm uppercase text-on-surface-variant mb-2">Discord / Tactical In-Game Tag</label>
+<input class="w-full bg-surface-container border border-outline-variant text-on-surface rounded p-space-sm font-body-sm text-body-sm focus:border-primary-container focus:ring-0 placeholder:text-outline" placeholder="PilotValk#8821 / Riot ID" type="text">
+</div>
+<div>
+<label class="block font-label-sm text-label-sm uppercase text-on-surface-variant mb-2">Preferred Queue Deployment Type</label>
+<select class="w-full bg-surface-container border border-outline-variant text-on-surface rounded p-space-sm font-body-sm text-body-sm focus:border-primary-container focus:ring-0">
+<option>Solo Pilot (Stealth Client Play)</option>
+<option>Duo Queue (Live Voice Coaching)</option>
+<option>Both Solo &amp; Duo Qualified</option>
+</select>
+</div>
+<div class="md:col-span-2">
+<label class="block font-label-sm text-label-sm uppercase text-on-surface-variant mb-2">Payout Wallet / Payment Gateway (EVM / PayPal)</label>
+<input class="w-full bg-surface-container border border-outline-variant text-on-surface rounded p-space-sm font-body-sm text-body-sm focus:border-primary-container focus:ring-0 placeholder:text-outline font-mono" placeholder="0x71C...38a7 (Arbitrum USDC preferred for 0% fee instant dispatch)" type="text">
+</div>
+<div class="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-outline-variant">
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<input checked="" class="rounded border-outline-variant text-primary-container focus:ring-0 bg-surface-container" id="hwid-check" type="checkbox">
+<label for="hwid-check" class="">I confirm clean HWID history and agreement to strict anti-cheat audit protocols.</label>
+</div>
+<button class="w-full sm:w-auto px-space-xl py-2.5 bg-primary-container text-on-primary-fixed font-label-md text-label-md rounded flex items-center justify-center gap-2 hover:bg-tertiary-container transition-colors duration-150" type="submit">
+<span class="material-symbols-outlined text-[18px]">send</span>
+                    Submit Credentials for Tier-2 Arbiter Audit
+                  </button>
+</div>
+</form>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Platform Footer (Shared Component) -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant relative z-40">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-md lg:px-margin-lg py-space-md gap-space-md">
+<!-- Left: Brand Logo & Copyright -->
+<div class="flex items-center gap-4">
+<img alt="Playora Arena Logo" class="h-6 w-auto object-contain drop-shadow-[0_0_6px_rgba(78,222,163,0.3)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB70eyUT4nxFwCvrv5UwbjrsmpqPYw49CIn7IrQdYSlr-F0fC3VGy-sfYoWd6iHkJU-_uVTl119MKf-rd-gbfmGuB7SlBkde64qUEOFieO5IlyamhoAkQjRKspC6vzc-AWEgDppgqJBR0VEODs2r0W8eVcSl5nR-GU15ePPpff3qm67VXOQZjjRmatf1dsYrdy7jPnwYsSj3JPPWB_QpjhYbgAmm9Xf-bb8h9tW8HvVzWKRlE3J0C-CtM9HzlIVbzuT4XU">
+<span class="text-on-surface-variant font-label-sm text-label-sm">
+            © 2025 PLAYORA ARENA. CRYPTOGRAPHIC ESCROW GUARANTEE ACTIVE. ALL RIGHTS RESERVED.
+          </span>
+</div>
+<!-- Right: Immutable Links from JSON -->
+<div class="flex flex-wrap items-center gap-space-lg">
+<a class="text-on-surface-variant hover:text-primary font-label-sm text-label-sm transition-colors duration-150" href="#">Smart Escrow Terms</a>
+<a class="text-on-surface-variant hover:text-primary font-label-sm text-label-sm transition-colors duration-150" href="#">Anti-Cheat Protocol</a>
+<a class="text-on-surface-variant hover:text-primary font-label-sm text-label-sm transition-colors duration-150" href="#">Proof of Reserve</a>
+<div class="flex items-center gap-1 text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container inline-block"></span>
+            Latency Status: 12ms
+          </div>
+<a class="text-on-surface-variant hover:text-primary font-label-sm text-label-sm transition-colors duration-150" href="#">Security Disclosures</a>
+</div>
+</div>
+</footer>
+</div>
+<!-- Interactive Dual-Perspective & Dossier Telemetry Switching Script -->
+<script>
+    function switchView(view) {
+      const dirContent = document.getElementById('view-directory-content');
+      const portContent = document.getElementById('view-portal-content');
+      const btnDir = document.getElementById('toggle-directory');
+      const btnPort = document.getElementById('toggle-portal');
+
+      if (view === 'directory') {
+        dirContent.classList.remove('hidden');
+        portContent.classList.add('hidden');
+
+        btnDir.className = "px-space-md py-2 rounded font-label-md text-label-md transition-colors duration-150 flex items-center gap-2 bg-primary-container text-on-primary-fixed";
+        btnPort.className = "px-space-md py-2 rounded font-label-md text-label-md transition-colors duration-150 flex items-center gap-2 text-on-surface-variant hover:text-on-surface";
+      } else {
+        dirContent.classList.add('hidden');
+        portContent.classList.remove('hidden');
+
+        btnPort.className = "px-space-md py-2 rounded font-label-md text-label-md transition-colors duration-150 flex items-center gap-2 bg-primary-container text-on-primary-fixed";
+        btnDir.className = "px-space-md py-2 rounded font-label-md text-label-md transition-colors duration-150 flex items-center gap-2 text-on-surface-variant hover:text-on-surface";
+      }
+    }
+
+    // Comprehensive Dossier Inspector Tab Switcher
+    function showDossierTab(tabKey) {
+      const tabs = ['matches', 'seasons', 'tournaments', 'hardware', 'vouches'];
+      tabs.forEach(t => {
+        const el = document.getElementById('dossier-tab-' + t);
+        const btn = document.getElementById('tab-' + t + '-btn');
+        if (t === tabKey) {
+          if (el) el.classList.remove('hidden');
+          if (btn) {
+            btn.className = "px-3 py-1.5 rounded font-label-md text-xs bg-surface-container border border-primary/50 text-primary flex items-center gap-1.5 shrink-0";
+          }
+        } else {
+          if (el) el.classList.add('hidden');
+          if (btn) {
+            btn.className = "px-3 py-1.5 rounded font-label-md text-xs bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 shrink-0";
+          }
+        }
+      });
+    }
+
+    // Pilot Selector inside the deep gaming history inspector
+    function inspectPilot(pilotId) {
+      const inspector = document.getElementById('pilot-dossier-inspector');
+      if (inspector) {
+        inspector.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      const nameEl = document.getElementById('dossier-name');
+      const titleEl = document.getElementById('dossier-title');
+      const btnValk = document.getElementById('dossier-btn-valk');
+      const btnShadow = document.getElementById('dossier-btn-shadow');
+
+      if (pilotId === 'shadowblade') {
+        if (nameEl) nameEl.textContent = "ShadowBlade_99";
+        if (titleEl) titleEl.textContent = "LoL Challenger 940 LP / Dota 2 Immortal #240";
+        if (btnShadow) btnShadow.className = "px-3 py-1.5 rounded text-xs font-label-md transition-colors bg-primary-container text-on-primary-fixed";
+        if (btnValk) btnValk.className = "px-3 py-1.5 rounded text-xs font-label-md transition-colors text-on-surface-variant hover:text-on-surface";
+      } else {
+        if (nameEl) nameEl.textContent = "Valkyrie_X";
+        if (titleEl) titleEl.textContent = "Apex Radiant #42 / MLBB Mythic 184★";
+        if (btnValk) btnValk.className = "px-3 py-1.5 rounded text-xs font-label-md transition-colors bg-primary-container text-on-primary-fixed";
+        if (btnShadow) btnShadow.className = "px-3 py-1.5 rounded text-xs font-label-md transition-colors text-on-surface-variant hover:text-on-surface";
+      }
+    }
+  </script>
+<div class="fixed right-3 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col items-center gap-2 pointer-events-none select-none"><div class="text-[9px] font-mono text-primary/80 tracking-widest uppercase rotate-90 mb-6">HUD // ESCROW_SYNC</div><div class="w-1.5 h-40 bg-[#061610]/90 rounded-full border border-primary/40 relative overflow-hidden backdrop-blur-md shadow-[0_0_12px_rgba(16,185,129,0.15)]"><div class="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-primary via-primary-container to-secondary rounded-full shadow-[0_0_12px_#4edea3] animate-pulse"></div></div><div class="flex flex-col items-center gap-1 mt-3"><div class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_#4edea3]"></div><div class="w-1 h-1 rounded-full bg-primary/50"></div><div class="w-1 h-1 rounded-full bg-primary/20"></div></div><span class="text-[9px] font-mono text-primary mt-1 font-bold tracking-tight">99.4%</span></div>
+
+</body></html>

@@ -1,0 +1,990 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>PLAYORA // ARENA - Wild Rift Dedicated Hub</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts: Space Grotesk & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS with Forms and Container Queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface": "#111317",
+            "on-error-container": "#ffdad6",
+            "on-primary-container": "#006649",
+            "on-secondary-fixed-variant": "#444651",
+            "on-primary-fixed": "#002115",
+            "surface-bright": "#37393e",
+            "inverse-on-surface": "#2f3035",
+            "tertiary-fixed-dim": "#3cddc7",
+            "primary-container": "#6ee7b7",
+            "tertiary": "#9fffee",
+            "on-secondary-container": "#b3b4c1",
+            "surface-container-high": "#282a2e",
+            "on-secondary-fixed": "#181b24",
+            "on-tertiary-fixed": "#00201c",
+            "secondary-fixed-dim": "#c4c6d2",
+            "secondary-container": "#444651",
+            "secondary": "#c4c6d2",
+            "on-tertiary-container": "#00655a",
+            "surface-container": "#1e2024",
+            "surface-container-highest": "#333539",
+            "error-container": "#93000a",
+            "on-surface": "#e2e2e8",
+            "surface-container-lowest": "#0c0e12",
+            "outline": "#86948c",
+            "surface-variant": "#333539",
+            "tertiary-fixed": "#62fae3",
+            "background": "#111317",
+            "surface-dim": "#111317",
+            "tertiary-container": "#4ce8d2",
+            "on-surface-variant": "#bccac1",
+            "on-primary-fixed-variant": "#00513a",
+            "error": "#ffb4ab",
+            "on-tertiary-fixed-variant": "#005047",
+            "secondary-fixed": "#e0e2ef",
+            "primary": "#aaffd8",
+            "on-primary": "#003827",
+            "on-tertiary": "#003731",
+            "inverse-primary": "#006c4e",
+            "primary-fixed": "#80f9c8",
+            "outline-variant": "#3d4a43",
+            "surface-container-low": "#1a1c20",
+            "primary-fixed-dim": "#62dcad",
+            "on-secondary": "#2d303a",
+            "on-error": "#690005",
+            "inverse-surface": "#e2e2e8",
+            "surface-tint": "#62dcad",
+            "on-background": "#e2e2e8"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin-lg": "3rem",
+            "space-lg": "1rem",
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "space-md": "0.75rem",
+            "gutter-md": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-xl": "1.5rem",
+            "margin-md": "2rem",
+            "gutter-lg": "2rem",
+            "margin": "1rem"
+          },
+          "fontFamily": {
+            "display-lg-mobile": ["Space Grotesk"],
+            "body-lg": ["Inter"],
+            "headline-xl-mobile": ["Space Grotesk"],
+            "headline-md": ["Space Grotesk"],
+            "label-md": ["Space Grotesk"],
+            "label-sm": ["Space Grotesk"],
+            "display-lg": ["Space Grotesk"],
+            "headline-sm": ["Space Grotesk"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-lg": ["Space Grotesk"],
+            "label-lg": ["Space Grotesk"],
+            "headline-xl": ["Space Grotesk"]
+          },
+          "fontSize": {
+            "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "headline-xl-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }],
+            "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style id="forest-emerald-theme-overrides">
+  :root {
+    --bg-main: #061610;
+    --surface-lowest: #02110b;
+    --surface-low: #0e1f18;
+    --surface-mid: #142720;
+    --surface-high: #1c332b;
+    --border-emerald: #1d3a2e;
+    --border-highlight: #285241;
+  }
+  body {
+    background-color: #061610 !important;
+    color: #d3e7db !important;
+  }
+  .bg-background {
+    background-color: #061610 !important;
+  }
+  .bg-surface-container-lowest, header, footer, aside {
+    background-color: #02110b !important;
+  }
+  .bg-surface-container-low, section.bg-surface-container-low {
+    background-color: #0e1f18 !important;
+  }
+  .bg-surface-container {
+    background-color: #142720 !important;
+  }
+  .bg-surface-container-high {
+    background-color: #1c332b !important;
+  }
+  .border-outline-variant {
+    border-color: #1d3a2e !important;
+  }
+  .hover\:border-outline:hover {
+    border-color: #285241 !important;
+  }
+  .hover\:border-primary:hover {
+    border-color: #4edea3 !important;
+  }
+  .hover\:bg-surface-container-low:hover {
+    background-color: #0e1f18 !important;
+  }
+  .hover\:bg-surface-container:hover {
+    background-color: #142720 !important;
+  }
+  .text-on-surface {
+    color: #d3e7db !important;
+  }
+  .text-on-surface-variant {
+    color: #9cb8a9 !important;
+  }
+  input, select {
+    background-color: #0a1b14 !important;
+    border-color: #1d3a2e !important;
+    color: #d3e7db !important;
+  }
+  input::placeholder {
+    color: #5d7e6f !important;
+  }
+</style></head>
+<body class="bg-background text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container font-body-md text-body-md min-h-screen" style="background-color: rgb(6, 22, 16); background-image: linear-gradient(rgba(6, 22, 16, 0.65) 0%, rgba(2, 17, 11, 0.78) 100%), url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCi0iZj9gz-ZZg74ml-uWexJuYucLoLOQuzfMl1CTbrhUH-fwSz6BI7cCKOjIx_wkctLJejFBVwxikjsqO1GlpPrGvVT1FpSS2xqYfYTf_CKNUFsyc3fSrzNZf6IBgN62umU-iqYT2XJN8rlPpYM7d8LMCHVdwuBekgUr2Z0bSOnUDNIezXdiMEI9JL-AA_B_DZimEFF7Ep9GHql1Ulttc1DshyU0zF7aUcpK1KIaKCi0GbBzhoRHSlXLjSSBR7bwQMHJU&quot;); background-size: cover; background-attachment: fixed; background-position: center center;">
+<!-- ================= TOP NAVBAR (Shared Component) ================= -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-lowest docked full-width top-0 border-b border-outline-variant dark:border-outline-variant sticky z-50">
+<div class="flex justify-between items-center w-full px-margin-md lg:px-margin-lg h-16">
+<!-- Brand & Game Switcher -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-2"><img alt="PLAYORA" class="h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjkeWNJk27YeGvICvBr7w8WOVMOcqa_yEAdRfxhtdJtr5rTvNBS55zgHAo9x0SEiOAmoUNDrynGKAr4aHI4KvQo1961N8t7Y9jA0WhRpslEnROGK4SyH6is3WRySfCP6RMuT7ASneiFdA12FNZedmekzg5EFt-RwZj1pdy1bxSB9OI8xns_u9106hNe8hZ_N7JnDvJEHzAPXStMXWa-Gwkj8JX40FrhmDFWMcQ7F0P6RBCT5Xf01FPVlfmqksZh7R-jUs"><span class="font-label-md text-label-md text-outline-variant font-mono">// ARENA</span></div>
+<!-- Game Switcher Pill -->
+<div class="hidden sm:flex items-center gap-space-xs bg-surface-container-low border border-outline-variant px-space-sm py-1 rounded-lg">
+<span class="inline-block w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-tertiary">WILD RIFT</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">v5.2.4</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center space-x-6">
+<a class="text-primary dark:text-primary border-b-2 border-primary dark:border-primary pb-2 font-label-md text-label-md" href="#boosting">Tournaments</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface pb-2 font-label-md text-label-md" href="#ladder">Matches</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface pb-2 font-label-md text-label-md" href="#smurfs">Scrims</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface pb-2 font-label-md text-label-md" href="#escrow">Escrow Leaderboard</a>
+</nav>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-space-md">
+<!-- Status indicator -->
+<div class="hidden xl:flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm bg-surface-container px-space-sm py-1 rounded-lg border border-outline-variant">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="shield">shield</span>
+<span class="">Role: Admin</span>
+</div>
+<button class="flex items-center gap-space-xs bg-primary-container text-on-primary-fixed hover:bg-primary-fixed-dim px-space-md py-1.5 rounded font-label-md text-label-md transition-colors duration-150 active:scale-[0.98]">
+<span class="material-symbols-outlined text-[18px]" data-icon="bolt">bolt</span>
+<span class="">Deploy Boost</span>
+</button>
+<div class="flex items-center gap-space-xs text-on-surface-variant">
+<button class="p-1.5 hover:bg-surface-container hover:text-primary rounded transition-colors duration-150" title="Notifications">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+</button>
+<button class="p-1.5 hover:bg-surface-container hover:text-primary rounded transition-colors duration-150" title="Game Terminal">
+<span class="material-symbols-outlined text-[20px]" data-icon="sports_esports">sports_esports</span>
+</button>
+<button class="p-1.5 hover:bg-surface-container hover:text-primary rounded transition-colors duration-150" title="Profile">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- ================= LAYOUT CONTAINER ================= -->
+<div class="flex min-h-[calc(100vh-4rem)]">
+<!-- ================= FIXED SIDE NAV BAR (Shared Component) ================= -->
+<aside class="hidden lg:flex fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-surface-container-lowest dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline-variant flex-col justify-between p-space-md z-40">
+<!-- Side Nav Top / Header -->
+<div class="flex flex-col gap-space-md">
+<!-- Header Info Card -->
+<div class="bg-surface-container-low border border-outline-variant p-space-sm rounded">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="verified_user">verified_user</span>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm font-bold tracking-tight text-primary dark:text-primary">PLAYORA ARENA</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant font-mono">SYSTEM: ENGAGED [ESCROW SECURE]</div>
+</div>
+</div>
+<div class="mt-2 pt-2 border-t border-outline-variant flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span> Riot Gateway
+            </span>
+<span class="text-primary font-mono">18ms Latency</span>
+</div>
+</div>
+<!-- Prominent Launch CTA -->
+<button class="w-full bg-primary-container text-on-primary-fixed hover:bg-primary-fixed-dim font-label-md text-label-md py-space-sm px-space-md rounded uppercase tracking-wider flex items-center justify-center gap-space-xs transition-colors duration-150">
+<span class="material-symbols-outlined text-[18px]" data-icon="rocket_launch">rocket_launch</span>
+<span class="">Launch Matchmaker</span>
+</button>
+<!-- Navigation Tabs (Dedicated for Wild Rift Hub) -->
+<nav class="flex flex-col space-y-1">
+<a class="flex items-center gap-space-md px-space-md py-space-sm bg-surface-container dark:bg-surface-container text-primary dark:text-primary border-l-2 border-primary dark:border-primary font-label-md text-label-md transition-colors duration-150" href="#boosting">
+<span class="material-symbols-outlined text-[18px]" data-icon="military_tech">military_tech</span>
+<span class="">Mark &amp; Fortitude Boosting</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-low hover:text-on-surface dark:hover:text-on-surface font-label-md text-label-md transition-colors duration-150" href="#packages">
+<span class="material-symbols-outlined text-[18px]" data-icon="dashboard">dashboard</span>
+<span class="">Fixed Value Packages</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-low hover:text-on-surface dark:hover:text-on-surface font-label-md text-label-md transition-colors duration-150" href="#duo">
+<span class="material-symbols-outlined text-[18px]" data-icon="swords">swords</span>
+<span class="">Duo Queue &amp; Pro Carry</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-low hover:text-on-surface dark:hover:text-on-surface font-label-md text-label-md transition-colors duration-150" href="#smurfs">
+<span class="material-symbols-outlined text-[18px]" data-icon="verified_user">verified_user</span>
+<span class="">Audited Wild Rift Smurfs &amp; Skins</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-low hover:text-on-surface dark:hover:text-on-surface font-label-md text-label-md transition-colors duration-150" href="#cores">
+<span class="material-symbols-outlined text-[18px]" data-icon="analytics">analytics</span>
+<span class="">Wild Cores &amp; Hextech Loot</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-low hover:text-on-surface dark:hover:text-on-surface font-label-md text-label-md transition-colors duration-150" href="#escrow">
+<span class="material-symbols-outlined text-[18px]" data-icon="lock">lock</span>
+<span class="">Escrow Guarantee</span>
+</a>
+</nav>
+</div>
+<!-- Side Nav Footer / Telemetry Status -->
+<div class="flex flex-col gap-space-sm border-t border-outline-variant pt-space-md">
+<div class="bg-surface-container-lowest p-space-sm border border-outline-variant rounded font-label-sm text-label-sm">
+<div class="flex items-center justify-between text-on-surface">
+<span class="text-primary flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+              HWID CLOAK
+            </span>
+<span class="text-on-surface-variant">ACTIVE</span>
+</div>
+<div class="text-[10px] text-on-surface-variant mt-1">Android/iOS Emulation Safeguard</div>
+</div>
+<div class="flex flex-col space-y-1">
+<a class="flex items-center gap-space-md px-space-md py-1 text-on-surface-variant hover:text-primary font-label-sm text-label-sm transition-colors duration-150" href="#settings">
+<span class="material-symbols-outlined text-[16px]" data-icon="settings">settings</span>
+<span class="">Settings</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-1 text-on-surface-variant hover:text-primary font-label-sm text-label-sm transition-colors duration-150" href="#support">
+<span class="material-symbols-outlined text-[16px]" data-icon="shield_person">shield_person</span>
+<span class="">Support Protocol</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- ================= MAIN STAGE CANVAS ================= -->
+<main class="flex-1 lg:ml-64 px-4 sm:px-8 py-8 max-w-7xl mx-auto space-y-12">
+<!-- SECTION 1: HERO HEADER BANNER -->
+<section class="border border-outline-variant bg-surface-container-low rounded-lg p-6 lg:p-8 relative overflow-hidden">
+<!-- Subtle tactical grid backdrop -->
+<div class="absolute inset-0 bg-[radial-gradient(#272e3d_1px,transparent_1px)] [background-size:16px_16px] opacity-25 pointer-events-none"></div>
+<div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Hero Copy Left (7 cols) -->
+<div class="lg:col-span-7 space-y-5">
+<div class="inline-flex items-center gap-2 px-2.5 py-1 bg-surface-container border border-outline-variant rounded font-label-sm text-label-sm text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="">SEASON 2025 / S14 TELEMETRY LIVE - WILD RIFT LADDER</span>
+</div>
+<h1 class="font-display-lg text-headline-xl lg:text-display-lg font-bold text-on-surface tracking-tight leading-tight">
+              Institutional Wild Rift Mark, Fortitude &amp; Skin Service Exchange
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+              Zero-markup mobile rank progression, hardware-cloaked boosting by verified Sovereign &amp; Challenger players, hand-leveled accounts, and Tier-1 Riot Mobile Trade Escrow.
+            </p>
+<!-- Metrics Quad -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+<div class="bg-surface-container-lowest border border-outline-variant p-3 rounded">
+<div class="font-headline-md text-headline-md font-bold text-primary font-mono">118</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Verified Boosters</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-3 rounded">
+<div class="font-headline-md text-headline-md font-bold text-on-surface font-mono">410</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Vaulted Smurfs</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-3 rounded">
+<div class="font-headline-md text-headline-md font-bold text-tertiary font-mono">1.4s</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Riot Mobile Ping</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-3 rounded">
+<div class="font-headline-md text-headline-md font-bold text-primary font-mono">$48,200</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Escrow Held</div>
+</div>
+</div>
+</div>
+<!-- Hero Graphic Right (5 cols): Champion Lineup Card -->
+<div class="lg:col-span-5">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden relative shadow-2xl">
+<div class="p-3 border-b border-outline-variant flex items-center justify-between bg-surface-container">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="sports_esports">sports_esports</span>
+<span class="font-label-md text-label-md text-on-surface">META ROSTER TELEMETRY</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary bg-surface-container-low px-2 py-0.5 rounded border border-outline-variant">TIER S+ ACTIVE</span>
+</div>
+<!-- Champion Splash Showcase -->
+<div class="relative h-64 sm:h-72 overflow-hidden">
+<img alt="Wild Rift Champions" class="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcnfnvqA5yxEtS5lPwAzvnVpVdbehMCh61ugyiPY0xojvX-7qSbIxyItIC9DCKPGnYUHVVKTQb37L9LSF396dbCS-D8acuC1rRnHwr5k2tf1ncfxKNvVrDdClIddXsKRPVZC7gqhRDqUJ7o74ckY6MyAZZ8n_4xgWi6g-w6kVY2YB9TjqoUoF4RMuRGphoQVTfL2oX2_RuZ6UaI3AQ3GRutXIoPC8G44TeJ0wJgLxPwwfPrKAmCwYzyA">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div>
+</div>
+<!-- Meta Pick Roster Bar -->
+<div class="p-4 bg-surface-container-lowest space-y-2">
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="">DEPLOYMENT CHAMPIONS</span>
+<span class="text-primary">99.4% EXECUTION SUCCESS</span>
+</div>
+<div class="grid grid-cols-4 gap-2 text-center">
+<div class="bg-surface-container p-2 rounded border border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface">JINX</div>
+<div class="font-label-sm text-label-sm text-primary">Duo ADC</div>
+</div>
+<div class="bg-surface-container p-2 rounded border border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface">YASUO</div>
+<div class="font-label-sm text-label-sm text-primary">Baron/Mid</div>
+</div>
+<div class="bg-surface-container p-2 rounded border border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface">AHRI</div>
+<div class="font-label-sm text-label-sm text-primary">Mid Burst</div>
+</div>
+<div class="bg-surface-container p-2 rounded border border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface">ZED</div>
+<div class="font-label-sm text-label-sm text-primary">Assassin</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: OFFICIAL WILD RIFT 11-TIER RANKED PROGRESSION LADDER -->
+<section class="space-y-4" id="ladder">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-outline-variant pb-3">
+<div>
+<div class="font-label-sm text-label-sm text-primary uppercase">Wild Rift S14 Division Structure</div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">Official 11-Tier Ranked Progression Ladder</h2>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">
+            Mark &amp; Fortitude Loss Shields resolve before Mark deduction. 1,200 Weekly Cap.
+          </div>
+</div>
+<!-- 11 Tier Horizontal Scroll Rail -->
+<div class="overflow-x-auto pb-4 pt-1">
+<div class="grid grid-cols-11 gap-3 min-w-[1240px]">
+<!-- Tier 1: Iron -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 text-center flex flex-col items-center justify-between hover:border-primary transition-colors">
+<span class="font-label-sm text-label-sm text-on-surface-variant">BILGEWATER</span>
+<img alt="Iron Rank" class="w-16 h-16 object-contain my-2" src="https://lh3.googleusercontent.com/aida/AEtjO1VZmpXlt5Gje6qhDQ5Z8zulzpeBWSSBO5E3ftHFfYhQjhzZd9iWDjbCLPS_qX0EOTJ5xiXIRmUUHDGppj09JSputz3k4TApdyFNptR2hAIpYZMjcFFH9FrcsurFrbCws0qZs4IHeHM3YlWEwAmEhvkA9h9948o1Diwqs-ubTmgi-_IeuzNOgMSu-C77EJ6TQhMrs2yAaCVxfHjbPSCPwNB8qbWqQzjrWCW8Mli-XsZExjukmtx7OXW4cjaT">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-bold">IRON</div>
+<div class="font-label-sm text-label-sm text-primary">2 Marks</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">50 Fortitude</div>
+</div>
+</div>
+<!-- Tier 2: Bronze -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 text-center flex flex-col items-center justify-between hover:border-primary transition-colors">
+<span class="font-label-sm text-label-sm text-on-surface-variant">ZAUN</span>
+<img alt="Bronze Rank" class="w-16 h-16 object-contain my-2" src="https://lh3.googleusercontent.com/aida/AEtjO1VgJsrZfr0QjvazsaPvLPA9RrGXEXG6z3x6hdxCENdOf7NGzoMjZlp497rAkAkoBkUl4BWsUKSwldvJ4IEx7CRNdUUbVgF2hag4plGcOETiFelBPHQ74Ciozg9cHmhKmQlWa8cSu7_mF2JkH1BQoJW1szCJIkUH3D5OiU1QENqv9CVOOxVGXiI8PbMp0HGwegkXIloDjBvo56XyligvpST9B9-04-x9ZlSYF9hR9udzMLAN6gO2Oe7S4TCQ">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-bold">BRONZE</div>
+<div class="font-label-sm text-label-sm text-primary">3 Marks</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">100 Fortitude</div>
+</div>
+</div>
+<!-- Tier 3: Silver -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 text-center flex flex-col items-center justify-between hover:border-primary transition-colors">
+<span class="font-label-sm text-label-sm text-on-surface-variant">PILTOVER</span>
+<img alt="Silver Rank" class="w-16 h-16 object-contain my-2" src="https://lh3.googleusercontent.com/aida/AEtjO1X3CPNEp0J81Zidz0dPNoEghhVw0_dV0NoFdilKjivtnor9_GkEF73yzg5j4iVBn6W6uCQRL3dubuMxgJqIycWlL_R7jhiL1psJGjDmalHlqh6K7o25_gSU_fqOpwAWiFhGPqNu_dslMge1XqF0br5kgl4AJj1-lAWTyt-ueF40DafMHCXvHRf2PzibrzLC-1yAI9rSJBj0syKKJNKU4zbNTDV9fnspF9AIqyng6SSH50zCUT_2xVlTaeFt">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-bold">SILVER</div>
+<div class="font-label-sm text-label-sm text-primary">3 Marks</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">150 Fortitude</div>
+</div>
+</div>
+<!-- Tier 4: Gold -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 text-center flex flex-col items-center justify-between hover:border-primary transition-colors">
+<span class="font-label-sm text-label-sm text-tertiary">SHURIMA</span>
+<img alt="Gold Rank" class="w-16 h-16 object-contain my-2" src="https://lh3.googleusercontent.com/aida/AEtjO1Vmfy9sIkzORRjJTljtJCtJGQbb-YktI-jf6a4wKR6fZ6GzttXIT8VuTjgvBDvOCaaod0C0DKVK49uOnGcUxj1DoYDb2yvd5wObGS_3E3UeQkvb4MPp4fBXQEut6HedzX4N3xblz_DAayulHtTu-n0Tu6Gg-fioOq9aHEVeixO_-zuUbmkgTLSp_qMhC84jXopDlKERByA5zHIiK-OmxOsIfoXbEmgF400q4BxndFdKBZt_oHT1UoNDV3g">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-bold">GOLD</div>
+<div class="font-label-sm text-label-sm text-primary">4 Marks</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">200 Fortitude</div>
+</div>
+</div>
+<!-- Tier 5: Platinum -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 text-center flex flex-col items-center justify-between hover:border-primary transition-colors">
+<span class="font-label-sm text-label-sm text-on-surface-variant">IONIA</span>
+<img alt="Platinum Rank" class="w-16 h-16 object-contain my-2" src="https://lh3.googleusercontent.com/aida/AEtjO1VA4ha6H7HfhhhQtoXxQUsd1aRPx-g_PKU9yNnRIKhHHInB2lXCL0Y9GSB7rl-9QEtCFBiTy68RJ6ONkwp1WDOo3AbCbL6nzDFNv2yYE2_clltLo6W4mUp4x0qF8rgi4u67y8D5F9j5rwoajTWLsIecKyK7BBDyxN9UcNman-QL-hs5LeqYQ7el0dPX28VOsf1I-9wfVJRsJ0UWLMLSzMbfc0cHTHLCvPrhNVtQECXHRVSNnCdwa3WHXv5C">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-bold">PLATINUM</div>
+<div class="font-label-sm text-label-sm text-primary">4 Marks</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">300 Fortitude</div>
+</div>
+</div>
+<!-- Tier 6: Emerald -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 text-center flex flex-col items-center justify-between hover:border-primary transition-colors">
+<span class="font-label-sm text-label-sm text-primary">SHADOW ISLES</span>
+<img alt="Emerald Rank" class="w-16 h-16 object-contain my-2" src="https://lh3.googleusercontent.com/aida/AEtjO1UmpU1stXDIWeGtT9BKGnR954GR8TyyPCmJSyaY01fwf5TGieOgv23gewlWALZxKhDwqBpYqoHQl3XPaShrwT1omAEIW-y7Vue0qoS4D7vzPEk0o1E38yHl67g-2Q_zC_Js57OFFbsTWXoBC2XsH6TEg5QOPTnV-06sQ7f4lc8T01R1jcsIx8VGRN53JyYpTVabP_MYCEgFbwNydwxgkwtw5xYEGtbo8GsPsK3H-EmUUlUXwOeRLF2h2X2A">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-bold">EMERALD</div>
+<div class="font-label-sm text-label-sm text-primary">5 Marks</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">400 Fortitude</div>
+</div>
+</div>
+<!-- Tier 7: Diamond -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 text-center flex flex-col items-center justify-between hover:border-primary transition-colors">
+<span class="font-label-sm text-label-sm text-on-surface-variant">TARGON</span>
+<img alt="Diamond Rank" class="w-16 h-16 object-contain my-2" src="https://lh3.googleusercontent.com/aida/AEtjO1X1Ld_ogm4dKyQXFYKk1Qw8QbLQK9VJhnwmLEm9vYGrpKDtf-RtaWAqSxWg86hUqiBjGM29zq943kVrCBCd863-GPN5qcC1zNZg-x_n2-JMzXOS0QzjQ_0Gt2yQOfYBrtq3QSbhsUrpHkISS-fP8d5aTlEubo7sP2RNIn-mVH621Wfua-RE1vFMP5mfeWSF9Xw4tuTO727QL3p6oiyiAlL_kIYL83DkkIZMsdo9qnsWWHVjLPCtOxd_Rj4I">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-bold">DIAMOND</div>
+<div class="font-label-sm text-label-sm text-primary">6 Marks</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">500 Fortitude</div>
+</div>
+</div>
+<!-- Tier 8: Master -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 text-center flex flex-col items-center justify-between hover:border-primary transition-colors">
+<span class="font-label-sm text-label-sm text-on-surface-variant">THE VOID</span>
+<img alt="Master Rank" class="w-16 h-16 object-contain my-2" src="https://lh3.googleusercontent.com/aida/AEtjO1Wn1IAuExIrT4iKIaqKDFG0nKux1ctheNRbPGEHsfeU0y3U3qFTg3lvuk_LquWkkcMI6ega_auvJkCrlgEleYXEUrWpf2yQECr1TrsmxkmWqGAgPR1cWH70tix9Q78W_eWSh1GGJCopMqDK8eAawmRXxdHu59WBFTmd2SDJjlP-JwCT_24miNxMgGUK3RMSf21voMgnvpYRDGrYE5tb2JqMQhBn3fS7ymvTrYrCzNQ9JVHUWAxLWT3ZX1YG">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-bold">MASTER</div>
+<div class="font-label-sm text-label-sm text-primary">30 Marks</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">600 Fortitude</div>
+</div>
+</div>
+<!-- Tier 9: Grandmaster -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 text-center flex flex-col items-center justify-between hover:border-primary transition-colors">
+<span class="font-label-sm text-label-sm text-on-surface-variant">NOXUS</span>
+<img alt="Grandmaster Rank" class="w-16 h-16 object-contain my-2" src="https://lh3.googleusercontent.com/aida/AEtjO1XeZ6AW8gjryxRPWl5XjnLjCjYa4xqhHpvJ94TTGxl29OSDj_I8RWaM6eMUA950BTVOM6EhMuF_BQRqbW5aeVVkD0nYKwRUvXIgm0Wix5mxmIFyl2Qn_OLgylV9xfVM69cZgXv16wwdDImYUFDVJJubw41rUAjkVPTgK5IKYzPO-3lruEzqx14Vyi2ShlgycmVNlYp4qtNDDVol9poL9UtcOIvvTBSU2Y3DkPmiStlYcX6QqCAkxPTVp1O4">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-bold">GRANDMASTER</div>
+<div class="font-label-sm text-label-sm text-primary">60 Marks</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">600 Fortitude</div>
+</div>
+</div>
+<!-- Tier 10: Challenger -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 text-center flex flex-col items-center justify-between hover:border-primary transition-colors">
+<span class="font-label-sm text-label-sm text-tertiary">DEMACIA</span>
+<img alt="Challenger Rank" class="w-16 h-16 object-contain my-2" src="https://lh3.googleusercontent.com/aida/AEtjO1VLjpOb-vJDi0IWsKJJBJj0h-HzCDi86GnK-xPSJo058TvWOhrWWAlll1E4QNYRHIDsfru_kJAYh6h0r5-rAAKPT2IMbfvjkq9tBAlxAXGLoKLyO73j88S8YC__49Y_5O0pAIoc479KqhncQ_YXeGXS2EFVG08klVjbi9XOxoxt9HU4GXulmRuj4RtotT8Uumd9WrShaAainxSzLQIAw3v6PvNDDYUgH9_zJb8Eq5thrOIbYw5XixuaFjQz">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-bold">CHALLENGER</div>
+<div class="font-label-sm text-label-sm text-primary">100 Marks</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">600 Fortitude</div>
+</div>
+</div>
+<!-- Tier 11: Sovereign -->
+<div class="bg-surface-container border border-primary rounded p-3 text-center flex flex-col items-center justify-between relative shadow-[0_0_15px_rgba(110,231,183,0.15)]">
+<div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary-fixed font-label-sm text-[9px] px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">APEX</div>
+<span class="font-label-sm text-label-sm text-primary">RUNETERRA</span>
+<img alt="Sovereign Rank" class="w-16 h-16 object-contain my-2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLCODFTvWuQwWX6nrGnzxtaUWX_KKF1Wmu2VUbm7_xrjtQRHxm90E7N7dKymg1-WdDz5i1EwUpVX8HirLkL_4_bImxPoVtYI9VJoSiX9LR7A8_75n3GLzMp2-L7YBuRWMeeNVemlPbpHvnvciPTiF-ODtSsqhkmYuRQpRqSzsPmStc5NGpSZUNonyZynNxVoTQmOI_x3tHbEqpgQi4Z4ffD8Sg1MVO0istgxf44O2uEJRQmF7cEvrXDQ">
+<div>
+<div class="font-label-md text-label-md text-primary font-bold">SOVEREIGN</div>
+<div class="font-label-sm text-label-sm text-primary">Apex Tier</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">600 Fortitude</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: INTERACTIVE WILD RIFT MARK & FORTITUDE BOOSTING ENGINE -->
+<section class="border border-outline-variant bg-surface-container-low rounded-lg p-6 lg:p-8 space-y-6" id="boosting">
+<div>
+<div class="font-label-sm text-label-sm text-primary uppercase">Direct Node Engine</div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">Interactive Wild Rift Mark &amp; Fortitude Boosting Engine</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Configure start points, designated lane roles, and hardware cloak protocols with real-time quote generation.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Engine Controls (8 cols) -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Dual Rank Tier Pickers -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Starting Rank -->
+<div class="bg-surface-container border border-outline-variant p-4 rounded space-y-3">
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase">CURRENT STARTING RANK</label>
+<div class="flex items-center gap-3">
+<img alt="Platinum Rank" class="w-12 h-12 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VA4ha6H7HfhhhQtoXxQUsd1aRPx-g_PKU9yNnRIKhHHInB2lXCL0Y9GSB7rl-9QEtCFBiTy68RJ6ONkwp1WDOo3AbCbL6nzDFNv2yYE2_clltLo6W4mUp4x0qF8rgi4u67y8D5F9j5rwoajTWLsIecKyK7BBDyxN9UcNman-QL-hs5LeqYQ7el0dPX28VOsf1I-9wfVJRsJ0UWLMLSzMbfc0cHTHLCvPrhNVtQECXHRVSNnCdwa3WHXv5C">
+<div class="flex-1">
+<select class="w-full bg-surface-container-low border border-outline-variant text-on-surface rounded p-2 font-label-md text-label-md focus:border-primary focus:ring-0">
+<option selected="">Platinum II (3 Marks)</option>
+<option>Platinum I (2 Marks)</option>
+<option>Emerald IV (0 Marks)</option>
+<option>Emerald I (4 Marks)</option>
+<option>Diamond III (2 Marks)</option>
+</select>
+</div>
+</div>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant pt-2 border-t border-outline-variant">
+<span class="">Current Fortitude: <span class="text-primary font-mono">180/300</span></span>
+<span class="text-on-surface">Loss Shield 0/1</span>
+</div>
+</div>
+<!-- Target Destination -->
+<div class="bg-surface-container border border-primary/40 p-4 rounded space-y-3">
+<label class="block font-label-sm text-label-sm text-primary uppercase">TARGET DESTINATION</label>
+<div class="flex items-center gap-3">
+<img alt="Sovereign Rank" class="w-12 h-12 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLCODFTvWuQwWX6nrGnzxtaUWX_KKF1Wmu2VUbm7_xrjtQRHxm90E7N7dKymg1-WdDz5i1EwUpVX8HirLkL_4_bImxPoVtYI9VJoSiX9LR7A8_75n3GLzMp2-L7YBuRWMeeNVemlPbpHvnvciPTiF-ODtSsqhkmYuRQpRqSzsPmStc5NGpSZUNonyZynNxVoTQmOI_x3tHbEqpgQi4Z4ffD8Sg1MVO0istgxf44O2uEJRQmF7cEvrXDQ">
+<div class="flex-1">
+<select class="w-full bg-surface-container-low border border-outline-variant text-primary font-bold rounded p-2 font-label-md text-label-md focus:border-primary focus:ring-0">
+<option selected="">Sovereign Entry (Apex Tier)</option>
+<option>Challenger (100 Marks)</option>
+<option>Grandmaster (60 Marks)</option>
+<option>Master (30 Marks)</option>
+</select>
+</div>
+</div>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant pt-2 border-t border-outline-variant">
+<span class="">Guaranteed Tier Unlock:</span>
+<span class="text-primary font-mono">Supreme Crown Badge</span>
+</div>
+</div>
+</div>
+<!-- Role / Lane Assignment Preference -->
+<div class="space-y-2">
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase">DESIGNATED PRIMARY LANE ROLE</label>
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+<label class="flex items-center justify-center p-2.5 bg-surface-container border border-outline-variant rounded cursor-pointer hover:border-primary text-center">
+<input checked="" class="sr-only" name="lane" type="radio">
+<span class="font-label-md text-label-md text-on-surface">Solo Baron</span>
+</label>
+<label class="flex items-center justify-center p-2.5 bg-surface-container border border-primary text-primary rounded cursor-pointer text-center">
+<input class="sr-only" name="lane" type="radio">
+<span class="font-label-md text-label-md font-bold">Jungle</span>
+</label>
+<label class="flex items-center justify-center p-2.5 bg-surface-container border border-outline-variant rounded cursor-pointer hover:border-primary text-center">
+<input class="sr-only" name="lane" type="radio">
+<span class="font-label-md text-label-md text-on-surface">Mid Lane</span>
+</label>
+<label class="flex items-center justify-center p-2.5 bg-surface-container border border-outline-variant rounded cursor-pointer hover:border-primary text-center">
+<input class="sr-only" name="lane" type="radio">
+<span class="font-label-md text-label-md text-on-surface">Duo Dragon</span>
+</label>
+<label class="flex items-center justify-center p-2.5 bg-surface-container border border-outline-variant rounded cursor-pointer hover:border-primary text-center">
+<input class="sr-only" name="lane" type="radio">
+<span class="font-label-md text-label-md text-on-surface">Support</span>
+</label>
+</div>
+</div>
+<!-- Security & Tactical Execution Checkboxes -->
+<div class="space-y-3 pt-2">
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase">TACTICAL SECURITY &amp; EXECUTION OPTIONS</label>
+<div class="space-y-2">
+<label class="flex items-start gap-3 bg-surface-container p-3 rounded border border-outline-variant cursor-pointer hover:border-outline">
+<input checked="" class="mt-1 rounded bg-surface-container-low border-outline-variant text-primary focus:ring-0" type="checkbox">
+<div class="flex-1 flex justify-between items-center">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-semibold">Clean Device ID &amp; Local 5G/WiFi VPN</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Matches customer geo-IP, exact iOS/Android mobile hardware cloaking. Zero Riot Ban guarantee.</div>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase font-mono px-2 py-0.5 bg-surface-container-low rounded">FREE</span>
+</div>
+</label>
+<label class="flex items-start gap-3 bg-surface-container p-3 rounded border border-outline-variant cursor-pointer hover:border-outline">
+<input checked="" class="mt-1 rounded bg-surface-container-low border-outline-variant text-primary focus:ring-0" type="checkbox">
+<div class="flex-1 flex justify-between items-center">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-semibold">Duo Queue with Verified Sovereign Pro</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Play your own device alongside an Apex Booster with optional Discord comms.</div>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase font-mono px-2 py-0.5 bg-surface-container-low rounded">+$22.00</span>
+</div>
+</label>
+<label class="flex items-start gap-3 bg-surface-container p-3 rounded border border-outline-variant cursor-pointer hover:border-outline">
+<input checked="" class="mt-1 rounded bg-surface-container-low border-outline-variant text-primary focus:ring-0" type="checkbox">
+<div class="flex-1 flex justify-between items-center">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-semibold">Champion Pool Lock (Comfort Mobile Picks)</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Restricts booster strictly to your requested pool (e.g. Yasuo, Lee Sin, Ahri, Zed).</div>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase font-mono px-2 py-0.5 bg-surface-container-low rounded">FREE</span>
+</div>
+</label>
+<label class="flex items-start gap-3 bg-surface-container p-3 rounded border border-outline-variant cursor-pointer hover:border-outline">
+<input checked="" class="mt-1 rounded bg-surface-container-low border-outline-variant text-primary focus:ring-0" type="checkbox">
+<div class="flex-1 flex justify-between items-center">
+<div>
+<div class="font-label-md text-label-md text-on-surface font-semibold">Appear Offline &amp; Hide Match History</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Automated in-client toggle preventing friend list alerts during match streaks.</div>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase font-mono px-2 py-0.5 bg-surface-container-low rounded">FREE</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Telemetry Order Breakdown (4 cols) -->
+<div class="lg:col-span-4">
+<div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-lg space-y-6 sticky top-24">
+<div class="border-b border-outline-variant pb-3 flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">ORDER TELEMETRY</span>
+<span class="font-label-sm text-label-sm text-primary font-mono">ENCRYPTED // TLS 1.3</span>
+</div>
+<div class="space-y-3 font-body-sm text-body-sm">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Elevation Delta:</span>
+<span class="text-on-surface font-semibold">Platinum II → Sovereign</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Estimated Delivery:</span>
+<span class="text-primary font-mono">24 – 48 Hours</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Assigned Booster:</span>
+<span class="text-on-surface">Sovereign Rank #28 SEA</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Escrow Guarantee:</span>
+<span class="text-primary">100% Locked until Delivery</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Duo Voice Fee:</span>
+<span class="text-on-surface font-mono">$22.00</span>
+</div>
+</div>
+<div class="border-t border-outline-variant pt-4 space-y-2">
+<div class="flex items-baseline justify-between">
+<span class="font-label-md text-label-md text-on-surface font-bold">TOTAL PRICE</span>
+<span class="font-headline-xl text-headline-xl font-bold text-primary font-mono">$82.00</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Includes cryptographic escrow hold and 30-day demotion warranty bond.</p>
+</div>
+<button class="w-full bg-primary-container text-on-primary-fixed hover:bg-primary-fixed-dim font-label-lg text-label-lg font-bold py-3 px-4 rounded transition-colors duration-150 uppercase tracking-wider flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="lock">lock</span>
+<span class="">INSTANT ESCROW ORDER</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: AUDITED SMURF & WILD RIFT SKIN VAULT -->
+<section class="space-y-4" id="smurfs">
+<div class="flex items-center justify-between border-b border-outline-variant pb-3">
+<div>
+<div class="font-label-sm text-label-sm text-primary uppercase">Pre-Audited Hardware Profiles</div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">Audited Smurf &amp; Wild Rift Skin Vault</h2>
+</div>
+<a class="font-label-md text-label-md text-primary hover:underline flex items-center gap-1" href="#viewall">
+<span class="">View All 410 Vault Items</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Smurf 1: Sovereign -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-5 space-y-4 hover:border-primary transition-colors flex flex-col justify-between">
+<div class="space-y-3">
+<div class="flex justify-between items-start">
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-surface-container border border-primary text-primary rounded font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="">PEAK SOVEREIGN</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">ID #WR-8831</span>
+</div>
+<div class="flex items-center gap-3">
+<img alt="Sovereign" class="w-16 h-16 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLCODFTvWuQwWX6nrGnzxtaUWX_KKF1Wmu2VUbm7_xrjtQRHxm90E7N7dKymg1-WdDz5i1EwUpVX8HirLkL_4_bImxPoVtYI9VJoSiX9LR7A8_75n3GLzMp2-L7YBuRWMeeNVemlPbpHvnvciPTiF-ODtSsqhkmYuRQpRqSzsPmStc5NGpSZUNonyZynNxVoTQmOI_x3tHbEqpgQi4Z4ffD8Sg1MVO0istgxf44O2uEJRQmF7cEvrXDQ">
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Sovereign 120 Marks Account</h3>
+<div class="font-label-sm text-label-sm text-on-surface-variant">EUW / MEA Server • Unbound OGE</div>
+</div>
+</div>
+<div class="bg-surface-container p-3 rounded space-y-1.5 font-body-sm text-body-sm">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Winrate:</span>
+<span class="text-primary font-mono font-bold">84.2% (148 Matches)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Exclusive Skins:</span>
+<span class="text-on-surface">Glorious Crimson &amp; Crystal Rose</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Wild Cores Vaulted:</span>
+<span class="text-tertiary font-mono">1,850 WC</span>
+</div>
+</div>
+</div>
+<div class="pt-3 border-t border-outline-variant flex items-center justify-between">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">INSTANT BUYOUT</div>
+<div class="font-headline-md text-headline-md font-bold text-primary font-mono">$380.00</div>
+</div>
+<button class="bg-surface-container hover:bg-primary-container hover:text-on-primary-fixed border border-outline-variant hover:border-primary text-on-surface px-4 py-2 rounded font-label-md text-label-md transition-colors">
+                Acquire Vault
+              </button>
+</div>
+</div>
+<!-- Smurf 2: Master -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-5 space-y-4 hover:border-primary transition-colors flex flex-col justify-between">
+<div class="space-y-3">
+<div class="flex justify-between items-start">
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-surface-container border border-outline-variant text-tertiary rounded font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span class="">MASTER READY</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">ID #WR-4299</span>
+</div>
+<div class="flex items-center gap-3">
+<img alt="Master" class="w-16 h-16 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Wn1IAuExIrT4iKIaqKDFG0nKux1ctheNRbPGEHsfeU0y3U3qFTg3lvuk_LquWkkcMI6ega_auvJkCrlgEleYXEUrWpf2yQECr1TrsmxkmWqGAgPR1cWH70tix9Q78W_eWSh1GGJCopMqDK8eAawmRXxdHu59WBFTmd2SDJjlP-JwCT_24miNxMgGUK3RMSf21voMgnvpYRDGrYE5tb2JqMQhBn3fS7ymvTrYrCzNQ9JVHUWAxLWT3ZX1YG">
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Master 45 Marks Smurf</h3>
+<div class="font-label-sm text-label-sm text-on-surface-variant">NA Server • Clean First Mail</div>
+</div>
+</div>
+<div class="bg-surface-container p-3 rounded space-y-1.5 font-body-sm text-body-sm">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Winrate:</span>
+<span class="text-primary font-mono font-bold">79.0% Clean MMR</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Champions Owned:</span>
+<span class="text-on-surface">42 Selected Meta Pool</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Wild Cores Vaulted:</span>
+<span class="text-tertiary font-mono">450 WC</span>
+</div>
+</div>
+</div>
+<div class="pt-3 border-t border-outline-variant flex items-center justify-between">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">INSTANT BUYOUT</div>
+<div class="font-headline-md text-headline-md font-bold text-primary font-mono">$165.00</div>
+</div>
+<button class="bg-surface-container hover:bg-primary-container hover:text-on-primary-fixed border border-outline-variant hover:border-primary text-on-surface px-4 py-2 rounded font-label-md text-label-md transition-colors">
+                Acquire Vault
+              </button>
+</div>
+</div>
+<!-- Smurf 3: Emerald 1 -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-5 space-y-4 hover:border-primary transition-colors flex flex-col justify-between">
+<div class="space-y-3">
+<div class="flex justify-between items-start">
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-surface-container border border-outline-variant text-on-surface-variant rounded font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant"></span>
+<span class="">FRESH SPRINGBOARD</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">ID #WR-1042</span>
+</div>
+<div class="flex items-center gap-3">
+<img alt="Emerald" class="w-16 h-16 object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UmpU1stXDIWeGtT9BKGnR954GR8TyyPCmJSyaY01fwf5TGieOgv23gewlWALZxKhDwqBpYqoHQl3XPaShrwT1omAEIW-y7Vue0qoS4D7vzPEk0o1E38yHl67g-2Q_zC_Js57OFFbsTWXoBC2XsH6TEg5QOPTnV-06sQ7f4lc8T01R1jcsIx8VGRN53JyYpTVabP_MYCEgFbwNydwxgkwtw5xYEGtbo8GsPsK3H-EmUUlUXwOeRLF2h2X2A">
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Emerald 1 Fresh Springboard</h3>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Global Server • Unlinked Mobile</div>
+</div>
+</div>
+<div class="bg-surface-container p-3 rounded space-y-1.5 font-body-sm text-body-sm">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Winrate:</span>
+<span class="text-primary font-mono font-bold">88.5% (26 Matches)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">History:</span>
+<span class="text-on-surface">Pristine Zero-Report Status</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Season Track:</span>
+<span class="text-tertiary font-mono">Rewards Unclaimed</span>
+</div>
+</div>
+</div>
+<div class="pt-3 border-t border-outline-variant flex items-center justify-between">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">INSTANT BUYOUT</div>
+<div class="font-headline-md text-headline-md font-bold text-primary font-mono">$42.00</div>
+</div>
+<button class="bg-surface-container hover:bg-primary-container hover:text-on-primary-fixed border border-outline-variant hover:border-primary text-on-surface px-4 py-2 rounded font-label-md text-label-md transition-colors">
+                Acquire Vault
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5: TURNKEY FIXED VALUE PACKAGES -->
+<section class="space-y-4" id="packages">
+<div>
+<div class="font-label-sm text-label-sm text-primary uppercase">Guaranteed Milestones</div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">Turnkey Fixed Value Packages</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-low border border-outline-variant p-6 rounded-lg space-y-4">
+<div class="font-label-sm text-label-sm text-tertiary font-mono">PACKAGE // 01</div>
+<h3 class="font-headline-md text-headline-md font-bold text-on-surface">10/10 Placement Matches Victory Guarantee</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Guarantees pristine MMR initialization with minimum 80%+ win-ratio or full mark refund with compensation fortitude points.</p>
+<div class="pt-4 border-t border-outline-variant flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg font-bold text-primary font-mono">$38.00</span>
+<button class="bg-primary-container text-on-primary-fixed hover:bg-primary-fixed-dim px-3 py-1.5 rounded font-label-sm text-label-sm font-bold uppercase transition-colors">Select</button>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-6 rounded-lg space-y-4">
+<div class="font-label-sm text-label-sm text-primary font-mono">PACKAGE // 02</div>
+<h3 class="font-headline-md text-headline-md font-bold text-on-surface">Hardstuck Fortitude Shield &amp; +1 Full Tier Jump</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Bypasses negative MMR matchmaking traps. Delivers +4 to +6 Marks per division with loss shield saturation and S-Rating execution.</p>
+<div class="pt-4 border-t border-outline-variant flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg font-bold text-primary font-mono">$69.00</span>
+<button class="bg-primary-container text-on-primary-fixed hover:bg-primary-fixed-dim px-3 py-1.5 rounded font-label-sm text-label-sm font-bold uppercase transition-colors">Select</button>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-6 rounded-lg space-y-4">
+<div class="font-label-sm text-label-sm text-secondary font-mono">PACKAGE // 03</div>
+<h3 class="font-headline-md text-headline-md font-bold text-on-surface">Pro Carry 20 Matches with Mobile Macro Coaching</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Live Duo Queue alongside a Sovereign coach. Includes touch-control setup audit, camera panning advice, and Baron timing control.</p>
+<div class="pt-4 border-t border-outline-variant flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg font-bold text-primary font-mono">$65.00</span>
+<button class="bg-primary-container text-on-primary-fixed hover:bg-primary-fixed-dim px-3 py-1.5 rounded font-label-sm text-label-sm font-bold uppercase transition-colors">Select</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 6: WILD CORES & WILD PASS DIRECT TERMINAL -->
+<section class="border border-outline-variant bg-surface-container-low rounded-lg p-6 lg:p-8 space-y-6" id="cores">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant pb-3">
+<div>
+<div class="font-label-sm text-label-sm text-primary uppercase">Cryptographic Gateway</div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">Wild Cores &amp; Wild Pass Direct Terminal</h2>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">Direct Riot Mobile Top-up via API</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+<div class="lg:col-span-4 space-y-2">
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase">Riot ID &amp; Tagline</label>
+<input class="w-full bg-surface-container border border-outline-variant text-on-surface rounded p-2.5 font-label-md text-label-md placeholder-outline focus:border-primary focus:ring-0" placeholder="e.g. Faker#LCK" type="text">
+</div>
+<div class="lg:col-span-4 space-y-2">
+<label class="block font-label-sm text-label-sm text-on-surface-variant uppercase">Server Region</label>
+<select class="w-full bg-surface-container border border-outline-variant text-on-surface rounded p-2.5 font-label-md text-label-md focus:border-primary focus:ring-0">
+<option>North America (NA)</option>
+<option>Europe West &amp; MEA (EUW)</option>
+<option>Southeast Asia (SEA)</option>
+<option>Latin America (LATAM)</option>
+<option>Brazil (BR)</option>
+</select>
+</div>
+<div class="lg:col-span-4">
+<button class="w-full bg-surface-container hover:bg-surface-container-high border border-outline-variant text-primary font-label-md text-label-md py-2.5 px-4 rounded transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="search">search</span>
+<span class="">Verify Riot ID Status</span>
+</button>
+</div>
+</div>
+<!-- Cores Denominations -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+<div class="bg-surface-container border border-outline-variant p-4 rounded text-center space-y-2 hover:border-primary transition-colors cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">STANDARD TIER</span>
+<div class="font-headline-md text-headline-md font-bold text-on-surface font-mono">1,000 WC</div>
+<div class="font-label-md text-label-md text-primary font-mono">$9.40 USD</div>
+</div>
+<div class="bg-surface-container border border-outline-variant p-4 rounded text-center space-y-2 hover:border-primary transition-colors cursor-pointer">
+<span class="font-label-sm text-label-sm text-tertiary font-mono">POPULAR PACK</span>
+<div class="font-headline-md text-headline-md font-bold text-on-surface font-mono">2,250 WC</div>
+<div class="font-label-md text-label-md text-primary font-mono">$19.90 USD</div>
+</div>
+<div class="bg-surface-container border border-primary p-4 rounded text-center space-y-2 hover:border-primary transition-colors cursor-pointer">
+<span class="font-label-sm text-label-sm text-primary font-mono">PREMIUM PASS</span>
+<div class="font-headline-md text-headline-md font-bold text-primary font-mono">Wild Pass + 10 Lvls</div>
+<div class="font-label-md text-label-md text-primary font-mono">$14.50 USD</div>
+</div>
+<div class="bg-surface-container border border-outline-variant p-4 rounded text-center space-y-2 hover:border-primary transition-colors cursor-pointer">
+<span class="font-label-sm text-label-sm text-secondary font-mono">WHALE VAULT</span>
+<div class="font-headline-md text-headline-md font-bold text-on-surface font-mono">11,000 WC</div>
+<div class="font-label-md text-label-md text-primary font-mono">$89.00 USD</div>
+</div>
+</div>
+</section>
+<!-- SECTION 7: PLAYORA INSTITUTIONAL ESCROW GUARANTEE PROTOCOL -->
+<section class="space-y-4" id="escrow">
+<div>
+<div class="font-label-sm text-label-sm text-primary uppercase">Security Infrastructure</div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">Playora Institutional Escrow Guarantee Protocol</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-low border border-outline-variant p-6 rounded-lg space-y-3">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-primary border border-outline-variant">
+<span class="material-symbols-outlined text-[24px]" data-icon="verified_user">verified_user</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">3rd-Party Riot Mobile Unbind &amp; OGE Audit</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Every vaulted account passes a 14-point original email ownership validation, Google Play/Apple ID unlinking, and Riot authentic security inspection before release.
+            </p>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-6 rounded-lg space-y-3">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-primary border border-outline-variant">
+<span class="material-symbols-outlined text-[24px]" data-icon="lock">lock</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">30-Day Anti-Revocation &amp; Ban Warranty Bond</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Playora smart contract deposits a financial guarantee for 30 consecutive days. Any rollback, revocation, or hardware flag triggers an immediate 100% full escrow refund.
+            </p>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-6 rounded-lg space-y-3">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-primary border border-outline-variant">
+<span class="material-symbols-outlined text-[24px]" data-icon="support_agent">support_agent</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">24/7 Human Arbiter Mobile Desk</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Direct access to senior arbiters monitoring booster performance, match integrity, ping logs, and device fingerprints throughout active service orders.
+            </p>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- ================= FOOTER (Shared Component) ================= -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest docked full-width bottom border-t border-outline-variant dark:border-outline-variant mt-16 z-30">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-md lg:px-margin-lg py-space-md gap-space-md">
+<!-- Copyright & Brand -->
+<div class="flex flex-col sm:flex-row items-center gap-space-sm text-center sm:text-left">
+<span class="font-label-lg text-label-lg font-bold text-primary dark:text-primary">PLAYORA ARENA</span>
+<span class="hidden sm:inline text-outline-variant">|</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-surface-variant">
+          © 2025 PLAYORA ARENA. CRYPTOGRAPHIC ESCROW GUARANTEE ACTIVE. ALL RIGHTS RESERVED.
+        </span>
+</div>
+<!-- Links from JSON -->
+<div class="flex flex-wrap items-center justify-center gap-4">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary font-label-sm text-label-sm transition-colors duration-150" href="#terms">
+          Smart Escrow Terms
+        </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary font-label-sm text-label-sm transition-colors duration-150" href="#anti-cheat">
+          Anti-Cheat Protocol
+        </a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary font-label-sm text-label-sm transition-colors duration-150" href="#reserve">
+          Proof of Reserve
+        </a>
+<span class="text-primary dark:text-primary font-label-sm text-label-sm font-mono">
+          Latency Status: 12ms
+        </span>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary font-label-sm text-label-sm transition-colors duration-150" href="#security">
+          Security Disclosures
+        </a>
+</div>
+</div>
+</footer>
+<div class="fixed right-2 top-24 bottom-10 w-2.5 z-50 flex flex-col items-center pointer-events-none"><span class="text-[7px] font-mono text-primary uppercase tracking-wider mb-1">HUD</span><div class="relative w-1 flex-1 bg-surface-container-lowest/80 rounded-full border border-primary/30 backdrop-blur-md overflow-hidden flex flex-col justify-start"><div class="w-full bg-primary rounded-full shadow-[0_0_8px_#10b981] animate-pulse" id="tactical-hud-thumb" style="height: 28%;"></div></div><span class="text-[7px] font-mono text-primary mt-1 font-bold" id="tactical-hud-val">28%</span></div>
+
+</body></html>

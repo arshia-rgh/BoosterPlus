@@ -1,0 +1,1289 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>PLAYORA // ARENA — Tactical Escrow &amp; Multi-Game Hub</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-variant": "#273830",
+          "secondary-fixed-dim": "#62dcad",
+          "on-background": "#d3e7db",
+          "on-secondary-container": "#003121",
+          "on-tertiary-container": "#00422e",
+          "inverse-surface": "#d3e7db",
+          "surface-container-high": "#1d2d26",
+          "on-secondary-fixed": "#002115",
+          "on-secondary-fixed-variant": "#00513a",
+          "on-error-container": "#ffdad6",
+          "outline-variant": "#23392e",
+          "on-primary": "#003824",
+          "tertiary": "#7bd8b1",
+          "on-primary-fixed-variant": "#005236",
+          "surface-container": "#12231c",
+          "surface-container-low": "#0e1f18",
+          "surface": "#061610",
+          "secondary": "#62dcad",
+          "tertiary-container": "#57b48f",
+          "on-primary-container": "#00422b",
+          "secondary-fixed": "#80f9c8",
+          "error": "#ffb4ab",
+          "on-surface-variant": "#bbcabf",
+          "on-secondary": "#003827",
+          "outline": "#4e6556",
+          "on-error": "#690005",
+          "error-container": "#93000a",
+          "surface-container-highest": "#273830",
+          "on-tertiary-fixed": "#002115",
+          "on-tertiary-fixed-variant": "#00513a",
+          "on-surface": "#d3e7db",
+          "primary": "#4edea3",
+          "on-primary-fixed": "#002113",
+          "surface-container-lowest": "#02110b",
+          "background": "#061610",
+          "surface-tint": "#4edea3",
+          "inverse-on-surface": "#23342c",
+          "primary-container": "#10b981",
+          "surface-dim": "#061610",
+          "secondary-container": "#18a479",
+          "on-tertiary": "#003827",
+          "primary-fixed": "#6ffbbe",
+          "inverse-primary": "#006c49",
+          "tertiary-fixed": "#97f5cc",
+          "primary-fixed-dim": "#4edea3",
+          "tertiary-fixed-dim": "#7bd8b1",
+          "surface-bright": "#2c3d35"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xl": "2.5rem",
+          "margin": "2rem",
+          "gutter-mobile": "0.75rem",
+          "margin-mobile": "1rem",
+          "space-sm": "0.5rem",
+          "space-md": "1rem",
+          "space-xs": "0.25rem",
+          "gutter": "1.5rem",
+          "space-lg": "1.5rem"
+        },
+        "fontFamily": {
+          "body-sm": ["Plus Jakarta Sans", "Inter", "sans-serif"],
+          "body-md": ["Plus Jakarta Sans", "Inter", "sans-serif"],
+          "body-lg": ["Plus Jakarta Sans", "Inter", "sans-serif"],
+          "display-hero": ["Space Grotesk", "sans-serif"],
+          "headline-xl": ["Space Grotesk", "sans-serif"],
+          "headline-lg": ["Space Grotesk", "sans-serif"],
+          "headline-md": ["Space Grotesk", "sans-serif"],
+          "headline-sm": ["Space Grotesk", "sans-serif"],
+          "label-caps": ["JetBrains Mono", "monospace"],
+          "label-data": ["JetBrains Mono", "monospace"],
+          "label-sm": ["JetBrains Mono", "Space Grotesk", "sans-serif"],
+          "label-md": ["Space Grotesk", "sans-serif"],
+          "label-lg": ["Space Grotesk", "sans-serif"]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    vertical-align: middle;
+  }
+  .custom-scroll::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+  }
+  .custom-scroll::-webkit-scrollbar-track {
+    background: #061610;
+  }
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background: #23392e;
+    border-radius: 2px;
+  }
+  .grid-lines {
+    background-size: 40px 40px;
+    background-image:
+      linear-gradient(to right, rgba(78, 222, 163, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(78, 222, 163, 0.05) 1px, transparent 1px);
+  }
+  /* Continuous fixed background for glassmorphic depth */
+  .aurora-bg-layer {
+    background-image:
+      radial-gradient(ellipse at top, rgba(16, 185, 129, 0.12) 0%, transparent 60%),
+      linear-gradient(to bottom, rgba(6, 22, 16, 0.78), rgba(2, 17, 11, 0.94)),
+      url('https://lh3.googleusercontent.com/aida-public/AB6AXuDcvS9qm1RDCR99xtO_s9yFglLiS_Q5bNMKf1AiUcj694orkTOhwJ09dFQCZgAgdv_092V6nf71bn4H_ynVRkeiYwVtXrYHUsNIuJLoew2ImPgDkmf4BbBChhLl_6F-Ckkm9-pdwtccRXoX5Wf6cdn8qY5KlDtOpn2q4Tku_vXMaGDjiEq4o4F8UcsMchiv5f-thiaAuujvKNa40GfAPAM3caz9qojhBYmh55NAt1x0ETR2GemFsrQuB9hlRwYEU2bu8Qg');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center top;
+  }
+</style>
+</head>
+<body class="text-on-surface font-body-md antialiased min-h-screen flex flex-col selection:bg-primary selection:text-on-primary relative overflow-x-hidden bg-transparent"><div class="fixed inset-0 pointer-events-none z-0 overflow-hidden" id="aurora-bg"><img alt="Playora Aurora Tactical Background" class="w-full h-full object-cover object-center transition-opacity duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcvS9qm1RDCR99xtO_s9yFglLiS_Q5bNMKf1AiUcj694orkTOhwJ09dFQCZgAgdv_092V6nf71bn4H_ynVRkeiYwVtXrYHUsNIuJLoew2ImPgDkmf4BbBChhLl_6F-Ckkm9-pdwtccRXoX5Wf6cdn8qY5KlDtOpn2q4Tku_vXMaGDjiEq4o4F8UcsMchiv5f-thiaAuujvKNa40GfAPAM3caz9qojhBYmh55NAt1x0ETR2GemFsrQuB9hlRwYEU2bu8Qg"><div class="absolute inset-0 bg-gradient-to-b from-[#061610]/35 via-[#061610]/15 to-[#02110b]/50"></div><div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-500/15 via-transparent to-[#02110b]/40"></div></div>
+<!-- 2. VERTICAL TACTICAL HUD GAMING SCROLLBAR (Fixed right rail) -->
+<aside aria-hidden="true" class="fixed right-0 top-0 bottom-0 w-12 z-50 pointer-events-none flex flex-col justify-between py-6 items-center border-l border-emerald-500/30 bg-gradient-to-b from-[#061610]/70 via-[#061610]/35 to-[#02110b]/80 backdrop-blur-[6px] hidden sm:flex"><div class="flex flex-col items-center gap-1.5 pt-2"><div class="relative w-6 h-6 flex items-center justify-center"><span class="absolute inline-flex h-full w-full rounded-full bg-primary/25 animate-ping"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-primary border border-white/60 shadow-[0_0_10px_#4edea3]"></span><span class="absolute w-5 h-5 rounded-full border border-primary/50 border-dashed animate-spin" style="animation-duration: 6s;"></span></div><span class="text-[8px] font-label-data text-primary tracking-widest font-mono drop-shadow-[0_0_6px_rgba(78,222,163,0.4)]">SYS//SYNC</span></div><div class="relative flex-1 w-full flex justify-center items-center my-6"><div class="w-[2px] h-full bg-[#193327] rounded-full relative shadow-[0_0_6px_rgba(78,222,163,0.2)]"><div class="absolute left-1/2 -translate-x-1/2 w-2.5 h-10 rounded-full bg-primary shadow-[0_0_16px_rgba(78,222,163,0.95)] border border-white/70 transition-transform duration-75 ease-out" id="hud-scroll-thumb" style="top: 0%;"></div></div></div><div class="flex flex-col items-center gap-3 pb-2"><div class="font-label-data text-primary font-bold text-[11px] font-mono tracking-tight drop-shadow-[0_0_6px_rgba(78,222,163,0.4)]" id="hud-scroll-percent">0%</div><div class="[writing-mode:vertical-lr] rotate-180 font-label-data text-[9px] uppercase tracking-widest text-primary/80 whitespace-nowrap font-mono">HUD // ARENA 1.2ms</div></div></aside>
+<!-- TOP TELEMETRY PROTOCOL STRIP -->
+<div class="w-full bg-[#02110b]/90 backdrop-blur-md border-b border-outline-variant/60 px-4 lg:px-8 py-1.5 flex flex-wrap justify-between items-center text-[11px] font-label-sm tracking-wider text-on-surface-variant z-40">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-1.5 text-primary">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_6px_#4edea3]"></span>
+<span class="font-mono text-[10px]">NODE 01: 2,480 BOOSTERS DEPLOYED</span>
+</div>
+<div class="hidden md:flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px] text-primary" data-icon="lock">lock</span>
+<span class="">ESCROW 2.0 HARDENED GUARANTEE</span>
+</div>
+<div class="hidden lg:flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[13px] text-primary" data-icon="headset_mic">headset_mic</span>
+<span class="">24/7 HUMAN ADMIN DESK: ONLINE (AVG RESP 32s)</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant">VAULT LIQUIDITY: <span class="text-primary font-mono font-semibold">$1,420,890.00 USDC</span></span>
+<span class="h-3 w-px bg-outline-variant"></span>
+<span class="text-primary font-mono font-semibold flex items-center gap-1">
+<span class="w-1 h-1 rounded-full bg-primary"></span>LATENCY: 12ms
+    </span>
+</div>
+</div>
+<!-- SHARED TOPNAVBAR (With Playora Logo & Tactical Avatar) -->
+<header class="sticky top-0 z-40 bg-[#061610]/80 backdrop-blur-md border-b border-outline-variant/80">
+<div class="flex justify-between items-center w-full px-4 lg:px-8 h-16 max-w-7xl mx-auto">
+<!-- Brand & Left Search -->
+<div class="flex items-center gap-6">
+<a class="flex items-center gap-2.5 group" href="#">
+<img alt="Playora Logo" class="h-7 md:h-8 w-auto object-contain drop-shadow-[0_0_8px_rgba(78,222,163,0.3)] transition-transform group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHuh7cvvzMPKdYB0-7B4RN0AQZghxj_2rGuM95T590JscpGCQukm7kBDXv-qYCM_TXiatzg2SfHR_KBiEQChc9vfTc7etsVyW7jTjMsij967ftVL5yiBqozMY8vyqPgkJZD1MbI1mizKomxlnQnGD7Ep3qv2CXgWUYco3yDvIaVD_TYtS-rv_65PWFj-EJr77g0DwV4M246zcLbSIkD5iN2sL7qeZB-bD8aC-xDO1de_Y-0rWQA0tgrZeQVBsve461IdA">
+<span class="font-headline-md font-bold tracking-tight text-primary uppercase text-sm sm:text-base tracking-widest">// ARENA</span>
+</a>
+<!-- Desktop Global Search Filter Bar -->
+<div class="hidden xl:flex items-center bg-[#0e1f18]/80 border border-outline-variant/80 px-3 py-1.5 rounded-lg w-72 focus-within:border-primary/60 transition-colors">
+<span class="material-symbols-outlined text-outline text-lg mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-0 p-0 text-body-sm text-on-surface placeholder:text-outline focus:ring-0 w-full focus:outline-none font-body-sm" placeholder="Search orders, match locks, skus..." type="text">
+<span class="text-[10px] text-primary/80 bg-surface-container border border-outline-variant px-1.5 py-0.5 rounded font-mono">⌘K</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden lg:flex items-center gap-6 h-full pt-1">
+<a class="text-on-surface-variant hover:text-primary pb-1 font-label-md text-sm transition-colors duration-150" href="#tournaments">Tournaments</a>
+<a class="text-primary border-b-2 border-primary pb-1 font-label-md text-sm font-semibold shadow-[0_2px_8px_rgba(78,222,163,0.3)]" href="#hub">Matches</a>
+<a class="text-on-surface-variant hover:text-primary pb-1 font-label-md text-sm transition-colors duration-150" href="#scrims">Scrims</a>
+<a class="text-on-surface-variant hover:text-primary pb-1 font-label-md text-sm transition-colors duration-150" href="#escrow-vault">Escrow Leaderboard</a>
+<a class="text-on-surface-variant hover:text-primary pb-1 font-label-md text-sm transition-colors duration-150" href="#packages">Packages</a>
+</nav>
+<!-- Trailing Action Controls -->
+<div class="flex items-center gap-3">
+<div class="hidden sm:flex items-center gap-2 text-xs font-mono border border-outline-variant bg-[#0e1f18]/70 px-2.5 py-1 rounded-full text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary inline-block shadow-[0_0_5px_#4edea3]"></span>
+<span class="">Role: Admin</span>
+</div>
+<button class="bg-primary-container text-on-primary-container font-label-md text-xs sm:text-sm uppercase px-3.5 py-2 rounded-lg transition-all duration-150 hover:bg-primary active:scale-[0.98] font-bold flex items-center gap-1.5 shadow-[0_0_16px_rgba(16,185,129,0.35)] hover:shadow-[0_0_20px_rgba(78,222,163,0.5)]">
+<span class="material-symbols-outlined text-[16px]" data-icon="bolt">bolt</span>
+<span class="">Deploy Boost</span>
+</button>
+<div class="flex items-center gap-1.5 pl-2 border-l border-outline-variant">
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-lg transition-colors" title="Notifications">
+<span class="material-symbols-outlined text-xl" data-icon="notifications">notifications</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-lg transition-colors" title="Game Controls">
+<span class="material-symbols-outlined text-xl" data-icon="sports_esports">sports_esports</span>
+</button>
+<!-- Official Playora User Avatar Profile -->
+<button class="p-0.5 border border-primary/40 rounded-full hover:border-primary hover:shadow-[0_0_10px_rgba(78,222,163,0.4)] transition-all ml-1" title="Tactical User Avatar Profile">
+<img alt="Playora User Avatar" class="w-8 h-8 rounded-full object-cover bg-[#0e1f18]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4iNUtJx8grqXCBxVaxgCuTUhAwopa3bJrnUJlONiMeXbdONDN4IECsM0wx-T6nsETWBttWbLswRTxS-xk6YX0m13prnJajCA9rH519hlB386hfwHOTzdill1Juj5KGj4Mi3xcU0xA-zeXoD94LMISMjsJpkIrWjRu_sMY9Dnvvq0Qt8_8udtXg9xxQmpRpr4-XlXC4Owh7eQnB4WhxuW9VTF3vRnx2s-cjPq1Dpk9poLI1y3mK5zMqmGdaJqSwvk_dtM">
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="flex-1 w-full relative z-10">
+<!-- HERO / COMMAND RADAR SECTION -->
+<section class="relative border-b border-outline-variant/80 overflow-hidden py-10 lg:py-16 grid-lines">
+<!-- Ambient Glow & Emerald Overlays -->
+<div class="absolute top-0 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-10 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Hero Text Content -->
+<div class="lg:col-span-7 space-y-5">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0e1f18]/85 border border-emerald-500/30 backdrop-blur-sm">
+<span class="material-symbols-outlined text-primary text-[16px]" data-icon="verified_user">verified_user</span>
+<span class="font-label-caps text-xs text-primary uppercase tracking-wider">CRYPTOGRAPHIC ESCROW TERMINAL // ACTIVE PROTOCOL</span>
+</div>
+<h1 class="font-display-hero text-3xl sm:text-4xl lg:text-5xl text-on-surface leading-tight tracking-tight font-bold">
+            Game Like a Pro.<br>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-300 to-white">Boost, Trade &amp; Team Up</span><br>
+            With Total Confidence.
+          </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl leading-relaxed">
+            The institutional-grade multi-game esports platform. Deploy certified Radiant, Challenger, and Mythic Immortals with automated smart vault escrow, zero-trace hardware resident routing, and instant payouts.
+          </p>
+<div class="flex flex-wrap items-center gap-4 pt-2">
+<a class="px-6 py-3 bg-primary-container text-on-primary-container font-label-md text-sm uppercase rounded-lg font-bold hover:bg-primary transition-all duration-150 active:scale-95 flex items-center gap-2 shadow-[0_0_18px_rgba(16,185,129,0.3)]" href="#hub">
+<span class="">Deploy Matchmaker</span>
+<span class="material-symbols-outlined text-lg" data-icon="arrow_forward">arrow_forward</span>
+</a>
+<a class="px-5 py-3 bg-[#0e1f18]/80 backdrop-blur-md border border-outline-variant text-on-surface font-label-md text-sm rounded-lg hover:bg-[#1d2d26] hover:border-primary/50 transition-colors flex items-center gap-2" href="#escrow-vault">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="shield">shield</span>
+<span class="">Audit Escrow 2.0</span>
+</a>
+</div>
+<!-- Quantitative Trust Signals -->
+<div class="pt-6 grid grid-cols-3 gap-4 border-t border-outline-variant/60 max-w-lg">
+<div>
+<div class="font-headline-md text-2xl font-bold text-on-surface font-mono">99.98%</div>
+<div class="font-label-caps text-[11px] text-outline uppercase tracking-wider">Dispute Clearance</div>
+</div>
+<div>
+<div class="font-headline-md text-2xl font-bold text-primary font-mono drop-shadow-[0_0_8px_rgba(78,222,163,0.4)]">0.00%</div>
+<div class="font-label-caps text-[11px] text-outline uppercase tracking-wider">Account Ban Metric</div>
+</div>
+<div>
+<div class="font-headline-md text-2xl font-bold text-on-surface font-mono">14,210+</div>
+<div class="font-label-caps text-[11px] text-outline uppercase tracking-wider">Secured Vault Swaps</div>
+</div>
+</div>
+</div>
+<!-- Hero Telemetry Radar Widget (Live Duo Queue Monitor) -->
+<div class="lg:col-span-5">
+<div class="bg-[#0e1f18]/85 backdrop-blur-md border border-emerald-500/25 rounded-xl p-5 shadow-[0_8px_32px_rgba(2,17,11,0.6)] relative overflow-hidden">
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant/60">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary animate-ping"></span>
+<span class="font-headline-sm text-base font-bold text-on-surface">LIVE MATCH RADAR</span>
+</div>
+<span class="font-label-caps text-xs bg-[#12231c] text-primary px-2.5 py-0.5 rounded border border-emerald-500/30 font-mono">SESSION #VAL-9824</span>
+</div>
+<!-- Stream details -->
+<div class="mt-4 space-y-4">
+<!-- Tactical Match Status -->
+<div class="bg-[#12231c]/90 p-3.5 rounded-lg border border-outline-variant/80 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-[#1a2d24] border border-emerald-500/40 flex items-center justify-center text-primary font-bold font-mono">
+                    VAL
+                  </div>
+<div>
+<div class="font-label-md text-sm text-on-surface font-bold">VALORANT // DUO QUEUE</div>
+<div class="font-body-sm text-xs text-on-surface-variant">Immortal 3 → Radiant Push (182 RR)</div>
+</div>
+</div>
+<div class="text-right">
+<span class="px-2 py-0.5 rounded text-[10px] font-label-caps uppercase bg-primary/15 text-primary border border-primary/40 font-mono">MATCHPOINT 12 - 9</span>
+</div>
+</div>
+<!-- Live booster telemetry -->
+<div class="grid grid-cols-2 gap-3 text-xs">
+<div class="bg-[#061610]/80 p-2.5 rounded-lg border border-outline-variant">
+<span class="text-outline font-label-caps text-[10px] block">ASSIGNED PRO BOOSTER</span>
+<span class="text-on-surface font-semibold flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-primary text-[14px]" data-icon="check_circle">check_circle</span>
+                    ViperSensei_EU (#42)
+                  </span>
+<span class="text-[11px] text-primary font-mono block mt-0.5">Win Streak: 9 Wins</span>
+</div>
+<div class="bg-[#061610]/80 p-2.5 rounded-lg border border-outline-variant">
+<span class="text-outline font-label-caps text-[10px] block">CLEAN IP TELEMETRY</span>
+<span class="text-on-surface font-semibold flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-tertiary text-[14px]" data-icon="router">router</span>
+                    Frankfurt RES-VPN #09
+                  </span>
+<span class="text-[11px] text-on-surface-variant font-mono block mt-0.5">Packet loss: 0.00%</span>
+</div>
+</div>
+<!-- Escrow arbiter bar -->
+<div class="p-3 bg-[#061610]/80 rounded-lg border border-outline-variant space-y-2">
+<div class="flex justify-between text-xs font-label-caps">
+<span class="text-on-surface-variant">ESCROW CONTRACT HOLD</span>
+<span class="text-primary font-mono font-bold">$125.00 USDC</span>
+</div>
+<div class="w-full bg-[#12231c] h-1.5 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-emerald-500 to-primary h-full rounded-full" style="width: 82%"></div>
+</div>
+<div class="flex justify-between items-center text-[11px] text-outline pt-1">
+<span class="">Arbiter: Admin Desk #14 Verified</span>
+<span class="text-primary font-mono">Auto-Release in 1 Match</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-xs pt-1 text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="verified">verified</span>
+                  100% Anti-Cheat Compliant
+                </span>
+<a class="text-primary hover:underline font-label-md text-xs flex items-center gap-1 font-semibold" href="#hub">
+                  Inspect Match Feed
+                  <span class="material-symbols-outlined text-xs" data-icon="open_in_new">open_in_new</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CENTRAL CORE: INTERACTIVE 6-GAME SWITCHER & 6-SUBCATEGORY HUB -->
+<section class="py-12 px-4 lg:px-8 border-b border-outline-variant/80 backdrop-blur-md bg-[#061610]/35" id="hub">
+<div class="max-w-7xl mx-auto">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-caps text-xs uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-sm" data-icon="hub">hub</span>
+<span class="">MULTI-GAME ARSENAL // REAL-TIME CATALOG</span>
+</div>
+<h2 class="font-headline-xl text-2xl md:text-3xl font-bold text-on-surface">
+            Tactical Game Switcher &amp; Subcategory Hub
+          </h2>
+</div>
+<div class="text-left md:text-right">
+<span class="text-body-sm text-xs text-on-surface-variant block">Sync Frequency: Live Webhooks</span>
+<span class="font-mono text-xs text-primary">All Accounts Audited &amp; Cleaned</span>
+</div>
+</div>
+<!-- 1. THE 6 MAJOR GAME SWITCHER BAR -->
+<div class="bg-[#0e1f18]/80 backdrop-blur-md p-1.5 rounded-xl border border-outline-variant/80 mb-6 overflow-x-auto custom-scroll">
+<div class="flex items-center min-w-max gap-2" id="game-tabs">
+<!-- Game 1: MLBB -->
+<button class="game-tab-btn active px-4 py-3 rounded-lg flex items-center gap-3 border border-primary bg-[#12231c] text-primary transition-all shadow-[0_0_12px_rgba(78,222,163,0.15)]" id="tab-game-mlbb" onclick="switchGame('mlbb')">
+<div class="w-8 h-8 rounded-lg bg-[#193327] flex items-center justify-center font-bold text-xs border border-primary/40 text-primary font-mono">
+              ML
+            </div>
+<div class="text-left">
+<div class="font-label-md text-xs font-bold text-on-surface">Mobile Legends: Bang Bang</div>
+<div class="font-label-caps text-[10px] text-primary tracking-wider font-mono">RANK: STARS // MYTHIC</div>
+</div>
+</button>
+<!-- Game 2: VALORANT -->
+<button class="game-tab-btn px-4 py-3 rounded-lg flex items-center gap-3 border border-transparent hover:border-outline-variant bg-transparent text-on-surface-variant transition-all hover:bg-[#0e1f18]" id="tab-game-valorant" onclick="switchGame('valorant')">
+<div class="w-8 h-8 rounded-lg bg-[#14261e] flex items-center justify-center font-bold text-xs border border-outline-variant font-mono">
+              VAL
+            </div>
+<div class="text-left">
+<div class="font-label-md text-xs font-bold text-on-surface">VALORANT</div>
+<div class="font-label-caps text-[10px] text-outline tracking-wider font-mono">RANK: RR // RADIANT</div>
+</div>
+</button>
+<!-- Game 3: Dota 2 -->
+<button class="game-tab-btn px-4 py-3 rounded-lg flex items-center gap-3 border border-transparent hover:border-outline-variant bg-transparent text-on-surface-variant transition-all hover:bg-[#0e1f18]" id="tab-game-dota2" onclick="switchGame('dota2')">
+<div class="w-8 h-8 rounded-lg bg-[#14261e] flex items-center justify-center font-bold text-xs border border-outline-variant font-mono">
+              D2
+            </div>
+<div class="text-left">
+<div class="font-label-md text-xs font-bold text-on-surface">Dota 2</div>
+<div class="font-label-caps text-[10px] text-outline tracking-wider font-mono">METRIC: MMR // IMMORTAL</div>
+</div>
+</button>
+<!-- Game 4: League of Legends -->
+<button class="game-tab-btn px-4 py-3 rounded-lg flex items-center gap-3 border border-transparent hover:border-outline-variant bg-transparent text-on-surface-variant transition-all hover:bg-[#0e1f18]" id="tab-game-lol" onclick="switchGame('lol')">
+<div class="w-8 h-8 rounded-lg bg-[#14261e] flex items-center justify-center font-bold text-xs border border-outline-variant font-mono">
+              LOL
+            </div>
+<div class="text-left">
+<div class="font-label-md text-xs font-bold text-on-surface">League of Legends</div>
+<div class="font-label-caps text-[10px] text-outline tracking-wider font-mono">METRIC: LP // CHALLENGER</div>
+</div>
+</button>
+<!-- Game 5: LoL Wild Rift -->
+<button class="game-tab-btn px-4 py-3 rounded-lg flex items-center gap-3 border border-transparent hover:border-outline-variant bg-transparent text-on-surface-variant transition-all hover:bg-[#0e1f18]" id="tab-game-wildrift" onclick="switchGame('wildrift')">
+<div class="w-8 h-8 rounded-lg bg-[#14261e] flex items-center justify-center font-bold text-xs border border-outline-variant font-mono">
+              WR
+            </div>
+<div class="text-left">
+<div class="font-label-md text-xs font-bold text-on-surface">League: Wild Rift</div>
+<div class="font-label-caps text-[10px] text-outline tracking-wider font-mono">RANK: MARKS // SOVEREIGN</div>
+</div>
+</button>
+<!-- Game 6: World of Warcraft -->
+<button class="game-tab-btn px-4 py-3 rounded-lg flex items-center gap-3 border border-transparent hover:border-outline-variant bg-transparent text-on-surface-variant transition-all hover:bg-[#0e1f18]" id="tab-game-wow" onclick="switchGame('wow')">
+<div class="w-8 h-8 rounded-lg bg-[#14261e] flex items-center justify-center font-bold text-xs border border-outline-variant font-mono">
+              WOW
+            </div>
+<div class="text-left">
+<div class="font-label-md text-xs font-bold text-on-surface">World of Warcraft</div>
+<div class="font-label-caps text-[10px] text-outline tracking-wider font-mono">RATING: M+ IO &amp; KEYSTONES</div>
+</div>
+</button>
+</div>
+</div>
+<!-- 2. SUB-CATEGORY NAVIGATION BAR (6 Modules) -->
+<div class="flex flex-wrap items-center gap-2 border-b border-outline-variant/60 pb-4 mb-8">
+<button class="cat-pill active px-4 py-2 rounded-lg font-label-md text-xs uppercase bg-primary-container text-on-primary-container font-bold transition-all flex items-center gap-2 shadow-[0_0_12px_rgba(16,185,129,0.3)]" id="cat-shop" onclick="switchCategory('shop')">
+<span class="material-symbols-outlined text-base" data-icon="storefront">storefront</span>
+<span class="">1. Shop (Currency &amp; Skins)</span>
+</button>
+<button class="cat-pill px-4 py-2 rounded-lg font-label-md text-xs uppercase bg-[#0e1f18]/80 text-on-surface-variant hover:text-on-surface hover:bg-[#12231c] transition-all flex items-center gap-2 border border-outline-variant/80" id="cat-accounts" onclick="switchCategory('accounts')">
+<span class="material-symbols-outlined text-base" data-icon="badge">badge</span>
+<span class="">2. Accounts (Audited Vault)</span>
+</button>
+<button class="cat-pill px-4 py-2 rounded-lg font-label-md text-xs uppercase bg-[#0e1f18]/80 text-on-surface-variant hover:text-on-surface hover:bg-[#12231c] transition-all flex items-center gap-2 border border-outline-variant/80" id="cat-boosting" onclick="switchCategory('boosting')">
+<span class="material-symbols-outlined text-base" data-icon="trending_up">trending_up</span>
+<span class="">3. Boosting (Rank &amp; MMR)</span>
+</button>
+<button class="cat-pill px-4 py-2 rounded-lg font-label-md text-xs uppercase bg-[#0e1f18]/80 text-on-surface-variant hover:text-on-surface hover:bg-[#12231c] transition-all flex items-center gap-2 border border-outline-variant/80" id="cat-packages" onclick="switchCategory('packages')">
+<span class="material-symbols-outlined text-base" data-icon="inventory_2">inventory_2</span>
+<span class="">4. Fixed Packages</span>
+</button>
+<button class="cat-pill px-4 py-2 rounded-lg font-label-md text-xs uppercase bg-[#0e1f18]/80 text-on-surface-variant hover:text-on-surface hover:bg-[#12231c] transition-all flex items-center gap-2 border border-outline-variant/80" id="cat-events" onclick="switchCategory('events')">
+<span class="material-symbols-outlined text-base" data-icon="emoji_events">emoji_events</span>
+<span class="">5. Events &amp; Tourneys</span>
+</button>
+<button class="cat-pill px-4 py-2 rounded-lg font-label-md text-xs uppercase bg-[#0e1f18]/80 text-on-surface-variant hover:text-on-surface hover:bg-[#12231c] transition-all flex items-center gap-2 border border-outline-variant/80" id="cat-news" onclick="switchCategory('news')">
+<span class="material-symbols-outlined text-base" data-icon="newspaper">newspaper</span>
+<span class="">6. News &amp; Meta Notes</span>
+</button>
+</div>
+<!-- 3. RICH DYNAMIC FEED CONTAINER -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="dynamic-hub-content">
+        <div class="bg-[#0e1f18]/85 backdrop-blur-md rounded-xl border border-outline-variant/80 p-5 flex flex-col justify-between hover:border-primary/60 transition-all duration-150 relative group hover:shadow-[0_4px_24px_rgba(78,222,163,0.12)]">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded text-[10px] font-label-caps uppercase bg-[#12231c] text-primary border border-emerald-500/30 tracking-wider font-mono">
+                FAST DISPATCH
+              </span>
+              <span class="text-xs font-label-md text-outline flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm text-primary" data-icon="diamond">diamond</span>
+                Instant Top-Up
+              </span>
+            </div>
+
+            <h4 class="font-headline-sm text-base font-bold text-on-surface group-hover:text-primary transition-colors">
+              5,000 + 1,200 Bonus Diamonds
+            </h4>
+
+            <p class="font-body-sm text-xs text-on-surface-variant mt-2 mb-4 leading-relaxed">
+              Direct server ID injection. 100% clean receipt with Moonton transaction hash.
+            </p>
+          </div>
+
+          <div class="border-t border-outline-variant/60 pt-4 mt-2">
+            <div class="flex items-baseline justify-between mb-3">
+              <div>
+                <span class="text-[10px] font-label-caps text-outline uppercase block font-mono">ESCROW PROTECTED</span>
+                <span class="font-mono text-xl font-bold text-primary">$74.50</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-label-caps text-primary font-mono block">INSTANT AUDIT</span>
+                <span class="text-xs text-on-surface-variant font-mono">100% Guaranteed</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <button class="w-full py-2 bg-primary-container text-on-primary-container hover:bg-primary font-label-md text-xs uppercase rounded-lg transition-colors font-bold flex items-center justify-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.25)]">
+                <span class="material-symbols-outlined text-sm" data-icon="shopping_cart_checkout">shopping_cart_checkout</span>
+                <span class="">Instant Lock</span>
+              </button>
+              <button class="w-full py-2 bg-[#12231c] hover:bg-[#1d2d26] text-on-surface font-label-md text-xs uppercase rounded-lg transition-colors border border-outline-variant flex items-center justify-center gap-1 font-semibold">
+                <span class="material-symbols-outlined text-sm" data-icon="visibility">visibility</span>
+                <span class="">Inspect Spec</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-[#0e1f18]/85 backdrop-blur-md rounded-xl border border-outline-variant/80 p-5 flex flex-col justify-between hover:border-primary/60 transition-all duration-150 relative group hover:shadow-[0_4px_24px_rgba(78,222,163,0.12)]">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded text-[10px] font-label-caps uppercase bg-[#12231c] text-primary border border-emerald-500/30 tracking-wider font-mono">
+                COLLECTOR TIER
+              </span>
+              <span class="text-xs font-label-md text-outline flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm text-primary" data-icon="strikethrough_s">strikethrough_s</span>
+                Gift Vault
+              </span>
+            </div>
+
+            <h4 class="font-headline-sm text-base font-bold text-on-surface group-hover:text-primary transition-colors">
+              Collector Skin: Aldous Realm Watcher
+            </h4>
+
+            <p class="font-body-sm text-xs text-on-surface-variant mt-2 mb-4 leading-relaxed">
+              Instant friendship bypass gifting or code redeem. Verified non-revocable.
+            </p>
+          </div>
+
+          <div class="border-t border-outline-variant/60 pt-4 mt-2">
+            <div class="flex items-baseline justify-between mb-3">
+              <div>
+                <span class="text-[10px] font-label-caps text-outline uppercase block font-mono">ESCROW PROTECTED</span>
+                <span class="font-mono text-xl font-bold text-primary">$49.00</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-label-caps text-primary font-mono block">INSTANT AUDIT</span>
+                <span class="text-xs text-on-surface-variant font-mono">100% Guaranteed</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <button class="w-full py-2 bg-primary-container text-on-primary-container hover:bg-primary font-label-md text-xs uppercase rounded-lg transition-colors font-bold flex items-center justify-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.25)]">
+                <span class="material-symbols-outlined text-sm" data-icon="shopping_cart_checkout">shopping_cart_checkout</span>
+                <span class="">Instant Lock</span>
+              </button>
+              <button class="w-full py-2 bg-[#12231c] hover:bg-[#1d2d26] text-on-surface font-label-md text-xs uppercase rounded-lg transition-colors border border-outline-variant flex items-center justify-center gap-1 font-semibold">
+                <span class="material-symbols-outlined text-sm" data-icon="visibility">visibility</span>
+                <span class="">Inspect Spec</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-[#0e1f18]/85 backdrop-blur-md rounded-xl border border-outline-variant/80 p-5 flex flex-col justify-between hover:border-primary/60 transition-all duration-150 relative group hover:shadow-[0_4px_24px_rgba(78,222,163,0.12)]">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded text-[10px] font-label-caps uppercase bg-[#12231c] text-primary border border-emerald-500/30 tracking-wider font-mono">
+                SEASON PASS
+              </span>
+              <span class="text-xs font-label-md text-outline flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm text-primary" data-icon="card_membership">card_membership</span>
+                Bundle
+              </span>
+            </div>
+
+            <h4 class="font-headline-sm text-base font-bold text-on-surface group-hover:text-primary transition-colors">
+              Twilight Pass + Seasonal Starlight
+            </h4>
+
+            <p class="font-body-sm text-xs text-on-surface-variant mt-2 mb-4 leading-relaxed">
+              Complete level progression unlock with all premium battle-emotes.
+            </p>
+          </div>
+
+          <div class="border-t border-outline-variant/60 pt-4 mt-2">
+            <div class="flex items-baseline justify-between mb-3">
+              <div>
+                <span class="text-[10px] font-label-caps text-outline uppercase block font-mono">ESCROW PROTECTED</span>
+                <span class="font-mono text-xl font-bold text-primary">$18.99</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-label-caps text-primary font-mono block">INSTANT AUDIT</span>
+                <span class="text-xs text-on-surface-variant font-mono">100% Guaranteed</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <button class="w-full py-2 bg-primary-container text-on-primary-container hover:bg-primary font-label-md text-xs uppercase rounded-lg transition-colors font-bold flex items-center justify-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.25)]">
+                <span class="material-symbols-outlined text-sm" data-icon="shopping_cart_checkout">shopping_cart_checkout</span>
+                <span class="">Instant Lock</span>
+              </button>
+              <button class="w-full py-2 bg-[#12231c] hover:bg-[#1d2d26] text-on-surface font-label-md text-xs uppercase rounded-lg transition-colors border border-outline-variant flex items-center justify-center gap-1 font-semibold">
+                <span class="material-symbols-outlined text-sm" data-icon="visibility">visibility</span>
+                <span class="">Inspect Spec</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- Escrow reassurance ticker directly under hub -->
+<div class="mt-8 p-4 rounded-xl bg-[#0e1f18]/85 backdrop-blur-md border border-emerald-500/25 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<span class="p-2 bg-primary/10 text-primary rounded-lg border border-primary/20">
+<span class="material-symbols-outlined" data-icon="security_update_good">security_update_good</span>
+</span>
+<div>
+<div class="font-label-md text-sm text-on-surface font-semibold">Zero-Risk Buyer Protection Protocol</div>
+<div class="font-body-sm text-xs text-on-surface-variant">Boosters receive zero payout until in-game milestones are verified via API &amp; screenshot hash.</div>
+</div>
+</div>
+<a class="whitespace-nowrap px-4 py-2 text-xs font-label-caps uppercase tracking-wider text-primary border border-primary/40 rounded-lg hover:bg-primary/10 transition-colors font-mono" href="#escrow-vault">
+          View Smart Contract Logs
+        </a>
+</div>
+</div>
+</section>
+<!-- CURATED FIXED PACKAGES & FLASH SALE EVENT SECTION -->
+<section class="py-16 px-4 lg:px-8 border-b border-outline-variant/80 backdrop-blur-md relative bg-transparent" id="packages">
+<div class="max-w-7xl mx-auto">
+<!-- Limited-Time Flash Sale Banner -->
+<div class="mb-12 p-6 rounded-2xl bg-gradient-to-r from-[#122d22] via-[#0e1f18] to-[#02110b] border border-primary/40 relative overflow-hidden shadow-[0_8px_32px_rgba(2,17,11,0.5)]">
+<div class="absolute right-0 top-0 w-96 h-full bg-primary/10 skew-x-12 blur-3xl pointer-events-none"></div>
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
+<div class="space-y-1">
+<div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-primary text-on-primary font-label-caps text-xs font-bold uppercase shadow-[0_0_10px_#4edea3]">
+<span class="material-symbols-outlined text-[14px]" data-icon="local_fire_department">local_fire_department</span>
+              Flash Deployment Sprint
+            </div>
+<h3 class="font-headline-lg text-xl sm:text-2xl font-bold text-on-surface">
+              Season End Surge: 5-Match Placement Guarantee Bundles
+            </h3>
+<p class="font-body-md text-sm text-on-surface-variant">
+              Escrow protected. Guaranteed minimum 80% Winrate or 100% refund into your balance vault.
+            </p>
+</div>
+<!-- Countdown Timer Component -->
+<div class="flex items-center gap-3">
+<div class="bg-[#02110b]/90 backdrop-blur-md px-3.5 py-2 rounded-lg border border-emerald-500/30 text-center min-w-[64px]">
+<div class="font-mono text-xl font-bold text-primary" id="timer-hours">05</div>
+<div class="font-label-caps text-[9px] text-outline uppercase font-mono">Hours</div>
+</div>
+<span class="text-primary font-bold text-lg">:</span>
+<div class="bg-[#02110b]/90 backdrop-blur-md px-3.5 py-2 rounded-lg border border-emerald-500/30 text-center min-w-[64px]">
+<div class="font-mono text-xl font-bold text-primary" id="timer-minutes">38</div>
+<div class="font-label-caps text-[9px] text-outline uppercase font-mono">Mins</div>
+</div>
+<span class="text-primary font-bold text-lg">:</span>
+<div class="bg-[#02110b]/90 backdrop-blur-md px-3.5 py-2 rounded-lg border border-emerald-500/30 text-center min-w-[64px]">
+<div class="font-mono text-xl font-bold text-primary" id="timer-seconds">53</div>
+<div class="font-label-caps text-[9px] text-outline uppercase font-mono">Secs</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 4-Tier Curated Package Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Package 1: Calibration Kickstart -->
+<div class="bg-[#0e1f18]/80 backdrop-blur-md rounded-xl border border-outline-variant/80 p-6 flex flex-col justify-between hover:border-primary/50 transition-all duration-150 hover:shadow-[0_4px_24px_rgba(78,222,163,0.1)]">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-xs text-outline uppercase tracking-wider font-mono">TIER 01 // ACCELERATOR</span>
+<span class="material-symbols-outlined text-outline" data-icon="tune">tune</span>
+</div>
+<h4 class="font-headline-sm text-base font-bold text-on-surface mb-2">Placement Calibration Pass</h4>
+<p class="font-body-sm text-xs text-on-surface-variant mb-6 leading-relaxed">
+              5 Provisional placement calibration games played with verified 80%+ win rate pros.
+            </p>
+<ul class="space-y-2.5 font-body-sm text-xs text-on-surface mb-6 border-t border-outline-variant/60 pt-4">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Solo or Duo Execution
+              </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Hardware VPN Masked
+              </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Specific Agent/Hero Selection
+              </li>
+</ul>
+</div>
+<div>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="font-mono text-2xl font-bold text-primary">$49.00</span>
+<span class="text-xs text-outline line-through font-mono">$65.00</span>
+<span class="text-[11px] text-outline font-mono">USDC / USD</span>
+</div>
+<button class="w-full py-2.5 bg-[#12231c] hover:bg-primary hover:text-on-primary text-on-surface font-label-md text-xs uppercase rounded-lg transition-colors border border-outline-variant font-semibold">
+              Engage Package
+            </button>
+</div>
+</div>
+<!-- Package 2: Full Division Leap (Popular) -->
+<div class="bg-[#12231c]/90 backdrop-blur-md rounded-xl border-2 border-primary p-6 flex flex-col justify-between relative shadow-[0_0_28px_rgba(78,222,163,0.18)]">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-on-primary text-[10px] font-label-caps font-bold uppercase tracking-widest px-3 py-0.5 rounded-full shadow-[0_0_8px_#4edea3]">
+            MOST POPULAR
+          </div>
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-xs text-primary uppercase tracking-wider font-mono">TIER 02 // DIVISION FLIGHT</span>
+<span class="material-symbols-outlined text-primary" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<h4 class="font-headline-sm text-base font-bold text-on-surface mb-2">Turnkey Division Leap</h4>
+<p class="font-body-sm text-xs text-on-surface-variant mb-6 leading-relaxed">
+              Fast-track 4 full divisions (e.g. Platinum to Diamond or Legend to Mythic) with zero rank drop.
+            </p>
+<ul class="space-y-2.5 font-body-sm text-xs text-on-surface mb-6 border-t border-outline-variant/60 pt-4">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Priority Booster Dispatch (&lt;10m)
+              </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Live Unlisted Discord Stream
+              </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Offline Mode In-Game
+              </li>
+</ul>
+</div>
+<div>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="font-mono text-2xl font-bold text-primary">$139.00</span>
+<span class="text-xs text-outline line-through font-mono">$180.00</span>
+<span class="text-[11px] text-outline font-mono">USDC / USD</span>
+</div>
+<button class="w-full py-2.5 bg-primary-container hover:bg-primary text-on-primary-container font-label-md text-xs uppercase rounded-lg transition-colors font-bold shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+              Deploy Leap
+            </button>
+</div>
+</div>
+<!-- Package 3: Pro Duo Coaching Pass -->
+<div class="bg-[#0e1f18]/80 backdrop-blur-md rounded-xl border border-outline-variant/80 p-6 flex flex-col justify-between hover:border-primary/50 transition-all duration-150 hover:shadow-[0_4px_24px_rgba(78,222,163,0.1)]">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-xs text-outline uppercase tracking-wider font-mono">TIER 03 // SYNERGY</span>
+<span class="material-symbols-outlined text-outline" data-icon="record_voice_over">record_voice_over</span>
+</div>
+<h4 class="font-headline-sm text-base font-bold text-on-surface mb-2">Pro Duo Coaching Pass</h4>
+<p class="font-body-sm text-xs text-on-surface-variant mb-6 leading-relaxed">
+              Queue up alongside a Tier-1 pro in voice comms. Learn macro, micro mechanics, and climb safely.
+            </p>
+<ul class="space-y-2.5 font-body-sm text-xs text-on-surface mb-6 border-t border-outline-variant/60 pt-4">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Private Voice Comms &amp; Review
+              </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Zero Account Sharing Needed
+              </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Post-Match VOD Breakdown
+              </li>
+</ul>
+</div>
+<div>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="font-mono text-2xl font-bold text-primary">$95.00</span>
+<span class="text-xs text-outline font-mono">/ 5 MATCHES</span>
+</div>
+<button class="w-full py-2.5 bg-[#12231c] hover:bg-primary hover:text-on-primary text-on-surface font-label-md text-xs uppercase rounded-lg transition-colors border border-outline-variant font-semibold">
+              Queue With Pro
+            </button>
+</div>
+</div>
+<!-- Package 4: Apex Mastery / Mythic Sprint -->
+<div class="bg-[#0e1f18]/80 backdrop-blur-md rounded-xl border border-outline-variant/80 p-6 flex flex-col justify-between hover:border-primary/50 transition-all duration-150 hover:shadow-[0_4px_24px_rgba(78,222,163,0.1)]">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-xs text-outline uppercase tracking-wider font-mono">TIER 04 // ELITE CROWN</span>
+<span class="material-symbols-outlined text-outline" data-icon="military_tech">military_tech</span>
+</div>
+<h4 class="font-headline-sm text-base font-bold text-on-surface mb-2">Apex Mastery Immortal Pass</h4>
+<p class="font-body-sm text-xs text-on-surface-variant mb-6 leading-relaxed">
+              Bespoke high-elo push into Radiant, Challenger top 50, or WoW Keystone Hero 0.1% title.
+            </p>
+<ul class="space-y-2.5 font-body-sm text-xs text-on-surface mb-6 border-t border-outline-variant/60 pt-4">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Top 100 Leaderboard Pro Dedicated
+              </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Full VIP Admin Concierge
+              </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check">check</span>
+                Bespoke Anti-Detection Sandbox
+              </li>
+</ul>
+</div>
+<div>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="font-mono text-2xl font-bold text-primary">$320.00</span>
+<span class="text-[11px] text-outline font-mono">CUSTOM ESCROW LOCK</span>
+</div>
+<button class="w-full py-2.5 bg-[#12231c] hover:bg-primary hover:text-on-primary text-on-surface font-label-md text-xs uppercase rounded-lg transition-colors border border-outline-variant font-semibold">
+              Request High-Elo Lock
+            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ESCROW 2.0 FORTRESS & 24/7 ADMIN SUPERVISION DESK -->
+<section class="py-16 px-4 lg:px-8 border-b border-outline-variant/80 backdrop-blur-md bg-[#0e1f18]/65" id="escrow-vault">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<!-- Architecture Details -->
+<div class="lg:col-span-6 space-y-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0e1f18] border border-emerald-500/30">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="encrypted">encrypted</span>
+<span class="font-label-caps text-xs text-primary uppercase font-mono">SECURITY ARCHITECTURE // HARDENED</span>
+</div>
+<h2 class="font-headline-xl text-2xl md:text-3xl font-bold text-on-surface">
+            Escrow 2.0 Smart Vault &amp; Human Watchdog Desk
+          </h2>
+<p class="font-body-md text-sm text-on-surface-variant leading-relaxed">
+            Traditional gaming marketplaces rely on slow email tickets and untrusted middlemen. Playora separates financial settlement from execution via programmatic time-locked smart escrows and 24/7 round-the-clock arbiter supervision.
+          </p>
+<div class="space-y-4 pt-2">
+<div class="flex items-start gap-4 p-4 rounded-xl bg-[#0e1f18]/85 border border-outline-variant/80">
+<div class="p-2 rounded-lg bg-[#12231c] text-primary border border-emerald-500/30">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<div>
+<h4 class="font-label-md text-sm font-bold text-on-surface">Isolated Smart Vault Escrow</h4>
+<p class="font-body-sm text-xs text-on-surface-variant mt-1 leading-relaxed">
+                  Buyer funds remain encrypted in multi-sig cold storage until the order goal is completed, verified by match logs, and approved by you.
+                </p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-4 rounded-xl bg-[#0e1f18]/85 border border-outline-variant/80">
+<div class="p-2 rounded-lg bg-[#12231c] text-tertiary border border-emerald-500/30">
+<span class="material-symbols-outlined" data-icon="vpn_lock">vpn_lock</span>
+</div>
+<div>
+<h4 class="font-label-md text-sm font-bold text-on-surface">Hardware Resident Geo-Tunneling</h4>
+<p class="font-body-sm text-xs text-on-surface-variant mt-1 leading-relaxed">
+                  Boosters authenticate strictly through local ISP residential gateways matching your native city coordinates to prevent automated flagged suspensions.
+                </p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-4 rounded-xl bg-[#0e1f18]/85 border border-outline-variant/80">
+<div class="p-2 rounded-lg bg-[#12231c] text-primary border border-emerald-500/30">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+</div>
+<div>
+<h4 class="font-label-md text-sm font-bold text-on-surface">24/7 Human Admin Desk (&lt;8m Dispute Resolution)</h4>
+<p class="font-body-sm text-xs text-on-surface-variant mt-1 leading-relaxed">
+                  Instant one-click appeal freezes payout immediately. A licensed platform admin arbitrates with full access to screenshots and live server telemetry.
+                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Escrow Terminal Telemetry Interface Graphic -->
+<div class="lg:col-span-6">
+<div class="bg-[#0e1f18]/90 backdrop-blur-md border border-emerald-500/30 rounded-2xl p-6 font-mono text-xs shadow-[0_8px_32px_rgba(2,17,11,0.6)]">
+<div class="flex justify-between items-center pb-4 border-b border-outline-variant/60 text-outline">
+<span class="flex items-center gap-2 text-on-surface font-semibold font-label-md text-sm">
+<span class="material-symbols-outlined text-primary text-base" data-icon="terminal">terminal</span>
+                ESCROW-DAEMON-VAULT // LIVE LOGS
+              </span>
+<span class="text-primary font-bold font-mono tracking-wider flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>STATUS: FORTIFIED
+              </span>
+</div>
+<div class="py-4 space-y-3">
+<div class="flex justify-between text-on-surface-variant border-b border-outline-variant/40 pb-2">
+<span class="text-outline">SMART_CONTRACT:</span>
+<span class="text-on-surface">0x79F...38d4 (PLAYORA-SEC-V2)</span>
+</div>
+<div class="flex justify-between text-on-surface-variant border-b border-outline-variant/40 pb-2">
+<span class="text-outline">CIRCULATING_ESCROW:</span>
+<span class="text-primary font-bold">$1,420,890.00 USDC</span>
+</div>
+<div class="flex justify-between text-on-surface-variant border-b border-outline-variant/40 pb-2">
+<span class="text-outline">AVG_ADMIN_INTERCEPT:</span>
+<span class="text-on-surface">32.4 seconds</span>
+</div>
+<div class="flex justify-between text-on-surface-variant border-b border-outline-variant/40 pb-2">
+<span class="text-outline">HARDWARE_NODES_UP:</span>
+<span class="text-on-surface">64 / 64 Datacenters</span>
+</div>
+</div>
+<!-- Terminal Stream Feed -->
+<div class="bg-[#02110b]/90 p-3 rounded-lg border border-outline-variant space-y-1.5 text-[11px] text-on-surface-variant">
+<div class="text-outline">[19:42:01] TX-49102: Escrow Locked for Account #ML-883 ($340.00)</div>
+<div class="text-primary">[19:42:12] TELEMETRY: Residential Node DE-04 Handshake Verified (0 loss)</div>
+<div class="text-outline">[19:42:25] ESCROW: Verification milestone passed (Rank Diamond 1 attained)</div>
+<div class="text-tertiary">[19:42:49] DISPUTE_POOL: 0 active claims in queue</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/60 flex items-center justify-between">
+<span class="text-outline font-label-caps text-[10px]">Audited by CertiK &amp; Trail of Bits (2025)</span>
+<button class="px-3 py-1.5 bg-[#12231c] hover:bg-primary hover:text-on-primary border border-emerald-500/30 text-primary rounded-lg text-xs font-mono font-semibold transition-all">
+                Run Cryptographic Audit
+              </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- SHARED FOOTER -->
+<footer class="w-full bg-[#02110b]/90 backdrop-blur-md border-t border-outline-variant/80 text-on-surface">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center px-4 lg:px-8 py-6 gap-4">
+<!-- Brand & Security Guarantee statement -->
+<div class="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
+<a class="flex items-center gap-2 group" href="#">
+<img alt="Playora" class="h-6 w-auto object-contain drop-shadow-[0_0_6px_rgba(78,222,163,0.3)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgeVH-yRJw2lvVh5J2Z69ymi42Fe95-HNoTMGu7OGU7bBCgOx3pdxiraZegewWBS1hhCLU78nKZjdjYSeZmo77AAMjI1xDRS94mYnG-0WLZq0rkNJ-NRzvKz3MelpQ2t4OtkY-i3T4eOeFZ_u7cfGl82TskIe6vr_DKZzChuxbItXbkDTcsdBx1MHZWrtJM9dvGu0whb_xclZ2GYws1Ci5QtcvHqeNz1_R9xdeUUL3prfR4vJFJt0PQoeVDNQtTBKcdSs">
+<span class="text-primary font-bold font-headline-sm text-sm tracking-widest">// ARENA</span>
+</a>
+<span class="font-body-sm text-xs text-on-surface-variant font-mono">
+        © 2025 PLAYORA ARENA. CRYPTOGRAPHIC ESCROW GUARANTEE ACTIVE. ALL RIGHTS RESERVED.
+      </span>
+</div>
+<!-- Links -->
+<div class="flex flex-wrap justify-center items-center gap-5 text-xs font-label-md">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Smart Escrow Terms</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Anti-Cheat Protocol</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Proof of Reserve</a>
+<a class="text-primary flex items-center gap-1 font-mono" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-primary inline-block shadow-[0_0_5px_#4edea3]"></span>
+        Latency Status: 12ms
+      </a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Security Disclosures</a>
+</div>
+</div>
+</footer>
+<!-- VANILLA JAVASCRIPT FOR MULTI-GAME, SUBCATEGORY SWITCHER & TACTICAL HUD SCROLLBAR -->
+<script>
+  // State machine
+  let currentGame = 'mlbb';
+  let currentCategory = 'shop';
+
+  // Rich Dataset for All 6 Games across 6 Subcategories
+  const gameDatabase = {
+    mlbb: {
+      title: "Mobile Legends: Bang Bang",
+      metric: "Stars / Mythical Glory",
+      shop: [
+        { title: "5,000 + 1,200 Bonus Diamonds", tag: "Instant Top-Up", price: "$74.50", desc: "Direct server ID injection. 100% clean receipt with Moonton transaction hash.", badge: "FAST DISPATCH", icon: "diamond" },
+        { title: "Collector Skin: Aldous Realm Watcher", tag: "Gift Vault", price: "$49.00", desc: "Instant friendship bypass gifting or code redeem. Verified non-revocable.", badge: "COLLECTOR TIER", icon: "strikethrough_s" },
+        { title: "Twilight Pass + Seasonal Starlight", tag: "Bundle", price: "$18.99", desc: "Complete level progression unlock with all premium battle-emotes.", badge: "SEASON PASS", icon: "card_membership" }
+      ],
+      accounts: [
+        { title: "All Heroes Unlocked + 380 Skins", tag: "Mythic Glory", price: "$299.00", desc: "First-owner audited account with 6 Legend Skins, clean Moonton email link change.", badge: "AUDITED SMURF", icon: "verified" },
+        { title: "Mythic Immortal Clean Starter (50 Stars)", tag: "High Winrate", price: "$120.00", desc: "Winrate 78.4% on Fanny, Gusion, Ling. Clean match history, zero warning strikes.", badge: "CLEAN MMR", icon: "military_tech" },
+        { title: "Collector Vault: Lesley & Granger Legend", tag: "Rare Vault", price: "$450.00", desc: "Rare 2021 collector roster with complete emblem sets at Level 60 Max.", badge: "RARE INVENTORY", icon: "star" }
+      ],
+      boosting: [
+        { title: "Mythic Placement (10 Stars Push)", tag: "Duo or Solo", price: "$42.00", desc: "Guaranteed 9+ Stars positive net gain. Performed under Southeast Asia residential IP.", badge: "BOOSTING PASS", icon: "trending_up" },
+        { title: "Epic to Mythic Accelerated Fast-Track", tag: "Division Leap", price: "$85.00", desc: "Estimated delivery 18-24 hours. Pro carry duo with private Discord screen share.", badge: "FAST TRACK", icon: "bolt" },
+        { title: "Mythical Immortal (100 Stars) Milestone", tag: "Apex Division", price: "$210.00", desc: "Played exclusively by top-tier MPL competitive substitutes. 100% win assurance.", badge: "TOP 0.1%", icon: "workspace_premium" }
+      ],
+      packages: [
+        { title: "MLBB Supreme Trio Bundle", tag: "Turnkey Package", price: "$145.00", desc: "Includes Mythic Honor Boost + 2,500 Diamonds + 3 Coaching match reviews.", badge: "VALUE PACK", icon: "inventory_2" },
+        { title: "Hero Mastery Calibration Bundle", tag: "Mastery 5", price: "$65.00", desc: "Get supreme local title badge for any selected hero in 15 consecutive matches.", badge: "TITLE RUN", icon: "psychology" }
+      ],
+      events: [
+        { title: "Playora MLBB 5v5 Community Skirmish #12", tag: "Prize: $2,500", price: "Free Entry", desc: "Single elimination bracket. Escrow prize disbursement automated to winning captain.", badge: "REGISTER OPEN", icon: "emoji_events" },
+        { title: "Mythic Bounties: 1v1 Midlane Showdown", tag: "Prize: $500", price: "$5 Entry", desc: "Fast Sunday shootout. Anti-cheat referee oversight in private custom room.", badge: "LIVE SOON", icon: "swords" }
+      ],
+      news: [
+        { title: "Patch 1.8.90: Suyou & Nolan Jungle Tuning", tag: "Meta Analysis", price: "Read Brief", desc: "Breakdown of the assassin dominance shifts and optimal item pathing in Season 33.", badge: "META REPORT", icon: "article" },
+        { title: "Anti-Cheat 3.4: Radar Detection Updates", tag: "System Notice", price: "Security Memo", desc: "All Playora booster client scripts updated to reflect Moonton latest detection strings.", badge: "SECURITY", icon: "security" }
+      ]
+    },
+
+    valorant: {
+      title: "VALORANT",
+      metric: "Rank Rating (RR) / Radiant",
+      shop: [
+        { title: "11,000 VP Riot Point Gift Key", tag: "Instant Code", price: "$89.99", desc: "Region-unlocked Riot prepaid code. Automatically validated by cryptographic bot.", badge: "HOT ITEM", icon: "confirmation_number" },
+        { title: "Kuronami Vandal & Melee Bundle Access", tag: "Skin Delivery", price: "$65.00", desc: "Direct store night-market reservation checkout service. 100% clean payment.", badge: "EXCLUSIVE", icon: "local_mall" },
+        { title: "Champions 2024 Limited Capsule Key", tag: "Legacy Code", price: "$140.00", desc: "Vaulted skin redemption ticket with exclusive champion banner and buddy.", badge: "VAULTED", icon: "lock" }
+      ],
+      accounts: [
+        { title: "Radiant Current Act (Top 350 EU)", tag: "Smurf Vault", price: "$340.00", desc: "Full access original email. Kuronami Vandal, Prime 2.0, Reaver Vandal included.", badge: "AUDITED HIGH-ELO", icon: "workspace_premium" },
+        { title: "Immortal 3 (240 RR) Ranked Ready", tag: "Level 45+", price: "$145.00", desc: "Native German IP history. No Vanguard flags. 1.48 K/D lifetime ranked record.", badge: "CLEAN RECORD", icon: "verified_user" },
+        { title: "Level 20 Unranked Smurf (Fresh MMR)", tag: "Hardware Verified", price: "$24.99", desc: "Hand-leveled in unrated with zero bots or third party tools. First owner pass.", badge: "HAND LEVELED", icon: "badge" }
+      ],
+      boosting: [
+        { title: "Immortal 1 to Radiant Ladder Push", tag: "Top 500 Duo", price: "$180.00", desc: "Live unlisted stream with pro VCT Challenger duo partner. Voice comms enabled.", badge: "PREMIER PRO", icon: "military_tech" },
+        { title: "Ascendant to Immortal 1 Calibration", tag: "Net RR Boost", price: "$75.00", desc: "Includes offline mode in client, specific agent pool (Jett/Reyna/Omen).", badge: "POPULAR", icon: "rocket_launch" },
+        { title: "5 Radiant Placement Games Pass", tag: "Provisional", price: "$55.00", desc: "Guaranteed minimum 4 out of 5 wins or full partial refund into escrow balance.", badge: "80% WINRATE", icon: "task_alt" }
+      ],
+      packages: [
+        { title: "VCT Aim Mechanics & Duo Boost Pack", tag: "Coaching + Elo", price: "$160.00", desc: "3 hours of AimLabs + crosshair placement drills followed by 4 duo ranked wins.", badge: "COMBO PACK", icon: "tune" },
+        { title: "Full Act Rank Badge Completion", tag: "9 Triangle Wins", price: "$99.00", desc: "Lock down all 9 golden act wins in Ascendant or Immortal rank before act close.", badge: "ACT BADGE", icon: "shield" }
+      ],
+      events: [
+        { title: "Playora Open: 5v5 Spike Cup ($5,000)", tag: "Prize: $5,000", price: "Free Entry", desc: "Vanguard strict enforced. Broadcasted on Twitch with live caster commentary.", badge: "TOURNAMENT", icon: "emoji_events" },
+        { title: "Custom Swiftplay 10-Man Bounties", tag: "Daily Cash", price: "$10 Entry", desc: "High octane continuous pickup lobbies with instant escrow win settlements.", badge: "DAILY CUP", icon: "sports_esports" }
+      ],
+      news: [
+        { title: "Episode 9 Act III: Vyse & Controller Meta Shifts", tag: "Patch Analysis", price: "Read Intel", desc: "How recent flash durations and smokes rebalance competitive map selections.", badge: "META INTEL", icon: "feed" },
+        { title: "Hardware Ban Telemetry Insights", tag: "Engineering Blog", price: "Whitepaper", desc: "Our research on how residential NIC virtualization maintains 0.00% ban rates.", badge: "SECURITY", icon: "memory" }
+      ]
+    },
+
+    dota2: {
+      title: "Dota 2",
+      metric: "MMR / Immortal Leaderboard",
+      shop: [
+        { title: "Arcana: Manifold Paradox (Phantom Assassin)", tag: "Steam Trade", price: "$32.00", desc: "Fully unlocked Level 3 assassination score. Traded via instant P2P steam bot.", badge: "UNLOCKED", icon: "swords" },
+        { title: "Dragonclaw Hook (Clean)", tag: "Immortal Vintage", price: "$185.00", desc: "Original Pudge collector piece. Fully audited cryptographic custody.", badge: "COLLECTOR ITEM", icon: "anchor" },
+        { title: "The International 2024 Collector Cache Set", tag: "Complete 14 Bundles", price: "$59.00", desc: "Unopened giftable items delivered with verified 30-day steam friendship vault.", badge: "LIMITED SET", icon: "inventory" }
+      ],
+      accounts: [
+        { title: "Immortal Leaderboard Rank #420 (EU)", tag: "8,800 MMR", price: "$380.00", desc: "Behavior Score 10,000. Clean Steam profile, verified Dota Plus subscription.", badge: "TOP TIER", icon: "verified" },
+        { title: "Divine 5 Smurf (5,400 MMR)", tag: "High Behavior", price: "$110.00", desc: "Behavior Score 12,000 Max. Zero low priority penalties or communications bans.", badge: "HIGH BEHAVIOR", icon: "thumb_up" },
+        { title: "100 Unranked Hours Completed Account", tag: "Ranked Ready", price: "$39.00", desc: "Unlocks immediate competitive calibration. Hand-played on residential IP.", badge: "READY TO CALIBRATE", icon: "schedule" }
+      ],
+      boosting: [
+        { title: "+500 MMR Accelerated Climb", tag: "Core or Support", price: "$65.00", desc: "Pick your role and preferred lane heroes. Played offline with steam chat muted.", badge: "NET MMR", icon: "trending_up" },
+        { title: "Divine to Immortal Calibration Service", tag: "Milestone Push", price: "$130.00", desc: "Carried by 9K+ MMR booster. Guarantees Immortal draft access.", badge: "GUARANTEED", icon: "military_tech" },
+        { title: "Low Priority Penalty Cleansing (5 Games)", tag: "Single Draft", price: "$22.00", desc: "Fast queue clearance in Single Draft mode to restore clean behavior standing.", badge: "SPEED CLEAR", icon: "cleaning_services" }
+      ],
+      packages: [
+        { title: "Immortal Draft Prep + Macro Coaching", tag: "Pro Package", price: "$175.00", desc: "Covers drafting counters, creep wave manipulation, and 300 guaranteed net MMR.", badge: "VIP COACHING", icon: "school" },
+        { title: "10 Ranked Calibration Games Package", tag: "New Season", price: "$70.00", desc: "Maximizes initial MMR bracket placement with 80%+ win rate assurance.", badge: "CALIBRATION", icon: "star_half" }
+      ],
+      events: [
+        { title: "Playora Battle Cup: Tier 7 & 8 Division", tag: "Prize: $1,800", price: "Free Entry", desc: "Saturday night brackets. Automatic escrow release to winning 5-man roster.", badge: "REGISTRATION", icon: "emoji_events" },
+        { title: "Mid-Only 1v1 Cash Ladder", tag: "Daily Match", price: "$5 Entry", desc: "Shadow Fiend / Puck mirrored mid match. Winner takes escrow pool.", badge: "1V1 ARENA", icon: "bolt" }
+      ],
+      news: [
+        { title: "Patch 7.37d Hero Tier List & Facets", tag: "Strategic Meta", price: "Read Breakdown", desc: "Comprehensive facet adjustments and why Ringmaster mid is dominating high elo.", badge: "PATCH NOTES", icon: "menu_book" },
+        { title: "Steam P2P Trade Escrow Updates", tag: "Trading Security", price: "Security Audit", desc: "How Playora eliminates 7-day trade holds through bonded hardware escrows.", badge: "SECURITY", icon: "lock" }
+      ]
+    },
+
+    lol: {
+      title: "League of Legends",
+      metric: "League Points (LP) / Challenger",
+      shop: [
+        { title: "Riot Points 7,200 RP Key Card", tag: "Instant Redemption", price: "$54.00", desc: "Official digital code. Works across NA, EUW, and EUNE server clusters.", badge: "INSTANT CODE", icon: "key" },
+        { title: "Mythic Essence 150 ME Bundle Voucher", tag: "Skin Crafting", price: "$68.00", desc: "Instantly unlock prestige and hextech vaulted skins in the crafting shop.", badge: "HEX CRAFT", icon: "auto_fix_high" },
+        { title: "Prestige Immortal Journey Sona Code", tag: "Vaulted Skin", price: "$45.00", desc: "Clean unredeemed hextech code verified by platform escrow bot.", badge: "RARE CODE", icon: "sell" }
+      ],
+      accounts: [
+        { title: "Master Tier 120 LP (EUW) - Clean MMR", tag: "Hand Leveled", price: "$195.00", desc: "Lifetime winrate 66%, 42 skins, original signup email credentials included.", badge: "MASTER TIER", icon: "verified" },
+        { title: "Level 30 Fresh Unranked (50,000+ BE)", tag: "Smurf Ready", price: "$14.50", desc: "Zero ranked games played. Hand-leveled against bots with clean hardware ID.", badge: "HIGH ESSENCE", icon: "account_circle" },
+        { title: "Diamond 2 Midlane Account (High MMR +28 LP)", tag: "Gains +28 LP", price: "$89.00", desc: "High MMR curve means 28 LP per win, skip divisions rapidly upon climb.", badge: "SUPER MMR", icon: "trending_up" }
+      ],
+      boosting: [
+        { title: "Diamond to Master Promotion Package", tag: "Division Leap", price: "$140.00", desc: "Covers all divisions from D4 to Master Tier. Includes stream & offline mode.", badge: "POPULAR LEAP", icon: "workspace_premium" },
+        { title: "Duo Queue With Challenger Mid / Jungler", tag: "Voice Comms", price: "$35.00", desc: "Per 3 games. Play on your own account with zero sharing required.", badge: "ZERO SHARING", icon: "group" },
+        { title: "5 Provisionals Placement Assurance", tag: "Season Reset", price: "$48.00", desc: "Guaranteed minimum 4 out of 5 wins. Any loss compensated with +2 bonus wins.", badge: "PLACEMENT", icon: "done_all" }
+      ],
+      packages: [
+        { title: "The Challenger Mentorship + Tier Climb", tag: "Complete Masterclass", price: "$240.00", desc: "Full division jump + 4 hours VOD reviews on wave management & tempo.", badge: "FLAGSHIP", icon: "military_tech" },
+        { title: "Clash Champion 5-Man Standin Pro", tag: "Clash Weekend", price: "$60.00", desc: "Rent a verified Challenger smurf to sub into your Tier 1 Clash team.", badge: "CLASH MERC", icon: "groups" }
+      ],
+      events: [
+        { title: "Summoner Rift Draft Cup Series ($3,500)", tag: "Tournament", price: "Free Entry", desc: "Weekly 5v5 draft tournament with automatic smart contract payouts to teams.", badge: "WEEKLY CUP", icon: "emoji_events" },
+        { title: "Howling Abyss 1v1 First Blood Bounties", tag: "Fast Matches", price: "$5 Entry", desc: "100 CS or First Blood win condition. 24/7 continuous matchmaking.", badge: "1V1 CASH", icon: "swords" }
+      ],
+      news: [
+        { title: "Pre-Season Item Rework & Lethality Curves", tag: "Meta Breakdown", price: "Read Analysis", desc: "In-depth spreadsheet calculations on the new assassin mythic changes.", badge: "ANALYSIS", icon: "insights" },
+        { title: "Vanguard Kernel Integration Safety Report", tag: "Safety Memo", price: "Whitepaper", desc: "Why our hardware isolated residential connections avoid Vanguard anti-cheat flags.", badge: "INTEGRITY", icon: "verified_user" }
+      ]
+    },
+
+    wildrift: {
+      title: "League of Legends: Wild Rift",
+      metric: "Marks / Sovereign Leaderboard",
+      shop: [
+        { title: "7,500 Wild Cores Top-Up Package", tag: "Instant Mobile ID", price: "$58.00", desc: "Fast credit to your Riot RiotID. No password required, 100% genuine bill.", badge: "FAST CORES", icon: "paid" },
+        { title: "Supreme Cells Sett & Zed Exclusive Bundle", tag: "Vault Skin", price: "$42.00", desc: "Direct gifting bypass service without 14-day friendship waiting block.", badge: "DIRECT GIFT", icon: "redeem" },
+        { title: "Wild Pass Elite Level 1-50 Instant Pass", tag: "Battlepass", price: "$19.50", desc: "All seasonal skins, poses, and poro coins automatically redeemed to inbox.", badge: "SEASON PASS", icon: "loyalty" }
+      ],
+      accounts: [
+        { title: "Sovereign Tier Top 100 Account (Global)", tag: "Top Leaderboard", price: "$320.00", desc: "Over 80 Marks in Sovereign. 74% winrate, 110 skins, clean Google Play link.", badge: "GLOBAL TOP", icon: "star" },
+        { title: "Master Tier Starter (Clean Unlinked)", tag: "Mobile Ready", price: "$65.00", desc: "Clean Riot credentials. High MMR ready to tackle Grandmaster ladder.", badge: "CLEAN CREDS", icon: "smartphone" },
+        { title: "Emerald 1 Smurf with High Blue Motes", tag: "65,000 Motes", price: "$30.00", desc: "Unlock 12 new heroes immediately. Perfect account for high-elo duo smurfing.", badge: "HIGH MOTES", icon: "account_balance" }
+      ],
+      boosting: [
+        { title: "Diamond to Grandmaster (Marks Boost)", tag: "Fast Marks", price: "$90.00", desc: "Delivered within 24 hours. Handled by top rank wild rift pro players.", badge: "MOBILE ELITE", icon: "trending_up" },
+        { title: "Duo Queue with Sovereign Support", tag: "No Account Share", price: "$28.00", desc: "Per 4 matches. Voice comms enabled. Guarantees lane stomps in botlane.", badge: "DUO QUEUE", icon: "group_add" },
+        { title: "Legendary Ranked Mode Push (+300 Score)", tag: "Solo Only", price: "$85.00", desc: "Climb through Warrior and Commander in the solo-only ranked queue.", badge: "SOLO LEGEND", icon: "psychology" }
+      ],
+      packages: [
+        { title: "Wild Rift Turnkey Challenger Package", tag: "Marks + Coaching", price: "$150.00", desc: "Includes 25 Marks boost + 2 live mobile screen share coaching sessions.", badge: "PRO CHOICE", icon: "inventory" },
+        { title: "Seasonal Rank Rewards Sweep Pass", tag: "Full Division", price: "$45.00", desc: "Guarantees seasonal Glorious skin + all ranked store reward tokens.", badge: "REWARD SWEEP", icon: "card_giftcard" }
+      ],
+      events: [
+        { title: "Wild Rift 5v5 Mobile Showdown Cup", tag: "Prize: $1,500", price: "Free Entry", desc: "Tournament hosted on official tournament realm. Instant escrow payout.", badge: "TOURNAMENT", icon: "emoji_events" },
+        { title: "Baron Lane 1v1 King of the Hill", tag: "Speed Match", price: "$3 Entry", desc: "Fast duel bracket. Automated screenshot AI referee validates the outcome.", badge: "FAST CASH", icon: "swords" }
+      ],
+      news: [
+        { title: "Wild Rift Patch 5.3: Champions Tier List", tag: "Meta Shift", price: "Read Intel", desc: "How item changes to Duskblade shift the assassin priority in high elo.", badge: "TIER LIST", icon: "format_list_bulleted" },
+        { title: "Anti-Lag Network Tunnel for SEA and EU", tag: "Infrastructure", price: "Tech Notice", desc: "Playora releases localized low-ping gaming proxy routes for mobile clients.", badge: "NETWORK", icon: "network_check" }
+      ]
+    },
+
+    wow: {
+      title: "World of Warcraft",
+      metric: "Mythic+ IO Rating & Keystones",
+      shop: [
+        { title: "1,000,000 WoW Gold (Any NA/EU Realm)", tag: "Guild Bank Delivery", price: "$62.00", desc: "Clean guild bank deposit. Traded from verified level 80 bank alts.", badge: "CLEAN GOLD", icon: "monetization_on" },
+        { title: "Mythic Raid Mount: Reins of the Ascendant", tag: "Direct Mount Carry", price: "$175.00", desc: "Unlocks guaranteed drop from final Mythic boss. Loot priority included.", badge: "RARE MOUNT", icon: "pets" },
+        { title: "WoW Token 30-Day Game Time Code", tag: "Digital Key", price: "$18.50", desc: "Instantly adds 30 days active subscription to your Battle.net account.", badge: "SUBSCRIPTION", icon: "confirmation_number" }
+      ],
+      accounts: [
+        { title: "3,200+ IO Mythic+ Keystone Master Main", tag: "635+ iLvl", price: "$450.00", desc: "Full Heroic/Mythic raid tier set. All 8 dungeon portals unlocked forever.", badge: "ELITE GEAR", icon: "stars" },
+        { title: "Gladiator Mounts Collection Account (TBC-DF)", tag: "Legacy Vanity", price: "$890.00", desc: "Audited account with 5 unobtainable PvP Gladiator drakes and tabards.", badge: "LEGACY GLAD", icon: "verified" },
+        { title: "Level 80 Fresh Alt Ready for Mythic+", tag: "600 iLvl", price: "$59.00", desc: "Max level campaign completed. Ready to step straight into Keystone dungeons.", badge: "READY TO RAID", icon: "flag" }
+      ],
+      boosting: [
+        { title: "+10 Keystone Timed Run (With Specific Key)", tag: "Mythic+ Dungeon", price: "$28.00", desc: "Guarantees Mythic tier vault reward on Tuesday reset. 4 pro carries carry you.", badge: "KEYSTONE TIMED", icon: "timer" },
+        { title: "Full 8/8 Mythic Raid Nerub-ar Palace Clear", tag: "VIP Raid Carry", price: "$290.00", desc: "Includes all tradeable loot from top world 50 guild roster. Self-play mode.", badge: "MYTHIC RAID", icon: "castle" },
+        { title: "Keystone Master (KSM) 2,000 IO Bundle", tag: "Full Season Mount", price: "$85.00", desc: "Timed runs for all current season dungeons. Unlocks seasonal mount achievement.", badge: "KSM COMPLETE", icon: "military_tech" }
+      ],
+      packages: [
+        { title: "Full Great Vault 3-Slot Keystone Package", tag: "Weekly Cap", price: "$75.00", desc: "Complete 8x +10 Keystones in a single evening. Maximum 3x 623 iLvl choices.", badge: "VAULT MAX", icon: "inventory_2" },
+        { title: "Arena 2,100 Rating Weapon Illusion Pass", tag: "PvP Mastery", price: "$130.00", desc: "Self-play 3v3 arena alongside Rank 1 gladiators. Unlocks elite transmog set.", badge: "PVP GLORY", icon: "shield" }
+      ],
+      events: [
+        { title: "Playora Speed Keystone Invitational", tag: "Prize: $4,000", price: "Free Entry", desc: "Timed dungeon race tournament. Live stream with official log checking.", badge: "M+ RACE", icon: "emoji_events" },
+        { title: "Dueler Guild 1v1 Arena Brawl", tag: "Weekly Gold Pool", price: "100k Gold", desc: "Open to all classes. Smart escrow contract locks match bets securely.", badge: "PVP TOURNAMENT", icon: "swords" }
+      ],
+      news: [
+        { title: "The War Within Season 2 Class Balance", tag: "Patch Notes", price: "Read Intel", desc: "Detailed breakdown of tank survivability nerfs and healer throughput tiers.", badge: "BALANCE", icon: "article" },
+        { title: "Safeguarding Battle.net Accounts from IP Bans", tag: "Security Dispatch", price: "Best Practices", desc: "Our recommendations on using dedicated residential IPs for self-play carries.", badge: "SECURITY", icon: "lock" }
+      ]
+    }
+  };
+
+  // Tab Switcher Functions
+  function switchGame(gameKey) {
+    currentGame = gameKey;
+
+    const buttons = document.querySelectorAll('.game-tab-btn');
+    buttons.forEach(btn => {
+      btn.classList.remove('active', 'border-primary', 'bg-[#12231c]', 'text-primary', 'shadow-[0_0_12px_rgba(78,222,163,0.15)]');
+      btn.classList.add('border-transparent', 'bg-transparent', 'text-on-surface-variant');
+    });
+
+    const activeBtn = document.getElementById(`tab-game-${gameKey}`);
+    if (activeBtn) {
+      activeBtn.classList.add('active', 'border-primary', 'bg-[#12231c]', 'text-primary', 'shadow-[0_0_12px_rgba(78,222,163,0.15)]');
+      activeBtn.classList.remove('border-transparent', 'bg-transparent', 'text-on-surface-variant');
+    }
+
+    renderHubContent();
+  }
+
+  function switchCategory(catKey) {
+    currentCategory = catKey;
+
+    const pills = document.querySelectorAll('.cat-pill');
+    pills.forEach(pill => {
+      pill.classList.remove('active', 'bg-primary-container', 'text-on-primary-container', 'shadow-[0_0_12px_rgba(16,185,129,0.3)]');
+      pill.classList.add('bg-[#0e1f18]/80', 'text-on-surface-variant');
+    });
+
+    const activePill = document.getElementById(`cat-${catKey}`);
+    if (activePill) {
+      activePill.classList.add('active', 'bg-primary-container', 'text-on-primary-container', 'shadow-[0_0_12px_rgba(16,185,129,0.3)]');
+      activePill.classList.remove('bg-[#0e1f18]/80', 'text-on-surface-variant');
+    }
+
+    renderHubContent();
+  }
+
+  // Render Dynamic Cards
+  function renderHubContent() {
+    const container = document.getElementById('dynamic-hub-content');
+    const gameData = gameDatabase[currentGame];
+    const items = gameData[currentCategory] || [];
+
+    let html = '';
+
+    items.forEach((item) => {
+      html += `
+        <div class="bg-[#0e1f18]/85 backdrop-blur-md rounded-xl border border-outline-variant/80 p-5 flex flex-col justify-between hover:border-primary/60 transition-all duration-150 relative group hover:shadow-[0_4px_24px_rgba(78,222,163,0.12)]">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded text-[10px] font-label-caps uppercase bg-[#12231c] text-primary border border-emerald-500/30 tracking-wider font-mono">
+                ${item.badge}
+              </span>
+              <span class="text-xs font-label-md text-outline flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm text-primary" data-icon="${item.icon}">${item.icon}</span>
+                ${item.tag}
+              </span>
+            </div>
+
+            <h4 class="font-headline-sm text-base font-bold text-on-surface group-hover:text-primary transition-colors">
+              ${item.title}
+            </h4>
+
+            <p class="font-body-sm text-xs text-on-surface-variant mt-2 mb-4 leading-relaxed">
+              ${item.desc}
+            </p>
+          </div>
+
+          <div class="border-t border-outline-variant/60 pt-4 mt-2">
+            <div class="flex items-baseline justify-between mb-3">
+              <div>
+                <span class="text-[10px] font-label-caps text-outline uppercase block font-mono">ESCROW PROTECTED</span>
+                <span class="font-mono text-xl font-bold text-primary">${item.price}</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-label-caps text-primary font-mono block">INSTANT AUDIT</span>
+                <span class="text-xs text-on-surface-variant font-mono">100% Guaranteed</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <button class="w-full py-2 bg-primary-container text-on-primary-container hover:bg-primary font-label-md text-xs uppercase rounded-lg transition-colors font-bold flex items-center justify-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.25)]">
+                <span class="material-symbols-outlined text-sm" data-icon="shopping_cart_checkout">shopping_cart_checkout</span>
+                <span>Instant Lock</span>
+              </button>
+              <button class="w-full py-2 bg-[#12231c] hover:bg-[#1d2d26] text-on-surface font-label-md text-xs uppercase rounded-lg transition-colors border border-outline-variant flex items-center justify-center gap-1 font-semibold">
+                <span class="material-symbols-outlined text-sm" data-icon="visibility">visibility</span>
+                <span>Inspect Spec</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  // Flash Sale Live Timer Countdown
+  function startCountdown() {
+    let hours = 5;
+    let minutes = 42;
+    let seconds = 12;
+
+    const hEl = document.getElementById('timer-hours');
+    const mEl = document.getElementById('timer-minutes');
+    const sEl = document.getElementById('timer-seconds');
+
+    setInterval(() => {
+      if (seconds > 0) {
+        seconds--;
+      } else {
+        seconds = 59;
+        if (minutes > 0) {
+          minutes--;
+        } else {
+          minutes = 59;
+          if (hours > 0) {
+            hours--;
+          }
+        }
+      }
+
+      if (hEl) hEl.textContent = hours < 10 ? '0' + hours : hours;
+      if (mEl) mEl.textContent = minutes < 10 ? '0' + minutes : minutes;
+      if (sEl) sEl.textContent = seconds < 10 ? '0' + seconds : seconds;
+    }, 1000);
+  }
+
+  // Dynamic Tactical HUD Scrollbar Sync Listener
+  function initHudScrollbar() {
+    const thumb = document.getElementById('hud-scroll-thumb');
+    const percentEl = document.getElementById('hud-scroll-percent');
+
+    function updateScroll() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = scrollHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / scrollHeight) * 100)) : 0;
+
+      if (percentEl) {
+        percentEl.textContent = `${Math.round(progress)}%`;
+      }
+
+      if (thumb) {
+        // Compute position inside the vertical guide rail
+        const boundedProgress = Math.max(0, Math.min(88, progress * 0.88));
+        thumb.style.top = `${boundedProgress}%`;
+      }
+    }
+
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    updateScroll();
+  }
+
+  // Initialize content on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    renderHubContent();
+    startCountdown();
+    initHudScrollbar();
+  });
+</script>
+
+
+
+
+</body></html>
