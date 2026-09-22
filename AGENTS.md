@@ -49,7 +49,7 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 ## Homepage/game design revision (23 September 2026)
 
 - The owner requested equal prominence for all games, service introductions on the homepage and game selection at its bottom; remove the homepage fighting-spirit section and global service navigation.
-- Game hubs retain their game introduction across service filtering and display featured offers above ordinary sections.
+- Game hubs retain their game introduction across service selection and display featured offers. Use large service cards, then only the selected service with a small Back to choose service link; no All services feed/control. Game navbars also omit global service links; Sell an account belongs inside Accounts.
 - Shop and news discovery are now explicitly requested design concepts, superseding their earlier exclusion as unsolicited export content. Detailed downstream flows and business rules still need design decisions; this does not authorize runtime implementation. See `docs/redesign/HOMEPAGE_GAME_HUB_REVISION.md`.
 
 ## Current delivery boundary (13 September 2026)

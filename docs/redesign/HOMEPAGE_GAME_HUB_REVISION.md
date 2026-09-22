@@ -10,13 +10,15 @@ Order: quiet hero → activity → Boost → Accounts → Shop → Crypto paymen
 
 Each service introduction has one “Choose your game” action targeting `#P01/games`. Native page scrolling, a soft scroll when permitted, and focus on the destination heading make the destination understandable to keyboard and screen-reader users. Repeated clicks must still scroll when the hash already matches. No forced scroll capture or motion gate.
 
-Game cards have equally sized image areas, names and available-service tags. Tags describe capabilities, not separate small click targets. The full available card opens the game’s all-services view. A paused card has a dimmed image, readable status text, no link and no keyboard activation. Missing services are omitted, not advertised as selectable. Catalog order and availability in this artifact are fictional examples. Dedicated art for VALORANT, Dota 2 and Wild Rift remains a clearly marked placeholder.
+Game cards have equally sized image areas, names and available-service tags. Tags describe capabilities, not separate small click targets. The full available card opens the game’s service chooser. A paused card has a dimmed image, readable status text, no link and no keyboard activation. Missing services are omitted, not advertised as selectable. Catalog order and availability in this artifact are fictional examples. Dedicated art for VALORANT, Dota 2 and Wild Rift remains a clearly marked placeholder.
 
 ## Game hubs G01–G06
 
-Game artwork, name, short description and statistics remain in the document as service selection changes. The header is not fixed across the full viewport: it scrolls normally so mobile content remains usable. Service navigation sits immediately after the introduction. All services is the initial selection and is always available as a reset. Only supported categories appear.
+Game artwork, name, short description and statistics remain in the document across service selection. The game navbar has only the logo, Support and Sign in; remove Games, Accounts, Sell an account and How it works here too. The header scrolls normally rather than taking over the viewport.
 
-Links store selection in `#G01/boost`, `/accounts`, `/shop`, `/news` or `/all`. Browser Back restores the selection. Switching keeps the header mounted and keyboard focus on the selected navigation link. Hidden sections leave both layout and the accessibility tree. Visible sections enter with a short 8px/opacity transition; reduced motion removes animation. Invalid or unsupported service fragments fall back to All services.
+The initial view has large service cards for supported categories and the featured rail. It has no combined service feed and no “All services” control. Selecting a card replaces the chooser with only that service and its related offers. A small “Back to choose service” link returns to the cards. Buying/selling entry actions live inside Accounts, not in the navbar. Existing P12/S02 destinations remain design templates; per-game downstream content/context is a later design pass.
+
+Selection remains URL-backed (`#G01/boost`, `/accounts`, `/shop`, `/news`); the bare game hash restores the chooser. Browser Back restores the previous view. Invalid and legacy `/all` fragments show the chooser. When a focused chooser card becomes hidden, focus moves to the selected service heading; the back link restores focus to the chooser heading. Hidden panels leave layout and the accessibility tree. Short entry transitions respect reduced motion.
 
 Featured offers sit above ordinary service content, with a restrained green border/glow rather than flashing. The initial view shows features across categories; selecting a service shows related featured items only. The offer action selects its service. News uses an editorial “Editor’s pick” badge, not a false discount. Empty promotion inventory should omit the rail. Promotions never override paused availability.
 
@@ -38,4 +40,4 @@ Seller proceeds remain direct crypto under the accepted offer, supporting either
 
 ## Review path
 
-Open P01, inspect the section order, activate each of the five Choose your game links and inspect the final catalog. Open any active game, switch service → All services → browser Back, and verify the game introduction stays intact. Inspect a game without Shop and the paused Wild Rift card. Review at desktop, tablet and narrow phone widths. This is a homepage/hub design revision, not acceptance of all older screens or authorization to implement.
+Open P01, inspect the section order, activate each of the five Choose your game links and inspect the final catalog. Open any active game, choose a service → Back to choose service → browser Back, and verify the game introduction stays intact. Inspect a game without Shop and the paused Wild Rift card. Review at desktop, tablet and narrow phone widths. This is a homepage/hub design revision, not acceptance of all older screens or authorization to implement.

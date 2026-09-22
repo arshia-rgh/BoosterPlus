@@ -198,8 +198,8 @@
         "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Service navigation",
-        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
+        "title": "Choose a service",
+        "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
         "title": "Featured offers",
@@ -207,7 +207,7 @@
       },
       {
         "title": "Service sections",
-        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
+        "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
       }
     ],
     "actions": [
@@ -274,8 +274,8 @@
         "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Service navigation",
-        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
+        "title": "Choose a service",
+        "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
         "title": "Featured offers",
@@ -283,7 +283,7 @@
       },
       {
         "title": "Service sections",
-        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
+        "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
       }
     ],
     "actions": [
@@ -347,8 +347,8 @@
         "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Service navigation",
-        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
+        "title": "Choose a service",
+        "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
         "title": "Featured offers",
@@ -356,7 +356,7 @@
       },
       {
         "title": "Service sections",
-        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
+        "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
       }
     ],
     "actions": [
@@ -420,8 +420,8 @@
         "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Service navigation",
-        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
+        "title": "Choose a service",
+        "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
         "title": "Featured offers",
@@ -429,7 +429,7 @@
       },
       {
         "title": "Service sections",
-        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
+        "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
       }
     ],
     "actions": [
@@ -493,8 +493,8 @@
         "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Service navigation",
-        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
+        "title": "Choose a service",
+        "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
         "title": "Featured offers",
@@ -502,7 +502,7 @@
       },
       {
         "title": "Service sections",
-        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
+        "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
       }
     ],
     "actions": [
@@ -566,8 +566,8 @@
         "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Service navigation",
-        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
+        "title": "Choose a service",
+        "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
         "title": "Featured offers",
@@ -575,7 +575,7 @@
       },
       {
         "title": "Service sections",
-        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
+        "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
       }
     ],
     "actions": [

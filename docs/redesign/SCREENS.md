@@ -100,9 +100,9 @@ Make your next rank a clear goal.
 ### Page anatomy & content
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
-2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
 3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
-4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
+4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
 
 ### Actions & destinations
 
@@ -137,9 +137,9 @@ Plan your next adventure.
 ### Page anatomy & content
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
-2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
 3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
-4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
+4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
 
 ### Actions & destinations
 
@@ -174,9 +174,9 @@ Build a climb around your role.
 ### Page anatomy & content
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
-2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
 3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
-4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
+4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
 
 ### Actions & destinations
 
@@ -211,9 +211,9 @@ Set your next competitive milestone.
 ### Page anatomy & content
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
-2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
 3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
-4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
+4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
 
 ### Actions & destinations
 
@@ -248,9 +248,9 @@ Choose your next MMR milestone.
 ### Page anatomy & content
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
-2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
 3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
-4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
+4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
 
 ### Actions & destinations
 
@@ -285,9 +285,9 @@ A clearer path through the ranks.
 ### Page anatomy & content
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
-2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
 3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
-4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
+4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
 
 ### Actions & destinations
 

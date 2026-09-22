@@ -8,7 +8,7 @@ The owner confirmed that the 13 HTML files in [pages/](pages/) are the full refe
 
 ## Latest owner revision
 
-[Homepage and game hubs](HOMEPAGE_GAME_HUB_REVISION.md) now use equal-game discovery: service introductions → game selection → persistent game header and filterable services. Shop and news are newly requested design concepts, not imported scope from Stitch. Earlier MLBB-first homepage guidance is superseded. Application development and R10/R11 remain paused.
+[Homepage and game hubs](HOMEPAGE_GAME_HUB_REVISION.md) now use equal-game discovery: service introductions → game selection → persistent game header, large service choices and individual service views. Shop and news are newly requested design concepts, not imported scope from Stitch. Earlier MLBB-first homepage guidance is superseded. Application development and R10/R11 remain paused.
 
 ## Open the design
 

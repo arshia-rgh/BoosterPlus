@@ -55,7 +55,7 @@ function isAdmin(s) {
   );
 }
 function nav(s) {
-  if (s.id === "P01")
+  if (s.id === "P01" || s.kind === "game")
     return `<nav class="topnav minimalnav" aria-label="Main"><a href="#P01" class="brand"><img src="assets/logo.svg" alt="PLAYORA"></a><div class="navend">${link("Support", "C13")}${link("Sign in", "I01", "button primary")}</div></nav>`;
   const internal = isAdmin(s) || s.group === "Booster";
   const signedIn =
@@ -371,10 +371,10 @@ function gameHub(s) {
       "Updates, patch notes and practical guides, together in one place.",
     ],
   };
-  return `<div class="gamehub"><section class="hubhero"><img src="assets/${g.art}.jpg" alt=""><div class="hubherocopy">${link("← All games", "P01/games", "textlink")}<div class="eyebrow">YOUR WORLD / PLAYORA</div><h1>${g.name}</h1><p>${g.goal}</p>${g.placeholder ? '<p class="quiet">Art direction placeholder · dedicated game art pending</p>' : ""}${g.paused ? chip("Services temporarily unavailable", "amber") : ""}</div></section><div class="hubmetrics">${metrics(g.id)}</div><nav class="servicechooser" aria-label="Game services"><a href="#${g.id}/all" data-service="all" class="servicefilter" aria-current="true">All services</a>${g.services.map((k) => `<a href="#${g.id}/${k}" class="servicefilter" data-service="${k}">${serviceNames[k]}</a>`).join("")}</nav><div class="hubcontent"><section class="featuredoffers" aria-labelledby="featuredTitle"><div class="sectionhead"><div><div class="eyebrow">IN THE SPOTLIGHT</div><h2 id="featuredTitle">Worth a closer look.</h2></div><span class="quiet">Illustrative promotions</span></div><div class="offergrid">${g.services.map((k) => `<article class="spotlight" data-offer="${k}">${chip({ boost: "Limited quantity", accounts: "Featured listing", shop: "Limited time", news: "Editor’s pick" }[k], "neutral")}<p class="eyebrow">${serviceNames[k]}</p><h3>${{ boost: "A package for your next goal", accounts: "A fresh start, carefully detailed", shop: "A little extra for your next session", news: "What changed in the latest patch" }[k]}</h3><p>${k === "news" ? "Explore the changes and what they mean for your next game." : "Review scope, availability and terms before choosing."}</p><a class="textlink" href="#${g.id}/${k}">Explore ${serviceNames[k].toLowerCase()} ↗</a></article>`).join("")}</div></section><p id="serviceFeedback" class="sr-only" role="status"></p>${g.services
+  return `<div class="gamehub"><section class="hubhero"><img src="assets/${g.art}.jpg" alt=""><div class="hubherocopy">${link("← All games", "P01/games", "textlink")}<div class="eyebrow">YOUR WORLD / PLAYORA</div><h1>${g.name}</h1><p>${g.goal}</p>${g.placeholder ? '<p class="quiet">Art direction placeholder · dedicated game art pending</p>' : ""}${g.paused ? chip("Services temporarily unavailable", "amber") : ""}</div></section><div class="hubmetrics">${metrics(g.id)}</div><section class="serviceentry" id="serviceEntry"><div class="sectionhead"><div><div class="eyebrow">MAKE YOUR NEXT MOVE</div><h2 id="serviceChoiceTitle" tabindex="-1">Choose your service.</h2></div><p>What brings you to ${g.name}?</p></div><nav class="servicechoices" aria-label="Choose a game service">${g.services.map((k) => `<a href="#${g.id}/${k}" class="servicechoice" data-service="${k}"><span class="orb" aria-hidden="true">${{ boost: "↗", accounts: "⇄", shop: "✦", news: "≋" }[k]}</span><strong>${serviceNames[k]}</strong><span>${descriptions[k][1]}</span><span class="choicearrow" aria-hidden="true">↗</span></a>`).join("")}</nav></section><div class="serviceback" id="serviceBack" hidden>${link("← Back to choose service", g.id, "textlink")}</div><div class="hubcontent"><section class="featuredoffers" aria-labelledby="featuredTitle"><div class="sectionhead"><div><div class="eyebrow">IN THE SPOTLIGHT</div><h2 id="featuredTitle">Worth a closer look.</h2></div><span class="quiet">Illustrative promotions</span></div><div class="offergrid">${g.services.map((k) => `<article class="spotlight" data-offer="${k}">${chip({ boost: "Limited quantity", accounts: "Featured listing", shop: "Limited time", news: "Editor’s pick" }[k], "neutral")}<p class="eyebrow">${serviceNames[k]}</p><h3>${{ boost: "A package for your next goal", accounts: "A fresh start, carefully detailed", shop: "A little extra for your next session", news: "What changed in the latest patch" }[k]}</h3><p>${k === "news" ? "Explore the changes and what they mean for your next game." : "Review scope, availability and terms before choosing."}</p><a class="textlink" href="#${g.id}/${k}">Explore ${serviceNames[k].toLowerCase()} ↗</a></article>`).join("")}</div></section><p id="serviceFeedback" class="sr-only" role="status"></p>${g.services
     .map(
       (k) =>
-        `<section class="hubservice" data-panel="${k}"><div class="sectionhead"><div><div class="eyebrow">${serviceNames[k]}</div><h2>${descriptions[k][0]}</h2></div><p>${descriptions[k][1]}</p></div><div class="three">${(k ===
+        `<section class="hubservice" data-panel="${k}"><div class="sectionhead"><div><div class="eyebrow">${serviceNames[k]}</div><h2 id="serviceTitle-${k}" tabindex="-1">${descriptions[k][0]}</h2></div><p>${descriptions[k][1]}</p></div><div class="three">${(k ===
         "boost"
           ? [
               [
@@ -435,7 +435,7 @@ function gameHub(s) {
           .map(([t, d]) => card(t, d))
           .join(
             "",
-          )}</div>${k === "boost" && !g.paused ? `<div class="actions">${link("Build a custom boost ↗", g.config, "button primary")}${g.id === "G01" ? link("View a fixed package", "P07", "button") : ""}</div>` : ""}<details class="smallsection"><summary>${k === "boost" ? "Package preview" : k === "accounts" ? "Account listing preview" : k === "shop" ? "Product preview" : "Article preview"} · design details</summary><p>${g.name} / ${serviceNames[k]}. Final catalog content, commercial terms and ${k === "news" ? "editorial publication" : "eligibility"} require approval. This review demonstrates discovery and filtering; it does not place orders.</p></details></section>`,
+          )}</div>${k === "boost" && !g.paused ? `<div class="actions">${link("Build a custom boost ↗", g.config, "button primary")}${g.id === "G01" ? link("View a fixed package", "P07", "button") : ""}</div>` : ""}${k === "accounts" && !g.paused ? `<div class="accountentry actions">${link("Browse accounts ↗", "P12", "button primary")}${link("Sell an account", "S02", "button")}</div>` : ""}<details class="smallsection"><summary>${k === "boost" ? "Package preview" : k === "accounts" ? "Account listing preview" : k === "shop" ? "Product preview" : "Article preview"} · design details</summary><p>${g.name} / ${serviceNames[k]}. Final catalog content, commercial terms and ${k === "news" ? "editorial publication" : "eligibility"} require approval. This review demonstrates discovery and filtering; it does not place orders.</p></details></section>`,
     )
     .join("")}</div></div>`;
 }
@@ -456,18 +456,33 @@ function applyDestination() {
   if (current.kind !== "game") return;
   const profile = gameProfiles.find((g) => g.id === current.id);
   const selected = profile.services.includes(destination) ? destination : "all";
-  document.querySelectorAll("[data-service]").forEach((el) => {
-    if (el.dataset.service === selected)
-      el.setAttribute("aria-current", "true");
-    else el.removeAttribute("aria-current");
+  const focusWasInChoice = $("serviceEntry").contains(document.activeElement);
+  const focusWasInService =
+    $("serviceBack").contains(document.activeElement) ||
+    !!document.activeElement.closest(".hubcontent");
+  $("serviceEntry").hidden = selected !== "all";
+  $("serviceBack").hidden = selected === "all";
+  document.querySelectorAll("[data-panel]").forEach((el) => {
+    el.hidden = el.dataset.panel !== selected;
   });
-  document.querySelectorAll("[data-panel], [data-offer]").forEach((el) => {
-    el.hidden =
-      selected !== "all" && (el.dataset.panel || el.dataset.offer) !== selected;
+  document.querySelectorAll("[data-offer]").forEach((el) => {
+    el.hidden = selected !== "all" && el.dataset.offer !== selected;
   });
+  if (selected !== "all" && (focusWasInChoice || focusWasInService)) {
+    $("serviceTitle-" + selected).focus({ preventScroll: true });
+    $("serviceBack").scrollIntoView({
+      block: "start",
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+    });
+  } else if (selected === "all" && focusWasInService) {
+    $("serviceChoiceTitle").focus({ preventScroll: true });
+    $("serviceEntry").scrollIntoView({ block: "start" });
+  }
   $("serviceFeedback").textContent =
     selected === "all"
-      ? "Showing all services and featured offers."
+      ? "Choose a service. Featured offers are also available below."
       : `Showing ${serviceNames[selected]} and related featured offers.`;
 }
 function summary(s) {

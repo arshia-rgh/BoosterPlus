@@ -2298,3 +2298,78 @@ details p {
 .minimalnav .navend {
   margin-left: auto;
 }
+
+/* Service entry replaces the multi-category feed and filter pills. */
+.serviceentry {
+  padding: 40px clamp(24px, 6vw, 80px);
+  scroll-margin-top: 24px;
+}
+.servicechoices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.servicechoice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 28px;
+  border: 1px solid #39523f;
+  border-radius: 20px;
+  text-decoration: none;
+  background:
+    radial-gradient(ellipse at top right, #3a59292b, transparent 75%), #102017;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.servicechoice:hover {
+  border-color: #b6e98a;
+  background-color: #1a2d1e;
+}
+.servicechoice strong {
+  font-size: 26px;
+}
+.servicechoice > span:not(.orb):not(.choicearrow) {
+  max-width: 370px;
+  color: #b8c8bc;
+  line-height: 1.7;
+  font-size: 14px;
+}
+.choicearrow {
+  position: absolute;
+  top: 32px;
+  right: 28px;
+  font-size: 24px;
+  color: #c2ee9b;
+}
+.serviceback {
+  padding: 24px clamp(24px, 6vw, 80px) 0;
+  scroll-margin-top: 24px;
+  font-size: 13px;
+}
+.serviceentry[hidden],
+.serviceback[hidden] {
+  display: none;
+}
+.phone .servicechoices {
+  grid-template-columns: 1fr;
+}
+@media (max-width: 600px) {
+  .servicechoices {
+    grid-template-columns: 1fr;
+  }
+  .servicechoice {
+    padding: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .servicechoice {
+    transition: none;
+  }
+}
+.servicechoice .orb {
+  width: 52px;
+}
