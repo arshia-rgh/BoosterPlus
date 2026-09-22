@@ -1894,3 +1894,407 @@ details p {
     overflow-wrap: anywhere;
   }
 }
+
+/* Equal-game discovery: design-only September owner revision. */
+.discoveryhero {
+  min-height: 640px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.discoveryhero p {
+  max-width: 560px;
+}
+.scrollhint {
+  display: flex;
+  gap: 24px;
+  margin-top: 56px;
+  color: #bac8bf;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.activitysection {
+  padding-top: 28px;
+  padding-bottom: 46px;
+}
+.metricstrip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-block: 1px solid #31443a;
+  padding: 30px 0;
+}
+.metricstrip > div {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  padding: 0 30px;
+  border-right: 1px solid #31443a;
+}
+.metricstrip > div:last-child {
+  border: 0;
+}
+.metricstrip strong {
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: -0.045em;
+  font-weight: 550;
+  color: #eef8f0;
+}
+.metricstrip small {
+  font-size: 0.55em;
+}
+.metricstrip span {
+  color: #b0c3b6;
+  font-size: 13px;
+}
+.metricstrip .live-dot {
+  position: absolute;
+  top: 8px;
+  right: 26px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #bcf77c;
+  box-shadow: 0 0 14px #b8f77260;
+}
+.metricnote {
+  margin-top: 14px;
+  font-size: 12px;
+  color: #a5b5ab;
+}
+.metricnote p {
+  max-width: 820px;
+  line-height: 1.7;
+  margin-top: 12px;
+}
+.serviceintro {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  align-items: center;
+  gap: clamp(30px, 7vw, 100px);
+  padding-block: 78px;
+  border-bottom: 1px solid #25392e;
+}
+.introcopy h2,
+.gamedestination h2 {
+  font-size: clamp(32px, 4vw, 54px);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+  margin: 18px 0 22px;
+}
+.introcopy > p {
+  max-width: 470px;
+  line-height: 1.8;
+  color: #adbcaf;
+  margin-bottom: 28px;
+}
+.servicevisual {
+  padding: clamp(22px, 3vw, 40px);
+  border: 1px solid #354b3a;
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 90% 0%, #36572755, transparent 65%),
+    linear-gradient(145deg, #14231c, #0c1611);
+  box-shadow: 0 24px 70px #0003;
+}
+.visualheading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 28px;
+  font-size: 14px;
+  color: #dcebdc;
+}
+.orb {
+  display: grid;
+  place-items: center;
+  flex: 0 0 52px;
+  height: 52px;
+  border-radius: 16px;
+  border: 1px solid #60833c;
+  background: #b9f37812;
+  color: #c6f599;
+  font-size: 29px;
+}
+.featureline {
+  display: flex;
+  gap: 20px;
+  padding: 22px 0;
+  border-top: 1px solid #2a3d30;
+}
+.featureline:last-child {
+  padding-bottom: 0;
+}
+.featureindex {
+  font-size: 11px;
+  color: #b9ef85;
+  padding-top: 3px;
+}
+.featureline h3 {
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+.featureline p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #a9bbae;
+}
+.intro-accounts .servicevisual,
+.intro-payments .servicevisual {
+  background:
+    radial-gradient(ellipse at 0 100%, #456c3540, transparent 65%), #101c16;
+}
+.gamedestination {
+  padding-top: 90px;
+  scroll-margin-top: 24px;
+}
+.discoverygames {
+  margin-top: 28px;
+}
+.discoverygames .gamecard {
+  min-height: 310px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: #14211a;
+}
+.discoverygames .gamecard > img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  z-index: -2;
+  transition: transform 0.5s ease;
+}
+.discoverygames .gamecard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #07110d22 10%,
+    #07110d60 35%,
+    #07110df5 100%
+  );
+  z-index: -1;
+}
+.discoverygames a.gamecard:hover > img {
+  transform: scale(1.035);
+}
+.capabilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.capabilities .chip {
+  font-size: 10px;
+  padding: 5px 8px;
+}
+.gamecardtop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.artnote {
+  font-size: 11px;
+  color: #e0e9dd;
+  background: #112218d9;
+  padding: 5px 8px;
+  border-radius: 5px;
+}
+.gamepaused > img {
+  filter: grayscale(1);
+  opacity: 0.35;
+}
+.gamepaused {
+  cursor: default;
+}
+.gamepaused p {
+  font-size: 12px;
+  margin-top: 12px;
+}
+.hubhero {
+  position: relative;
+  min-height: 340px;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.hubhero > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+  z-index: -2;
+}
+.hubhero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, #08130ef5 5%, #08130ec9 45%, #08130e33),
+    linear-gradient(0deg, #08130e, transparent 50%);
+}
+.hubherocopy {
+  padding: 40px clamp(24px, 6vw, 80px);
+  max-width: 800px;
+}
+.hubherocopy .eyebrow {
+  margin-top: 40px;
+}
+.hubherocopy h1 {
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  margin: 16px 0;
+}
+.hubherocopy p {
+  color: #c1d0c4;
+  line-height: 1.7;
+}
+.hubmetrics,
+.hubcontent {
+  padding: 0 clamp(24px, 6vw, 80px);
+}
+.hubmetrics .metricstrip {
+  padding-block: 24px;
+}
+.hubmetrics .metricstrip strong {
+  font-size: 30px;
+}
+.servicechooser {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 26px clamp(24px, 6vw, 80px);
+  border-bottom: 1px solid #304335;
+}
+.servicefilter {
+  border: 1px solid #34483a;
+  border-radius: 40px;
+  padding: 12px 22px;
+  font-size: 14px;
+  color: #c0cfc4;
+  background: #142119;
+  text-decoration: none;
+}
+.servicefilter[aria-current] {
+  color: #12200d;
+  background: #c1f48b;
+  border-color: #c1f48b;
+}
+.featuredoffers {
+  padding-block: 42px;
+}
+.offergrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.spotlight {
+  position: relative;
+  padding: 28px;
+  border: 1px solid #638046;
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse at 100% 0, #5d7b3135, transparent 75%), #152318;
+  box-shadow: 0 0 24px #9ccd6210;
+}
+.spotlight .eyebrow {
+  margin-top: 24px;
+}
+.spotlight h3 {
+  font-size: 23px;
+  margin: 10px 0;
+}
+.spotlight p:not(.eyebrow) {
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 22px;
+  color: #b7c6ba;
+}
+.hubservice {
+  padding: 36px 0 48px;
+  border-top: 1px solid #304335;
+  animation: reveal-service 0.28s ease-out;
+}
+[data-panel][hidden],
+[data-offer][hidden] {
+  display: none;
+}
+@keyframes reveal-service {
+  from {
+    opacity: 0.3;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 700px) {
+  .serviceintro {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding-block: 46px;
+  }
+  .discoveryhero {
+    min-height: 510px;
+  }
+  .metricstrip > div {
+    padding: 0 10px;
+  }
+  .metricstrip span {
+    font-size: 11px;
+  }
+  .metricstrip .live-dot {
+    right: 8px;
+    top: 0;
+  }
+  .offergrid {
+    grid-template-columns: 1fr;
+  }
+  .servicefilter {
+    padding: 10px 15px;
+  }
+  .hubherocopy {
+    padding: 28px 24px;
+  }
+  .hubhero {
+    min-height: 320px;
+  }
+}
+.phone .serviceintro,
+.tablet .serviceintro {
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+.phone .offergrid {
+  grid-template-columns: 1fr;
+}
+.phone .metricstrip > div {
+  padding: 0 8px;
+}
+.phone .metricstrip strong {
+  font-size: 26px;
+}
+.phone .metricstrip span {
+  font-size: 10px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hubservice {
+    animation: none;
+  }
+  .discoverygames .gamecard > img {
+    transition: none;
+  }
+}
+.minimalnav .navend {
+  margin-left: auto;
+}

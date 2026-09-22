@@ -1,5 +1,7 @@
 # Detailed interaction contract
 
+> 23 September revision: homepage/game navigation follows [HOMEPAGE_GAME_HUB_REVISION.md](HOMEPAGE_GAME_HUB_REVISION.md), superseding earlier MLBB-first or global-service entry guidance. Shop/news discovery is now owner-requested design scope.
+
 Applies to every screen specification. The atlas is a navigation/layout prototype with fictional examples; these are requirements for later implementation, not claims that its HTML executes the real business workflow.
 
 ## Global state and mutation rules

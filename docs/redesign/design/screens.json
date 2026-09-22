@@ -5,41 +5,49 @@
     "title": "Your next level starts here.",
     "route": "/",
     "kind": "hero",
-    "summary": "Choose your game. Build your boost. Stay connected from the first question to the final result.",
+    "summary": "Discover PLAYORA services, then choose any available game. All games receive equal visual treatment.",
     "sections": [
       {
-        "title": "Choose your game",
-        "body": "Mobile Legends is our starting lineup. Other games appear only when their catalog is published."
+        "title": "Hero",
+        "body": "Retain the landscape and short multi-game copy. No hero CTA. Logo, support and sign-in only in the homepage navigation."
       },
       {
-        "title": "A clear path to your goal",
-        "body": "Customize → Review your quote → Pay directly → Follow your progress."
+        "title": "Activity",
+        "body": "Live active orders and aggregate completed orders and eligible-match win rate. Explicit sample labels, definitions and unavailable/stale states."
       },
       {
-        "title": "Find your fighting spirit",
-        "body": "A quiet, game-specific scene. One active character at a time; readable text stays outside the art."
+        "title": "Boost services",
+        "body": "Fixed packages, custom quotes, limited time and quantity offers; Choose your game scrolls to the bottom selector."
       },
       {
-        "title": "Prefer a ready-made package?",
-        "body": "Exact scope and a fixed price, with no individual quote approval."
+        "title": "Accounts",
+        "body": "Buying, review, seller arrangements and supported handover; Choose your game."
       },
       {
-        "title": "Support throughout your order",
-        "body": "Keep messages, progress and proof together in your private order workspace."
+        "title": "Shop",
+        "body": "New owner-requested design concept: eligible in-game goods per game with transparent delivery requirements; Choose your game."
+      },
+      {
+        "title": "Crypto payments",
+        "body": "Direct payments and verified confirmation; seller proceeds follow agreed payout terms; Choose your game."
+      },
+      {
+        "title": "News and guides",
+        "body": "Updates, patches and learning per game; Choose your game."
+      },
+      {
+        "title": "Game selection",
+        "body": "Equal image cards, capability tags and text-labeled non-clickable paused games. No privileged MLBB section."
       }
     ],
     "actions": [
       {
-        "label": "Explore games",
-        "to": "P02"
+        "label": "Choose your game (in-page scroll)",
+        "to": "P01"
       },
       {
-        "label": "Browse accounts",
-        "to": "P12"
-      },
-      {
-        "label": "How it works",
-        "to": "P16"
+        "label": "Open an available game",
+        "to": "G01"
       }
     ],
     "states": [
@@ -66,8 +74,8 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Use the existing landscape as the hero, never an extra hero character overlay. Hero: 7 columns text/5 columns quiet art at desktop. No fake activity, countdowns, rating totals or publisher partnership claims.",
-    "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
+    "notes": "See HOMEPAGE_GAME_HUB_REVISION.md. All five Choose your game links target #P01/games. No fake live metrics, countdowns or publisher claims. Catalog capability examples are design fixtures.",
+    "mobile": "Single-column service introductions; wrapping capability badges; three compact metrics; no horizontal clipping. Respect reduced motion and focus the game-selection heading after anchor navigation.",
     "flowIds": [
       "F01"
     ]
@@ -78,7 +86,7 @@
     "title": "Find your game.",
     "route": "/games",
     "kind": "games",
-    "summary": "Boosting and fixed packages, organized around the way you play.",
+    "summary": "Choose from equally presented games, each showing its available services and current availability.",
     "sections": [
       {
         "title": "Mobile Legends",
@@ -186,20 +194,20 @@
     "summary": "Make your next rank a clear goal.",
     "sections": [
       {
-        "title": "Custom boost",
-        "body": "Rank, division, stars, requested win rate, hero and role restrictions. All choices use the current published game configuration."
+        "title": "Persistent game introduction",
+        "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Fixed packages",
-        "body": "Compare included scope, eligibility, price and availability before choosing."
+        "title": "Service navigation",
+        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
       },
       {
-        "title": "How it works",
-        "body": "Custom requests receive a final quote after review. Packages can proceed directly to checkout."
+        "title": "Featured offers",
+        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
       },
       {
-        "title": "Your questions, answered",
-        "body": "Payment timing · Play modes · Delivery estimates · Changes and support"
+        "title": "Service sections",
+        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
       }
     ],
     "actions": [
@@ -244,7 +252,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: mobile-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Launch example.",
+    "notes": "Game key: mobile-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Launch example. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F01",
@@ -262,20 +270,20 @@
     "summary": "Plan your next adventure.",
     "sections": [
       {
-        "title": "Custom boost",
-        "body": "Service first: dungeon, raid, leveling or PvP. Then region, realm, faction where applicable, difficulty, run count and schedule. All choices use the current published game configuration."
+        "title": "Persistent game introduction",
+        "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Fixed packages",
-        "body": "Compare included scope, eligibility, price and availability before choosing."
+        "title": "Service navigation",
+        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
       },
       {
-        "title": "How it works",
-        "body": "Custom requests receive a final quote after review. Packages can proceed directly to checkout."
+        "title": "Featured offers",
+        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
       },
       {
-        "title": "Your questions, answered",
-        "body": "Payment timing · Play modes · Delivery estimates · Changes and support"
+        "title": "Service sections",
+        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
       }
     ],
     "actions": [
@@ -320,7 +328,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: world-of-warcraft. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation.",
+    "notes": "Game key: world-of-warcraft. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F26"
@@ -335,20 +343,20 @@
     "summary": "Build a climb around your role.",
     "sections": [
       {
-        "title": "Custom boost",
-        "body": "Queue, region, starting and target rank/division/LP, role and champion preferences. All choices use the current published game configuration."
+        "title": "Persistent game introduction",
+        "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Fixed packages",
-        "body": "Compare included scope, eligibility, price and availability before choosing."
+        "title": "Service navigation",
+        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
       },
       {
-        "title": "How it works",
-        "body": "Custom requests receive a final quote after review. Packages can proceed directly to checkout."
+        "title": "Featured offers",
+        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
       },
       {
-        "title": "Your questions, answered",
-        "body": "Payment timing · Play modes · Delivery estimates · Changes and support"
+        "title": "Service sections",
+        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
       }
     ],
     "actions": [
@@ -393,7 +401,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: league-of-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation.",
+    "notes": "Game key: league-of-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F27"
@@ -408,20 +416,20 @@
     "summary": "Set your next competitive milestone.",
     "sections": [
       {
-        "title": "Custom boost",
-        "body": "Region, queue, starting and target rank/RR, play mode and agent preferences. All choices use the current published game configuration."
+        "title": "Persistent game introduction",
+        "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Fixed packages",
-        "body": "Compare included scope, eligibility, price and availability before choosing."
+        "title": "Service navigation",
+        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
       },
       {
-        "title": "How it works",
-        "body": "Custom requests receive a final quote after review. Packages can proceed directly to checkout."
+        "title": "Featured offers",
+        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
       },
       {
-        "title": "Your questions, answered",
-        "body": "Payment timing · Play modes · Delivery estimates · Changes and support"
+        "title": "Service sections",
+        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
       }
     ],
     "actions": [
@@ -466,7 +474,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: valorant. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation.",
+    "notes": "Game key: valorant. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F28"
@@ -481,20 +489,20 @@
     "summary": "Choose your next MMR milestone.",
     "sections": [
       {
-        "title": "Custom boost",
-        "body": "Region, starting and target MMR, party/solo requirements and hero/role preferences. All choices use the current published game configuration."
+        "title": "Persistent game introduction",
+        "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Fixed packages",
-        "body": "Compare included scope, eligibility, price and availability before choosing."
+        "title": "Service navigation",
+        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
       },
       {
-        "title": "How it works",
-        "body": "Custom requests receive a final quote after review. Packages can proceed directly to checkout."
+        "title": "Featured offers",
+        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
       },
       {
-        "title": "Your questions, answered",
-        "body": "Payment timing · Play modes · Delivery estimates · Changes and support"
+        "title": "Service sections",
+        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
       }
     ],
     "actions": [
@@ -539,7 +547,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: dota-2. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation.",
+    "notes": "Game key: dota-2. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F29"
@@ -554,20 +562,20 @@
     "summary": "A clearer path through the ranks.",
     "sections": [
       {
-        "title": "Custom boost",
-        "body": "Region, starting and target rank/marks, role and champion preferences. All choices use the current published game configuration."
+        "title": "Persistent game introduction",
+        "body": "Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero."
       },
       {
-        "title": "Fixed packages",
-        "body": "Compare included scope, eligibility, price and availability before choosing."
+        "title": "Service navigation",
+        "body": "All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state."
       },
       {
-        "title": "How it works",
-        "body": "Custom requests receive a final quote after review. Packages can proceed directly to checkout."
+        "title": "Featured offers",
+        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
       },
       {
-        "title": "Your questions, answered",
-        "body": "Payment timing · Play modes · Delivery estimates · Changes and support"
+        "title": "Service sections",
+        "body": "Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes."
       }
     ],
     "actions": [
@@ -612,7 +620,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: wild-rift. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation.",
+    "notes": "Game key: wild-rift. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F30"

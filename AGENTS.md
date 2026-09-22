@@ -46,6 +46,12 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 - The owner explicitly confirmed existing business rules remain: no wallet/escrow/tournament/top-up/automatic booster payout scope from the exports. Preserve the green brand direction.
 - Design review does not authorize product implementation or launch. R10/R11 stay held with full detail in `final-launch.md`. Owner visual acceptance remains open.
 
+## Homepage/game design revision (23 September 2026)
+
+- The owner requested equal prominence for all games, service introductions on the homepage and game selection at its bottom; remove the homepage fighting-spirit section and global service navigation.
+- Game hubs retain their game introduction across service filtering and display featured offers above ordinary sections.
+- Shop and news discovery are now explicitly requested design concepts, superseding their earlier exclusion as unsolicited export content. Detailed downstream flows and business rules still need design decisions; this does not authorize runtime implementation. See `docs/redesign/HOMEPAGE_GAME_HUB_REVISION.md`.
+
 ## Current delivery boundary (13 September 2026)
 
 - R07, R08 and R09 are delivered. UX01–UX10 implementation and automated qualification are delivered as of 14 September 2026; see `docs/ux/UX10_QUALIFICATION.md` for the route/state matrix, media and explicit remaining human/device review. Stop for owner acceptance. R10/R11 still require separate authorization.

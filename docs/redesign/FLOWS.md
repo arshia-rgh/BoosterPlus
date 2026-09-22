@@ -4,29 +4,27 @@ Each path links to designed views. Staff/customer handoffs represent different a
 
 ## F01 — Custom boost: browse to completion
 
-[P01](design/index.html#P01) → [P16](design/index.html#P16) → [P02](design/index.html#P02) → [G01](design/index.html#G01) → [P04](design/index.html#P04) → [P05](design/index.html#P05) → [I01](design/index.html#I01) → [I02](design/index.html#I02) → [P05](design/index.html#P05) → [P06](design/index.html#P06) → [C02](design/index.html#C02) → [C03](design/index.html#C03) → [P09](design/index.html#P09) → [P10](design/index.html#P10) → [P11](design/index.html#P11) → [C04](design/index.html#C04) → [C06](design/index.html#C06) → [C05](design/index.html#C05) → [C16](design/index.html#C16)
+[P01](design/index.html#P01) → [G01](design/index.html#G01) → [P04](design/index.html#P04) → [P05](design/index.html#P05) → [I01](design/index.html#I01) → [I02](design/index.html#I02) → [P05](design/index.html#P05) → [P06](design/index.html#P06) → [C02](design/index.html#C02) → [C03](design/index.html#C03) → [P09](design/index.html#P09) → [P10](design/index.html#P10) → [P11](design/index.html#P11) → [C04](design/index.html#C04) → [C06](design/index.html#C06) → [C05](design/index.html#C05) → [C16](design/index.html#C16)
 
 ```mermaid
 flowchart LR
   n0["P01 · Your next level starts here."]
-  n1["P16 · How PLAYORA works."]
-  n2["P02 · Find your game."]
-  n3["G01 · Mobile Legends"]
-  n4["P04 · Build your Mobile Legends boost."]
-  n5["P05 · Review your request."]
-  n6["I01 · Welcome to PLAYORA."]
-  n7["I02 · Check your email."]
-  n8["P05 · Review your request."]
-  n9["P06 · Your request is with our team."]
-  n10["C02 · Your orders."]
-  n11["C03 · Your quote is ready."]
-  n12["P09 · Choose how to pay."]
-  n13["P10 · Complete your payment."]
-  n14["P11 · We’re confirming your payment."]
-  n15["C04 · Let’s get your order ready."]
-  n16["C06 · Plan your play session."]
-  n17["C05 · Your boost is in progress."]
-  n18["C16 · Review your experience."]
+  n1["G01 · Mobile Legends"]
+  n2["P04 · Build your Mobile Legends boost."]
+  n3["P05 · Review your request."]
+  n4["I01 · Welcome to PLAYORA."]
+  n5["I02 · Check your email."]
+  n6["P05 · Review your request."]
+  n7["P06 · Your request is with our team."]
+  n8["C02 · Your orders."]
+  n9["C03 · Your quote is ready."]
+  n10["P09 · Choose how to pay."]
+  n11["P10 · Complete your payment."]
+  n12["P11 · We’re confirming your payment."]
+  n13["C04 · Let’s get your order ready."]
+  n14["C06 · Plan your play session."]
+  n15["C05 · Your boost is in progress."]
+  n16["C16 · Review your experience."]
   n0 --> n1
   n1 --> n2
   n2 --> n3
@@ -43,12 +41,11 @@ flowchart LR
   n13 --> n14
   n14 --> n15
   n15 --> n16
-  n16 --> n17
-  n17 --> n18
 ```
 
 **Branches and guards**
 
+- P01 service introductions all scroll to the bottom game selection. G01 starts with All services; select Boost without replacing its hero.
 - Invalid ranks stay in P04 with field errors.
 - Manual estimate can submit without a numeric promise.
 - Clarification returns to C03/C12.

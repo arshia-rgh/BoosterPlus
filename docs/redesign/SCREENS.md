@@ -8,21 +8,23 @@ Design review edition · 21 September 2026. All monetary values and identities a
 
 **Area:** Explore · **Current route:** `/` · **Layout:** hero
 
-Choose your game. Build your boost. Stay connected from the first question to the final result.
+Discover PLAYORA services, then choose any available game. All games receive equal visual treatment.
 
 ### Page anatomy & content
 
-1. **Choose your game** — Mobile Legends is our starting lineup. Other games appear only when their catalog is published.
-2. **A clear path to your goal** — Customize → Review your quote → Pay directly → Follow your progress.
-3. **Find your fighting spirit** — A quiet, game-specific scene. One active character at a time; readable text stays outside the art.
-4. **Prefer a ready-made package?** — Exact scope and a fixed price, with no individual quote approval.
-5. **Support throughout your order** — Keep messages, progress and proof together in your private order workspace.
+1. **Hero** — Retain the landscape and short multi-game copy. No hero CTA. Logo, support and sign-in only in the homepage navigation.
+2. **Activity** — Live active orders and aggregate completed orders and eligible-match win rate. Explicit sample labels, definitions and unavailable/stale states.
+3. **Boost services** — Fixed packages, custom quotes, limited time and quantity offers; Choose your game scrolls to the bottom selector.
+4. **Accounts** — Buying, review, seller arrangements and supported handover; Choose your game.
+5. **Shop** — New owner-requested design concept: eligible in-game goods per game with transparent delivery requirements; Choose your game.
+6. **Crypto payments** — Direct payments and verified confirmation; seller proceeds follow agreed payout terms; Choose your game.
+7. **News and guides** — Updates, patches and learning per game; Choose your game.
+8. **Game selection** — Equal image cards, capability tags and text-labeled non-clickable paused games. No privileged MLBB section.
 
 ### Actions & destinations
 
-- **Explore games** → [P02](design/index.html#P02). Prototype actions are simulations only; guards must pass in the eventual application.
-- **Browse accounts** → [P12](design/index.html#P12). Prototype actions are simulations only; guards must pass in the eventual application.
-- **How it works** → [P16](design/index.html#P16). Prototype actions are simulations only; guards must pass in the eventual application.
+- **Choose your game (in-page scroll)** → [P01](design/index.html#P01). Prototype actions are simulations only; guards must pass in the eventual application.
+- **Open an available game** → [G01](design/index.html#G01). Prototype actions are simulations only; guards must pass in the eventual application.
 
 ### States & recovery
 
@@ -34,10 +36,10 @@ Choose your game. Build your boost. Stay connected from the first question to th
 
 ### Responsive / accessibility
 
-Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
+Single-column service introductions; wrapping capability badges; three compact metrics; no horizontal clipping. Respect reduced motion and focus the game-selection heading after anchor navigation.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the existing landscape as the hero, never an extra hero character overlay. Hero: 7 columns text/5 columns quiet art at desktop. No fake activity, countdowns, rating totals or publisher partnership claims.
+See HOMEPAGE_GAME_HUB_REVISION.md. All five Choose your game links target #P01/games. No fake live metrics, countdowns or publisher claims. Catalog capability examples are design fixtures.
 
 **Journeys:** F01.
 
@@ -45,7 +47,7 @@ Use the existing landscape as the hero, never an extra hero character overlay. H
 
 **Area:** Explore · **Current route:** `/games` · **Layout:** games
 
-Boosting and fixed packages, organized around the way you play.
+Choose from equally presented games, each showing its available services and current availability.
 
 ### Page anatomy & content
 
@@ -97,10 +99,10 @@ Make your next rank a clear goal.
 
 ### Page anatomy & content
 
-1. **Custom boost** — Rank, division, stars, requested win rate, hero and role restrictions. All choices use the current published game configuration.
-2. **Fixed packages** — Compare included scope, eligibility, price and availability before choosing.
-3. **How it works** — Custom requests receive a final quote after review. Packages can proceed directly to checkout.
-4. **Your questions, answered** — Payment timing · Play modes · Delivery estimates · Changes and support
+1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
+2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
 
 ### Actions & destinations
 
@@ -122,7 +124,7 @@ Make your next rank a clear goal.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: mobile-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Launch example.
+Game key: mobile-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Launch example. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
 
 **Journeys:** F01, F02, F11, F14.
 
@@ -134,10 +136,10 @@ Plan your next adventure.
 
 ### Page anatomy & content
 
-1. **Custom boost** — Service first: dungeon, raid, leveling or PvP. Then region, realm, faction where applicable, difficulty, run count and schedule. All choices use the current published game configuration.
-2. **Fixed packages** — Compare included scope, eligibility, price and availability before choosing.
-3. **How it works** — Custom requests receive a final quote after review. Packages can proceed directly to checkout.
-4. **Your questions, answered** — Payment timing · Play modes · Delivery estimates · Changes and support
+1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
+2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
 
 ### Actions & destinations
 
@@ -159,7 +161,7 @@ Plan your next adventure.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: world-of-warcraft. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation.
+Game key: world-of-warcraft. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
 
 **Journeys:** F26.
 
@@ -171,10 +173,10 @@ Build a climb around your role.
 
 ### Page anatomy & content
 
-1. **Custom boost** — Queue, region, starting and target rank/division/LP, role and champion preferences. All choices use the current published game configuration.
-2. **Fixed packages** — Compare included scope, eligibility, price and availability before choosing.
-3. **How it works** — Custom requests receive a final quote after review. Packages can proceed directly to checkout.
-4. **Your questions, answered** — Payment timing · Play modes · Delivery estimates · Changes and support
+1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
+2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
 
 ### Actions & destinations
 
@@ -196,7 +198,7 @@ Build a climb around your role.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: league-of-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation.
+Game key: league-of-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
 
 **Journeys:** F27.
 
@@ -208,10 +210,10 @@ Set your next competitive milestone.
 
 ### Page anatomy & content
 
-1. **Custom boost** — Region, queue, starting and target rank/RR, play mode and agent preferences. All choices use the current published game configuration.
-2. **Fixed packages** — Compare included scope, eligibility, price and availability before choosing.
-3. **How it works** — Custom requests receive a final quote after review. Packages can proceed directly to checkout.
-4. **Your questions, answered** — Payment timing · Play modes · Delivery estimates · Changes and support
+1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
+2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
 
 ### Actions & destinations
 
@@ -233,7 +235,7 @@ Set your next competitive milestone.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: valorant. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation.
+Game key: valorant. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
 
 **Journeys:** F28.
 
@@ -245,10 +247,10 @@ Choose your next MMR milestone.
 
 ### Page anatomy & content
 
-1. **Custom boost** — Region, starting and target MMR, party/solo requirements and hero/role preferences. All choices use the current published game configuration.
-2. **Fixed packages** — Compare included scope, eligibility, price and availability before choosing.
-3. **How it works** — Custom requests receive a final quote after review. Packages can proceed directly to checkout.
-4. **Your questions, answered** — Payment timing · Play modes · Delivery estimates · Changes and support
+1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
+2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
 
 ### Actions & destinations
 
@@ -270,7 +272,7 @@ Choose your next MMR milestone.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: dota-2. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation.
+Game key: dota-2. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
 
 **Journeys:** F29.
 
@@ -282,10 +284,10 @@ A clearer path through the ranks.
 
 ### Page anatomy & content
 
-1. **Custom boost** — Region, starting and target rank/marks, role and champion preferences. All choices use the current published game configuration.
-2. **Fixed packages** — Compare included scope, eligibility, price and availability before choosing.
-3. **How it works** — Custom requests receive a final quote after review. Packages can proceed directly to checkout.
-4. **Your questions, answered** — Payment timing · Play modes · Delivery estimates · Changes and support
+1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
+2. **Service navigation** — All services initially; Boost, Accounts, Shop and News appear only when configured for this game. URL-backed selection and browser Back; accessible links with current state.
+3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+4. **Service sections** — Distinct summaries for each available service, softly revealing selected content. Reduced-motion users see immediate changes.
 
 ### Actions & destinations
 
@@ -307,7 +309,7 @@ A clearer path through the ranks.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: wild-rift. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation.
+Game key: wild-rift. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
 
 **Journeys:** F30.
 

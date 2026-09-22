@@ -4,8 +4,6 @@
     "title": "Custom boost: browse to completion",
     "path": [
       "P01",
-      "P16",
-      "P02",
       "G01",
       "P04",
       "P05",
@@ -24,6 +22,7 @@
       "C16"
     ],
     "branches": [
+      "P01 service introductions all scroll to the bottom game selection. G01 starts with All services; select Boost without replacing its hero.",
       "Invalid ranks stay in P04 with field errors.",
       "Manual estimate can submit without a numeric promise.",
       "Clarification returns to C03/C12.",

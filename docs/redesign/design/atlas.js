@@ -55,6 +55,8 @@ function isAdmin(s) {
   );
 }
 function nav(s) {
+  if (s.id === "P01")
+    return `<nav class="topnav minimalnav" aria-label="Main"><a href="#P01" class="brand"><img src="assets/logo.svg" alt="PLAYORA"></a><div class="navend">${link("Support", "C13")}${link("Sign in", "I01", "button primary")}</div></nav>`;
   const internal = isAdmin(s) || s.group === "Booster";
   const signedIn =
     internal ||
@@ -175,52 +177,298 @@ function stateBanner(s) {
     ? `<section class="statebanner" role="status"><h2>${esc(st.name)}</h2><p>${esc(st.copy)}</p>${st.name === "Loading" ? '<div class="loadingbar"></div>' : ""}</section>`
     : "";
 }
+const gameProfiles = [
+  {
+    id: "G01",
+    name: "Mobile Legends",
+    art: "miya",
+    services: ["boost", "accounts", "shop", "news"],
+    goal: "Make your next ranked chapter count.",
+    config: "P04",
+  },
+  {
+    id: "G02",
+    name: "World of Warcraft",
+    art: "illidan",
+    services: ["boost", "accounts", "news"],
+    goal: "Your next adventure starts here.",
+    config: "G07",
+  },
+  {
+    id: "G03",
+    name: "League of Legends",
+    art: "ahri",
+    services: ["boost", "accounts", "shop", "news"],
+    goal: "Find your next competitive edge.",
+    config: "G08",
+  },
+  {
+    id: "G04",
+    name: "VALORANT",
+    art: "ascension",
+    services: ["boost", "news"],
+    goal: "A clearer path to your next milestone.",
+    config: "G09",
+    placeholder: true,
+  },
+  {
+    id: "G05",
+    name: "Dota 2",
+    art: "ascension",
+    services: ["boost", "accounts", "news"],
+    goal: "Build your next great play.",
+    config: "G10",
+    placeholder: true,
+  },
+  {
+    id: "G06",
+    name: "Wild Rift",
+    art: "ascension",
+    services: ["boost", "accounts", "news"],
+    goal: "Your next chapter on the Rift.",
+    config: "G11",
+    placeholder: true,
+    paused: true,
+  },
+];
+const serviceNames = {
+  boost: "Boost",
+  accounts: "Accounts",
+  shop: "Shop",
+  news: "News",
+};
+const chooseGame = () =>
+  link("Choose your game ↘", "P01/games", "button primary");
 function gameCards() {
-  const games = [
-    [
-      "G01",
-      "Mobile Legends",
-      "miya",
-      "Custom boosts & packages",
-      "Available at launch",
-    ],
-    [
-      "G02",
-      "World of Warcraft",
-      "illidan",
-      "Dungeons, raids & more",
-      "Template preview",
-    ],
-    [
-      "G03",
-      "League of Legends",
-      "ahri",
-      "Rank & role goals",
-      "Template preview",
-    ],
-    ["G04", "VALORANT", "", "Your competitive milestone", "Template preview"],
-    ["G05", "Dota 2", "", "Your next MMR goal", "Template preview"],
-    ["G06", "Wild Rift", "", "Your next rank", "Template preview"],
-  ];
-  return `<div class="gamegrid">${games.map(([id, title, img, sub, status]) => `<a href="#${id}" class="gamecard ${img ? "art-" + img : ""}">${chip(status, "neutral")}<div class="gamebottom"><div><h3>${esc(title)}</h3><p>${esc(sub)}</p></div><span class="arrow" aria-hidden="true">↗</span></div></a>`).join("")}</div>`;
+  return `<div class="gamegrid discoverygames">${gameProfiles
+    .map((g) => {
+      const body = `<img src="assets/${g.art}.jpg" alt="" loading="lazy"><div class="gamecardtop">${g.paused ? chip("Temporarily unavailable", "amber") : ""}${g.placeholder ? '<span class="artnote">Game artwork pending</span>' : ""}</div><div class="gamebottom"><div><h3>${g.name}</h3><div class="capabilities">${g.services.map((x) => chip(serviceNames[x], "neutral")).join("")}</div>${g.paused ? "<p>Services paused. Check back later.</p>" : ""}</div>${g.paused ? "" : '<span class="arrow" aria-hidden="true">↗</span>'}</div>`;
+      return g.paused
+        ? `<article class="gamecard gamepaused" aria-disabled="true">${body}</article>`
+        : `<a href="#${g.id}" class="gamecard">${body}</a>`;
+    })
+    .join("")}</div>`;
+}
+function metrics(game = false) {
+  const objective = game === "G02";
+  return `<div class="metricstrip"><div><span class="live-dot" aria-hidden="true"></span><strong>${game ? "24" : "128"}</strong><span>Active orders · live sample</span></div><div><strong>${game ? "2,480" : "12,480"}</strong><span>Completed orders · all time</span></div><div><strong>${objective ? "840" : "89.4<small>%</small>"}</strong><span>${objective ? "Completed objectives · 30 days" : "Win rate · last 30 days"}</span></div></div><details class="metricnote"><summary>Illustrative statistics · how these are measured</summary><p>These numbers are fictional design samples, not live claims. Active orders count paid orders currently in fulfillment. Completed orders exclude cancelled orders. Win rate counts wins divided by completed win/loss matches in eligible boosting orders during the last 30 days; it excludes shop, accounts and non-match services. Show unavailable data as “—”, never a fabricated zero. In production include the sample size, source update time and eligible games; omit win rate for games without a meaningful match metric.</p></details>`;
 }
 function home() {
-  return `<section class="hero"><div class="eyebrow">YOUR GAME. YOUR NEXT CHAPTER.</div><h1>Your next level.<br><em>Closer than ever.</em></h1><p>Make your next gaming goal a clear plan. Choose a boost, find an account, and follow every step with your PLAYORA team.</p><div class="actions">${link("Find your game ↗", "P02", "button primary")}${link("Browse accounts", "P12", "button")}</div><div class="herofoot"><span>Clear quotes</span><span>Direct crypto payment</span><span>Order support</span></div></section><section class="section"><div class="sectionhead"><div><div class="eyebrow">CHOOSE YOUR WORLD</div><h2>Where are we heading?</h2></div><p>Start with Mobile Legends.<br>More game templates, ready to grow.</p></div>${gameCards()}</section><section class="section"><div class="scene"><img src="assets/miya.jpg" alt="Mobile Legends character scene reference"><div class="copy"><div class="eyebrow">MOBILE LEGENDS</div><h2>Find your<br><em>fighting spirit.</em></h2><p>A climb shaped around your goal, your hero and how you want to play.</p><div class="actions">${link("Explore Mobile Legends ↗", "G01", "button primary")}</div><p class="quiet">Motion placement study · static artwork in this review</p></div></div></section><section class="section"><div class="sectionhead"><div><div class="eyebrow">A CLEAR PATH</div><h2>From your goal to your next win.</h2></div></div><div class="three">${[
-    ["01", "Make it yours", "Choose a custom boost or a ready-made package."],
+  const sections = [
     [
-      "02",
-      "Know the next step",
-      "Accept a clear quote or package scope before paying.",
+      "01 / BOOST SERVICES",
+      "A bigger goal.<br>A clearer way there.",
+      "A ready-made package or a plan built around you. Find the right way forward in your game.",
+      "boost",
+      "Your climb, your choice",
+      [
+        ["Fixed packages", "Clear scope. A stated price. Ready when you are."],
+        [
+          "Custom boosts",
+          "Choose your goal and preferences. Confirm the final staff quote before paying.",
+        ],
+        [
+          "Limited releases",
+          "Discover time-limited offers and small-batch packages, with clear availability.",
+        ],
+      ],
     ],
-    ["03", "Stay in the loop", "Keep messages, progress and proof together."],
-  ]
+    [
+      "02 / ACCOUNTS",
+      "Your next chapter.<br>Or someone else’s.",
+      "Find an account that fits your next adventure, or submit yours for review. Keep the conversation and handover in one place.",
+      "accounts",
+      "From discovery to handover",
+      [
+        [
+          "Find your fit",
+          "Compare the details, region and transfer terms before you buy.",
+        ],
+        [
+          "Sell with a clear agreement",
+          "Submit an account for review. Agree the price, arrangement and payout terms.",
+        ],
+        [
+          "Follow every step",
+          "Stay connected with staff through the sale and supported handover.",
+        ],
+      ],
+    ],
+    [
+      "03 / GAME SHOP",
+      "A little more<br>for your world.",
+      "Explore in-game items and extras for supported games. See exactly what’s included and how delivery works before checkout.",
+      "shop",
+      "The details come first",
+      [
+        [
+          "Made for your game",
+          "Only eligible products for the chosen game and region.",
+        ],
+        [
+          "Know what you’re buying",
+          "Clear contents, delivery requirements and availability.",
+        ],
+        [
+          "Keep track",
+          "Your purchase and support stay together in your account.",
+        ],
+      ],
+    ],
+    [
+      "04 / CRYPTO PAYMENTS",
+      "One clear payment.<br>Every step visible.",
+      "Pay directly with crypto for your order. Follow payment confirmation without loading a wallet or managing a balance.",
+      "payments",
+      "From checkout to confirmation",
+      [
+        ["Review", "Check the amount, supported asset and exact network."],
+        [
+          "Pay directly",
+          "Use your order’s payment instructions and follow verification.",
+        ],
+        [
+          "Receive sale proceeds",
+          "Seller payouts use crypto under your accepted offer terms and timing.",
+        ],
+      ],
+    ],
+    [
+      "05 / NEWS & GUIDES",
+      "Stay in the game.<br>Ahead of the changes.",
+      "Catch up on patches, discover what’s new, and learn something useful before your next session.",
+      "news",
+      "Your game, in the loop",
+      [
+        ["Game updates", "The changes that matter, with dates and sources."],
+        ["Patch notes", "Find the latest changes for your chosen game."],
+        [
+          "Practical guides",
+          "Learn at your own pace, from first steps to finer details.",
+        ],
+      ],
+    ],
+  ];
+  return `<section class="hero discoveryhero"><div class="eyebrow">MANY WORLDS. ONE PLAYORA.</div><h1>Your next level.<br><em>Closer than ever.</em></h1><p>Boost your progress. Find your next account.<br>Discover more of the games you love.</p><span class="scrollhint">Scroll to explore <span aria-hidden="true">↓</span></span></section><section class="section activitysection" aria-label="PLAYORA activity">${metrics()}</section>${sections.map(([label, title, desc, type, caption, items]) => `<section class="section serviceintro intro-${type}"><div class="introcopy"><div class="eyebrow">${label}</div><h2>${title}</h2><p>${desc}</p>${chooseGame()}</div><div class="servicevisual"><div class="visualheading"><span class="orb" aria-hidden="true">${{ boost: "↗", accounts: "⇄", shop: "✦", payments: "◇", news: "≋" }[type]}</span><span>${caption}</span></div>${items.map(([t, d], i) => `<article class="featureline"><span class="featureindex">0${i + 1}</span><div><h3>${t}</h3><p>${d}</p></div></article>`).join("")}</div></section>`).join("")}<section class="section gamedestination" id="gameSelection"><div class="sectionhead"><div><div class="eyebrow">CHOOSE YOUR WORLD</div><h2 tabindex="-1" id="gameSelectionTitle">Every game.<br><em>A new possibility.</em></h2></div><p>Pick your game to see what’s available.<br>Services vary by game.</p></div><p class="quiet">Design catalog · availability and capabilities shown as examples.</p>${gameCards()}</section>`;
+}
+function gameHub(s) {
+  const g = gameProfiles.find((x) => x.id === s.id);
+  const descriptions = {
+    boost: [
+      "Your goal. Your way.",
+      "Compare fixed packages, request a custom boost, or explore limited releases.",
+    ],
+    accounts: [
+      "A new chapter starts here.",
+      "Explore reviewed listings or submit your account for staff review and agreed sale terms.",
+    ],
+    shop: [
+      "More for your game.",
+      "Browse in-game extras with explicit region, eligibility and delivery information.",
+    ],
+    news: [
+      "Keep your game knowledge fresh.",
+      "Updates, patch notes and practical guides, together in one place.",
+    ],
+  };
+  return `<div class="gamehub"><section class="hubhero"><img src="assets/${g.art}.jpg" alt=""><div class="hubherocopy">${link("← All games", "P01/games", "textlink")}<div class="eyebrow">YOUR WORLD / PLAYORA</div><h1>${g.name}</h1><p>${g.goal}</p>${g.placeholder ? '<p class="quiet">Art direction placeholder · dedicated game art pending</p>' : ""}${g.paused ? chip("Services temporarily unavailable", "amber") : ""}</div></section><div class="hubmetrics">${metrics(g.id)}</div><nav class="servicechooser" aria-label="Game services"><a href="#${g.id}/all" data-service="all" class="servicefilter" aria-current="true">All services</a>${g.services.map((k) => `<a href="#${g.id}/${k}" class="servicefilter" data-service="${k}">${serviceNames[k]}</a>`).join("")}</nav><div class="hubcontent"><section class="featuredoffers" aria-labelledby="featuredTitle"><div class="sectionhead"><div><div class="eyebrow">IN THE SPOTLIGHT</div><h2 id="featuredTitle">Worth a closer look.</h2></div><span class="quiet">Illustrative promotions</span></div><div class="offergrid">${g.services.map((k) => `<article class="spotlight" data-offer="${k}">${chip({ boost: "Limited quantity", accounts: "Featured listing", shop: "Limited time", news: "Editor’s pick" }[k], "neutral")}<p class="eyebrow">${serviceNames[k]}</p><h3>${{ boost: "A package for your next goal", accounts: "A fresh start, carefully detailed", shop: "A little extra for your next session", news: "What changed in the latest patch" }[k]}</h3><p>${k === "news" ? "Explore the changes and what they mean for your next game." : "Review scope, availability and terms before choosing."}</p><a class="textlink" href="#${g.id}/${k}">Explore ${serviceNames[k].toLowerCase()} ↗</a></article>`).join("")}</div></section><p id="serviceFeedback" class="sr-only" role="status"></p>${g.services
     .map(
-      ([n, t, b]) =>
-        `<article class="card"><span class="num">${n}</span><h3>${t}</h3><p>${b}</p></article>`,
+      (k) =>
+        `<section class="hubservice" data-panel="${k}"><div class="sectionhead"><div><div class="eyebrow">${serviceNames[k]}</div><h2>${descriptions[k][0]}</h2></div><p>${descriptions[k][1]}</p></div><div class="three">${(k ===
+        "boost"
+          ? [
+              [
+                "Fixed packages",
+                "Choose a defined scope and price. No custom-quote approval is needed.",
+              ],
+              [
+                "Custom boost",
+                "Tell us your goal. Staff confirm the final quote before checkout.",
+              ],
+              [
+                "Limited releases",
+                "Visible eligibility, expiry and remaining quantity when applicable.",
+              ],
+            ]
+          : k === "accounts"
+            ? [
+                [
+                  "Buy an account",
+                  "Compare region, progression, cosmetics and transfer terms.",
+                ],
+                [
+                  "Sell an account",
+                  "Submit details privately for review; agree purchase-before-resale or payout-after-sale terms.",
+                ],
+                [
+                  "Supported handover",
+                  "Keep transfer instructions, questions and acceptance in your order.",
+                ],
+              ]
+            : k === "shop"
+              ? [
+                  [
+                    "Browse extras",
+                    "Game-specific catalog and region eligibility.",
+                  ],
+                  [
+                    "Check delivery",
+                    "Contents, expected delivery and required details shown before payment.",
+                  ],
+                  [
+                    "Track your order",
+                    "Payment confirmation, fulfillment and support in one place.",
+                  ],
+                ]
+              : [
+                  ["Latest updates", "Dated reporting with a clear source."],
+                  [
+                    "Patch notes",
+                    "Version and platform context before the details.",
+                  ],
+                  [
+                    "Guides",
+                    "Practical advice with difficulty and last-updated dates.",
+                  ],
+                ]
+        )
+          .map(([t, d]) => card(t, d))
+          .join(
+            "",
+          )}</div>${k === "boost" && !g.paused ? `<div class="actions">${link("Build a custom boost ↗", g.config, "button primary")}${g.id === "G01" ? link("View a fixed package", "P07", "button") : ""}</div>` : ""}<details class="smallsection"><summary>${k === "boost" ? "Package preview" : k === "accounts" ? "Account listing preview" : k === "shop" ? "Product preview" : "Article preview"} · design details</summary><p>${g.name} / ${serviceNames[k]}. Final catalog content, commercial terms and ${k === "news" ? "editorial publication" : "eligibility"} require approval. This review demonstrates discovery and filtering; it does not place orders.</p></details></section>`,
     )
-    .join(
-      "",
-    )}</div><div class="actions">${link("See how it works", "P16", "textlink")}</div></section><section class="section"><div class="attention"><div><div class="eyebrow">HAVE A QUESTION?</div><h2>Let’s find the right fit.</h2><p>Ask the team before you commit to an order.</p></div>${link("Talk to PLAYORA ↗", "C13", "button primary")}</div></section>`;
+    .join("")}</div></div>`;
+}
+function applyDestination() {
+  const destination = location.hash.slice(1).split("/")[1] || "all";
+  if (current.id === "P01" && destination === "games") {
+    $("gameSelectionTitle").focus({ preventScroll: true });
+    $("gameSelection").scrollIntoView({
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+      block: "start",
+    });
+  }
+  if (current.id === "P01" && destination === "all") {
+    $("canvas").scrollIntoView({ block: "start" });
+  }
+  if (current.kind !== "game") return;
+  const profile = gameProfiles.find((g) => g.id === current.id);
+  const selected = profile.services.includes(destination) ? destination : "all";
+  document.querySelectorAll("[data-service]").forEach((el) => {
+    if (el.dataset.service === selected)
+      el.setAttribute("aria-current", "true");
+    else el.removeAttribute("aria-current");
+  });
+  document.querySelectorAll("[data-panel], [data-offer]").forEach((el) => {
+    el.hidden =
+      selected !== "all" && (el.dataset.panel || el.dataset.offer) !== selected;
+  });
+  $("serviceFeedback").textContent =
+    selected === "all"
+      ? "Showing all services and featured offers."
+      : `Showing ${serviceNames[selected]} and related featured offers.`;
 }
 function summary(s) {
   let payable = ["P07", "P08", "P09"].includes(s.id);
@@ -360,7 +608,7 @@ function renderBody(s) {
     case "games":
       return `<section class="section">${fields(s, true)}${gameCards()}</section>`;
     case "game":
-      return `<div class="content"><div class="scene"><img src="assets/${s.id === "G02" ? "illidan" : s.id === "G03" ? "ahri" : s.id === "G01" ? "miya" : "ascension"}.jpg" alt="${s.id === "G01" ? "Mobile Legends" : s.id === "G02" ? "World of Warcraft" : s.id === "G03" ? "League of Legends" : "Game art placeholder — final art required"} scene reference"><div class="copy"><div class="eyebrow">${s.id === "G01" ? "BUILD YOUR BOOST" : "GAME TEMPLATE PREVIEW"}</div><h2>${s.id === "G01" ? "Your rank.<br>Your way." : esc(s.title)}</h2><p>${esc(s.summary)}</p>${actions(s)}</div></div><nav class="subnav"><a href="#P04">Custom boost</a><a href="#P07">Fixed packages</a><a href="#P15">Reviews</a><a href="#C13">Questions</a></nav><div class="three">${card("Custom boost", "Choose your goal and preferences. Receive a final quote after staff review.")}${card("Fixed packages", "Review the included scope and price, then proceed directly to checkout.")}${card("Stay connected", "Messages, updates and proof stay together in your order.")}</div></div>`;
+      return gameHub(s);
     case "configure":
       return `<div class="content">${configuration(s)}</div>`;
     case "form":
@@ -443,7 +691,10 @@ function render() {
   const s = current;
   const workspace =
     ["Customer", "Seller", "Booster"].includes(s.group) || isAdmin(s);
-  const head = s.kind === "hero" || s.kind === "auth" ? "" : heading(s);
+  const head =
+    s.kind === "hero" || s.kind === "auth" || s.kind === "game"
+      ? ""
+      : heading(s);
   let body = renderBody(s);
   const chosen = s.states.find((x) => x.name === stateName);
   if (
@@ -469,12 +720,19 @@ function render() {
   document.title = `${s.id} · ${s.title} — PLAYORA design`;
   $("announce").textContent =
     `${s.id}. ${s.title}${stateName ? ". " + stateName : ""}`;
+  applyDestination();
+  document.querySelectorAll('a[href="#P01/games"]').forEach((a) => {
+    a.onclick = () => {
+      if (location.hash === "#P01/games") applyDestination();
+    };
+  });
   const menu = $("menuToggle");
-  menu.onclick = () => {
-    const open = menu.getAttribute("aria-expanded") === "true";
-    menu.setAttribute("aria-expanded", String(!open));
-    $("mobileNav").hidden = open;
-  };
+  if (menu)
+    menu.onclick = () => {
+      const open = menu.getAttribute("aria-expanded") === "true";
+      menu.setAttribute("aria-expanded", String(!open));
+      $("mobileNav").hidden = open;
+    };
   if ($("sendDemo"))
     $("sendDemo").onclick = () => {
       const draft = $("messageDraft");
@@ -545,12 +803,18 @@ document.querySelectorAll("[data-width]").forEach(
 );
 window.addEventListener("hashchange", () => {
   if (location.hash === "#canvas") return;
-  current =
-    byId.get(decodeURIComponent(location.hash.slice(1))) || byId.get("X01");
-  stateName = "";
-  render();
-  $("canvas").focus({ preventScroll: true });
-  $("canvas").scrollIntoView({ block: "start" });
+  const next =
+    byId.get(decodeURIComponent(location.hash.slice(1).split("/")[0])) ||
+    byId.get("X01");
+  if (next !== current) {
+    current = next;
+    stateName = "";
+    render();
+    $("canvas").focus({ preventScroll: true });
+    $("canvas").scrollIntoView({ block: "start" });
+  }
+  applyDestination();
 });
-current = byId.get(location.hash.slice(1)) || screens[0];
+current = byId.get(location.hash.slice(1).split("/")[0]) || screens[0];
 render();
+applyDestination();

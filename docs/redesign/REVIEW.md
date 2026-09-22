@@ -79,3 +79,9 @@ The final verification receipt below records the actual completed checks. These 
 - Repository checks passed, including the policy/secret scanner, contract equality and workflow lint. No application dependencies, backend logic, deployment files or live provider data were changed. The tracked documentation gate is required again at commit.
 
 Not qualified here: real iOS/Android keyboard behavior, human screen-reader use, complete WCAG conformance, authenticated product integration, live transfers, character animation quality, art publication rights or human comprehension results. Those remain explicit design/implementation/launch review boundaries. No production site was deployed.
+
+## 23 September — homepage and game-hub revision
+
+Verified the changed P01/P02/G01–G06 layouts at 320, 768 and 1440px in the in-app browser: 24 combinations, each with one H1, no horizontal document overflow and no broken loaded images. Inspected homepage/service/catalog and narrow game-hub screenshots. Exercised all 25 available All services/category selections across six game profiles; hidden panels match selection. Checked related promotion filtering, All services reset and browser Back, all five Choose your game links including repeated same-hash clicks, destination focus, and the non-linked paused card. Browser error log was empty. Reduced-motion handling was reviewed in source; physical-device/assistive-technology and owner visual acceptance remain open.
+
+Design integrity (113 screens, 30 journeys, 55 routes, 555 named treatments), JavaScript syntax, formatting and root repository checks passed. This revision does not requalify application functionality. New shop/news downstream screens and three dedicated game artworks remain explicitly pending; see [the revision brief](HOMEPAGE_GAME_HUB_REVISION.md).

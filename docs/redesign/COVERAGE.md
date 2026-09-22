@@ -73,6 +73,6 @@ Generated from both current React Router manifests and the design screen invento
 
 ## Unimplemented and intentionally excluded
 
-No wallet/top-up, escrow smart contract, wager/tournament/scrim platform, in-game currency shop, auto-matchmaking, public booster hiring marketplace, affiliate/cashback system, invented anti-cheat telemetry or automatic booster compensation. These suggestions in raw exports do not expand the product scope.
+No wallet/top-up, escrow smart contract, wager/tournament/scrim platform, auto-matchmaking, public booster hiring marketplace, affiliate/cashback system, invented anti-cheat telemetry or automatic booster compensation. These suggestions in raw exports do not expand the product scope. The owner separately requested game shop and news designs on 23 September; their discovery concepts are now included, with implementation and detailed downstream flows pending.
 
 The structured inventory is comprehensive against current routes, not a guarantee that every data combination has a distinct visual screenshot. Shared templates, named states and interaction contracts define those combinations. Owner review and future implementation qualification remain separate.

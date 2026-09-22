@@ -1,5 +1,7 @@
 # Design direction — PLAYORA
 
+> 23 September revision: homepage/game navigation follows [HOMEPAGE_GAME_HUB_REVISION.md](HOMEPAGE_GAME_HUB_REVISION.md), superseding earlier MLBB-first or global-service entry guidance. Shop/news discovery is now owner-requested design scope.
+
 21 September 2026 · Proposed design for review, not an implementation authorization
 
 ## The experience

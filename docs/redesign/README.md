@@ -1,10 +1,14 @@
 # PLAYORA — design before development
 
-Design review edition · 21 September 2026 · Owner approval pending
+Design review edition · updated 23 September 2026 · Owner approval pending
 
 **Application development is paused.** This design package supersedes `UI_UX_ROADMAP.md` and `docs/ux/HOMEPAGE_REFINEMENT_ROADMAP.md` as the active design direction. Those files remain historical records, not an implementation queue. R10/R11 remain held with their full scope in [final-launch.md](../../final-launch.md). Design approval does not authorize production launch.
 
 The owner confirmed that the 13 HTML files in [pages/](pages/) are the full reference set and **visual suggestions only**. They are not the desired final quality or new product requirements. Preserve existing business rules: no wallet, escrow, wagers, top-ups, invented publisher integration, automatic booster payouts or claims of zero risk. Design all existing product capabilities first, then agree an implementation plan.
+
+## Latest owner revision
+
+[Homepage and game hubs](HOMEPAGE_GAME_HUB_REVISION.md) now use equal-game discovery: service introductions → game selection → persistent game header and filterable services. Shop and news are newly requested design concepts, not imported scope from Stitch. Earlier MLBB-first homepage guidance is superseded. Application development and R10/R11 remain paused.
 
 ## Open the design
 
