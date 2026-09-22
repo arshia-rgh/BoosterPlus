@@ -874,3 +874,9 @@ These are design-artifact checks, not production behavior/security or a human us
 - Design-only owner follow-up: game hubs now share the minimal logo/support/sign-in navbar. Large service cards replace the All services feed and filter pills. Opening a service hides the chooser and all other service panels; a small Back to choose service link restores it. Accounts contains Browse accounts and Sell an account actions.
 - Verified all 19 supported service entries/returns across six games, with one visible service panel and no global service navbar links. Verified Accounts seller action, keyboard Enter, focus transfer, browser Back, and 390px entry/detail layouts without horizontal overflow. Reviewed desktop/phone screenshots. Design integrity, JS syntax, formatting and required repository gate passed; this does not qualify runtime or downstream per-game account forms.
 - Application development and R10/R11 remain held. Older All services verification is historical and superseded by this chooser design.
+
+### 23 September 2026 — homepage themed motion design
+
+- Added five decorative SVG/CSS icon compositions and finite scroll-triggered entrances to the design atlas: boost lightning/speed, account identity/exchange, shop bag/sparkles, dollar/crypto marks, and news/article symbols.
+- Verified all five sections receive the entrance class while scrolling; decorative art is aria-hidden and no horizontal overflow at desktop or 390px canvas. Reduced-motion media handling and observer cleanup included; atlas Reduced motion preview is static. Icons do not represent live supported currency claims. No application files changed.
+- Design integrity, syntax, formatting and repository checks run for this stage. Physical-device motion acceptance remains with the owner.

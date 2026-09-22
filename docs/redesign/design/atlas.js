@@ -253,6 +253,50 @@ function metrics(game = false) {
   const objective = game === "G02";
   return `<div class="metricstrip"><div><span class="live-dot" aria-hidden="true"></span><strong>${game ? "24" : "128"}</strong><span>Active orders · live sample</span></div><div><strong>${game ? "2,480" : "12,480"}</strong><span>Completed orders · all time</span></div><div><strong>${objective ? "840" : "89.4<small>%</small>"}</strong><span>${objective ? "Completed objectives · 30 days" : "Win rate · last 30 days"}</span></div></div><details class="metricnote"><summary>Illustrative statistics · how these are measured</summary><p>These numbers are fictional design samples, not live claims. Active orders count paid orders currently in fulfillment. Completed orders exclude cancelled orders. Win rate counts wins divided by completed win/loss matches in eligible boosting orders during the last 30 days; it excludes shop, accounts and non-match services. Show unavailable data as “—”, never a fabricated zero. In production include the sample size, source update time and eligible games; omit win rate for games without a meaningful match metric.</p></details>`;
 }
+function sectionEmblem(type) {
+  const shapes = {
+    boost: '<path d="m28 7-13 19h10l-5 15 15-22H25z"/>',
+    accounts:
+      '<circle cx="24" cy="17" r="7"/><path d="M11 39v-5c0-7 26-7 26 0v5M7 17l-4 4 4 4m34-8 4 4-4 4"/>',
+    shop: '<path d="M11 17h26l-2 24H13zM18 17v-5a6 6 0 0 1 12 0v5M20 28l4 4 5-7"/>',
+    payments:
+      '<path d="M32 14c-3-6-19-5-18 3 1 8 20 5 20 14 0 9-18 10-22 2M24 5v38"/>',
+    news: '<path d="M9 8h30v33H9zM15 15h18M15 22h8v8h-8zM28 22h5m-5 7h5M15 35h18"/>',
+  };
+  const satellites = {
+    boost: ["›››", "↗", "⚡", "››"],
+    accounts: ["♙", "✓", "⇄", "◇"],
+    shop: ["✦", "+", "◇", "✓"],
+    payments: ["₿", "Ξ", "₮", "Ł"],
+    news: ["#", "≡", "↗", "+"],
+  };
+  return `<div class="sectionemblem emblem-${type}" aria-hidden="true"><div class="emblemhalo"></div><div class="emblemcore"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${shapes[type]}</svg></div>${satellites[type].map((mark, i) => `<span class="emblembadge badge-${i}">${mark}</span>`).join("")}<span class="emblemtrail trail-one"></span><span class="emblemtrail trail-two"></span></div>`;
+}
+let homepageObserver = null;
+function bindHomepageMotion() {
+  if (homepageObserver) homepageObserver.disconnect();
+  homepageObserver = null;
+  if (current.id !== "P01" || !("IntersectionObserver" in window)) return;
+  if (stateName === "Reduced motion") {
+    document
+      .querySelectorAll(".serviceintro")
+      .forEach((el) => el.classList.add("motion-preview-off"));
+    return;
+  }
+  homepageObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("section-entered");
+        homepageObserver.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.18 },
+  );
+  document
+    .querySelectorAll(".serviceintro")
+    .forEach((el) => homepageObserver.observe(el));
+}
 function home() {
   const sections = [
     [
@@ -349,7 +393,7 @@ function home() {
       ],
     ],
   ];
-  return `<section class="hero discoveryhero"><div class="eyebrow">MANY WORLDS. ONE PLAYORA.</div><h1>Your next level.<br><em>Closer than ever.</em></h1><p>Boost your progress. Find your next account.<br>Discover more of the games you love.</p><span class="scrollhint">Scroll to explore <span aria-hidden="true">↓</span></span></section><section class="section activitysection" aria-label="PLAYORA activity">${metrics()}</section>${sections.map(([label, title, desc, type, caption, items]) => `<section class="section serviceintro intro-${type}"><div class="introcopy"><div class="eyebrow">${label}</div><h2>${title}</h2><p>${desc}</p>${chooseGame()}</div><div class="servicevisual"><div class="visualheading"><span class="orb" aria-hidden="true">${{ boost: "↗", accounts: "⇄", shop: "✦", payments: "◇", news: "≋" }[type]}</span><span>${caption}</span></div>${items.map(([t, d], i) => `<article class="featureline"><span class="featureindex">0${i + 1}</span><div><h3>${t}</h3><p>${d}</p></div></article>`).join("")}</div></section>`).join("")}<section class="section gamedestination" id="gameSelection"><div class="sectionhead"><div><div class="eyebrow">CHOOSE YOUR WORLD</div><h2 tabindex="-1" id="gameSelectionTitle">Every game.<br><em>A new possibility.</em></h2></div><p>Pick your game to see what’s available.<br>Services vary by game.</p></div><p class="quiet">Design catalog · availability and capabilities shown as examples.</p>${gameCards()}</section>`;
+  return `<section class="hero discoveryhero"><div class="eyebrow">MANY WORLDS. ONE PLAYORA.</div><h1>Your next level.<br><em>Closer than ever.</em></h1><p>Boost your progress. Find your next account.<br>Discover more of the games you love.</p><span class="scrollhint">Scroll to explore <span aria-hidden="true">↓</span></span></section><section class="section activitysection" aria-label="PLAYORA activity">${metrics()}</section>${sections.map(([label, title, desc, type, caption, items]) => `<section class="section serviceintro intro-${type}"><div class="introcopy"><div class="eyebrow">${label}</div><h2>${title}</h2><p>${desc}</p>${chooseGame()}</div><div class="servicevisual">${sectionEmblem(type)}<div class="visualheading"><span class="orb" aria-hidden="true">${{ boost: "↗", accounts: "⇄", shop: "✦", payments: "◇", news: "≋" }[type]}</span><span>${caption}</span></div>${items.map(([t, d], i) => `<article class="featureline"><span class="featureindex">0${i + 1}</span><div><h3>${t}</h3><p>${d}</p></div></article>`).join("")}</div></section>`).join("")}<section class="section gamedestination" id="gameSelection"><div class="sectionhead"><div><div class="eyebrow">CHOOSE YOUR WORLD</div><h2 tabindex="-1" id="gameSelectionTitle">Every game.<br><em>A new possibility.</em></h2></div><p>Pick your game to see what’s available.<br>Services vary by game.</p></div><p class="quiet">Design catalog · availability and capabilities shown as examples.</p>${gameCards()}</section>`;
 }
 function gameHub(s) {
   const g = gameProfiles.find((x) => x.id === s.id);
@@ -735,6 +779,7 @@ function render() {
   document.title = `${s.id} · ${s.title} — PLAYORA design`;
   $("announce").textContent =
     `${s.id}. ${s.title}${stateName ? ". " + stateName : ""}`;
+  bindHomepageMotion();
   applyDestination();
   document.querySelectorAll('a[href="#P01/games"]').forEach((a) => {
     a.onclick = () => {

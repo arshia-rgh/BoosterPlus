@@ -41,3 +41,9 @@ Seller proceeds remain direct crypto under the accepted offer, supporting either
 ## Review path
 
 Open P01, inspect the section order, activate each of the five Choose your game links and inspect the final catalog. Open any active game, choose a service → Back to choose service → browser Back, and verify the game introduction stays intact. Inspect a game without Shop and the paused Wild Rift card. Review at desktop, tablet and narrow phone widths. This is a homepage/hub design revision, not acceptance of all older screens or authorization to implement.
+
+## Homepage section entrances
+
+Five service introductions now have native SVG/CSS icon compositions. Boost uses a lightning bolt, chevrons and two speed passes; Accounts uses a profile, exchange and verification marks; Shop uses a bag and sparkles; Payments uses a dollar symbol surrounded by BTC/ETH/USDT/LTC-style typographic marks; News uses an article and update marks. These are decorative design symbols, not a statement of supported assets, fiat checkout or provider integration. Real checkout remains authoritative for supported currencies/networks.
+
+At 18% visibility, each section plays one short entrance per page render: gentle text/card rise, icon scale/rotation, staggered small badges and a soft halo. Motion settles within about 2.2 seconds; there are no infinite loops, audio or scroll interception. All content is visible if observation is unavailable. Decorative art is hidden from assistive technology and does not intercept clicks. System reduced-motion and the atlas Reduced motion preview show static ornaments. The observer disconnects on screen changes. Artwork uses no new downloads or external libraries.
