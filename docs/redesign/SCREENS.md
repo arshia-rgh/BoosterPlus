@@ -19,7 +19,9 @@ Discover PLAYORA services, then choose any available game. All games receive equ
 5. **Shop** — New owner-requested design concept: eligible in-game goods per game with transparent delivery requirements; Choose your game.
 6. **Crypto payments** — Direct payments and verified confirmation; seller proceeds follow agreed payout terms; Choose your game.
 7. **News and guides** — Updates, patches and learning per game; Choose your game.
-8. **Game selection** — Equal image cards, capability tags and text-labeled non-clickable paused games. No privileged MLBB section.
+8. **Community review cards** — Horizontal cards with previous/next arrow controls and native touch/keyboard scrolling. Clearly fictional examples until verified reviews are supplied. No autoplay.
+9. **FAQ** — Expandable answers about boosts, payment, account sales, service availability and support.
+10. **Game selection** — Equal image cards, capability tags and text-labeled non-clickable paused games. No privileged MLBB section.
 
 ### Actions & destinations
 
@@ -39,7 +41,7 @@ Discover PLAYORA services, then choose any available game. All games receive equ
 Single-column service introductions; wrapping capability badges; three compact metrics; no horizontal clipping. Respect reduced motion and focus the game-selection heading after anchor navigation.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-See HOMEPAGE_GAME_HUB_REVISION.md. All five Choose your game links target #P01/games. No fake live metrics, countdowns or publisher claims. Catalog capability examples are design fixtures.
+See HOMEPAGE_GAME_HUB_REVISION.md. All five Choose your game links target #P01/games. No fake live metrics, countdowns or publisher claims. Catalog capability examples are design fixtures. Shared footer includes Contact us, help, policy destinations and motion controls. The signed-in demo exposes the corner activity panel.
 
 **Journeys:** F01.
 
@@ -101,8 +103,10 @@ Make your next rank a clear goal.
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
 2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
-3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+3. **Pinned limited offers** — Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game.
 4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
+5. **Persistent service workspace** — Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage.
+6. **Game FAQ** — Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift.
 
 ### Actions & destinations
 
@@ -124,7 +128,7 @@ Make your next rank a clear goal.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: mobile-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Launch example. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
+Game key: mobile-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Launch example. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.
 
 **Journeys:** F01, F02, F11, F14.
 
@@ -138,8 +142,10 @@ Plan your next adventure.
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
 2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
-3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+3. **Pinned limited offers** — Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game.
 4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
+5. **Persistent service workspace** — Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage.
+6. **Game FAQ** — Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift.
 
 ### Actions & destinations
 
@@ -161,7 +167,7 @@ Plan your next adventure.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: world-of-warcraft. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
+Game key: world-of-warcraft. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.
 
 **Journeys:** F26.
 
@@ -175,8 +181,10 @@ Build a climb around your role.
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
 2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
-3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+3. **Pinned limited offers** — Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game.
 4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
+5. **Persistent service workspace** — Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage.
+6. **Game FAQ** — Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift.
 
 ### Actions & destinations
 
@@ -198,7 +206,7 @@ Build a climb around your role.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: league-of-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
+Game key: league-of-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.
 
 **Journeys:** F27.
 
@@ -212,8 +220,10 @@ Set your next competitive milestone.
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
 2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
-3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+3. **Pinned limited offers** — Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game.
 4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
+5. **Persistent service workspace** — Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage.
+6. **Game FAQ** — Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift.
 
 ### Actions & destinations
 
@@ -235,7 +245,7 @@ Set your next competitive milestone.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: valorant. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
+Game key: valorant. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.
 
 **Journeys:** F28.
 
@@ -249,8 +259,10 @@ Choose your next MMR milestone.
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
 2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
-3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+3. **Pinned limited offers** — Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game.
 4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
+5. **Persistent service workspace** — Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage.
+6. **Game FAQ** — Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift.
 
 ### Actions & destinations
 
@@ -272,7 +284,7 @@ Choose your next MMR milestone.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: dota-2. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
+Game key: dota-2. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.
 
 **Journeys:** F29.
 
@@ -286,8 +298,10 @@ A clearer path through the ranks.
 
 1. **Persistent game introduction** — Game name, artwork, short copy and meaningful game-specific statistics remain mounted when filtering. Persistence is across selections, not a full-screen sticky hero.
 2. **Choose a service** — Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar.
-3. **Featured offers** — A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication.
+3. **Pinned limited offers** — Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game.
 4. **Service sections** — Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back.
+5. **Persistent service workspace** — Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage.
+6. **Game FAQ** — Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift.
 
 ### Actions & destinations
 
@@ -309,7 +323,7 @@ A clearer path through the ranks.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Game key: wild-rift. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.
+Game key: wild-rift. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.
 
 **Journeys:** F30.
 

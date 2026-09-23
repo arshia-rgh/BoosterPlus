@@ -14,6 +14,12 @@
     <script src="atlas.js" defer></script>
   </head>
   <body>
+    <img
+      id="siteBackdrop"
+      src="assets/ascension.jpg"
+      alt=""
+      aria-hidden="true"
+    />
     <a class="skip" href="#canvas">Skip design controls</a>
     <header class="reviewbar">
       <div class="reviewbrand">
@@ -25,6 +31,16 @@
       <label
         >State<select id="stateSelect" aria-label="Design state"></select
       ></label>
+      <label
+        >Preview as<select id="identityPreview" aria-label="Preview identity">
+          <option value="visitor">Visitor</option>
+          <option value="customer">Signed-in customer (demo)</option>
+          <option value="customer-empty">Signed in · no ongoing orders</option>
+          <option value="customer-error">
+            Signed in · updates unavailable
+          </option>
+        </select></label
+      >
       <button id="inspect" aria-expanded="false" aria-controls="inspector">
         Specifications
       </button>
@@ -52,6 +68,7 @@
     </div>
     <div id="stage"><div id="canvas" tabindex="-1"></div></div>
     <aside id="inspector" hidden aria-label="Screen specification"></aside>
+    <div id="orderCorner" hidden></div>
     <div id="announce" class="sr-only" role="status"></div>
   </body>
 </html>

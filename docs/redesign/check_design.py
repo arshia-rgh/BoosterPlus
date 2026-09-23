@@ -1,6 +1,7 @@
 """Dependency-free integrity checks for the review artifact, not application tests."""
 import json
 import re
+import hashlib
 from pathlib import Path
 from html.parser import HTMLParser
 
@@ -40,6 +41,12 @@ class Assets(HTMLParser):
 Assets().feed((base / 'design/index.html').read_text())
 for name in re.findall(r'url\(assets/([^)]+)\)', (base / 'design/atlas.css').read_text()):
     assert (base / 'design/assets' / name).is_file(), name
+for asset in json.loads((base / 'design/assets/game-art-manifest.json').read_text()):
+    path = base / 'design/assets' / asset['file']
+    assert path.is_file(), f'Missing game art: {path.name}'
+    data = path.read_bytes()
+    assert len(data) == asset['bytes'], f'Game art size changed: {path.name}'
+    assert hashlib.sha256(data).hexdigest() == asset['sha256'], f'Game art hash changed: {path.name}'
 coverage = ['# Current route → design coverage', '', 'Generated from both current React Router manifests and the design screen inventory. A design subview does not imply a newly implemented route. New navigation proposals require later implementation approval.', '', '| Existing route | Designed views |', '| --- | --- |']
 for route in sorted(routes):
     matches = [s for s in screens if s['route'] == route]

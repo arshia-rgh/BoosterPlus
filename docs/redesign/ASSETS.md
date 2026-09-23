@@ -19,3 +19,18 @@ Before implementation: select final per-game scene/background crops, approved ra
 Character movement, cameo animation, voice and punch audio need separate matching assets, provenance and human motion/audio review. Unfinished prior experiments remain paused and are not imported into this atlas. Still scenes here do not claim completed motion delivery.
 
 The raw Stitch exports still reference remote Google-hosted imagery, Google fonts and Tailwind CDN. Preserve them as supplied references. Do not ship that export HTML or its unsupported public copy as application code. The new atlas has a restrictive CSP, no external runtime dependency and no network/API integrations.
+
+## 23 September — game-specific hero/background revision
+
+The earlier “no new generation” note describes the initial atlas only. The new selected assets replace generic game placeholders; each is shared by its game hero, card and backdrop. Original files are retained unchanged under `design/assets/`. CSS controls crop, contrast and motion. The manifest records byte counts, hashes and direct asset URLs.
+
+| File | Identity and source |
+| --- | --- |
+| `game-mlbb.png` | Generated Miya / Mobile Legends fan illustration; [prompt record](GAME_ART_PROMPTS.md) |
+| `game-wow.jpg` | World of Warcraft publisher homepage masthead, troll/temple scene; [source page](https://worldofwarcraft.blizzard.com/en-us/) |
+| `game-lol.jpg` | Ahri splash, Riot Data Dragon; [source page](https://www.leagueoflegends.com/en-us/champions/ahri/) |
+| `game-valorant.png` | Jett agent banner; [source page](https://playvalorant.com/en-us/agents/jett/) |
+| `game-dota.jpg` | Juggernaut Bladeform Legacy masthead; [source page](https://www.dota2.com/bladeformlegacy) |
+| `game-wildrift.jpg` | Jinx base splash served on Wild Rift’s champion page; [source page](https://wildrift.leagueoflegends.com/en-us/champions/jinx/) |
+
+Publisher artwork is used as an attributed local design reference. Public commercial deployment rights have not been qualified by this design task; existing final-launch asset review remains held. No publisher affiliation is implied. MLBB likeness/art direction remains subject to owner visual acceptance. Old scene files are preserved for historical views.

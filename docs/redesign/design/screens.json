@@ -36,6 +36,14 @@
         "body": "Updates, patches and learning per game; Choose your game."
       },
       {
+        "title": "Community review cards",
+        "body": "Horizontal cards with previous/next arrow controls and native touch/keyboard scrolling. Clearly fictional examples until verified reviews are supplied. No autoplay."
+      },
+      {
+        "title": "FAQ",
+        "body": "Expandable answers about boosts, payment, account sales, service availability and support."
+      },
+      {
         "title": "Game selection",
         "body": "Equal image cards, capability tags and text-labeled non-clickable paused games. No privileged MLBB section."
       }
@@ -74,7 +82,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "See HOMEPAGE_GAME_HUB_REVISION.md. All five Choose your game links target #P01/games. No fake live metrics, countdowns or publisher claims. Catalog capability examples are design fixtures.",
+    "notes": "See HOMEPAGE_GAME_HUB_REVISION.md. All five Choose your game links target #P01/games. No fake live metrics, countdowns or publisher claims. Catalog capability examples are design fixtures. Shared footer includes Contact us, help, policy destinations and motion controls. The signed-in demo exposes the corner activity panel.",
     "mobile": "Single-column service introductions; wrapping capability badges; three compact metrics; no horizontal clipping. Respect reduced motion and focus the game-selection heading after anchor navigation.",
     "flowIds": [
       "F01"
@@ -202,12 +210,20 @@
         "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
-        "title": "Featured offers",
-        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
+        "title": "Pinned limited offers",
+        "body": "Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game."
       },
       {
         "title": "Service sections",
         "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
+      },
+      {
+        "title": "Persistent service workspace",
+        "body": "Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage."
+      },
+      {
+        "title": "Game FAQ",
+        "body": "Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift."
       }
     ],
     "actions": [
@@ -252,7 +268,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: mobile-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Launch example. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
+    "notes": "Game key: mobile-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Launch example. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F01",
@@ -278,12 +294,20 @@
         "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
-        "title": "Featured offers",
-        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
+        "title": "Pinned limited offers",
+        "body": "Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game."
       },
       {
         "title": "Service sections",
         "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
+      },
+      {
+        "title": "Persistent service workspace",
+        "body": "Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage."
+      },
+      {
+        "title": "Game FAQ",
+        "body": "Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift."
       }
     ],
     "actions": [
@@ -328,7 +352,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: world-of-warcraft. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
+    "notes": "Game key: world-of-warcraft. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F26"
@@ -351,12 +375,20 @@
         "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
-        "title": "Featured offers",
-        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
+        "title": "Pinned limited offers",
+        "body": "Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game."
       },
       {
         "title": "Service sections",
         "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
+      },
+      {
+        "title": "Persistent service workspace",
+        "body": "Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage."
+      },
+      {
+        "title": "Game FAQ",
+        "body": "Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift."
       }
     ],
     "actions": [
@@ -401,7 +433,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: league-of-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
+    "notes": "Game key: league-of-legends. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F27"
@@ -424,12 +456,20 @@
         "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
-        "title": "Featured offers",
-        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
+        "title": "Pinned limited offers",
+        "body": "Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game."
       },
       {
         "title": "Service sections",
         "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
+      },
+      {
+        "title": "Persistent service workspace",
+        "body": "Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage."
+      },
+      {
+        "title": "Game FAQ",
+        "body": "Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift."
       }
     ],
     "actions": [
@@ -474,7 +514,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: valorant. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
+    "notes": "Game key: valorant. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F28"
@@ -497,12 +537,20 @@
         "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
-        "title": "Featured offers",
-        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
+        "title": "Pinned limited offers",
+        "body": "Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game."
       },
       {
         "title": "Service sections",
         "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
+      },
+      {
+        "title": "Persistent service workspace",
+        "body": "Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage."
+      },
+      {
+        "title": "Game FAQ",
+        "body": "Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift."
       }
     ],
     "actions": [
@@ -547,7 +595,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: dota-2. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
+    "notes": "Game key: dota-2. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F29"
@@ -570,12 +618,20 @@
         "body": "Large cards for supported services only. No All services control or combined feed. Selection hides the chooser and opens only that service; a small Back to choose service link restores the chooser. Minimal logo/support/sign-in navbar."
       },
       {
-        "title": "Featured offers",
-        "body": "A restrained glowing rail above normal sections; all categories initially, selected-category offers when filtered. Real expiry, stock and discount terms required before publication."
+        "title": "Pinned limited offers",
+        "body": "Between game statistics and the service chooser. Time, quantity or discount offers for available Boost/Accounts/Shop services. Selected service filters this rail. No repeated Worth a closer look section; hide empty rails and all offers for a paused game."
       },
       {
         "title": "Service sections",
         "body": "Only the chosen service is displayed, with related featured offers. Accounts contains Browse accounts and Sell an account actions. Move focus out of the hidden chooser into the selected service heading; return focus to the chooser heading on back."
+      },
+      {
+        "title": "Persistent service workspace",
+        "body": "Configuration, account browsing and linked review/checkout templates render inside the game shell. Use nested design fragments such as #G01/boost/P04. Retain hero, stats and background. In-memory form nodes retain draft input across back/forward; no API or persistent storage."
+      },
+      {
+        "title": "Game FAQ",
+        "body": "Game-specific question plus availability and support disclosures after the service workspace. Explicit paused-game answer for Wild Rift."
       }
     ],
     "actions": [
@@ -620,7 +676,7 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Game key: wild-rift. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md.",
+    "notes": "Game key: wild-rift. Do not hard-code season numbers, rank ladders, guaranteed win rates or publisher API claims. Future-game design specimen, not a launch activation. Owner revision 23 September: equal-game hub; capability fixtures do not activate games or shop/news in the application. Read HOMEPAGE_GAME_HUB_REVISION.md. Latest revision uses game-specific local hero/background art. Signed-in customer demo offers ongoing-order progress and chat from every screen; see SHARED_EXPERIENCE_REVISION.md.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F30"

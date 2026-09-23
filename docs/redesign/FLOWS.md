@@ -45,6 +45,7 @@ flowchart LR
 
 **Branches and guards**
 
+- Game service links use nested design fragments so the hero, statistics and background remain mounted during configuration/review. My account/order destinations intentionally leave the game shell.
 - P01 service introductions scroll to the bottom game selection. G01 starts with large service cards; selecting Boost opens only Boost while preserving the game hero. Back to choose service returns to the cards.
 - Invalid ranks stay in P04 with field errors.
 - Manual estimate can submit without a numeric promise.

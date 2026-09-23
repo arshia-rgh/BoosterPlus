@@ -89,3 +89,12 @@ Design integrity (113 screens, 30 journeys, 55 routes, 555 named treatments), Ja
 ### Follow-up — service chooser replaces All services
 
 The later owner refinement removes global links from game navbars too. Verified all 19 category entries and returns across six games: only the selected panel is visible; the chooser hides; the small back link restores it. Accounts exposes buying/selling actions internally. Keyboard Enter moves focus into the service; browser Back restores chooser focus. Desktop and 390px screenshots reviewed; narrow chooser/detail show no horizontal overflow. Previous All services checks above are historical. Detailed per-game downstream marketplace/submission templates remain a separate design pass.
+
+## Shared experience follow-up — 23 September
+
+- All 113 screens checked at 390px: one H1, no horizontal document overflow, Contact us footer present, no Games/Accounts/Sell an account/How it works links in top navigation.
+- All six game profiles checked for the same hero/background asset, three FAQ disclosures and exactly one offer rail before the chooser. Wild Rift rail is hidden while paused; direct nested request shows no order fields. Artwork inspected locally and settled MLBB/WoW compositions inspected in-browser.
+- Homepage FAQ disclosure and horizontal review arrow movement exercised. Reduced-motion preview disables ambient and emblem animations; footer Pause/Resume changes background play state. No captured browser errors.
+- Embedded MLBB custom form, account listing and account detail retain game hero/statistics/background with one H1. Edited EU selection survives overview/back; Visitor reset returns the sample default. In-game draft values are memory-only design controls.
+- Signed-in panel exercised: expand, Escape collapse, active/empty/unavailable states, hide on Visitor, order link to C05, support link to C11, collapse on navigation and availability on subsequent screens. Phone panel reviewed at 390×844; desktop layout reviewed at 1100px. No real account access or provider requests occurred.
+- `node --check`, Prettier, design integrity/asset hashes and root repository checks are the stage checks. Existing application suites are unchanged and not requalified. Physical-device/assistive-technology and owner visual acceptance remain open. Publisher assets are local design references; deployment rights remain unqualified.

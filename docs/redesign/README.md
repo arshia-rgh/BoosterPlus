@@ -10,6 +10,8 @@ The owner confirmed that the 13 HTML files in [pages/](pages/) are the full refe
 
 [Homepage and game hubs](HOMEPAGE_GAME_HUB_REVISION.md) now use equal-game discovery: service introductions → game selection → persistent game header, large service choices and individual service views. Shop and news are newly requested design concepts, not imported scope from Stitch. Earlier MLBB-first homepage guidance is superseded. Application development and R10/R11 remain paused.
 
+See the latest [shared experience revision](SHARED_EXPERIENCE_REVISION.md) for FAQs, review cards, pinned offers, persistent game flows, shared backgrounds and signed-in order-panel previews.
+
 ## Open the design
 
 Start a loopback-only static preview from the repository root:

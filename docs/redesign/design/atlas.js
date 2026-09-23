@@ -15,7 +15,7 @@ let current = screens[0],
   stateName = "",
   activeFlow = null;
 const link = (label, to, cls = "") =>
-  `<a class="${cls}" href="#${esc(to)}">${esc(label)}</a>`;
+  `<a class="${cls}" href="#${esc(contextualTarget(to))}">${esc(label)}</a>`;
 const chip = (label, tone = "") =>
   `<span class="chip ${tone}">${esc(label)}</span>`;
 const card = (title, body) =>
@@ -54,71 +54,48 @@ function isAdmin(s) {
     s.group,
   );
 }
+let previewSignedIn = false;
+let cornerExpanded = false;
+let cornerExample = "active";
+const gameDraftViews = new Map();
+let motionPaused = false;
+const embeddedScreens = new Set([
+  "P04",
+  "P05",
+  "P06",
+  "P07",
+  "P08",
+  "P09",
+  "P10",
+  "P11",
+  "P12",
+  "P13",
+  "P14",
+  "S02",
+  "I01",
+  "I02",
+  "G07",
+  "G08",
+  "G09",
+  "G10",
+  "G11",
+  "G12",
+  "G13",
+  "G14",
+  "G15",
+  "G16",
+]);
+function contextualTarget(to) {
+  if (current.kind !== "game" || !embeddedScreens.has(to)) return to;
+  const service = ["P12", "P13", "P14", "S02"].includes(to)
+    ? "accounts"
+    : location.hash.split("/")[1] || "boost";
+  return `${current.id}/${service === "all" ? "boost" : service}/${to}`;
+}
 function nav(s) {
-  if (s.id === "P01" || s.kind === "game")
-    return `<nav class="topnav minimalnav" aria-label="Main"><a href="#P01" class="brand"><img src="assets/logo.svg" alt="PLAYORA"></a><div class="navend">${link("Support", "C13")}${link("Sign in", "I01", "button primary")}</div></nav>`;
-  const internal = isAdmin(s) || s.group === "Booster";
-  const signedIn =
-    internal ||
-    ["Customer", "Seller", "Payments"].includes(s.group) ||
-    s.id === "P06";
-  return `<nav class="topnav" aria-label="Main"><a href="#P01" class="brand"><img src="assets/logo.svg" alt="PLAYORA"></a><div class="toplinks">${(internal
-    ? [
-        ["Overview", isAdmin(s) ? "A01" : "B01"],
-        ["Orders", isAdmin(s) ? "A02" : "B02"],
-        ["Messages", isAdmin(s) ? "A05" : "B05"],
-      ]
-    : [
-        ["Games", "P02"],
-        ["Accounts", "P12"],
-        ["Sell an account", "S01"],
-        ["How it works", "P16"],
-      ]
-  )
-    .map(([a, b]) => link(a, b))
-    .join(
-      "",
-    )}</div><button class="menu" id="menuToggle" aria-expanded="false" aria-controls="mobileNav">Menu</button><div class="navend">${link("Support", "C11")}${link(signedIn ? "My account" : "Sign in", signedIn ? "C01" : "I01", "button primary")}</div></nav><nav class="mobilemenu" id="mobileNav" hidden aria-label="Mobile navigation">${(isAdmin(
-    s,
-  )
-    ? [
-        ["Overview", "A01"],
-        ["Orders", "A02"],
-        ["Messages", "A05"],
-        ["Calendars", "A07"],
-        ["Customers & staff", "A08"],
-        ["Catalog", "A10"],
-        ["Accounts", "A22"],
-        ["Submissions", "A20"],
-        ["Finance", "A15"],
-        ["Reports", "A30"],
-        ["Coupons", "A27"],
-        ["Reviews", "A28"],
-        ["Content", "A34"],
-        ["Privacy", "A35"],
-        ["Media", "A32"],
-        ["Alerts", "A33"],
-        ["Tasks", "A31"],
-      ]
-    : s.group === "Booster"
-      ? [
-          ["Overview", "B01"],
-          ["Assigned orders", "B02"],
-          ["Calendar", "B04"],
-          ["Messages", "B05"],
-          ["Security", "C17"],
-        ]
-      : [
-          ["Games", "P02"],
-          ["Accounts", "P12"],
-          ["My orders", "C02"],
-          ["Messages", "C11"],
-          ["My sales", "S01"],
-          ["Settings", "C22"],
-        ]
-  )
-    .map(([a, b]) => link(a, b))
-    .join("")}</nav>`;
+  const privateWorkspace =
+    ["Customer", "Seller", "Booster"].includes(s.group) || isAdmin(s);
+  return `<nav class="topnav minimalnav" aria-label="Main"><a href="#P01" class="brand"><img src="assets/logo.svg" alt="PLAYORA"></a>${privateWorkspace ? '<button class="menu" id="menuToggle" aria-expanded="false" aria-controls="mobileNav">Workspace</button>' : ""}<div class="navend">${link("Support", "C13")}${link(previewSignedIn || privateWorkspace ? "My account" : "Sign in", previewSignedIn || privateWorkspace ? "C01" : "I01", "button primary")}</div></nav>${privateWorkspace ? `<nav class="mobilemenu" id="mobileNav" hidden aria-label="Workspace navigation">${link("Overview", isAdmin(s) ? "A01" : s.group === "Booster" ? "B01" : "C01")}${link("Orders", isAdmin(s) ? "A02" : s.group === "Booster" ? "B02" : "C02")}${link("Messages", isAdmin(s) ? "A05" : s.group === "Booster" ? "B05" : "C11")}${link("Settings", "C22")}</nav>` : ""}`;
 }
 function sidebar(s) {
   let links;
@@ -181,7 +158,7 @@ const gameProfiles = [
   {
     id: "G01",
     name: "Mobile Legends",
-    art: "miya",
+    art: "game-mlbb.png",
     services: ["boost", "accounts", "shop", "news"],
     goal: "Make your next ranked chapter count.",
     config: "P04",
@@ -189,7 +166,7 @@ const gameProfiles = [
   {
     id: "G02",
     name: "World of Warcraft",
-    art: "illidan",
+    art: "game-wow.jpg",
     services: ["boost", "accounts", "news"],
     goal: "Your next adventure starts here.",
     config: "G07",
@@ -197,7 +174,7 @@ const gameProfiles = [
   {
     id: "G03",
     name: "League of Legends",
-    art: "ahri",
+    art: "game-lol.jpg",
     services: ["boost", "accounts", "shop", "news"],
     goal: "Find your next competitive edge.",
     config: "G08",
@@ -205,29 +182,26 @@ const gameProfiles = [
   {
     id: "G04",
     name: "VALORANT",
-    art: "ascension",
+    art: "game-valorant.png",
     services: ["boost", "news"],
     goal: "A clearer path to your next milestone.",
     config: "G09",
-    placeholder: true,
   },
   {
     id: "G05",
     name: "Dota 2",
-    art: "ascension",
+    art: "game-dota.jpg",
     services: ["boost", "accounts", "news"],
     goal: "Build your next great play.",
     config: "G10",
-    placeholder: true,
   },
   {
     id: "G06",
     name: "Wild Rift",
-    art: "ascension",
+    art: "game-wildrift.jpg",
     services: ["boost", "accounts", "news"],
     goal: "Your next chapter on the Rift.",
     config: "G11",
-    placeholder: true,
     paused: true,
   },
 ];
@@ -242,7 +216,7 @@ const chooseGame = () =>
 function gameCards() {
   return `<div class="gamegrid discoverygames">${gameProfiles
     .map((g) => {
-      const body = `<img src="assets/${g.art}.jpg" alt="" loading="lazy"><div class="gamecardtop">${g.paused ? chip("Temporarily unavailable", "amber") : ""}${g.placeholder ? '<span class="artnote">Game artwork pending</span>' : ""}</div><div class="gamebottom"><div><h3>${g.name}</h3><div class="capabilities">${g.services.map((x) => chip(serviceNames[x], "neutral")).join("")}</div>${g.paused ? "<p>Services paused. Check back later.</p>" : ""}</div>${g.paused ? "" : '<span class="arrow" aria-hidden="true">↗</span>'}</div>`;
+      const body = `<img src="assets/${g.art}" alt="" loading="lazy"><div class="gamecardtop">${g.paused ? chip("Temporarily unavailable", "amber") : ""}${g.placeholder ? '<span class="artnote">Game artwork pending</span>' : ""}</div><div class="gamebottom"><div><h3>${g.name}</h3><div class="capabilities">${g.services.map((x) => chip(serviceNames[x], "neutral")).join("")}</div>${g.paused ? "<p>Services paused. Check back later.</p>" : ""}</div>${g.paused ? "" : '<span class="arrow" aria-hidden="true">↗</span>'}</div>`;
       return g.paused
         ? `<article class="gamecard gamepaused" aria-disabled="true">${body}</article>`
         : `<a href="#${g.id}" class="gamecard">${body}</a>`;
@@ -393,7 +367,194 @@ function home() {
       ],
     ],
   ];
-  return `<section class="hero discoveryhero"><div class="eyebrow">MANY WORLDS. ONE PLAYORA.</div><h1>Your next level.<br><em>Closer than ever.</em></h1><p>Boost your progress. Find your next account.<br>Discover more of the games you love.</p><span class="scrollhint">Scroll to explore <span aria-hidden="true">↓</span></span></section><section class="section activitysection" aria-label="PLAYORA activity">${metrics()}</section>${sections.map(([label, title, desc, type, caption, items]) => `<section class="section serviceintro intro-${type}"><div class="introcopy"><div class="eyebrow">${label}</div><h2>${title}</h2><p>${desc}</p>${chooseGame()}</div><div class="servicevisual">${sectionEmblem(type)}<div class="visualheading"><span class="orb" aria-hidden="true">${{ boost: "↗", accounts: "⇄", shop: "✦", payments: "◇", news: "≋" }[type]}</span><span>${caption}</span></div>${items.map(([t, d], i) => `<article class="featureline"><span class="featureindex">0${i + 1}</span><div><h3>${t}</h3><p>${d}</p></div></article>`).join("")}</div></section>`).join("")}<section class="section gamedestination" id="gameSelection"><div class="sectionhead"><div><div class="eyebrow">CHOOSE YOUR WORLD</div><h2 tabindex="-1" id="gameSelectionTitle">Every game.<br><em>A new possibility.</em></h2></div><p>Pick your game to see what’s available.<br>Services vary by game.</p></div><p class="quiet">Design catalog · availability and capabilities shown as examples.</p>${gameCards()}</section>`;
+  return `<section class="hero discoveryhero"><div class="eyebrow">MANY WORLDS. ONE PLAYORA.</div><h1>Your next level.<br><em>Closer than ever.</em></h1><p>Boost your progress. Find your next account.<br>Discover more of the games you love.</p><span class="scrollhint">Scroll to explore <span aria-hidden="true">↓</span></span></section><section class="section activitysection" aria-label="PLAYORA activity">${metrics()}</section>${sections.map(([label, title, desc, type, caption, items]) => `<section class="section serviceintro intro-${type}"><div class="introcopy"><div class="eyebrow">${label}</div><h2>${title}</h2><p>${desc}</p>${chooseGame()}</div><div class="servicevisual">${sectionEmblem(type)}<div class="visualheading"><span class="orb" aria-hidden="true">${{ boost: "↗", accounts: "⇄", shop: "✦", payments: "◇", news: "≋" }[type]}</span><span>${caption}</span></div>${items.map(([t, d], i) => `<article class="featureline"><span class="featureindex">0${i + 1}</span><div><h3>${t}</h3><p>${d}</p></div></article>`).join("")}</div></section>`).join("")}${homeReviews()}${faqSection()}<section class="section gamedestination" id="gameSelection"><div class="sectionhead"><div><div class="eyebrow">CHOOSE YOUR WORLD</div><h2 tabindex="-1" id="gameSelectionTitle">Every game.<br><em>A new possibility.</em></h2></div><p>Pick your game to see what’s available.<br>Services vary by game.</p></div><p class="quiet">Design catalog · availability and capabilities shown as examples.</p>${gameCards()}</section>`;
+}
+function faqSection(game) {
+  const gameQuestions = {
+    G01: [
+      "Can I choose a hero, role or play-together boost?",
+      "Use the published Mobile Legends form to request your preferred mode, hero and role. Staff confirm scope and any win-rate terms in the final quote.",
+    ],
+    G02: [
+      "What do you need for a dungeon or raid request?",
+      "Choose the available activity and provide the realm, region and relevant character details requested by the form. Staff confirm eligibility, group arrangement and schedule.",
+    ],
+    G03: [
+      "Can I request a specific role or champion?",
+      "Request your rank goal, role and champion preferences in the League form. Availability and exact terms are confirmed before payment.",
+    ],
+    G04: [
+      "How do region and queue affect my VALORANT request?",
+      "Select the supported region and queue in the request. Staff check eligibility and agree the scope before you accept a quote.",
+    ],
+    G05: [
+      "How is a Dota 2 MMR goal agreed?",
+      "Provide your current and target MMR, region and preferred role. Your final quote defines the eligible queue and the agreed scope.",
+    ],
+    G06: [
+      "Why can’t I order Wild Rift services right now?",
+      "This design demonstrates a temporarily paused game. New orders are unavailable while paused; existing customers can still use their order workspace and contact support.",
+    ],
+  };
+  const questions = game
+    ? [
+        gameQuestions[game.id],
+        [
+          "Is every service and offer available in my region?",
+          "Availability varies by game, region and product. Check the offer’s eligibility and current availability before continuing.",
+        ],
+        [
+          "Where do I see progress and contact the team?",
+          "Open My account for order updates, proof and messages. Signed-in customers can also open an order from the corner activity panel.",
+        ],
+      ]
+    : [
+        [
+          "How do custom boosts and fixed packages differ?",
+          "Custom requests receive a final staff quote for approval before payment. Fixed packages have a defined scope and price and can go directly to checkout.",
+        ],
+        [
+          "How do I pay?",
+          "Pay directly for an order using the supported crypto asset and exact network shown at checkout. Fulfillment starts only after verified payment and any required order preparation.",
+        ],
+        [
+          "Can I sell an account?",
+          "Choose your game, open Accounts and select Sell an account. Staff review the submission and provide an offer with explicit payout terms.",
+        ],
+        [
+          "Do all games offer the same services?",
+          "No. Each game shows only its available services. Paused games are labeled and cannot accept new orders.",
+        ],
+        [
+          "How do I get help with an order?",
+          "Use your private order conversation in My account or the signed-in corner panel’s Chat with support action.",
+        ],
+      ];
+  return `<section class="section faqsection"><div class="sectionhead"><div><div class="eyebrow">A LITTLE CLARITY</div><h2>${game ? esc(game.name) + " questions" : "Good questions. Clear answers."}</h2></div><p>${link("Contact us ↗", "C13", "textlink")}</p></div><div class="faqlist">${questions.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("")}</div></section>`;
+}
+function homeReviews() {
+  return `<section class="section reviewsection" aria-labelledby="reviewsTitle"><div class="sectionhead"><div><div class="eyebrow">THE PLAYER PERSPECTIVE</div><h2 id="reviewsTitle">A few words from the community.</h2></div><div class="reviewarrows"><button id="reviewPrevious" aria-label="Previous reviews" aria-controls="reviewTrack">←</button><button id="reviewNext" aria-label="Next reviews" aria-controls="reviewTrack">→</button></div></div><p class="quiet">Fictional review examples for layout review · not customer testimonials.</p><div class="reviewtrack" id="reviewTrack" tabindex="0" aria-label="Review cards; scroll horizontally">${[
+    [
+      "The next step was always clear.",
+      "A clear quote and progress updates in the same place.",
+      "Boost order",
+    ],
+    [
+      "Everything I needed to compare.",
+      "The listing details made it easy to understand the transfer.",
+      "Account purchase",
+    ],
+    [
+      "A conversation, not a guessing game.",
+      "I could ask about the offer before accepting the terms.",
+      "Account sale",
+    ],
+    [
+      "One place to follow my order.",
+      "The payment status and support were easy to find.",
+      "Order support",
+    ],
+  ]
+    .map(
+      ([t, b, l], i) =>
+        `<article class="reviewquote"><span class="quoteMark" aria-hidden="true">“</span><h3>${t}</h3><p>${b}</p><div><span class="avatar" aria-hidden="true">${i + 1}</span><span>Example player ${i + 1}<small>${l} · design sample</small></span></div></article>`,
+    )
+    .join(
+      "",
+    )}</div><p class="sr-only" id="reviewFeedback" role="status"></p></section>`;
+}
+function footer() {
+  return `<footer class="footer fullfooter"><div class="footerbrand"><img src="assets/logo.svg" alt="PLAYORA"><p>Your games. Your next chapter.</p><small>Independent service. No publisher affiliation is claimed.</small></div><nav aria-label="Help and contact"><h2>Here to help</h2>${link("Contact us", "C13")}${link("Help & FAQ", "C13")}${link("Order support", "C11")}</nav><nav aria-label="Policies"><h2>The details</h2>${link("Terms of service", "P17/terms")}${link("Privacy policy", "P17/privacy")}${link("Refund & cancellation terms", "P17/refunds")}</nav><nav aria-label="Your experience"><h2>Your experience</h2>${link("My account", "C01")}${link("Accessibility & motion", "C19")}<button class="textlink" id="toggleAmbient">${motionPaused ? "Resume" : "Pause"} background motion</button></nav><div class="footerbottom"><span>© PLAYORA · Design preview</span><span>Direct crypto payments · No stored balance</span></div></footer>`;
+}
+function renderCorner() {
+  $("orderCorner").hidden = !previewSignedIn;
+  $("orderCorner").innerHTML = previewSignedIn
+    ? `<aside class="ordercorner" aria-label="Your ongoing orders"><div class="cornerhead"><button id="cornerToggle" aria-expanded="${cornerExpanded}" aria-controls="cornerDetails"><span class="live-dot" aria-hidden="true"></span>${cornerExample === "active" ? "2 ongoing orders" : cornerExample === "empty" ? "Your orders" : "Order updates unavailable"} <span aria-hidden="true">${cornerExpanded ? "−" : "+"}</span></button></div><div id="cornerDetails" ${cornerExpanded ? "" : "hidden"}><div class="eyebrow">YOUR ACTIVITY · DESIGN SAMPLE</div>${cornerExample === "active" ? `<a class="cornerorder" href="#C05"><strong>Mobile Legends · PL-1042</strong><span>In progress · Epic II → Legend V</span><span>Current milestone: Epic I</span><progress value="3" max="5" aria-label="3 of 5 agreed milestones completed">3 of 5</progress><small>3 of 5 agreed milestones · last update 12 min ago (sample)</small><span class="textlink">Open order ↗</span></a><a class="cornerorder" href="#C23"><strong>Account purchase · PL-1048</strong><span>Preparing handover</span><small>Last update 35 min ago (sample)</small><span class="textlink">Open order ↗</span></a><p class="quiet">Progress is based on reported milestones, not a live game feed.</p>` : cornerExample === "empty" ? '<p>No ongoing orders. Your completed orders remain in My account.</p><a class="textlink" href="#C02">View order history ↗</a>' : '<p>We couldn’t refresh your orders. Check My account for the latest recorded update.</p><a class="textlink" href="#C02">Open my orders ↗</a>'}</div><a class="cornerchat" href="#C11">Chat with support ↗</a></aside>`
+    : "";
+  $("orderCorner")
+    .querySelectorAll("a")
+    .forEach(
+      (a) =>
+        (a.onclick = () => {
+          cornerExpanded = false;
+        }),
+    );
+  if ($("cornerToggle"))
+    $("cornerToggle").onclick = () => {
+      cornerExpanded = !cornerExpanded;
+      renderCorner();
+      $("cornerToggle").focus();
+    };
+}
+function bindExtras() {
+  document.body.classList.toggle(
+    "preview-reduced",
+    stateName === "Reduced motion",
+  );
+  if ($("reviewTrack")) {
+    const track = $("reviewTrack");
+    const update = () => {
+      $("reviewPrevious").disabled = track.scrollLeft < 2;
+      $("reviewNext").disabled =
+        track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+    };
+    [
+      ["reviewPrevious", -1],
+      ["reviewNext", 1],
+    ].forEach(
+      ([id, dir]) =>
+        ($(id).onclick = () => {
+          track.scrollBy({
+            left:
+              dir *
+              (track.querySelector("article").getBoundingClientRect().width +
+                20),
+            behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+              ? "instant"
+              : "smooth",
+          });
+          $("reviewFeedback").textContent =
+            dir === 1
+              ? "Showing later review examples."
+              : "Showing earlier review examples.";
+        }),
+    );
+    track.addEventListener("scroll", update, { passive: true });
+    update();
+  }
+  if ($("toggleAmbient"))
+    $("toggleAmbient").onclick = () => {
+      motionPaused = !motionPaused;
+      document.body.classList.toggle("ambient-paused", motionPaused);
+      $("toggleAmbient").textContent =
+        `${motionPaused ? "Resume" : "Pause"} background motion`;
+    };
+  const game =
+    current.kind === "game"
+      ? gameProfiles.find((g) => g.id === current.id)
+      : null;
+  $("siteBackdrop").src = `assets/${game ? game.art : "ascension.jpg"}`;
+  renderCorner();
+}
+function embeddedView(game, id) {
+  if (game.paused)
+    return `<div class="card"><h2 id="embeddedTitle" tabindex="-1">New orders are paused</h2><p>You can still open existing orders in My account or contact support.</p></div>`;
+  let screen = byId.get(id);
+  if (!screen || !embeddedScreens.has(id))
+    return '<p class="quiet">This step is unavailable. Return to the service overview.</p>';
+  let body;
+  if (["P12", "P13", "P14", "S02"].includes(id) && game.id !== "G01") {
+    body =
+      id === "P12"
+        ? `<div class="three">${card(game.name + " account listings", "Game-specific reviewed inventory appears here. Use region and progression details relevant to this game.")}${card("Availability", "This design has no published example inventory for this game. No account is offered for sale.")}${card("Want to sell?", "Submit your own account for review and agreed terms.")}</div><div class="actions">${link("Sell an account", "S02", "button primary")}</div>`
+        : id === "S02"
+          ? `<div class="card"><h3>Tell us about your ${game.name} account</h3>${fields({ ...screen, fields: screen.fields.filter((f) => !/rank|hero|skin|game/i.test(f.label)) })}<p class="quiet">The ${game.name} intake schema and transfer terms must be configured before submission is enabled. Design preview only.</p></div>`
+          : `<div class="card"><h3>No listing selected</h3><p>Choose an available ${game.name} account before reviewing its details.</p>${link("Back to accounts", "P12", "button")}</div>`;
+  } else
+    body = renderBody(screen)
+      .replace(/<h1>/g, "<h2>")
+      .replace(/<\/h1>/g, "</h2>");
+  return `<div class="flowheading"><div class="eyebrow">${esc(game.name)} / ${esc(screen.group)}</div><h2 id="embeddedTitle" tabindex="-1">${esc(id === "P12" ? "Find your next account." : screen.title)}</h2><p>${esc(screen.summary)}</p></div>${body}`;
 }
 function gameHub(s) {
   const g = gameProfiles.find((x) => x.id === s.id);
@@ -415,7 +576,15 @@ function gameHub(s) {
       "Updates, patch notes and practical guides, together in one place.",
     ],
   };
-  return `<div class="gamehub"><section class="hubhero"><img src="assets/${g.art}.jpg" alt=""><div class="hubherocopy">${link("← All games", "P01/games", "textlink")}<div class="eyebrow">YOUR WORLD / PLAYORA</div><h1>${g.name}</h1><p>${g.goal}</p>${g.placeholder ? '<p class="quiet">Art direction placeholder · dedicated game art pending</p>' : ""}${g.paused ? chip("Services temporarily unavailable", "amber") : ""}</div></section><div class="hubmetrics">${metrics(g.id)}</div><section class="serviceentry" id="serviceEntry"><div class="sectionhead"><div><div class="eyebrow">MAKE YOUR NEXT MOVE</div><h2 id="serviceChoiceTitle" tabindex="-1">Choose your service.</h2></div><p>What brings you to ${g.name}?</p></div><nav class="servicechoices" aria-label="Choose a game service">${g.services.map((k) => `<a href="#${g.id}/${k}" class="servicechoice" data-service="${k}"><span class="orb" aria-hidden="true">${{ boost: "↗", accounts: "⇄", shop: "✦", news: "≋" }[k]}</span><strong>${serviceNames[k]}</strong><span>${descriptions[k][1]}</span><span class="choicearrow" aria-hidden="true">↗</span></a>`).join("")}</nav></section><div class="serviceback" id="serviceBack" hidden>${link("← Back to choose service", g.id, "textlink")}</div><div class="hubcontent"><section class="featuredoffers" aria-labelledby="featuredTitle"><div class="sectionhead"><div><div class="eyebrow">IN THE SPOTLIGHT</div><h2 id="featuredTitle">Worth a closer look.</h2></div><span class="quiet">Illustrative promotions</span></div><div class="offergrid">${g.services.map((k) => `<article class="spotlight" data-offer="${k}">${chip({ boost: "Limited quantity", accounts: "Featured listing", shop: "Limited time", news: "Editor’s pick" }[k], "neutral")}<p class="eyebrow">${serviceNames[k]}</p><h3>${{ boost: "A package for your next goal", accounts: "A fresh start, carefully detailed", shop: "A little extra for your next session", news: "What changed in the latest patch" }[k]}</h3><p>${k === "news" ? "Explore the changes and what they mean for your next game." : "Review scope, availability and terms before choosing."}</p><a class="textlink" href="#${g.id}/${k}">Explore ${serviceNames[k].toLowerCase()} ↗</a></article>`).join("")}</div></section><p id="serviceFeedback" class="sr-only" role="status"></p>${g.services
+  return `<div class="gamehub hub-${g.id}"><section class="hubhero"><img src="assets/${g.art}" alt=""><div class="hubherocopy">${link("← All games", "P01/games", "textlink")}<div class="eyebrow">YOUR WORLD / PLAYORA</div><h1>${g.name}</h1><p>${g.goal}</p>${g.placeholder ? '<p class="quiet">Art direction placeholder · dedicated game art pending</p>' : ""}${g.paused ? chip("Services temporarily unavailable", "amber") : ""}</div></section><div class="hubmetrics">${metrics(g.id)}</div><div class="serviceback" id="serviceBack" hidden>${link("← Back to choose service", g.id, "textlink")}</div><section class="featuredoffers pinnedoffers" aria-labelledby="featuredTitle"><div class="sectionhead"><div><div class="eyebrow">PINNED FOR THIS GAME</div><h2 id="featuredTitle">Limited offers.</h2></div><span class="quiet">Design offers · no live prices or availability</span></div><div class="offergrid">${g.services
+    .filter((k) => k !== "news")
+    .map(
+      (k) =>
+        `<article class="spotlight" data-offer="${k}">${chip({ boost: "Limited quantity", accounts: "Discounted · example", shop: "Limited time", news: "Editor’s pick" }[k], "neutral")}<p class="eyebrow">${serviceNames[k]}</p><h3>${{ boost: "A package for your next goal", accounts: "A fresh start, carefully detailed", shop: "A little extra for your next session", news: "What changed in the latest patch" }[k]}</h3><p>${k === "news" ? "Explore the changes and what they mean for your next game." : "Review scope, availability and terms before choosing."}</p><a class="textlink" href="#${g.id}/${k}">Explore ${serviceNames[k].toLowerCase()} ↗</a></article>`,
+    )
+    .join(
+      "",
+    )}</div></section><section class="serviceentry" id="serviceEntry"><div class="sectionhead"><div><div class="eyebrow">MAKE YOUR NEXT MOVE</div><h2 id="serviceChoiceTitle" tabindex="-1">Choose your service.</h2></div><p>What brings you to ${g.name}?</p></div><nav class="servicechoices" aria-label="Choose a game service">${g.services.map((k) => `<a href="#${g.id}/${k}" class="servicechoice" data-service="${k}"><span class="orb" aria-hidden="true">${{ boost: "↗", accounts: "⇄", shop: "✦", news: "≋" }[k]}</span><strong>${serviceNames[k]}</strong><span>${descriptions[k][1]}</span><span class="choicearrow" aria-hidden="true">↗</span></a>`).join("")}</nav></section><div class="hubcontent"><p id="serviceFeedback" class="sr-only" role="status"></p>${g.services
     .map(
       (k) =>
         `<section class="hubservice" data-panel="${k}"><div class="sectionhead"><div><div class="eyebrow">${serviceNames[k]}</div><h2 id="serviceTitle-${k}" tabindex="-1">${descriptions[k][0]}</h2></div><p>${descriptions[k][1]}</p></div><div class="three">${(k ===
@@ -481,7 +650,9 @@ function gameHub(s) {
             "",
           )}</div>${k === "boost" && !g.paused ? `<div class="actions">${link("Build a custom boost ↗", g.config, "button primary")}${g.id === "G01" ? link("View a fixed package", "P07", "button") : ""}</div>` : ""}${k === "accounts" && !g.paused ? `<div class="accountentry actions">${link("Browse accounts ↗", "P12", "button primary")}${link("Sell an account", "S02", "button")}</div>` : ""}<details class="smallsection"><summary>${k === "boost" ? "Package preview" : k === "accounts" ? "Account listing preview" : k === "shop" ? "Product preview" : "Article preview"} · design details</summary><p>${g.name} / ${serviceNames[k]}. Final catalog content, commercial terms and ${k === "news" ? "editorial publication" : "eligibility"} require approval. This review demonstrates discovery and filtering; it does not place orders.</p></details></section>`,
     )
-    .join("")}</div></div>`;
+    .join(
+      "",
+    )}<section id="gameFlow" class="gameflow" hidden></section></div>${faqSection(g)}</div>`;
 }
 function applyDestination() {
   const destination = location.hash.slice(1).split("/")[1] || "all";
@@ -512,8 +683,40 @@ function applyDestination() {
   document.querySelectorAll("[data-offer]").forEach((el) => {
     el.hidden = selected !== "all" && el.dataset.offer !== selected;
   });
+  document.querySelector(".pinnedoffers").hidden =
+    profile.paused ||
+    ![...document.querySelectorAll("[data-offer]")].some((el) => !el.hidden);
+  const flowId = location.hash.split("/")[2];
+  const flow = $("gameFlow");
+  if (flowId && selected !== "all") {
+    if (flow.dataset.view !== flowId) {
+      const key = `${profile.id}/${selected}/${flowId}`;
+      let view = gameDraftViews.get(key);
+      if (!view) {
+        view = document.createElement("div");
+        view.innerHTML = embeddedView(profile, flowId);
+        gameDraftViews.set(key, view);
+      }
+      flow.replaceChildren(view);
+      flow.dataset.view = flowId;
+    }
+    flow.hidden = false;
+    document
+      .querySelectorAll("[data-panel]")
+      .forEach((el) => (el.hidden = true));
+  } else {
+    flow.hidden = true;
+    flow.innerHTML = "";
+    delete flow.dataset.view;
+  }
+  $("serviceBack").innerHTML =
+    flowId && selected !== "all"
+      ? `<a class="textlink" href="#${profile.id}/${selected}">← Back to ${serviceNames[selected].toLowerCase()}</a>`
+      : `<a class="textlink" href="#${profile.id}">← Back to choose service</a>`;
   if (selected !== "all" && (focusWasInChoice || focusWasInService)) {
-    $("serviceTitle-" + selected).focus({ preventScroll: true });
+    (flowId ? $("embeddedTitle") : $("serviceTitle-" + selected))?.focus({
+      preventScroll: true,
+    });
     $("serviceBack").scrollIntoView({
       block: "start",
       behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -526,10 +729,16 @@ function applyDestination() {
   }
   $("serviceFeedback").textContent =
     selected === "all"
-      ? "Choose a service. Featured offers are also available below."
+      ? "Choose a service. Limited offers are pinned above."
       : `Showing ${serviceNames[selected]} and related featured offers.`;
 }
 function summary(s) {
+  const contextGame =
+    current.kind === "game"
+      ? gameProfiles.find((g) => g.id === current.id)
+      : null;
+  if (contextGame && contextGame.id !== "G01")
+    return `<aside class="summary"><div class="eyebrow">${esc(contextGame.name)}</div><h2>Your request</h2><p>The final scope and quote follow staff review. No MLBB rank or price applies to this game.</p>${s.actions[0] ? link(s.actions[0].label, s.actions[0].to, "button primary") : ""}</aside>`;
   let payable = ["P07", "P08", "P09"].includes(s.id);
   return `<aside class="aside"><div class="summary"><div class="eyebrow">${payable ? "YOUR PACKAGE" : "YOUR BOOST"}</div><h2>Mobile Legends</h2><div class="rank"><span>Epic II</span><span aria-hidden="true">→</span><strong>Legend V</strong></div><dl><div><dt>Play mode</dt><dd>Play together</dd></div><div><dt>Region</dt><dd>SEA</dd></div><div><dt>${payable ? "Fixed package" : "Base estimate"}</dt><dd>$48.00</dd></div>${!payable ? "<div><dt>Play together</dt><dd>$12.00</dd></div>" : ""}</dl><div class="divider"></div><p>${payable ? "Package total" : "Estimated total"}</p><div class="price">$${payable ? "48" : "60"}.00 <small>USD</small></div><p>Illustrative design price</p>${s.actions[0] ? link(s.actions[0].label, s.actions[0].to, "button primary") : ""}<p class="disclaimer">${payable ? "Review the exact package scope and eligibility before paying." : "Final quote after staff review. Nothing is charged when you send a request."}</p></div><section class="smallsection"><h3>Need a little guidance?</h3><p>${link("Ask our team", "C13", "textlink")}</p></section></aside>`;
 }
@@ -657,8 +866,8 @@ function order(s) {
 function market(s) {
   return `${fields(s, true)}<div class="productgrid">${[0, 1].map((_, i) => `<article class="productcard"><div class="productart"><span>${i ? "Legend" : "Mythic"} · Mobile Legends</span></div><div class="productbody">${chip("Available")}<h3 class="smallsection">${i ? "Legend account" : "Mythic account"} · ${i ? "EU" : "SEA"}</h3><p>Review rank, cosmetics and included transfer details before purchasing.</p><div class="money">USD ${i ? "85" : "120"}.00 <small>example</small></div><div class="actions">${link("View account ↗", "P13", "button primary")}</div></div></article>`).join("")}</div>${actions(s)}`;
 }
-function invoice() {
-  return `<section class="card"><div class="invoice"><div>${chip("Waiting for payment", "amber")}<p class="smallsection">Send exactly</p><div class="amount">48.000000 <small>USDT</small></div><p>Network: <strong>TRON · example only</strong></p><div class="copybox">DEMO-ADDRESS-NOT-PAYABLE</div><p class="quiet">Illustration only. No real payment address or QR code.</p><div class="steps"><span>1 · Waiting</span><span>2 · Detected</span><span>3 · Confirming</span><span>4 · Verified</span></div></div><div class="qr"><strong>DESIGN ONLY<br>NOT A PAYMENT QR</strong></div></div><div class="divider"></div><h3>Your invoice is waiting for payment</h3><p class="smallsection">You can leave this page. Check your order for updates and avoid sending a second payment.</p></section>${actions(current)}`;
+function invoice(s = current) {
+  return `<section class="card"><div class="invoice"><div>${chip("Waiting for payment", "amber")}<p class="smallsection">Send exactly</p><div class="amount">48.000000 <small>USDT</small></div><p>Network: <strong>TRON · example only</strong></p><div class="copybox">DEMO-ADDRESS-NOT-PAYABLE</div><p class="quiet">Illustration only. No real payment address or QR code.</p><div class="steps"><span>1 · Waiting</span><span>2 · Detected</span><span>3 · Confirming</span><span>4 · Verified</span></div></div><div class="qr"><strong>DESIGN ONLY<br>NOT A PAYMENT QR</strong></div></div><div class="divider"></div><h3>Your invoice is waiting for payment</h3><p class="smallsection">You can leave this page. Check your order for updates and avoid sending a second payment.</p></section>${actions(s)}`;
 }
 function renderBody(s) {
   switch (s.kind) {
@@ -688,7 +897,7 @@ function renderBody(s) {
     case "auth":
       return `<section class="autharea"><div class="authcard"><div class="eyebrow">PLAYORA / ${s.id === "I01" ? "WELCOME" : "VERIFICATION"}</div><h1>${esc(s.title)}</h1><p>${esc(s.summary)}</p>${s.id === "I01" ? '<div class="actions">' + link("Continue with Google · demo", "I02", "button") + '</div><div class="divider"></div>' : ""}${fields(s)}${actions(s.id === "I01" ? { ...s, actions: s.actions.slice(1) } : s)}<details><summary>What happens next?</summary><p>${esc(s.sections[0].body)}</p></details></div></section>`;
     case "invoice":
-      return `<div class="content">${invoice()}</div>`;
+      return `<div class="content">${invoice(s)}</div>`;
     case "product":
       return `<div class="content"><div class="cols"><div><div class="gallery"><span>Reviewed listing screenshot placement</span></div><div class="sectionsgrid smallsection">${s.sections
         .slice(1, 3)
@@ -764,7 +973,7 @@ function render() {
   )
     body = `<div class="content"><div class="emptybox"><h2>Access unavailable</h2><p>${esc(chosen.copy)}</p>${link("Return safely", "X01", "button smallsection")}</div></div>`;
   $("canvas").innerHTML =
-    `${nav(s)}${workspace ? '<div class="workspace">' + sidebar(s) + '<main class="maincol">' : "<main>"}${head}${stateBanner(s)}${body}</main>${workspace ? "</div>" : ""}<footer class="footer"><strong>PLAYORA</strong>${link("Support", "C13")}${link("Terms & privacy", "P17")}${link("Motion & sound", "C19")}</footer><div class="specHint">${s.id} · ${esc(s.kind)} · ${esc(s.route)} · DESIGN SAMPLE · <a href="../SCREENS.md">Screen specification ↗</a></div>`;
+    `${nav(s)}${workspace ? '<div class="workspace">' + sidebar(s) + '<main class="maincol">' : "<main>"}${head}${stateBanner(s)}${body}</main>${workspace ? "</div>" : ""}${footer()}<div class="specHint">${s.id} · ${esc(s.kind)} · ${esc(s.route)} · DESIGN SAMPLE · <a href="../SCREENS.md">Screen specification ↗</a></div>`;
   $("screenSelect").value = s.id;
   $("stateSelect").innerHTML =
     '<option value="">Default view</option>' +
@@ -779,6 +988,7 @@ function render() {
   document.title = `${s.id} · ${s.title} — PLAYORA design`;
   $("announce").textContent =
     `${s.id}. ${s.title}${stateName ? ". " + stateName : ""}`;
+  bindExtras();
   bindHomepageMotion();
   applyDestination();
   document.querySelectorAll('a[href="#P01/games"]').forEach((a) => {
@@ -847,7 +1057,24 @@ $("flowSelect").onchange = (e) => {
   renderFlow();
 };
 $("inspect").onclick = () => toggleInspector($("inspector").hidden);
+$("identityPreview").onchange = (e) => {
+  previewSignedIn = e.target.value.startsWith("customer");
+  cornerExample =
+    e.target.value === "customer-empty"
+      ? "empty"
+      : e.target.value === "customer-error"
+        ? "error"
+        : "active";
+  if (!previewSignedIn) gameDraftViews.clear();
+  cornerExpanded = false;
+  render();
+};
 document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && cornerExpanded) {
+    cornerExpanded = false;
+    renderCorner();
+    $("cornerToggle")?.focus();
+  }
   if (e.key === "Escape" && !$("inspector").hidden) toggleInspector(false);
 });
 document.querySelectorAll("[data-width]").forEach(

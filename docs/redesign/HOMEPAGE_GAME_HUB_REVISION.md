@@ -2,6 +2,8 @@
 
 23 September 2026 · Design only · Visual acceptance pending
 
+The later [shared experience revision](SHARED_EXPERIENCE_REVISION.md) supersedes offer placement, shared navigation/footer, background and embedded-flow details below.
+
 This revision replaces the homepage’s MLBB-first structure. Every game has equal prominence. The production catalog is not being changed. The green identity, landscape hero and fonts remain. Application development, the old cameo work and R10/R11 remain held.
 
 ## Homepage P01
@@ -10,7 +12,7 @@ Order: quiet hero → activity → Boost → Accounts → Shop → Crypto paymen
 
 Each service introduction has one “Choose your game” action targeting `#P01/games`. Native page scrolling, a soft scroll when permitted, and focus on the destination heading make the destination understandable to keyboard and screen-reader users. Repeated clicks must still scroll when the hash already matches. No forced scroll capture or motion gate.
 
-Game cards have equally sized image areas, names and available-service tags. Tags describe capabilities, not separate small click targets. The full available card opens the game’s service chooser. A paused card has a dimmed image, readable status text, no link and no keyboard activation. Missing services are omitted, not advertised as selectable. Catalog order and availability in this artifact are fictional examples. Dedicated art for VALORANT, Dota 2 and Wild Rift remains a clearly marked placeholder.
+Game cards have equally sized image areas, names and available-service tags. Tags describe capabilities, not separate small click targets. The full available card opens the game’s service chooser. A paused card has a dimmed image, readable status text, no link and no keyboard activation. Missing services are omitted, not advertised as selectable. Catalog order and availability in this artifact are fictional examples. All six games now use specific local artwork; see ASSETS.md for provenance.
 
 ## Game hubs G01–G06
 

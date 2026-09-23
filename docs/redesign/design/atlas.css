@@ -2581,3 +2581,372 @@ details p {
 .serviceintro.motion-preview-off * {
   animation: none;
 }
+
+/* Shared atmosphere remains behind high-contrast content surfaces. */
+body {
+  isolation: isolate;
+}
+#siteBackdrop {
+  position: fixed;
+  inset: -2%;
+  width: 104%;
+  height: 104%;
+  object-fit: cover;
+  object-position: center;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.48;
+  animation: ambient-drift 24s ease-in-out infinite alternate;
+}
+#canvas {
+  background: rgba(6, 20, 14, 0.86);
+}
+.topnav,
+.fullfooter {
+  background: rgba(7, 24, 16, 0.94);
+}
+@keyframes ambient-drift {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.035) translate3d(-0.4%, 0.5%, 0);
+  }
+}
+.ambient-paused #siteBackdrop {
+  animation-play-state: paused;
+}
+.fullfooter {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, 1fr);
+  align-items: start;
+  gap: 32px;
+  padding: 48px;
+}
+.footerbrand img {
+  width: 145px;
+}
+.footerbrand p {
+  margin: 16px 0 12px;
+  font-size: 14px;
+}
+.footerbrand small {
+  display: block;
+  max-width: 230px;
+  line-height: 1.7;
+}
+.fullfooter nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.fullfooter h2 {
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.fullfooter a,
+.fullfooter button {
+  font-size: 13px;
+  width: fit-content;
+}
+.fullfooter button {
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  color: var(--muted);
+}
+.footerbottom {
+  grid-column: 1/-1;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+}
+.faqlist {
+  border-top: 1px solid #3b5141;
+}
+.faqlist details {
+  border-bottom: 1px solid #3b5141;
+  padding: 22px 0;
+}
+.faqlist summary {
+  font-size: 17px;
+  font-weight: 550;
+  cursor: pointer;
+  padding-right: 20px;
+}
+.faqlist p {
+  max-width: 800px;
+  margin: 16px 0 0;
+  line-height: 1.8;
+  color: #bed0c2;
+}
+.reviewtrack {
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  padding: 22px 2px;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-color: #527345 #10251a;
+}
+.reviewquote {
+  flex: 0 0 340px;
+  scroll-snap-align: start;
+  background: #13271ddd;
+  border: 1px solid #415c43;
+  padding: 28px;
+  border-radius: 20px;
+}
+.reviewquote h3 {
+  font-size: 21px;
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+.reviewquote > p {
+  font-size: 14px;
+  color: #bdd0c0;
+}
+.reviewquote > div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+  font-size: 13px;
+}
+.reviewquote small {
+  display: block;
+  color: #b5c6ba;
+  font-size: 11px;
+}
+.quoteMark {
+  color: #bcef89;
+  font-family: Georgia, serif;
+  font-size: 44px;
+  line-height: 1;
+}
+.reviewarrows {
+  display: flex;
+  gap: 8px;
+}
+.reviewarrows button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 20px;
+}
+.pinnedoffers {
+  padding: 34px clamp(24px, 6vw, 80px);
+  border-bottom: 1px solid #354937;
+}
+.pinnedoffers .offergrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.pinnedoffers .spotlight {
+  padding: 22px;
+}
+.pinnedoffers .spotlight h3 {
+  font-size: 21px;
+}
+.pinnedoffers:has(.spotlight:not([hidden]):only-child) .offergrid {
+  grid-template-columns: 1fr;
+}
+.gameflow {
+  padding-block: 24px 40px;
+}
+.gameflow[hidden] {
+  display: none;
+}
+.flowheading {
+  padding: 12px 0 30px;
+}
+.flowheading h2 {
+  font-size: 32px;
+  margin: 12px 0;
+}
+.gameflow .content {
+  padding: 0;
+}
+.gameflow .autharea {
+  padding: 24px 0;
+}
+.gameflow .summary {
+  position: static;
+}
+#orderCorner {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 80;
+  width: min(340px, calc(100vw - 32px));
+}
+#orderCorner[hidden] {
+  display: none;
+}
+.ordercorner {
+  border: 1px solid #678450aa;
+  border-radius: 20px;
+  background: #10231de8;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 16px 50px #0008,
+    inset 0 1px #d5fbaa22;
+  overflow: hidden;
+}
+.cornerhead button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 0;
+  background: transparent;
+  padding: 16px 18px;
+  width: 100%;
+  text-align: left;
+  color: #e6f4df;
+  font-size: 14px;
+}
+.cornerhead .live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #b8ec87;
+  flex: 0 0 auto;
+}
+#cornerDetails {
+  padding: 0 18px 12px;
+  max-height: min(460px, 60vh);
+  overflow-y: auto;
+}
+#cornerDetails .eyebrow {
+  font-size: 9px;
+  margin: 8px 0;
+}
+.cornerorder {
+  display: grid;
+  gap: 7px;
+  padding: 18px 0;
+  border-bottom: 1px solid #496343;
+  text-decoration: none;
+  font-size: 12px;
+}
+.cornerorder strong {
+  font-size: 14px;
+}
+.cornerorder small {
+  color: #b0c2b2;
+  line-height: 1.6;
+}
+.cornerorder progress {
+  width: 100%;
+  height: 6px;
+  accent-color: #bcec8a;
+}
+#cornerDetails .quiet {
+  font-size: 11px;
+  margin-top: 12px;
+}
+.cornerchat {
+  display: block;
+  padding: 12px 18px;
+  border-top: 1px solid #486344;
+  color: #d1efa8;
+  font-size: 13px;
+  text-decoration: none;
+}
+#canvas:has(~ *) {
+  scroll-margin-bottom: 120px;
+}
+body:has(#orderCorner:not([hidden])) #stage {
+  padding-bottom: 150px;
+}
+@media (max-width: 850px) {
+  .fullfooter {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 32px 24px;
+  }
+  .pinnedoffers .offergrid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 500px) {
+  .fullfooter {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 18px;
+  }
+  .footerbrand {
+    grid-column: 1/-1;
+  }
+  .reviewquote {
+    flex-basis: 86%;
+  }
+  #orderCorner {
+    right: 12px;
+    bottom: 12px;
+    width: min(320px, calc(100vw - 24px));
+  }
+}
+.phone .fullfooter {
+  grid-template-columns: 1fr 1fr;
+  padding: 28px 24px;
+  gap: 22px;
+}
+.phone .footerbrand {
+  grid-column: 1/-1;
+}
+.phone .pinnedoffers .offergrid,
+.tablet .pinnedoffers .offergrid {
+  grid-template-columns: 1fr;
+}
+.phone .reviewquote {
+  flex-basis: 90%;
+}
+@media (prefers-reduced-motion: reduce) {
+  #siteBackdrop {
+    animation: none;
+  }
+}
+.pinnedoffers[hidden] {
+  display: none;
+}
+.pinnedoffers .offergrid {
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+}
+.hub-G02 .hubherocopy {
+  margin-left: auto;
+}
+.hub-G02 .hubhero::after {
+  background:
+    linear-gradient(270deg, #08130ef5 5%, #08130ec9 45%, #08130e22),
+    linear-gradient(0deg, #08130e, transparent 50%);
+}
+.hubhero {
+  min-height: 390px;
+}
+.hubhero > img {
+  object-position: center;
+}
+.reviewbar {
+  flex-wrap: wrap;
+}
+@media (max-width: 600px) {
+  .hub-G02 .hubherocopy {
+    margin-left: 0;
+  }
+  .hub-G02 .hubhero::after {
+    background:
+      linear-gradient(90deg, #08130eee, #08130e55),
+      linear-gradient(0deg, #08130e, transparent);
+  }
+}
+#inspector {
+  z-index: 100;
+}
+.preview-reduced #siteBackdrop {
+  animation: none;
+}

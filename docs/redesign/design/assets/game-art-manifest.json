@@ -1,0 +1,50 @@
+[
+  {
+    "game": "mlbb",
+    "file": "game-mlbb.png",
+    "source": "Built-in image_gen; prompt recorded in GAME_ART_PROMPTS.md",
+    "sha256": "b2f52218ca43203cecd5d1a8a658473ff96cb19e96b27fd9342432a5e15dbc48",
+    "bytes": 2378437,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "game": "wow",
+    "file": "game-wow.jpg",
+    "source": "https://blz-contentstack-images.akamaized.net/v3/assets/blt9c12f249ac15c7ec/bltfe806acfa8672377/6a87bb854b66aa218691cf56/BG_Masthead_2600_Desktop.jpg",
+    "sha256": "e9073e85dc49a1024e9cdf7cde7dd38e53b4b50380eeaf817c279c335c97231a",
+    "bytes": 137479,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "game": "lol",
+    "file": "game-lol.jpg",
+    "source": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+    "sha256": "afe0ce6622095ce8a818b68162b88f916ba0e79f7a3621ce7a556ddc21d87770",
+    "bytes": 158108,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "game": "valorant",
+    "file": "game-valorant.png",
+    "source": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data/74075835ddc4e8457fb30f7fe560d2aff6d51702-5120x1772.png?accountingTag=VAL",
+    "sha256": "122b618d5a6ab127ce700600a319b15b92db539efb2cee24233c252d3d3a116c",
+    "bytes": 1295636,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "game": "dota",
+    "file": "game-dota.jpg",
+    "source": "https://cdn.steamstatic.com/apps/dota2/images/bladeform_legacy/bg_01.jpg",
+    "sha256": "2614d8907eb35e33718869553bc1a5bf467b4c12405aca6bca9807d0e3308950",
+    "bytes": 363654,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "game": "wildrift",
+    "file": "game-wildrift.jpg",
+    "source": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data/58a1d5def09d35ea722ca402db31700f9c2b3580-1280x720.jpg?accountingTag=WR",
+    "sha256": "a2c60272662c92db6df6ba76cc8ec5ee536102d6bf56bcefe1af961390c422cf",
+    "bytes": 124318,
+    "use": "Local design review; public-release asset qualification remains open"
+  }
+]
