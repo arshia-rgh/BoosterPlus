@@ -57,6 +57,10 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 - All pages omit global marketing navbar links. Use shared contact/policy footers, homepage FAQ/review carousel, game FAQs and limited offers below game stats. Keep service subflows within the game shell. Shared non-game artwork and game-specific artwork have reduced-motion/pause controls. The signed-in corner order/support panel is a design fixture, not real authentication or progress.
 - Shop and news discovery are now explicitly requested design concepts, superseding their earlier exclusion as unsolicited export content. Detailed downstream flows and business rules still need design decisions; this does not authorize runtime implementation. See `docs/redesign/HOMEPAGE_GAME_HUB_REVISION.md`.
 
+## Panel design revision (24 September 2026)
+
+- Customer, booster and admin panels retain explicit role/workspace identity. Order sections replace local content inside a persistent order shell, preserving record ID/status and drafts; never send a section tab to a global unrelated page. Lists use named record actions and retain filter/return context. Staff customer previews stay explicitly labeled inside the staff workspace and return to the originating editor. Follow [docs/redesign/PANEL_UX_REVISION.md](docs/redesign/PANEL_UX_REVISION.md).
+
 ## Current delivery boundary (13 September 2026)
 
 - R07, R08 and R09 are delivered. UX01–UX10 implementation and automated qualification are delivered as of 14 September 2026; see `docs/ux/UX10_QUALIFICATION.md` for the route/state matrix, media and explicit remaining human/device review. Stop for owner acceptance. R10/R11 still require separate authorization.

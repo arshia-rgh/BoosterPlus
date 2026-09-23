@@ -28,7 +28,8 @@
       "Manual estimate can submit without a numeric promise.",
       "Clarification returns to C03/C12.",
       "Quote change or expiry requires fresh review.",
-      "Staff approval is required for quote and completion."
+      "Staff approval is required for quote and completion.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Verified payment, fulfilled scope, evidence and eligible review; not success from a browser redirect."
   },
@@ -51,7 +52,8 @@
     "branches": [
       "Ineligible package offers compatible/custom alternatives.",
       "Sold-out/paused package blocks new purchase.",
-      "Version or price changes return to explicit review."
+      "Version or price changes return to explicit review.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Package snapshot accepted and verified payment; no per-order quote approval."
   },
@@ -76,7 +78,8 @@
     "branches": [
       "Reservation conflict means no invoice.",
       "Expired reservation requires availability recheck.",
-      "Late paid reservation enters a case, never steals sold inventory."
+      "Late paid reservation enters a case, never steals sold inventory.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Verified payment, audited transfer and required acknowledgement."
   },
@@ -95,7 +98,8 @@
       "Paused checkout stays unpaid.",
       "Uncertain invoice creation reconciles before retry.",
       "Under/over/late/wrong-network/duplicate funds remain separate states.",
-      "Expired invoice with detected funds cannot release inventory blindly."
+      "Expired invoice with detected funds cannot release inventory blindly.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Authoritative evidence resolves payment or explicit refund review."
   },
@@ -115,7 +119,8 @@
       "Unpaid cancellation retires eligible invoice.",
       "Paid cancellation is a request, not an immediate refund.",
       "Recipient changes require review; outgoing disabled blocks transfer.",
-      "Denied remedy exposes approved appeal terms."
+      "Denied remedy exposes approved appeal terms.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Recorded decision and verified outgoing evidence where applicable."
   },
@@ -143,7 +148,8 @@
       "More proof returns to S03.",
       "Changed offer requires new acceptance.",
       "Payout waits for agreed delivery/dispute conditions.",
-      "Related refunds/disputes can hold payout."
+      "Related refunds/disputes can hold payout.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Direct payout confirmed under the accepted consignment terms."
   },
@@ -162,7 +168,8 @@
     ],
     "branches": [
       "Choose Buy first explicitly in A21 and display it in S04.",
-      "Payment becomes due after verified seller-to-PLAYORA transfer, before resale."
+      "Payment becomes due after verified seller-to-PLAYORA transfer, before resale.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "One verified payout obligation; unsold inventory does not change agreed seller terms."
   },
@@ -197,7 +204,8 @@
     "branches": [
       "Enrollment required only when missing; authenticator required at every staff sign-in.",
       "Recovery code substitutes only second factor.",
-      "Owner-reviewed recovery never bypasses identity verification."
+      "Owner-reviewed recovery never bypasses identity verification.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Authorized staff session; last-owner and recovery safeguards retained."
   },
@@ -215,7 +223,8 @@
     "branches": [
       "Google linking verifies both existing and new identities.",
       "Email conflicts do not reveal account ownership.",
-      "Revoke-all confirmation explains current session will end."
+      "Revoke-all confirmation explains current session will end.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Verified identity changes and accurate session state."
   },
@@ -234,7 +243,8 @@
       "Draft survives reconnect and failed send.",
       "New messages do not move a reader looking at history.",
       "Rejected files keep the text draft.",
-      "Access revocation clears private thread content."
+      "Access revocation clears private thread content.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "One accessible conversation with known audience and reliable send status."
   },
@@ -255,7 +265,8 @@
       "Unpaid/missing prerequisites block start.",
       "Assignment revocation removes access immediately.",
       "Proof scanning blocks completion submission.",
-      "Booster submits completion; admin approves final completion."
+      "Booster submits completion; admin approves final completion.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Scoped fulfillment and customer-visible evidence with no pricing/refund authority."
   },
@@ -271,7 +282,8 @@
     "branches": [
       "Conflicts reject stale slot; chosen timezone remains.",
       "DST ambiguity presents explicit offsets.",
-      "Reschedule keeps previous booking until replacement accepted according to backend."
+      "Reschedule keeps previous booking until replacement accepted according to backend.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "One valid confirmed booking and visible change history."
   },
@@ -292,7 +304,8 @@
       "Invalid references/condition cycles block publication.",
       "Unsaved navigation prompts retain drafts.",
       "Stale preview/version conflict requires fresh review.",
-      "Archive/pause affect new purchases, not historical snapshots."
+      "Archive/pause affect new purchases, not historical snapshots.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "A validated versioned release with customer previews."
   },
@@ -310,7 +323,8 @@
     "branches": [
       "Clarify/reject needs a customer-visible reason.",
       "Accepted contract cannot be silently repriced.",
-      "Concurrent status update requires reload/compare."
+      "Concurrent status update requires reload/compare.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Correct next action and audited state transition."
   },
@@ -325,7 +339,8 @@
     "branches": [
       "Audience stays visible through attachment and keyboard states.",
       "Switching mode with an unsent draft asks where to keep it.",
-      "Buyer and seller conversations remain separate."
+      "Buyer and seller conversations remain separate.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Message reaches only its selected authorized audience."
   },
@@ -343,7 +358,8 @@
     "branches": [
       "No manual paid toggle.",
       "Uncertain transfer reconciles before retry.",
-      "Separate outgoing activation and verified recipient required."
+      "Separate outgoing activation and verified recipient required.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Provider-backed result without duplicate transfer or mixed currencies."
   },
@@ -360,7 +376,8 @@
     "branches": [
       "Reorder validates current options and prices.",
       "Sold/archived saved item remains understandable.",
-      "Unsubscribe token affects only its intended alert."
+      "Unsubscribe token affects only its intended alert.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Fresh eligible order or explicit alert consent; no reservation from a favorite."
   },
@@ -378,7 +395,8 @@
     "branches": [
       "Eligibility, duplicate and moderation states explicit.",
       "Customer text is not rewritten to improve sentiment.",
-      "Refund labels remain where required."
+      "Refund labels remain where required.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Published eligible review or reasoned moderation outcome."
   },
@@ -394,7 +412,8 @@
     "branches": [
       "Read notification does not complete its action.",
       "Unavailable deep link returns safely.",
-      "Sound is opt-in; reduced motion is honored."
+      "Sound is opt-in; reduced motion is honored.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Preferences saved and destination/context preserved."
   },
@@ -412,7 +431,8 @@
       "Owner policy must be published/enabled.",
       "Active order/dispute holds block erasure.",
       "Cancellation ends when irreversible erasure begins.",
-      "Live erasure, pending files, retained evidence/backups are distinct."
+      "Live erasure, pending files, retained evidence/backups are distinct.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Truthful deletion/export status under explicit policy."
   },
@@ -428,7 +448,8 @@
     "branches": [
       "Last owner cannot be removed.",
       "Role/suspension change revokes affected sessions as required.",
-      "No public role selection or automatic email-based role grant."
+      "No public role selection or automatic email-based role grant.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Audited access change and exact affected-session outcome."
   },
@@ -445,7 +466,8 @@
     "branches": [
       "Historical agreements stay immutable.",
       "Incomplete commercial terms block related purchases.",
-      "Coupons cannot produce invalid totals or unsupported scope."
+      "Coupons cannot produce invalid totals or unsupported scope.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Published explicit version; preview and customer terms agree."
   },
@@ -461,7 +483,8 @@
     "branches": [
       "Stale report preview needs regeneration.",
       "Rejected/quarantined files never render public previews.",
-      "Retry queues a job, not a payment success."
+      "Retry queues a job, not a payment success.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Scoped evidence/export and truthful recovery status."
   },
@@ -476,7 +499,8 @@
     "branches": [
       "404 and access denial do not disclose private object existence.",
       "Offline recovery retains only safe drafts.",
-      "Rate limits use server-provided retry information."
+      "Rate limits use server-provided retry information.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
     ],
     "done": "Safe navigation without leaking private content or losing permitted drafts."
   },

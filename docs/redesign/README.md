@@ -63,3 +63,7 @@ Before implementation resumes: review the principal visual layouts, walk the cro
 ## Mandatory design change review
 
 Follow [DESIGN_CHANGE_GATE.md](DESIGN_CHANGE_GATE.md) for every design stage: a separate senior UI/UX designer reviews the changed scope, then repeated fix/review rounds must reach an explicit pass before delivery. The bordered preview contains its own scrollable website, artwork and order panel; controls and specifications outside it belong to the atlas.
+
+## Panel navigation review
+
+The [panel UX revision](PANEL_UX_REVISION.md) replaces disconnected customer, booster and admin subpages with persistent record workspaces, role-specific navigation and explicit return paths. Start at C01, B01 or A01; follow named rows and use local sections within each record.

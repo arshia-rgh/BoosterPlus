@@ -98,3 +98,7 @@ The later owner refinement removes global links from game navbars too. Verified 
 - Embedded MLBB custom form, account listing and account detail retain game hero/statistics/background with one H1. Edited EU selection survives overview/back; Visitor reset returns the sample default. In-game draft values are memory-only design controls.
 - Signed-in panel exercised: expand, Escape collapse, active/empty/unavailable states, hide on Visitor, order link to C05, support link to C11, collapse on navigation and availability on subsequent screens. Phone panel reviewed at 390×844; desktop layout reviewed at 1100px. No real account access or provider requests occurred.
 - `node --check`, Prettier, design integrity/asset hashes and root repository checks are the stage checks. Existing application suites are unchanged and not requalified. Physical-device/assistive-technology and owner visual acceptance remain open. Publisher assets are local design references; deployment rights remain unqualified.
+
+## 24 September panel navigation gate
+
+See [PANEL_UX_REVISION.md](PANEL_UX_REVISION.md) and the [four-round senior review](reviews/2026-09-24-panel-workspaces.md). Changed-scope verdict PASS. Reproduce the route/fixture checks with `node docs/redesign/check_panels.mjs`, then explore C01/B01/A01, open named records, change sections and return to filtered lists. Existing screen IDs for record subviews now resolve into the same record shell.

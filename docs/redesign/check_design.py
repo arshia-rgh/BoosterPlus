@@ -29,7 +29,7 @@ for manifest in ['frontend/app/routes.ts', 'frontend/admin-app/routes.ts']:
     routes.update('/' + r for r in re.findall(r'route\("([^"]+)"', (root / manifest).read_text()))
 missing = routes - {s['route'] for s in screens}
 assert not missing, f'Unmapped current routes: {missing}'
-code = (base / 'design/atlas.js').read_text()
+code = '\n'.join(path.read_text() for path in (base / 'design').glob('*.js'))
 assert not re.search(r'\b(fetch|XMLHttpRequest|WebSocket|localStorage|sessionStorage)\b', code), 'Review network or persistence addition'
 class Assets(HTMLParser):
     def handle_starttag(self, tag, attrs):

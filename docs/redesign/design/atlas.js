@@ -21,6 +21,7 @@ const chip = (label, tone = "") =>
 const card = (title, body) =>
   `<section class="card"><h3>${esc(title)}</h3><p>${esc(body)}</p></section>`;
 const actions = (s) =>
+  panelActionLinks(s) ||
   `<div class="actions">${s.actions.map((a, i) => link(a.label, a.to, "button " + (i === 0 ? "primary" : ""))).join("")}</div>`;
 let fieldSequence = 0;
 function fields(s, filter = false) {
@@ -86,6 +87,8 @@ const embeddedScreens = new Set([
   "G16",
 ]);
 function contextualTarget(to) {
+  const panelTarget = panelDestination(to);
+  if (panelTarget) return panelTarget;
   if (current.kind !== "game" || !embeddedScreens.has(to)) return to;
   const service = ["P12", "P13", "P14", "S02"].includes(to)
     ? "accounts"
@@ -93,11 +96,14 @@ function contextualTarget(to) {
   return `${current.id}/${service === "all" ? "boost" : service}/${to}`;
 }
 function nav(s) {
-  const privateWorkspace =
-    ["Customer", "Seller", "Booster"].includes(s.group) || isAdmin(s);
-  return `<nav class="topnav minimalnav" aria-label="Main"><a href="#P01" class="brand"><img src="assets/logo.svg" alt="PLAYORA"></a>${privateWorkspace ? '<button class="menu" id="menuToggle" aria-expanded="false" aria-controls="mobileNav">Workspace</button>' : ""}<div class="navend">${link("Support", "C13")}${link(previewSignedIn || privateWorkspace ? "My account" : "Sign in", previewSignedIn || privateWorkspace ? "C01" : "I01", "button primary")}</div></nav>${privateWorkspace ? `<nav class="mobilemenu" id="mobileNav" hidden aria-label="Workspace navigation">${link("Overview", isAdmin(s) ? "A01" : s.group === "Booster" ? "B01" : "C01")}${link("Orders", isAdmin(s) ? "A02" : s.group === "Booster" ? "B02" : "C02")}${link("Messages", isAdmin(s) ? "A05" : s.group === "Booster" ? "B05" : "C11")}${link("Settings", "C22")}</nav>` : ""}`;
+  const ctx = panelContext(s);
+  if (ctx)
+    return `<nav class="topnav minimalnav" aria-label="Main"><a href="#P01" class="brand"><img src="assets/logo.svg" alt="PLAYORA"></a><span class="workspaceBadge">${panelRoleNames[ctx.role]}</span><div class="navend"><a class="textlink" href="#${panelHomes[ctx.role]}">Workspace home</a></div></nav>${panelMobileNav(ctx)}`;
+  return `<nav class="topnav minimalnav" aria-label="Main"><a href="#P01" class="brand"><img src="assets/logo.svg" alt="PLAYORA"></a><div class="navend">${link("Support", "C13")}${link(previewSignedIn ? "My account" : "Sign in", previewSignedIn ? "C01" : "I01", "button primary")}</div></nav>`;
 }
 function sidebar(s) {
+  const ctx = panelContext(s);
+  if (ctx) return panelSidebar(ctx);
   let links;
   if (isAdmin(s))
     links = [
@@ -476,12 +482,14 @@ function homeReviews() {
     )}</div><p class="sr-only" id="reviewFeedback" role="status"></p></section>`;
 }
 function footer() {
-  return `<footer class="footer fullfooter"><div class="footerbrand"><img src="assets/logo.svg" alt="PLAYORA"><p>Your games. Your next chapter.</p><small>Independent service. No publisher affiliation is claimed.</small></div><nav aria-label="Help and contact"><h2>Here to help</h2>${link("Contact us", "C13")}${link("Help & FAQ", "C13")}${link("Order support", "C11")}</nav><nav aria-label="Policies"><h2>The details</h2>${link("Terms of service", "P17/terms")}${link("Privacy policy", "P17/privacy")}${link("Refund & cancellation terms", "P17/refunds")}</nav><nav aria-label="Your experience"><h2>Your experience</h2>${link("My account", "C01")}${link("Accessibility & motion", "C19")}<button class="textlink" id="toggleAmbient">${motionPaused ? "Resume" : "Pause"} background motion</button></nav><div class="footerbottom"><span>© PLAYORA · Design preview</span><span>Direct crypto payments · No stored balance</span></div></footer>`;
+  return `<footer class="footer fullfooter"><div class="footerbrand"><img src="assets/logo.svg" alt="PLAYORA"><p>Your games. Your next chapter.</p><small>Independent service. No publisher affiliation is claimed.</small></div><nav aria-label="Help and contact"><h2>Here to help</h2>${panelContext()?.role === "admin" ? '<a href="#A05">Support inbox</a><a href="#A09">Audit & recovery</a>' : panelContext()?.role === "booster" ? '<a href="#B05">Assignment messages</a><a href="#B02">Assigned orders</a>' : link("Contact us", "C13") + link("Help & FAQ", "C13") + link("Order support", "C11")}</nav><nav aria-label="Policies"><h2>The details</h2>${panelContext()?.role === "admin" ? '<a href="#A34">Content & policies</a><a href="#A18">Payment policy</a>' : '<a href="#P17/terms">Terms of service</a><a href="#P17/privacy">Privacy policy</a><a href="#P17/refunds">Refund & cancellation terms</a>'}</nav><nav aria-label="Your experience"><h2>Your experience</h2>${panelContext() ? `<a href="#${panelHomes[panelContext().role]}">${panelRoleNames[panelContext().role]}</a><a href="#${panelNavHref(panelContext().role, "C17")}">Security</a>` : link("My account", "C01") + link("Accessibility & motion", "C19")}<button class="textlink" id="toggleAmbient">${motionPaused ? "Resume" : "Pause"} background motion</button></nav><div class="footerbottom"><span>© PLAYORA · Design preview</span><span>Direct crypto payments · No stored balance</span></div></footer>`;
 }
 function renderCorner() {
-  $("orderCorner").hidden = !previewSignedIn;
-  $("orderCorner").innerHTML = previewSignedIn
-    ? `<aside class="ordercorner" aria-label="Your ongoing orders"><div class="cornerhead"><button id="cornerToggle" aria-expanded="${cornerExpanded}" aria-controls="cornerDetails"><span class="live-dot" aria-hidden="true"></span>${cornerExample === "active" ? "2 ongoing orders" : cornerExample === "empty" ? "Your orders" : "Order updates unavailable"} <span aria-hidden="true">${cornerExpanded ? "−" : "+"}</span></button></div><div id="cornerDetails" ${cornerExpanded ? "" : "hidden"}><div class="eyebrow">YOUR ACTIVITY · DESIGN SAMPLE</div>${cornerExample === "active" ? `<a class="cornerorder" href="#C05"><strong>Mobile Legends · PL-1042</strong><span>In progress · Epic II → Legend V</span><span>Current milestone: Epic I</span><progress value="3" max="5" aria-label="3 of 5 agreed milestones completed">3 of 5</progress><small>3 of 5 agreed milestones · last update 12 min ago (sample)</small><span class="textlink">Open order ↗</span></a><a class="cornerorder" href="#C23"><strong>Account purchase · PL-1048</strong><span>Preparing handover</span><small>Last update 35 min ago (sample)</small><span class="textlink">Open order ↗</span></a><p class="quiet">Progress is based on reported milestones, not a live game feed.</p>` : cornerExample === "empty" ? '<p>No ongoing orders. Your completed orders remain in My account.</p><a class="textlink" href="#C02">View order history ↗</a>' : '<p>We couldn’t refresh your orders. Check My account for the latest recorded update.</p><a class="textlink" href="#C02">Open my orders ↗</a>'}</div><a class="cornerchat" href="#C11">Chat with support ↗</a></aside>`
+  const show =
+    previewSignedIn && (!panelContext() || panelContext().role === "customer");
+  $("orderCorner").hidden = !show;
+  $("orderCorner").innerHTML = show
+    ? `<aside class="ordercorner" aria-label="Your ongoing orders"><div class="cornerhead"><button id="cornerToggle" aria-expanded="${cornerExpanded}" aria-controls="cornerDetails"><span class="live-dot" aria-hidden="true"></span>${cornerExample === "active" ? "2 ongoing orders" : cornerExample === "empty" ? "Your orders" : "Order updates unavailable"} <span aria-hidden="true">${cornerExpanded ? "−" : "+"}</span></button></div><div id="cornerDetails" ${cornerExpanded ? "" : "hidden"}><div class="eyebrow">YOUR ACTIVITY · DESIGN SAMPLE</div>${cornerExample === "active" ? `<a class="cornerorder" href="#C05"><strong>Mobile Legends · PL-1038</strong><span>In progress · Epic II → Legend V</span><span>Current milestone: Epic I</span><progress value="3" max="5" aria-label="3 of 5 agreed milestones completed">3 of 5</progress><small>3 of 5 agreed milestones · last update 12 min ago (sample)</small><span class="textlink">Open order ↗</span></a><a class="cornerorder" href="#C23"><strong>Account purchase · PL-1048</strong><span>Preparing handover</span><small>Last update 35 min ago (sample)</small><span class="textlink">Open order ↗</span></a><p class="quiet">Progress is based on reported milestones, not a live game feed.</p>` : cornerExample === "empty" ? '<p>No ongoing orders. Your completed orders remain in My account.</p><a class="textlink" href="#C02">View order history ↗</a>' : '<p>We couldn’t refresh your orders. Check My account for the latest recorded update.</p><a class="textlink" href="#C02">Open my orders ↗</a>'}</div><a class="cornerchat" href="#C11">Chat with support ↗</a></aside>`
     : "";
   $("orderCorner")
     .querySelectorAll("a")
@@ -932,7 +940,7 @@ function renderBody(s) {
           "",
         )}<section class="card"><h3>Before you confirm</h3><p>Check the scope, terms and next step. Go back to make a change before continuing.</p></section></aside></div></div>`;
     case "calendar":
-      return `<div class="content"><div class="calendargrid">${["Mon 21", "Tue 22", "Wed 23", "Thu 24", "Fri 25"].map((day, i) => `<section class="calday"><strong>${day}</strong>${i === 3 ? '<div class="slot">19:00 – 20:00<br>PL-1042 · Proposed<br>Asia/Tehran</div>' : ""}</section>`).join("")}</div>${formContent(s)}</div>`;
+      return `<div class="content"><div class="calendargrid">${["Mon 21", "Tue 22", "Wed 23", "Thu 24", "Fri 25"].map((day, i) => `<section class="calday"><strong>${day}</strong>${i === 3 ? '<div class="slot">19:00 – 20:00<br>PL-1038 · Proposed<br>Asia/Tehran</div>' : ""}</section>`).join("")}</div>${formContent(s)}</div>`;
     case "policy":
       return `<div class="content policy">${s.sections.map((x) => card(x.title, x.body)).join("")}${actions(s)}</div>`;
     case "success":
@@ -969,13 +977,17 @@ function renderFlow() {
 }
 function render() {
   const s = current;
+  const panel = panelContext(s);
   const workspace =
     ["Customer", "Seller", "Booster"].includes(s.group) || isAdmin(s);
-  const head =
-    s.kind === "hero" || s.kind === "auth" || s.kind === "game"
+  const head = panel
+    ? panel.family
+      ? ""
+      : panelHeading(panel)
+    : s.kind === "hero" || s.kind === "auth" || s.kind === "game"
       ? ""
       : heading(s);
-  let body = renderBody(s);
+  let body = panel ? panelBody(panel) : renderBody(s);
   const chosen = s.states.find((x) => x.name === stateName);
   if (
     chosen &&
@@ -983,9 +995,9 @@ function render() {
       chosen.name,
     )
   )
-    body = `<div class="content"><div class="emptybox"><h2>Access unavailable</h2><p>${esc(chosen.copy)}</p>${link("Return safely", "X01", "button smallsection")}</div></div>`;
+    body = `<div class="content"><div class="emptybox"><${panel?.family ? "h1" : "h2"}>Access unavailable</${panel?.family ? "h1" : "h2"}><p>${esc(chosen.copy)}</p>${panel ? `<a class="button smallsection" href="#${panel.family?.parent || panelHomes[panel.role]}">Back to ${panel.family?.label.toLowerCase() || panelRoleNames[panel.role]}</a>` : link("Return safely", "X01", "button smallsection")}</div></div>`;
   $("canvas").innerHTML =
-    `${nav(s)}${workspace ? '<div class="workspace">' + sidebar(s) + '<main class="maincol">' : "<main>"}${head}${stateBanner(s)}${body}</main>${workspace ? "</div>" : ""}${footer()}<div class="specHint">${s.id} · ${esc(s.kind)} · ${esc(s.route)} · DESIGN SAMPLE · <a href="../SCREENS.md">Screen specification ↗</a></div>`;
+    `${nav(s)}${workspace ? '<div class="workspace">' + sidebar(s) + '<main class="maincol">' : "<main>"}${head}${stateBanner(s)}${body}${panel ? '<p class="panelFeedback" id="panelFeedback" role="status"></p>' : ""}</main>${workspace ? "</div>" : ""}${footer()}<div class="specHint">${s.id} · ${esc(s.kind)} · ${esc(s.route)} · DESIGN SAMPLE · <a href="../SCREENS.md">Screen specification ↗</a></div>`;
   $("screenSelect").value = s.id;
   $("stateSelect").innerHTML =
     '<option value="">Default view</option>' +
@@ -1001,6 +1013,8 @@ function render() {
   $("announce").textContent =
     `${s.id}. ${s.title}${stateName ? ". " + stateName : ""}`;
   bindExtras();
+  updateRecordView();
+  bindPanelActions();
   bindHomepageMotion();
   applyDestination();
   document.querySelectorAll('a[href="#P01/games"]').forEach((a) => {
@@ -1038,6 +1052,8 @@ function render() {
         ? "Internal note · Only authorized staff will see this."
         : "Participant reply · Visible to the named customer or seller.";
     };
+  bindPanelActions();
+  bindPanelLists();
 }
 const groups = [...new Set(screens.map((s) => s.group))];
 $("screenSelect").innerHTML = groups
@@ -1077,7 +1093,12 @@ $("identityPreview").onchange = (e) => {
       : e.target.value === "customer-error"
         ? "error"
         : "active";
-  if (!previewSignedIn) gameDraftViews.clear();
+  if (!previewSignedIn) {
+    gameDraftViews.clear();
+    panelDrafts.clear();
+    panelLists.clear();
+    panelListScroll.clear();
+  }
   cornerExpanded = false;
   render();
 };
@@ -1104,9 +1125,10 @@ document.querySelectorAll("[data-width]").forEach(
 );
 window.addEventListener("hashchange", () => {
   if (location.hash === "#canvas") return;
-  const next =
+  let next =
     byId.get(decodeURIComponent(location.hash.slice(1).split("/")[0])) ||
     byId.get("X01");
+  next = canonicalPanelScreen(next);
   if (next !== current) {
     current = next;
     stateName = "";
@@ -1114,8 +1136,17 @@ window.addEventListener("hashchange", () => {
     $("canvas").focus({ preventScroll: true });
     $("canvas").scrollTo({ top: 0, behavior: "instant" });
   }
+  if (panelContext()?.family) {
+    const ctx = panelContext();
+    const shell = document.querySelector(".recordWorkspace");
+    if (shell && shell.dataset.recordKey !== `${ctx.family.root}/${ctx.entity}`)
+      render();
+    else updateRecordView(true);
+  } else if (panelContext()) render();
+  restorePanelListScroll();
   applyDestination();
 });
 current = byId.get(location.hash.slice(1).split("/")[0]) || screens[0];
+current = canonicalPanelScreen(current);
 render();
 applyDestination();

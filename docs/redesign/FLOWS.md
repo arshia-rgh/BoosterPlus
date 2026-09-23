@@ -52,6 +52,7 @@ flowchart LR
 - Clarification returns to C03/C12.
 - Quote change or expiry requires fresh review.
 - Staff approval is required for quote and completion.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Verified payment, fulfilled scope, evidence and eligible review; not success from a browser redirect.
 
@@ -89,6 +90,7 @@ flowchart LR
 - Ineligible package offers compatible/custom alternatives.
 - Sold-out/paused package blocks new purchase.
 - Version or price changes return to explicit review.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Package snapshot accepted and verified payment; no per-order quote approval.
 
@@ -130,6 +132,7 @@ flowchart LR
 - Reservation conflict means no invoice.
 - Expired reservation requires availability recheck.
 - Late paid reservation enters a case, never steals sold inventory.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Verified payment, audited transfer and required acknowledgement.
 
@@ -158,6 +161,7 @@ flowchart LR
 - Uncertain invoice creation reconciles before retry.
 - Under/over/late/wrong-network/duplicate funds remain separate states.
 - Expired invoice with detected funds cannot release inventory blindly.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Authoritative evidence resolves payment or explicit refund review.
 
@@ -188,6 +192,7 @@ flowchart LR
 - Paid cancellation is a request, not an immediate refund.
 - Recipient changes require review; outgoing disabled blocks transfer.
 - Denied remedy exposes approved appeal terms.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Recorded decision and verified outgoing evidence where applicable.
 
@@ -234,6 +239,7 @@ flowchart LR
 - Changed offer requires new acceptance.
 - Payout waits for agreed delivery/dispute conditions.
 - Related refunds/disputes can hold payout.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Direct payout confirmed under the accepted consignment terms.
 
@@ -264,6 +270,7 @@ flowchart LR
 
 - Choose Buy first explicitly in A21 and display it in S04.
 - Payment becomes due after verified seller-to-PLAYORA transfer, before resale.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** One verified payout obligation; unsold inventory does not change agreed seller terms.
 
@@ -316,6 +323,7 @@ flowchart LR
 - Enrollment required only when missing; authenticator required at every staff sign-in.
 - Recovery code substitutes only second factor.
 - Owner-reviewed recovery never bypasses identity verification.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Authorized staff session; last-owner and recovery safeguards retained.
 
@@ -343,6 +351,7 @@ flowchart LR
 - Google linking verifies both existing and new identities.
 - Email conflicts do not reveal account ownership.
 - Revoke-all confirmation explains current session will end.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Verified identity changes and accurate session state.
 
@@ -371,6 +380,7 @@ flowchart LR
 - New messages do not move a reader looking at history.
 - Rejected files keep the text draft.
 - Access revocation clears private thread content.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** One accessible conversation with known audience and reliable send status.
 
@@ -382,10 +392,10 @@ flowchart LR
 flowchart LR
   n0["B01 · Your next session."]
   n1["B02 · Assigned orders."]
-  n2["B03 · PL-1042 · Your assignment"]
+  n2["B03 · PL-1038 · Your assignment"]
   n3["B04 · Availability & sessions."]
   n4["B05 · Assignment messages."]
-  n5["B03 · PL-1042 · Your assignment"]
+  n5["B03 · PL-1038 · Your assignment"]
   n6["A03 · Review order PL-1042."]
   n7["C05 · Your boost is in progress."]
   n0 --> n1
@@ -403,6 +413,7 @@ flowchart LR
 - Assignment revocation removes access immediately.
 - Proof scanning blocks completion submission.
 - Booster submits completion; admin approves final completion.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Scoped fulfillment and customer-visible evidence with no pricing/refund authority.
 
@@ -426,6 +437,7 @@ flowchart LR
 - Conflicts reject stale slot; chosen timezone remains.
 - DST ambiguity presents explicit offsets.
 - Reschedule keeps previous booking until replacement accepted according to backend.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** One valid confirmed booking and visible change history.
 
@@ -458,6 +470,7 @@ flowchart LR
 - Unsaved navigation prompts retain drafts.
 - Stale preview/version conflict requires fresh review.
 - Archive/pause affect new purchases, not historical snapshots.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** A validated versioned release with customer previews.
 
@@ -485,6 +498,7 @@ flowchart LR
 - Clarify/reject needs a customer-visible reason.
 - Accepted contract cannot be silently repriced.
 - Concurrent status update requires reload/compare.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Correct next action and audited state transition.
 
@@ -506,6 +520,7 @@ flowchart LR
 - Audience stays visible through attachment and keyboard states.
 - Switching mode with an unsent draft asks where to keep it.
 - Buyer and seller conversations remain separate.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Message reaches only its selected authorized audience.
 
@@ -533,6 +548,7 @@ flowchart LR
 - No manual paid toggle.
 - Uncertain transfer reconciles before retry.
 - Separate outgoing activation and verified recipient required.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Provider-backed result without duplicate transfer or mixed currencies.
 
@@ -558,6 +574,7 @@ flowchart LR
 - Reorder validates current options and prices.
 - Sold/archived saved item remains understandable.
 - Unsubscribe token affects only its intended alert.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Fresh eligible order or explicit alert consent; no reservation from a favorite.
 
@@ -585,6 +602,7 @@ flowchart LR
 - Eligibility, duplicate and moderation states explicit.
 - Customer text is not rewritten to improve sentiment.
 - Refund labels remain where required.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Published eligible review or reasoned moderation outcome.
 
@@ -608,6 +626,7 @@ flowchart LR
 - Read notification does not complete its action.
 - Unavailable deep link returns safely.
 - Sound is opt-in; reduced motion is honored.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Preferences saved and destination/context preserved.
 
@@ -634,6 +653,7 @@ flowchart LR
 - Active order/dispute holds block erasure.
 - Cancellation ends when irreversible erasure begins.
 - Live erasure, pending files, retained evidence/backups are distinct.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Truthful deletion/export status under explicit policy.
 
@@ -657,6 +677,7 @@ flowchart LR
 - Last owner cannot be removed.
 - Role/suspension change revokes affected sessions as required.
 - No public role selection or automatic email-based role grant.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Audited access change and exact affected-session outcome.
 
@@ -682,6 +703,7 @@ flowchart LR
 - Historical agreements stay immutable.
 - Incomplete commercial terms block related purchases.
 - Coupons cannot produce invalid totals or unsupported scope.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Published explicit version; preview and customer terms agree.
 
@@ -705,6 +727,7 @@ flowchart LR
 - Stale report preview needs regeneration.
 - Rejected/quarantined files never render public previews.
 - Retry queues a job, not a payment success.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Scoped evidence/export and truthful recovery status.
 
@@ -726,6 +749,7 @@ flowchart LR
 - 404 and access denial do not disclose private object existence.
 - Offline recovery retains only safe drafts.
 - Rate limits use server-provided retry information.
+- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
 
 **Completion evidence:** Safe navigation without leaking private content or losing permitted drafts.
 

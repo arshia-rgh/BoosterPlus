@@ -263,7 +263,7 @@ small,
   background: var(--bg);
   border: 1px solid #2b4335;
   border-radius: 20px;
-  overflow: hidden;
+  overflow: clip;
   container-name: preview;
   container-type: size;
   box-shadow: 0 25px 80px #0005;
@@ -3028,4 +3028,289 @@ details p {
 }
 .preview-reduced #siteBackdrop {
   animation: none;
+}
+
+/* Panel navigation keeps role, record and local section distinct. */
+.workspaceBadge {
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 650;
+}
+.workspaceSelect {
+  display: none;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+.workspaceSelect select {
+  margin-top: 6px;
+}
+.panelSidebar nav {
+  display: grid;
+  gap: 4px;
+}
+.panelSidebar .eyebrow {
+  line-height: 1.7;
+}
+.recordWorkspace {
+  min-width: 0;
+}
+.recordHeader {
+  padding: 30px 32px 20px;
+  border-bottom: 1px solid var(--line);
+  background: #0b211ae8;
+}
+.recordHeader .crumb {
+  margin-bottom: 16px;
+}
+.recordBack {
+  display: inline-block;
+  margin-bottom: 24px;
+  font-size: 13px;
+}
+.recordIdentity {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: start;
+}
+.recordIdentity h1 {
+  font-size: clamp(28px, 3cqi, 42px);
+  margin: 0 0 8px;
+}
+.recordIdentity .eyebrow {
+  margin-bottom: 10px;
+}
+.recordIdentity .statusline {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.recordHeader .quiet {
+  margin: 18px 0 0;
+  font-size: 12px;
+}
+.recordTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 12px 28px;
+  background: #10271ee8;
+  border-bottom: 1px solid var(--line);
+}
+.recordTabs a {
+  padding: 10px 14px;
+  min-height: 44px;
+  text-decoration: none;
+  color: #b8cdbe;
+  border-radius: 9px;
+  font-size: 14px;
+}
+.recordTabs a[aria-current] {
+  background: #b5edc6;
+  color: #082216;
+  font-weight: 650;
+}
+.recordView {
+  padding: 28px 32px 40px;
+}
+.recordView > div > h2 {
+  font-size: 24px;
+  margin: 0 0 24px;
+}
+.recordView .formcard {
+  margin-top: 24px;
+}
+.recordView .sectionsgrid {
+  margin-bottom: 24px;
+}
+.recordGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 20px;
+}
+.recordFacts {
+  margin: 20px 0;
+}
+.recordFacts > div {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.recordFacts dt {
+  color: var(--muted);
+}
+.recordFacts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.recordView progress {
+  width: 100%;
+  accent-color: var(--green);
+}
+.recordView .actions {
+  align-items: center;
+  flex-wrap: wrap;
+}
+.recordChat {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0c2018;
+}
+.recordChat .messages {
+  max-height: 420px;
+  overflow-y: auto;
+}
+.recordChat .chathead p {
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+.recordChat .composer {
+  border-top: 1px solid var(--line);
+  padding: 24px;
+}
+.recordChat textarea {
+  min-height: 110px;
+}
+.panelFeedback:not(:empty) {
+  border: 1px solid var(--line);
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+.entityList {
+  display: grid;
+  gap: 14px;
+}
+.entityRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #10271edb;
+}
+.entityRow h2 {
+  font-size: 19px;
+  margin: 0 0 6px;
+}
+.entityRow p {
+  margin: 6px 0;
+}
+.entityRow .entityStatus {
+  font-size: 13px;
+  color: #cae2ce;
+}
+.entityRow .button {
+  flex-shrink: 0;
+}
+.panelList > .quiet {
+  margin-bottom: 18px;
+}
+.content .panelList {
+  padding: 0;
+}
+.workspaceQuicklinks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 24px 0 32px;
+}
+.workspaceQuicklinks a {
+  display: flex;
+  justify-content: space-between;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-decoration: none;
+}
+@container (max-width: 1100px) {
+  .recordGrid {
+    grid-template-columns: 1fr;
+  }
+}
+@container (max-width: 900px) {
+  .workspaceSelect {
+    display: block;
+  }
+}
+@container (max-width: 600px) {
+  .workspaceBadge {
+    font-size: 11px;
+  }
+  .topnav:has(.workspaceBadge) {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 76px;
+    padding: 14px 20px;
+    gap: 10px;
+  }
+  .topnav:has(.workspaceBadge) .navend {
+    margin-left: auto;
+  }
+  .recordHeader {
+    padding: 24px 20px;
+  }
+  .recordIdentity {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .recordIdentity .statusline {
+    justify-content: flex-start;
+  }
+  .recordTabs {
+    padding: 10px 12px;
+  }
+  .recordTabs a {
+    padding: 10px;
+    font-size: 13px;
+  }
+  .recordView {
+    padding: 24px 20px;
+  }
+  .recordFacts > div {
+    grid-template-columns: 80px minmax(0, 1fr);
+  }
+  .entityRow {
+    align-items: start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+  }
+  .entityRow .button {
+    width: 100%;
+  }
+  .workspaceQuicklinks {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .recordChat .composer {
+    padding: 18px;
+  }
+}
+
+.entityRow[hidden],
+.listEmpty[hidden] {
+  display: none;
+}
+
+.recordTabs {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  background: #10271e;
+}
+.tabContext {
+  flex: 0 0 100%;
+  font-size: 12px;
+  color: #b8cdbe;
+  padding: 2px 14px;
+}
+.recordView {
+  scroll-margin-top: 150px;
 }

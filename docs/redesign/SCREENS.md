@@ -1172,7 +1172,7 @@ Your next steps, all in one place.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F10, F25.
 
@@ -1191,10 +1191,10 @@ Find the next action without opening every order.
 
 | Label | Control | Example/default | Help / conditions |
 | --- | --- | --- | --- |
-| Search orders | search |  |  |
-| Status | select | All |  |
+| Search records | text |  | ID, game or name. Retained when returning from a record. |
+| Status | select | All statuses | Filters the example records. |
 
-Allowed options: Status: All, Needs your action, Active, Completed, Cancelled.
+Allowed options: Status: All statuses, Quote ready, In progress.
 
 ### Table/card fields
 
@@ -1218,7 +1218,7 @@ Order / goal → Status → Payment → Next action. Rows become labeled cards b
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F01.
 
@@ -1267,7 +1267,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Accept button includes exact amount in production; never assumes consent from navigation. Quote history uses collapsible immutable revisions.
+Accept button includes exact amount in production; never assumes consent from navigation. Quote history uses collapsible immutable revisions. Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F01, F15, F20.
 
@@ -1313,7 +1313,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Separate on-account substate includes masked credential input, consent to authorized access, submitted timestamp, replace/revoke and audit notice. No secret sample values.
+Separate on-account substate includes masked credential input, consent to authorized access, submitted timestamp, replace/revoke and audit notice. No secret sample values. Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F01, F02.
 
@@ -1321,7 +1321,7 @@ Separate on-account substate includes masked credential input, consent to author
 
 **Area:** Customer · **Current route:** `/orders/:id` · **Layout:** order
 
-PL-1042 · Play together · Payment verified
+PL-1038 · Follow recorded milestones without losing the order context.
 
 ### Page anatomy & content
 
@@ -1351,7 +1351,7 @@ PL-1042 · Play together · Payment verified
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F01, F02, F05, F12, F19.
 
@@ -1397,7 +1397,7 @@ Allowed options: .
 Agenda list replaces the dense week grid. Date and timezone remain visible above slots; action follows the selected proposal.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F01, F13.
 
@@ -1436,7 +1436,7 @@ Attempt → Asset / network → Status → Received. Rows become labeled cards b
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F04, F05.
 
@@ -1480,7 +1480,7 @@ Allowed options: Reason: Payment issue, Cancellation request, Delivery problem, 
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F04, F05.
 
@@ -1527,7 +1527,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F04, F05.
 
@@ -1562,7 +1562,7 @@ Revisit a package or account without losing your place.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F18.
 
@@ -1605,7 +1605,7 @@ Allowed options: Show: All, Unread, Order conversations, Sales, General support.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F11.
 
@@ -1652,7 +1652,7 @@ Allowed options: .
 List and thread are separate pages. Thread fills available height; composer stays above the keyboard. Back returns to the same list position. Context collapses to one line.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F11.
 
@@ -1696,7 +1696,7 @@ Allowed options: Topic: Pre-sales, Order, Account sale, Payment, General.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F11.
 
@@ -1734,7 +1734,7 @@ Update → Received → State. Rows become labeled cards below 760px; preserve p
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F20.
 
@@ -1767,7 +1767,7 @@ Review completed orders and track moderation.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F19.
 
@@ -1810,7 +1810,7 @@ Allowed options: Rating: 1, 2, 3, 4, 5.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F01, F19.
 
@@ -1849,7 +1849,7 @@ Session → Last active → Action. Rows become labeled cards below 760px; prese
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F09, F10.
 
@@ -1935,7 +1935,7 @@ Allowed options: Export category: Profile, Orders, Messages, Payments, Submissio
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Cancellation is possible only before irreversible erasure begins. Confirmation names the account and consequences; never promises instant complete deletion.
+Cancellation is possible only before irreversible erasure begins. Confirmation names the account and consequences; never promises instant complete deletion. Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F21.
 
@@ -1980,7 +1980,7 @@ Allowed options: Motion: Follow system, Reduced; Sound effects: Off, On.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F20.
 
@@ -2022,7 +2022,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F18, F20.
 
@@ -2054,7 +2054,7 @@ Manage the alert linked from your email.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F18.
 
@@ -2096,7 +2096,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F10.
 
@@ -2132,7 +2132,7 @@ Submission → Review → Arrangement → Payout. Rows become labeled cards belo
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06.
 
@@ -2179,7 +2179,7 @@ Allowed options: Game: Mobile Legends.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06, F07.
 
@@ -2217,7 +2217,7 @@ Mobile Legends · Awaiting review
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06, F07.
 
@@ -2262,7 +2262,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06, F07.
 
@@ -2306,7 +2306,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Secure credential form is an isolated subview: masked secret inputs, no browser draft persistence, submit/replace, access audience and audit disclosure.
+Secure credential form is an isolated subview: masked secret inputs, no browser draft persistence, submit/replace, access audience and audit disclosure. Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06, F07.
 
@@ -2353,7 +2353,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06, F07.
 
@@ -2387,7 +2387,7 @@ Focus on assigned work and the next customer action.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F12.
 
@@ -2406,9 +2406,10 @@ Only the orders assigned to you.
 
 | Label | Control | Example/default | Help / conditions |
 | --- | --- | --- | --- |
-| Status | select | Active |  |
+| Search records | text |  | ID, game or name. Retained when returning from a record. |
+| Status | select | All statuses | Filters the example records. |
 
-Allowed options: Status: Active, Needs attention, On hold, Completed.
+Allowed options: Status: All statuses, Quote ready, In progress.
 
 ### Table/card fields
 
@@ -2431,11 +2432,11 @@ Order → Mode → Session → Next action. Rows become labeled cards below 760p
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F12.
 
-## B03 — PL-1042 · Your assignment
+## B03 — PL-1038 · Your assignment
 
 **Area:** Booster · **Current route:** `/booster/orders/:id` · **Layout:** order
 
@@ -2479,7 +2480,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F12.
 
@@ -2524,15 +2525,15 @@ Allowed options: .
 Agenda-first layout with a date picker; no horizontally compressed seven-column week view.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F12, F13.
 
 ## B05 — Assignment messages.
 
-**Area:** Booster · **Current route:** `/booster/support/:id` · **Layout:** chat
+**Area:** Booster · **Current route:** `/booster/support/:id` · **Layout:** inbox
 
-Your booster alias is visible to the customer.
+Only conversations for your assigned orders. Open a named thread inside its assignment.
 
 ### Page anatomy & content
 
@@ -2566,7 +2567,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F12.
 
@@ -2603,7 +2604,7 @@ Start with the queues that need a decision.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F09, F15.
 
@@ -2623,10 +2624,10 @@ Review requests, manage fulfillment and resolve exceptions.
 
 | Label | Control | Example/default | Help / conditions |
 | --- | --- | --- | --- |
-| Search order/customer | search |  |  |
-| Queue | select | Needs review |  |
+| Search records | text |  | ID, game or name. Retained when returning from a record. |
+| Status | select | All statuses | Filters the example records. |
 
-Allowed options: Queue: Needs review, Paid unassigned, Active, Holds, All.
+Allowed options: Status: All statuses, Quote ready, In progress.
 
 ### Table/card fields
 
@@ -2649,7 +2650,7 @@ Order → Customer → State → Payment → Next. Rows become labeled cards bel
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F15.
 
@@ -2698,7 +2699,7 @@ Allowed options: Assigned booster: Unassigned, Demo booster.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F12, F15, F16.
 
@@ -2746,7 +2747,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F15.
 
@@ -2788,7 +2789,7 @@ Allowed options: Queue: Waiting on staff, Unread, Waiting on customer, Closed.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F16.
 
@@ -2832,7 +2833,7 @@ Allowed options: Composer audience: Customer reply, Internal note.
 Full-width thread. Context opens as a separate sheet, never overlapping the composer. Audience always visible above Send.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F16.
 
@@ -2863,7 +2864,7 @@ Allowed options: Booster: Demo booster.
 
 ### Actions & destinations
 
-- **Open linked order** → [A03](design/index.html#A03). Prototype actions are simulations only; guards must pass in the eventual application.
+- **Open order PL-1038** → [A03](design/index.html#A03). Prototype actions are simulations only; guards must pass in the eventual application.
 - **Save booking · demo** → [A07](design/index.html#A07). Prototype actions are simulations only; guards must pass in the eventual application.
 
 ### States & recovery
@@ -2879,7 +2880,7 @@ Allowed options: Booster: Demo booster.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F13.
 
@@ -2928,7 +2929,7 @@ Identity → Role → Access → Verification. Rows become labeled cards below 7
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F22.
 
@@ -2975,7 +2976,7 @@ When → Actor → Action → Target. Rows become labeled cards below 760px; pre
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F22.
 
@@ -3024,7 +3025,7 @@ Game → Draft → Published → Ordering. Rows become labeled cards below 760px
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F14.
 
@@ -3074,7 +3075,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F14.
 
@@ -3125,7 +3126,7 @@ Allowed options: Field type: Select, Multiselect, Boolean, Integer, Decimal, Sho
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F14.
 
@@ -3173,7 +3174,7 @@ Allowed options: Rule type: Base amount, Rank step, Fixed adjustment, Multiplier
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F14.
 
@@ -3218,7 +3219,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F14.
 
@@ -3267,7 +3268,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F14.
 
@@ -3314,7 +3315,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F14.
 
@@ -3361,7 +3362,7 @@ Order / attempt → Asset / network → Issue → Next action. Rows become label
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F17.
 
@@ -3409,7 +3410,7 @@ Allowed options: Decision: Request information, Approve refund, Reject, Approve 
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F05, F17.
 
@@ -3455,7 +3456,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06, F07, F17.
 
@@ -3505,7 +3506,7 @@ Allowed options: Processing fees paid by: Owner decision required, Customer, Mer
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F23.
 
@@ -3548,7 +3549,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F05, F17.
 
@@ -3593,7 +3594,7 @@ Submission → Game → Evidence → State. Rows become labeled cards below 760p
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06.
 
@@ -3644,7 +3645,7 @@ Allowed options: Arrangement: Consignment, Buy first.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06, F07.
 
@@ -3690,7 +3691,7 @@ Listing → Game → State → Linked record. Rows become labeled cards below 76
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06.
 
@@ -3739,7 +3740,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06, F07.
 
@@ -3784,7 +3785,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F03.
 
@@ -3792,7 +3793,7 @@ Use the common interaction contract; do not invent additional commercial promise
 
 **Area:** Customer · **Current route:** `/orders/:id` · **Layout:** order
 
-Account AC-208 · Payment verified
+PL-1048 · Preparing secure account handover. Delivery, payment, messages and help remain in this order.
 
 ### Page anatomy & content
 
@@ -3802,8 +3803,8 @@ Account AC-208 · Payment verified
 
 ### Actions & destinations
 
-- **Open secure delivery** → [I08](design/index.html#I08). Prototype actions are simulations only; guards must pass in the eventual application.
-- **Acknowledge receipt · demo** → [C05](design/index.html#C05). Prototype actions are simulations only; guards must pass in the eventual application.
+- **View delivery status** → [I08](design/index.html#I08). Prototype actions are simulations only; guards must pass in the eventual application.
+- **Ask about delivery** → [C12](design/index.html#C12). Prototype actions are simulations only; guards must pass in the eventual application.
 - **Report delivery issue** → [C08](design/index.html#C08). Prototype actions are simulations only; guards must pass in the eventual application.
 
 ### States & recovery
@@ -3820,7 +3821,7 @@ Account AC-208 · Payment verified
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F03, F06.
 
@@ -3868,7 +3869,7 @@ Allowed options: Type: Percentage, Fixed amount.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F23.
 
@@ -3912,7 +3913,7 @@ Review → Order → Rating → State. Rows become labeled cards below 760px; pr
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F19.
 
@@ -3940,7 +3941,7 @@ Allowed options: .
 
 - **Publish review · demo** → [A28](design/index.html#A28). Prototype actions are simulations only; guards must pass in the eventual application.
 - **Request correction · demo** → [A28](design/index.html#A28). Prototype actions are simulations only; guards must pass in the eventual application.
-- **Open order** → [A03](design/index.html#A03). Prototype actions are simulations only; guards must pass in the eventual application.
+- **Open order PL-1038** → [A03](design/index.html#A03). Prototype actions are simulations only; guards must pass in the eventual application.
 
 ### States & recovery
 
@@ -3954,7 +3955,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F19.
 
@@ -4000,7 +4001,7 @@ Allowed options: Game: All, Mobile Legends.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F24.
 
@@ -4048,7 +4049,7 @@ Task → Kind → State → Attempts. Rows become labeled cards below 760px; pre
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F17, F24.
 
@@ -4079,7 +4080,7 @@ File → Purpose → Visibility → State. Rows become labeled cards below 760px
 
 ### Actions & destinations
 
-- **View linked order** → [A03](design/index.html#A03). Prototype actions are simulations only; guards must pass in the eventual application.
+- **Open order PL-1038** → [A03](design/index.html#A03). Prototype actions are simulations only; guards must pass in the eventual application.
 - **View submission** → [A21](design/index.html#A21). Prototype actions are simulations only; guards must pass in the eventual application.
 
 ### States & recovery
@@ -4095,7 +4096,7 @@ File → Purpose → Visibility → State. Rows become labeled cards below 760px
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F24.
 
@@ -4137,7 +4138,7 @@ Allowed options: State: Active, Unsubscribed, Delivery failed.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F24.
 
@@ -4182,7 +4183,7 @@ Allowed options: Document type: Service terms, Payment/refund, Account sale, Pri
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F23.
 
@@ -4229,7 +4230,7 @@ Allowed options: Action: Review, Place hold, Release eligible hold, Erase eligib
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F21.
 
@@ -4277,7 +4278,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F21.
 
@@ -4389,7 +4390,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06.
 
@@ -4430,7 +4431,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
 
 **Journeys:** F06.
 
