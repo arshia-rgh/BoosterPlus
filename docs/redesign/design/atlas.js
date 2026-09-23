@@ -159,6 +159,8 @@ const gameProfiles = [
     id: "G01",
     name: "Mobile Legends",
     art: "game-mlbb.png",
+    artWidth: 1536,
+    artHeight: 1024,
     services: ["boost", "accounts", "shop", "news"],
     goal: "Make your next ranked chapter count.",
     config: "P04",
@@ -167,6 +169,8 @@ const gameProfiles = [
     id: "G02",
     name: "World of Warcraft",
     art: "game-wow.jpg",
+    artWidth: 2600,
+    artHeight: 1260,
     services: ["boost", "accounts", "news"],
     goal: "Your next adventure starts here.",
     config: "G07",
@@ -175,6 +179,8 @@ const gameProfiles = [
     id: "G03",
     name: "League of Legends",
     art: "game-lol.jpg",
+    artWidth: 1215,
+    artHeight: 717,
     services: ["boost", "accounts", "shop", "news"],
     goal: "Find your next competitive edge.",
     config: "G08",
@@ -183,6 +189,8 @@ const gameProfiles = [
     id: "G04",
     name: "VALORANT",
     art: "game-valorant.png",
+    artWidth: 5120,
+    artHeight: 1772,
     services: ["boost", "news"],
     goal: "A clearer path to your next milestone.",
     config: "G09",
@@ -191,6 +199,8 @@ const gameProfiles = [
     id: "G05",
     name: "Dota 2",
     art: "game-dota.jpg",
+    artWidth: 1600,
+    artHeight: 947,
     services: ["boost", "accounts", "news"],
     goal: "Build your next great play.",
     config: "G10",
@@ -199,6 +209,8 @@ const gameProfiles = [
     id: "G06",
     name: "Wild Rift",
     art: "game-wildrift.jpg",
+    artWidth: 1280,
+    artHeight: 720,
     services: ["boost", "accounts", "news"],
     goal: "Your next chapter on the Rift.",
     config: "G11",
@@ -576,7 +588,7 @@ function gameHub(s) {
       "Updates, patch notes and practical guides, together in one place.",
     ],
   };
-  return `<div class="gamehub hub-${g.id}"><section class="hubhero"><img src="assets/${g.art}" alt=""><div class="hubherocopy">${link("← All games", "P01/games", "textlink")}<div class="eyebrow">YOUR WORLD / PLAYORA</div><h1>${g.name}</h1><p>${g.goal}</p>${g.placeholder ? '<p class="quiet">Art direction placeholder · dedicated game art pending</p>' : ""}${g.paused ? chip("Services temporarily unavailable", "amber") : ""}</div></section><div class="hubmetrics">${metrics(g.id)}</div><div class="serviceback" id="serviceBack" hidden>${link("← Back to choose service", g.id, "textlink")}</div><section class="featuredoffers pinnedoffers" aria-labelledby="featuredTitle"><div class="sectionhead"><div><div class="eyebrow">PINNED FOR THIS GAME</div><h2 id="featuredTitle">Limited offers.</h2></div><span class="quiet">Design offers · no live prices or availability</span></div><div class="offergrid">${g.services
+  return `<div class="gamehub hub-${g.id}"><section class="hubhero"><img src="assets/${g.art}" width="${g.artWidth}" height="${g.artHeight}" alt=""><div class="hubherocopy">${link("← All games", "P01/games", "textlink")}<div class="eyebrow">YOUR WORLD / PLAYORA</div><h1>${g.name}</h1><p>${g.goal}</p>${g.placeholder ? '<p class="quiet">Art direction placeholder · dedicated game art pending</p>' : ""}${g.paused ? chip("Services temporarily unavailable", "amber") : ""}</div></section><div class="hubmetrics">${metrics(g.id)}</div><div class="serviceback" id="serviceBack" hidden>${link("← Back to choose service", g.id, "textlink")}</div><section class="featuredoffers pinnedoffers" aria-labelledby="featuredTitle"><div class="sectionhead"><div><div class="eyebrow">PINNED FOR THIS GAME</div><h2 id="featuredTitle">Limited offers.</h2></div><span class="quiet">Design offers · no live prices or availability</span></div><div class="offergrid">${g.services
     .filter((k) => k !== "news")
     .map(
       (k) =>
@@ -666,7 +678,7 @@ function applyDestination() {
     });
   }
   if (current.id === "P01" && destination === "all") {
-    $("canvas").scrollIntoView({ block: "start" });
+    $("canvas").scrollTo({ top: 0, behavior: "instant" });
   }
   if (current.kind !== "game") return;
   const profile = gameProfiles.find((g) => g.id === current.id);
@@ -1081,8 +1093,10 @@ document.querySelectorAll("[data-width]").forEach(
   (button) =>
     (button.onclick = () => {
       const width = button.dataset.width;
-      $("canvas").className =
+      const sizeClass =
         width === "390" ? "phone" : width === "768" ? "tablet" : "";
+      $("previewFrame").className = sizeClass;
+      $("canvas").className = sizeClass;
       document
         .querySelectorAll("[data-width]")
         .forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
@@ -1098,7 +1112,7 @@ window.addEventListener("hashchange", () => {
     stateName = "";
     render();
     $("canvas").focus({ preventScroll: true });
-    $("canvas").scrollIntoView({ block: "start" });
+    $("canvas").scrollTo({ top: 0, behavior: "instant" });
   }
   applyDestination();
 });

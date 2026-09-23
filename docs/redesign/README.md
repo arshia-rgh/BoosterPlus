@@ -59,3 +59,7 @@ The current review inventory contains **113 views, 30 journeys, 555 named state 
 This is a complete **review edition of the screen/flow specification and visual atlas**, not an owner-accepted final design or a production implementation. “Complete” means the existing route inventory and supporting subflows are represented, the interaction and exception contracts are written, and the artifact can be reviewed independently of the running app. It does not mean business terms, art rights, real-device behavior or all human usability questions have been settled.
 
 Before implementation resumes: review the principal visual layouts, walk the cross-role flows, resolve commercial copy placeholders, and record accepted changes. Changes to design documents/prototypes are allowed during the pause; product implementation and the old cameo/audio experiment remain paused. Preserve the uncommitted cameo experiment without mounting or shipping it.
+
+## Mandatory design change review
+
+Follow [DESIGN_CHANGE_GATE.md](DESIGN_CHANGE_GATE.md) for every design stage: a separate senior UI/UX designer reviews the changed scope, then repeated fix/review rounds must reach an explicit pass before delivery. The bordered preview contains its own scrollable website, artwork and order panel; controls and specifications outside it belong to the atlas.

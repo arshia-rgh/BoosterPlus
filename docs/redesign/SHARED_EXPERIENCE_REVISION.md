@@ -35,3 +35,7 @@ On phones the panel fits the viewport, caps its scrollable body height and retai
 ## Review
 
 Check homepage arrows and FAQ disclosures; game offer placement and service filtering; custom-form/listing navigation while the hero persists; form Back/Forward; paused-game direct entry; footer links and ambient pause; visitor vs signed-in/empty/error panel; order and support navigation. Inspect desktop and phone, keyboard focus and reduced motion. No passing design check constitutes application or live-payment qualification.
+
+## 24 September — preview containment and art composition
+
+The bordered `previewFrame` is a simulated website viewport. It clips the ambient image and owns the corner activity layer; `canvas` scrolls inside it. Atlas controls and the specification drawer stay outside. Phone/Tablet controls resize the whole frame, not just page content. Game heroes render source artwork at its intrinsic aspect ratio: copy beside it on wide screens and above it at preview widths of 900px or less. This prevents additional face/body cropping and text covering subjects; existing source-image edges remain unchanged. Motion/pause and signed-in/out controls still apply inside the preview.

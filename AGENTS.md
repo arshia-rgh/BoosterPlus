@@ -46,6 +46,10 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 - The owner explicitly confirmed existing business rules remain: no wallet/escrow/tournament/top-up/automatic booster payout scope from the exports. Preserve the green brand direction.
 - Design review does not authorize product implementation or launch. R10/R11 stay held with full detail in `final-launch.md`. Owner visual acceptance remains open.
 
+## Design review gate (24 September 2026)
+
+- During design-first work, follow [docs/redesign/DESIGN_CHANGE_GATE.md](docs/redesign/DESIGN_CHANGE_GATE.md): spawn a senior UI/UX designer to review only changed designs and affected shared behavior, fix findings and repeat review until no actionable scoped findings remain. Record each round and the explicit verdict; a missing review is not a pass. Keep the existing proportionate checks and owner acceptance.
+
 ## Homepage/game design revision (23 September 2026)
 
 - The owner requested equal prominence for all games, service introductions on the homepage and game selection at its bottom; remove the homepage fighting-spirit section and global service navigation.

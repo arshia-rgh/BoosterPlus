@@ -14,12 +14,6 @@
     <script src="atlas.js" defer></script>
   </head>
   <body>
-    <img
-      id="siteBackdrop"
-      src="assets/ascension.jpg"
-      alt=""
-      aria-hidden="true"
-    />
     <a class="skip" href="#canvas">Skip design controls</a>
     <header class="reviewbar">
       <div class="reviewbrand">
@@ -66,9 +60,27 @@
       REVIEW PROTOTYPE · Fictional data. No real sign-in, messages or payments.
       <a href="../README.md">Read the brief ↗</a>
     </div>
-    <div id="stage"><div id="canvas" tabindex="-1"></div></div>
+    <div id="stage">
+      <p class="previewlabel" id="previewLabel">
+        Website preview · Scroll inside the border to explore the page.
+      </p>
+      <div id="previewFrame" aria-describedby="previewLabel">
+        <img
+          id="siteBackdrop"
+          src="assets/ascension.jpg"
+          alt=""
+          aria-hidden="true"
+        />
+        <div
+          id="canvas"
+          tabindex="0"
+          role="region"
+          aria-label="Website preview"
+        ></div>
+        <div id="orderCorner" hidden></div>
+      </div>
+    </div>
     <aside id="inspector" hidden aria-label="Screen specification"></aside>
-    <div id="orderCorner" hidden></div>
     <div id="announce" class="sr-only" role="status"></div>
   </body>
 </html>
