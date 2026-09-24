@@ -32,7 +32,7 @@ function fields(s, filter = false) {
         help = f.help ? `<small id="${fid}-help">${esc(f.help)}</small>` : "";
       const described = f.help ? ` aria-describedby="${fid}-help"` : "";
       if (f.type === "checkbox")
-        return `<label class="field check" for="${fid}"><input id="${fid}" type="checkbox"><span>${esc(f.label)}${help}</span></label>`;
+        return `<label class="field check" for="${fid}" data-field-label="${esc(f.label)}"><input id="${fid}" type="checkbox"><span>${esc(f.label)}${help}</span></label>`;
       let input;
       if (f.type === "select")
         input = `<select id="${fid}"${described}>${f.options.map((o) => `<option${o === f.value ? " selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
@@ -42,7 +42,7 @@ function fields(s, filter = false) {
         input = `<input id="${fid}" type="file"${described}><small>Design control only. Files are not uploaded.</small>`;
       else
         input = `<input id="${fid}" type="${esc(f.type)}" value="${esc(f.value)}" autocomplete="off"${described}>`;
-      return `<label class="field" for="${fid}"><span>${esc(f.label)}</span>${input}${help}</label>`;
+      return `<label class="field" for="${fid}" data-field-label="${esc(f.label)}"><span>${esc(f.label)}</span>${input}${help}</label>`;
     })
     .join("")}</div>`;
 }
@@ -87,6 +87,8 @@ const embeddedScreens = new Set([
   "G16",
 ]);
 function contextualTarget(to) {
+  const journeyTarget = journeyDestination(to);
+  if (journeyTarget) return journeyTarget;
   const panelTarget = panelDestination(to);
   if (panelTarget) return panelTarget;
   if (current.kind !== "game" || !embeddedScreens.has(to)) return to;
@@ -152,6 +154,46 @@ function sidebar(s) {
 }
 function heading(s) {
   return `<header class="pagehead ${s.kind === "chat" ? "chatpagehead" : ""}"><div class="crumb">${link(isAdmin(s) ? "Operations" : "PLAYORA", isAdmin(s) ? "A01" : "P01")} <span aria-hidden="true"> / </span> ${esc(s.group)}</div><div class="eyebrow">${esc(s.group)}</div><h1>${esc(s.title)}</h1><p>${esc(s.summary)}</p></header>`;
+}
+function reviewScreen() {
+  const ctx = panelContext();
+  if (ctx?.family) {
+    return (
+      byId.get(
+        { invoice: "P10", "case-status": "C09", "quote-preview": "A04" }[
+          ctx.view
+        ],
+      ) || ctx.screen
+    );
+  }
+  if (ctx) return ctx.screen;
+  if (current.kind === "game")
+    return byId.get(location.hash.split("/")[2]) || current;
+  return current;
+}
+function syncReviewControls() {
+  const s = reviewScreen();
+  $("screenSelect").value = s.id;
+  $("stateSelect").innerHTML =
+    '<option value="">Default view</option>' +
+    s.states
+      .map(
+        (x) =>
+          `<option value="${esc(x.name)}"${x.name === stateName ? " selected" : ""}>${esc(x.name)}</option>`,
+      )
+      .join("");
+  if (
+    recordScenario &&
+    !s.states.some((x) => x.name === recordScenario.state.name)
+  ) {
+    const option = document.createElement("option");
+    option.value = recordScenario.state.name;
+    option.textContent = "Record scenario: " + recordScenario.state.name;
+    option.selected = true;
+    $("stateSelect").append(option);
+  }
+  document.title = `${s.id} · ${s.title} — PLAYORA design`;
+  if (!$("inspector").hidden) renderInspector();
 }
 function stateBanner(s) {
   if (!stateName) return "";
@@ -488,8 +530,11 @@ function renderCorner() {
   const show =
     previewSignedIn && (!panelContext() || panelContext().role === "customer");
   $("orderCorner").hidden = !show;
+  const modal = show && cornerExpanded && $("previewFrame").clientWidth <= 600;
+  $("canvas").inert = modal;
+  $("previewFrame").classList.toggle("corner-modal", modal);
   $("orderCorner").innerHTML = show
-    ? `<aside class="ordercorner" aria-label="Your ongoing orders"><div class="cornerhead"><button id="cornerToggle" aria-expanded="${cornerExpanded}" aria-controls="cornerDetails"><span class="live-dot" aria-hidden="true"></span>${cornerExample === "active" ? "2 ongoing orders" : cornerExample === "empty" ? "Your orders" : "Order updates unavailable"} <span aria-hidden="true">${cornerExpanded ? "−" : "+"}</span></button></div><div id="cornerDetails" ${cornerExpanded ? "" : "hidden"}><div class="eyebrow">YOUR ACTIVITY · DESIGN SAMPLE</div>${cornerExample === "active" ? `<a class="cornerorder" href="#C05"><strong>Mobile Legends · PL-1038</strong><span>In progress · Epic II → Legend V</span><span>Current milestone: Epic I</span><progress value="3" max="5" aria-label="3 of 5 agreed milestones completed">3 of 5</progress><small>3 of 5 agreed milestones · last update 12 min ago (sample)</small><span class="textlink">Open order ↗</span></a><a class="cornerorder" href="#C23"><strong>Account purchase · PL-1048</strong><span>Preparing handover</span><small>Last update 35 min ago (sample)</small><span class="textlink">Open order ↗</span></a><p class="quiet">Progress is based on reported milestones, not a live game feed.</p>` : cornerExample === "empty" ? '<p>No ongoing orders. Your completed orders remain in My account.</p><a class="textlink" href="#C02">View order history ↗</a>' : '<p>We couldn’t refresh your orders. Check My account for the latest recorded update.</p><a class="textlink" href="#C02">Open my orders ↗</a>'}</div><a class="cornerchat" href="#C11">Chat with support ↗</a></aside>`
+    ? `<aside class="ordercorner" ${modal ? 'role="dialog" aria-modal="true"' : ""} aria-label="Your ongoing orders"><div class="cornerhead"><button id="cornerToggle" aria-expanded="${cornerExpanded}" aria-controls="cornerDetails"><span class="live-dot" aria-hidden="true"></span>${cornerExample === "active" ? "2 ongoing orders" : cornerExample === "empty" ? "Your orders" : "Order updates unavailable"} <span aria-hidden="true">${cornerExpanded ? "Close ×" : "+"}</span></button></div><div id="cornerDetails" ${cornerExpanded ? "" : "hidden"}><div class="eyebrow">YOUR ACTIVITY · DESIGN SAMPLE</div>${cornerExample === "active" ? `<a class="cornerorder" href="#C05"><strong>Mobile Legends · PL-1038</strong><span>In progress · Epic II → Legend V</span><span>Current milestone: Epic I</span><progress value="3" max="5" aria-label="3 of 5 agreed milestones completed">3 of 5</progress><small>3 of 5 agreed milestones · last update 12 min ago (sample)</small><span class="textlink">Open order ↗</span></a><a class="cornerorder" href="#C23"><strong>Account purchase · PL-1048</strong><span>Preparing handover</span><small>Last update 35 min ago (sample)</small><span class="textlink">Open order ↗</span></a><p class="quiet">Progress is based on reported milestones, not a live game feed.</p>` : cornerExample === "empty" ? '<p>No ongoing orders. Your completed orders remain in My account.</p><a class="textlink" href="#C02">View order history ↗</a>' : '<p>We couldn’t refresh your orders. Check My account for the latest recorded update.</p><a class="textlink" href="#C02">Open my orders ↗</a>'}</div><a class="cornerchat" href="#C11">Chat with support ↗</a></aside>`
     : "";
   $("orderCorner")
     .querySelectorAll("a")
@@ -574,7 +619,7 @@ function embeddedView(game, id) {
     body = renderBody(screen)
       .replace(/<h1>/g, "<h2>")
       .replace(/<\/h1>/g, "</h2>");
-  return `<div class="flowheading"><div class="eyebrow">${esc(game.name)} / ${esc(screen.group)}</div><h2 id="embeddedTitle" tabindex="-1">${esc(id === "P12" ? "Find your next account." : screen.title)}</h2><p>${esc(screen.summary)}</p></div>${body}`;
+  return `<div class="flowheading"><a class="textlink" href="#${game.id}/${location.hash.split("/")[1]}">← Back to ${serviceNames[location.hash.split("/")[1]] || "service"}</a><div class="eyebrow">${esc(game.name)} / ${esc(screen.group)}</div><h2 id="embeddedTitle" tabindex="-1">${esc(id === "P12" ? "Find your next account." : screen.title)}</h2><p>${esc(screen.summary)}</p></div>${body}`;
 }
 function gameHub(s) {
   const g = gameProfiles.find((x) => x.id === s.id);
@@ -607,7 +652,7 @@ function gameHub(s) {
     )}</div></section><section class="serviceentry" id="serviceEntry"><div class="sectionhead"><div><div class="eyebrow">MAKE YOUR NEXT MOVE</div><h2 id="serviceChoiceTitle" tabindex="-1">Choose your service.</h2></div><p>What brings you to ${g.name}?</p></div><nav class="servicechoices" aria-label="Choose a game service">${g.services.map((k) => `<a href="#${g.id}/${k}" class="servicechoice" data-service="${k}"><span class="orb" aria-hidden="true">${{ boost: "↗", accounts: "⇄", shop: "✦", news: "≋" }[k]}</span><strong>${serviceNames[k]}</strong><span>${descriptions[k][1]}</span><span class="choicearrow" aria-hidden="true">↗</span></a>`).join("")}</nav></section><div class="hubcontent"><p id="serviceFeedback" class="sr-only" role="status"></p>${g.services
     .map(
       (k) =>
-        `<section class="hubservice" data-panel="${k}"><div class="sectionhead"><div><div class="eyebrow">${serviceNames[k]}</div><h2 id="serviceTitle-${k}" tabindex="-1">${descriptions[k][0]}</h2></div><p>${descriptions[k][1]}</p></div><div class="three">${(k ===
+        `<section class="hubservice" data-panel="${k}"><div class="sectionhead"><div><a class="textlink" href="#${g.id}">← Back to choose service</a><div class="eyebrow">${serviceNames[k]}</div><h2 id="serviceTitle-${k}" tabindex="-1">${descriptions[k][0]}</h2></div><p>${descriptions[k][1]}</p></div><div class="three">${(k ===
         "boost"
           ? [
               [
@@ -737,15 +782,13 @@ function applyDestination() {
     (flowId ? $("embeddedTitle") : $("serviceTitle-" + selected))?.focus({
       preventScroll: true,
     });
-    $("serviceBack").scrollIntoView({
-      block: "start",
-      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
-        : "smooth",
-    });
+    const destination = flowId
+      ? document.querySelector(".flowheading") || $("embeddedTitle")
+      : $("serviceTitle-" + selected)?.parentElement;
+    if (destination) scrollPanelContent(destination);
   } else if (selected === "all" && focusWasInService) {
     $("serviceChoiceTitle").focus({ preventScroll: true });
-    $("serviceEntry").scrollIntoView({ block: "start" });
+    scrollPanelContent($("serviceEntry"));
   }
   $("serviceFeedback").textContent =
     selected === "all"
@@ -890,6 +933,8 @@ function invoice(s = current) {
   return `<section class="card"><div class="invoice"><div>${chip("Waiting for payment", "amber")}<p class="smallsection">Send exactly</p><div class="amount">48.000000 <small>USDT</small></div><p>Network: <strong>TRON · example only</strong></p><div class="copybox">DEMO-ADDRESS-NOT-PAYABLE</div><p class="quiet">Illustration only. No real payment address or QR code.</p><div class="steps"><span>1 · Waiting</span><span>2 · Detected</span><span>3 · Confirming</span><span>4 · Verified</span></div></div><div class="qr"><strong>DESIGN ONLY<br>NOT A PAYMENT QR</strong></div></div><div class="divider"></div><h3>Your invoice is waiting for payment</h3><p class="smallsection">You can leave this page. Check your order for updates and avoid sending a second payment.</p></section>${actions(s)}`;
 }
 function renderBody(s) {
+  const refined = refinedBody(s);
+  if (refined !== null) return refined;
   switch (s.kind) {
     case "hero":
       return home();
@@ -951,7 +996,7 @@ function renderBody(s) {
   }
 }
 function renderInspector() {
-  const s = current;
+  const s = reviewScreen();
   $("inspector").innerHTML =
     `<button id="closeSpec" aria-label="Close specifications">Close ×</button><div class="eyebrow">${s.id} / ${esc(s.kind)}</div><h2>${esc(s.title)}</h2><p>${esc(s.summary)}</p><p><strong>Current route:</strong> ${esc(s.route)}</p><h3>Page anatomy</h3>${s.sections.map((x) => `<div class="specstate"><strong>${esc(x.title)}</strong><p>${esc(x.body)}</p></div>`).join("")}<h3>Fields</h3>${s.fields.map((f) => `<p><strong>${esc(f.label)}</strong> · ${esc(f.type)}<br>${esc(f.help)}${f.options.length ? "<br>Options: " + esc(f.options.join(", ")) : ""}</p>`).join("") || "<p>No input fields in this view.</p>"}<h3>States & recovery</h3>${s.states.map((x) => `<div class="specstate"><strong>${esc(x.name)}</strong><p>${esc(x.copy)}</p></div>`).join("")}<h3>Responsive behavior</h3><p>${esc(s.mobile)}</p><h3>Guardrails</h3><p>${esc(s.notes || "Follow the shared interaction specification.")}</p><h3>Journey coverage</h3><p>${esc(s.flowIds.join(", "))}</p><p><a href="../SCREENS.md">Full specifications</a> · <a href="../INTERACTIONS.md">Interaction contract</a></p>`;
   $("closeSpec").onclick = () => toggleInspector(false);
@@ -984,32 +1029,18 @@ function render() {
     ? panel.family
       ? ""
       : panelHeading(panel)
-    : s.kind === "hero" || s.kind === "auth" || s.kind === "game"
+    : s.kind === "hero" ||
+        s.kind === "auth" ||
+        s.kind === "game" ||
+        s.id.startsWith("I")
       ? ""
       : heading(s);
   let body = panel ? panelBody(panel) : renderBody(s);
-  const chosen = s.states.find((x) => x.name === stateName);
-  if (
-    chosen &&
-    /403|404|Access (lost|removed|revoked)|Reassigned|Unauthorized|Restricted/.test(
-      chosen.name,
-    )
-  )
-    body = `<div class="content"><div class="emptybox"><${panel?.family ? "h1" : "h2"}>Access unavailable</${panel?.family ? "h1" : "h2"}><p>${esc(chosen.copy)}</p>${panel ? `<a class="button smallsection" href="#${panel.family?.parent || panelHomes[panel.role]}">Back to ${panel.family?.label.toLowerCase() || panelRoleNames[panel.role]}</a>` : link("Return safely", "X01", "button smallsection")}</div></div>`;
   $("canvas").innerHTML =
-    `${nav(s)}${workspace ? '<div class="workspace">' + sidebar(s) + '<main class="maincol">' : "<main>"}${head}${stateBanner(s)}${body}${panel ? '<p class="panelFeedback" id="panelFeedback" role="status"></p>' : ""}</main>${workspace ? "</div>" : ""}${footer()}<div class="specHint">${s.id} · ${esc(s.kind)} · ${esc(s.route)} · DESIGN SAMPLE · <a href="../SCREENS.md">Screen specification ↗</a></div>`;
-  $("screenSelect").value = s.id;
-  $("stateSelect").innerHTML =
-    '<option value="">Default view</option>' +
-    s.states
-      .map(
-        (x) =>
-          `<option value="${esc(x.name)}"${x.name === stateName ? " selected" : ""}>${esc(x.name)}</option>`,
-      )
-      .join("");
+    `${nav(s)}${workspace ? '<div class="workspace">' + sidebar(s) + '<main class="maincol">' : "<main>"}${head}<div id="designBody">${body}</div>${panel ? '<p class="panelFeedback" id="panelFeedback" role="status"></p>' : ""}</main>${workspace ? "</div>" : ""}${footer()}<div class="specHint">${s.id} · ${esc(s.kind)} · ${esc(s.route)} · DESIGN SAMPLE · <a href="../SCREENS.md">Screen specification ↗</a></div>`;
+  restorePageDraft();
+  syncReviewControls();
   renderFlow();
-  if (!$("inspector").hidden) renderInspector();
-  document.title = `${s.id} · ${s.title} — PLAYORA design`;
   $("announce").textContent =
     `${s.id}. ${s.title}${stateName ? ". " + stateName : ""}`;
   bindExtras();
@@ -1054,6 +1085,9 @@ function render() {
     };
   bindPanelActions();
   bindPanelLists();
+  bindJourneyControls();
+  bindRefinedForms();
+  applyDesignState();
 }
 const groups = [...new Set(screens.map((s) => s.group))];
 $("screenSelect").innerHTML = groups
@@ -1075,7 +1109,20 @@ $("screenSelect").onchange = (e) => {
 };
 $("stateSelect").onchange = (e) => {
   stateName = e.target.value;
-  render();
+  const ctx = panelContext();
+  recordScenario =
+    ctx?.family && stateName
+      ? {
+          key: `${ctx.family.root}/${ctx.entity}`,
+          state: reviewScreen().states.find((x) => x.name === stateName),
+        }
+      : null;
+  applyDesignState();
+  syncReviewControls();
+  document.body.classList.toggle(
+    "preview-reduced",
+    stateName === "Reduced motion",
+  );
 };
 $("flowSelect").onchange = (e) => {
   activeFlow = flows.find((f) => f.id === e.target.value) || null;
@@ -1098,11 +1145,50 @@ $("identityPreview").onchange = (e) => {
     panelDrafts.clear();
     panelLists.clear();
     panelListScroll.clear();
+    pageDrafts.clear();
   }
   cornerExpanded = false;
   render();
 };
+document.addEventListener("focusin", (e) => {
+  if (!previewSignedIn || cornerExpanded || !$("canvas").contains(e.target))
+    return;
+  const corner = $("orderCorner").getBoundingClientRect(),
+    target = e.target.getBoundingClientRect();
+  const actions =
+    e.target.id === "messageDraft"
+      ? e.target
+          .closest(".composer")
+          ?.querySelector(".actions")
+          ?.getBoundingClientRect()
+      : null;
+  const bottom = actions?.bottom || target.bottom;
+  if (bottom > corner.top - 12 && target.right > corner.left)
+    $("canvas").scrollTop += Math.min(
+      bottom - corner.top + 16,
+      Math.max(
+        0,
+        target.top -
+          $("canvas").getBoundingClientRect().top -
+          (parseFloat(getComputedStyle($("canvas")).scrollPaddingTop) || 0),
+      ),
+    );
+});
 document.addEventListener("keydown", (e) => {
+  if (e.key === "Tab" && $("previewFrame").classList.contains("corner-modal")) {
+    const items = [...$("orderCorner").querySelectorAll("button,a")].filter(
+      (el) => !el.closest("[hidden]"),
+    );
+    const first = items[0],
+      last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
   if (e.key === "Escape" && cornerExpanded) {
     cornerExpanded = false;
     renderCorner();
@@ -1118,6 +1204,7 @@ document.querySelectorAll("[data-width]").forEach(
         width === "390" ? "phone" : width === "768" ? "tablet" : "";
       $("previewFrame").className = sizeClass;
       $("canvas").className = sizeClass;
+      renderCorner();
       document
         .querySelectorAll("[data-width]")
         .forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
@@ -1125,13 +1212,22 @@ document.querySelectorAll("[data-width]").forEach(
 );
 window.addEventListener("hashchange", () => {
   if (location.hash === "#canvas") return;
-  let next =
-    byId.get(decodeURIComponent(location.hash.slice(1).split("/")[0])) ||
-    byId.get("X01");
+  preservePageDraft();
+  const nextFamily = panelContext(
+    byId.get(location.hash.slice(1).split("/")[0]) || current,
+  );
+  if (
+    recordScenario?.key !==
+    (nextFamily?.family ? `${nextFamily.family.root}/${nextFamily.entity}` : "")
+  )
+    recordScenario = null;
+  stateName = recordScenario?.state?.name || "";
+  applyDesignState();
+  let next = byId.get(location.hash.slice(1).split("/")[0]) || byId.get("X01");
   next = canonicalPanelScreen(next);
   if (next !== current) {
     current = next;
-    stateName = "";
+    if (!recordScenario) stateName = "";
     render();
     $("canvas").focus({ preventScroll: true });
     $("canvas").scrollTo({ top: 0, behavior: "instant" });
@@ -1139,14 +1235,23 @@ window.addEventListener("hashchange", () => {
   if (panelContext()?.family) {
     const ctx = panelContext();
     const shell = document.querySelector(".recordWorkspace");
-    if (shell && shell.dataset.recordKey !== `${ctx.family.root}/${ctx.entity}`)
+    if (
+      !shell ||
+      shell.dataset.recordKey !== `${ctx.family.root}/${ctx.entity}`
+    )
       render();
     else updateRecordView(true);
-  } else if (panelContext()) render();
+  } else if (panelContext() || current.kind !== "game") render();
   restorePanelListScroll();
   applyDestination();
+  syncReviewControls();
+  bindJourneyControls();
+  bindRefinedForms();
+  applyDesignState();
 });
-current = byId.get(location.hash.slice(1).split("/")[0]) || screens[0];
+current =
+  byId.get(location.hash.slice(1).split("/")[0]) ||
+  (location.hash ? byId.get("X01") : screens[0]);
 current = canonicalPanelScreen(current);
 render();
 applyDestination();

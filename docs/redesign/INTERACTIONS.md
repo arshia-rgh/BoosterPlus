@@ -148,3 +148,11 @@ Deletion remains disabled until explicit owner policy publication/enablement. Th
 | Deletion update | Privacy request updated | State and next action; no sensitive retained data summary in subject | Private privacy screen |
 
 Every deep link handles signed-out, revoked, missing and stale targets safely. Marking a notification read never marks its underlying task complete.
+
+## Current atlas behavior after complete review
+
+Local review controls follow the selected record section or embedded game step. A record-level scenario (for example Completed or Expired quote) remains active when its local tabs change; explicitly leaving the scenario or record resets it. Exceptional states replace conflicting default controls, retain identity and provide scoped recovery. Generic secondary treatments remain design annotations.
+
+Checkout examples retain their purchase type and amount. Identity examples preserve the originating task, distinguish Google/email paths and expose staff enrollment steps. Edited request scope is retained in memory through review and sign-in; no price-rule engine or provider is simulated. Public policies remain unpublished until owner-approved copy exists.
+
+Customer and staff drafts remain in memory until reload/Visitor reset. Internal notes and participant replies have separate draft buffers. The expanded narrow corner panel is a contained modal with an inert page behind it, focus containment and Escape return; its collapsed launcher allows focused chat controls to remain visible.

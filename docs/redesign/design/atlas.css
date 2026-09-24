@@ -3327,3 +3327,55 @@ details p {
 .recordView {
   scroll-margin-top: 150px;
 }
+
+/* Complete design-review recovery states and explicit conversation audiences. */
+.designState {
+  margin: 24px;
+}
+[data-state-hidden],
+.gamecard[hidden],
+.productcard[hidden] {
+  display: none !important;
+}
+.internalNote {
+  background: #302716;
+  border-top: 2px solid #e8c879 !important;
+}
+.internalNote label[for="messageDraft"] {
+  color: #ffe3a0;
+  font-weight: 700;
+}
+.subnav a[aria-current] {
+  color: var(--green);
+  text-decoration: underline;
+}
+@container preview (max-width: 600px) {
+  .ordercorner:not(:has(#cornerDetails:not([hidden]))) {
+    border-radius: 14px;
+  }
+  .ordercorner .cornerhead button {
+    padding: 10px 14px;
+    min-height: 44px;
+  }
+  .ordercorner .cornerchat {
+    padding: 8px 14px;
+  }
+  #orderCorner {
+    width: min(270px, calc(100% - 24px));
+  }
+  #previewFrame:has(#orderCorner:not([hidden])) #canvas {
+    padding-bottom: 180px;
+    scroll-padding-bottom: 180px;
+  }
+}
+#previewFrame.corner-modal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #04120e99;
+  backdrop-filter: blur(4px);
+  z-index: 70;
+}
+.corner-modal #orderCorner {
+  width: calc(100% - 24px);
+}

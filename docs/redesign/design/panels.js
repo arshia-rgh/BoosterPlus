@@ -329,7 +329,7 @@ function panelDestination(to) {
     ctx.role !== "customer" &&
     ["C17", "C19", "C22", "I06", "I04", "I07"].includes(to)
   )
-    return `${panelHomes[ctx.role]}/view/${to}`;
+    return `${current.id}/view/${to}`;
   if (
     ctx.role === "admin" &&
     !isAdmin(byId.get(to) || { group: "" }) &&
@@ -343,6 +343,7 @@ function panelActive(ctx) {
   if (ctx.family) return ctx.family.parent;
   const id = ctx.screen.id;
   const parents = {
+    S02: "S01",
     C21: "C20",
     A16: "A15",
     A17: "A15",
@@ -474,7 +475,7 @@ function panelRecord(ctx) {
             privacy: "Privacy request",
             moderation: "Review moderation",
           }[f.type] || "Mobile Legends · Account sale";
-  return `<section class="recordWorkspace" data-record-key="${f.root}/${esc(ctx.entity)}"><header class="recordHeader"><nav class="crumb" aria-label="Breadcrumb"><a href="#${panelHomes[ctx.role]}">${panelRoleNames[ctx.role]}</a> / <a href="#${f.parent}">${f.label}</a> / <span aria-current="page">${esc(ctx.entity)}</span></nav><a class="textlink recordBack" href="#${f.parent}">← Back to ${f.label.toLowerCase()}</a><div class="recordIdentity"><div><p class="eyebrow">${name}</p><h1>${esc(ctx.entity)}</h1><p>${order ? fx.goal : "One record. All related work stays here."}</p></div><div class="statusline">${chip(order ? fx.status : f.type === "catalog" ? "Draft · revision 5" : f.type === "listing" ? "Draft" : ["case", "payout", "privacy", "moderation"].includes(f.type) ? "Awaiting review" : "Offer ready", order && !fx.paid ? "amber" : "neutral")}${order && ctx.role !== "booster" ? chip(fx.payment, fx.paid ? "" : "neutral") : ""}</div></div><p class="quiet">Design example · ${ctx.role === "booster" ? "Only this assigned order and its permitted conversation." : "No actions change real records."}</p></header>${panelTabs(ctx)}<div id="recordView" class="recordView"></div></section>`;
+  return `<section class="recordWorkspace" data-record-key="${f.root}/${esc(ctx.entity)}"><header class="recordHeader"><nav class="crumb" aria-label="Breadcrumb"><a href="#${panelHomes[ctx.role]}">${panelRoleNames[ctx.role]}</a> / <a href="#${f.parent}">${f.label}</a> / <span aria-current="page">${esc(ctx.entity)}</span></nav><a class="textlink recordBack" href="#${f.parent}">← Back to ${f.label.toLowerCase()}</a><div class="recordIdentity"><div><p class="eyebrow">${name}</p><h1>${esc(ctx.entity)}</h1><p>${order ? fx.goal : "One record. All related work stays here."}</p></div><div class="statusline">${chip(order ? fx.status : f.type === "catalog" ? "Draft · revision 5" : f.type === "listing" ? "Draft" : ["case", "payout", "privacy", "moderation"].includes(f.type) ? "Awaiting review" : "Terms incomplete", order && !fx.paid ? "amber" : "neutral")}${order && ctx.role !== "booster" ? chip(fx.payment, fx.paid ? "" : "neutral") : ""}</div></div><p class="quiet">Design example · ${ctx.role === "booster" ? "Only this assigned order and its permitted conversation." : "No actions change real records."}</p></header>${panelTabs(ctx)}<div id="recordView" class="recordView"></div></section>`;
 }
 function panelDemo(label, message, primary = false) {
   return `<button class="${primary ? "primary" : ""}" data-panel-feedback="${esc(message)}">${esc(label)}</button>`;
@@ -536,7 +537,7 @@ function panelOrderBody(ctx) {
   if (v === "payment")
     return `<section class="card"><h3>${f.paid ? "Payment verified" : "Quote ready · payment required"}</h3><dl class="recordFacts"><div><dt>Order</dt><dd>${ctx.entity}</dd></div><div><dt>Total</dt><dd>USD ${f.amount} · example</dd></div><div><dt>Status</dt><dd>${f.payment}</dd></div></dl><p>${f.paid ? "Verified payment evidence belongs to this order. No new payment is needed." : "Review the quote and terms before accepting and opening direct crypto checkout. There is no stored balance."}</p>${!f.paid && !staff ? `<div class="actions">${panelLocal(ctx, "Review checkout", "invoice", "button primary")}</div>` : ""}${staff ? `<div class="actions">${panelDemo("Request reconciliation · demo", "Design preview: reconciliation would check existing provider evidence; it cannot grant payment success.")}${panelLocal(ctx, "Review case or refund", "case", "textlink")}</div>` : ""}</section>`;
   if (v === "invoice")
-    return `<section class="card"><h3>Checkout · ${ctx.entity}</h3><p>USD ${f.amount} · illustrative total. Payment is still ${f.payment.toLowerCase()}.</p><label class="field">Crypto asset / network<select><option>Select a supported asset and exact network</option><option>Example only · USDT / TRON</option></select></label><label class="field check"><input type="checkbox"><span>I have reviewed this order’s scope and applicable terms.</span></label>${panelDemo("Continue to provider · demo", "Design preview only: no invoice is created, no payment is accepted and no provider is contacted.", true)}<p>No payable address or QR code is generated in this design.</p></section>`;
+    return `<section class="card"><h3>Checkout · ${ctx.entity}</h3><p>USD ${f.amount} · illustrative total. Payment is still ${f.payment.toLowerCase()}.</p><label class="field">Crypto asset / network<select data-checkout-network><option value="">Select a supported asset and exact network</option><option>Example only · USDT / TRON</option></select></label><label class="field check"><input type="checkbox" data-checkout-consent><span>I have reviewed this order’s scope and <a href="#P17/terms">terms</a> and <a href="#P17/refunds">refund policy</a>.</span></label><button class="primary" data-checkout-next="${panelHref(ctx, "invoice")}" data-checkout-demo>Continue to provider · demo</button><p data-form-feedback role="status"></p><p>No payable address or QR code is generated in this design.</p></section>`;
   if (["session", "sessions"].includes(v))
     return !f.paid
       ? card(
@@ -582,6 +583,8 @@ function panelOrderBody(ctx) {
 }
 function panelGenericView(ctx) {
   const s = ctx.screen;
+  const refined = refinedRecordBody(ctx);
+  if (refined !== null) return refined;
   if (ctx.view === "verification")
     return `<section class="card"><h3>Verify identity for ${esc(ctx.entity)}</h3><p>Reverify Google/email, then an authenticator or an unused recovery code. Return to this record and revalidate the pending action before confirmation.</p>${panelDemo("Preview verification flow", "Design preview: no authentication or record action was performed.")}<div class="actions">${panelLocal(ctx, "← Return to record", Object.keys(ctx.family.views)[0], "textlink")}</div></section>`;
   if (ctx.view === "messages") return panelConversation(ctx);
@@ -592,7 +595,7 @@ function panelGenericView(ctx) {
         "Preview unavailable",
         "Return to the record sections above.",
       );
-    return `<div class="previewfeedback">Read-only customer preview · ${esc(ctx.entity)} · Your admin workspace remains open</div><section class="card"><h3>${esc(target.title)}</h3>${target.sections
+    return `<div class="previewfeedback">Illustrative layout only · not generated from the current editor draft · ${esc(ctx.entity)} · Your admin workspace remains open</div><section class="card"><h3>${esc(target.title)}</h3>${target.sections
       .slice(0, 3)
       .map((x) => `<h4>${esc(x.title)}</h4><p>${esc(x.body)}</p>`)
       .join(
@@ -627,6 +630,9 @@ function updateRecordView(focus = false) {
     else a.removeAttribute("aria-current");
   });
   bindPanelActions();
+  bindJourneyControls();
+  bindRefinedForms();
+  syncReviewControls();
   if (focus) {
     const title = $("recordSectionTitle");
     title?.focus({ preventScroll: true });
@@ -779,7 +785,7 @@ function panelRows(s, ctx) {
       [
         "SA-204",
         "Mobile Legends · Account sale",
-        "Offer ready · Consignment example",
+        "Terms incomplete · Consignment example",
         "Review offer",
         "S03/SA-204/offer",
       ],
@@ -788,7 +794,7 @@ function panelRows(s, ctx) {
       [
         "SA-204",
         "Mobile Legends · Seller submission",
-        "Offer ready · Consignment example",
+        "Terms incomplete · Consignment example",
         "Review submission",
         "A21/SA-204/overview",
       ],
@@ -918,6 +924,8 @@ function panelBody(ctx) {
   )
     return `<div class="content"><h2>${esc(stateName)}</h2><p>${stateName === "Loading" ? "Loading this workspace’s records…" : stateName === "Empty" ? "There are no records in this example state." : stateName === "No match" ? "No records match. Clear the filters to continue." : "Records could not be loaded. Your workspace navigation remains available."}</p><button data-panel-reset>Return to example records</button></div>`;
   const s = ctx.screen;
+  const refined = refinedPanelBody(ctx);
+  if (refined !== null) return refined;
   if (ctx.origin && ctx.role === "admin" && !isAdmin(s))
     return `<div class="content"><div class="previewfeedback">Read-only preview · ${panelRoleNames[ctx.role]}</div>${s.sections.map((x) => card(x.title, x.body)).join("")}<p>Return to the originating workspace before changing this record.</p></div>`;
   if (["C01", "B01", "A01"].includes(s.id)) return panelDashboard(s, ctx);
@@ -990,7 +998,10 @@ function scrollPanelContent(element, center = false) {
   const canvas = $("canvas"),
     rect = element.getBoundingClientRect(),
     viewport = canvas.getBoundingClientRect();
-  const padding = parseFloat(getComputedStyle(canvas).scrollPaddingTop) || 0;
+  const padding = Math.max(
+    24,
+    parseFloat(getComputedStyle(canvas).scrollPaddingTop) || 0,
+  );
   const extra = center
     ? Math.max(0, (canvas.clientHeight - padding - rect.height) / 2)
     : 0;

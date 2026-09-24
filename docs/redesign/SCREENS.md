@@ -589,7 +589,7 @@ Specimen assets are not approved production routes. Never contact the payment pr
 
 **Area:** Payments · **Current route:** `/orders/:id` · **Layout:** invoice
 
-Invoice waiting for payment · 14:32 remaining (static design example)
+Check the exact asset, network and current invoice status before sending funds. Design example only.
 
 ### Page anatomy & content
 
@@ -2140,7 +2140,7 @@ Every field has a persistent label, linked help/error and visible focus. Read or
 
 **Area:** Seller · **Current route:** `/sell/new` · **Layout:** form
 
-Save a private draft before submitting for review.
+Review your account details before submitting them to staff.
 
 ### Page anatomy & content
 
@@ -2911,7 +2911,7 @@ Identity → Role → Access → Verification. Rows become labeled cards below 7
 
 ### Actions & destinations
 
-- **Review sensitive action** → [I06](design/index.html#I06). Prototype actions are simulations only; guards must pass in the eventual application.
+- **View verification design** → [I06](design/index.html#I06). Prototype actions are simulations only; guards must pass in the eventual application.
 - **Audit history** → [A09](design/index.html#A09). Prototype actions are simulations only; guards must pass in the eventual application.
 - **Open customer orders** → [A02](design/index.html#A02). Prototype actions are simulations only; guards must pass in the eventual application.
 

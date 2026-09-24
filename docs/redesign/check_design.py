@@ -4,6 +4,7 @@ import re
 import hashlib
 from pathlib import Path
 from html.parser import HTMLParser
+from urllib.parse import urlsplit
 
 base = Path(__file__).resolve().parent
 root = base.parent.parent
@@ -37,7 +38,7 @@ class Assets(HTMLParser):
         for key in ['src', 'href']:
             value = attrs.get(key, '')
             if value and not value.startswith(('#', 'http:', 'https:', 'data:')):
-                assert (base / 'design' / value).exists(), f'Missing {value}'
+                assert (base / 'design' / urlsplit(value).path).exists(), f'Missing {value}'
 Assets().feed((base / 'design/index.html').read_text())
 for name in re.findall(r'url\(assets/([^)]+)\)', (base / 'design/atlas.css').read_text()):
     assert (base / 'design/assets' / name).is_file(), name

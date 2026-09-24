@@ -1,6 +1,6 @@
 # PLAYORA — design before development
 
-Design review edition · updated 23 September 2026 · Owner approval pending
+Design review edition · updated 24 September 2026 · Owner approval pending
 
 **Application development is paused.** This design package supersedes `UI_UX_ROADMAP.md` and `docs/ux/HOMEPAGE_REFINEMENT_ROADMAP.md` as the active design direction. Those files remain historical records, not an implementation queue. R10/R11 remain held with their full scope in [final-launch.md](../../final-launch.md). Design approval does not authorize production launch.
 
@@ -67,3 +67,7 @@ Follow [DESIGN_CHANGE_GATE.md](DESIGN_CHANGE_GATE.md) for every design stage: a 
 ## Panel navigation review
 
 The [panel UX revision](PANEL_UX_REVISION.md) replaces disconnected customer, booster and admin subpages with persistent record workspaces, role-specific navigation and explicit return paths. Start at C01, B01 or A01; follow named rows and use local sections within each record.
+
+## Complete current design audit
+
+See the [full review and correction log](reviews/2026-09-24-complete-design-review.md) for the cross-role review, scoped verdicts, responsive/state checks and remaining acceptance limits. The current atlas includes context-preserving identity/checkout, truthful recovery states, working fictional discovery filters and in-memory draft continuity.

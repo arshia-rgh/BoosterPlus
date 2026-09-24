@@ -20,6 +20,7 @@ const context = vm.createContext({
   },
 });
 vm.runInContext(read("design/panels.js"), context);
+vm.runInContext(read("design/journeys.js"), context);
 vm.runInContext(read("design/atlas.js").split("const groups =")[0], context);
 const run = (code) => vm.runInContext(code, context);
 function visit(hash) {
@@ -72,4 +73,40 @@ visit("#A35/DEL-12/overview");
 assert.equal(run("panelContext().family.type"), "privacy");
 console.log(
   "Panel design routes, record identities and fixture guards passed (20 assertions).",
+);
+
+visit("#A04");
+assert.equal(run("reviewScreen().id"), "A04");
+assert.equal(
+  run('reviewScreen().states.some(s=>s.name === "Invalid amount")'),
+  true,
+);
+visit("#S04");
+assert.equal(run("reviewScreen().id"), "S04");
+assert.match(run("refinedRecordBody(panelContext())"), /disabled>Accept offer/);
+visit("#A17");
+assert.match(
+  run("refinedRecordBody(panelContext())"),
+  /disabled>Authorize payout/,
+);
+visit("#A23/AC-208/delivery");
+assert.match(run("refinedRecordBody(panelContext())"), /no buyer reservation/);
+location.hash = "#P09/account";
+run('current=byId.get("P09")');
+assert.equal(run("checkoutKind()"), "account");
+assert.match(run("checkoutDesign(current)"), /120\.00/);
+assert.doesNotMatch(run("checkoutDesign(current)"), /48\.00/);
+location.hash = "#I01/return/G02%2Fboost%2FG12";
+run('current=byId.get("I01")');
+assert.equal(run("identityReturn()"), "G02/boost/G12");
+assert.match(
+  run("identityDesign(current)"),
+  /I01\/google\/return\/G02%2Fboost%2FG12/,
+);
+location.hash = "#I04/return/B01%2Fview%2FC17";
+run('current=byId.get("I04")');
+assert.match(run("identityDesign(current)"), /NOT A REAL SECRET/);
+assert.doesNotMatch(run("identityDesign(current)"), />Use a recovery code</);
+console.log(
+  "Additional state-source, blocked-action, checkout and identity assertions passed (13 assertions).",
 );

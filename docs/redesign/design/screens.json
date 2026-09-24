@@ -1265,7 +1265,7 @@
     "title": "Complete your payment.",
     "route": "/orders/:id",
     "kind": "invoice",
-    "summary": "Invoice waiting for payment · 14:32 remaining (static design example)",
+    "summary": "Check the exact asset, network and current invoice status before sending funds. Design example only.",
     "sections": [
       {
         "title": "Send exactly",
@@ -4273,7 +4273,7 @@
     "title": "Tell us about your account.",
     "route": "/sell/new",
     "kind": "form",
-    "summary": "Save a private draft before submitting for review.",
+    "summary": "Review your account details before submitting them to staff.",
     "sections": [
       {
         "title": "01 / Account details",
@@ -5797,7 +5797,7 @@
     ],
     "actions": [
       {
-        "label": "Review sensitive action",
+        "label": "View verification design",
         "to": "I06"
       },
       {

@@ -8,7 +8,7 @@ Open [the atlas](http://127.0.0.1:4177/design/index.html) with the local command
 
 The atlas includes 113 views, 30 connected journey specifications and 555 named state treatments. Every one of the 55 current route paths has a design mapping. Many states share a visual pattern (for example, a persistent error panel); this is not a claim of 555 independently drawn compositions.
 
-It is a **reviewable annotated prototype**, not a production-equivalent app. Some secondary cards describe the intended content/behavior; those annotations must become real data and final microcopy during implementation. The specification drawer contains the full contract. The atlas does not retain actual multi-screen form data, authenticate, enforce permissions, upload files, send messages, query a provider, create money movements or implement completed character animation. Route/state coverage does not imply those real scenarios were executed.
+It is a **reviewable annotated prototype**, not a production-equivalent app. Some secondary cards describe the intended content/behavior; those annotations must become real data and final microcopy during implementation. The specification drawer contains the full contract. The atlas retains fictional example drafts in memory only; it does not persist real multi-screen form data, authenticate, enforce permissions, upload files, send messages, query a provider, create money movements or implement completed character animation. Route/state coverage does not imply those real scenarios were executed.
 
 ## Task-based owner review
 
@@ -102,3 +102,7 @@ The later owner refinement removes global links from game navbars too. Verified 
 ## 24 September panel navigation gate
 
 See [PANEL_UX_REVISION.md](PANEL_UX_REVISION.md) and the [four-round senior review](reviews/2026-09-24-panel-workspaces.md). Changed-scope verdict PASS. Reproduce the route/fixture checks with `node docs/redesign/check_panels.mjs`, then explore C01/B01/A01, open named records, change sections and return to filtered lists. Existing screen IDs for record subviews now resolve into the same record shell.
+
+## Complete review — 24 September
+
+The [complete current-design review](reviews/2026-09-24-complete-design-review.md) supersedes earlier qualification for the changed journeys and shared state handling. Run `node docs/redesign/check_panels.mjs` for all 33 route/fixture assertions. The source of the clickable recovery and journey refinements is `design/journeys.js`; it remains a design artifact with no provider/API or persistent storage integration.
