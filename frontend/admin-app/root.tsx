@@ -13,6 +13,8 @@ import { IdentityFrame } from "../app/identity/frame";
 import AdminShell from "../app/admin/shell";
 import "../app/styles.css";
 import "../app/admin/admin.css";
+import "../app/ui/design-system.css";
+import { AmbientBackdrop, SiteFooter } from "../app/ui/site-chrome";
 export function loader({ request }: LoaderFunctionArgs) {
   return { nonce: request.headers.get("x-csp-nonce") ?? undefined };
 }
@@ -39,7 +41,9 @@ export function Layout({ children }: { children: ReactNode }) {
         <a className="skip-link" href="#main">
           Skip to content
         </a>
+        <AmbientBackdrop />
         {children}
+        <SiteFooter />
         <ScrollRestoration nonce={data?.nonce} />
         <Scripts nonce={data?.nonce} />
       </body>

@@ -27,11 +27,11 @@ export default function AccountNavigation({
   const { pathname } = useLocation();
   const drawer = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
+  const booster = pathname.startsWith("/booster");
   const verified =
     !!session.user &&
     !session.mfa_required &&
-    session.capabilities.includes("account");
-  const booster = pathname.startsWith("/booster");
+    session.capabilities.includes(booster ? "booster" : "account");
   const items = booster
     ? [
         ["/booster", "Overview"],
@@ -56,7 +56,7 @@ export default function AccountNavigation({
     ));
   const extra = (
     <>
-      {links(secondary)}
+      {!booster && links(secondary)}
       {booster && (
         <NavLink end to="/account">
           Customer account
@@ -68,17 +68,20 @@ export default function AccountNavigation({
         </NavLink>
       )}
       {session.capabilities.includes("admin") && (
-        <a href="/admin">Administration ↗</a>
+        <a href="/admin/">Administration ↗</a>
       )}
     </>
   );
   return (
     <>
-      <aside className="account-sidebar" aria-label="Account workspace">
+      <aside
+        className="account-sidebar"
+        aria-label={booster ? "Booster workspace" : "Account workspace"}
+      >
         <p className="eyebrow">
           {booster ? "BOOSTER WORKSPACE" : "YOUR PLAYORA"}
         </p>
-        <nav aria-label="Account navigation">
+        <nav aria-label={booster ? "Booster navigation" : "Account navigation"}>
           {links(items)}
           <div className="account-nav-divider" />
           {extra}
@@ -88,7 +91,10 @@ export default function AccountNavigation({
           {action}
         </div>
       </aside>
-      <nav className="account-mobile-nav" aria-label="Account shortcuts">
+      <nav
+        className="account-mobile-nav"
+        aria-label={booster ? "Booster shortcuts" : "Account shortcuts"}
+      >
         {links(items)}
         <button
           ref={trigger}
@@ -102,16 +108,22 @@ export default function AccountNavigation({
       <dialog
         ref={drawer}
         className="account-drawer"
-        aria-label="Account menu"
+        aria-label={booster ? "Booster menu" : "Account menu"}
         onClose={() => trigger.current?.focus()}
       >
         <div className="account-drawer-header">
-          <h2>Account menu</h2>
+          <h2>{booster ? "Booster menu" : "Account menu"}</h2>
           <button type="button" onClick={() => drawer.current?.close()}>
             Close
           </button>
         </div>
-        <nav aria-label="More account destinations">{extra}</nav>
+        <nav
+          aria-label={
+            booster ? "Other workspaces" : "More account destinations"
+          }
+        >
+          {extra}
+        </nav>
         <div className="account-person">
           <strong>{session.user?.display_name || "Your account"}</strong>
           {action}

@@ -705,16 +705,18 @@
 }
 .experience-preferences {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: end;
   gap: 0.5rem;
   max-width: 1280px;
-  padding: 2rem;
+  padding: 2rem min(2rem, 5vw);
   margin: auto;
   font-size: 0.72rem;
   color: #bdcdb6;
 }
 .experience-preferences button {
+  flex-shrink: 0;
   border: 1px solid #516c44;
   background: transparent;
   color: #dfebd4;

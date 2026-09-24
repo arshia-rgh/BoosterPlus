@@ -1,6 +1,6 @@
 # PLAYORA — accepted design implementation roadmap
 
-25 September 2026 · **Implementation authorized by the owner; DI00 contracts/addenda delivered; DI01 next. R10/R11 held.**
+25 September 2026 · **Implementation authorized by the owner; DI00 contracts/addenda delivered; DI01 in progress. R10/R11 held.**
 
 The owner accepted the current design as complete for now and requested this implementation plan before development resumes. This is the next application roadmap, replacing the execution order in the historical UI/UX and homepage-refinement roadmaps. R00–R09 and earlier UX deliveries remain existing code to preserve and improve. R10/R11 remain separately held in [final-launch.md](../../final-launch.md).
 
@@ -58,7 +58,7 @@ Audit entry points: [storefront routes](../../frontend/app/routes.ts), [admin ro
 
 ## 4. Phase sequence
 
-DI00 contracts/addenda are **delivered**; DI01–DI15 are planned. The owner authorized this implementation sequence on 25 September. Implement in this order unless a later owner decision changes it. Dependencies identify required contracts; a phase can prepare components earlier, but cannot claim complete user journeys until its dependencies are real. Do not expose incomplete feature entry points publicly. One phase may use several verified commits; each commit follows the applicable gate. A phase exit verifies its owned screens/contracts and relevant journey segments against working existing counterparts. It does not certify later redesigned screens as delivered. Complete design-matched cross-phase journey acceptance is scheduled in DI14, followed by independent requalification in DI15.
+DI00 contracts/addenda are **delivered**; DI01 is **in progress**; DI02–DI15 are planned. The owner authorized this implementation sequence on 25 September. Implement in this order unless a later owner decision changes it. Dependencies identify required contracts; a phase can prepare components earlier, but cannot claim complete user journeys until its dependencies are real. Do not expose incomplete feature entry points publicly. One phase may use several verified commits; each commit follows the applicable gate. A phase exit verifies its owned screens/contracts and relevant journey segments against working existing counterparts. It does not certify later redesigned screens as delivered. Complete design-matched cross-phase journey acceptance is scheduled in DI14, followed by independent requalification in DI15.
 
 | Phase | Deliverable | Requires |
 | --- | --- | --- |
@@ -93,6 +93,8 @@ DI00 contracts/addenda are **delivered**; DI01–DI15 are planned. The owner aut
 **Exit:** complete, reviewed new-feature screen/flow addenda; deterministic state/permission tables; explicit owner commercial inputs tracked below; no missing route owner. Senior designer reviews changed addenda and repeats fixes to PASS; owner review is required for material new flows or commercial choices. Unresolved publication terms block publication of the relevant feature, not the rest of the roadmap.
 
 ### DI01 — shared visual system and persistent shells
+
+**In progress:** the shared chrome/navigation foundation implements minimal headers, role-aware navigation, shared footer/background/motion controls and a tested local RecordShell primitive. [Scoped review](reviews/2026-09-25-di01-shared-chrome.md) passed after enlarged-text fixes. Persistent game-shell integration, remaining component adaptation and phase-exit qualification are still open; no complete screen or journey is certified by this foundation alone.
 
 **Reuse:** existing React/TypeScript, accessibility components, accepted fonts/artwork and build tooling. **Adapt:** implement the actual product UI from the atlas rather than embedding the static atlas or its workspace controls.
 

@@ -234,6 +234,7 @@ export async function qualifyChat(buyer: Page, staff: Page, project: string) {
   await expect(input).toHaveValue("");
   // A failed authorization recheck must remove the history and memory-only draft.
   await input.fill("Private draft before revoked access");
+  await buyer.bringToFront();
   await buyer.route(`**/api/v1/conversations/${id}`, (route) =>
     route.fulfill({
       status: 403,
@@ -241,12 +242,11 @@ export async function qualifyChat(buyer: Page, staff: Page, project: string) {
       body: JSON.stringify({ code: "permission_denied" }),
     }),
   );
-  await buyer
-    .getByRole("button", { name: "Refresh conversation", exact: true })
-    .click();
+  // The visible-page authorization poll can remove the refresh button before a
+  // manual click completes. Wait for that required ten-second recheck directly.
   await expect(
     buyer.getByText("Conversation access is unavailable."),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 15000 });
   await expect(rows).toHaveCount(0);
   await expect(input).toHaveCount(0);
 }

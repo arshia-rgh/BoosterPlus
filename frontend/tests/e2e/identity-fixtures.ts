@@ -106,7 +106,9 @@ export async function accountDestination(page: Page, label: string) {
 export async function signOut(page: Page) {
   await expect(
     page
-      .getByRole("navigation", { name: /^Account (shortcuts|navigation)$/ })
+      .getByRole("navigation", {
+        name: /^(Account|Booster) (shortcuts|navigation)$/,
+      })
       .filter({ visible: true }),
   ).toBeVisible();
   const more = page.getByRole("button", { name: "More", exact: true });

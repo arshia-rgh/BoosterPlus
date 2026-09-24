@@ -7,56 +7,18 @@ import {
   ScrollRestoration,
   Link,
   useRouteLoaderData,
-  useLocation,
 } from "react-router";
 import type { ReactNode } from "react";
 import type { LoaderFunctionArgs } from "react-router";
 import "./styles.css";
-import { BrandLogo, brand } from "./brand/brand";
+import { AmbientBackdrop, SiteFooter, SiteHeader } from "./ui/site-chrome";
+import "./ui/design-system.css";
 
 export function loader({ request }: LoaderFunctionArgs) {
   return { nonce: request.headers.get("x-csp-nonce") ?? undefined };
 }
 export function shouldRevalidate() {
   return false;
-}
-
-function MainNavigation() {
-  const location = useLocation();
-  return (
-    <nav aria-label="Main navigation">
-      {[
-        ["/games", "Games"],
-        ["/accounts", "Game accounts"],
-        ["/#how-it-works", "How it works"],
-        ["/account", "My account"],
-      ].map(([to, label]) => {
-        if (!to) return null;
-        const [pathname, hash] = to.split("#");
-        const exact =
-          location.pathname === pathname &&
-          (!hash || location.hash === `#${hash}`);
-        const parent = !hash && location.pathname.startsWith(`${to}/`);
-        return (
-          <Link
-            key={to}
-            to={to}
-            aria-current={
-              exact
-                ? hash
-                  ? "location"
-                  : "page"
-                : parent
-                  ? "location"
-                  : undefined
-            }
-          >
-            {label}
-          </Link>
-        );
-      })}
-    </nav>
-  );
 }
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -78,18 +40,10 @@ export function Layout({ children }: { children: ReactNode }) {
         <a className="skip-link" href="#main">
           Skip to content
         </a>
-        <header className="site-header">
-          <Link className="brand" to="/" aria-label="PLAYORA home">
-            <BrandLogo />
-          </Link>
-          <MainNavigation />
-        </header>
+        <AmbientBackdrop />
+        <SiteHeader />
         {children}
-        <footer>
-          <span>{brand.name}</span>
-          <span>{brand.description}</span>
-          <a href="/admin">Staff access ↗</a>
-        </footer>
+        <SiteFooter />
         <ScrollRestoration nonce={data?.nonce} />
         <Scripts nonce={data?.nonce} />
       </body>

@@ -40,7 +40,7 @@ test("homepage choice survives game selection, reload and back; form results sta
     page
       .getByRole("navigation", { name: "Main navigation" })
       .getByRole("link", { name: "Games", exact: true }),
-  ).toHaveAttribute("aria-current", "location");
+  ).toHaveCount(0);
   const summary = page.getByRole("complementary", {
     name: "Selection summary",
   });
@@ -84,7 +84,7 @@ test("homepage choice survives game selection, reload and back; form results sta
   await expect(result).toHaveCount(0);
   await page.setViewportSize({ width: 320, height: 480 });
   const nav = page.getByRole("navigation", { name: "Main navigation" });
-  for (const name of ["Games", "Game accounts", "How it works", "My account"])
+  for (const name of ["Support", "My account"])
     await expect(nav.getByRole("link", { name, exact: true })).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),

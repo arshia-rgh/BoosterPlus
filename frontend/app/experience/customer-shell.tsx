@@ -1,17 +1,20 @@
 import "../ui/workspace.css";
 import "../account/account.css";
+import { useLocation } from "react-router";
 import type { FrameProps } from "../identity/frame";
 export default function CustomerShell({
   session,
   children,
   navigation,
 }: FrameProps) {
+  const booster = useLocation().pathname.startsWith("/booster");
   const signedIn =
     !!session?.user &&
     !session.mfa_required &&
-    session.capabilities.includes("account");
+    session.capabilities.includes(booster ? "booster" : "account");
   return (
     <div
+      data-workspace={booster ? "booster" : "customer"}
       className={
         signedIn
           ? "customer-shell account-layout"

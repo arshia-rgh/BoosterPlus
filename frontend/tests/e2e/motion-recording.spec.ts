@@ -56,6 +56,9 @@ test("records native scroll and multi-game articulated motion", async ({
   }
   await page.getByRole("button", { name: "Reduced", exact: true }).click();
   await expect(showcase.locator("animate")).toHaveCount(0);
-  await page.getByRole("link", { name: "Games", exact: true }).first().click();
+  await page
+    .getByRole("link", { name: "Explore games", exact: true })
+    .first()
+    .click();
   await expect(page.locator(".character-art")).toHaveCount(0);
 });
