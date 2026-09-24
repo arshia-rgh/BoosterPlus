@@ -37,7 +37,14 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 - Reconciliation continues for existing payments while new checkout is paused. Refunds/payouts have a separate explicit activation switch. Provider failure or missing credentials never grants payment success.
 - Automated payment tests use isolated fixtures. Controlled live transaction qualification replaces unavailable sandbox qualification; fixtures cannot qualify real funds movement.
 
-## Design-first boundary (21 September 2026) — current owner direction
+## Accepted design implementation planning (25 September 2026) — current owner direction
+
+- The owner accepted the current design as complete for now and requested a complete implementation roadmap before coding. Follow `docs/redesign/IMPLEMENTATION_ROADMAP.md` for the next application sequence; all DI00–DI15 phases remain planned until separately authorized and implemented. Design acceptance does not authorize implementation or launch by itself.
+- Initial shop fulfillment is manual by PLAYORA staff after verified payment. Initial news/patches/guides are staff-managed articles only. Complete the bounded downstream design/contract addenda before dependent implementation; do not import wallets, unsolicited top-ups, supplier APIs or community publishing.
+- Preserve the accepted atlas and latest review corrections; keep design-to-runtime traceability for all 115 views/31 journeys plus approved new-feature addenda. Continue the senior designer fix/review gate for changed UI and final integrated qualification.
+- R10/R11 remain held in `final-launch.md`; old UI/UX and homepage-refinement roadmaps remain historical. Current work is documentation only pending the owner's instruction to implement.
+
+## Design-first boundary (21 September 2026) — retained context
 
 - Pause all application development, including the unfinished homepage cameo/audio work. Preserve that work without shipping it.
 - The owner superseded the old UI/UX and homepage-refinement roadmaps. Their historical records remain, but do not resume them as the active implementation queue.

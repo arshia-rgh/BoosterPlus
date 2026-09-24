@@ -1,8 +1,8 @@
 # PLAYORA — final launch: R10 and R11
 
-> **Hold reaffirmed — 21 September 2026.** The design-first work in [docs/redesign/](docs/redesign/README.md) does not resume R10/R11. All retained scope and launch prerequisites below remain applicable after design acceptance and separate authorization.
+> **Hold reaffirmed — 25 September 2026.** The owner accepted the current design for implementation planning. [the accepted design implementation roadmap](docs/redesign/IMPLEMENTATION_ROADMAP.md) does not resume R10/R11. All retained scope and launch prerequisites below remain applicable after application implementation, owner review and separate authorization.
 
-**Status: ON HOLD.** The owner has deferred production-readiness implementation and launch while the [design-first redesign](docs/redesign/README.md) is completed and reviewed. Neither this document nor completion of a UX phase authorizes resuming R10/R11. Separate explicit owner authorization is required.
+**Status: ON HOLD.** The owner has deferred production-readiness implementation and launch while the accepted [redesign](docs/redesign/README.md) is planned, implemented and qualified. Neither this document nor completion of a UX phase authorizes resuming R10/R11. Separate explicit owner authorization is required.
 
 Updated: 13 September 2026. R08 is delivered as `6da4bd592e94e4f85ec87b1e2be8ccf2b8d126d6`; R09 is delivered as `7f9b7e00d9f0a6025b46bfb7cb33372bc27f987f`. These are implementation deliveries with local qualification, not production-launch certification.
 
@@ -13,6 +13,10 @@ This is the retained execution plan for **all R10 and R11 work**. It consolidate
 UX01–UX10 implementation and local automated qualification were delivered on 14 September 2026. [The UX handoff](docs/ux/UX10_QUALIFICATION.md) retains owner acceptance, actual mobile keyboard and human screen-reader review. Those reviews and separate authorization remain prerequisites. When a real public domain is selected, configure the frontend's optional `PUBLIC_SITE_ORIGIN` for absolute homepage share URLs and verify previews on the chosen social platforms. No production rollout was performed by the UX work.
 
 ## 1. Existing foundation versus unfinished qualification
+
+### New design handoff to include when this hold is lifted
+
+The DI00–DI15 plan adds server-isolated customer/admin/booster sign-in, persistent game/record shells, manually fulfilled shop orders and staff-managed news. Before executing this retained launch plan, update its release inventory for portal cookie/audience and OAuth callback routing, game/article URLs and cache invalidation, new SQL backfills/order kinds, shop fulfillment and notification jobs, article media/publication, and privacy/report coverage. The proposed packaging retains two frontend builds with an isolated booster route tree; recheck the implemented artifacts rather than assuming a third build exists. Include these additions in real identity, financial, migration/restore, monitoring and owner walkthrough qualification. This is a queued handoff requirement, not deployment work or permission to resume R10/R11. Every original requirement below remains in scope.
 
 | Area | Already present at R09 | Work still required |
 | --- | --- | --- |

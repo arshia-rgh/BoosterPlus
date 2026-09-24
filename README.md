@@ -1,11 +1,14 @@
 # PLAYORA
 
-Game boosting and game-account commerce, starting with Mobile Legends. Formerly Booster Plus; UI/UX implementation is underway.
+Game boosting and game-account commerce, starting with Mobile Legends. Formerly Booster Plus. The current redesign is accepted for implementation planning; application development is paused pending the next instruction.
 
 Planning documents:
 
+- [Accepted design implementation roadmap](docs/redesign/IMPLEMENTATION_ROADMAP.md): DI00–DI15, mapping all 115 accepted views and 31 journeys to existing code and new portal, shop and news features.
+- [Accepted design package](docs/redesign/README.md): atlas, screen/flow contracts and independent review records.
+
 - [PLAYORA brand assets](docs/brand/playora/README.md): refined O logo, game-character social background, preserved green aurora and art/motion direction for review.
-- [UI/UX roadmap](UI_UX_ROADMAP.md): layout repairs, a simpler account workspace, chat and complete customer/staff journeys; UX01–UX03 are delivered; UX04 order workspace is implemented for verification.
+- [Historical UI/UX roadmap](UI_UX_ROADMAP.md): previous UX delivery requirements and history; superseded as the active execution queue.
 - [Final launch](final-launch.md): full R10/R11 production operations and launch scope, explicitly on hold until UX review and separate authorization.
 - [Earlier delivery roadmap](REMAINING_ROADMAP.md): R00–R09 history and retained product/deployment requirements.
 
@@ -16,6 +19,6 @@ Planning documents:
 - [Frontend](frontend/README.md): separate React storefront/admin applications with type, lint, security, component, browser, and accessibility checks.
 - [Customer experience](docs/customer-experience.md): R03 catalog, estimator, account, conversations and booster workspace.
 
-Implementation has started. See [progress](docs/progress.md) for verified stage status and [repository rules](AGENTS.md) for the required workflow.
+R00–R09 and earlier UX work exist; the new DI phases are all planned. See [progress](docs/progress.md) for verified stage status and [repository rules](AGENTS.md) for the required workflow.
 
-Run `make bootstrap`, start local services with `make -C backend dev-up`, then run `make pre-commit`. The root gate always runs repository policy/secret checks and **both** projects' `pre-commit` targets. The tracked hook enforces that gate before each commit to `main`; stage commits are pushed directly to `origin/main`.
+Run `make bootstrap`, start local services with `make -C backend dev-up`, then run `make pre-commit`. The root gate always runs repository policy/secret checks plus backend, frontend and production `pre-commit` targets. The tracked hook selects proportionate checks for each staged change: root checks for documentation, root plus frontend for UI-only changes, and the full gate for backend/deployment/dependency/tooling or mixed changes. Final qualification and CI retain the full gate. Stage commits are pushed directly to `origin/main`.

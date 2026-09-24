@@ -1,8 +1,10 @@
 # PLAYORA — design before development
 
-Design review edition · updated 24 September 2026 · Owner approval pending
+Design baseline · updated 25 September 2026 · Accepted by the owner for implementation planning
 
 **Application development is paused.** This design package supersedes `UI_UX_ROADMAP.md` and `docs/ux/HOMEPAGE_REFINEMENT_ROADMAP.md` as the active design direction. Those files remain historical records, not an implementation queue. R10/R11 remain held with their full scope in [final-launch.md](../../final-launch.md). Design approval does not authorize production launch.
+
+On 25 September the owner accepted the current design as complete for now and requested a complete implementation roadmap before coding. [Implementation roadmap](IMPLEMENTATION_ROADMAP.md) maps the existing runtime to all 115 accepted views and 31 journeys, including missing portal isolation, shop and news capabilities. Manual staff shop fulfillment and staff-managed articles are confirmed. Detailed shop/news downstream addenda are the first planned step; they do not reopen the accepted design wholesale. Application implementation awaits the owner's next instruction; all DI phases are planned.
 
 The owner confirmed that the 13 HTML files in [pages/](pages/) are the full reference set and **visual suggestions only**. They are not the desired final quality or new product requirements. Preserve existing business rules: no wallet, escrow, wagers, top-ups, invented publisher integration, automatic booster payouts or claims of zero risk. Design all existing product capabilities first, then agree an implementation plan.
 
@@ -56,9 +58,9 @@ The current review inventory contains **115 views, 31 journeys, 573 named state 
 
 ## Status and definition of design completion
 
-This is a complete **review edition of the screen/flow specification and visual atlas**, not an owner-accepted final design or a production implementation. “Complete” means the existing route inventory and supporting subflows are represented, the interaction and exception contracts are written, and the artifact can be reviewed independently of the running app. It does not mean business terms, art rights, real-device behavior or all human usability questions have been settled.
+This is the **owner-accepted design baseline for implementation planning**, not a production implementation. The existing route inventory and supporting subflows are represented, the interaction and exception contracts are written, and the artifact can be reviewed independently of the running app. Acceptance does not settle unpublished business terms, art rights, real-device behavior or the detailed new shop/news downstream flows. Historical review logs retain the status and limitations recorded when each review ran.
 
-Before implementation resumes: review the principal visual layouts, walk the cross-role flows, resolve commercial copy placeholders, and record accepted changes. Changes to design documents/prototypes are allowed during the pause; product implementation and the old cameo/audio experiment remain paused. Preserve the uncommitted cameo experiment without mounting or shipping it.
+Before implementation resumes: obtain the owner's instruction to start the new roadmap; its DI00 phase completes missing new-feature contracts and records dependent commercial decisions. Changes to planning documents are allowed during the pause; product implementation and the old cameo/audio experiment remain paused. Preserve the uncommitted cameo experiment without mounting or shipping it.
 
 ## Mandatory design change review
 
