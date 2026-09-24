@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>PLAYORA · Shop and editorial addendum</title>
+    <link rel="stylesheet" href="addendum.css" />
+    <script src="addendum.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#preview">Skip review controls</a>
+    <header class="review-tools">
+      <strong>PLAYORA / DI00</strong>
+      <label>View<select id="view"></select></label>
+      <label
+        >State<select id="state">
+          <option value="default">Default</option>
+          <option>loading</option>
+          <option>empty</option>
+          <option>invalid</option>
+          <option>changed</option>
+          <option>unavailable</option>
+          <option>denied</option>
+          <option>failed</option>
+        </select></label
+      >
+      <label
+        >Order fixture<select id="order-state">
+          <option value="ready">Verified paid · ready</option>
+          <option value="unpaid">Unpaid</option>
+          <option value="processing">Processing</option>
+          <option value="submitted">Delivery submitted</option>
+          <option value="completed">Completed</option>
+          <option value="held">On hold</option>
+        </select></label
+      >
+      <label
+        >Width<select id="width">
+          <option value="full">Fluid</option>
+          <option value="768">Tablet</option>
+          <option value="390">Phone</option>
+        </select></label
+      >
+      <a href="index.html">Accepted atlas ↗</a>
+    </header>
+    <p class="review-notice">
+      DESIGN EXTENSION · Fictional products, prices, recipient, articles and
+      orders. No sign-in, network calls, real payment or delivery. Controls
+      above are review tools.
+    </p>
+    <main id="preview" tabindex="-1" aria-label="Product design preview"></main>
+    <p class="review-notice">
+      <a href="../SHOP_NEWS_ADDENDUM.md"
+        >Full states and journey specification</a
+      >
+      · <a href="../IMPLEMENTATION_CONTRACTS.md">Implementation contracts</a>
+    </p>
+    <div class="sr-only" id="announce" role="status"></div>
+  </body>
+</html>

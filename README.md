@@ -1,6 +1,6 @@
 # PLAYORA
 
-Game boosting and game-account commerce, starting with Mobile Legends. Formerly Booster Plus. The current redesign is accepted for implementation planning; application development is paused pending the next instruction.
+Game boosting and game-account commerce, starting with Mobile Legends. Formerly Booster Plus. The accepted redesign is now in implementation under DI00–DI15; final launch remains held.
 
 Planning documents:
 
@@ -19,6 +19,6 @@ Planning documents:
 - [Frontend](frontend/README.md): separate React storefront/admin applications with type, lint, security, component, browser, and accessibility checks.
 - [Customer experience](docs/customer-experience.md): R03 catalog, estimator, account, conversations and booster workspace.
 
-R00–R09 and earlier UX work exist; the new DI phases are all planned. See [progress](docs/progress.md) for verified stage status and [repository rules](AGENTS.md) for the required workflow.
+R00–R09 and earlier UX work exist; DI00 contracts and addenda are delivered; DI01 is next. See [progress](docs/progress.md) for verified stage status and [repository rules](AGENTS.md) for the required workflow.
 
 Run `make bootstrap`, start local services with `make -C backend dev-up`, then run `make pre-commit`. The root gate always runs repository policy/secret checks plus backend, frontend and production `pre-commit` targets. The tracked hook selects proportionate checks for each staged change: root checks for documentation, root plus frontend for UI-only changes, and the full gate for backend/deployment/dependency/tooling or mixed changes. Final qualification and CI retain the full gate. Stage commits are pushed directly to `origin/main`.

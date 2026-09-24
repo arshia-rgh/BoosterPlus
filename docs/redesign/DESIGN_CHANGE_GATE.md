@@ -1,6 +1,6 @@
 # Required design change gate
 
-Owner instruction, 24 September 2026. Applies throughout the design-first phase to changes in the design atlas, visual assets, screen/flow specifications and interaction designs. Application work and R10/R11 remain paused. This review supplements the existing repository checks; it never replaces them or owner acceptance.
+Owner instruction, 24 September 2026. Applies throughout the design-first phase to changes in the design atlas, visual assets, screen/flow specifications and interaction designs. Application work under DI00–DI15 was authorized on 25 September; this gate continues for affected UI and final qualification. R10/R11 remain held. This review supplements the existing repository checks; it never replaces them or owner acceptance.
 
 ## Required review loop
 

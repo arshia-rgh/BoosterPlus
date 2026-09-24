@@ -1,0 +1,4098 @@
+{
+  "baseline": "29238851367d949070bfc9a900cc0e3b0e6d255b",
+  "note": "API families are inventories; operation-level binding is refined with each phase. All delivery states start planned; no runtime qualification implied.",
+  "apiFamilies": {
+    "identity": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/auth/session",
+        "/api/v1/auth/email/request",
+        "/api/v1/auth/email/verify",
+        "/api/v1/auth/google/start",
+        "/api/v1/auth/google/callback",
+        "/api/v1/auth/logout",
+        "/api/v1/auth/mfa/disable",
+        "/api/v1/me/google/unlink",
+        "/api/v1/auth/sessions/revoke",
+        "/api/v1/auth/mfa/enroll",
+        "/api/v1/auth/mfa/verify",
+        "/api/v1/auth/mfa/recovery-codes",
+        "/api/v1/me",
+        "/api/v1/me/profile",
+        "/api/v1/me/sessions",
+        "/api/v1/me/favorites",
+        "/api/v1/me/favorites/{id}/remove",
+        "/api/v1/me/notifications",
+        "/api/v1/me/notifications/{id}/read",
+        "/api/v1/media",
+        "/api/v1/media/{id}",
+        "/api/v1/media/{id}/bytes",
+        "/api/v1/media/{id}/finalize",
+        "/api/v1/media/{id}/grant",
+        "/api/v1/media/{id}/content",
+        "/api/v1/media/{id}/retry",
+        "/api/v1/media/{id}/remove",
+        "/api/v1/me/overview"
+      ]
+    },
+    "public": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/catalog/games",
+        "/api/v1/catalog/games/{slug}",
+        "/api/v1/catalog/games/{slug}/validate",
+        "/api/v1/catalog/games/{slug}/estimate",
+        "/api/v1/catalog/games/{slug}/discount",
+        "/api/v1/public/reviews/{slug}",
+        "/api/v1/site/{kind}",
+        "/api/v1/site/{kind}/versions/{label}"
+      ]
+    },
+    "catalog": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/catalog/games",
+        "/api/v1/catalog/games/{slug}",
+        "/api/v1/catalog/games/{slug}/validate",
+        "/api/v1/admin/catalog/games",
+        "/api/v1/admin/catalog/games/{id}",
+        "/api/v1/admin/catalog/games/{id}/preview",
+        "/api/v1/admin/catalog/games/{id}/history",
+        "/api/v1/admin/catalog/games/{id}/save",
+        "/api/v1/admin/catalog/games/{id}/publish",
+        "/api/v1/admin/catalog/games/{id}/pause",
+        "/api/v1/admin/catalog/games/{id}/resume",
+        "/api/v1/admin/catalog/games/{id}/archive",
+        "/api/v1/admin/catalog/games/{id}/restore",
+        "/api/v1/admin/catalog/games/{id}/delete",
+        "/api/v1/admin/catalog/games/{id}/validate-preview",
+        "/api/v1/catalog/games/{slug}/estimate",
+        "/api/v1/admin/catalog/games/{id}/estimate-preview",
+        "/api/v1/admin/catalog/coupons",
+        "/api/v1/admin/catalog/coupons/{id}/save",
+        "/api/v1/admin/catalog/coupons/{id}/history",
+        "/api/v1/catalog/games/{slug}/discount"
+      ]
+    },
+    "orders": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/orders",
+        "/api/v1/orders/{id}",
+        "/api/v1/orders/{id}/events",
+        "/api/v1/orders/{id}/quotes",
+        "/api/v1/orders/{id}/accept",
+        "/api/v1/orders/{id}/decline",
+        "/api/v1/orders/{id}/cancel",
+        "/api/v1/admin/orders",
+        "/api/v1/admin/orders/{id}",
+        "/api/v1/admin/orders/{id}/events",
+        "/api/v1/admin/orders/{id}/quotes",
+        "/api/v1/admin/orders/{id}/clarify",
+        "/api/v1/admin/orders/{id}/reject",
+        "/api/v1/admin/orders/{id}/cancel",
+        "/api/v1/admin/orders/{id}/quote",
+        "/api/v1/orders/{id}/revise",
+        "/api/v1/orders/{id}/validate",
+        "/api/v1/orders/{id}/reorder",
+        "/api/v1/fulfillment/{id}",
+        "/api/v1/fulfillment/{id}/handoff",
+        "/api/v1/fulfillment/{id}/secret",
+        "/api/v1/fulfillment/{id}/secret/revoke",
+        "/api/v1/admin/fulfillment/{id}",
+        "/api/v1/admin/fulfillment/{id}/secret/reveal",
+        "/api/v1/admin/fulfillment/{id}/start",
+        "/api/v1/admin/fulfillment/{id}/resume",
+        "/api/v1/admin/fulfillment/{id}/hold",
+        "/api/v1/admin/fulfillment/{id}/progress",
+        "/api/v1/admin/fulfillment/{id}/submit_completion",
+        "/api/v1/admin/fulfillment/{id}/approve_completion",
+        "/api/v1/admin/fulfillment/{id}/return_completion",
+        "/api/v1/admin/fulfillment/{id}/estimate",
+        "/api/v1/admin/fulfillment/staff",
+        "/api/v1/admin/fulfillment/{id}/assign",
+        "/api/v1/admin/staff/{staff}/calendar",
+        "/api/v1/admin/staff/{staff}/calendar/windows",
+        "/api/v1/admin/staff/{staff}/calendar/windows/{window}/remove",
+        "/api/v1/fulfillment/{id}/bookings",
+        "/api/v1/fulfillment/{id}/slots",
+        "/api/v1/fulfillment/{id}/bookings/{booking}/cancel",
+        "/api/v1/admin/fulfillment/{id}/bookings",
+        "/api/v1/admin/fulfillment/{id}/slots",
+        "/api/v1/admin/fulfillment/{id}/bookings/{booking}/cancel",
+        "/api/v1/admin/fulfillment/{id}/bookings/{booking}/confirm",
+        "/api/v1/admin/fulfillment/{id}/bookings/{booking}/attended",
+        "/api/v1/admin/fulfillment/{id}/bookings/{booking}/no_show",
+        "/api/v1/admin/fulfillment/{id}/conversation",
+        "/api/v1/admin/fulfillment/{id}/forecast/preview",
+        "/api/v1/admin/fulfillment/{id}/forecast/apply",
+        "/api/v1/orders/{id}/review",
+        "/api/v1/orders/{id}/review/withdraw",
+        "/api/v1/orders/{id}/payments",
+        "/api/v1/admin/orders/{id}/payments",
+        "/api/v1/orders/{id}/checkout",
+        "/api/v1/orders/{id}/cases",
+        "/api/v1/cases/{id}",
+        "/api/v1/cases/{id}/{action}",
+        "/api/v1/orders/{id}/refunds",
+        "/api/v1/admin/orders/{id}/cases",
+        "/api/v1/admin/orders/{id}/refunds",
+        "/api/v1/account-orders/{id}/delivery",
+        "/api/v1/account-orders/{id}/delivery/{action}",
+        "/api/v1/account-orders/{id}/secret/reveal"
+      ]
+    },
+    "chat": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/conversations",
+        "/api/v1/conversations/{id}",
+        "/api/v1/conversations/{id}/messages",
+        "/api/v1/conversations/{id}/read",
+        "/api/v1/conversations/{id}/stream",
+        "/api/v1/admin/conversations",
+        "/api/v1/admin/conversations/{id}",
+        "/api/v1/admin/conversations/{id}/messages",
+        "/api/v1/admin/conversations/{id}/read",
+        "/api/v1/admin/conversations/{id}/stream",
+        "/api/v1/admin/conversations/{id}/state",
+        "/api/v1/admin/conversations/{id}/assign",
+        "/api/v1/admin/conversations/{id}/link",
+        "/api/v1/media",
+        "/api/v1/media/{id}",
+        "/api/v1/media/{id}/bytes",
+        "/api/v1/media/{id}/finalize",
+        "/api/v1/media/{id}/grant",
+        "/api/v1/media/{id}/content",
+        "/api/v1/media/{id}/retry",
+        "/api/v1/media/{id}/remove",
+        "/api/v1/admin/media",
+        "/api/v1/admin/media/{id}",
+        "/api/v1/admin/media/{id}/bytes",
+        "/api/v1/admin/media/{id}/finalize",
+        "/api/v1/admin/media/{id}/grant",
+        "/api/v1/admin/media/{id}/content",
+        "/api/v1/admin/media/{id}/retry",
+        "/api/v1/admin/media/{id}/remove",
+        "/api/v1/admin/conversations/{id}/sharing"
+      ]
+    },
+    "booster": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/portal/booster",
+        "/api/v1/conversations/{id}",
+        "/api/v1/conversations/{id}/messages",
+        "/api/v1/conversations/{id}/read",
+        "/api/v1/conversations/{id}/stream",
+        "/api/v1/booster/fulfillment/{id}",
+        "/api/v1/booster/fulfillment",
+        "/api/v1/booster/fulfillment/{id}/secret/reveal",
+        "/api/v1/booster/fulfillment/{id}/start",
+        "/api/v1/booster/fulfillment/{id}/resume",
+        "/api/v1/booster/fulfillment/{id}/hold",
+        "/api/v1/booster/fulfillment/{id}/progress",
+        "/api/v1/booster/fulfillment/{id}/submit_completion",
+        "/api/v1/booster/calendar",
+        "/api/v1/booster/calendar/windows",
+        "/api/v1/booster/calendar/windows/{window}/remove",
+        "/api/v1/booster/fulfillment/{id}/bookings",
+        "/api/v1/booster/fulfillment/{id}/slots",
+        "/api/v1/booster/fulfillment/{id}/bookings/{booking}/cancel",
+        "/api/v1/booster/fulfillment/{id}/bookings/{booking}/confirm",
+        "/api/v1/booster/fulfillment/{id}/bookings/{booking}/attended",
+        "/api/v1/booster/fulfillment/{id}/bookings/{booking}/no_show"
+      ]
+    },
+    "resale": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/submissions",
+        "/api/v1/submissions/{id}",
+        "/api/v1/submissions/{id}/history",
+        "/api/v1/submissions/{id}/submit",
+        "/api/v1/submissions/{id}/withdraw",
+        "/api/v1/submissions/{id}/edit",
+        "/api/v1/admin/submissions",
+        "/api/v1/admin/submissions/{id}",
+        "/api/v1/admin/submissions/{id}/history",
+        "/api/v1/admin/submissions/{id}/clarify",
+        "/api/v1/admin/submissions/{id}/reject",
+        "/api/v1/admin/submissions/{id}/approve_review",
+        "/api/v1/accounts",
+        "/api/v1/accounts/{id}",
+        "/api/v1/accounts/{id}/reserve",
+        "/api/v1/submissions/{id}/offers",
+        "/api/v1/submissions/{id}/payouts",
+        "/api/v1/seller-offers/{id}/{action}",
+        "/api/v1/admin/submissions/{id}/offers",
+        "/api/v1/admin/submissions/{id}/payouts",
+        "/api/v1/admin/seller-offers/{id}/{action}",
+        "/api/v1/seller-offers/{id}/secret",
+        "/api/v1/admin/seller-offers/{id}/secret/reveal",
+        "/api/v1/admin/seller-offers/{id}/listing",
+        "/api/v1/admin/account-listings",
+        "/api/v1/admin/account-listings/{id}",
+        "/api/v1/admin/account-listings/{id}/{action}",
+        "/api/v1/payouts/{id}/recipient",
+        "/api/v1/accounts/{id}/images/{slot}",
+        "/api/v1/seller-offers/{id}/events",
+        "/api/v1/admin/seller-offers/{id}/events"
+      ]
+    },
+    "finance": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/admin/finance",
+        "/api/v1/admin/finance/policy",
+        "/api/v1/admin/finance/reconcile",
+        "/api/v1/admin/cases/{id}",
+        "/api/v1/admin/cases/{id}/{action}",
+        "/api/v1/admin/cases",
+        "/api/v1/admin/cases/{id}/refunds",
+        "/api/v1/admin/refunds/{id}/approve",
+        "/api/v1/admin/refunds/{id}/cancel",
+        "/api/v1/admin/refunds/{id}/verify",
+        "/api/v1/admin/finance/outgoing/reconcile",
+        "/api/v1/admin/finance/outgoing",
+        "/api/v1/admin/payouts/{id}/approve",
+        "/api/v1/admin/payouts/{id}/verify",
+        "/api/v1/admin/finance/payouts"
+      ]
+    },
+    "governance": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/admin/users",
+        "/api/v1/admin/users/{id}",
+        "/api/v1/admin/users/{id}/role",
+        "/api/v1/admin/users/{id}/suspension",
+        "/api/v1/admin/audit",
+        "/api/v1/admin/recoveries",
+        "/api/v1/admin/recoveries/{id}/resolve",
+        "/api/v1/admin/users/{id}/sessions",
+        "/api/v1/admin/users/{id}/sessions/revoke"
+      ]
+    },
+    "account": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/me/google/unlink",
+        "/api/v1/me",
+        "/api/v1/me/profile",
+        "/api/v1/me/sessions",
+        "/api/v1/me/favorites",
+        "/api/v1/me/favorites/{id}/remove",
+        "/api/v1/me/notifications",
+        "/api/v1/me/notifications/{id}/read",
+        "/api/v1/media",
+        "/api/v1/media/{id}",
+        "/api/v1/media/{id}/bytes",
+        "/api/v1/media/{id}/finalize",
+        "/api/v1/media/{id}/grant",
+        "/api/v1/media/{id}/content",
+        "/api/v1/media/{id}/retry",
+        "/api/v1/media/{id}/remove",
+        "/api/v1/availability",
+        "/api/v1/availability/{id}",
+        "/api/v1/availability-link/inspect",
+        "/api/v1/availability-link/confirm",
+        "/api/v1/privacy/requests",
+        "/api/v1/privacy/requests/{id}",
+        "/api/v1/privacy/export",
+        "/api/v1/me/overview"
+      ]
+    },
+    "reviews": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/orders/{id}/review",
+        "/api/v1/orders/{id}/review/withdraw",
+        "/api/v1/reviews",
+        "/api/v1/reviews/{id}",
+        "/api/v1/reviews/{id}/history",
+        "/api/v1/admin/reviews",
+        "/api/v1/admin/reviews/{id}",
+        "/api/v1/admin/reviews/{id}/history",
+        "/api/v1/admin/reviews/{id}/publish",
+        "/api/v1/admin/reviews/{id}/hide",
+        "/api/v1/admin/reviews/{id}/reject",
+        "/api/v1/admin/reviews/{id}/respond"
+      ]
+    },
+    "operations": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/admin/media",
+        "/api/v1/admin/media/{id}",
+        "/api/v1/admin/media/{id}/bytes",
+        "/api/v1/admin/media/{id}/finalize",
+        "/api/v1/admin/media/{id}/grant",
+        "/api/v1/admin/media/{id}/content",
+        "/api/v1/admin/media/{id}/retry",
+        "/api/v1/admin/media/{id}/remove",
+        "/api/v1/admin/operations",
+        "/api/v1/admin/jobs",
+        "/api/v1/admin/jobs/{id}/retry",
+        "/api/v1/admin/reports/preview",
+        "/api/v1/admin/reports/export",
+        "/api/v1/admin/site/{kind}",
+        "/api/v1/admin/site/{kind}/history",
+        "/api/v1/admin/privacy/requests",
+        "/api/v1/admin/privacy/requests/{id}",
+        "/api/v1/admin/availability",
+        "/api/v1/admin/availability/{id}/suppress"
+      ]
+    },
+    "error": {
+      "status": "existing-adapt",
+      "paths": []
+    },
+    "shop": {
+      "status": "proposed",
+      "paths": [
+        "/api/v1/shop/games/{slug}/products",
+        "/api/v1/shop/products/{id}",
+        "/api/v1/shop/orders",
+        "/api/v1/shop/orders/{id}/delivery",
+        "/api/v1/admin/shop/products",
+        "/api/v1/admin/shop/products/{id}",
+        "/api/v1/admin/shop/orders",
+        "/api/v1/admin/shop/orders/{id}/delivery"
+      ]
+    },
+    "news": {
+      "status": "proposed",
+      "paths": [
+        "/api/v1/news/games/{slug}/articles",
+        "/api/v1/news/games/{slug}/articles/{slug}",
+        "/api/v1/admin/news/articles",
+        "/api/v1/admin/news/articles/{id}",
+        "/api/v1/admin/news/articles/{id}/revisions",
+        "/api/v1/admin/news/articles/{id}/publication"
+      ]
+    },
+    "private-handoff": {
+      "status": "existing-adapt",
+      "paths": [
+        "/api/v1/fulfillment/{id}/secret",
+        "/api/v1/fulfillment/{id}/secret/revoke",
+        "/api/v1/admin/fulfillment/{id}/secret/reveal",
+        "/api/v1/booster/fulfillment/{id}/secret/reveal",
+        "/api/v1/seller-offers/{id}/secret",
+        "/api/v1/admin/seller-offers/{id}/secret/reveal",
+        "/api/v1/admin/account-orders/{id}/secret",
+        "/api/v1/account-orders/{id}/secret/reveal"
+      ]
+    }
+  },
+  "screens": [
+    {
+      "id": "P01",
+      "title": "Your next level starts here.",
+      "phase": "DI04",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/",
+      "targetRoute": "/",
+      "apiFamily": "public",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Catalog unavailable",
+        "No published games",
+        "Reduced motion",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P02",
+      "title": "Find your game.",
+      "phase": "DI04",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games",
+      "targetRoute": "/games",
+      "apiFamily": "public",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "No results",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F26",
+        "F27",
+        "F28",
+        "F29",
+        "F30"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G01",
+      "title": "Mobile Legends",
+      "phase": "DI04",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug",
+      "targetRoute": "/games/:slug",
+      "apiFamily": "public",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Ordering paused",
+        "Archived game",
+        "Missing terms",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F02",
+        "F11",
+        "F14"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G02",
+      "title": "World of Warcraft",
+      "phase": "DI04",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug",
+      "targetRoute": "/games/:slug",
+      "apiFamily": "public",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Ordering paused",
+        "Archived game",
+        "Missing terms",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F26"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G03",
+      "title": "League of Legends",
+      "phase": "DI04",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug",
+      "targetRoute": "/games/:slug",
+      "apiFamily": "public",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Ordering paused",
+        "Archived game",
+        "Missing terms",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F27"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G04",
+      "title": "VALORANT",
+      "phase": "DI04",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug",
+      "targetRoute": "/games/:slug",
+      "apiFamily": "public",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Ordering paused",
+        "Archived game",
+        "Missing terms",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F28"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G05",
+      "title": "Dota 2",
+      "phase": "DI04",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug",
+      "targetRoute": "/games/:slug",
+      "apiFamily": "public",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Ordering paused",
+        "Archived game",
+        "Missing terms",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F29"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G06",
+      "title": "Wild Rift",
+      "phase": "DI04",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug",
+      "targetRoute": "/games/:slug",
+      "apiFamily": "public",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Ordering paused",
+        "Archived game",
+        "Missing terms",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F30"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P04",
+      "title": "Build your Mobile Legends boost.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Invalid progression",
+        "Manual estimate",
+        "Price unavailable",
+        "Catalog changed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F18"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P05",
+      "title": "Review your request.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Signed in",
+        "Terms changed",
+        "Submit uncertain",
+        "Validation error",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F08"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P06",
+      "title": "Your request is with our team.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Customer portal session + exact order ownership; verified payment required before fulfillment",
+      "states": [
+        "Needs information",
+        "Rejected",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P07",
+      "title": "Rank progress package.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/packages/:pack",
+      "targetRoute": "/games/:slug/packages/:pack",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Sold out",
+        "Paused",
+        "Changed price",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F02"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P08",
+      "title": "Check your package details.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/packages/:pack",
+      "targetRoute": "/games/:slug/packages/:pack",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Ineligible",
+        "Last capacity taken",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F02"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P09",
+      "title": "Choose how to pay.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Customer portal session + exact order ownership; verified payment required before fulfillment",
+      "states": [
+        "Checkout paused",
+        "Below minimum",
+        "Provider unavailable",
+        "Creation uncertain",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F02",
+        "F03",
+        "F04"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P10",
+      "title": "Complete your payment.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Customer portal session + exact order ownership; verified payment required before fulfillment",
+      "states": [
+        "Confirming",
+        "Expired, no funds",
+        "Underpaid",
+        "Overpaid",
+        "Late payment",
+        "Wrong network",
+        "Status unavailable",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F02",
+        "F03",
+        "F04"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P11",
+      "title": "We’re confirming your payment.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Customer portal session + exact order ownership; verified payment required before fulfillment",
+      "states": [
+        "Verified",
+        "Failed",
+        "Duplicate receipt",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F02",
+        "F03",
+        "F04"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P12",
+      "title": "Find your next account.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/accounts",
+      "targetRoute": "/games/:slug/accounts",
+      "apiFamily": "resale",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Empty",
+        "Loading",
+        "Unavailable",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F03"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P13",
+      "title": "Mythic account · Mobile Legends",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/accounts/:id",
+      "targetRoute": "/games/:slug/accounts/:id",
+      "apiFamily": "resale",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Reserved",
+        "Sold",
+        "Gallery failure",
+        "Listing changed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F03",
+        "F06",
+        "F18"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P14",
+      "title": "Review your account purchase.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/accounts/:id",
+      "targetRoute": "/games/:slug/accounts/:id",
+      "apiFamily": "resale",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Reservation conflict",
+        "Reservation expired",
+        "Paid after release",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F03"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P15",
+      "title": "What customers say.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/reviews",
+      "targetRoute": "/games/:slug/reviews",
+      "apiFamily": "public",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "No reviews",
+        "Filtered empty",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F19"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P16",
+      "title": "How PLAYORA works.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/terms",
+      "targetRoute": "/how-it-works",
+      "apiFamily": "public",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Policy not published",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "P17",
+      "title": "Service terms & privacy.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/terms",
+      "targetRoute": "/policies/:kind",
+      "apiFamily": "public",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Historical version",
+        "Unavailable",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F23"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "I01",
+      "title": "Welcome to PLAYORA.",
+      "phase": "DI02",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/login",
+      "targetRoute": "/login",
+      "apiFamily": "identity",
+      "audience": "portal-scoped",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Invalid email",
+        "Rate limited",
+        "Google cancelled",
+        "Google unavailable",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F02",
+        "F03",
+        "F08",
+        "F11",
+        "F25",
+        "F26",
+        "F27",
+        "F28",
+        "F29",
+        "F30"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "I02",
+      "title": "Check your email.",
+      "phase": "DI02",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/login",
+      "targetRoute": "/login",
+      "apiFamily": "identity",
+      "audience": "portal-scoped",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Wrong code",
+        "Expired",
+        "Already used",
+        "Too many attempts",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F02",
+        "F03",
+        "F08",
+        "F10",
+        "F11",
+        "F26",
+        "F27",
+        "F28",
+        "F29",
+        "F30",
+        "F09",
+        "F31"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "I03",
+      "title": "Verify your staff sign-in.",
+      "phase": "DI02",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/login",
+      "targetRoute": "/login",
+      "apiFamily": "identity",
+      "audience": "portal-scoped",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Invalid code",
+        "Session expired",
+        "Enrollment required",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F09",
+        "F31"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "I04",
+      "title": "Set up your authenticator.",
+      "phase": "DI02",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/account/security",
+      "targetRoute": "/account/security",
+      "apiFamily": "identity",
+      "audience": "portal-scoped",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Verification failed",
+        "Interrupted setup",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F09",
+        "F31"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "I05",
+      "title": "Recover staff access.",
+      "phase": "DI02",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/login",
+      "targetRoute": "/login",
+      "apiFamily": "identity",
+      "audience": "portal-scoped",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Used or invalid",
+        "Owner review",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F09",
+        "F31"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "I06",
+      "title": "Confirm it’s you.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/account/security",
+      "targetRoute": "/account/security",
+      "apiFamily": "identity",
+      "audience": "portal-scoped",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Action changed",
+        "Access revoked",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F05",
+        "F17",
+        "F21",
+        "F22",
+        "F23",
+        "F09",
+        "F31"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "I09",
+      "title": "Admin sign-in.",
+      "phase": "DI02",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": "/admin/login",
+      "targetRoute": "/admin/login",
+      "apiFamily": "identity",
+      "audience": "portal-scoped",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Invalid email",
+        "Rate limited",
+        "Google cancelled",
+        "Google unavailable",
+        "Loading",
+        "Request failed",
+        "Access unavailable",
+        "Session expired",
+        "Other portal already signed in"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F09"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "I10",
+      "title": "Booster sign-in.",
+      "phase": "DI02",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": "/booster/login",
+      "targetRoute": "/booster/login",
+      "apiFamily": "identity",
+      "audience": "portal-scoped",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Invalid email",
+        "Rate limited",
+        "Google cancelled",
+        "Google unavailable",
+        "Loading",
+        "Request failed",
+        "Access unavailable",
+        "Session expired",
+        "Other portal already signed in"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F31"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C01",
+      "title": "Good to see you, Player.",
+      "phase": "DI06",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/account",
+      "targetRoute": "/account",
+      "apiFamily": "account",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "First visit",
+        "Partial failure",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F10",
+        "F25"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C02",
+      "title": "Your orders.",
+      "phase": "DI06",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders",
+      "targetRoute": "/orders",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Empty",
+        "No match",
+        "Load failed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C03",
+      "title": "Your quote is ready.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Awaiting review",
+        "Needs information",
+        "Quote superseded",
+        "Quote expired",
+        "Cancelled",
+        "Rejected",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F15",
+        "F20"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C04",
+      "title": "Let’s get your order ready.",
+      "phase": "DI06",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "File scanning",
+        "Credential access expired",
+        "Validation failed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F02"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C05",
+      "title": "Your boost is in progress.",
+      "phase": "DI06",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "On hold",
+        "Completion under review",
+        "Completed",
+        "Evidence unavailable",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F02",
+        "F05",
+        "F12",
+        "F19"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C06",
+      "title": "Plan your play session.",
+      "phase": "DI06",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Conflict",
+        "DST change",
+        "No slots",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F13"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C07",
+      "title": "Payment & receipts.",
+      "phase": "DI06",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "No payment",
+        "Refund processing",
+        "Refund failed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F04",
+        "F05"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C08",
+      "title": "Get help with your order.",
+      "phase": "DI06",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Outside policy window",
+        "Case already open",
+        "Upload rejected",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F04",
+        "F05"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C09",
+      "title": "Your case is under review.",
+      "phase": "DI06",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Information needed",
+        "Approved",
+        "Rejected",
+        "Refund confirmed",
+        "Recipient changed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F04",
+        "F05"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C10",
+      "title": "Saved for later.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/favorites",
+      "targetRoute": "/favorites",
+      "apiFamily": "account",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Empty",
+        "Removed",
+        "Unavailable item",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F18"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C11",
+      "title": "Messages.",
+      "phase": "DI07",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/support",
+      "targetRoute": "/support",
+      "apiFamily": "chat",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Empty",
+        "Offline",
+        "Unauthorized",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F11"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C12",
+      "title": "Order PL-1042 · Messages",
+      "phase": "DI07",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/support/:id",
+      "targetRoute": "/support/:id",
+      "apiFamily": "chat",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Sending",
+        "Send failed",
+        "Reconnecting",
+        "Attachment scanning",
+        "Attachment rejected",
+        "Access lost",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F11"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C13",
+      "title": "How can we help?",
+      "phase": "DI07",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/support",
+      "targetRoute": "/support",
+      "apiFamily": "chat",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Already linked",
+        "Could not send",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F11"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C14",
+      "title": "Notifications.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/notifications",
+      "targetRoute": "/notifications",
+      "apiFamily": "account",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Empty",
+        "Target unavailable",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F20"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C15",
+      "title": "Your reviews.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/reviews",
+      "targetRoute": "/reviews",
+      "apiFamily": "reviews",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "No eligible order",
+        "Pending moderation",
+        "Hidden",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F19"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C16",
+      "title": "Review your experience.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/reviews/:id",
+      "targetRoute": "/reviews/:id",
+      "apiFamily": "reviews",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Already reviewed",
+        "Eligibility changed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F01",
+        "F19"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C17",
+      "title": "Security & sign-in.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/account/security",
+      "targetRoute": "/account/security",
+      "apiFamily": "identity",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Session revoked",
+        "Google link conflict",
+        "Revoke all confirmation",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F09",
+        "F10"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "I07",
+      "title": "Update your sign-in email.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/account/security",
+      "targetRoute": "/account/security",
+      "apiFamily": "identity",
+      "audience": "portal-scoped",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Already linked",
+        "Verification expired",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F10"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C18",
+      "title": "Your data & privacy.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/privacy",
+      "targetRoute": "/privacy",
+      "apiFamily": "account",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Deletion unavailable",
+        "On hold",
+        "Pending file purge",
+        "Completed with retention",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F21"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C19",
+      "title": "Preferences.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/account/preferences",
+      "targetRoute": "/account/preferences",
+      "apiFamily": "account",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Save failed",
+        "Device limitation",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F20"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C20",
+      "title": "Availability alerts.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/availability",
+      "targetRoute": "/availability",
+      "apiFamily": "account",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "No alerts",
+        "Unavailable target",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F18",
+        "F20"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C21",
+      "title": "Availability email preference.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/availability/unsubscribe",
+      "targetRoute": "/availability/unsubscribe",
+      "apiFamily": "account",
+      "audience": "public-token",
+      "permission": "Scoped availability-link inspect/confirm token only; no account data discovery",
+      "states": [
+        "Invalid or expired link",
+        "Already unsubscribed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F18"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C22",
+      "title": "Profile settings.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/account/settings",
+      "targetRoute": "/account/settings",
+      "apiFamily": "account",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Invalid name",
+        "Save conflict",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F10"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S01",
+      "title": "Your account sales.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/sell",
+      "targetRoute": "/sell",
+      "apiFamily": "resale",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Empty",
+        "Withdrawn",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S02",
+      "title": "Tell us about your account.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/sell/new",
+      "targetRoute": "/sell/new",
+      "apiFamily": "resale",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Draft incomplete",
+        "Proof scanning",
+        "Intake changed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06",
+        "F07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S03",
+      "title": "Submission SA-204.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/sell/:id",
+      "targetRoute": "/sell/:id",
+      "apiFamily": "resale",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "More information needed",
+        "Rejected",
+        "Withdraw confirmation",
+        "Accepted contract",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06",
+        "F07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S04",
+      "title": "Review your sale offer.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/sell/:id",
+      "targetRoute": "/sell/:id",
+      "apiFamily": "resale",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Buy-first offer",
+        "Expired offer",
+        "Superseded",
+        "Accepted",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06",
+        "F07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S05",
+      "title": "Secure account handover.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/sell/:id",
+      "targetRoute": "/sell/:id",
+      "apiFamily": "resale",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Verification required",
+        "Correction needed",
+        "Verified",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06",
+        "F07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S06",
+      "title": "Your direct payout.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/sell/:id",
+      "targetRoute": "/sell/:id",
+      "apiFamily": "resale",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Not due",
+        "Blocked by case",
+        "Processing",
+        "Confirmed",
+        "Failed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06",
+        "F07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "B01",
+      "title": "Your next session.",
+      "phase": "DI08",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/booster",
+      "targetRoute": "/booster",
+      "apiFamily": "booster",
+      "audience": "booster",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "No assignments",
+        "Access revoked",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F12"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "B02",
+      "title": "Assigned orders.",
+      "phase": "DI08",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/booster/orders",
+      "targetRoute": "/booster/orders",
+      "apiFamily": "booster",
+      "audience": "booster",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Reassigned",
+        "No matching orders",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F12"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "B03",
+      "title": "PL-1038 · Your assignment",
+      "phase": "DI08",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/booster/orders/:id",
+      "targetRoute": "/booster/orders/:id",
+      "apiFamily": "booster",
+      "audience": "booster",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "On hold",
+        "Evidence scanning",
+        "Completion submitted",
+        "Reassigned",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F12"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "B04",
+      "title": "Availability & sessions.",
+      "phase": "DI08",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/booster/calendar",
+      "targetRoute": "/booster/calendar",
+      "apiFamily": "booster",
+      "audience": "booster",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Overlap",
+        "Stale proposal",
+        "DST ambiguity",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F12",
+        "F13"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "B05",
+      "title": "Assignment messages.",
+      "phase": "DI08",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/booster/support/:id",
+      "targetRoute": "/booster/support/:id",
+      "apiFamily": "booster",
+      "audience": "booster",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Access removed",
+        "Send failed",
+        "Closed conversation",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F12"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A01",
+      "title": "Operations overview.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin",
+      "targetRoute": "/admin",
+      "apiFamily": "operations",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "All clear",
+        "Partial outage",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F09",
+        "F15"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A02",
+      "title": "Order queue.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/orders",
+      "targetRoute": "/admin/orders",
+      "apiFamily": "orders",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "No match",
+        "Queue changed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F15"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A03",
+      "title": "Review order PL-1042.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/orders/:id",
+      "targetRoute": "/admin/orders/:id",
+      "apiFamily": "orders",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Conflict",
+        "Unpaid",
+        "Missing proof",
+        "Hold confirmation",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F12",
+        "F15",
+        "F16"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A04",
+      "title": "Issue a final quote.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/orders/:id",
+      "targetRoute": "/admin/orders/:id",
+      "apiFamily": "orders",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Invalid amount",
+        "Stale version",
+        "Accepted contract",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F15"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A05",
+      "title": "Support inbox.",
+      "phase": "DI07",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/support",
+      "targetRoute": "/admin/support",
+      "apiFamily": "chat",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "No waiting threads",
+        "Connection lost",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F16"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A06",
+      "title": "PL-1042 · Customer conversation",
+      "phase": "DI07",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/support/:id",
+      "targetRoute": "/admin/support/:id",
+      "apiFamily": "chat",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Internal note",
+        "Send failed",
+        "Access removed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F16"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A07",
+      "title": "Staff calendars.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/calendar",
+      "targetRoute": "/admin/calendar",
+      "apiFamily": "orders",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Conflict",
+        "Participant changed",
+        "Unassigned order",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F13"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A08",
+      "title": "Customers & staff.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/customers",
+      "targetRoute": "/admin/customers",
+      "apiFamily": "governance",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Owner only",
+        "Last owner",
+        "Recovery pending",
+        "Suspension confirmation",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F22"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A09",
+      "title": "Audit & recovery review.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin",
+      "targetRoute": "/admin",
+      "apiFamily": "governance",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "No records",
+        "Restricted",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F22"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A10",
+      "title": "Game catalog.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/catalog",
+      "targetRoute": "/admin/catalog",
+      "apiFamily": "catalog",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Empty",
+        "Paused",
+        "Archived",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F14"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A11",
+      "title": "Mobile Legends · Game settings",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/catalog",
+      "targetRoute": "/admin/catalog",
+      "apiFamily": "catalog",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Unsaved changes",
+        "Revision conflict",
+        "Invalid reference",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F14"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A12",
+      "title": "Build the order form.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/catalog",
+      "targetRoute": "/admin/catalog",
+      "apiFamily": "catalog",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Cycle detected",
+        "Hidden required field",
+        "Unsupported secret",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F14"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A13",
+      "title": "Price estimation rules.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/catalog",
+      "targetRoute": "/admin/catalog",
+      "apiFamily": "catalog",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Uncovered combination",
+        "Invalid arithmetic",
+        "Rule overlap",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F14"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A14",
+      "title": "Preview & publish a release.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/catalog",
+      "targetRoute": "/admin/catalog",
+      "apiFamily": "catalog",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Dirty draft",
+        "Validation failed",
+        "Stale preview",
+        "History",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F14"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A24",
+      "title": "Fixed packages editor.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/catalog",
+      "targetRoute": "/admin/catalog",
+      "apiFamily": "catalog",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Incompatible eligibility",
+        "Capacity invalid",
+        "Unpriced option",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F14"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A25",
+      "title": "Seller intake & transfer rules.",
+      "phase": "DI09",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/catalog",
+      "targetRoute": "/admin/catalog",
+      "apiFamily": "catalog",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Missing ownership criterion",
+        "Unsafe public field",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F14"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A15",
+      "title": "Payments & exceptions.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/finance",
+      "targetRoute": "/admin/finance",
+      "apiFamily": "finance",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Provider unavailable",
+        "No exceptions",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F17"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A16",
+      "title": "Service case & refund review.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/finance",
+      "targetRoute": "/admin/finance",
+      "apiFamily": "finance",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Recipient unverified",
+        "Outgoing disabled",
+        "Already processing",
+        "Refund confirmed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F05",
+        "F17"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A17",
+      "title": "Seller payout review.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/finance",
+      "targetRoute": "/admin/finance",
+      "apiFamily": "finance",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Not due",
+        "Case hold",
+        "Uncertain transfer",
+        "Confirmed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06",
+        "F07",
+        "F17"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A18",
+      "title": "Payment policy.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/finance",
+      "targetRoute": "/admin/finance",
+      "apiFamily": "finance",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Missing required terms",
+        "Checkout paused",
+        "Conflict",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F23"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A19",
+      "title": "Reconcile provider evidence.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/finance",
+      "targetRoute": "/admin/finance",
+      "apiFamily": "finance",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Unknown reference",
+        "Already queued",
+        "Failed check",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F05",
+        "F17"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A20",
+      "title": "Account submissions.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/submissions",
+      "targetRoute": "/admin/submissions",
+      "apiFamily": "resale",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Empty queue",
+        "Evidence unavailable",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A21",
+      "title": "Review submission SA-204.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/submissions/:id",
+      "targetRoute": "/admin/submissions/:id",
+      "apiFamily": "resale",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Missing evidence",
+        "Offer expired",
+        "Transfer incomplete",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06",
+        "F07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A22",
+      "title": "Account inventory.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/accounts",
+      "targetRoute": "/admin/accounts",
+      "apiFamily": "resale",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "No inventory",
+        "Reservation attention",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A23",
+      "title": "Edit account listing AC-208.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/accounts/:id",
+      "targetRoute": "/admin/accounts/:id",
+      "apiFamily": "resale",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Private information detected",
+        "Source not verified",
+        "Reserved",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06",
+        "F07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A26",
+      "title": "Buyer account delivery.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/orders/:id",
+      "targetRoute": "/admin/orders/:id",
+      "apiFamily": "orders",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Unpaid",
+        "Access expired",
+        "Disputed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F03"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "C23",
+      "title": "Your purchased account.",
+      "phase": "DI10",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/orders/:id",
+      "targetRoute": "/orders/:id",
+      "apiFamily": "orders",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Preparing",
+        "Verification needed",
+        "Delivery ready",
+        "Acknowledged",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F03",
+        "F06"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A27",
+      "title": "Coupons.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/coupons",
+      "targetRoute": "/admin/coupons",
+      "apiFamily": "catalog",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Duplicate code",
+        "Invalid discount",
+        "Usage exhausted",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F23"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A28",
+      "title": "Review moderation.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/reviews",
+      "targetRoute": "/admin/reviews",
+      "apiFamily": "reviews",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "No pending reviews",
+        "Eligibility changed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F19"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A29",
+      "title": "Review REV-12.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/reviews/:id",
+      "targetRoute": "/admin/reviews/:id",
+      "apiFamily": "reviews",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Conflict",
+        "Hidden",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F19"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A30",
+      "title": "Reports.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/reports",
+      "targetRoute": "/admin/reports",
+      "apiFamily": "operations",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "No data",
+        "Stale preview",
+        "Export failed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F24"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A31",
+      "title": "Background task recovery.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/jobs",
+      "targetRoute": "/admin/jobs",
+      "apiFamily": "operations",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Already running",
+        "Not retryable",
+        "Retry queued",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F17",
+        "F24"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A32",
+      "title": "Media directory.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/media",
+      "targetRoute": "/admin/media",
+      "apiFamily": "operations",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Scanning",
+        "Rejected",
+        "Purge pending",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F24"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A33",
+      "title": "Availability alert management.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/alerts",
+      "targetRoute": "/admin/alerts",
+      "apiFamily": "operations",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "No subscribers",
+        "Unsubscribed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F24"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A34",
+      "title": "Content & policies.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/content",
+      "targetRoute": "/admin/content",
+      "apiFamily": "operations",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Missing required policy",
+        "Unsaved changes",
+        "Version conflict",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F23"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A35",
+      "title": "Privacy request review.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/privacy",
+      "targetRoute": "/admin/privacy",
+      "apiFamily": "operations",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Policy disabled",
+        "Active hold",
+        "Erased pending files",
+        "Completed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F21"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A36",
+      "title": "Retention policy.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/privacy",
+      "targetRoute": "/admin/privacy",
+      "apiFamily": "operations",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Incomplete rule",
+        "Active obligations",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F21"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "X01",
+      "title": "This page isn’t available.",
+      "phase": "DI01",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "*",
+      "targetRoute": "*",
+      "apiFamily": "error",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "404",
+        "403/revoked",
+        "Offline",
+        "Maintenance",
+        "Rate limited",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F25"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "I08",
+      "title": "Open your private handoff.",
+      "phase": "DI13",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/account/security",
+      "targetRoute": "/account/security",
+      "apiFamily": "private-handoff",
+      "audience": "portal-scoped",
+      "permission": "Owning customer or explicitly permitted staff portal + recent identity verification; role-specific secret reveal and audit",
+      "states": [
+        "Verification expired",
+        "No access",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F03"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S07",
+      "title": "SA-204 · Private seller messages",
+      "phase": "DI07",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/support/:id",
+      "targetRoute": "/support/:id",
+      "apiFamily": "chat",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Send failed",
+        "Access removed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "A37",
+      "title": "SA-204 · Seller conversation",
+      "phase": "DI07",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/admin/support/:id",
+      "targetRoute": "/admin/support/:id",
+      "apiFamily": "chat",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "states": [
+        "Internal note",
+        "Send failed",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F06"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G07",
+      "title": "Build your World of Warcraft request.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Unsupported combination",
+        "Manual estimate",
+        "Ordering unavailable",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F26"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G12",
+      "title": "Review your World of Warcraft request.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Catalog changed",
+        "Manual estimate",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F26"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G08",
+      "title": "Build your League of Legends request.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Unsupported combination",
+        "Manual estimate",
+        "Ordering unavailable",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F27"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G13",
+      "title": "Review your League of Legends request.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Catalog changed",
+        "Manual estimate",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F27"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G09",
+      "title": "Build your VALORANT request.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Unsupported combination",
+        "Manual estimate",
+        "Ordering unavailable",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F28"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G14",
+      "title": "Review your VALORANT request.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Catalog changed",
+        "Manual estimate",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F28"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G10",
+      "title": "Build your Dota 2 request.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Unsupported combination",
+        "Manual estimate",
+        "Ordering unavailable",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F29"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G15",
+      "title": "Review your Dota 2 request.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Catalog changed",
+        "Manual estimate",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F29"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G11",
+      "title": "Build your Wild Rift request.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Unsupported combination",
+        "Manual estimate",
+        "Ordering unavailable",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F30"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "G16",
+      "title": "Review your Wild Rift request.",
+      "phase": "DI05",
+      "mode": "adapt",
+      "status": "planned",
+      "baselineRoute": "/games/:slug/services/:service",
+      "targetRoute": "/games/:slug/services/:service",
+      "apiFamily": "catalog",
+      "audience": "public",
+      "permission": "Public published resources only",
+      "states": [
+        "Catalog changed",
+        "Manual estimate",
+        "Loading",
+        "Request failed"
+      ],
+      "scenarios": [
+        "default",
+        "loading/empty if applicable",
+        "validation and retry",
+        "access revoked or missing resource",
+        "keyboard and narrow layout",
+        "F30"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SH01",
+      "title": "Game shop",
+      "phase": "DI11",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/games/:slug/shop",
+      "apiFamily": "shop",
+      "audience": "public",
+      "permission": "Published resources only",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SH02",
+      "title": "Product",
+      "phase": "DI11",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/games/:slug/shop/:product",
+      "apiFamily": "shop",
+      "audience": "public",
+      "permission": "Published resources only",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SH03",
+      "title": "Recipient",
+      "phase": "DI11",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/games/:slug/shop/:product?step=recipient",
+      "apiFamily": "shop",
+      "audience": "public-draft/customer-submit",
+      "permission": "Guest may prepare nonsensitive draft; creating order requires customer portal session and validated published contract",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SH04",
+      "title": "Purchase review",
+      "phase": "DI11",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/games/:slug/shop/:product?step=review",
+      "apiFamily": "shop",
+      "audience": "public-draft/customer-submit",
+      "permission": "Guest may prepare nonsensitive draft; creating order requires customer portal session and validated published contract",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SH05",
+      "title": "Customer shop order",
+      "phase": "DI11",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/orders/:id",
+      "apiFamily": "shop",
+      "audience": "customer",
+      "permission": "Portal session + role/ownership + explicit state guards",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SH06",
+      "title": "Admin products",
+      "phase": "DI11",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/admin/shop",
+      "apiFamily": "shop",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership + explicit state guards",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SH07",
+      "title": "Product editor",
+      "phase": "DI11",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/admin/shop/:id",
+      "apiFamily": "shop",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership + explicit state guards",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SH08",
+      "title": "Shop fulfillment queue",
+      "phase": "DI11",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/admin/shop/orders",
+      "apiFamily": "shop",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership + explicit state guards",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SH09",
+      "title": "Shop fulfillment record",
+      "phase": "DI11",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/admin/orders/:id",
+      "apiFamily": "shop",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership + explicit state guards",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "NW01",
+      "title": "News index",
+      "phase": "DI12",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/games/:slug/news",
+      "apiFamily": "news",
+      "audience": "public",
+      "permission": "Published resources only",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "NW02",
+      "title": "Article",
+      "phase": "DI12",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/games/:slug/news/:article",
+      "apiFamily": "news",
+      "audience": "public",
+      "permission": "Published resources only",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "NW03",
+      "title": "Staff articles",
+      "phase": "DI12",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/admin/news",
+      "apiFamily": "news",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership + explicit state guards",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "NW04",
+      "title": "Article editor",
+      "phase": "DI12",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/admin/news/:id",
+      "apiFamily": "news",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership + explicit state guards",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "NW05",
+      "title": "Private preview",
+      "phase": "DI12",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/admin/news/:id?section=preview",
+      "apiFamily": "news",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership + explicit state guards",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "NW06",
+      "title": "Publication",
+      "phase": "DI12",
+      "mode": "new",
+      "status": "planned",
+      "baselineRoute": null,
+      "targetRoute": "/admin/news/:id?section=publication",
+      "apiFamily": "news",
+      "audience": "admin",
+      "permission": "Portal session + role/ownership + explicit state guards",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "changed",
+        "unavailable",
+        "denied",
+        "failed"
+      ],
+      "scenarios": [
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "keyboard and narrow layout"
+      ],
+      "evidence": []
+    }
+  ]
+}

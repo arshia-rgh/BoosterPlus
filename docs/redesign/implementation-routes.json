@@ -1,0 +1,554 @@
+[
+  {
+    "route": "/",
+    "screens": [
+      "P01"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/account",
+    "screens": [
+      "C01"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/account/preferences",
+    "screens": [
+      "C19"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/account/security",
+    "screens": [
+      "I04",
+      "I06",
+      "C17",
+      "I07",
+      "I08"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/account/settings",
+    "screens": [
+      "C22"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/accounts",
+    "screens": [
+      "P12"
+    ],
+    "strategy": "compatibility discovery",
+    "contract": "Choose game or use validated game filter; no lost listing context.",
+    "status": "planned"
+  },
+  {
+    "route": "/accounts/:id",
+    "screens": [
+      "P13",
+      "P14"
+    ],
+    "strategy": "canonical redirect",
+    "contract": "Resolve only public listing to its game-local detail; preserve unavailable recovery.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin",
+    "screens": [
+      "A01",
+      "A09"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/accounts",
+    "screens": [
+      "A22"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/accounts/:id",
+    "screens": [
+      "A23"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/alerts",
+    "screens": [
+      "A33"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/calendar",
+    "screens": [
+      "A07"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/catalog",
+    "screens": [
+      "A10",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "A24",
+      "A25"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/content",
+    "screens": [
+      "A34"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/coupons",
+    "screens": [
+      "A27"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/customers",
+    "screens": [
+      "A08"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/finance",
+    "screens": [
+      "A15",
+      "A16",
+      "A17",
+      "A18",
+      "A19"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/jobs",
+    "screens": [
+      "A31"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/media",
+    "screens": [
+      "A32"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/orders",
+    "screens": [
+      "A02"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/orders/:id",
+    "screens": [
+      "A03",
+      "A04",
+      "A26"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/privacy",
+    "screens": [
+      "A35",
+      "A36"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/reports",
+    "screens": [
+      "A30"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/reviews",
+    "screens": [
+      "A28"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/reviews/:id",
+    "screens": [
+      "A29"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/submissions",
+    "screens": [
+      "A20"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/submissions/:id",
+    "screens": [
+      "A21"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/support",
+    "screens": [
+      "A05"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/admin/support/:id",
+    "screens": [
+      "A06",
+      "A37"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/availability",
+    "screens": [
+      "C20"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/availability/unsubscribe",
+    "screens": [
+      "C21"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/booster",
+    "screens": [
+      "B01"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/booster/calendar",
+    "screens": [
+      "B04"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/booster/orders",
+    "screens": [
+      "B02"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/booster/orders/:id",
+    "screens": [
+      "B03"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/booster/support/:id",
+    "screens": [
+      "B05"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/favorites",
+    "screens": [
+      "C10"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/games",
+    "screens": [
+      "P02"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/games/:slug",
+    "screens": [
+      "G01",
+      "G02",
+      "G03",
+      "G04",
+      "G05",
+      "G06"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/games/:slug/packages/:pack",
+    "screens": [
+      "P07",
+      "P08"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/games/:slug/reviews",
+    "screens": [
+      "P15"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/games/:slug/services/:service",
+    "screens": [
+      "P04",
+      "P05",
+      "G07",
+      "G12",
+      "G08",
+      "G13",
+      "G09",
+      "G14",
+      "G10",
+      "G15",
+      "G11",
+      "G16"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/login",
+    "screens": [
+      "I01",
+      "I02",
+      "I03",
+      "I05"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/notifications",
+    "screens": [
+      "C14"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/orders",
+    "screens": [
+      "C02"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/orders/:id",
+    "screens": [
+      "P06",
+      "P09",
+      "P10",
+      "P11",
+      "C03",
+      "C04",
+      "C05",
+      "C06",
+      "C07",
+      "C08",
+      "C09",
+      "C23"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/privacy",
+    "screens": [
+      "C18"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/reviews",
+    "screens": [
+      "C15"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/reviews/:id",
+    "screens": [
+      "C16"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/sell",
+    "screens": [
+      "S01"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/sell/:id",
+    "screens": [
+      "S03",
+      "S04",
+      "S05",
+      "S06"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/sell/new",
+    "screens": [
+      "S02"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/support",
+    "screens": [
+      "C11",
+      "C13"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/support/:id",
+    "screens": [
+      "C12",
+      "S07"
+    ],
+    "strategy": "preserve",
+    "contract": "Retain route with accepted shell/local sections and permitted audience.",
+    "status": "planned"
+  },
+  {
+    "route": "/terms",
+    "screens": [
+      "P16",
+      "P17"
+    ],
+    "strategy": "compatibility alias",
+    "contract": "Link/redirect to current typed policy with old version links preserved.",
+    "status": "planned"
+  }
+]
