@@ -6,7 +6,7 @@ Status: review edition prepared; owner acceptance pending. Product development a
 
 Open [the atlas](http://127.0.0.1:4177/design/index.html) with the local command in README.md. Start with P01, G01, P04, P09/P10, C01, C03, C12, S04, B03, A01, A12 and A16. Compare desktop and phone using the width controls. The prototype uses supplied art as layout references; it is independently designed rather than a restyled copy of the exports.
 
-The atlas includes 113 views, 30 connected journey specifications and 555 named state treatments. Every one of the 55 current route paths has a design mapping. Many states share a visual pattern (for example, a persistent error panel); this is not a claim of 555 independently drawn compositions.
+The atlas includes 115 views, 31 connected journey specifications and 573 named state treatments. Every one of the 55 current route paths has a design mapping. Many states share a visual pattern (for example, a persistent error panel); this is not a claim of 573 independently drawn compositions.
 
 It is a **reviewable annotated prototype**, not a production-equivalent app. Some secondary cards describe the intended content/behavior; those annotations must become real data and final microcopy during implementation. The specification drawer contains the full contract. The atlas retains fictional example drafts in memory only; it does not persist real multi-screen form data, authenticate, enforce permissions, upload files, send messages, query a provider, create money movements or implement completed character animation. Route/state coverage does not imply those real scenarios were executed.
 
@@ -106,3 +106,8 @@ See [PANEL_UX_REVISION.md](PANEL_UX_REVISION.md) and the [four-round senior revi
 ## Complete review — 24 September
 
 The [complete current-design review](reviews/2026-09-24-complete-design-review.md) supersedes earlier qualification for the changed journeys and shared state handling. Run `node docs/redesign/check_panels.mjs` for all 33 route/fixture assertions. The source of the clickable recovery and journey refinements is `design/journeys.js`; it remains a design artifact with no provider/API or persistent storage integration.
+
+
+## Separate portals and full re-review — 24 September
+
+The later [full review log](reviews/2026-09-24-separate-logins-full-review.md) records separate I09/I10 sign-in and all three final reviewer passes. Review F09/F31 for staff; customer I01 remains separate. `node docs/redesign/check_panels.mjs` now includes the original 33 assertions plus new portal, exact-return, semantic-list, moderation and conversation regressions. The latest route inventory is 115 views/31 journeys/573 named states; preceding numerical evidence is historical.

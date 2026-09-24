@@ -98,6 +98,10 @@ function contextualTarget(to) {
   return `${current.id}/${service === "all" ? "boost" : service}/${to}`;
 }
 function nav(s) {
+  if (s.id.startsWith("I")) {
+    const role = identityPortal();
+    return `<nav class="topnav minimalnav" aria-label="Main"><a href="#P01" class="brand"><img src="assets/logo.svg" alt="PLAYORA"></a><span class="workspaceBadge">${unscopedStaffIdentity() ? "Staff portal selection" : (role === "admin" ? "Admin" : role === "booster" ? "Booster" : "Customer") + " sign-in"}</span><a href="#P01">Back to website</a></nav>`;
+  }
   const ctx = panelContext(s);
   if (ctx)
     return `<nav class="topnav minimalnav" aria-label="Main"><a href="#P01" class="brand"><img src="assets/logo.svg" alt="PLAYORA"></a><span class="workspaceBadge">${panelRoleNames[ctx.role]}</span><div class="navend"><a class="textlink" href="#${panelHomes[ctx.role]}">Workspace home</a></div></nav>${panelMobileNav(ctx)}`;
@@ -524,11 +528,15 @@ function homeReviews() {
     )}</div><p class="sr-only" id="reviewFeedback" role="status"></p></section>`;
 }
 function footer() {
+  if (current.id.startsWith("I") && identityPortal() !== "customer")
+    return `<footer class="footer fullfooter"><div><strong>PLAYORA · ${identityPortal() === "admin" ? "Admin" : "Booster"} portal</strong><p>For access help, contact your PLAYORA administrator through your established staff contact.</p></div><div><a href="#P01">Back to website</a><button class="textlink" id="toggleAmbient">${motionPaused ? "Resume" : "Pause"} background motion</button></div><p>Design preview · No shared customer session</p></footer>`;
   return `<footer class="footer fullfooter"><div class="footerbrand"><img src="assets/logo.svg" alt="PLAYORA"><p>Your games. Your next chapter.</p><small>Independent service. No publisher affiliation is claimed.</small></div><nav aria-label="Help and contact"><h2>Here to help</h2>${panelContext()?.role === "admin" ? '<a href="#A05">Support inbox</a><a href="#A09">Audit & recovery</a>' : panelContext()?.role === "booster" ? '<a href="#B05">Assignment messages</a><a href="#B02">Assigned orders</a>' : link("Contact us", "C13") + link("Help & FAQ", "C13") + link("Order support", "C11")}</nav><nav aria-label="Policies"><h2>The details</h2>${panelContext()?.role === "admin" ? '<a href="#A34">Content & policies</a><a href="#A18">Payment policy</a>' : '<a href="#P17/terms">Terms of service</a><a href="#P17/privacy">Privacy policy</a><a href="#P17/refunds">Refund & cancellation terms</a>'}</nav><nav aria-label="Your experience"><h2>Your experience</h2>${panelContext() ? `<a href="#${panelHomes[panelContext().role]}">${panelRoleNames[panelContext().role]}</a><a href="#${panelNavHref(panelContext().role, "C17")}">Security</a>` : link("My account", "C01") + link("Accessibility & motion", "C19")}<button class="textlink" id="toggleAmbient">${motionPaused ? "Resume" : "Pause"} background motion</button></nav><div class="footerbottom"><span>© PLAYORA · Design preview</span><span>Direct crypto payments · No stored balance</span></div></footer>`;
 }
 function renderCorner() {
   const show =
-    previewSignedIn && (!panelContext() || panelContext().role === "customer");
+    previewSignedIn &&
+    !current.id.startsWith("I") &&
+    (!panelContext() || panelContext().role === "customer");
   $("orderCorner").hidden = !show;
   const modal = show && cornerExpanded && $("previewFrame").clientWidth <= 600;
   $("canvas").inert = modal;
@@ -734,6 +742,8 @@ function applyDestination() {
     $("canvas").scrollTo({ top: 0, behavior: "instant" });
   }
   if (current.kind !== "game") return;
+  const signIn = document.querySelector('.topnav .navend a[href^="#I01"]');
+  if (signIn) signIn.href = "#" + identityHref("I01", location.hash.slice(1));
   const profile = gameProfiles.find((g) => g.id === current.id);
   const selected = profile.services.includes(destination) ? destination : "all";
   const focusWasInChoice = $("serviceEntry").contains(document.activeElement);
@@ -995,10 +1005,15 @@ function renderBody(s) {
       return `<div class="content">${s.sections.map((x) => card(x.title, x.body)).join("")}${actions(s)}</div>`;
   }
 }
+function displayedRoute(s) {
+  if (s.id.startsWith("I") && identityPortal() !== "customer")
+    return `/${identityPortal()}/login · proposed portal flow`;
+  return s.route;
+}
 function renderInspector() {
   const s = reviewScreen();
   $("inspector").innerHTML =
-    `<button id="closeSpec" aria-label="Close specifications">Close ×</button><div class="eyebrow">${s.id} / ${esc(s.kind)}</div><h2>${esc(s.title)}</h2><p>${esc(s.summary)}</p><p><strong>Current route:</strong> ${esc(s.route)}</p><h3>Page anatomy</h3>${s.sections.map((x) => `<div class="specstate"><strong>${esc(x.title)}</strong><p>${esc(x.body)}</p></div>`).join("")}<h3>Fields</h3>${s.fields.map((f) => `<p><strong>${esc(f.label)}</strong> · ${esc(f.type)}<br>${esc(f.help)}${f.options.length ? "<br>Options: " + esc(f.options.join(", ")) : ""}</p>`).join("") || "<p>No input fields in this view.</p>"}<h3>States & recovery</h3>${s.states.map((x) => `<div class="specstate"><strong>${esc(x.name)}</strong><p>${esc(x.copy)}</p></div>`).join("")}<h3>Responsive behavior</h3><p>${esc(s.mobile)}</p><h3>Guardrails</h3><p>${esc(s.notes || "Follow the shared interaction specification.")}</p><h3>Journey coverage</h3><p>${esc(s.flowIds.join(", "))}</p><p><a href="../SCREENS.md">Full specifications</a> · <a href="../INTERACTIONS.md">Interaction contract</a></p>`;
+    `<button id="closeSpec" aria-label="Close specifications">Close ×</button><div class="eyebrow">${s.id} / ${esc(s.kind)}</div><h2>${esc(s.title)}</h2><p>${esc(s.summary)}</p><p><strong>Route reference:</strong> ${esc(displayedRoute(s))}</p><h3>Page anatomy</h3>${s.sections.map((x) => `<div class="specstate"><strong>${esc(x.title)}</strong><p>${esc(x.body)}</p></div>`).join("")}<h3>Fields</h3>${s.fields.map((f) => `<p><strong>${esc(f.label)}</strong> · ${esc(f.type)}<br>${esc(f.help)}${f.options.length ? "<br>Options: " + esc(f.options.join(", ")) : ""}</p>`).join("") || "<p>No input fields in this view.</p>"}<h3>States & recovery</h3>${s.states.map((x) => `<div class="specstate"><strong>${esc(x.name)}</strong><p>${esc(x.copy)}</p></div>`).join("")}<h3>Responsive behavior</h3><p>${esc(s.mobile)}</p><h3>Guardrails</h3><p>${esc(s.notes || "Follow the shared interaction specification.")}</p><h3>Journey coverage</h3><p>${esc(s.flowIds.join(", "))}</p><p><a href="../SCREENS.md">Full specifications</a> · <a href="../INTERACTIONS.md">Interaction contract</a></p>`;
   $("closeSpec").onclick = () => toggleInspector(false);
 }
 function toggleInspector(open) {
@@ -1009,13 +1024,18 @@ function toggleInspector(open) {
     $("closeSpec").focus();
   } else $("inspect").focus();
 }
+function flowDestination(id) {
+  if (["F09", "F31"].includes(activeFlow?.id) && id.startsWith("I"))
+    return identityHref(id, activeFlow.id === "F09" ? "A01" : "B01");
+  return id;
+}
 function renderFlow() {
   const target = $("journeySteps");
   target.innerHTML = activeFlow
     ? activeFlow.path
         .map(
           (id, i) =>
-            `<a href="#${id}"${id === current.id ? ' aria-current="step"' : ""} title="${esc(byId.get(id).title)}">${i + 1}. ${id}</a>`,
+            `<a href="#${flowDestination(id)}"${id === current.id ? ' aria-current="step"' : ""} title="${esc(byId.get(id).title)}">${i + 1}. ${id}</a>`,
         )
         .join("")
     : "";
@@ -1037,7 +1057,7 @@ function render() {
       : heading(s);
   let body = panel ? panelBody(panel) : renderBody(s);
   $("canvas").innerHTML =
-    `${nav(s)}${workspace ? '<div class="workspace">' + sidebar(s) + '<main class="maincol">' : "<main>"}${head}<div id="designBody">${body}</div>${panel ? '<p class="panelFeedback" id="panelFeedback" role="status"></p>' : ""}</main>${workspace ? "</div>" : ""}${footer()}<div class="specHint">${s.id} · ${esc(s.kind)} · ${esc(s.route)} · DESIGN SAMPLE · <a href="../SCREENS.md">Screen specification ↗</a></div>`;
+    `${nav(s)}${workspace ? '<div class="workspace">' + sidebar(s) + '<main class="maincol">' : "<main>"}${head}<div id="designBody">${body}</div>${panel ? '<p class="panelFeedback" id="panelFeedback" role="status"></p>' : ""}</main>${workspace ? "</div>" : ""}${footer()}<div class="specHint">${s.id} · ${esc(s.kind)} · ${esc(displayedRoute(s))} · DESIGN SAMPLE · <a href="../SCREENS.md">Screen specification ↗</a></div>`;
   restorePageDraft();
   syncReviewControls();
   renderFlow();
@@ -1151,7 +1171,12 @@ $("identityPreview").onchange = (e) => {
   render();
 };
 document.addEventListener("focusin", (e) => {
-  if (!previewSignedIn || cornerExpanded || !$("canvas").contains(e.target))
+  if (
+    !previewSignedIn ||
+    $("orderCorner").hidden ||
+    cornerExpanded ||
+    !$("canvas").contains(e.target)
+  )
     return;
   const corner = $("orderCorner").getBoundingClientRect(),
     target = e.target.getBoundingClientRect();

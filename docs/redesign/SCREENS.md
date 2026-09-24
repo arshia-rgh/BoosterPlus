@@ -2,7 +2,7 @@
 
 Design review edition · 21 September 2026. All monetary values and identities are fictional examples. Screen IDs identify design views, not new implemented routes. Business rules and implementation boundaries remain in README.md.
 
-113 designed views, including subviews of existing routes. Shared behavior in DESIGN_SYSTEM.md and INTERACTIONS.md applies to every view.
+115 designed views, including subviews of existing routes. Shared behavior in DESIGN_SYSTEM.md and INTERACTIONS.md applies to every view.
 
 ## P01 — Your next level starts here.
 
@@ -934,9 +934,9 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Customer portal only. Staff use dedicated I09 admin or I10 booster entry surfaces; verification templates carry explicit portal context.
 
-**Journeys:** F01, F02, F03, F08, F09, F11, F25, F26, F27, F28, F29, F30.
+**Journeys:** F01, F02, F03, F08, F11, F25, F26, F27, F28, F29, F30.
 
 ## I02 — Check your email.
 
@@ -962,7 +962,6 @@ Allowed options: .
 ### Actions & destinations
 
 - **Verify · demo** → [P05](design/index.html#P05). Prototype actions are simulations only; guards must pass in the eventual application.
-- **Staff verification** → [I03](design/index.html#I03). Prototype actions are simulations only; guards must pass in the eventual application.
 - **Change email** → [I01](design/index.html#I01). Prototype actions are simulations only; guards must pass in the eventual application.
 
 ### States & recovery
@@ -979,9 +978,9 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Context-specific return: order draft, saved listing, seller draft, or account overview. Never accept arbitrary external return URLs.
+Context-specific return: order draft, saved listing, seller draft, or account overview. Never accept arbitrary external return URLs. Customer portal only. Staff use dedicated I09 admin or I10 booster entry surfaces; verification templates carry explicit portal context. Shared visual template only: staff variants use /admin or /booster hash context, never a shared customer login. Portal badge, same-portal return and recovery persist.
 
-**Journeys:** F01, F02, F03, F08, F09, F10, F11, F26, F27, F28, F29, F30.
+**Journeys:** F01, F02, F03, F08, F10, F11, F26, F27, F28, F29, F30, F09, F31.
 
 ## I03 — Verify your staff sign-in.
 
@@ -1020,9 +1019,9 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Shared visual template only: staff variants use /admin or /booster hash context, never a shared customer login. Portal badge, same-portal return and recovery persist.
 
-**Journeys:** F09.
+**Journeys:** F09, F31.
 
 ## I04 — Set up your authenticator.
 
@@ -1062,9 +1061,9 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Shared visual template only: staff variants use /admin or /booster hash context, never a shared customer login. Portal badge, same-portal return and recovery persist.
 
-**Journeys:** F09.
+**Journeys:** F09, F31.
 
 ## I05 — Recover staff access.
 
@@ -1103,9 +1102,9 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Use the common interaction contract; do not invent additional commercial promises.
+ Shared visual template only: staff variants use /admin or /booster hash context, never a shared customer login. Portal badge, same-portal return and recovery persist.
 
-**Journeys:** F09.
+**Journeys:** F09, F31.
 
 ## I06 — Confirm it’s you.
 
@@ -1136,9 +1135,103 @@ This action requires recent Google/email and authenticator verification.
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
-Reuse for refunds, seller payouts, staff permissions, private credentials, policy publication and other server-required sensitive actions.
+Reuse for refunds, seller payouts, staff permissions, private credentials, policy publication and other server-required sensitive actions. Shared visual template only: staff variants use /admin or /booster hash context, never a shared customer login. Portal badge, same-portal return and recovery persist.
 
-**Journeys:** F05, F17, F21, F22, F23.
+**Journeys:** F05, F17, F21, F22, F23, F09, F31.
+
+## I09 — Admin sign-in.
+
+**Area:** Identity · **Current route:** `/admin/login` · **Layout:** auth
+
+Separate admin portal: Google or email, then mandatory authenticator. No customer session reuse or public staff signup.
+
+### Page anatomy & content
+
+1. **Admin portal identity** — Explicit admin branding remains through Google, email, authenticator, enrollment, recovery and errors. Customer and other staff sessions do not sign you in here.
+2. **Authorized access only** — After first factor check the assigned portal role. Ineligible or suspended identities receive a generic denial, no role upgrade or automatic account creation.
+3. **Safe return** — Restore only permitted internal destinations in this portal after both factors. On expiry restart here. On cancellation stay at sign-in or leave to public website.
+
+### Fields
+
+| Label | Control | Example/default | Help / conditions |
+| --- | --- | --- | --- |
+| Email address | email |  | Use email autocomplete. Do not disclose whether the address already has an account. |
+
+Allowed options: .
+
+### Actions & destinations
+
+- **Continue with Google · preview** → [I09](design/index.html#I09). Prototype actions are simulations only; guards must pass in the eventual application.
+- **Send email code · preview** → [I02](design/index.html#I02). Prototype actions are simulations only; guards must pass in the eventual application.
+- **Leave portal** → [P01](design/index.html#P01). Prototype actions are simulations only; guards must pass in the eventual application.
+
+### States & recovery
+
+- **Invalid email:** Enter an email address in the format name@example.com.
+- **Rate limited:** Too many attempts. Try again after the displayed server-provided delay.
+- **Google cancelled:** Sign-in was cancelled. Continue with Google or use email.
+- **Google unavailable:** Google sign-in is unavailable. You can use email instead.
+- **Loading:** Keep the page title and stable layout. Show progress in the affected region; do not display empty data as a loaded result.
+- **Request failed:** The action could not complete. Keep safe input, explain the recovery and retry only after checking whether the prior action succeeded.
+- **Access unavailable:** This identity cannot access this portal. Try another identity or contact your PLAYORA administrator. No new role is created.
+- **Session expired:** Your verification session expired. Start again with Google or email in this portal.
+- **Other portal already signed in:** Your customer or other staff session stays separate. Complete this portal’s sign-in to enter.
+
+### Responsive / accessibility
+
+Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
+Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
+
+Proposed design route only; not an implemented application route. Explicit role-bound callbacks/challenges/sessions must be implemented later.
+
+**Journeys:** F09.
+
+## I10 — Booster sign-in.
+
+**Area:** Identity · **Current route:** `/booster/login` · **Layout:** auth
+
+Separate booster portal: Google or email, then mandatory authenticator. No customer session reuse or public staff signup.
+
+### Page anatomy & content
+
+1. **Booster portal identity** — Explicit booster branding remains through Google, email, authenticator, enrollment, recovery and errors. Customer and other staff sessions do not sign you in here.
+2. **Authorized access only** — After first factor check the assigned portal role. Ineligible or suspended identities receive a generic denial, no role upgrade or automatic account creation.
+3. **Safe return** — Restore only permitted internal destinations in this portal after both factors. On expiry restart here. On cancellation stay at sign-in or leave to public website.
+
+### Fields
+
+| Label | Control | Example/default | Help / conditions |
+| --- | --- | --- | --- |
+| Email address | email |  | Use email autocomplete. Do not disclose whether the address already has an account. |
+
+Allowed options: .
+
+### Actions & destinations
+
+- **Continue with Google · preview** → [I10](design/index.html#I10). Prototype actions are simulations only; guards must pass in the eventual application.
+- **Send email code · preview** → [I02](design/index.html#I02). Prototype actions are simulations only; guards must pass in the eventual application.
+- **Leave portal** → [P01](design/index.html#P01). Prototype actions are simulations only; guards must pass in the eventual application.
+
+### States & recovery
+
+- **Invalid email:** Enter an email address in the format name@example.com.
+- **Rate limited:** Too many attempts. Try again after the displayed server-provided delay.
+- **Google cancelled:** Sign-in was cancelled. Continue with Google or use email.
+- **Google unavailable:** Google sign-in is unavailable. You can use email instead.
+- **Loading:** Keep the page title and stable layout. Show progress in the affected region; do not display empty data as a loaded result.
+- **Request failed:** The action could not complete. Keep safe input, explain the recovery and retry only after checking whether the prior action succeeded.
+- **Access unavailable:** This identity cannot access this portal. Try another identity or contact your PLAYORA administrator. No new role is created.
+- **Session expired:** Your verification session expired. Start again with Google or email in this portal.
+- **Other portal already signed in:** Your customer or other staff session stays separate. Complete this portal’s sign-in to enter.
+
+### Responsive / accessibility
+
+Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
+Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
+
+Proposed design route only; not an implemented application route. Explicit role-bound callbacks/challenges/sessions must be implemented later.
+
+**Journeys:** F31.
 
 ## C01 — Good to see you, Player.
 
@@ -3921,7 +4014,7 @@ Every field has a persistent label, linked help/error and visible focus. Read or
 
 **Area:** Administration · **Current route:** `/admin/reviews/:id` · **Layout:** review
 
-Inspect content and eligibility before a moderation decision.
+Review REV-12 with its original content and eligibility evidence. Publication is held because PL-1038 is still in progress.
 
 ### Page anatomy & content
 
@@ -3955,7 +4048,7 @@ Allowed options: .
 Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.
 Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.
 
- Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.
+ Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages. Current fictional review has an eligibility conflict; publication stays disabled until resolved. Never invent a completed order.
 
 **Journeys:** F19.
 
@@ -4034,7 +4127,7 @@ Task → Kind → State → Attempts. Rows become labeled cards below 760px; pre
 ### Actions & destinations
 
 - **Queue retry · demo** → [A31](design/index.html#A31). Prototype actions are simulations only; guards must pass in the eventual application.
-- **Open related payment** → [A15](design/index.html#A15). Prototype actions are simulations only; guards must pass in the eventual application.
+- **Open payment review queue** → [A15](design/index.html#A15). Prototype actions are simulations only; guards must pass in the eventual application.
 
 ### States & recovery
 

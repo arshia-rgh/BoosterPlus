@@ -103,10 +103,87 @@ assert.match(
   run("identityDesign(current)"),
   /I01\/google\/return\/G02%2Fboost%2FG12/,
 );
-location.hash = "#I04/return/B01%2Fview%2FC17";
+location.hash = "#I04/booster/return/B01%2Fview%2FC17";
 run('current=byId.get("I04")');
 assert.match(run("identityDesign(current)"), /NOT A REAL SECRET/);
 assert.doesNotMatch(run("identityDesign(current)"), />Use a recovery code</);
 console.log(
   "Additional state-source, blocked-action, checkout and identity assertions passed (13 assertions).",
+);
+
+// Portal separation is a design-navigation contract, not a session security test.
+for (const [entry, role, home, other] of [
+  ["I09", "admin", "A01", "B01"],
+  ["I10", "booster", "B01", "A01"],
+]) {
+  visit("#" + entry);
+  assert.equal(run("identityPortal()"), role);
+  assert.equal(run("identityReturn()"), home);
+  assert.match(
+    run("identityDesign(current)"),
+    new RegExp(`${entry}/google/return/${home}`),
+  );
+  assert.match(
+    run("identityDesign(current)"),
+    new RegExp(`I02/${role}/return/${home}`),
+  );
+  visit(`#I02/${role}/return/${home}`);
+  assert.match(
+    run("identityDesign(current)"),
+    new RegExp(`I03/${role}/return/${home}`),
+  );
+  assert.doesNotMatch(run("identityDesign(current)"), /Use a recovery code/);
+  visit(`#I03/${role}/return/${home}`);
+  assert.match(
+    run("identityDesign(current)"),
+    new RegExp(`I05/${role}/return/${home}`),
+  );
+  assert.doesNotMatch(run("nav(current) + footer()"), /href="#C01"/);
+  visit(`#${entry}/return/${other}`);
+  assert.equal(run("identityReturn()"), home);
+}
+visit("#I01/return/A36");
+assert.equal(run("identityReturn()"), "P01");
+visit("#I03/return/A01");
+assert.doesNotMatch(run("identityDesign(current)"), /data-identity-next/);
+visit("#I09/return/A36");
+assert.equal(run("identityReturn()"), "A36");
+assert.equal(
+  run('identityHref("I01", "B03/PL-1038/progress")'),
+  "I10/return/B03%2FPL-1038%2Fprogress",
+);
+for (const route of ["G01", "G01/boost", "G01/boost/P04"]) {
+  visit("#" + route);
+  assert.equal(
+    run('journeyDestination("I01")'),
+    "I01/return/" + encodeURIComponent(route),
+  );
+}
+visit("#A31");
+assert.match(
+  run("panelRows(current, panelContext())"),
+  /data-entity-status="Failed"/,
+);
+assert.match(run("panelRows(current, panelContext())"), /Attempts: 3/);
+visit("#A09");
+assert.match(run("panelRows(current, panelContext())"), />Action<select/);
+visit("#A29");
+assert.match(
+  run("refinedRecordBody(panelContext())"),
+  /disabled>Publish review/,
+);
+visit("#C05/PL-1038/messages/booster");
+const customerBoosterThread = run("panelConversation(panelContext())");
+visit("#B03/PL-1038/messages");
+assert.match(customerBoosterThread, /Can we confirm the next play session/);
+assert.match(
+  run("panelConversation(panelContext())"),
+  /Can we confirm the next play session/,
+);
+assert.match(
+  run("panelConversation(panelContext())"),
+  /Assigned booster · 14:22/,
+);
+console.log(
+  "Separate portal, exact return, list semantics, moderation and conversation regression assertions passed.",
 );

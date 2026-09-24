@@ -191,23 +191,21 @@
   },
   {
     "id": "F09",
-    "title": "Staff enrollment, sign-in & recovery",
+    "title": "Separate admin sign-in, enrollment & recovery",
     "path": [
-      "I01",
+      "I09",
       "I02",
-      "I04",
       "I03",
-      "A01",
-      "I05",
-      "C17"
+      "A01"
     ],
     "branches": [
-      "Enrollment required only when missing; authenticator required at every staff sign-in.",
-      "Recovery code substitutes only second factor.",
-      "Owner-reviewed recovery never bypasses identity verification.",
-      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+      "Every step is explicitly admin-scoped: I02/admin, I03/admin, I04/admin, I05/admin. No customer or booster session reuse.",
+      "Google returns to the admin authenticator check; email first verifies I02/admin. No public staff signup.",
+      "Missing enrollment opens I04/admin after first factor; invalid/expired/recovery states remain in this portal. Recovery code substitutes only the second factor.",
+      "Wrong role or suspension denies entry without creating access. Both-factor success revalidates the permitted admin destination.",
+      "Cancelled or expired verification returns to I09; customer and booster portals remain separate. Sensitive actions return to the exact originating editor and are not auto-confirmed."
     ],
-    "done": "Authorized staff session; last-owner and recovery safeguards retained."
+    "done": "Separate authorized admin session only after both factors; safe same-portal return."
   },
   {
     "id": "F10",
@@ -603,5 +601,23 @@
       "Invalid or unpublished configuration blocks new ordering, without affecting history."
     ],
     "done": "Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published."
+  },
+  {
+    "id": "F31",
+    "title": "Separate booster sign-in, enrollment & recovery",
+    "path": [
+      "I10",
+      "I02",
+      "I03",
+      "B01"
+    ],
+    "branches": [
+      "Every step is explicitly booster-scoped: I02/booster, I03/booster, I04/booster, I05/booster. No customer or admin session reuse.",
+      "Google returns to the booster authenticator check; email first verifies I02/booster. No public staff signup.",
+      "Missing enrollment opens I04/booster after first factor; invalid/expired/recovery states remain in this portal. Recovery code substitutes only the second factor.",
+      "Wrong role or suspension denies entry without creating access. Both-factor success revalidates the permitted booster destination.",
+      "Cancelled or expired verification returns to I10; customer and admin portals remain separate. Sensitive actions return to the exact originating editor and are not auto-confirmed."
+    ],
+    "done": "Separate authorized booster session only after both factors; assigned-workspace return."
   }
 ]

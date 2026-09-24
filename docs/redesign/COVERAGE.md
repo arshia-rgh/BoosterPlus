@@ -60,7 +60,7 @@ Generated from both current React Router manifests and the design screen invento
 | `/support/:id` | [C12](design/index.html#C12), [S07](design/index.html#S07) |
 | `/terms` | [P16](design/index.html#P16), [P17](design/index.html#P17) |
 
-**Coverage:** 55 existing routes mapped; 113 design views; 30 journey specifications; 555 named state treatments.
+**Coverage:** 55 existing routes mapped; 115 design views; 31 journey specifications; 573 named state treatments.
 
 ## Deliberate subviews and proposed information architecture
 
@@ -68,7 +68,7 @@ Generated from both current React Router manifests and the design screen invento
 - How it works is a proposed separate informational destination; P16 currently maps to the existing terms surface. Policy types are current content variants, not assumed new APIs.
 - Future-game templates use `/games/:slug` and the existing configurable service path. WoW, League, VALORANT, Dota 2 and Wild Rift are not activated for launch by their designs.
 - Admin form/rule/package/intake/preview/history designs map to current catalog subviews; finance views map to the existing finance workspace.
-- Staff directory/recovery/audit and customer identity substeps remain scoped to the existing authentication/access model.
+- Staff directory/recovery/audit and customer identity substeps retain their authorization rules. I09 `/admin/login` and I10 `/booster/login` are separately requested proposed design entries; their role-scoped verification/session boundaries require later application implementation. See SEPARATE_PORTAL_SIGN_IN.md.
 - X01 covers route-not-found and shared access/outage recovery outside the ordinary route list.
 
 ## Unimplemented and intentionally excluded

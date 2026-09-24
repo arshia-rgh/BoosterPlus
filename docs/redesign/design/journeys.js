@@ -7,6 +7,22 @@ const isAccessLoss = (name) =>
     name,
   );
 function applyDesignState() {
+  document.querySelectorAll("[data-state-href]").forEach((el) => {
+    el.setAttribute("href", el.dataset.stateHref);
+    el.removeAttribute("aria-disabled");
+    delete el.dataset.stateHref;
+  });
+  document.querySelectorAll("[data-state-disabled]").forEach((el) => {
+    el.disabled = false;
+    delete el.dataset.stateDisabled;
+  });
+  document
+    .querySelectorAll("[data-identity-input][aria-invalid]")
+    .forEach((el) => {
+      el.removeAttribute("aria-invalid");
+      el.removeAttribute("aria-describedby");
+    });
+
   document.querySelectorAll("[data-state-hidden]").forEach((el) => {
     el.hidden = false;
     delete el.dataset.stateHidden;
@@ -33,6 +49,7 @@ function applyDesignState() {
     }
   }
   if (!st || st.name === "Reduced motion") return;
+  if (current.id.startsWith("I") && applyIdentityState(st)) return;
   if (pageHead) {
     pageHead.dataset.originalHeading = pageHead.innerHTML;
     pageHead.querySelector("h1").textContent = s.title;
@@ -155,63 +172,195 @@ function checkoutDesign(s) {
     return `<div class="content">${header}<section class="card"><h2>Waiting for payment · invoice example</h2><p>Example amount: ${amount} USDT · TRON. Confirm the exact provider amount and network in the implemented checkout.</p><div class="copybox">DEMO-ADDRESS-NOT-PAYABLE</div><p>No payable address or QR code exists in this design.</p><p>Payment has not been detected. Do not send a duplicate payment if you already paid.</p><div class="actions"><a class="button" href="#${href("P11")}">Preview confirmation status</a><a href="#${href(back)}">Return to purchase review</a></div><p>For payment problems, keep this purchase reference when contacting support.</p></section></div>`;
   return `<div class="content">${header}<section class="card"><h2>Confirmation pending</h2><p>Provider evidence has not confirmed this purchase. Do not pay again. Fulfillment remains unavailable.</p><div class="actions"><a class="button" href="#${href("P10")}">Back to invoice example</a><a href="#${href(back)}">Return to purchase review</a></div><p class="quiet">This is a status illustration, not a completed payment.</p></section></div>`;
 }
+// Separate entry surfaces and role-scoped verification; these are not real sessions.
+function identityPortal() {
+  const parts = location.hash.slice(1).split("/");
+  if (current.id === "I09") return "admin";
+  if (current.id === "I10") return "booster";
+  if (current.id === "I01") return "customer";
+  if (current.id.startsWith("I") && ["admin", "booster"].includes(parts[1]))
+    return parts[1];
+  return "customer";
+}
+function portalHome(role) {
+  return role === "admin" ? "A01" : role === "booster" ? "B01" : "P01";
+}
+function portalEntry(role) {
+  return role === "admin" ? "I09" : role === "booster" ? "I10" : "I01";
+}
+function destinationRole(origin) {
+  const screen = byId.get(origin.split("/")[0]);
+  return screen && isAdmin(screen)
+    ? "admin"
+    : screen?.group === "Booster"
+      ? "booster"
+      : "customer";
+}
 function identityReturn() {
   const parts = location.hash.split("/"),
-    index = parts.indexOf("return");
+    index = parts.indexOf("return"),
+    role = identityPortal();
   if (index >= 0) {
     try {
       const dest = decodeURIComponent(parts[index + 1] || "");
-      if (byId.has(dest.split("/")[0])) return dest;
+      if (
+        byId.has(dest.split("/")[0]) &&
+        !dest.startsWith("I") &&
+        destinationRole(dest) === role
+      )
+        return dest;
     } catch {}
   }
   if (current.kind === "game")
     return `${current.id}/${parts[1]}/${parts[3]?.replace("from-", "") || "P05"}`;
-  if (["I03", "I04", "I05"].includes(current.id)) return "A01";
-  if (current.id === "I07") return "C17";
+  if (current.id === "I07")
+    return role === "customer" ? "C17" : `${portalHome(role)}/view/C17`;
   if (current.id === "I08") return "C23/PL-1048/delivery";
-  return "P01";
+  return portalHome(role);
 }
 function identityHref(id, origin = identityReturn()) {
-  return `${id}/return/${encodeURIComponent(origin)}`;
+  const role = destinationRole(origin);
+  if (id === "I01") id = portalEntry(role);
+  return `${id}${!["I01", "I09", "I10"].includes(id) ? "/" + role : ""}/return/${encodeURIComponent(origin)}`;
+}
+function unscopedStaffIdentity() {
+  return (
+    ["I03", "I04", "I05"].includes(current.id) &&
+    identityPortal() === "customer"
+  );
 }
 function identityDesign(s) {
-  const origin = identityReturn(),
-    staff = /^[AB]/.test(origin),
-    google = location.hash.includes("/google/");
-  const title = google ? "Continue securely with Google" : s.title;
-  const intro =
-    s.id === "I01"
-      ? "Use Google or a one-time email code. No password is needed."
-      : s.id === "I02"
-        ? "Enter the one-time code sent to your email. Do not enter a real code in this design."
-        : s.id === "I03"
-          ? "Your Google or email check is complete. An authenticator code is required for every staff sign-in."
-          : s.id === "I05"
-            ? "An unused recovery code replaces only the authenticator step. Recent Google or email verification is still required."
-            : s.id === "I07"
-              ? "Verify the new address before it replaces your current sign-in email."
-              : s.id === "I08"
-                ? "Confirm your identity before private delivery instructions can be opened."
-                : "Verify your identity for the pending action. Nothing is changed by this preview.";
+  if (unscopedStaffIdentity())
+    return `<section class="autharea"><div class="authcard"><div class="eyebrow">PLAYORA / STAFF PORTALS</div><h1>Choose your staff portal</h1><p>Open your assigned portal to verify Google or email, then your authenticator. Customer accounts do not require staff verification and cannot grant staff access.</p><div class="actions"><a class="button" href="#I09">Admin sign-in</a><a class="button" href="#I10">Booster sign-in</a></div><a href="#P01">Back to website</a><p class="quiet">Design preview · No sign-in or role change occurs.</p></div></section>`;
+
+  const role = identityPortal(),
+    origin = identityReturn(),
+    staff = role !== "customer",
+    roleName =
+      role === "admin" ? "Admin" : role === "booster" ? "Booster" : "Customer",
+    entry = portalEntry(role),
+    entryStep = ["I01", "I09", "I10"].includes(s.id),
+    google = location.hash.includes("/google/"),
+    href = (id) => identityHref(id, origin),
+    destination = origin === "P01" ? "C01" : origin;
+  const title = google
+    ? `Continue with Google · ${roleName.toLowerCase()}`
+    : entryStep
+      ? `${roleName} sign-in`
+      : staff
+        ? `${roleName} · ${s.title}`
+        : s.title;
+  const intro = entryStep
+    ? staff
+      ? `For authorized ${role === "admin" ? "administrators" : "boosters"} only. Verify with Google or email, then your authenticator. This portal does not create staff access.`
+      : "Sign in or create your customer account with Google or a one-time email code. No password needed."
+    : s.id === "I02"
+      ? "Enter the one-time code sent to your email. Do not enter a real code in this design."
+      : s.id === "I03"
+        ? "Google or email verification comes first. An authenticator code is required every time you sign in to this portal."
+        : s.id === "I05"
+          ? "An unused recovery code replaces only the authenticator step. Recent Google or email verification is still required."
+          : s.id === "I07"
+            ? "Verify the new address before it replaces your current sign-in email."
+            : "Verify your identity before continuing. No account or permissions change in this preview.";
   let body = "";
-  if (s.id === "I04")
-    body = `<ol><li>Add PLAYORA to your authenticator using the setup QR or manual key.</li><li>Enter the generated six-digit code to verify setup.</li><li>Save the single-use recovery codes privately.</li></ol><div class="copybox">SETUP QR / MANUAL KEY PLACEMENT · NOT A REAL SECRET</div><label class="field">Example authenticator code<input type="text" autocomplete="one-time-code" data-identity-input></label><details><summary>Recovery-code storage preview</summary><p>Recovery codes appear once after verification. Store them privately before leaving setup.</p><code>DEMO-RECOVERY-NOT-VALID</code></details><label class="field check"><input type="checkbox" data-recovery-saved><span>I understand recovery codes must be saved before leaving setup.</span></label><button class="primary" data-identity-next="${origin}" data-input-kind="enrollment">Preview completed setup and return</button>`;
+  if (["I03", "I04", "I05"].includes(s.id) && !staff)
+    body = `<p>Staff verification belongs to a separate portal. Customer sign-in cannot open a staff workspace.</p><div class="actions"><a href="#I09">Admin sign-in</a><a href="#I10">Booster sign-in</a></div>`;
+  else if (s.id === "I04")
+    body = `<ol><li>Add PLAYORA ${roleName} to your authenticator using the setup QR or manual key.</li><li>Enter the generated six-digit code to verify setup.</li><li>Save the single-use recovery codes privately.</li></ol><div class="copybox">SETUP QR / MANUAL KEY PLACEMENT · NOT A REAL SECRET</div><label class="field">Example authenticator code<input type="text" inputmode="numeric" autocomplete="one-time-code" data-identity-input></label><details><summary>Recovery-code storage preview</summary><p>Recovery codes appear once after verification. Store them privately before leaving setup.</p><code>DEMO-RECOVERY-NOT-VALID</code></details><label class="field check"><input type="checkbox" data-recovery-saved><span>I understand recovery codes must be saved before leaving setup.</span></label><button class="primary" data-identity-next="${destination}" data-input-kind="enrollment">Preview completed setup and return</button>`;
   else if (google)
-    body = `<p>Google opens its own identity screen. Successful verification returns to the original task${staff ? ", followed by the required staff authenticator check" : ""}.</p><a class="button primary" data-identity-return="${staff ? "staff" : "customer"}" href="#${staff ? identityHref("I03", origin) : origin === "P01" ? "C01" : origin}">Preview return to ${staff ? "staff verification" : "your task"}</a>`;
-  else if (s.id === "I01")
-    body = `<a class="button" href="#I01/google/return/${encodeURIComponent(origin)}">Continue with Google · preview</a><div class="divider"></div><label class="field">Email address<input type="email" autocomplete="email" data-identity-input></label><button class="primary" data-identity-next="${identityHref("I02", origin)}" data-input-kind="email">Send email code · preview</button>`;
-  else if (s.id === "I06" || s.id === "I08")
-    body = `<p>Return destination: ${esc(byId.get(origin.split("/")[0])?.title || "your task")}</p><a class="button primary" href="#${identityHref("I01", origin)}">Verify with Google or email</a>`;
+    body = `<p>Google opens its own identity screen. Cancellation returns to this ${roleName.toLowerCase()} portal. ${staff ? "An eligible staff role and second factor are required before the workspace opens." : "Successful verification restores your original task."}</p><a class="button primary" data-identity-return="${role}" href="#${staff ? href("I03") : destination}">Preview ${staff ? "eligible identity → authenticator" : "return to your task"}</a><a class="textlink" href="#${href(entry)}">Cancel Google and return to ${roleName.toLowerCase()} sign-in</a>`;
+  else if (entryStep)
+    body = `<a class="button" href="#${entry}/google/return/${encodeURIComponent(origin)}">Continue with Google · preview</a><div class="divider"></div><label class="field">${staff ? "Work email address" : "Email address"}<input type="email" autocomplete="email" data-identity-input></label><button class="primary" data-identity-next="${href("I02")}" data-input-kind="email">Send email code · preview</button>${staff ? "<details><summary>Need access or help signing in?</summary><p>Contact your PLAYORA administrator through your established staff contact. An existing customer or other staff session does not grant access to this portal. No public staff signup is available.</p></details>" : ""}`;
+  else if (["I06", "I08"].includes(s.id))
+    body = `<p>Return destination: ${esc(byId.get(origin.split("/")[0])?.title || "your task")}</p><a class="button primary" href="#${href("I01")}">Verify with Google or email</a>`;
   else if (s.id === "I07")
-    body = `<label class="field">New email address<input type="email" autocomplete="email" data-identity-input></label><button class="primary" data-identity-next="${identityHref("I02", origin)}" data-input-kind="email">Preview verification email</button>`;
+    body = `<label class="field">New email address<input type="email" autocomplete="email" data-identity-input></label><button class="primary" data-identity-next="${href("I02")}" data-input-kind="email">Preview verification email</button>`;
   else
-    body = `<label class="field">${s.id === "I02" ? "Email code" : s.id === "I05" ? "Recovery code" : "Authenticator code"}<input type="text" autocomplete="one-time-code" data-identity-input></label><p>Use a fictional ${s.id === "I05" ? "recovery code" : "six-digit code"} for this preview.</p><button class="primary" data-identity-next="${s.id === "I02" && staff ? identityHref("I03", origin) : origin === "P01" ? "C01" : origin === "P01" ? "C01" : origin}" data-input-kind="${s.id === "I05" ? "recovery" : "code"}">Preview verified return</button>${staff ? `<div class="actions"><a href="#${identityHref(s.id === "I05" ? "I03" : "I05", origin)}">${s.id === "I05" ? "Use authenticator" : "Use a recovery code"}</a></div>` : ""}`;
-  return `<section class="autharea"><div class="authcard"><div class="eyebrow">PLAYORA / ${staff ? "STAFF VERIFICATION" : "SIGN-IN"}</div><h1>${esc(title)}</h1><p>${intro}</p>${body}<p data-form-feedback role="status"></p><div class="actions"><a href="#${origin}">Cancel and return to ${esc(byId.get(origin.split("/")[0])?.title || "your task")}</a></div><p class="quiet">Design journey only. No sign-in, code delivery or account change occurs.</p></div></section>`;
+    body = `<label class="field">${s.id === "I02" ? "Email code" : s.id === "I05" ? "Recovery code" : "Authenticator code"}<input type="text" ${s.id === "I05" ? "" : 'inputmode="numeric"'} autocomplete="one-time-code" data-identity-input></label><p>Use a fictional ${s.id === "I05" ? "recovery code" : "six-digit code"} for this preview.</p><button class="primary" data-identity-next="${s.id === "I02" && staff ? href("I03") : destination}" data-input-kind="${s.id === "I05" ? "recovery" : "code"}">${s.id === "I02" && staff ? "Preview eligible identity → authenticator" : "Preview verified return"}</button>${s.id === "I02" ? `<div class="actions"><a href="#${href(entry)}">Change email or request a new code</a></div>` : staff ? `<div class="actions"><a href="#${href(s.id === "I05" ? "I03" : "I05")}">${s.id === "I05" ? "Use authenticator" : "Use a recovery code"}</a></div>${s.id === "I05" ? "<p>No codes left? Contact your administrator for reviewed recovery. Access stays unavailable during review.</p>" : ""}` : ""}`;
+  const cancel = staff ? href(entry) : origin;
+  return `<section class="autharea"><div class="authcard" data-auth-portal="${role}"><div class="eyebrow">PLAYORA / ${roleName.toUpperCase()} PORTAL</div><h1>${esc(title)}</h1><p>${intro}</p>${staff ? `<p class="quiet">${entryStep ? "Step 1 · Google or email" : s.id === "I02" ? "Step 1 · Email verification" : "Step 2 · Authenticator or recovery"} · ${roleName} access only</p>` : ""}${body}<p data-form-feedback role="status"></p><div class="actions"><a href="#${cancel}">${staff ? "Start over at " + roleName.toLowerCase() + " sign-in" : "Cancel and return to " + esc(byId.get(origin.split("/")[0])?.title || "your task")}</a>${staff ? '<a href="#P01">Leave portal</a>' : ""}</div><p class="quiet">Design journey only. No sign-in, code delivery or account change occurs.</p></div></section>`;
+}
+function applyIdentityState(st) {
+  if (
+    /Session expired|Access unavailable|Owner review|Enrollment required|Other portal/i.test(
+      st.name,
+    )
+  )
+    return false;
+  const box = document.querySelector(".authcard");
+  if (!box) return false;
+  const waiting = /Loading|Rate limited|Too many attempts/i.test(st.name),
+    input = box.querySelector("[data-identity-input]"),
+    emailStep = reviewScreen().id === "I02",
+    google = /Google/.test(st.name),
+    role = identityPortal();
+  const messages = {
+    Loading: `Checking this ${role} sign-in step… Please wait before trying again.`,
+    "Request failed":
+      "We couldn’t complete this check. Your place is kept. Try this step again; no sign-in has been completed.",
+    "Rate limited":
+      "Too many attempts. Please wait before retrying. The retry time will be shown when it is available.",
+    "Too many attempts":
+      "Verification is temporarily paused. Wait for the retry time from the service; no sign-in has been completed.",
+    "Invalid email": "Enter an email address in the format name@example.com.",
+    "Google cancelled":
+      "Google sign-in was cancelled. Try Google again or use email in this same portal.",
+    "Google unavailable":
+      "Google sign-in is unavailable. Try again later or use email in this same portal.",
+    Expired:
+      "This email code expired. Request a new code; your intended destination stays the same.",
+    "Already used":
+      "This email code was already used. Request a new code to continue securely.",
+    "Used or invalid":
+      "This recovery code could not be used. Try another unused code, or use your authenticator.",
+    "Invalid code":
+      "That authenticator code could not be verified. Check your app and enter a current code below.",
+    "Wrong code":
+      "That email code did not work. Check the code and try again below.",
+  };
+  const note = document.createElement("section");
+  note.className = "designState";
+  note.id = "identityStateFeedback";
+  note.setAttribute("role", waiting ? "status" : "alert");
+  note.innerHTML = `<h2>${esc(st.name)}</h2><p>${esc(messages[st.name] || "This verification step needs attention. Review the details and try again.")}</p>${emailStep && /Expired|Already used/.test(st.name) ? `<a href="#${identityHref(portalEntry(role))}">Request a new email code</a>` : google ? `<a href="#${identityHref(portalEntry(role))}">Choose Google or email again</a>` : ""}<button data-auth-state-reset>${waiting || (emailStep && /Expired|Already used/.test(st.name)) ? "Return to default preview" : "Retry this step · preview"}</button>`;
+  box.querySelector("h1").insertAdjacentElement("afterend", note);
+  if (input && /Invalid|Wrong|Used or invalid/i.test(st.name)) {
+    input.setAttribute("aria-invalid", "true");
+    input.setAttribute("aria-describedby", note.id);
+  }
+  if (waiting || (emailStep && /Expired|Already used/.test(st.name)))
+    box.querySelectorAll("[data-identity-next]").forEach((button) => {
+      button.disabled = true;
+      button.dataset.stateDisabled = "true";
+    });
+  if (waiting)
+    box
+      .querySelectorAll(
+        'a[href*="/google/"], [data-identity-return], a[href*="/return/"]',
+      )
+      .forEach((a) => {
+        if (a.textContent.startsWith("Start over")) return;
+        a.dataset.stateHref = a.getAttribute("href");
+        a.removeAttribute("href");
+        a.setAttribute("aria-disabled", "true");
+      });
+  note.querySelector("[data-auth-state-reset]").onclick = () => {
+    stateName = "";
+    applyDesignState();
+    syncReviewControls();
+    input?.focus();
+  };
+  return true;
 }
 function bindJourneyControls() {
   document.querySelectorAll('[data-identity-return="customer"]').forEach(
     (a) =>
-      (a.onclick = () => {
+      (a.onclick = (event) => {
+        if (a.getAttribute("aria-disabled") === "true") {
+          event.preventDefault();
+          return;
+        }
         previewSignedIn = true;
         $("identityPreview").value = "customer";
       }),
@@ -260,7 +409,7 @@ function bindJourneyControls() {
           input.focus();
           return;
         }
-        if (kind !== "email" && !/^[AB]/.test(b.dataset.identityNext)) {
+        if (kind !== "email" && identityPortal() === "customer") {
           previewSignedIn = true;
           $("identityPreview").value = "customer";
         }
@@ -271,12 +420,7 @@ function bindJourneyControls() {
 function journeyDestination(to) {
   const ctx = panelContext();
   if (to === "I01" && !ctx) {
-    const origin =
-      current.kind === "game"
-        ? `${current.id}/${location.hash.split("/")[1]}/${location.hash.split("/")[2] || "P05"}`
-        : current.id === "P01"
-          ? "P01"
-          : current.id;
+    const origin = location.hash.slice(1) || current.id;
     return identityHref("I01", origin);
   }
   if (["P09", "P10", "P11"].includes(to) && !ctx && current.kind !== "game")
@@ -326,6 +470,8 @@ function refinedBody(s) {
 }
 function refinedRecordBody(ctx) {
   const t = ctx.family.type;
+  if (t === "moderation")
+    return `<section class="card"><h3>Review REV-12 · Publication held</h3><dl class="recordFacts"><div><dt>Public alias</dt><dd>Example player</dd></div><div><dt>Rating</dt><dd>4 / 5</dd></div><div><dt>Submitted</dt><dd>24 Sep · 14:00 · fictional example</dd></div><div><dt>Related order</dt><dd>PL-1038 · In progress</dd></div></dl><blockquote>“The team kept me updated and arranging a session was straightforward.”</blockquote><p>Original text · no edits recorded. No personal information is present in this example. A low rating alone is not grounds to hide a review.</p><p>Eligibility conflict: the linked order is not completed. Resolve the record mismatch and verify eligibility before publication. Do not change an order merely to publish a review.</p><button disabled>Publish review</button><label class="field">Review note<textarea placeholder="Record the eligibility issue for staff"></textarea></label>${panelDemo("Preview moderation note", "Design preview: the eligibility concern would be recorded for review. Nothing was published.")}<a class="textlink" href="#A03/PL-1038/overview/from-review">Inspect related order PL-1038</a></section>`;
   if (t === "sale") {
     if (ctx.view === "messages") return null;
     const names = {
@@ -582,13 +728,17 @@ function bindRefinedForms() {
         ? "Internal note · staff only"
         : panelContext()?.family?.type === "submission"
           ? "Reply to seller"
-          : "Reply to customer";
+          : location.hash.endsWith("/booster")
+            ? "Reply to customer and assigned booster"
+            : "Reply to customer";
       document.querySelector("#sendDemo").textContent = internal
         ? "Add internal note · demo"
         : "Send reply · demo";
       document.querySelector("#chatFeedback").textContent = internal
-        ? "Only authorized staff can see this note. The customer or seller cannot see it."
-        : "Visible to the named customer or seller.";
+        ? "Only authorized support/admin staff can see this note. Customers, sellers and boosters cannot see it."
+        : location.hash.endsWith("/booster")
+          ? "Visible to the customer and assigned booster in this thread."
+          : "Visible to the named customer or seller; not the booster.";
     };
     audience.onchange = update;
     update();
@@ -598,6 +748,16 @@ function targetedState(s, st, ctx, h) {
   const reset =
     "<button data-return-default>Return to default preview</button>";
   const title = `<${h}>${esc(st.name)}</${h}>`;
+  if (s.id.startsWith("I")) {
+    const role = identityPortal(),
+      entry = identityHref(portalEntry(role)),
+      name = role === "customer" ? "customer" : role;
+    const action =
+      /Enrollment required/i.test(st.name) && role !== "customer"
+        ? `<a class="button" href="#${identityHref("I04")}">Set up your ${name} authenticator</a>`
+        : `<a class="button" href="#${entry}">Return to ${name} sign-in</a>`;
+    return `${title}<p>${esc(st.copy)}</p><p>${name === "customer" ? "Customer" : name === "admin" ? "Admin" : "Booster"} portal · no session or new access has been granted.</p>${action}<div class="actions">${reset}</div>`;
+  }
   if (ctx?.family && isAccessLoss(st.name))
     return `${title}<p>This record is no longer available in your workspace. Its details and conversation are hidden.</p><a class="button" href="#${ctx.family.parent}">Back to ${esc(ctx.family.label.toLowerCase())}</a><div class="actions">${reset}</div>`;
   if (ctx?.family && ctx.view === "messages")

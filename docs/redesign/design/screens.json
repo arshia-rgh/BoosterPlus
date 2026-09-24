@@ -1932,14 +1932,13 @@
       }
     ],
     "table": null,
-    "notes": "",
+    "notes": " Customer portal only. Staff use dedicated I09 admin or I10 booster entry surfaces; verification templates carry explicit portal context.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F01",
       "F02",
       "F03",
       "F08",
-      "F09",
       "F11",
       "F25",
       "F26",
@@ -1974,10 +1973,6 @@
       {
         "label": "Verify · demo",
         "to": "P05"
-      },
-      {
-        "label": "Staff verification",
-        "to": "I03"
       },
       {
         "label": "Change email",
@@ -2027,21 +2022,22 @@
       }
     ],
     "table": null,
-    "notes": "Context-specific return: order draft, saved listing, seller draft, or account overview. Never accept arbitrary external return URLs.",
+    "notes": "Context-specific return: order draft, saved listing, seller draft, or account overview. Never accept arbitrary external return URLs. Customer portal only. Staff use dedicated I09 admin or I10 booster entry surfaces; verification templates carry explicit portal context. Shared visual template only: staff variants use /admin or /booster hash context, never a shared customer login. Portal badge, same-portal return and recovery persist.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F01",
       "F02",
       "F03",
       "F08",
-      "F09",
       "F10",
       "F11",
       "F26",
       "F27",
       "F28",
       "F29",
-      "F30"
+      "F30",
+      "F09",
+      "F31"
     ]
   },
   {
@@ -2103,10 +2099,11 @@
       }
     ],
     "table": null,
-    "notes": "",
+    "notes": " Shared visual template only: staff variants use /admin or /booster hash context, never a shared customer login. Portal badge, same-portal return and recovery persist.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
-      "F09"
+      "F09",
+      "F31"
     ]
   },
   {
@@ -2175,10 +2172,11 @@
       }
     ],
     "table": null,
-    "notes": "",
+    "notes": " Shared visual template only: staff variants use /admin or /booster hash context, never a shared customer login. Portal badge, same-portal return and recovery persist.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
-      "F09"
+      "F09",
+      "F31"
     ]
   },
   {
@@ -2240,10 +2238,11 @@
       }
     ],
     "table": null,
-    "notes": "",
+    "notes": " Shared visual template only: staff variants use /admin or /booster hash context, never a shared customer login. Portal badge, same-portal return and recovery persist.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
-      "F09"
+      "F09",
+      "F31"
     ]
   },
   {
@@ -2297,14 +2296,194 @@
     ],
     "fields": [],
     "table": null,
-    "notes": "Reuse for refunds, seller payouts, staff permissions, private credentials, policy publication and other server-required sensitive actions.",
+    "notes": "Reuse for refunds, seller payouts, staff permissions, private credentials, policy publication and other server-required sensitive actions. Shared visual template only: staff variants use /admin or /booster hash context, never a shared customer login. Portal badge, same-portal return and recovery persist.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F05",
       "F17",
       "F21",
       "F22",
-      "F23"
+      "F23",
+      "F09",
+      "F31"
+    ]
+  },
+  {
+    "id": "I09",
+    "group": "Identity",
+    "title": "Admin sign-in.",
+    "route": "/admin/login",
+    "kind": "auth",
+    "summary": "Separate admin portal: Google or email, then mandatory authenticator. No customer session reuse or public staff signup.",
+    "sections": [
+      {
+        "title": "Admin portal identity",
+        "body": "Explicit admin branding remains through Google, email, authenticator, enrollment, recovery and errors. Customer and other staff sessions do not sign you in here."
+      },
+      {
+        "title": "Authorized access only",
+        "body": "After first factor check the assigned portal role. Ineligible or suspended identities receive a generic denial, no role upgrade or automatic account creation."
+      },
+      {
+        "title": "Safe return",
+        "body": "Restore only permitted internal destinations in this portal after both factors. On expiry restart here. On cancellation stay at sign-in or leave to public website."
+      }
+    ],
+    "actions": [
+      {
+        "label": "Continue with Google · preview",
+        "to": "I09"
+      },
+      {
+        "label": "Send email code · preview",
+        "to": "I02"
+      },
+      {
+        "label": "Leave portal",
+        "to": "P01"
+      }
+    ],
+    "states": [
+      {
+        "name": "Invalid email",
+        "copy": "Enter an email address in the format name@example.com."
+      },
+      {
+        "name": "Rate limited",
+        "copy": "Too many attempts. Try again after the displayed server-provided delay."
+      },
+      {
+        "name": "Google cancelled",
+        "copy": "Sign-in was cancelled. Continue with Google or use email."
+      },
+      {
+        "name": "Google unavailable",
+        "copy": "Google sign-in is unavailable. You can use email instead."
+      },
+      {
+        "name": "Loading",
+        "copy": "Keep the page title and stable layout. Show progress in the affected region; do not display empty data as a loaded result."
+      },
+      {
+        "name": "Request failed",
+        "copy": "The action could not complete. Keep safe input, explain the recovery and retry only after checking whether the prior action succeeded."
+      },
+      {
+        "name": "Access unavailable",
+        "copy": "This identity cannot access this portal. Try another identity or contact your PLAYORA administrator. No new role is created."
+      },
+      {
+        "name": "Session expired",
+        "copy": "Your verification session expired. Start again with Google or email in this portal."
+      },
+      {
+        "name": "Other portal already signed in",
+        "copy": "Your customer or other staff session stays separate. Complete this portal’s sign-in to enter."
+      }
+    ],
+    "fields": [
+      {
+        "label": "Email address",
+        "type": "email",
+        "value": "",
+        "help": "Use email autocomplete. Do not disclose whether the address already has an account.",
+        "options": []
+      }
+    ],
+    "table": null,
+    "notes": "Proposed design route only; not an implemented application route. Explicit role-bound callbacks/challenges/sessions must be implemented later.",
+    "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
+    "flowIds": [
+      "F09"
+    ]
+  },
+  {
+    "id": "I10",
+    "group": "Identity",
+    "title": "Booster sign-in.",
+    "route": "/booster/login",
+    "kind": "auth",
+    "summary": "Separate booster portal: Google or email, then mandatory authenticator. No customer session reuse or public staff signup.",
+    "sections": [
+      {
+        "title": "Booster portal identity",
+        "body": "Explicit booster branding remains through Google, email, authenticator, enrollment, recovery and errors. Customer and other staff sessions do not sign you in here."
+      },
+      {
+        "title": "Authorized access only",
+        "body": "After first factor check the assigned portal role. Ineligible or suspended identities receive a generic denial, no role upgrade or automatic account creation."
+      },
+      {
+        "title": "Safe return",
+        "body": "Restore only permitted internal destinations in this portal after both factors. On expiry restart here. On cancellation stay at sign-in or leave to public website."
+      }
+    ],
+    "actions": [
+      {
+        "label": "Continue with Google · preview",
+        "to": "I10"
+      },
+      {
+        "label": "Send email code · preview",
+        "to": "I02"
+      },
+      {
+        "label": "Leave portal",
+        "to": "P01"
+      }
+    ],
+    "states": [
+      {
+        "name": "Invalid email",
+        "copy": "Enter an email address in the format name@example.com."
+      },
+      {
+        "name": "Rate limited",
+        "copy": "Too many attempts. Try again after the displayed server-provided delay."
+      },
+      {
+        "name": "Google cancelled",
+        "copy": "Sign-in was cancelled. Continue with Google or use email."
+      },
+      {
+        "name": "Google unavailable",
+        "copy": "Google sign-in is unavailable. You can use email instead."
+      },
+      {
+        "name": "Loading",
+        "copy": "Keep the page title and stable layout. Show progress in the affected region; do not display empty data as a loaded result."
+      },
+      {
+        "name": "Request failed",
+        "copy": "The action could not complete. Keep safe input, explain the recovery and retry only after checking whether the prior action succeeded."
+      },
+      {
+        "name": "Access unavailable",
+        "copy": "This identity cannot access this portal. Try another identity or contact your PLAYORA administrator. No new role is created."
+      },
+      {
+        "name": "Session expired",
+        "copy": "Your verification session expired. Start again with Google or email in this portal."
+      },
+      {
+        "name": "Other portal already signed in",
+        "copy": "Your customer or other staff session stays separate. Complete this portal’s sign-in to enter."
+      }
+    ],
+    "fields": [
+      {
+        "label": "Email address",
+        "type": "email",
+        "value": "",
+        "help": "Use email autocomplete. Do not disclose whether the address already has an account.",
+        "options": []
+      }
+    ],
+    "table": null,
+    "notes": "Proposed design route only; not an implemented application route. Explicit role-bound callbacks/challenges/sessions must be implemented later.",
+    "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
+    "flowIds": [
+      "F31"
     ]
   },
   {
@@ -8038,7 +8217,7 @@
     "title": "Review REV-12.",
     "route": "/admin/reviews/:id",
     "kind": "review",
-    "summary": "Inspect content and eligibility before a moderation decision.",
+    "summary": "Review REV-12 with its original content and eligibility evidence. Publication is held because PL-1038 is still in progress.",
     "sections": [
       {
         "title": "Customer content",
@@ -8095,7 +8274,7 @@
       }
     ],
     "table": null,
-    "notes": " Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages.",
+    "notes": " Panel navigation revision: persistent role/record context and local sections; see PANEL_UX_REVISION.md. Screen IDs may be local subviews of a record rather than separate pages. Current fictional review has an eligibility conflict; publication stays disabled until resolved. Never invent a completed order.",
     "mobile": "Stack content in reading order. Keep one primary action; secondary actions remain in the page, never behind hover.",
     "flowIds": [
       "F19"
@@ -8225,7 +8404,7 @@
         "to": "A31"
       },
       {
-        "label": "Open related payment",
+        "label": "Open payment review queue",
         "to": "A15"
       }
     ],

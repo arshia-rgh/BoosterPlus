@@ -475,7 +475,7 @@ function panelRecord(ctx) {
             privacy: "Privacy request",
             moderation: "Review moderation",
           }[f.type] || "Mobile Legends · Account sale";
-  return `<section class="recordWorkspace" data-record-key="${f.root}/${esc(ctx.entity)}"><header class="recordHeader"><nav class="crumb" aria-label="Breadcrumb"><a href="#${panelHomes[ctx.role]}">${panelRoleNames[ctx.role]}</a> / <a href="#${f.parent}">${f.label}</a> / <span aria-current="page">${esc(ctx.entity)}</span></nav><a class="textlink recordBack" href="#${f.parent}">← Back to ${f.label.toLowerCase()}</a><div class="recordIdentity"><div><p class="eyebrow">${name}</p><h1>${esc(ctx.entity)}</h1><p>${order ? fx.goal : "One record. All related work stays here."}</p></div><div class="statusline">${chip(order ? fx.status : f.type === "catalog" ? "Draft · revision 5" : f.type === "listing" ? "Draft" : ["case", "payout", "privacy", "moderation"].includes(f.type) ? "Awaiting review" : "Terms incomplete", order && !fx.paid ? "amber" : "neutral")}${order && ctx.role !== "booster" ? chip(fx.payment, fx.paid ? "" : "neutral") : ""}</div></div><p class="quiet">Design example · ${ctx.role === "booster" ? "Only this assigned order and its permitted conversation." : "No actions change real records."}</p></header>${panelTabs(ctx)}<div id="recordView" class="recordView"></div></section>`;
+  return `<section class="recordWorkspace" data-record-key="${f.root}/${esc(ctx.entity)}"><header class="recordHeader"><nav class="crumb" aria-label="Breadcrumb"><a href="#${panelHomes[ctx.role]}">${panelRoleNames[ctx.role]}</a> / <a href="#${f.parent}">${f.label}</a> / <span aria-current="page">${esc(ctx.entity)}</span></nav><a class="textlink recordBack" href="#${f.parent}">← Back to ${f.label.toLowerCase()}</a><div class="recordIdentity"><div><p class="eyebrow">${name}</p><h1>${esc(ctx.entity)}</h1><p>${order ? fx.goal : "One record. All related work stays here."}</p></div><div class="statusline">${chip(order ? fx.status : f.type === "catalog" ? "Draft · revision 5" : f.type === "listing" ? "Draft" : ["case", "payout", "privacy", "moderation"].includes(f.type) ? "Awaiting review" : "Terms incomplete", order && !fx.paid ? "amber" : "neutral")}${order && ctx.role !== "booster" ? chip(fx.payment, fx.paid ? "" : "neutral") : ""}</div></div><p class="quiet">Design example · ${ctx.role === "booster" ? "Only this assigned order and its permitted conversation." : "No actions change real records."}</p></header>${location.hash.endsWith("/from-media") ? '<a class="textlink" href="#A32">← Back to media directory</a>' : location.hash.endsWith("/from-review") ? '<a class="textlink" href="#A29/REV-12/overview">← Back to review REV-12</a>' : ""}${panelTabs(ctx)}<div id="recordView" class="recordView"></div></section>`;
 }
 function panelDemo(label, message, primary = false) {
   return `<button class="${primary ? "primary" : ""}" data-panel-feedback="${esc(message)}">${esc(label)}</button>`;
@@ -486,13 +486,23 @@ function panelFields(id, title, action) {
 }
 function panelConversation(ctx) {
   const seller = ["sale", "submission"].includes(ctx.family.type),
-    booster = ctx.role === "booster";
-  const audience = seller
-    ? "Seller ↔ authorized staff"
-    : booster
-      ? "Customer ↔ assigned booster"
-      : "Customer ↔ support";
-  return `<section class="recordChat"><header class="chathead"><strong>${esc(ctx.entity)} · ${audience}</strong><p>This conversation belongs only to this ${seller ? "sale" : "order"}.</p></header><div class="messages" aria-label="Message history"><div class="day">Design conversation · Today</div><div class="bubble"><p>${seller ? "Please review the offer and ask any questions here." : ctx.entity === "PL-1042" ? "Your quote is ready. Please review its scope before accepting." : "Your latest update is available in this workspace. Let us know if you need help."}</p><small>${booster ? "Customer" : "Support"} · 14:20</small></div><div class="bubble mine"><p>Thank you. I’ll check the details here.</p><small>You · 14:22 · Sample</small></div></div><div class="composer">${ctx.role === "admin" ? '<label>Audience<select id="audience"><option>Reply to participant</option><option>Internal note · staff only</option></select></label>' : ""}<label for="messageDraft">${ctx.role === "admin" ? "Reply to " + (seller ? "seller" : "customer") : "Message"}</label><textarea id="messageDraft" placeholder="Write your message…"></textarea><p class="quiet">Never send passwords or recovery codes here. Your draft stays while switching sections in this preview.</p><div class="actions"><button id="attachDemo">Attach file</button><button id="sendDemo" class="primary">Send message · demo</button></div><p id="chatFeedback" role="status"></p></div></section>`;
+    assigned = ctx.entity === "PL-1038",
+    boosterThread =
+      ctx.role === "booster" ||
+      (assigned && location.hash.split("/")[3] === "booster"),
+    audience = seller
+      ? "Seller ↔ authorized staff"
+      : boosterThread
+        ? "Customer ↔ assigned booster · Support can review"
+        : "Customer ↔ support · Private from booster";
+  const choice =
+    assigned && ctx.role !== "booster"
+      ? `<nav class="subnav" aria-label="Order conversations"><a href="#${panelHref(ctx, "messages")}" ${!boosterThread ? 'aria-current="page"' : ""}>Private support</a><a href="#${panelHref(ctx, "messages")}/booster" ${boosterThread ? 'aria-current="page"' : ""}>Assigned booster</a></nav>`
+      : "";
+  const history = boosterThread
+    ? `<div class="bubble"><p>Can we confirm the next play session?</p><small>Customer · 14:20</small></div><div class="bubble"><p>Yes. Please review the proposed time in Sessions.</p><small>Assigned booster · 14:22</small></div>`
+    : `<div class="bubble"><p>${seller ? "Please review the offer and ask any questions here." : ctx.entity === "PL-1042" ? "Your quote is ready. Please review its scope before accepting." : "Your latest update is available. Contact us here for private order or payment questions."}</p><small>Support · 14:20</small></div><div class="bubble"><p>Thank you. I’ll check the details here.</p><small>${seller ? "Seller" : "Customer"} · 14:22</small></div>`;
+  return `<section class="recordChat">${choice}<header class="chathead"><strong>${esc(ctx.entity)} · ${audience}</strong><p>This conversation belongs only to this ${seller ? "sale" : "order"}. ${boosterThread ? (ctx.role === "booster" ? "Only assignment coordination belongs here. Ask the customer to use their private support thread for payment or private questions. You cannot view that conversation." : "Only assignment coordination belongs here. Keep payment and private support questions in Private support.") : "This thread is not shared with the assigned booster."}</p></header><div class="messages" aria-label="Message history"><div class="day">Design conversation · Today</div>${history}</div><div class="composer">${ctx.role === "admin" ? '<label>Audience<select id="audience"><option>Reply to participant</option><option>Internal note · staff only</option></select></label>' : ""}<label for="messageDraft">${boosterThread ? (ctx.role === "booster" ? "Message customer" : "Message assigned booster") : seller ? "Message about this sale" : "Message private support"}</label><textarea id="messageDraft" placeholder="Write your message…"></textarea><p class="quiet">Never send passwords or recovery codes here. Drafts stay separate for each conversation and audience.</p><div class="actions"><button id="attachDemo">Attach file</button><button id="sendDemo" class="primary">Send message · demo</button></div><p id="chatFeedback" role="status"></p></div></section>`;
 }
 function panelOrderBody(ctx) {
   const f = panelFixture(ctx),
@@ -612,7 +622,7 @@ function panelGenericView(ctx) {
 function updateRecordView(focus = false) {
   const ctx = panelContext();
   if (!ctx?.family || !$("recordView")) return;
-  const key = `${ctx.family.root}/${ctx.entity}/${ctx.view}/${stateName}`;
+  const key = `${ctx.family.root}/${ctx.entity}/${ctx.view}/${stateName}${ctx.view === "messages" ? "/" + (location.hash.split("/")[3] || "support") : ""}`;
   if (ctx.view.startsWith("preview-") || ctx.view === "quote-preview")
     panelDrafts.delete(key);
   let node = panelDrafts.get(key);
@@ -699,6 +709,34 @@ function bindPanelActions() {
 }
 function panelRows(s, ctx) {
   let rows = {
+    A09: [
+      [
+        "Audit · 21 Sep 14:20",
+        "Actor: Owner example · Target: Demo staff",
+        "Role changed",
+        "",
+        "",
+      ],
+    ],
+    A31: [
+      [
+        "JOB-12",
+        "Payment reconciliation · Attempts: 3 · Failure: provider unavailable · Next retry: awaiting review",
+        "Failed",
+        "",
+        "",
+      ],
+    ],
+    A32: [
+      [
+        "proof-demo.png",
+        "Order proof · Private · Linked order: PL-1038",
+        "Available",
+        "View related order PL-1038",
+        "A03/PL-1038/overview/from-media",
+      ],
+    ],
+
     A35: [
       [
         "DEL-12",
@@ -751,7 +789,7 @@ function panelRows(s, ctx) {
       [
         "PL-1038",
         "Assigned order · Mobile Legends",
-        "Customer ↔ assigned booster",
+        "Customer ↔ assigned booster · Support can review",
         "Read assigned-order messages",
         "B03/PL-1038/messages",
       ],
@@ -818,8 +856,8 @@ function panelRows(s, ctx) {
       ],
       [
         "PL-1038",
-        "Order conversation · In progress",
-        "Customer ↔ support",
+        "Order conversations · Private support and assigned booster",
+        "Choose a conversation",
         "Read order messages",
         "C05/PL-1038/messages",
       ],
@@ -875,7 +913,7 @@ function panelRows(s, ctx) {
     return `<div class="content"><section class="card"><h2>No example records to show</h2><p>${esc(s.summary)}</p><p>Use the named actions below to explore this section.</p></section>${actions(s)}</div>`;
   if (!rows) return null;
   const listing = `<div class="entityList">${rows.map(([id, name, status, label, to]) => `<article class="entityRow" data-entity-search="${esc(id + " " + name + " " + status)}" data-entity-status="${esc(status.split(" · ")[0])}"><div><h2>${esc(id)}</h2><p>${esc(name)}</p><p class="entityStatus">${esc(status)}</p></div>${to ? `<a class="button" href="#${to}" aria-label="${esc(label)} for ${esc(id)}">${esc(label)} <span aria-hidden="true">→</span></a>` : '<span class="quiet">Read-only record</span>'}</article>`).join("")}</div>`;
-  return `<div class="content panelList"><div class="filters"><label class="field">Search records<input type="search" data-list-search placeholder="ID, game or name"></label><label class="field">Status<select data-list-status><option>All statuses</option>${[...new Set(rows.map((r) => r[2].split(" · ")[0]))].map((st) => `<option>${esc(st)}</option>`).join("")}</select></label></div><p class="listCount quiet" role="status"></p><p class="listEmpty" hidden>No matching records. Clear your search or select All statuses.</p><p class="quiet">Example records · Each action identifies its record and next step.</p>${listing}${!["C02", "B02", "A02", "S01", "A20", "A22", "C11", "A05", "B05", "A10", "A15", "A35"].includes(s.id) ? actions(s) : ""}${s.id === "A15" ? '<div class="actions"><a class="textlink" href="#A18">Payment policy</a><a class="textlink" href="#A19">Provider reconciliation</a></div>' : ""}${s.id === "S01" ? '<div class="actions"><a class="button primary" href="#S02">Submit another account</a></div>' : ""}${s.id === "C11" ? '<div class="actions"><a class="textlink" href="#C13">Start a general support conversation</a></div>' : ""}</div>`;
+  return `<div class="content panelList"><div class="filters"><label class="field">Search records<input type="search" data-list-search placeholder="ID, game or name"></label><label class="field">${s.id === "A09" ? "Action" : "Status"}<select data-list-status><option value="All statuses">${s.id === "A09" ? "All actions" : "All statuses"}</option>${[...new Set(rows.map((r) => r[2].split(" · ")[0]))].map((st) => `<option>${esc(st)}</option>`).join("")}</select></label></div><p class="listCount quiet" role="status"></p><p class="listEmpty" hidden>No matching records. Clear your search or reset the filter.</p><p class="quiet">Example records · Each action identifies its record and next step.</p>${listing}${!["C02", "B02", "A02", "S01", "A20", "A22", "C11", "A05", "B05", "A10", "A15", "A35"].includes(s.id) ? actions(s) : ""}${s.id === "A15" ? '<div class="actions"><a class="textlink" href="#A18">Payment policy</a><a class="textlink" href="#A19">Provider reconciliation</a></div>' : ""}${s.id === "S01" ? '<div class="actions"><a class="button primary" href="#S02">Submit another account</a></div>' : ""}${s.id === "C11" ? '<div class="actions"><a class="textlink" href="#C13">Start a general support conversation</a></div>' : ""}</div>`;
 }
 function panelDashboard(s, ctx) {
   const next =

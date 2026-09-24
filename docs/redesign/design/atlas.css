@@ -577,7 +577,7 @@ small,
   text-decoration: none;
   border-radius: 8px;
 }
-.subnav a:first-child {
+.subnav a[aria-current="page"] {
   background: #254233;
   color: var(--green);
 }
@@ -3378,4 +3378,8 @@ details p {
 }
 .corner-modal #orderCorner {
   width: calc(100% - 24px);
+}
+.authcard a[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

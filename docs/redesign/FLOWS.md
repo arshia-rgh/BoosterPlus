@@ -297,35 +297,30 @@ flowchart LR
 
 **Completion evidence:** Same intended custom/package/listing flow restored without secrets in local storage.
 
-## F09 — Staff enrollment, sign-in & recovery
+## F09 — Separate admin sign-in, enrollment & recovery
 
-[I01](design/index.html#I01) → [I02](design/index.html#I02) → [I04](design/index.html#I04) → [I03](design/index.html#I03) → [A01](design/index.html#A01) → [I05](design/index.html#I05) → [C17](design/index.html#C17)
+[I09](design/index.html#I09/return/A01) → [I02](design/index.html#I02/admin/return/A01) → [I03](design/index.html#I03/admin/return/A01) → [A01](design/index.html#A01)
 
 ```mermaid
 flowchart LR
-  n0["I01 · Welcome to PLAYORA."]
+  n0["I09 · Admin sign-in."]
   n1["I02 · Check your email."]
-  n2["I04 · Set up your authenticator."]
-  n3["I03 · Verify your staff sign-in."]
-  n4["A01 · Operations overview."]
-  n5["I05 · Recover staff access."]
-  n6["C17 · Security & sign-in."]
+  n2["I03 · Verify your staff sign-in."]
+  n3["A01 · Operations overview."]
   n0 --> n1
   n1 --> n2
   n2 --> n3
-  n3 --> n4
-  n4 --> n5
-  n5 --> n6
 ```
 
 **Branches and guards**
 
-- Enrollment required only when missing; authenticator required at every staff sign-in.
-- Recovery code substitutes only second factor.
-- Owner-reviewed recovery never bypasses identity verification.
-- Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md.
+- Every step is explicitly admin-scoped: I02/admin, I03/admin, I04/admin, I05/admin. No customer or booster session reuse.
+- Google returns to the admin authenticator check; email first verifies I02/admin. No public staff signup.
+- Missing enrollment opens I04/admin after first factor; invalid/expired/recovery states remain in this portal. Recovery code substitutes only the second factor.
+- Wrong role or suspension denies entry without creating access. Both-factor success revalidates the permitted admin destination.
+- Cancelled or expired verification returns to I09; customer and booster portals remain separate. Sensitive actions return to the exact originating editor and are not auto-confirmed.
 
-**Completion evidence:** Authorized staff session; last-owner and recovery safeguards retained.
+**Completion evidence:** Separate authorized admin session only after both factors; safe same-portal return.
 
 ## F10 — Profile, identity linking & session revocation
 
@@ -902,3 +897,28 @@ flowchart LR
 - Invalid or unpublished configuration blocks new ordering, without affecting history.
 
 **Completion evidence:** Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published.
+
+## F31 — Separate booster sign-in, enrollment & recovery
+
+[I10](design/index.html#I10/return/B01) → [I02](design/index.html#I02/booster/return/B01) → [I03](design/index.html#I03/booster/return/B01) → [B01](design/index.html#B01)
+
+```mermaid
+flowchart LR
+  n0["I10 · Booster sign-in."]
+  n1["I02 · Check your email."]
+  n2["I03 · Verify your staff sign-in."]
+  n3["B01 · Your next session."]
+  n0 --> n1
+  n1 --> n2
+  n2 --> n3
+```
+
+**Branches and guards**
+
+- Every step is explicitly booster-scoped: I02/booster, I03/booster, I04/booster, I05/booster. No customer or admin session reuse.
+- Google returns to the booster authenticator check; email first verifies I02/booster. No public staff signup.
+- Missing enrollment opens I04/booster after first factor; invalid/expired/recovery states remain in this portal. Recovery code substitutes only the second factor.
+- Wrong role or suspension denies entry without creating access. Both-factor success revalidates the permitted booster destination.
+- Cancelled or expired verification returns to I10; customer and admin portals remain separate. Sensitive actions return to the exact originating editor and are not auto-confirmed.
+
+**Completion evidence:** Separate authorized booster session only after both factors; assigned-workspace return.

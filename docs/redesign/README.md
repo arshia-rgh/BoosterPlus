@@ -24,7 +24,7 @@ Open [the design atlas](http://127.0.0.1:4177/design/index.html). It is a separa
 
 Use the screen selector for individual views, Journey for connected tasks, State for alternate outcomes, and the width controls for responsive composition. The specification drawer contains anatomy, fields, guards and recovery behavior. Review the product canvas separately from these annotations. The browser Back button returns through design views.
 
-The current review inventory contains **113 views, 30 journeys, 555 named state treatments and all 55 existing application routes**. Named states reuse common layouts where appropriate; they are not 555 independently drawn pages.
+The current review inventory contains **115 views, 31 journeys, 573 named state treatments and all 55 existing application routes**. Named states reuse common layouts where appropriate; they are not 573 independently drawn pages.
 
 ## Package map
 
@@ -34,7 +34,7 @@ The current review inventory contains **113 views, 30 journeys, 555 named state 
 | [RESEARCH.md](RESEARCH.md) | Dated research, observed evidence and design inferences |
 | [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) | Tokens, typography, layouts, components, responsive, motion and accessibility |
 | [SCREENS.md](SCREENS.md) | Every designed view: content, fields, actions, states, mobile rules and current-route mapping |
-| [FLOWS.md](FLOWS.md) | 30 connected journeys with exception branches and completion guards |
+| [FLOWS.md](FLOWS.md) | 31 connected journeys with exception branches and completion guards |
 | [INTERACTIONS.md](INTERACTIONS.md) | Detailed form, quote, invoice, chat, handover, publication and recovery behavior |
 | [COVERAGE.md](COVERAGE.md) | Every existing storefront/admin route mapped to design views; new proposed subviews explicitly distinguished |
 | [REVIEW.md](REVIEW.md) | Review tasks, acceptance checklist, checks actually run and remaining human decisions |
@@ -71,3 +71,9 @@ The [panel UX revision](PANEL_UX_REVISION.md) replaces disconnected customer, bo
 ## Complete current design audit
 
 See the [full review and correction log](reviews/2026-09-24-complete-design-review.md) for the cross-role review, scoped verdicts, responsive/state checks and remaining acceptance limits. The current atlas includes context-preserving identity/checkout, truthful recovery states, working fictional discovery filters and in-memory draft continuity.
+
+## Separate portal sign-in
+
+[Customer, admin and booster sign-in](SEPARATE_PORTAL_SIGN_IN.md) now have independent entry experiences and portal-scoped verification/recovery. Review I01, I09 and I10; F09 and F31 cover the separate staff journeys. These are proposed design routes, not runtime authentication changes.
+
+The [separate-login and full re-review log](reviews/2026-09-24-separate-logins-full-review.md) records this later audit and its final verdicts; earlier review evidence remains historical.

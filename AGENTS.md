@@ -82,3 +82,7 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 For fighting-spirit game artwork, motion or backgrounds, read `frontend/app/home/README.motion.md` and `docs/ux/CHARACTER_MOTION_AGENT_GUIDE.md`. Reuse the shared scene renderer and preserve perceptibility, planted-foot, loading/failure, accessibility and transfer checks.
 
 HF04 three-game scene implementation and automated qualification are delivered as `3537aa5` (20 September 2026). See `docs/ux/HF04_SCENE_QUALIFICATION.md` for the verification scope and macOS Firefox limitation. Owner visual/physical-device acceptance remains open; do not infer acceptance or resume held launch work.
+
+## Separate portal sign-in design (24 September 2026)
+
+- Customer, admin and booster sign-in must be separate experiences, with no customer-session reuse for staff or shared staff entry. Preserve Google/email passwordless and mandatory staff second factor. Follow `docs/redesign/SEPARATE_PORTAL_SIGN_IN.md`. This is currently design-only; application development and R10/R11 remain held.

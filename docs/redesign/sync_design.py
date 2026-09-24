@@ -26,8 +26,14 @@ for s in S:
  md+=['','### Responsive / accessibility','',s['mobile'],'Every field has a persistent label, linked help/error and visible focus. Read order follows the visual order. Permission/error variants use the shared recovery rules.','',s['notes'] or 'Use the common interaction contract; do not invent additional commercial promises.','', '**Journeys:** '+', '.join(s['flowIds'])+'.','']
 (out/'SCREENS.md').write_text('\n'.join(md))
 md=['# PLAYORA end-to-end journeys','', 'Each path links to designed views. Staff/customer handoffs represent different authorized people; prototype navigation is not an authorization model. Branches must be checked before implementation acceptance.','']
+def flow_target(flow, screen_id):
+ if flow['id'] in ('F09', 'F31') and screen_id.startswith('I'):
+  portal, home = ('admin', 'A01') if flow['id'] == 'F09' else ('booster', 'B01')
+  return screen_id + ('' if screen_id in ('I09', 'I10') else '/' + portal) + '/return/' + home
+ return screen_id
+
 for f in F:
- md += [f"## {f['id']} — {f['title']}",'',' → '.join(f"[{x}](design/index.html#{x})" for x in f['path']),'','```mermaid','flowchart LR']
+ md += [f"## {f['id']} — {f['title']}",'',' → '.join(f"[{x}](design/index.html#{flow_target(f, x)})" for x in f['path']),'','```mermaid','flowchart LR']
  for i,x in enumerate(f['path']):md.append(f'  n{i}["{x} · {next(s["title"] for s in S if s["id"]==x).replace(chr(34), chr(39))}"]')
  for i in range(len(f['path'])-1):md.append(f'  n{i} --> n{i+1}')
  md+=['```','','**Branches and guards**','']+['- '+x for x in f['branches']]+['','**Completion evidence:** '+f['done'],'']

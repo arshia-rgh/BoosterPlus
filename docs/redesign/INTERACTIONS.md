@@ -156,3 +156,10 @@ Local review controls follow the selected record section or embedded game step. 
 Checkout examples retain their purchase type and amount. Identity examples preserve the originating task, distinguish Google/email paths and expose staff enrollment steps. Edited request scope is retained in memory through review and sign-in; no price-rule engine or provider is simulated. Public policies remain unpublished until owner-approved copy exists.
 
 Customer and staff drafts remain in memory until reload/Visitor reset. Internal notes and participant replies have separate draft buffers. The expanded narrow corner panel is a contained modal with an inert page behind it, focus containment and Escape return; its collapsed launcher allows focused chat controls to remain visible.
+
+
+## Separate sign-in and conversation audiences
+
+Follow [SEPARATE_PORTAL_SIGN_IN.md](SEPARATE_PORTAL_SIGN_IN.md): customer, admin and booster entries and verification journeys remain separate. Staff always complete both factors in the selected authorized portal. Proposed URLs are design requirements, not implemented session isolation.
+
+Order PL-1038 demonstrates two distinct conversations: Private support (customer and authorized support/admin only) and Assigned booster (customer, assigned booster and authorized support/admin review). Labels, authors and history agree across role views. Drafts stay separate by thread and, for admin, internal/participant audience. Boosters do not see the private support thread or internal notes. Assignment access loss removes conversation content. All shown histories are fictional.
