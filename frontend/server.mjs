@@ -87,6 +87,7 @@ app.use("/api", (req, res) => {
     "origin",
     "sec-fetch-site",
     "x-csrf-token",
+    "x-playora-portal",
     "last-event-id",
     "x-nowpayments-sig",
   ]) {

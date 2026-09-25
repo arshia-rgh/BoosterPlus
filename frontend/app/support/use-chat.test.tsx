@@ -39,7 +39,11 @@ it("keeps reading anchors separate by account and clears them at a session bound
   });
   expect(readingPosition("bob", "thread")).toBeUndefined();
   readingPosition("bob", "thread", { sequence: 10, offset: 1 });
-  window.dispatchEvent(new Event("boosterplus:session-changed"));
+  window.dispatchEvent(
+    new CustomEvent("boosterplus:session-changed", {
+      detail: { portal: "customer" },
+    }),
+  );
   expect(readingPosition("bob", "thread")).toBeUndefined();
 });
 it("appends earlier history, reconciles multi-page gaps and closes one stable event stream", async () => {

@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { fixture } from "./identity-fixtures";
 
@@ -73,6 +73,18 @@ export async function qualifyChat(buyer: Page, staff: Page, project: string) {
       ),
     )
     .toBeLessThan(4);
+  await test.info().attach("chat-recovery-reading-position", {
+    body: JSON.stringify({
+      project,
+      before: reading,
+      recovered: await history.evaluate((element) => element.scrollTop),
+    }),
+    contentType: "application/json",
+  });
+  await test.info().attach("chat-recovered-before-jump", {
+    body: await buyer.screenshot(),
+    contentType: "image/png",
+  });
   await expect(
     buyer.getByRole("button", { name: /New messages/ }),
   ).toBeVisible();

@@ -20,6 +20,12 @@ type AuthSessionCreate struct {
 	hooks    []Hook
 }
 
+// SetPortal sets the "portal" field.
+func (_c *AuthSessionCreate) SetPortal(v string) *AuthSessionCreate {
+	_c.mutation.SetPortal(v)
+	return _c
+}
+
 // SetUserID sets the "user_id" field.
 func (_c *AuthSessionCreate) SetUserID(v string) *AuthSessionCreate {
 	_c.mutation.SetUserID(v)
@@ -130,6 +136,14 @@ func (_c *AuthSessionCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *AuthSessionCreate) check() error {
+	if _, ok := _c.mutation.Portal(); !ok {
+		return &ValidationError{Name: "portal", err: errors.New(`ent: missing required field "AuthSession.portal"`)}
+	}
+	if v, ok := _c.mutation.Portal(); ok {
+		if err := authsession.PortalValidator(v); err != nil {
+			return &ValidationError{Name: "portal", err: fmt.Errorf(`ent: validator failed for field "AuthSession.portal": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AuthSession.user_id"`)}
 	}
@@ -200,6 +214,10 @@ func (_c *AuthSessionCreate) createSpec() (*AuthSession, *sqlgraph.CreateSpec) {
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := _c.mutation.Portal(); ok {
+		_spec.SetField(authsession.FieldPortal, field.TypeString, value)
+		_node.Portal = value
 	}
 	if value, ok := _c.mutation.UserID(); ok {
 		_spec.SetField(authsession.FieldUserID, field.TypeString, value)

@@ -304,3 +304,26 @@
     outline: 2px solid Highlight;
   }
 }
+
+/* Portal entry stays narrow and ordered without exposing an authenticated shell. */
+.portal-sign-in {
+  max-width: 60rem;
+  margin-inline: auto;
+}
+.portal-sign-in-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.5rem;
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  color: var(--muted, #acbfb7);
+  font-size: 0.88rem;
+}
+.portal-sign-in-steps [aria-current="step"] {
+  color: var(--accent, #94f2b7);
+}
+.portal-entry-help {
+  padding-block: 1.5rem;
+  border-top: 1px solid rgb(180 225 199 / 14%);
+}

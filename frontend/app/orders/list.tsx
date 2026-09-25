@@ -1,3 +1,4 @@
+import { activePortal, sessionEventMatches } from "../identity/portal";
 import {
   useContext,
   useEffect,
@@ -17,7 +18,8 @@ import { useResource } from "./resource";
 const listAnchors = new Map<string, string>();
 let listEpoch = 0;
 if (typeof window !== "undefined")
-  window.addEventListener("boosterplus:session-changed", () => {
+  window.addEventListener("boosterplus:session-changed", (event) => {
+    if (!sessionEventMatches(event, activePortal())) return;
     listEpoch++;
     listAnchors.clear();
   });
@@ -49,6 +51,8 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
   const resource = useResource(base + "?" + query.toString(), listingSchema);
   const identity = useContext(AuthorizedIdentity);
   const cacheKey =
+    activePortal() +
+    ":" +
     (identity?.session.user?.id ?? "isolated-view") +
     ":" +
     base +

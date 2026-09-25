@@ -17,6 +17,8 @@ type AuthChallenge struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// Portal holds the value of the "portal" field.
+	Portal string `json:"portal,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// Purpose holds the value of the "purpose" field.
@@ -51,7 +53,7 @@ func (*AuthChallenge) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case authchallenge.FieldAttempts:
 			values[i] = new(sql.NullInt64)
-		case authchallenge.FieldID, authchallenge.FieldEmail, authchallenge.FieldPurpose, authchallenge.FieldUserID, authchallenge.FieldSessionID, authchallenge.FieldBrowserHash, authchallenge.FieldCodeDigest, authchallenge.FieldTermsVersion:
+		case authchallenge.FieldID, authchallenge.FieldPortal, authchallenge.FieldEmail, authchallenge.FieldPurpose, authchallenge.FieldUserID, authchallenge.FieldSessionID, authchallenge.FieldBrowserHash, authchallenge.FieldCodeDigest, authchallenge.FieldTermsVersion:
 			values[i] = new(sql.NullString)
 		case authchallenge.FieldCreatedAt, authchallenge.FieldExpiresAt:
 			values[i] = new(sql.NullTime)
@@ -75,6 +77,12 @@ func (_m *AuthChallenge) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				_m.ID = value.String
+			}
+		case authchallenge.FieldPortal:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field portal", values[i])
+			} else if value.Valid {
+				_m.Portal = value.String
 			}
 		case authchallenge.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -178,6 +186,9 @@ func (_m *AuthChallenge) String() string {
 	var builder strings.Builder
 	builder.WriteString("AuthChallenge(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("portal=")
+	builder.WriteString(_m.Portal)
+	builder.WriteString(", ")
 	builder.WriteString("email=")
 	builder.WriteString(_m.Email)
 	builder.WriteString(", ")

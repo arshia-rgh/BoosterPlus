@@ -62,7 +62,8 @@ func TestPrivacyRealFileCleanupPreservesCaseEvidence(t *testing.T) {
 	executeSQL(t, f.auth.db, "UPDATE conversations SET state='resolved' WHERE id=?", thread.ID)
 	executeSQL(t, f.auth.db, "UPDATE media_files SET expires_at=? WHERE user_id=?", time.Now().Add(-2*time.Hour), f.buyer.User.ID)
 	// The real media store timestamps with the wall clock; advance the fixture beyond those writes.
-	f.auth.clock.Store(time.Now().Add(time.Second).Unix())
+	// Keep the fixture clock monotonic after explicit staff sign-in cooldowns.
+	f.auth.clock.Store(max(f.auth.clock.Load(), time.Now().Add(time.Second).Unix()))
 	now := func() time.Time { return time.Unix(f.auth.clock.Load(), 0) }
 	content := sitecontent.New(f.auth.client, f.auth.service, now)
 	policy, e := content.Save(ctx, owner, "retention", sitecontent.Input{Data: retentionData(), Label: "cleanup-test", Publish: true})

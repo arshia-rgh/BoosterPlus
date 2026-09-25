@@ -49,7 +49,7 @@ func fulfillmentDB(t *testing.T) *fulfillmentFixture {
 		if _, e := f.auth.client.User.UpdateOneID(p.User.ID).SetRole(identity.RoleBooster).SetStaffAlias("Synthetic booster").Save(t.Context()); e != nil {
 			t.Fatal(e)
 		}
-		p = f.auth.principalFromSession(t, p)
+		p = f.auth.enterPortal(t, p, identity.PortalBooster)
 		_, _, p = f.auth.enroll(t, p)
 		return p
 	}

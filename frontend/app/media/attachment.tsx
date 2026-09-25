@@ -1,3 +1,4 @@
+import { activePortal, portalHeaders } from "../identity/portal";
 import { useEffect, useRef, useState } from "react";
 import { z } from "../validation";
 import { APIError, command, get, post, sessionSchema } from "../identity/api";
@@ -90,6 +91,7 @@ export function UploadImage({
   }, [item, base, change]);
   async function upload() {
     if (!file) return;
+    const portal = activePortal();
     setBusy(true);
     setError(null);
     change("", true);
@@ -120,10 +122,12 @@ export function UploadImage({
             content_type: file.type,
           },
           mediaSchema,
+          portal,
         ));
       setItem(created);
       if (created.state === "pending" || created.state === "uploaded") {
-        const session = await get("/auth/session", sessionSchema);
+        const session = await get("/auth/session", sessionSchema, portal);
+        if (!mounted.current || activePortal() !== portal) return;
         const response = await fetch(
           "/api/v1" + base + "/" + created.id + "/bytes",
           {
@@ -132,6 +136,7 @@ export function UploadImage({
             cache: "no-store",
             signal: AbortSignal.timeout(15000),
             headers: {
+              ...portalHeaders(base, portal),
               "Content-Type": "application/octet-stream",
               "X-CSRF-Token": session.csrf_token,
             },
@@ -151,6 +156,7 @@ export function UploadImage({
         base + "/" + created.id + "/finalize",
         {},
         mediaSchema,
+        portal,
       );
       setItem(next);
       if (mounted.current)

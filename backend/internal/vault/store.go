@@ -80,6 +80,16 @@ func audit(ctx context.Context, tx *ent.Tx, p *identity.Principal, id, action st
 // Put accepts a policy-approved secret with explicit expiry, optimistic version
 // and a private idempotency digest. Customers cannot choose another scope owner.
 func (s *Store) Put(ctx context.Context, p *identity.Principal, scope Scope, version int, requestKey string, expires time.Time, plaintext []byte) (View, error) {
+	return s.put(ctx, p, scope, version, requestKey, expires, plaintext, "account", false)
+}
+
+// PutForStaff creates an administrator-owned handoff with fresh staff factors.
+// The resource policy still controls purpose, ownership, payment and delivery state.
+func (s *Store) PutForStaff(ctx context.Context, p *identity.Principal, scope Scope, version int, requestKey string, expires time.Time, plaintext []byte) (View, error) {
+	return s.put(ctx, p, scope, version, requestKey, expires, plaintext, "admin", true)
+}
+
+func (s *Store) put(ctx context.Context, p *identity.Principal, scope Scope, version int, requestKey string, expires time.Time, plaintext []byte, capability string, sensitive bool) (View, error) {
 	if _, err := scope.aad(uuid.NewString()); err != nil {
 		return View{}, err
 	}
@@ -99,7 +109,7 @@ func (s *Store) Put(ctx context.Context, p *identity.Principal, scope Scope, ver
 	digest := s.auth.RequestDigest("vault-write", raw)
 	clear(raw)
 	var result View
-	err = s.auth.AuthorizedTransaction(ctx, p, "account", false, func(tx *ent.Tx, current *identity.Principal) error {
+	err = s.auth.AuthorizedTransaction(ctx, p, capability, sensitive, func(tx *ent.Tx, current *identity.Principal) error {
 		if current.User.ID != scope.OwnerID {
 			return identity.ErrForbidden
 		}
@@ -154,9 +164,17 @@ func (s *Store) Put(ctx context.Context, p *identity.Principal, scope Scope, ver
 	return result, err
 }
 
+// Staff authority is selected by the stored session, never inferred from role.
+func staffCapability(p *identity.Principal) string {
+	if p != nil && p.Session != nil && p.Session.Portal == string(identity.PortalAdmin) {
+		return "admin"
+	}
+	return "booster"
+}
+
 // RevealForStaff commits live authorization and its audit before returning bytes.
 func (s *Store) RevealForStaff(ctx context.Context, p *identity.Principal, scope Scope) ([]byte, error) {
-	return s.reveal(ctx, p, scope, "booster", true, Reveal)
+	return s.reveal(ctx, p, scope, staffCapability(p), true, Reveal)
 }
 
 // RevealForCustomer requires recent authentication and a separately authorized delivery policy.
@@ -214,7 +232,7 @@ func (s *Store) RevokeForStaff(ctx context.Context, p *identity.Principal, scope
 func (s *Store) revoke(ctx context.Context, p *identity.Principal, scope Scope, version int, staff bool) error {
 	capability := "account"
 	if staff {
-		capability = "booster"
+		capability = staffCapability(p)
 	}
 	return s.auth.AuthorizedTransaction(ctx, p, capability, staff, func(tx *ent.Tx, current *identity.Principal) error {
 		if !staff && current.User.ID != scope.OwnerID {

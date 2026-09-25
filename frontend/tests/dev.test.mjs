@@ -38,7 +38,7 @@ test(
           const result = await fetch(origin + "/admin/orders", {
             signal: AbortSignal.timeout(500),
           });
-          if (result.ok && (await result.text()).includes("Staff workspace")) {
+          if (result.ok && (await result.text()).includes("Admin workspace")) {
             ready = true;
             break;
           }

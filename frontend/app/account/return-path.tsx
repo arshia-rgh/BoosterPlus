@@ -1,49 +1,36 @@
+import {
+  activePortal,
+  portalHome,
+  portalLogin,
+  portalSecurity,
+  portalFromPath,
+  portalReturn,
+  type Portal,
+} from "../identity/portal";
 import { useEffect } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { APIError } from "../identity/api";
 
-const key = "playora.google-return";
-// Retain local navigation and a bounded public package variant, never private query values.
-export function safeReturnPath(value: string | null) {
-  if (
-    !value ||
-    value.length > 2048 ||
-    !value.startsWith("/") ||
-    value.startsWith("//") ||
-    /[\\\u0000-\u0020]/.test(value)
-  )
-    return null;
-  try {
-    const url = new URL(value, "https://playora.invalid");
-    if (
-      url.origin !== "https://playora.invalid" ||
-      !/^\/(account|accounts|orders|games|support|sell|privacy|favorites|availability|notifications|reviews|admin|booster)(\/|$)/.test(
-        url.pathname,
-      )
-    )
-      return null;
-    const variant = url.searchParams.get("variant");
-    return (
-      url.pathname +
-      (/^\/games\/[^/]+\/packages\/[^/]+$/.test(url.pathname) &&
-      variant &&
-      /^[a-zA-Z0-9_-]{1,64}$/.test(variant)
-        ? "?variant=" + encodeURIComponent(variant)
-        : "")
-    );
-  } catch {
-    return null;
-  }
+const key = (portal: Portal) => `playora.google-return.${portal}`;
+export function safeReturnPath(
+  value: string | null,
+  portal: Portal = activePortal(),
+) {
+  return portalReturn(value, portal);
 }
-export function rememberGoogleReturn(path: string, resume?: string) {
-  const target = safeReturnPath(path);
+export function rememberGoogleReturn(
+  path: string,
+  resume?: string,
+  portal: Portal = activePortal(),
+) {
+  const target = safeReturnPath(path, portal);
   try {
     if (target)
       sessionStorage.setItem(
-        key,
+        key(portal),
         JSON.stringify({
           path: target,
-          resume: safeReturnPath(resume ?? null),
+          resume: safeReturnPath(resume ?? null, portal),
           expires: Date.now() + 10 * 60_000,
         }),
       );
@@ -51,17 +38,19 @@ export function rememberGoogleReturn(path: string, resume?: string) {
     /* Sign-in remains available when browser storage is blocked. */
   }
 }
-export function clearGoogleReturn() {
+export function clearGoogleReturn(portal: Portal = activePortal()) {
   try {
-    sessionStorage.removeItem(key);
+    sessionStorage.removeItem(key(portal));
   } catch {
     /* Storage is optional. */
   }
 }
-function takeGoogleReturn() {
+function takeGoogleReturn(portal: Portal) {
   try {
-    const raw: unknown = JSON.parse(sessionStorage.getItem(key) ?? "null");
-    clearGoogleReturn();
+    const raw: unknown = JSON.parse(
+      sessionStorage.getItem(key(portal)) ?? "null",
+    );
+    clearGoogleReturn(portal);
     if (
       typeof raw !== "object" ||
       raw === null ||
@@ -72,16 +61,16 @@ function takeGoogleReturn() {
       typeof raw.path !== "string"
     )
       return null;
-    const target = safeReturnPath(raw.path);
+    const target = safeReturnPath(raw.path, portal);
     const resume =
       "resume" in raw && typeof raw.resume === "string"
-        ? safeReturnPath(raw.resume)
+        ? safeReturnPath(raw.resume, portal)
         : null;
-    return target === "/account/security" && resume
+    return target === portalSecurity(portal) && resume
       ? target + "?returnTo=" + encodeURIComponent(resume)
       : target;
   } catch {
-    clearGoogleReturn();
+    clearGoogleReturn(portal);
     return null;
   }
 }
@@ -89,24 +78,28 @@ export function SignInReturn({ ready }: { ready: boolean }) {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const { pathname } = useLocation();
-  const requested = safeReturnPath(params.get("returnTo"));
+  const portal = portalFromPath(pathname);
+  const requested = safeReturnPath(params.get("returnTo"), portal);
   useEffect(() => {
-    if (!ready || (pathname !== "/account" && pathname !== "/login")) return;
-    const stored = takeGoogleReturn();
-    const target = requested ?? stored;
+    if (
+      !ready ||
+      (pathname !== portalHome(portal) && pathname !== portalLogin(portal))
+    )
+      return;
+    const stored = takeGoogleReturn(portal);
+    const target = requested ?? stored ?? portalHome(portal);
     if (target && target !== pathname) {
-      clearGoogleReturn();
-      // Admin has an independent route graph and requires a document navigation.
-      if (/^\/admin(?:\/|$)/.test(target)) location.assign(target);
-      else void navigate(target, { replace: true });
+      clearGoogleReturn(portal);
+      void navigate(target, { replace: true });
     }
-  }, [ready, pathname, requested, navigate]);
+  }, [ready, pathname, requested, navigate, portal]);
   return null;
 }
 export function VerificationReturn() {
   const [params] = useSearchParams();
-  const target = safeReturnPath(params.get("returnTo"));
-  return target && target !== "/account/security" ? (
+  const portal = portalFromPath(useLocation().pathname);
+  const target = safeReturnPath(params.get("returnTo"), portal);
+  return target && target !== portalSecurity(portal) ? (
     <p className="account-return">
       <Link to={target}>Return to your task ↗</Link> after verification. Review
       the current details before trying the action again.
@@ -123,11 +116,11 @@ export function VerificationLink({ error }: { error: unknown }) {
   const target =
     typeof window === "undefined"
       ? null
-      : safeReturnPath(window.location.pathname);
+      : safeReturnPath(window.location.pathname + window.location.search);
   return (
     <a
       href={
-        "/account/security" +
+        portalSecurity(activePortal()) +
         (target ? "?returnTo=" + encodeURIComponent(target) : "")
       }
     >

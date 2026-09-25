@@ -1,3 +1,4 @@
+import { authURL } from "./identity-fixtures";
 import { qualifyOrderWorkspace } from "./order-workspace-journey";
 import { availabilityJourney } from "./availability-journey";
 import { randomUUID } from "node:crypto";
@@ -13,7 +14,7 @@ import {
 import { detailSchema } from "../../app/orders/model";
 async function api(page: Page, path: string, body: unknown) {
   const session = sessionSchema.parse(
-    await (await page.request.get("/api/v1/auth/session")).json(),
+    await (await page.request.get(authURL(page, "session"))).json(),
   );
   const response = await page.request.post("/api/v1" + path, {
     data: body,
@@ -39,7 +40,12 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
   request,
 }, info) => {
   test.setTimeout(150000);
-  await signIn(page, request, fixture(info.project.name, "orderadmin"));
+  await signIn(
+    page,
+    request,
+    fixture(info.project.name, "orderadmin"),
+    "/admin/login",
+  );
   await enroll(page);
   const slug = `order-${info.project.name}-${randomUUID()}`,
     config = emptyConfiguration("Order journey game");
@@ -420,7 +426,7 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
         (
           await stranger.request.get(`/api/v1/admin/orders/${orderID}`)
         ).status(),
-      ).toBe(403);
+      ).toBe(401);
     } finally {
       await strangerContext.close();
     }

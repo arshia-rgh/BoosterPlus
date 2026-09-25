@@ -360,7 +360,7 @@ func TestConversationHTTPContractAndCSRF(t *testing.T) {
 	store.Register(mux)
 	bootstrap := httptest.NewRecorder()
 	r := httptest.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/auth/session", nil)
-	cookie := &http.Cookie{Name: "bp-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
+	cookie := &http.Cookie{Name: "bp-customer-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
 	r.AddCookie(cookie)
 	mux.ServeHTTP(bootstrap, r)
 	var session struct {
@@ -463,7 +463,7 @@ func TestConversationSSERechecksSessionAndHidesNotes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req.AddCookie(&http.Cookie{Name: "bp-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
+	req.AddCookie(&http.Cookie{Name: "bp-customer-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
 	response, err := server.Client().Do(req)
 	if err != nil {
 		t.Fatal(err)

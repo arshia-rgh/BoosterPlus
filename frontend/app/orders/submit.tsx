@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { clearConfigurationDraft } from "../catalog/configuration-draft";
+import { sessionEventMatches } from "../identity/portal";
 import { Link, useLocation, useNavigate } from "react-router";
 import { get, post, sessionSchema, type Session } from "../identity/api";
 import { Check, ErrorNotice, Action } from "../catalog/controls";
@@ -42,7 +43,7 @@ export default function SubmitOrder({
       sequence = 0;
     const refresh = () => {
       const request = ++sequence;
-      void get("/auth/session", sessionSchema)
+      void get("/auth/session", sessionSchema, "customer")
         .then((value) => {
           if (active && request === sequence) {
             setSession(value);
@@ -59,12 +60,15 @@ export default function SubmitOrder({
         });
     };
     refresh();
+    const changed = (event: Event) => {
+      if (sessionEventMatches(event, "customer")) refresh();
+    };
     window.addEventListener("focus", refresh);
-    window.addEventListener("boosterplus:session-changed", refresh);
+    window.addEventListener("boosterplus:session-changed", changed);
     return () => {
       active = false;
       window.removeEventListener("focus", refresh);
-      window.removeEventListener("boosterplus:session-changed", refresh);
+      window.removeEventListener("boosterplus:session-changed", changed);
     };
   }, []);
   const amount = variant

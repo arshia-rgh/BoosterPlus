@@ -5,7 +5,7 @@ test("workspace loading stays readable and fills its panel at every width", asyn
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.route("**/api/v1/auth/session", async () => {
+  await page.route("**/api/v1/auth/portals/admin/session", async () => {
     // Leave the session pending to inspect the real Identity/PanelState integration.
   });
   for (const width of [320, 768, 1440]) {
@@ -77,7 +77,7 @@ test("session recovery respects server cooldown and keeps a retry busy until it 
   const pending = new Promise<void>((resolve) => {
     release = resolve;
   });
-  await page.route("**/api/v1/auth/session", async (route) => {
+  await page.route("**/api/v1/auth/portals/customer/session", async (route) => {
     reads++;
     if (reads === 1) {
       await route.fulfill({
@@ -90,6 +90,7 @@ test("session recovery respects server cooldown and keeps a retry busy until it 
     await pending;
     await route.fulfill({
       json: {
+        portal: "customer",
         user: null,
         csrf_token: "fixture".repeat(10),
         google_enabled: false,

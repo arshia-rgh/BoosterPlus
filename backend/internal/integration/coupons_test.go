@@ -199,7 +199,7 @@ func TestCouponHTTPAndAbuseLimits(t *testing.T) {
 	if res := call(endpoint, body, "https://evil.test"); res.Code != 403 {
 		t.Fatal("CSRF accepted", res.Code)
 	}
-	if res := call("/api/v1/admin/catalog/coupons", `{}`, "http://localhost"); res.Code != 401 {
+	if res := call("/api/v1/admin/catalog/coupons", `{}`, "http://localhost"); res.Code != 403 {
 		t.Fatal("anonymous administration", res.Code)
 	}
 	if res := call(endpoint, body, "http://localhost"); res.Code != 200 || !strings.Contains(res.Body.String(), `"amount_minor":"50"`) {

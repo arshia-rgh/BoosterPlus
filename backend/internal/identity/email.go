@@ -18,6 +18,7 @@ import (
 
 // EmailRequest binds a challenge to its browser, purpose, and current session where applicable.
 type EmailRequest struct {
+	Portal       Portal
 	Email        string
 	AccountEmail string
 	Purpose      string
@@ -51,6 +52,12 @@ func (s *Service) Throttle(ctx context.Context, scope, identity string, limit in
 // RequestEmail returns an opaque challenge ID even when issuance is throttled or an account is unavailable.
 func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string, error) {
 	id := randomToken()
+	if !input.Portal.valid() {
+		return "", ErrInvalid
+	}
+	if err := portalMatches(input.Principal, input.Portal); err != nil {
+		return "", err
+	}
 	email, normalizeErr := NormalizeEmail(input.Email)
 	if normalizeErr != nil {
 		return "", ErrInvalid
@@ -69,7 +76,7 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 		accountID = input.Principal.User.ID
 		sessionID = input.Principal.Session.ID
 	case "email_change":
-		if err := Require(input.Principal, "account"); err != nil {
+		if err := Require(input.Principal, "self"); err != nil {
 			return "", err
 		}
 		if err := s.recent(input.Principal); err != nil {
@@ -125,8 +132,20 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 		if e := lockSecurity(ctx, tx); e != nil {
 			return e
 		}
+		if input.Purpose == "login" && input.Portal != PortalCustomer {
+			account, findErr := tx.User.Query().Where(user.EmailEQ(email), user.SuspendedEQ(false)).Only(ctx)
+			if ent.IsNotFound(findErr) {
+				return nil
+			}
+			if findErr != nil {
+				return findErr
+			}
+			if !input.Portal.permitsRole(account.Role) {
+				return nil
+			}
+		}
 		// A newly issued code invalidates previous codes for the same destination/purpose.
-		if _, invalidateErr := tx.AuthChallenge.Update().Where(authchallenge.EmailEQ(email), authchallenge.PurposeEQ(input.Purpose), authchallenge.ConsumedEQ(false)).SetConsumed(true).Save(ctx); invalidateErr != nil {
+		if _, invalidateErr := tx.AuthChallenge.Update().Where(authchallenge.PortalEQ(string(input.Portal)), authchallenge.EmailEQ(email), authchallenge.PurposeEQ(input.Purpose), authchallenge.ConsumedEQ(false)).SetConsumed(true).Save(ctx); invalidateErr != nil {
 			return invalidateErr
 		}
 		terms := ""
@@ -137,11 +156,11 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 				return termsErr
 			}
 		}
-		_, createErr := tx.AuthChallenge.Create().SetID(id).SetEmail(email).SetPurpose(input.Purpose).SetUserID(accountID).SetSessionID(sessionID).SetBrowserHash(s.digest("browser", input.Browser)).SetCodeDigest(s.digest("code", id, input.Purpose, code)).SetTermsVersion(terms).SetCreatedAt(s.now()).SetExpiresAt(s.now().Add(10 * time.Minute)).Save(ctx)
+		_, createErr := tx.AuthChallenge.Create().SetID(id).SetPortal(string(input.Portal)).SetEmail(email).SetPurpose(input.Purpose).SetUserID(accountID).SetSessionID(sessionID).SetBrowserHash(s.browserDigest(input.Portal, input.Browser)).SetCodeDigest(s.digest("code.portal", string(input.Portal), id, input.Purpose, code)).SetTermsVersion(terms).SetCreatedAt(s.now()).SetExpiresAt(s.now().Add(10 * time.Minute)).Save(ctx)
 		if createErr != nil {
 			return createErr
 		}
-		return s.queueMessage(ctx, tx, id, email, "Your PLAYORA verification code", fmt.Sprintf("Your code is %s. It expires in 10 minutes. Use it only for the %s request you started. If you did not request this code, ignore this email.", code, input.Purpose), 10*time.Minute)
+		return s.queueMessage(ctx, tx, id, email, "Your PLAYORA verification code", fmt.Sprintf("Your code is %s. It expires in 10 minutes. Use it only for the %s portal %s request you started. If you did not request this code, ignore this email.", code, input.Portal, input.Purpose), 10*time.Minute)
 	})
 	return id, err
 }
@@ -174,9 +193,12 @@ type Verification struct {
 }
 
 // VerifyEmail consumes codes and creates identity/session state in one transaction.
-func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string, p *Principal) (Verification, error) {
-	if len(id) > 64 || len(code) != 6 || len(browser) < 40 {
+func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string, p *Principal, portal Portal) (Verification, error) {
+	if !portal.valid() || len(id) > 64 || len(code) != 6 || len(browser) < 40 {
 		return Verification{}, ErrInvalid
+	}
+	if err := portalMatches(p, portal); err != nil {
+		return Verification{}, err
 	}
 	for _, digit := range code {
 		if digit < '0' || digit > '9' {
@@ -207,7 +229,7 @@ func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string,
 			}
 			p = fresh
 		}
-		count, claimErr := tx.AuthChallenge.Update().Where(authchallenge.IDEQ(id), authchallenge.BrowserHashEQ(s.digest("browser", browser)), authchallenge.ConsumedEQ(false), authchallenge.ExpiresAtGT(s.now()), authchallenge.AttemptsLT(5)).AddAttempts(1).Save(ctx)
+		count, claimErr := tx.AuthChallenge.Update().Where(authchallenge.IDEQ(id), authchallenge.PortalEQ(string(portal)), authchallenge.BrowserHashEQ(s.browserDigest(portal, browser)), authchallenge.ConsumedEQ(false), authchallenge.ExpiresAtGT(s.now()), authchallenge.AttemptsLT(5)).AddAttempts(1).Save(ctx)
 		if claimErr != nil {
 			return claimErr
 		}
@@ -218,7 +240,7 @@ func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string,
 		if readErr != nil {
 			return readErr
 		}
-		if !hmac.Equal([]byte(challenge.CodeDigest), []byte(s.digest("code", id, challenge.Purpose, code))) {
+		if !hmac.Equal([]byte(challenge.CodeDigest), []byte(s.digest("code.portal", string(portal), id, challenge.Purpose, code))) {
 			return nil
 		}
 		if challenge.SessionID != "" && (p == nil || p.Session.ID != challenge.SessionID || p.User.ID != challenge.UserID) {
@@ -235,6 +257,9 @@ func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string,
 				return termsErr
 			}
 			account, accountErr := tx.User.Query().Where(user.EmailEQ(challenge.Email)).Only(ctx)
+			if portal != PortalCustomer && (ent.IsNotFound(accountErr) || accountErr == nil && !portal.permitsRole(account.Role)) {
+				return nil
+			}
 			if ent.IsNotFound(accountErr) {
 				if challenge.TermsVersion == "" || challenge.TermsVersion != currentTerms {
 					resultErr = ErrTerms
@@ -268,7 +293,7 @@ func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string,
 			if p != nil {
 				old = p.Session.ID
 			}
-			token, sessionErr := s.issueSession(ctx, tx, account, old)
+			token, sessionErr := s.issueSession(ctx, tx, account, old, portal)
 			if sessionErr != nil {
 				return sessionErr
 			}

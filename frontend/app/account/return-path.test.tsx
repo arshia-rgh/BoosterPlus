@@ -33,7 +33,7 @@ function Location() {
 }
 
 it("returns Google re-verification to security with a safe manual task link", async () => {
-  rememberGoogleReturn("/account/security", "/admin/orders?customer=private");
+  rememberGoogleReturn("/account/security", "/orders?customer=private");
   render(
     <MemoryRouter initialEntries={["/account"]}>
       <SignInReturn ready />
@@ -44,7 +44,7 @@ it("returns Google re-verification to security with a safe manual task link", as
   await screen.findByText("/account/security");
   expect(
     screen.getByRole("link", { name: "Return to your task ↗" }),
-  ).toHaveAttribute("href", "/admin/orders");
+  ).toHaveAttribute("href", "/orders");
 });
 it("waits for MFA/recovery acknowledgment before returning from Google and consumes the path", async () => {
   rememberGoogleReturn("/orders");
@@ -62,27 +62,45 @@ it("waits for MFA/recovery acknowledgment before returning from Google and consu
     </MemoryRouter>,
   );
   await screen.findByText("/orders");
-  expect(sessionStorage.getItem("playora.google-return")).toBeNull();
+  expect(sessionStorage.getItem("playora.google-return.customer")).toBeNull();
 });
-it("opens the independent staff application with document navigation", async () => {
-  const assign = vi.fn();
-  vi.stubGlobal("location", { assign });
+it("never carries a customer sign-in into a staff application", () => {
   rememberGoogleReturn("/admin/orders");
   render(
-    <MemoryRouter initialEntries={["/account"]}>
+    <MemoryRouter initialEntries={["/account?returnTo=%2Fadmin%2Forders"]}>
       <SignInReturn ready />
       <Location />
     </MemoryRouter>,
   );
-  await waitFor(() => {
-    expect(assign).toHaveBeenCalledExactlyOnceWith("/admin/orders");
-  });
   expect(screen.getByText("/account")).toBeInTheDocument();
-  expect(sessionStorage.getItem("playora.google-return")).toBeNull();
+  expect(sessionStorage.getItem("playora.google-return.customer")).toBeNull();
+});
+it("keeps staff return paths and reauthentication in their selected portal", async () => {
+  rememberGoogleReturn(
+    "/admin/account/security",
+    "/admin/orders/owned?section=payment&token=private",
+    "admin",
+  );
+  rememberGoogleReturn("/orders/other");
+  render(
+    <MemoryRouter initialEntries={["/admin"]}>
+      <SignInReturn ready />
+      <VerificationReturn />
+      <Location />
+    </MemoryRouter>,
+  );
+  await screen.findByText("/admin/account/security");
+  expect(
+    screen.getByRole("link", { name: "Return to your task ↗" }),
+  ).toHaveAttribute("href", "/admin/orders/owned?section=payment");
+  expect(sessionStorage.getItem("playora.google-return.admin")).toBeNull();
+  expect(
+    sessionStorage.getItem("playora.google-return.customer"),
+  ).not.toBeNull();
 });
 it("ignores expired return data and tolerates blocked storage", async () => {
   sessionStorage.setItem(
-    "playora.google-return",
+    "playora.google-return.customer",
     JSON.stringify({ path: "/orders", expires: 0 }),
   );
   render(
@@ -92,7 +110,7 @@ it("ignores expired return data and tolerates blocked storage", async () => {
     </MemoryRouter>,
   );
   await waitFor(() => {
-    expect(sessionStorage.getItem("playora.google-return")).toBeNull();
+    expect(sessionStorage.getItem("playora.google-return.customer")).toBeNull();
   });
   expect(screen.getByText("/account")).toBeInTheDocument();
   vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {

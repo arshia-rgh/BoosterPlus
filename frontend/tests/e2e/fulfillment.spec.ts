@@ -16,7 +16,12 @@ test("paid work supports both modes, narrow booster access and reviewed completi
   request,
 }, info) => {
   test.setTimeout(150000);
-  await signIn(page, request, fixture(info.project.name, "workadmin"));
+  await signIn(
+    page,
+    request,
+    fixture(info.project.name, "workadmin"),
+    "/admin/login",
+  );
   await enroll(page);
   const buyerContext = await browser.newContext({
       baseURL: "http://127.0.0.1:4173",
@@ -29,7 +34,12 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     buyer = await buyerContext.newPage(),
     staff = await staffContext.newPage();
   try {
-    await signIn(staff, request, fixture(info.project.name, "workbooster"));
+    await signIn(
+      staff,
+      request,
+      fixture(info.project.name, "workbooster"),
+      "/booster/login",
+    );
     await enroll(staff);
     await signIn(buyer, request, fixture(info.project.name, "workbuyer"));
     const accountID = fixture(info.project.name, "work_solo"),
@@ -175,7 +185,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     expect(raw).not.toContain(fixture(info.project.name, "workbuyer"));
     expect(
       (await staff.request.get(`/api/v1/orders/${accountID}`)).status(),
-    ).toBe(404);
+    ).toBe(401);
     await staff
       .getByRole("button", { name: "Reveal game access", exact: true })
       .click();

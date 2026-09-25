@@ -1,3 +1,11 @@
+import {
+  portalFromPath,
+  portalLogin,
+  portalHome,
+  portalSecurity,
+  sessionEventMatches,
+  type Portal,
+} from "./portal";
 import { Button, Skeleton } from "../ui/primitives";
 import {
   FieldValidation,
@@ -22,7 +30,7 @@ import { RetryButton, useRetryPending } from "../ui/retry-button";
 import { Feedback, PanelState } from "../ui/feedback";
 import "../ui/feedback.css";
 import { PageHeader } from "../ui/page-header";
-import { createElement, useContext } from "react";
+import { createContext, createElement, useContext } from "react";
 import { AuthorizedIdentity, IdentityFrame } from "./frame";
 import {
   useEffect,
@@ -32,7 +40,13 @@ import {
   type ReactNode,
   type SubmitEvent,
 } from "react";
-import { Link, NavLink, useSearchParams } from "react-router";
+import {
+  Link,
+  NavLink,
+  Navigate,
+  useLocation,
+  useSearchParams,
+} from "react-router";
 import { z } from "../validation";
 import {
   get,
@@ -47,6 +61,34 @@ import {
 } from "./api";
 
 type Refresh = () => Promise<void>;
+// Email and Google share entry progression, including a server-supplied cooldown.
+const EntryProgress = createContext<{
+  busy: boolean;
+  acquire: () => boolean;
+  release: () => void;
+  retryAt: number | undefined;
+  setRetryAt: (time: number | undefined) => void;
+} | null>(null);
+function AuthEntryProgress({ children }: { children: ReactNode }) {
+  const [busy, setBusy] = useState(false);
+  const [retryAt, setRetryAt] = useState<number | undefined>();
+  const lock = useRef(false);
+  const acquire = useCallback(() => {
+    if (lock.current) return false;
+    lock.current = true;
+    setBusy(true);
+    return true;
+  }, []);
+  const release = useCallback(() => {
+    lock.current = false;
+    setBusy(false);
+  }, []);
+  return (
+    <EntryProgress value={{ busy, acquire, release, retryAt, setRetryAt }}>
+      {children}
+    </EntryProgress>
+  );
+}
 export function Form({
   title,
   children,
@@ -62,12 +104,16 @@ export function Form({
   compact?: boolean;
   success?: string;
 }) {
+  const entry = useContext(EntryProgress);
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState(""),
     [failed, setFailed] = useState(false),
     [problem, setProblem] = useState<unknown>(null);
   const cooling = useRetryPending(
-    problem instanceof APIError ? problem.retryAt : undefined,
+    Math.max(
+      problem instanceof APIError ? (problem.retryAt ?? 0) : 0,
+      entry?.retryAt ?? 0,
+    ) || undefined,
   );
   const [fields, setFields] = useState<RegisteredField[]>([]);
   const [issues, setIssues] = useState<FieldIssue[]>([]);
@@ -100,6 +146,7 @@ export function Form({
   async function send(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (lock.current || cooling) return;
+    if (entry && !entry.acquire()) return;
     lock.current = true;
     const data = new FormData(event.currentTarget);
     setBusy(true);
@@ -114,9 +161,12 @@ export function Form({
       setMessage(errorMessage(error));
       setFailed(true);
       setProblem(error);
+      if (error instanceof APIError && error.retryAt !== undefined)
+        entry?.setRetryAt(error.retryAt);
       setIssues(error instanceof APIError ? error.issues : []);
     } finally {
       lock.current = false;
+      entry?.release();
       setBusy(false);
     }
   }
@@ -128,7 +178,7 @@ export function Form({
         onSubmit={(event) => void send(event)}
       >
         {!compact && <h2>{title}</h2>}
-        <fieldset disabled={busy}>
+        <fieldset disabled={busy || entry?.busy}>
           {children}
           <Button
             className="button"
@@ -163,6 +213,7 @@ function EmailForm({
   email?: string;
   refresh: Refresh;
 }) {
+  const portal = portalFromPath(useLocation().pathname);
   const [challenge, setChallenge] = useState(""),
     [done, setDone] = useState(false),
     [requestedEmail, setRequestedEmail] = useState("");
@@ -227,7 +278,9 @@ function EmailForm({
               label={
                 purpose === "recovery" || purpose === "email_change"
                   ? "New email address"
-                  : "Email address"
+                  : portal === "customer"
+                    ? "Email address"
+                    : "Work email address"
               }
               type="email"
               autoComplete="email"
@@ -356,7 +409,7 @@ function Google({
         rememberGoogleReturn(
           purpose === "login"
             ? (requested ?? window.location.pathname)
-            : "/account/security",
+            : portalSecurity(session.portal),
           purpose === "login" ? undefined : (requested ?? undefined),
         );
         window.location.assign(target.href);
@@ -387,15 +440,24 @@ function Security({
   onCodes: (codes: string[]) => void;
 }) {
   const [secret, setSecret] = useState("");
+  const heading = useRef<HTMLHeadingElement>(null);
+  const pending = session.mfa_required;
+  useEffect(() => {
+    if (pending) heading.current?.focus();
+  }, [pending]);
   const user = session.user;
   if (!user) return null;
   return (
     <section className="identity-section">
-      <h2>Authenticator security</h2>
+      <h2 ref={heading} tabIndex={-1}>
+        Authenticator security
+      </h2>
       <p>
-        Staff must verify an authenticator at every sign-in. A code can be used
-        only once. Sensitive changes require email or Google verification and an
-        authenticator code from the last 10 minutes.
+        {session.portal === "customer"
+          ? "When enabled, your authenticator adds a second verification step to sign-in."
+          : "Staff must verify an authenticator at every sign-in."}{" "}
+        A code can be used only once. Sensitive changes require email or Google
+        verification and an authenticator code from the last 10 minutes.
       </p>
       {!user.mfa_enabled && (
         <Form
@@ -446,6 +508,30 @@ function Security({
             maxLength={26}
           />
         </Form>
+      )}
+      {session.mfa_required && user.mfa_enabled && (
+        <details className="auth-recovery-help">
+          <summary>Can’t use your authenticator?</summary>
+          <p>
+            Use one of your unused recovery codes in the field above. Each code
+            works once, after your email or Google verification.
+          </p>
+          <p>
+            {session.portal === "customer" ? (
+              <>
+                If you have no remaining codes, recovery requires a PLAYORA
+                support review. Consult the{" "}
+                <Link to="/terms">public account terms</Link> or your existing
+                PLAYORA correspondence for recovery assistance.
+              </>
+            ) : (
+              "If you have no remaining codes, contact your PLAYORA administrator through your established staff contact channel for an access review."
+            )}{" "}
+            Do not send your setup key, verification codes or recovery codes.
+            Email verification alone cannot remove the authenticator
+            requirement.
+          </p>
+        </details>
       )}
       {user.mfa_enabled && !session.mfa_required && (
         <>
@@ -504,7 +590,7 @@ function SessionList({ refresh }: { refresh: Refresh }) {
       {items.map((item) => (
         <Form
           key={item.id}
-          title={item.current ? "This session" : "Another session"}
+          title={`${item.portal === "admin" ? "Admin" : item.portal === "booster" ? "Booster" : "Customer"} · ${item.current ? "This session" : "Another session"}`}
           label="Sign out this session"
           submit={async () => {
             await command("/auth/sessions/revoke", { id: item.id, all: false });
@@ -544,6 +630,8 @@ function Account({
   onCodes: (codes: string[]) => void;
   section?: "profile" | "security" | "preferences";
 }) {
+  const portal = session.portal;
+  const base = portal === "customer" ? "/account" : `/${portal}/account`;
   const user = session.user;
   const [name, setName] = useState(user?.display_name ?? "");
   const [alias, setAlias] = useState(user?.staff_alias ?? "");
@@ -552,10 +640,10 @@ function Account({
     <div className="account-settings">
       {section === "security" && <VerificationReturn />}
       <nav className="settings-navigation" aria-label="Account settings">
-        <NavLink to="/account/settings">Profile</NavLink>
-        <NavLink to="/account/security">Security</NavLink>
-        <NavLink to="/account/preferences">Preferences</NavLink>
-        <Link to="/privacy">Privacy</Link>
+        <NavLink to={`${base}/settings`}>Profile</NavLink>
+        <NavLink to={`${base}/security`}>Security</NavLink>
+        <NavLink to={`${base}/preferences`}>Preferences</NavLink>
+        {portal === "customer" && <Link to="/privacy">Privacy</Link>}
       </nav>
       {section === "profile" && (
         <Form
@@ -565,12 +653,19 @@ function Account({
           submit={async (data) => {
             await command("/me/profile", {
               display_name: value(data, "display_name"),
-              staff_alias: value(data, "staff_alias"),
+              staff_alias:
+                portal === "customer"
+                  ? user.staff_alias
+                  : value(data, "staff_alias"),
               notify_updates: user.notify_updates,
             });
             await refresh();
             setName(value(data, "display_name").trim());
-            setAlias(value(data, "staff_alias").trim());
+            setAlias(
+              portal === "customer"
+                ? user.staff_alias
+                : value(data, "staff_alias").trim(),
+            );
           }}
         >
           <p className="quiet">
@@ -588,7 +683,7 @@ function Account({
               autoComplete="nickname"
             />
           </label>
-          {user.role !== "customer" && (
+          {portal !== "customer" && (
             <label>
               Customer-facing staff alias
               <input
@@ -602,7 +697,7 @@ function Account({
             </label>
           )}
           <p>{user.email} · Verified email</p>
-          <Link to="/account/security">Manage email and sign-in methods</Link>
+          <Link to={`${base}/security`}>Manage email and sign-in methods</Link>
           <details>
             <summary>Account reference</summary>
             <p className="quiet">{user.id}</p>
@@ -632,10 +727,12 @@ function Account({
             Email me order updates
           </label>
           <p>Security emails are always sent.</p>
-          <p>
-            <Link to="/availability">Manage package availability alerts</Link>{" "}
-            separately.
-          </p>
+          {portal === "customer" && (
+            <p>
+              <Link to="/availability">Manage package availability alerts</Link>{" "}
+              separately.
+            </p>
+          )}
         </Form>
       )}
       {section === "security" && (
@@ -686,17 +783,32 @@ function Account({
     </div>
   );
 }
-export default function Identity({
+type IdentityProps = {
+  title: string;
+  view?: "overview" | "profile" | "security" | "preferences";
+  capability?: "self" | "account" | "admin" | "booster" | "owner";
+  children?: ReactNode;
+};
+export default function Identity(props: IdentityProps) {
+  const portal = portalFromPath(useLocation().pathname);
+  return <PortalIdentity key={portal} {...props} portal={portal} />;
+}
+function PortalIdentity({
   title,
   capability = "account",
   children,
   view = "profile",
-}: {
-  title: string;
-  view?: "overview" | "profile" | "security" | "preferences";
-  capability?: "account" | "admin" | "booster" | "owner";
-  children?: React.ReactNode;
-}) {
+  portal,
+}: IdentityProps & { portal: Portal }) {
+  const location = useLocation();
+  const entry = location.pathname === portalLogin(portal);
+  if (entry)
+    title =
+      portal === "admin"
+        ? "Admin sign-in"
+        : portal === "booster"
+          ? "Booster sign-in"
+          : "Sign in";
   const Frame = useContext(IdentityFrame);
   const [search] = useSearchParams();
   const googleError = new Map([
@@ -720,45 +832,50 @@ export default function Identity({
   const currentUser = useRef<string | null>(null);
   const pending = useRef(false);
   const cooldown = useRef<number | undefined>(undefined);
-  const refresh = useCallback(async (sessionChanged = true) => {
-    // Focus and manual retry share the same lock. A completed auth mutation can
-    // supersede an older read, but even that must respect the server cooldown.
-    if (cooldown.current !== undefined && cooldown.current > Date.now()) return;
-    if (pending.current && !sessionChanged) return;
-    const requestRevision = ++revision.current;
-    pending.current = true;
-    setRefreshing(true);
-    try {
-      const result = await get("/auth/session", sessionSchema);
-      if (requestRevision !== revision.current) return;
-      setSession(result);
-      if ((result.user?.id ?? null) !== currentUser.current) setCodes([]);
-      currentUser.current = result.user?.id ?? null;
-      setFailure("");
-      setFailureStatus(undefined);
-      cooldown.current = undefined;
-      setRetryAt(undefined);
-    } catch (error) {
-      if (requestRevision !== revision.current) return;
-      setSession(null);
-      setFailure(errorMessage(error));
-      setFailureStatus(error instanceof APIError ? error.status : undefined);
-      cooldown.current = error instanceof APIError ? error.retryAt : undefined;
-      setRetryAt(cooldown.current);
-    } finally {
-      if (requestRevision === revision.current) {
-        pending.current = false;
-        setRefreshing(false);
+  const refresh = useCallback(
+    async (sessionChanged = true) => {
+      // Focus and manual retry share the same lock. A completed auth mutation can
+      // supersede an older read, but even that must respect the server cooldown.
+      if (cooldown.current !== undefined && cooldown.current > Date.now())
+        return;
+      if (pending.current && !sessionChanged) return;
+      const requestRevision = ++revision.current;
+      pending.current = true;
+      setRefreshing(true);
+      try {
+        const result = await get("/auth/session", sessionSchema, portal);
+        if (requestRevision !== revision.current) return;
+        setSession(result);
+        if ((result.user?.id ?? null) !== currentUser.current) setCodes([]);
+        currentUser.current = result.user?.id ?? null;
+        setFailure("");
+        setFailureStatus(undefined);
+        cooldown.current = undefined;
+        setRetryAt(undefined);
+      } catch (error) {
+        if (requestRevision !== revision.current) return;
+        setSession(null);
+        setFailure(errorMessage(error));
+        setFailureStatus(error instanceof APIError ? error.status : undefined);
+        cooldown.current =
+          error instanceof APIError ? error.retryAt : undefined;
+        setRetryAt(cooldown.current);
+      } finally {
+        if (requestRevision === revision.current) {
+          pending.current = false;
+          setRefreshing(false);
+        }
       }
-    }
-  }, []);
+    },
+    [portal],
+  );
   const cancelRefresh = useCallback(() => {
     revision.current++;
     pending.current = false;
   }, []);
   useEffect(() => {
-    const changed = () => {
-      void refresh();
+    const changed = (event: Event) => {
+      if (sessionEventMatches(event, portal)) void refresh();
     };
     const focused = () => {
       void refresh(false);
@@ -777,14 +894,25 @@ export default function Identity({
       window.removeEventListener("focus", focused);
       cancelRefresh();
     };
-  }, [refresh, cancelRefresh]);
+  }, [refresh, cancelRefresh, portal]);
+  if (!entry && session && (!session.user || session.mfa_required)) {
+    const target =
+      safeReturnPath(location.pathname + location.search, portal) ??
+      portalHome(portal);
+    return (
+      <Navigate
+        replace
+        to={`${portalLogin(portal)}?returnTo=${encodeURIComponent(target)}`}
+      />
+    );
+  }
   return createElement(Frame, {
-    session,
+    session: entry ? null : session,
     title,
     navigation:
-      session?.user && capability !== "admin" && capability !== "owner" ? (
+      session?.user && !entry && portal !== "admin" ? (
         <AccountNavigation
-          key={session.user.id}
+          key={`${portal}:${session.user.id}`}
           session={session}
           action={
             <Form
@@ -792,8 +920,8 @@ export default function Identity({
               title="Sign out"
               submit={async () => {
                 await command("/auth/logout");
-                clearGoogleReturn();
-                clearConfigurationDraft();
+                clearGoogleReturn(portal);
+                if (portal === "customer") clearConfigurationDraft();
                 setCodes([]);
                 await refresh();
               }}
@@ -802,7 +930,11 @@ export default function Identity({
         />
       ) : null,
     children: (
-      <main id="main" className="page identity-page">
+      <main
+        id="main"
+        className={`page identity-page${entry ? " portal-sign-in" : ""}`}
+        data-portal={portal}
+      >
         <SignInReturn
           ready={
             !!session?.user &&
@@ -815,13 +947,25 @@ export default function Identity({
         <PageHeader
           title={title}
           eyebrow={
-            capability === "admin" || capability === "owner"
-              ? "Staff workspace"
-              : capability === "booster"
+            portal === "admin"
+              ? "Admin workspace"
+              : portal === "booster"
                 ? "Booster workspace"
                 : "My account"
           }
         />
+        {entry && (
+          <ol className="portal-sign-in-steps" aria-label="Sign-in steps">
+            <li aria-current={!session?.user ? "step" : undefined}>
+              1 · Verify email or Google
+            </li>
+            {(portal !== "customer" || session?.mfa_required) && (
+              <li aria-current={session?.mfa_required ? "step" : undefined}>
+                2 · Verify authenticator
+              </li>
+            )}
+          </ol>
+        )}
         {googleError && <p role="alert">{googleError}</p>}
         {failure ? (
           <PanelState
@@ -879,27 +1023,37 @@ export default function Identity({
             {!session.user ? (
               <>
                 <p>
-                  Sign in with Google or an email code. No password is needed.
+                  {portal === "customer"
+                    ? "Sign in or create your account with Google or email. No password needed."
+                    : `Use your invited ${portal} account. Email or Google verification is followed by your authenticator.`}
                 </p>
-                <div className="identity-grid">
-                  <EmailForm
-                    purpose="login"
-                    refresh={refresh}
-                    termsVersion={session.terms_version}
-                  />
-                  {session.google_enabled ? (
-                    <Google
-                      session={session}
+                {portal !== "customer" && (
+                  <p className="quiet">
+                    Access is managed by PLAYORA. This page does not create
+                    staff accounts.
+                  </p>
+                )}
+                <AuthEntryProgress>
+                  <div className="identity-grid">
+                    <EmailForm
                       purpose="login"
                       refresh={refresh}
+                      termsVersion={session.terms_version}
                     />
-                  ) : (
-                    <p>
-                      Google sign-in is currently unavailable. Continue with
-                      email.
-                    </p>
-                  )}
-                </div>
+                    {session.google_enabled ? (
+                      <Google
+                        session={session}
+                        purpose="login"
+                        refresh={refresh}
+                      />
+                    ) : (
+                      <p>
+                        Google sign-in is currently unavailable. Continue with
+                        email.
+                      </p>
+                    )}
+                  </div>
+                </AuthEntryProgress>
                 <details>
                   <summary>Lost access to your email?</summary>
                   <EmailForm purpose="recovery" refresh={refresh} />
@@ -907,14 +1061,14 @@ export default function Identity({
               </>
             ) : (
               <>
-                {(capability === "admin" || capability === "owner") && (
+                {(portal === "admin" || entry) && (
                   <Form
                     compact
                     title="Sign out"
                     submit={async () => {
                       await command("/auth/logout");
-                      clearGoogleReturn();
-                      clearConfigurationDraft();
+                      clearGoogleReturn(portal);
+                      if (portal === "customer") clearConfigurationDraft();
                       setCodes([]);
                       await refresh();
                     }}
@@ -942,14 +1096,20 @@ export default function Identity({
                   </>
                 ) : !session.capabilities.includes(capability) ? (
                   <p role="alert">You do not have access to this portal.</p>
+                ) : entry ? (
+                  <p role="status">
+                    {codes.length
+                      ? "Save your recovery codes to finish signing in."
+                      : "Opening your workspace…"}
+                  </p>
                 ) : children ? (
                   <AuthorizedIdentity
-                    key={session.user.id}
+                    key={`${portal}:${session.user.id}`}
                     value={{ session, refresh }}
                   >
                     {children}
                   </AuthorizedIdentity>
-                ) : capability === "booster" ? (
+                ) : capability === "booster" && view === "overview" ? (
                   <section
                     className="booster-start"
                     aria-label="Booster workspace shortcuts"
@@ -984,10 +1144,10 @@ export default function Identity({
                     </div>
                   </section>
                 ) : view === "overview" ? (
-                  <AccountOverview key={session.user.id} />
+                  <AccountOverview key={`${portal}:${session.user.id}`} />
                 ) : (
                   <Account
-                    key={session.user.id}
+                    key={`${portal}:${session.user.id}`}
                     section={view}
                     session={session}
                     refresh={refresh}
@@ -997,6 +1157,11 @@ export default function Identity({
               </>
             )}
           </>
+        )}
+        {entry && portal !== "customer" && (
+          <p className="portal-entry-help">
+            <a href="/">Visit the PLAYORA website ↗</a>
+          </p>
         )}
       </main>
     ),

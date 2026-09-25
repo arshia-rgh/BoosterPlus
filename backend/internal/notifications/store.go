@@ -100,16 +100,30 @@ type Listing struct {
 	Next          string `json:"next"`
 }
 
-// List reads only the authenticated customer's notices.
+// portalKinds keeps staff notices out of customer pagination and read mutations.
+func portalKinds(portal identity.Portal) []string {
+	switch portal {
+	case identity.PortalCustomer:
+		return []string{"review_customer", "submission_seller", "conversation_customer", "order_customer", "booking_customer"}
+	case identity.PortalBooster:
+		return []string{"coordination_booster", "booking_staff", "order_staff"}
+	case identity.PortalAdmin:
+		return []string{"conversation_staff"}
+	default:
+		return nil
+	}
+}
+
+// List reads only the selected portal's owned notices.
 func (s *Store) List(ctx context.Context, p *identity.Principal, after string) (Listing, error) {
 	result := Listing{Notifications: []View{}}
-	if err := identity.Require(p, "account"); err != nil {
+	if err := identity.Require(p, "self"); err != nil {
 		return result, err
 	}
 	if len(after) > 36 {
 		return result, identity.ErrInvalid
 	}
-	q := s.client.Notification.Query().Where(notification.UserIDEQ(p.User.ID)).Order(ent.Desc(notification.FieldID)).Limit(51)
+	q := s.client.Notification.Query().Where(notification.UserIDEQ(p.User.ID), notification.KindIn(portalKinds(identity.Portal(p.Session.Portal))...)).Order(ent.Desc(notification.FieldID)).Limit(51)
 	if after != "" {
 		q.Where(notification.IDLT(after))
 	}
@@ -133,8 +147,8 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, after string) (
 
 // Read marks an owned notice read and is idempotent for missing/unowned IDs.
 func (s *Store) Read(ctx context.Context, p *identity.Principal, id string) error {
-	return s.auth.AuthorizedTransaction(ctx, p, "account", false, func(tx *ent.Tx, current *identity.Principal) error {
-		_, err := tx.Notification.Update().Where(notification.IDEQ(id), notification.UserIDEQ(current.User.ID), notification.ReadAtIsNil()).SetReadAt(time.Now()).Save(ctx)
+	return s.auth.AuthorizedTransaction(ctx, p, "self", false, func(tx *ent.Tx, current *identity.Principal) error {
+		_, err := tx.Notification.Update().Where(notification.IDEQ(id), notification.UserIDEQ(current.User.ID), notification.KindIn(portalKinds(identity.Portal(current.Session.Portal))...), notification.ReadAtIsNil()).SetReadAt(time.Now()).Save(ctx)
 		return err
 	})
 }

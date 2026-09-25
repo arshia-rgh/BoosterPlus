@@ -21,6 +21,7 @@ const user = {
 };
 const session = {
   user: null,
+  portal: "customer",
   csrf_token: "a".repeat(64),
   google_enabled: false,
   google_linked: false,
@@ -114,13 +115,14 @@ it("gets a fresh CSRF token for every mutation and uses same-origin cookies", as
   await command("/auth/logout");
   expect(fetcher).toHaveBeenNthCalledWith(
     2,
-    "/api/v1/auth/logout",
+    "/api/v1/auth/portals/customer/logout",
     expect.objectContaining({
       method: "POST",
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
         "X-CSRF-Token": session.csrf_token,
+        "X-Playora-Portal": "customer",
       },
     }),
   );
@@ -184,7 +186,12 @@ it("ignores older session responses after a newer refresh", async () => {
   await waitFor(() => {
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
-  fireEvent(window, new Event("boosterplus:session-changed"));
+  fireEvent(
+    window,
+    new CustomEvent("boosterplus:session-changed", {
+      detail: { portal: "customer" },
+    }),
+  );
   await screen.findByRole("button", { name: "Save profile" });
   if (!older) throw new Error("Missing response resolver");
   older(new Response(JSON.stringify(session)));
@@ -269,7 +276,12 @@ it("respects cooldown on focus and allows only one explicit retry in flight", as
       screen.getByRole("button", { name: "Retry connection" }),
     ).toBeDisabled();
     fireEvent(window, new Event("focus"));
-    fireEvent(window, new Event("boosterplus:session-changed"));
+    fireEvent(
+      window,
+      new CustomEvent("boosterplus:session-changed", {
+        detail: { portal: "customer" },
+      }),
+    );
     expect(fetcher).toHaveBeenCalledTimes(1);
     act(() => {
       vi.advanceTimersByTime(2000);

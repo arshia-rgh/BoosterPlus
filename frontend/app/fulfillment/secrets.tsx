@@ -2,8 +2,9 @@ import { useEffect, useId, useRef, useState } from "react";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { post } from "../identity/api";
+import { useProtectedReveal } from "../identity/protected-reveal";
 import { useResource } from "../orders/resource";
-import { active, revealSchema, secretSchema, type Work } from "./model";
+import { active, secretSchema, type Work } from "./model";
 export function CustomerSecret({ work }: { work: Work }) {
   const base = `/fulfillment/${work.order_id}/secret`,
     status = useResource(
@@ -139,51 +140,10 @@ export function CustomerSecret({ work }: { work: Work }) {
   );
 }
 export function StaffSecret({ work, admin }: { work: Work; admin: boolean }) {
-  const [value, setValue] = useState(""),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState<unknown>(null),
-    mounted = useRef(true);
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-  useEffect(() => {
-    if (!value) return;
-    const clear = () => {
-      setValue("");
-    };
-    const timer = window.setTimeout(clear, 30000);
-    window.addEventListener("blur", clear);
-    document.addEventListener("visibilitychange", clear);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("blur", clear);
-      document.removeEventListener("visibilitychange", clear);
-    };
-  }, [value]);
-  async function reveal() {
-    setBusy(true);
-    setError(null);
-    try {
-      const data = await post(
-        `/${admin ? "admin" : "booster"}/fulfillment/${work.order_id}/secret/reveal`,
-        {},
-        revealSchema,
-      );
-      const bytes = Uint8Array.from(atob(data.value), (char) =>
-        char.charCodeAt(0),
-      );
-      const text = new TextDecoder().decode(bytes);
-      bytes.fill(0);
-      if (mounted.current) setValue(text);
-    } catch (cause) {
-      if (mounted.current) setError(cause);
-    } finally {
-      if (mounted.current) setBusy(false);
-    }
-  }
+  const { value, busy, error, reveal, hide } = useProtectedReveal(
+    `/${admin ? "admin" : "booster"}/fulfillment/${work.order_id}/secret/reveal`,
+    30000,
+  );
   if (work.mode !== "account" || !active(work)) return null;
   return (
     <section className="catalog-section">
@@ -196,13 +156,7 @@ export function StaffSecret({ work, admin }: { work: Work; admin: boolean }) {
       {value ? (
         <>
           <pre className="secret-value">{value}</pre>
-          <Action
-            onClick={() => {
-              setValue("");
-            }}
-          >
-            Hide game access
-          </Action>
+          <Action onClick={hide}>Hide game access</Action>
         </>
       ) : (
         <Action

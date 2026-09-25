@@ -58,9 +58,7 @@ export default function AccountNavigation({
     <>
       {!booster && links(secondary)}
       {booster && (
-        <NavLink end to="/account">
-          Customer account
-        </NavLink>
+        <NavLink to="/booster/account/settings">Profile and security</NavLink>
       )}
       {!booster && session.capabilities.includes("booster") && (
         <NavLink end to="/booster">

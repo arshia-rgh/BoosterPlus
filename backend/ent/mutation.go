@@ -5767,6 +5767,7 @@ type AuthChallengeMutation struct {
 	op            Op
 	typ           string
 	id            *string
+	portal        *string
 	email         *string
 	purpose       *string
 	user_id       *string
@@ -5887,6 +5888,42 @@ func (m *AuthChallengeMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetPortal sets the "portal" field.
+func (m *AuthChallengeMutation) SetPortal(s string) {
+	m.portal = &s
+}
+
+// Portal returns the value of the "portal" field in the mutation.
+func (m *AuthChallengeMutation) Portal() (r string, exists bool) {
+	v := m.portal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPortal returns the old "portal" field's value of the AuthChallenge entity.
+// If the AuthChallenge object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AuthChallengeMutation) OldPortal(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPortal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPortal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPortal: %w", err)
+	}
+	return oldValue.Portal, nil
+}
+
+// ResetPortal resets all changes to the "portal" field.
+func (m *AuthChallengeMutation) ResetPortal() {
+	m.portal = nil
 }
 
 // SetEmail sets the "email" field.
@@ -6339,7 +6376,10 @@ func (m *AuthChallengeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AuthChallengeMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
+	if m.portal != nil {
+		fields = append(fields, authchallenge.FieldPortal)
+	}
 	if m.email != nil {
 		fields = append(fields, authchallenge.FieldEmail)
 	}
@@ -6381,6 +6421,8 @@ func (m *AuthChallengeMutation) Fields() []string {
 // schema.
 func (m *AuthChallengeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case authchallenge.FieldPortal:
+		return m.Portal()
 	case authchallenge.FieldEmail:
 		return m.Email()
 	case authchallenge.FieldPurpose:
@@ -6412,6 +6454,8 @@ func (m *AuthChallengeMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *AuthChallengeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case authchallenge.FieldPortal:
+		return m.OldPortal(ctx)
 	case authchallenge.FieldEmail:
 		return m.OldEmail(ctx)
 	case authchallenge.FieldPurpose:
@@ -6443,6 +6487,13 @@ func (m *AuthChallengeMutation) OldField(ctx context.Context, name string) (ent.
 // type.
 func (m *AuthChallengeMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case authchallenge.FieldPortal:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPortal(v)
+		return nil
 	case authchallenge.FieldEmail:
 		v, ok := value.(string)
 		if !ok {
@@ -6584,6 +6635,9 @@ func (m *AuthChallengeMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *AuthChallengeMutation) ResetField(name string) error {
 	switch name {
+	case authchallenge.FieldPortal:
+		m.ResetPortal()
+		return nil
 	case authchallenge.FieldEmail:
 		m.ResetEmail()
 		return nil
@@ -6675,6 +6729,7 @@ type AuthFlowMutation struct {
 	op            Op
 	typ           string
 	id            *string
+	portal        *string
 	browser_hash  *string
 	purpose       *string
 	user_id       *string
@@ -6792,6 +6847,42 @@ func (m *AuthFlowMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetPortal sets the "portal" field.
+func (m *AuthFlowMutation) SetPortal(s string) {
+	m.portal = &s
+}
+
+// Portal returns the value of the "portal" field in the mutation.
+func (m *AuthFlowMutation) Portal() (r string, exists bool) {
+	v := m.portal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPortal returns the old "portal" field's value of the AuthFlow entity.
+// If the AuthFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AuthFlowMutation) OldPortal(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPortal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPortal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPortal: %w", err)
+	}
+	return oldValue.Portal, nil
+}
+
+// ResetPortal resets all changes to the "portal" field.
+func (m *AuthFlowMutation) ResetPortal() {
+	m.portal = nil
 }
 
 // SetBrowserHash sets the "browser_hash" field.
@@ -7152,7 +7243,10 @@ func (m *AuthFlowMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AuthFlowMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
+	if m.portal != nil {
+		fields = append(fields, authflow.FieldPortal)
+	}
 	if m.browser_hash != nil {
 		fields = append(fields, authflow.FieldBrowserHash)
 	}
@@ -7188,6 +7282,8 @@ func (m *AuthFlowMutation) Fields() []string {
 // schema.
 func (m *AuthFlowMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case authflow.FieldPortal:
+		return m.Portal()
 	case authflow.FieldBrowserHash:
 		return m.BrowserHash()
 	case authflow.FieldPurpose:
@@ -7215,6 +7311,8 @@ func (m *AuthFlowMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *AuthFlowMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case authflow.FieldPortal:
+		return m.OldPortal(ctx)
 	case authflow.FieldBrowserHash:
 		return m.OldBrowserHash(ctx)
 	case authflow.FieldPurpose:
@@ -7242,6 +7340,13 @@ func (m *AuthFlowMutation) OldField(ctx context.Context, name string) (ent.Value
 // type.
 func (m *AuthFlowMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case authflow.FieldPortal:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPortal(v)
+		return nil
 	case authflow.FieldBrowserHash:
 		v, ok := value.(string)
 		if !ok {
@@ -7354,6 +7459,9 @@ func (m *AuthFlowMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *AuthFlowMutation) ResetField(name string) error {
 	switch name {
+	case authflow.FieldPortal:
+		m.ResetPortal()
+		return nil
 	case authflow.FieldBrowserHash:
 		m.ResetBrowserHash()
 		return nil
@@ -9546,6 +9654,7 @@ type AuthSessionMutation struct {
 	op               Op
 	typ              string
 	id               *string
+	portal           *string
 	user_id          *string
 	token_hash       *string
 	auth_version     *int64
@@ -9664,6 +9773,42 @@ func (m *AuthSessionMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetPortal sets the "portal" field.
+func (m *AuthSessionMutation) SetPortal(s string) {
+	m.portal = &s
+}
+
+// Portal returns the value of the "portal" field in the mutation.
+func (m *AuthSessionMutation) Portal() (r string, exists bool) {
+	v := m.portal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPortal returns the old "portal" field's value of the AuthSession entity.
+// If the AuthSession object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AuthSessionMutation) OldPortal(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPortal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPortal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPortal: %w", err)
+	}
+	return oldValue.Portal, nil
+}
+
+// ResetPortal resets all changes to the "portal" field.
+func (m *AuthSessionMutation) ResetPortal() {
+	m.portal = nil
 }
 
 // SetUserID sets the "user_id" field.
@@ -10070,7 +10215,10 @@ func (m *AuthSessionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AuthSessionMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
+	if m.portal != nil {
+		fields = append(fields, authsession.FieldPortal)
+	}
 	if m.user_id != nil {
 		fields = append(fields, authsession.FieldUserID)
 	}
@@ -10106,6 +10254,8 @@ func (m *AuthSessionMutation) Fields() []string {
 // schema.
 func (m *AuthSessionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case authsession.FieldPortal:
+		return m.Portal()
 	case authsession.FieldUserID:
 		return m.UserID()
 	case authsession.FieldTokenHash:
@@ -10133,6 +10283,8 @@ func (m *AuthSessionMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *AuthSessionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case authsession.FieldPortal:
+		return m.OldPortal(ctx)
 	case authsession.FieldUserID:
 		return m.OldUserID(ctx)
 	case authsession.FieldTokenHash:
@@ -10160,6 +10312,13 @@ func (m *AuthSessionMutation) OldField(ctx context.Context, name string) (ent.Va
 // type.
 func (m *AuthSessionMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case authsession.FieldPortal:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPortal(v)
+		return nil
 	case authsession.FieldUserID:
 		v, ok := value.(string)
 		if !ok {
@@ -10302,6 +10461,9 @@ func (m *AuthSessionMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *AuthSessionMutation) ResetField(name string) error {
 	switch name {
+	case authsession.FieldPortal:
+		m.ResetPortal()
+		return nil
 	case authsession.FieldUserID:
 		m.ResetUserID()
 		return nil

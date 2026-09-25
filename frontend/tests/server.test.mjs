@@ -71,6 +71,7 @@ test(
           ip: req.headers["x-booster-client-ip"],
           forwarded: req.headers["x-forwarded-for"] ?? null,
           cookie: req.headers.cookie ?? null,
+          portal: req.headers["x-playora-portal"] ?? null,
           signature: req.headers["x-nowpayments-sig"] ?? null,
         }),
       );
@@ -115,7 +116,8 @@ test(
           "X-Booster-Proxy-Key": "forged",
           "X-Booster-Client-IP": "203.0.113.5",
           "X-Forwarded-For": "203.0.113.6",
-          Cookie: "bp-session=client-cookie",
+          Cookie: "bp-admin-session=client-cookie",
+          "X-Playora-Portal": "admin",
         },
       },
     );
@@ -123,7 +125,8 @@ test(
     assert.equal(result.proxyCorrect, true);
     assert.equal(result.forwarded, null);
     assert.equal(result.ip, "127.0.0.1");
-    assert.equal(result.cookie, "bp-session=client-cookie");
+    assert.equal(result.cookie, "bp-admin-session=client-cookie");
+    assert.equal(result.portal, "admin");
     assert.equal(result.path, "/api/v1/test?target=https://evil.example");
     assert.match(response.headers.get("set-cookie"), /HttpOnly/);
     const callback = await fetch(
@@ -196,6 +199,10 @@ for (const application of ["storefront", "admin", "both"]) {
       const hasAdmin = application !== "storefront";
       for (const route of [
         "/admin",
+        "/admin/login",
+        "/admin/account/settings",
+        "/admin/account/security",
+        "/admin/account/preferences",
         "/admin/orders",
         "/admin/orders/test-id",
         "/admin/support/test-id",
@@ -216,7 +223,8 @@ for (const application of ["storefront", "admin", "both"]) {
         assert.equal(response.headers.get("cache-control"), "no-store");
         if (hasAdmin) {
           const html = await response.text();
-          assert.match(html, /Staff workspace/);
+          assert.match(html, /Admin workspace/);
+          assert.match(html, /data-portal="admin"/);
           assert.doesNotMatch(html, /ascension-1536/);
           const assets = [
             ...html.matchAll(/(?:src|href)="(\/admin\/assets\/[^"?]+)"/g),
@@ -239,7 +247,26 @@ for (const application of ["storefront", "admin", "both"]) {
       if (application !== "admin") {
         const html = await games.text();
         assert.match(html, /Coming soon/);
-        assert.doesNotMatch(html, /Staff workspace/);
+        assert.doesNotMatch(html, /Admin workspace/);
+      }
+      for (const route of [
+        "/booster/login",
+        "/booster/account/settings",
+        "/booster/account/security",
+        "/booster/account/preferences",
+      ]) {
+        const response = await fetch(origin + route);
+        assert.equal(
+          response.status,
+          application === "admin" ? 404 : 200,
+          route,
+        );
+        assert.equal(response.headers.get("cache-control"), "no-store");
+        if (application !== "admin") {
+          const html = await response.text();
+          assert.match(html, /data-portal="booster"/);
+          assert.doesNotMatch(html, /data-portal="admin"/);
+        }
       }
       assert.equal((await fetch(origin + "/admin/missing-page")).status, 404);
       assert.equal((await fetch(origin + "/administrator")).status, 404);

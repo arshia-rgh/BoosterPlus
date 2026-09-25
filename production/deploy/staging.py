@@ -132,8 +132,11 @@ def wait_call(function, timeout=120):
 def identity_smoke(manifest, origin, ca):
     jar = http.cookiejar.CookieJar()
     opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ssl.create_default_context(cafile=ca)), urllib.request.HTTPCookieProcessor(jar))
-    def call(path, body=None, csrf="", other_origin=None):
-        request = urllib.request.Request(origin + "/api/v1" + path, data=json.dumps(body).encode() if body is not None else None, headers={"Content-Type": "application/json", "Origin": other_origin or origin, "X-CSRF-Token": csrf})
+    def call(path, body=None, csrf="", other_origin=None, portal=None):
+        headers = {"Content-Type": "application/json", "Origin": other_origin or origin, "X-CSRF-Token": csrf}
+        if portal is not None:
+            headers["X-Playora-Portal"] = portal
+        request = urllib.request.Request(origin + "/api/v1" + path, data=json.dumps(body).encode() if body is not None else None, headers=headers)
         with opener.open(request, timeout=15) as response:
             return json.loads(response.read())
     session = call("/auth/session")
@@ -155,8 +158,14 @@ def identity_smoke(manifest, origin, ca):
             call(path)
             raise RuntimeError("Customer crossed a staff authorization boundary")
         except urllib.error.HTTPError as error:
-            if error.code != 403:
+            if error.code != 401:
                 raise RuntimeError("Unexpected staff authorization response") from None
+        try:
+            call(path, portal="customer")
+            raise RuntimeError("Explicit customer audience crossed a staff boundary")
+        except urllib.error.HTTPError as error:
+            if error.code != 403:
+                raise RuntimeError("Unexpected audience conflict response") from None
     try:
         call("/me/profile", {"display_name": "forged"}, session["csrf_token"], "https://untrusted.example")
         raise RuntimeError("Foreign-origin mutation was accepted")

@@ -64,6 +64,11 @@ func IDContainsFold(id string) predicate.AuthFlow {
 	return predicate.AuthFlow(sql.FieldContainsFold(FieldID, id))
 }
 
+// Portal applies equality check predicate on the "portal" field. It's identical to PortalEQ.
+func Portal(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldEQ(FieldPortal, v))
+}
+
 // BrowserHash applies equality check predicate on the "browser_hash" field. It's identical to BrowserHashEQ.
 func BrowserHash(v string) predicate.AuthFlow {
 	return predicate.AuthFlow(sql.FieldEQ(FieldBrowserHash, v))
@@ -107,6 +112,71 @@ func Consumed(v bool) predicate.AuthFlow {
 // ExpiresAt applies equality check predicate on the "expires_at" field. It's identical to ExpiresAtEQ.
 func ExpiresAt(v time.Time) predicate.AuthFlow {
 	return predicate.AuthFlow(sql.FieldEQ(FieldExpiresAt, v))
+}
+
+// PortalEQ applies the EQ predicate on the "portal" field.
+func PortalEQ(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldEQ(FieldPortal, v))
+}
+
+// PortalNEQ applies the NEQ predicate on the "portal" field.
+func PortalNEQ(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldNEQ(FieldPortal, v))
+}
+
+// PortalIn applies the In predicate on the "portal" field.
+func PortalIn(vs ...string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldIn(FieldPortal, vs...))
+}
+
+// PortalNotIn applies the NotIn predicate on the "portal" field.
+func PortalNotIn(vs ...string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldNotIn(FieldPortal, vs...))
+}
+
+// PortalGT applies the GT predicate on the "portal" field.
+func PortalGT(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldGT(FieldPortal, v))
+}
+
+// PortalGTE applies the GTE predicate on the "portal" field.
+func PortalGTE(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldGTE(FieldPortal, v))
+}
+
+// PortalLT applies the LT predicate on the "portal" field.
+func PortalLT(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldLT(FieldPortal, v))
+}
+
+// PortalLTE applies the LTE predicate on the "portal" field.
+func PortalLTE(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldLTE(FieldPortal, v))
+}
+
+// PortalContains applies the Contains predicate on the "portal" field.
+func PortalContains(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldContains(FieldPortal, v))
+}
+
+// PortalHasPrefix applies the HasPrefix predicate on the "portal" field.
+func PortalHasPrefix(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldHasPrefix(FieldPortal, v))
+}
+
+// PortalHasSuffix applies the HasSuffix predicate on the "portal" field.
+func PortalHasSuffix(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldHasSuffix(FieldPortal, v))
+}
+
+// PortalEqualFold applies the EqualFold predicate on the "portal" field.
+func PortalEqualFold(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldEqualFold(FieldPortal, v))
+}
+
+// PortalContainsFold applies the ContainsFold predicate on the "portal" field.
+func PortalContainsFold(v string) predicate.AuthFlow {
+	return predicate.AuthFlow(sql.FieldContainsFold(FieldPortal, v))
 }
 
 // BrowserHashEQ applies the EQ predicate on the "browser_hash" field.

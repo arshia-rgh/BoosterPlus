@@ -411,6 +411,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -444,6 +450,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -672,6 +687,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -695,7 +716,18 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+          }
+        ]
       }
     },
     "/api/v1/me/profile": {
@@ -705,6 +737,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -748,6 +786,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -759,6 +806,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -782,7 +835,18 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+          }
+        ]
       }
     },
     "/api/v1/portal/admin": {
@@ -791,7 +855,7 @@
         "summary": "getAdminPortal",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -824,7 +888,7 @@
         "summary": "getBoosterPortal",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -857,7 +921,7 @@
         "summary": "getUsers",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -913,7 +977,7 @@
         "summary": "getUser",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -957,7 +1021,7 @@
         "summary": "changeRole",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1020,7 +1084,7 @@
         "summary": "changeSuspension",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1083,7 +1147,7 @@
         "summary": "getAudit",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1116,7 +1180,7 @@
         "summary": "getRecoveries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1149,7 +1213,7 @@
         "summary": "resolveRecovery",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1406,7 +1470,7 @@
         "summary": "listCatalogDrafts",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1466,7 +1530,7 @@
         "summary": "createCatalogDraft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1539,7 +1603,7 @@
         "summary": "getCatalogDraft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1602,7 +1666,7 @@
         "summary": "previewCatalogDraft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1665,7 +1729,7 @@
         "summary": "getCatalogHistory",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1735,7 +1799,7 @@
         "summary": "saveCatalogDraft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1816,7 +1880,7 @@
         "summary": "publishCatalogDraft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1897,7 +1961,7 @@
         "summary": "pauseCatalogDraft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -1978,7 +2042,7 @@
         "summary": "resumeCatalogDraft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -2059,7 +2123,7 @@
         "summary": "archiveCatalogDraft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -2140,7 +2204,7 @@
         "summary": "restoreCatalogDraft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -2221,7 +2285,7 @@
         "summary": "deleteCatalogDraft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -2295,7 +2359,7 @@
         "summary": "Validate ordinary answers against a saved administrator draft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -2453,7 +2517,7 @@
         "summary": "Calculate a versioned, provisional estimate. Never authorizes checkout.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -2534,7 +2598,7 @@
         "summary": "listCoupons",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -2594,7 +2658,7 @@
         "summary": "createCoupon",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -2667,7 +2731,7 @@
         "summary": "saveCoupon",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -2748,7 +2812,7 @@
         "summary": "couponHistory",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -3520,7 +3584,7 @@
         "summary": "adminOrders",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -3638,7 +3702,7 @@
         "summary": "adminOrder",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -3701,7 +3765,7 @@
         "summary": "adminOrderEvents",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -3771,7 +3835,7 @@
         "summary": "adminOrderQuotes",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -3841,7 +3905,7 @@
         "summary": "adminClarifyOrder",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -3930,7 +3994,7 @@
         "summary": "adminRejectOrder",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -4019,7 +4083,7 @@
         "summary": "adminCancelOrder",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -4108,7 +4172,7 @@
         "summary": "Requires recent primary and authenticator verification. Creates immutable revision, supersedes prior quote, and requires new customer acceptance.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -4652,6 +4716,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -4724,6 +4794,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       },
@@ -4733,6 +4812,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -4793,6 +4878,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ],
         "requestBody": {
@@ -4814,6 +4908,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -4866,6 +4966,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -4877,6 +4986,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -4943,6 +5058,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       },
@@ -4952,6 +5076,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -5020,6 +5150,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ],
         "requestBody": {
@@ -5041,6 +5180,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -5102,6 +5247,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ],
         "requestBody": {
@@ -5123,6 +5277,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -5189,6 +5349,24 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+          },
+          {
+            "name": "portal",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Native EventSource/download audience selection. Must agree with any header; never an authentication credential."
           }
         ]
       }
@@ -5199,7 +5377,7 @@
         "summary": "staffConversations",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -5287,7 +5465,7 @@
         "summary": "Create authenticated pre-sales support or an order\u2019s single private thread. Idempotent, limited to 20 attempts/hour per address and account.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -5368,7 +5546,7 @@
         "summary": "staffConversation",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -5431,7 +5609,7 @@
         "summary": "Forward backfill with after, or latest/earlier window with before (0 means latest). Mutually exclusive cursors; up to 50 visible messages. Customer sequences exclude internal notes.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -5506,7 +5684,7 @@
         "summary": "Immutable, idempotent send with transactional notices and audit. Internal visibility requires the staff endpoint. Limited to 60 attempts/minute per address and account.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -5595,7 +5773,7 @@
         "summary": "staffReadConversation",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -5677,7 +5855,7 @@
         "summary": "Eight-second SSE stream, reconnectable using Last-Event-ID. Sends change cursor hints and heartbeats only, rechecks live session authority, and excludes internal activity from customer cursors. Polling/backfill remains authoritative.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -5754,7 +5932,7 @@
         "summary": "staffStateConversation",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -5843,7 +6021,7 @@
         "summary": "staffAssignConversation",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -5932,7 +6110,7 @@
         "summary": "staffLinkConversation",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -6022,6 +6200,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -6073,6 +6257,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -6084,6 +6277,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -6145,6 +6344,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -6155,7 +6363,7 @@
         "summary": "activityEmailDeliveries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -6208,7 +6416,7 @@
         "summary": "Requires recent staff primary and authenticator verification; restarts only failed activity jobs with audit. Running/completed jobs cannot be restarted.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -6261,6 +6469,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -6321,6 +6535,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ],
         "requestBody": {
@@ -6342,6 +6565,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -6394,6 +6623,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -6405,6 +6643,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -6466,6 +6710,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ],
         "requestBody": {
@@ -6489,6 +6742,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -6557,6 +6816,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -6568,6 +6836,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -6636,6 +6910,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -6647,6 +6930,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -6722,6 +7011,24 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+          },
+          {
+            "name": "portal",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Native EventSource/download audience selection. Must agree with any header; never an authentication credential."
           }
         ]
       }
@@ -6733,6 +7040,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -6794,6 +7107,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -6805,6 +7127,12 @@
         "security": [
           {
             "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -6866,6 +7194,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "X-Playora-Portal",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            },
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -6876,7 +7213,7 @@
         "summary": "Reserve private quota and immutable checksum, scope and audience. JPEG/PNG/WebP only, 4 MiB and 4 million pixels maximum. Intent expires in 24 hours.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -6955,7 +7292,7 @@
         "summary": "getStaffMediaDirectory",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -7031,7 +7368,7 @@
         "summary": "Read scoped upload state, including exhausted scan jobs.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -7094,7 +7431,7 @@
         "summary": "Authenticated CSRF-protected binary upload matching the intent checksum. No customer-supplied object key.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -7178,7 +7515,7 @@
         "summary": "Queue idempotent malware scan and image sanitization. Quarantined bytes cannot be downloaded.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -7257,7 +7594,7 @@
         "summary": "Issue a one-minute, session-bound private download URL after checking current access.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -7336,7 +7673,7 @@
         "summary": "Validate signature and current session/membership; return sanitized bytes only, as an attachment.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -7422,7 +7759,7 @@
         "summary": "Audited staff maintenance for authorized unbound uploads; recent factors required. Bound evidence cannot be removed.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -7494,7 +7831,7 @@
         "summary": "Audited staff maintenance for authorized unbound uploads; recent factors required. Bound evidence cannot be removed.",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -7950,7 +8287,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8013,7 +8350,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8075,7 +8412,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8164,7 +8501,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8253,7 +8590,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8342,7 +8679,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8431,7 +8768,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8520,7 +8857,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8609,7 +8946,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8698,7 +9035,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8787,7 +9124,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8876,7 +9213,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -8930,7 +9267,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -9019,7 +9356,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9082,7 +9419,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9144,7 +9481,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9233,7 +9570,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9322,7 +9659,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9411,7 +9748,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9500,7 +9837,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9589,7 +9926,7 @@
         "summary": "Paid-order fulfillment with live resource authorization",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9678,7 +10015,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9738,7 +10075,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9819,7 +10156,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9900,7 +10237,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -9982,7 +10319,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -10050,7 +10387,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -10139,7 +10476,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -10228,7 +10565,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -10651,7 +10988,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -10721,7 +11058,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -10800,7 +11137,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -10897,7 +11234,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -10994,7 +11331,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -11091,7 +11428,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -11188,7 +11525,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -11258,7 +11595,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -11337,7 +11674,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -11434,7 +11771,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -11531,7 +11868,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -11628,7 +11965,7 @@
         "summary": "Private scheduling with live assignment and overlap checks",
         "security": [
           {
-            "sessionCookie": []
+            "boosterSessionCookie": []
           }
         ],
         "responses": {
@@ -11725,7 +12062,7 @@
         "summary": "Explicitly share a separate paid-order coordination thread after recent staff factors",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -11814,7 +12151,7 @@
         "summary": "Pause or resume assigned booster sharing with recent staff factors and expected thread version",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -11903,7 +12240,7 @@
         "summary": "Review operational delivery range",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -11995,7 +12332,7 @@
         "summary": "Apply unchanged reviewed range with recent primary and authenticator verification",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -12641,7 +12978,7 @@
         "summary": "Private account intake with live ownership or administrator authorization; no commercial acceptance or payout",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -12718,7 +13055,7 @@
         "summary": "Private account intake with live ownership or administrator authorization; no commercial acceptance or payout",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -12781,7 +13118,7 @@
         "summary": "Private account intake with live ownership or administrator authorization; no commercial acceptance or payout",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -12852,7 +13189,7 @@
         "summary": "Private account intake with live ownership or administrator authorization; no commercial acceptance or payout",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -12941,7 +13278,7 @@
         "summary": "Private account intake with live ownership or administrator authorization; no commercial acceptance or payout",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -13030,7 +13367,7 @@
         "summary": "Private account intake with live ownership or administrator authorization; no commercial acceptance or payout",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -13560,7 +13897,7 @@
         "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -13629,7 +13966,7 @@
         "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -13692,7 +14029,7 @@
         "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -13762,7 +14099,7 @@
         "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -13851,7 +14188,7 @@
         "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -13940,7 +14277,7 @@
         "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -14029,7 +14366,7 @@
         "summary": "Verified purchase feedback with explicit publication policy and private moderation history",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -14198,7 +14535,7 @@
         "summary": "Inspect operational metadata or request an audited retry under current staff authority",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -14252,7 +14589,7 @@
         "summary": "Inspect operational metadata or request an audited retry under current staff authority",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -14328,7 +14665,7 @@
         "summary": "Inspect operational metadata or request an audited retry under current staff authority",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -14802,7 +15139,7 @@
         "summary": "Preview bounded operational metadata or download the exact reviewed page with recent staff factors and a committed audit",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -14883,7 +15220,7 @@
         "summary": "Preview bounded operational metadata or download the exact reviewed page with recent staff factors and a committed audit",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15015,7 +15352,7 @@
         "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15119,7 +15456,7 @@
         "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15168,7 +15505,7 @@
         "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15199,7 +15536,7 @@
         "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15252,7 +15589,7 @@
         "summary": "Direct crypto payments with immutable policy acceptance and verified provider evidence",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15615,7 +15952,7 @@
         "summary": "Read private order cases",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15663,7 +16000,7 @@
         "summary": "Open a private service case",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15724,7 +16061,7 @@
         "summary": "Read a private case and event page",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15774,7 +16111,7 @@
         "summary": "Reply, decide, appeal or close a case with authority and version checks",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15843,7 +16180,7 @@
         "summary": "Read private refund history",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15886,7 +16223,7 @@
         "summary": "Read open service case queue",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -15928,7 +16265,7 @@
         "summary": "Propose a refund reserved against received funds",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -16050,7 +16387,7 @@
         "summary": "Owner authorization with recent sign-in and authenticator verification",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -16111,7 +16448,7 @@
         "summary": "Owner authorization with recent sign-in and authenticator verification",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -16172,7 +16509,7 @@
         "summary": "Authorize an independently verified outgoing attempt with an ephemeral provider code",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -16233,7 +16570,7 @@
         "summary": "Request authoritative outgoing evidence",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -16286,7 +16623,7 @@
         "summary": "Read outgoing exceptions without private provider payloads",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "responses": {
@@ -16763,7 +17100,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -16804,7 +17141,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -16865,7 +17202,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -16908,7 +17245,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -16978,7 +17315,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -17021,7 +17358,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -17193,7 +17530,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -17254,7 +17591,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -17376,7 +17713,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -17437,7 +17774,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -17486,7 +17823,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -17529,7 +17866,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -17660,7 +17997,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -17721,7 +18058,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -17782,7 +18119,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -17927,7 +18264,7 @@
         "summary": "Reviewed account resale; exact accepted terms and live authorization boundaries",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -18037,7 +18374,7 @@
         "summary": "getSiteDraft",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -18098,7 +18435,7 @@
         "summary": "saveOrPublishSiteContent",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -18187,7 +18524,7 @@
         "summary": "getSitePublicationHistory",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -18487,7 +18824,7 @@
         "summary": "getOwnerReviewedPrivacyRequests",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -18549,7 +18886,7 @@
         "summary": "changeOwnerReviewedPrivacyRequest",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -18719,7 +19056,7 @@
         "summary": "getStaffAvailabilityConsent",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -18795,7 +19132,7 @@
         "summary": "suppressAvailabilityDelivery",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -18877,7 +19214,7 @@
         "summary": "getStaffUserSessions",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -18920,7 +19257,7 @@
         "summary": "revokeStaffUserSessions",
         "security": [
           {
-            "sessionCookie": []
+            "adminSessionCookie": []
           }
         ],
         "parameters": [
@@ -19085,6 +19422,688 @@
           }
         }
       }
+    },
+    "/api/v1/auth/portals/{portal}/session": {
+      "get": {
+        "operationId": "portalGetAuthSession",
+        "summary": "getAuthSession",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSession"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "portal",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            }
+          }
+        ],
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+      }
+    },
+    "/api/v1/auth/portals/{portal}/email/request": {
+      "post": {
+        "operationId": "portalRequestEmailCode",
+        "summary": "requestEmailCode",
+        "security": [],
+        "responses": {
+          "202": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailChallenge"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "portal",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            }
+          }
+        ],
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+      }
+    },
+    "/api/v1/auth/portals/{portal}/email/verify": {
+      "post": {
+        "operationId": "portalVerifyEmailCode",
+        "summary": "verifyEmailCode",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResult"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailVerification"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "portal",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            }
+          }
+        ],
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+      }
+    },
+    "/api/v1/auth/portals/{portal}/google/start": {
+      "post": {
+        "operationId": "portalStartGoogle",
+        "summary": "startGoogle",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleLocation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "portal",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            }
+          }
+        ],
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+      }
+    },
+    "/api/v1/auth/portals/{portal}/google/callback": {
+      "get": {
+        "operationId": "portalFinishGoogle",
+        "summary": "finishGoogle",
+        "security": [],
+        "responses": {
+          "303": {
+            "description": "Successful response"
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "portal",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            }
+          }
+        ],
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+      }
+    },
+    "/api/v1/auth/portals/{portal}/logout": {
+      "post": {
+        "operationId": "portalLogout",
+        "summary": "logout",
+        "security": [
+          {
+            "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "portal",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            }
+          }
+        ],
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+      }
+    },
+    "/api/v1/auth/portals/{portal}/mfa/disable": {
+      "post": {
+        "operationId": "portalDisableMFA",
+        "summary": "disableMFA",
+        "security": [
+          {
+            "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "portal",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            }
+          }
+        ],
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+      }
+    },
+    "/api/v1/auth/portals/{portal}/sessions/revoke": {
+      "post": {
+        "operationId": "portalRevokeSessions",
+        "summary": "revokeSessions",
+        "security": [
+          {
+            "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeSessions"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "portal",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            }
+          }
+        ],
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+      }
+    },
+    "/api/v1/auth/portals/{portal}/mfa/enroll": {
+      "post": {
+        "operationId": "portalEnrollMFA",
+        "summary": "enrollMFA",
+        "security": [
+          {
+            "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enrollment"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "portal",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            }
+          }
+        ],
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+      }
+    },
+    "/api/v1/auth/portals/{portal}/mfa/verify": {
+      "post": {
+        "operationId": "portalVerifyMFA",
+        "summary": "verifyMFA",
+        "security": [
+          {
+            "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecoveryCodes"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MFAVerification"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "portal",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            }
+          }
+        ],
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+      }
+    },
+    "/api/v1/auth/portals/{portal}/mfa/recovery-codes": {
+      "post": {
+        "operationId": "portalRegenerateRecoveryCodes",
+        "summary": "regenerateRecoveryCodes",
+        "security": [
+          {
+            "sessionCookie": []
+          },
+          {
+            "adminSessionCookie": []
+          },
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecoveryCodes"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "portal",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AuthPortal"
+            }
+          }
+        ],
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+      }
     }
   },
   "components": {
@@ -19220,6 +20239,9 @@
           },
           "terms_url": {
             "type": "string"
+          },
+          "portal": {
+            "$ref": "#/components/schemas/AuthPortal"
           }
         },
         "required": [
@@ -19230,7 +20252,8 @@
           "mfa_required",
           "capabilities",
           "terms_version",
-          "terms_url"
+          "terms_url",
+          "portal"
         ]
       },
       "EmailRequest": {
@@ -19424,6 +20447,9 @@
                 },
                 "current": {
                   "type": "boolean"
+                },
+                "portal": {
+                  "$ref": "#/components/schemas/AuthPortal"
                 }
               },
               "required": [
@@ -19431,7 +20457,8 @@
                 "created_at",
                 "last_seen_at",
                 "expires_at",
-                "current"
+                "current",
+                "portal"
               ]
             }
           }
@@ -26189,14 +27216,31 @@
           "mobile_y",
           "copy_side"
         ]
+      },
+      "AuthPortal": {
+        "type": "string",
+        "enum": ["customer", "booster", "admin"],
+        "description": "Authentication audience; never grants role or resource authority."
       }
     },
     "securitySchemes": {
       "sessionCookie": {
         "type": "apiKey",
         "in": "cookie",
-        "name": "__Host-bp-session",
-        "description": "Secure HttpOnly production cookie. Development uses bp-session on loopback HTTP."
+        "name": "__Host-bp-customer-session",
+        "description": "Customer-only Secure HttpOnly cookie. Development uses bp-customer-session on loopback HTTP; staff cookies never substitute."
+      },
+      "adminSessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "__Host-bp-admin-session",
+        "description": "Admin-only Secure HttpOnly session; requires explicit first-factor sign-in and authenticator verification. Loopback HTTP uses bp-admin-session."
+      },
+      "boosterSessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "__Host-bp-booster-session",
+        "description": "Booster-only Secure HttpOnly session; requires explicit first-factor sign-in and authenticator verification. Loopback HTTP uses bp-booster-session."
       }
     }
   }

@@ -20,6 +20,12 @@ type AuthChallengeCreate struct {
 	hooks    []Hook
 }
 
+// SetPortal sets the "portal" field.
+func (_c *AuthChallengeCreate) SetPortal(v string) *AuthChallengeCreate {
+	_c.mutation.SetPortal(v)
+	return _c
+}
+
 // SetEmail sets the "email" field.
 func (_c *AuthChallengeCreate) SetEmail(v string) *AuthChallengeCreate {
 	_c.mutation.SetEmail(v)
@@ -191,6 +197,14 @@ func (_c *AuthChallengeCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *AuthChallengeCreate) check() error {
+	if _, ok := _c.mutation.Portal(); !ok {
+		return &ValidationError{Name: "portal", err: errors.New(`ent: missing required field "AuthChallenge.portal"`)}
+	}
+	if v, ok := _c.mutation.Portal(); ok {
+		if err := authchallenge.PortalValidator(v); err != nil {
+			return &ValidationError{Name: "portal", err: fmt.Errorf(`ent: validator failed for field "AuthChallenge.portal": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Email(); !ok {
 		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "AuthChallenge.email"`)}
 	}
@@ -298,6 +312,10 @@ func (_c *AuthChallengeCreate) createSpec() (*AuthChallenge, *sqlgraph.CreateSpe
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := _c.mutation.Portal(); ok {
+		_spec.SetField(authchallenge.FieldPortal, field.TypeString, value)
+		_node.Portal = value
 	}
 	if value, ok := _c.mutation.Email(); ok {
 		_spec.SetField(authchallenge.FieldEmail, field.TypeString, value)

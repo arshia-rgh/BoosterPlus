@@ -61,9 +61,18 @@ func (s *recordingSender) Send(_ context.Context, m identity.Message) error {
 	s.messages = append(s.messages, m)
 	return nil
 }
-func (f *authFixture) request(t *testing.T, email, purpose string, p *identity.Principal) (string, string) {
+func testPortal(portals []identity.Portal) identity.Portal {
+	if len(portals) == 1 {
+		return portals[0]
+	}
+	if len(portals) != 0 {
+		panic("test must select one portal")
+	}
+	return identity.PortalCustomer
+}
+func (f *authFixture) request(t *testing.T, email, purpose string, p *identity.Principal, portals ...identity.Portal) (string, string) {
 	t.Helper()
-	id, err := f.service.RequestEmail(t.Context(), identity.EmailRequest{Email: email, Purpose: purpose, Browser: f.browser, IP: "127.0.0.1", AcceptTerms: true, Principal: p})
+	id, err := f.service.RequestEmail(t.Context(), identity.EmailRequest{Portal: testPortal(portals), Email: email, Purpose: purpose, Browser: f.browser, IP: "127.0.0.1", AcceptTerms: true, Principal: p})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,22 +106,32 @@ func (f *authFixture) deliver(t *testing.T, email string) string {
 	t.Fatal("verification mail was not delivered")
 	return ""
 }
-func (f *authFixture) login(t *testing.T, email string) (string, *identity.Principal) {
+func (f *authFixture) login(t *testing.T, email string, portals ...identity.Portal) (string, *identity.Principal) {
 	t.Helper()
-	id, code := f.request(t, email, "login", nil)
-	result, err := f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil)
+	portal := testPortal(portals)
+	id, code := f.request(t, email, "login", nil, portal)
+	result, err := f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil, portal)
 	if err != nil {
 		t.Fatal(err)
 	}
-	return result.Token, f.principal(t, result.Token)
+	return result.Token, f.principal(t, result.Token, portal)
 }
-func (f *authFixture) principal(t *testing.T, token string) *identity.Principal {
+func (f *authFixture) principal(t *testing.T, token string, portals ...identity.Portal) *identity.Principal {
 	t.Helper()
-	p, err := f.service.Authenticate(t.Context(), token)
+	p, err := f.service.Authenticate(t.Context(), token, testPortal(portals))
 	if err != nil {
 		t.Fatal(err)
 	}
 	return p
+}
+
+// enterPortal performs a separate first-factor verification after a fixture role grant.
+// It deliberately never edits a stored session's audience.
+func (f *authFixture) enterPortal(t *testing.T, p *identity.Principal, portal identity.Portal) *identity.Principal {
+	t.Helper()
+	f.clock.Add(61)
+	_, current := f.login(t, p.User.Email, portal)
+	return current
 }
 func (f *authFixture) enroll(t *testing.T, p *identity.Principal) (string, []string, *identity.Principal) {
 	t.Helper()
@@ -131,19 +150,19 @@ func (f *authFixture) enroll(t *testing.T, p *identity.Principal) (string, []str
 	if len(result.RecoveryCodes) != 10 {
 		t.Fatal("missing one-time recovery codes")
 	}
-	return enrollment.Secret, result.RecoveryCodes, f.principal(t, result.Token)
+	return enrollment.Secret, result.RecoveryCodes, f.principal(t, result.Token, identity.Portal(p.Session.Portal))
 }
 func TestIdentityEmailConsumptionAndPrivacy(t *testing.T) {
 	f := authDB(t, nil)
 	id, code := f.request(t, "person@example.test", "login", nil)
-	if _, err := f.service.VerifyEmail(t.Context(), id, code, rand.Text()+rand.Text(), "127.0.0.1", nil); !errors.Is(err, identity.ErrInvalid) {
+	if _, err := f.service.VerifyEmail(t.Context(), id, code, rand.Text()+rand.Text(), "127.0.0.1", nil, identity.PortalCustomer); !errors.Is(err, identity.ErrInvalid) {
 		t.Fatal("cross-browser code accepted", err)
 	}
 	var wins atomic.Int64
 	var wg sync.WaitGroup
 	for range 6 {
 		wg.Go(func() {
-			result, err := f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil)
+			result, err := f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil, identity.PortalCustomer)
 			if err == nil && result.Token != "" {
 				wins.Add(1)
 			}
@@ -153,7 +172,7 @@ func TestIdentityEmailConsumptionAndPrivacy(t *testing.T) {
 	if wins.Load() != 1 {
 		t.Fatalf("verification winners %d", wins.Load())
 	}
-	if _, err := f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil); !errors.Is(err, identity.ErrInvalid) {
+	if _, err := f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil, identity.PortalCustomer); !errors.Is(err, identity.ErrInvalid) {
 		t.Fatal("replayed code accepted", err)
 	}
 	challenge, err := f.client.AuthChallenge.Get(t.Context(), id)
@@ -185,16 +204,16 @@ func TestIdentityEmailConsumptionAndPrivacy(t *testing.T) {
 		wrong = "111111"
 	}
 	for range 5 {
-		if _, err = f.service.VerifyEmail(t.Context(), id, wrong, f.browser, "127.0.0.1", nil); !errors.Is(err, identity.ErrInvalid) {
+		if _, err = f.service.VerifyEmail(t.Context(), id, wrong, f.browser, "127.0.0.1", nil, identity.PortalCustomer); !errors.Is(err, identity.ErrInvalid) {
 			t.Fatal(err)
 		}
 	}
-	if _, err = f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil); !errors.Is(err, identity.ErrInvalid) {
+	if _, err = f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil, identity.PortalCustomer); !errors.Is(err, identity.ErrInvalid) {
 		t.Fatal("attempt limit bypassed", err)
 	}
 	id, code = f.request(t, "expiry@example.test", "login", nil)
 	f.clock.Add(601)
-	if _, err = f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil); !errors.Is(err, identity.ErrInvalid) {
+	if _, err = f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil, identity.PortalCustomer); !errors.Is(err, identity.ErrInvalid) {
 		t.Fatal("expired code accepted", err)
 	}
 	if err = f.service.Cleanup(t.Context()); err != nil {
@@ -210,14 +229,14 @@ func TestIdentityCooldownTermsAndSessionBoundaries(t *testing.T) {
 	f.clock.Store(f.clock.Load()/60*60 + 59)
 	id, code := f.request(t, "cooldown@example.test", "login", nil)
 	f.clock.Add(2)
-	ignored, err := f.service.RequestEmail(t.Context(), identity.EmailRequest{Email: "cooldown@example.test", Purpose: "login", Browser: f.browser, IP: "127.0.0.1", AcceptTerms: true})
+	ignored, err := f.service.RequestEmail(t.Context(), identity.EmailRequest{Portal: identity.PortalCustomer, Email: "cooldown@example.test", Purpose: "login", Browser: f.browser, IP: "127.0.0.1", AcceptTerms: true})
 	if err != nil || ignored == id {
 		t.Fatal("non-generic cooldown result", err)
 	}
 	if _, err = f.client.AuthChallenge.Get(t.Context(), ignored); !ent.IsNotFound(err) {
 		t.Fatal("minute boundary bypassed rolling cooldown", err)
 	}
-	verified, err := f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil)
+	verified, err := f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil, identity.PortalCustomer)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -232,30 +251,30 @@ func TestIdentityCooldownTermsAndSessionBoundaries(t *testing.T) {
 	}
 	f.clock.Add(61)
 	reauthID, reauthCode := f.request(t, p.User.Email, "reauth", p)
-	result, err := f.service.VerifyEmail(t.Context(), reauthID, reauthCode, f.browser, "127.0.0.1", p)
+	result, err := f.service.VerifyEmail(t.Context(), reauthID, reauthCode, f.browser, "127.0.0.1", p, identity.PortalCustomer)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = f.service.Authenticate(t.Context(), verified.Token); !errors.Is(err, identity.ErrUnauthenticated) {
+	if _, err = f.service.Authenticate(t.Context(), verified.Token, identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal("rotated token remained valid", err)
 	}
 	p = f.principal(t, result.Token)
 	if err = f.service.Revoke(t.Context(), p, "", true); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = f.service.Authenticate(t.Context(), result.Token); !errors.Is(err, identity.ErrUnauthenticated) {
+	if _, err = f.service.Authenticate(t.Context(), result.Token, identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal("logout-all failed", err)
 	}
 	f.clock.Add(1801)
-	if _, err = f.service.Authenticate(t.Context(), victimToken); !errors.Is(err, identity.ErrUnauthenticated) {
+	if _, err = f.service.Authenticate(t.Context(), victimToken, identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal("idle expiry failed", err)
 	}
-	id, err = f.service.RequestEmail(t.Context(), identity.EmailRequest{Email: "terms@example.test", Purpose: "login", Browser: f.browser, IP: "127.0.0.1"})
+	id, err = f.service.RequestEmail(t.Context(), identity.EmailRequest{Portal: identity.PortalCustomer, Email: "terms@example.test", Purpose: "login", Browser: f.browser, IP: "127.0.0.1"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	code = f.deliver(t, "terms@example.test")
-	if _, err = f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil); !errors.Is(err, identity.ErrTerms) {
+	if _, err = f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", nil, identity.PortalCustomer); !errors.Is(err, identity.ErrTerms) {
 		t.Fatal("signup without terms", err)
 	}
 }
@@ -266,14 +285,14 @@ func TestIdentityStaffMFAAndOwnerControls(t *testing.T) {
 		t.Fatal("bootstrap without MFA", err)
 	}
 	secret, codes, customer := f.enroll(t, customer)
-	if _, err := f.service.Authenticate(t.Context(), oldToken); !errors.Is(err, identity.ErrUnauthenticated) {
+	if _, err := f.service.Authenticate(t.Context(), oldToken, identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal("enrollment did not revoke old session", err)
 	}
 	if err := f.service.BootstrapOwner(t.Context(), customer.User.ID, "operator-1"); err != nil {
 		t.Fatal(err)
 	}
 	f.clock.Add(61)
-	_, pending := f.login(t, customer.User.Email)
+	_, pending := f.login(t, customer.User.Email, identity.PortalAdmin)
 	if err := identity.Require(pending, "owner"); !errors.Is(err, identity.ErrMFA) {
 		t.Fatal("staff first factor granted privileges", err)
 	}
@@ -285,7 +304,7 @@ func TestIdentityStaffMFAAndOwnerControls(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	owner := f.principal(t, result.Token)
+	owner := f.principal(t, result.Token, identity.PortalAdmin)
 	if err = identity.Require(owner, "owner"); err != nil {
 		t.Fatal(err)
 	}
@@ -302,7 +321,7 @@ func TestIdentityStaffMFAAndOwnerControls(t *testing.T) {
 	if err = f.service.GrantRole(t.Context(), owner, target.User.ID, identity.RoleBooster); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = f.service.Authenticate(t.Context(), targetToken); !errors.Is(err, identity.ErrUnauthenticated) {
+	if _, err = f.service.Authenticate(t.Context(), targetToken, identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal("role change did not revoke sessions", err)
 	}
 	if err = f.service.Suspend(t.Context(), owner, target.User.ID, true); err != nil {
@@ -328,7 +347,7 @@ func TestIdentityStaffMFAAndOwnerControls(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	owner = f.principal(t, result.Token)
+	owner = f.principal(t, result.Token, identity.PortalAdmin)
 	if _, err = f.service.VerifyMFA(t.Context(), owner, codes[0], "127.0.0.1"); !errors.Is(err, identity.ErrInvalid) {
 		t.Fatal("recovery code reused", err)
 	}
@@ -393,10 +412,10 @@ func TestIdentityHTTPBoundary(t *testing.T) {
 
 type googleStub struct{ assertion identity.GoogleIdentity }
 
-func (*googleStub) AuthorizationURL(state, nonce, verifier string) string {
+func (*googleStub) AuthorizationURL(state, nonce, verifier string, _ identity.Portal) string {
 	return "https://accounts.google.com/auth?" + url.Values{"state": {state}, "nonce": {nonce}, "code_challenge": {verifier}}.Encode()
 }
-func (g *googleStub) Exchange(context.Context, string, string, string) (identity.GoogleIdentity, error) {
+func (g *googleStub) Exchange(context.Context, string, string, string, identity.Portal) (identity.GoogleIdentity, error) {
 	return g.assertion, nil
 }
 func TestIdentityGoogleExplicitLinking(t *testing.T) {
@@ -405,7 +424,7 @@ func TestIdentityGoogleExplicitLinking(t *testing.T) {
 	_, p := f.login(t, provider.assertion.Email)
 	start := func(purpose string, principal *identity.Principal) string {
 		t.Helper()
-		location, err := f.service.StartGoogle(t.Context(), principal, f.browser, "127.0.0.1", purpose, true)
+		location, err := f.service.StartGoogle(t.Context(), principal, f.browser, "127.0.0.1", purpose, true, identity.PortalCustomer)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -416,24 +435,24 @@ func TestIdentityGoogleExplicitLinking(t *testing.T) {
 		return parsed.Query().Get("state")
 	}
 	state := start("login", nil)
-	if _, err := f.service.FinishGoogle(t.Context(), nil, f.browser, state, "code"); !errors.Is(err, identity.ErrConflict) {
+	if _, err := f.service.FinishGoogle(t.Context(), nil, f.browser, state, "code", identity.PortalCustomer); !errors.Is(err, identity.ErrConflict) {
 		t.Fatal("email silently merged identities", err)
 	}
 	state = start("link", p)
-	if _, err := f.service.FinishGoogle(t.Context(), p, "wrong browser", state, "code"); !errors.Is(err, identity.ErrInvalid) {
+	if _, err := f.service.FinishGoogle(t.Context(), p, "wrong browser", state, "code", identity.PortalCustomer); !errors.Is(err, identity.ErrInvalid) {
 		t.Fatal("OAuth browser mismatch accepted", err)
 	}
-	token, err := f.service.FinishGoogle(t.Context(), p, f.browser, state, "code")
+	token, err := f.service.FinishGoogle(t.Context(), p, f.browser, state, "code", identity.PortalCustomer)
 	if err != nil {
 		t.Fatal(err)
 	}
 	p = f.principal(t, token)
-	if _, err = f.service.FinishGoogle(t.Context(), p, f.browser, state, "code"); !errors.Is(err, identity.ErrInvalid) {
+	if _, err = f.service.FinishGoogle(t.Context(), p, f.browser, state, "code", identity.PortalCustomer); !errors.Is(err, identity.ErrInvalid) {
 		t.Fatal("OAuth state replayed", err)
 	}
 	provider.assertion.Email = "renamed-at-provider@example.test"
 	state = start("login", nil)
-	token, err = f.service.FinishGoogle(t.Context(), nil, f.browser, state, "code")
+	token, err = f.service.FinishGoogle(t.Context(), nil, f.browser, state, "code", identity.PortalCustomer)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -444,7 +463,7 @@ func TestIdentityGoogleExplicitLinking(t *testing.T) {
 	if err = f.service.UnlinkGoogle(t.Context(), linked); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = f.service.Authenticate(t.Context(), token); !errors.Is(err, identity.ErrUnauthenticated) {
+	if _, err = f.service.Authenticate(t.Context(), token, identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal("unlink failed to revoke sessions", err)
 	}
 }
@@ -454,7 +473,7 @@ func TestIdentityEmailChangeAndReviewedRecovery(t *testing.T) {
 	_, account := f.login(t, "recover@example.test")
 	_, _, account = f.enroll(t, account)
 	id, code := f.request(t, "changed@example.test", "email_change", account)
-	result, err := f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", account)
+	result, err := f.service.VerifyEmail(t.Context(), id, code, f.browser, "127.0.0.1", account, identity.PortalCustomer)
 	if err != nil || result.Token != "" || result.Purpose != "email_change" {
 		t.Fatal("email change incorrectly granted a session", err)
 	}
@@ -462,7 +481,7 @@ func TestIdentityEmailChangeAndReviewedRecovery(t *testing.T) {
 	if err != nil || changed.Email != "changed@example.test" || !changed.MfaEnabled {
 		t.Fatal("email change altered authenticator", err)
 	}
-	if _, err = f.service.Authenticate(t.Context(), "invalid"); !errors.Is(err, identity.ErrUnauthenticated) {
+	if _, err = f.service.Authenticate(t.Context(), "invalid", identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal(err)
 	}
 	_, owner := f.login(t, "reviewer@example.test")
@@ -471,7 +490,7 @@ func TestIdentityEmailChangeAndReviewedRecovery(t *testing.T) {
 		t.Fatal(err)
 	}
 	f.clock.Add(61)
-	_, owner = f.login(t, owner.User.Email)
+	_, owner = f.login(t, owner.User.Email, identity.PortalAdmin)
 	factor, factorErr := totp.GenerateCode(secret, time.Unix(f.clock.Load(), 0))
 	if factorErr != nil {
 		t.Fatal(factorErr)
@@ -480,19 +499,19 @@ func TestIdentityEmailChangeAndReviewedRecovery(t *testing.T) {
 	if mfaErr != nil {
 		t.Fatal(mfaErr)
 	}
-	owner = f.principal(t, mfa.Token)
+	owner = f.principal(t, mfa.Token, identity.PortalAdmin)
 	if _, createErr := f.client.AuthIdentity.Create().SetID(rand.Text()).SetUserID(changed.ID).SetProvider("google").SetSubject("recovery-subject").SetCreatedAt(time.Unix(f.clock.Load(), 0)).Save(t.Context()); createErr != nil {
 		t.Fatal(createErr)
 	}
 	if err = f.service.Suspend(t.Context(), owner, changed.ID, true); err != nil {
 		t.Fatal(err)
 	}
-	recoveryID, requestErr := f.service.RequestEmail(t.Context(), identity.EmailRequest{Email: "new-destination@example.test", AccountEmail: changed.Email, Purpose: "recovery", Browser: f.browser, IP: "127.0.0.1"})
+	recoveryID, requestErr := f.service.RequestEmail(t.Context(), identity.EmailRequest{Portal: identity.PortalCustomer, Email: "new-destination@example.test", AccountEmail: changed.Email, Purpose: "recovery", Browser: f.browser, IP: "127.0.0.1"})
 	if requestErr != nil {
 		t.Fatal(requestErr)
 	}
 	recoveryCode := f.deliver(t, "new-destination@example.test")
-	verified, verifyErr := f.service.VerifyEmail(t.Context(), recoveryID, recoveryCode, f.browser, "127.0.0.1", nil)
+	verified, verifyErr := f.service.VerifyEmail(t.Context(), recoveryID, recoveryCode, f.browser, "127.0.0.1", nil, identity.PortalCustomer)
 	if verifyErr != nil || verified.Token != "" || verified.Purpose != "recovery" {
 		t.Fatal("destination proof granted account access", verifyErr)
 	}
@@ -572,7 +591,7 @@ func TestIdentityConcurrentOwnersCannotRemoveLastOwner(t *testing.T) {
 		if _, err := f.client.User.Create().SetEmail(email).SetRole(identity.RoleOwner).SetEmailVerifiedAt(time.Unix(f.clock.Load(), 0)).SetTermsVersion("test-v1").Save(t.Context()); err != nil {
 			t.Fatal(err)
 		}
-		_, p := f.login(t, email)
+		_, p := f.login(t, email, identity.PortalAdmin)
 		_, _, p = f.enroll(t, p)
 		principals[i] = p
 	}

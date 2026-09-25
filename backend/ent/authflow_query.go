@@ -262,12 +262,12 @@ func (_q *AuthFlowQuery) Clone() *AuthFlowQuery {
 // Example:
 //
 //	var v []struct {
-//		BrowserHash string `json:"browser_hash,omitempty"`
+//		Portal string `json:"portal,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.AuthFlow.Query().
-//		GroupBy(authflow.FieldBrowserHash).
+//		GroupBy(authflow.FieldPortal).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *AuthFlowQuery) GroupBy(field string, fields ...string) *AuthFlowGroupBy {
@@ -285,11 +285,11 @@ func (_q *AuthFlowQuery) GroupBy(field string, fields ...string) *AuthFlowGroupB
 // Example:
 //
 //	var v []struct {
-//		BrowserHash string `json:"browser_hash,omitempty"`
+//		Portal string `json:"portal,omitempty"`
 //	}
 //
 //	client.AuthFlow.Query().
-//		Select(authflow.FieldBrowserHash).
+//		Select(authflow.FieldPortal).
 //		Scan(ctx, &v)
 func (_q *AuthFlowQuery) Select(fields ...string) *AuthFlowSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

@@ -101,7 +101,7 @@ function Navigation({ close, owner }: { close?: () => void; owner: boolean }) {
             ))}
         </div>
       ))}
-      <a className="admin-external" href="/account/security">
+      <a className="admin-external" href="/admin/account/security">
         Profile and security ↗
       </a>
       <a className="admin-external" href="/">

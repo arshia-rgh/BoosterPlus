@@ -1,3 +1,4 @@
+import { activePortal, sessionEventMatches } from "../identity/portal";
 import { APIError } from "../identity/api";
 import type { z } from "../validation";
 import { messageSchema } from "./model";
@@ -55,9 +56,10 @@ export function readingPosition(
   thread: string,
   next?: ReadingPosition,
 ) {
-  if (owner !== user) {
+  const identity = `${activePortal()}:${user}`;
+  if (owner !== identity) {
     positions.clear();
-    owner = user;
+    owner = identity;
   }
   if (next !== undefined) {
     positions.set(thread, next);
@@ -69,7 +71,7 @@ export function readingPosition(
   return positions.get(thread);
 }
 if (typeof window !== "undefined") {
-  window.addEventListener("boosterplus:session-changed", () => {
-    positions.clear();
+  window.addEventListener("boosterplus:session-changed", (event) => {
+    if (sessionEventMatches(event, activePortal())) positions.clear();
   });
 }

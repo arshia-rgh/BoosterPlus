@@ -36,7 +36,7 @@ func capFor(admin bool) string {
 	if admin {
 		return "admin"
 	}
-	return "account"
+	return "self"
 }
 func member(ctx context.Context, client *ent.Client, p *identity.Principal, id string, admin bool) error {
 	if err := identity.Require(p, capFor(admin)); err != nil {
@@ -261,7 +261,11 @@ func (s *Store) Grant(ctx context.Context, p *identity.Principal, id string, adm
 	if admin {
 		base = "/api/v1/admin/media/"
 	}
-	return base + id + "/content?expires=" + expires + "&signature=" + signature, nil
+	context := ""
+	if !admin {
+		context = "&portal=" + p.Session.Portal
+	}
+	return base + id + "/content?expires=" + expires + "&signature=" + signature + context, nil
 }
 
 // Content never returns quarantine keys or bytes, even with a valid signature.

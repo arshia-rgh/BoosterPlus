@@ -55,6 +55,7 @@ const price: Commercial = {
   terms_version: "terms-v2",
 };
 const session: Session = {
+  portal: "customer",
   csrf_token: "x".repeat(48),
   user: null,
   google_enabled: false,

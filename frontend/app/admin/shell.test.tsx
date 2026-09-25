@@ -15,6 +15,7 @@ const base = {
     mfa_enabled: true,
     notify_updates: true,
   },
+  portal: "customer",
   csrf_token: "a".repeat(64),
   google_enabled: false,
   google_linked: false,

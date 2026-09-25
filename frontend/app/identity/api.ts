@@ -1,3 +1,10 @@
+import {
+  activePortal,
+  portalAPIPath,
+  portalHeaders,
+  notifySession,
+  type Portal,
+} from "./portal";
 import { retryTime, retryLabel } from "../ui/retry-time";
 import { z } from "../validation";
 import type { components } from "../api/schema";
@@ -17,6 +24,7 @@ export const userSchema: z.ZodType<components["schemas"]["User"]> = z.object({
 export type User = z.infer<typeof userSchema>;
 export const sessionSchema: z.ZodType<components["schemas"]["AuthSession"]> =
   z.object({
+    portal: z.enum(["customer", "booster", "admin"]),
     user: userSchema.nullable(),
     csrf_token: z.string().min(40),
     google_enabled: z.boolean(),
@@ -32,6 +40,7 @@ export const sessionsSchema = z.object({
   sessions: z.array(
     z.object({
       id: z.string(),
+      portal: z.enum(["customer", "booster", "admin"]),
       created_at: z.string(),
       last_seen_at: z.string(),
       expires_at: z.string(),
@@ -192,18 +201,21 @@ export class APIError extends Error {
 }
 async function read(
   path: string,
+  portal: Portal,
   body?: unknown,
   csrf?: string,
 ): Promise<unknown> {
-  const response = await fetch("/api/v1" + path, {
+  const response = await fetch("/api/v1" + portalAPIPath(path, portal), {
     credentials: "same-origin",
     cache: "no-store",
     signal: AbortSignal.timeout(15000),
+    headers: portalHeaders(path, portal),
     ...(body === undefined
       ? {}
       : {
           method: "POST",
           headers: {
+            ...portalHeaders(path, portal),
             "Content-Type": "application/json",
             "X-CSRF-Token": csrf ?? "",
           },
@@ -215,7 +227,7 @@ async function read(
     (response.status === 401 || response.status === 403) &&
     typeof window !== "undefined"
   )
-    window.dispatchEvent(new Event("boosterplus:session-changed"));
+    notifySession(portal);
   // Preserve authority/status even when a proxy returns a non-JSON error page.
   const result: unknown = await response.json().catch(() => null);
   if (!response.ok) {
@@ -249,20 +261,47 @@ async function read(
   }
   return result;
 }
-export async function get<T>(path: string, schema: z.ZodType<T>): Promise<T> {
-  return schema.parse(await read(path));
+export async function get<T>(
+  path: string,
+  schema: z.ZodType<T>,
+  portal: Portal = activePortal(),
+): Promise<T> {
+  const result = await read(path, portal);
+  if (portalAPIPath(path, portal).endsWith("/session")) {
+    const session = sessionSchema.parse(result);
+    if (session.portal !== portal)
+      throw new APIError(
+        "Sign-in context changed. Refresh this portal before continuing.",
+      );
+  }
+  return schema.parse(result);
 }
 export async function post<T>(
   path: string,
   body: unknown,
   schema: z.ZodType<T>,
+  portal: Portal = activePortal(),
 ): Promise<T> {
-  // A fresh token follows session rotation and remains in memory only.
-  const session = await get("/auth/session", sessionSchema);
-  return schema.parse(await read(path, body, session.csrf_token));
+  // Capture one portal for the whole operation, including its CSRF bootstrap.
+  // Navigation during the read cancels the action; it never borrows a new portal.
+  const session = await get("/auth/session", sessionSchema, portal);
+  if (activePortal() !== portal)
+    throw new APIError(
+      "Your portal changed. Return to the action and review it again.",
+    );
+  const result = schema.parse(
+    await read(path, portal, body, session.csrf_token),
+  );
+  if (path === "/auth/logout" || path === "/auth/sessions/revoke")
+    notifySession(portal);
+  return result;
 }
-export async function command(path: string, body: unknown = {}): Promise<void> {
-  await post(path, body, z.null());
+export async function command(
+  path: string,
+  body: unknown = {},
+  portal: Portal = activePortal(),
+): Promise<void> {
+  await post(path, body, z.null(), portal);
 }
 export function errorMessage(error: unknown): string {
   return error instanceof APIError

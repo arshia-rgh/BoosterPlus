@@ -243,18 +243,18 @@ func TestPublishedLegalInvalidatesPendingEmailAndReservesBootstrap(t *testing.T)
 	if e != nil {
 		t.Fatal(e)
 	}
-	if _, e = f.auth.service.VerifyEmail(ctx, challenge, code, f.auth.browser, "127.0.0.1", nil); !errors.Is(e, identity.ErrTerms) {
+	if _, e = f.auth.service.VerifyEmail(ctx, challenge, code, f.auth.browser, "127.0.0.1", nil, identity.PortalCustomer); !errors.Is(e, identity.ErrTerms) {
 		t.Fatal("prepublication challenge accepted", e)
 	}
-	if _, e = f.auth.service.RequestEmail(ctx, identity.EmailRequest{Email: "stale-publication@example.test", Purpose: "login", Browser: f.auth.browser, IP: "127.0.0.1", AcceptTerms: true, TermsVersion: f.auth.cfg.TermsVersion}); !errors.Is(e, identity.ErrTerms) {
+	if _, e = f.auth.service.RequestEmail(ctx, identity.EmailRequest{Portal: identity.PortalCustomer, Email: "stale-publication@example.test", Purpose: "login", Browser: f.auth.browser, IP: "127.0.0.1", AcceptTerms: true, TermsVersion: f.auth.cfg.TermsVersion}); !errors.Is(e, identity.ErrTerms) {
 		t.Fatal("new challenge accepted stale terms", e)
 	}
-	challenge, e = f.auth.service.RequestEmail(ctx, identity.EmailRequest{Email: "current-publication@example.test", Purpose: "login", Browser: f.auth.browser, IP: "127.0.0.1", AcceptTerms: true, TermsVersion: release.Label})
+	challenge, e = f.auth.service.RequestEmail(ctx, identity.EmailRequest{Portal: identity.PortalCustomer, Email: "current-publication@example.test", Purpose: "login", Browser: f.auth.browser, IP: "127.0.0.1", AcceptTerms: true, TermsVersion: release.Label})
 	if e != nil {
 		t.Fatal(e)
 	}
 	code = f.auth.deliver(t, "current-publication@example.test")
-	if _, e = f.auth.service.VerifyEmail(ctx, challenge, code, f.auth.browser, "127.0.0.1", nil); e != nil {
+	if _, e = f.auth.service.VerifyEmail(ctx, challenge, code, f.auth.browser, "127.0.0.1", nil, identity.PortalCustomer); e != nil {
 		t.Fatal("current legal sign-in rejected", e)
 	}
 	historical, e := content.Version(ctx, "legal", release.Label)

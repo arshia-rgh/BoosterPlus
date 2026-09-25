@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"slices"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -19,35 +20,40 @@ import (
 )
 
 func TestCapabilityMatrixAndPendingMFA(t *testing.T) {
-	for _, role := range []string{RoleCustomer, RoleBooster, RoleAdmin, RoleOwner, "unknown"} {
-		for _, verified := range []bool{false, true} {
-			for _, capability := range []string{"account", "booster", "admin", "users.read", "owner", "audit", "staff.manage", "recovery", "unknown"} {
-				p := &Principal{User: &ent.User{Role: role}, Session: &ent.AuthSession{}}
-				if verified {
-					now := time.Now()
-					p.Session.MfaVerifiedAt = &now
-				}
-				expected := role == RoleCustomer || verified
-				switch capability {
-				case "account":
-					expected = expected && role != "unknown"
-				case "booster":
-					expected = expected && (role == RoleBooster || role == RoleAdmin || role == RoleOwner)
-				case "admin", "users.read":
-					expected = expected && (role == RoleAdmin || role == RoleOwner)
-				case "owner", "audit", "staff.manage", "recovery":
-					expected = expected && role == RoleOwner
-				default:
-					expected = false
-				}
-				if (Require(p, capability) == nil) != expected {
-					t.Fatalf("role=%s MFA=%v capability=%s", role, verified, capability)
+	// Explicit grants ensure adding a portal or role cannot silently expand access.
+	grants := map[Portal]map[string][]string{
+		PortalCustomer: {
+			RoleCustomer: {"self", "account"}, RoleBooster: {"self", "account"},
+			RoleAdmin: {"self", "account"}, RoleOwner: {"self", "account"},
+		},
+		PortalBooster: {RoleBooster: {"self", "booster"}, RoleAdmin: {"self", "booster"}, RoleOwner: {"self", "booster"}},
+		PortalAdmin:   {RoleAdmin: {"self", "admin", "users.read"}, RoleOwner: {"self", "admin", "users.read", "owner", "audit", "staff.manage", "recovery"}},
+	}
+	for _, portal := range []Portal{PortalCustomer, PortalBooster, PortalAdmin, "", "unknown"} {
+		for _, role := range []string{RoleCustomer, RoleBooster, RoleAdmin, RoleOwner, "unknown"} {
+			for _, verified := range []bool{false, true} {
+				for _, capability := range []string{"self", "account", "booster", "admin", "users.read", "owner", "audit", "staff.manage", "recovery", "unknown"} {
+					p := &Principal{User: &ent.User{Role: role}, Session: &ent.AuthSession{Portal: string(portal)}}
+					if verified {
+						now := time.Now()
+						p.Session.MfaVerifiedAt = &now
+					}
+					expected := (role == RoleCustomer || verified) && slices.Contains(grants[portal][role], capability)
+					if (Require(p, capability) == nil) != expected {
+						t.Fatalf("portal=%s role=%s MFA=%v capability=%s", portal, role, verified, capability)
+					}
 				}
 			}
 		}
 	}
-	if err := Require(nil, "account"); !errors.Is(err, ErrUnauthenticated) {
-		t.Fatal(err)
+	for _, p := range []*Principal{nil, {}, {User: &ent.User{}}, {Session: &ent.AuthSession{}}} {
+		if err := Require(p, "self"); !errors.Is(err, ErrUnauthenticated) {
+			t.Fatal(err)
+		}
+	}
+	p := &Principal{User: &ent.User{Role: RoleCustomer, MfaEnabled: true}, Session: &ent.AuthSession{Portal: string(PortalCustomer)}}
+	if err := Require(p, "self"); !errors.Is(err, ErrMFA) {
+		t.Fatal("enrolled customer bypassed MFA", err)
 	}
 }
 func TestCryptographicDomainSeparationAndProxyBoundary(t *testing.T) {
@@ -133,12 +139,12 @@ func TestGoogleOIDCValidatesSignedProtocol(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	location, err := url.Parse(provider.AuthorizationURL("state", "nonce", verifier))
+	location, err := url.Parse(provider.AuthorizationURL("state", "nonce", verifier, PortalCustomer))
 	if err != nil {
 		t.Fatal(err)
 	}
 	query := location.Query()
-	if query.Get("state") != "state" || query.Get("nonce") != "nonce" || query.Get("code_challenge") != oauth2.S256ChallengeFromVerifier(verifier) || query.Get("code_challenge_method") != "S256" || query.Get("redirect_uri") != "https://booster.example/api/v1/auth/google/callback" {
+	if query.Get("state") != "state" || query.Get("nonce") != "nonce" || query.Get("code_challenge") != oauth2.S256ChallengeFromVerifier(verifier) || query.Get("code_challenge_method") != "S256" || query.Get("redirect_uri") != "https://booster.example/api/v1/auth/portals/customer/google/callback" {
 		t.Fatal("invalid OAuth binding")
 	}
 	for _, scenario := range []string{"valid", "wrong issuer", "wrong audience", "wrong nonce", "expired", "unverified email", "empty subject", "wrong authorized party", "multi audience without authorized party", "tampered signature"} {
@@ -178,7 +184,7 @@ func TestGoogleOIDCValidatesSignedProtocol(t *testing.T) {
 				raw = raw[:len(raw)-10] + "AAAAAAAAAA"
 			}
 			token.Store(raw)
-			assertion, exchangeErr := provider.Exchange(t.Context(), "code", verifier, "nonce")
+			assertion, exchangeErr := provider.Exchange(t.Context(), "code", verifier, "nonce", PortalCustomer)
 			if scenario == "valid" {
 				if exchangeErr != nil || assertion.Subject != "stable-subject" {
 					t.Fatal("valid token rejected", exchangeErr)

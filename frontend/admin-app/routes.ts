@@ -1,5 +1,15 @@
 import { route, type RouteConfig } from "@react-router/dev/routes";
 export default [
+  route("admin/login", "../app/routes/login.tsx", { id: "admin-login" }),
+  route("admin/account/settings", "../app/routes/portal.tsx", {
+    id: "admin-settings",
+  }),
+  route("admin/account/security", "../app/routes/portal.tsx", {
+    id: "admin-security",
+  }),
+  route("admin/account/preferences", "../app/routes/portal.tsx", {
+    id: "admin-preferences",
+  }),
   route("admin/customers", "../app/routes/customers-admin.tsx"),
   route("admin/media", "../app/routes/media-admin.tsx"),
   route("admin/alerts", "../app/routes/alerts-admin.tsx"),

@@ -32,7 +32,18 @@
         "/api/v1/media/{id}/content",
         "/api/v1/media/{id}/retry",
         "/api/v1/media/{id}/remove",
-        "/api/v1/me/overview"
+        "/api/v1/me/overview",
+        "/api/v1/auth/portals/{portal}/session",
+        "/api/v1/auth/portals/{portal}/email/request",
+        "/api/v1/auth/portals/{portal}/email/verify",
+        "/api/v1/auth/portals/{portal}/google/start",
+        "/api/v1/auth/portals/{portal}/google/callback",
+        "/api/v1/auth/portals/{portal}/logout",
+        "/api/v1/auth/portals/{portal}/mfa/disable",
+        "/api/v1/auth/portals/{portal}/sessions/revoke",
+        "/api/v1/auth/portals/{portal}/mfa/enroll",
+        "/api/v1/auth/portals/{portal}/mfa/verify",
+        "/api/v1/auth/portals/{portal}/mfa/recovery-codes"
       ]
     },
     "public": {
@@ -1028,7 +1039,7 @@
       "title": "Welcome to PLAYORA.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "planned",
+      "status": "in_progress",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1060,14 +1071,17 @@
         "F29",
         "F30"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-25-di02-portals.md",
+        "docs/redesign/DI02_QUALIFICATION.md"
+      ]
     },
     {
       "id": "I02",
       "title": "Check your email.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "planned",
+      "status": "in_progress",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1101,14 +1115,17 @@
         "F09",
         "F31"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-25-di02-portals.md",
+        "docs/redesign/DI02_QUALIFICATION.md"
+      ]
     },
     {
       "id": "I03",
       "title": "Verify your staff sign-in.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "planned",
+      "status": "in_progress",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1130,14 +1147,17 @@
         "F09",
         "F31"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-25-di02-portals.md",
+        "docs/redesign/DI02_QUALIFICATION.md"
+      ]
     },
     {
       "id": "I04",
       "title": "Set up your authenticator.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "planned",
+      "status": "in_progress",
       "baselineRoute": "/account/security",
       "targetRoute": "/account/security",
       "apiFamily": "identity",
@@ -1158,14 +1178,17 @@
         "F09",
         "F31"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-25-di02-portals.md",
+        "docs/redesign/DI02_QUALIFICATION.md"
+      ]
     },
     {
       "id": "I05",
       "title": "Recover staff access.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "planned",
+      "status": "in_progress",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1186,7 +1209,10 @@
         "F09",
         "F31"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-25-di02-portals.md",
+        "docs/redesign/DI02_QUALIFICATION.md"
+      ]
     },
     {
       "id": "I06",
@@ -1226,7 +1252,7 @@
       "title": "Admin sign-in.",
       "phase": "DI02",
       "mode": "new",
-      "status": "planned",
+      "status": "in_progress",
       "baselineRoute": "/admin/login",
       "targetRoute": "/admin/login",
       "apiFamily": "identity",
@@ -1251,14 +1277,17 @@
         "keyboard and narrow layout",
         "F09"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-25-di02-portals.md",
+        "docs/redesign/DI02_QUALIFICATION.md"
+      ]
     },
     {
       "id": "I10",
       "title": "Booster sign-in.",
       "phase": "DI02",
       "mode": "new",
-      "status": "planned",
+      "status": "in_progress",
       "baselineRoute": "/booster/login",
       "targetRoute": "/booster/login",
       "apiFamily": "identity",
@@ -1283,7 +1312,10 @@
         "keyboard and narrow layout",
         "F31"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-25-di02-portals.md",
+        "docs/redesign/DI02_QUALIFICATION.md"
+      ]
     },
     {
       "id": "C01",

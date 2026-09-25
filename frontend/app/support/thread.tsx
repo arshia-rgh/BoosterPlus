@@ -122,7 +122,32 @@ function ThreadSession({
   const identity = useContext(AuthorizedIdentity);
   const user = identity?.session.user?.id ?? "isolated-view";
   const [savedPosition] = useState(() => readingPosition(user, id));
-  const chat = useChat(base, savedPosition?.sequence);
+  const room = useRef<HTMLDivElement>(null),
+    history = useRef<HTMLDivElement>(null);
+  const recovering = useRef<boolean | null>(null);
+  const initial = useRef(false),
+    pinned = useRef(true),
+    last = useRef(0),
+    marked = useRef(0);
+  const captureReading = useCallback(() => {
+    const box = history.current;
+    if (!box) return;
+    const node = [...box.querySelectorAll<HTMLElement>(".message-bubble")].find(
+      (item) =>
+        item.getBoundingClientRect().bottom >
+        box.getBoundingClientRect().top + 4,
+    );
+    // Repeated outage responses must not replace the saved position with the
+    // recovery notice's geometry.
+    if (!node) return;
+    pinned.current = box.scrollHeight - box.scrollTop - box.clientHeight <= 24;
+    readingPosition(user, id, {
+      sequence: Number(node.closest<HTMLElement>(".message")?.dataset.sequence),
+      offset:
+        box.getBoundingClientRect().top - node.getBoundingClientRect().top,
+    });
+  }, [id, user]);
+  const chat = useChat(base, savedPosition?.sequence, captureReading);
   const details = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
     const close = (event: globalThis.KeyboardEvent) => {
@@ -143,13 +168,6 @@ function ThreadSession({
       document.removeEventListener("keydown", close);
     };
   }, []);
-  const room = useRef<HTMLDivElement>(null),
-    history = useRef<HTMLDivElement>(null);
-  const recovering = useRef<boolean | null>(null);
-  const initial = useRef(false),
-    pinned = useRef(true),
-    last = useRef(0),
-    marked = useRef(0);
   const anchor = useRef<{
     sequence: string;
     offset: number;
@@ -182,25 +200,12 @@ function ThreadSession({
     const box = history.current;
     if (!box || chat.error) return;
     const remaining = box.scrollHeight - box.scrollTop - box.clientHeight;
-    pinned.current = remaining <= 24;
-    const node = [...box.querySelectorAll<HTMLElement>(".message-bubble")].find(
-      (item) =>
-        item.getBoundingClientRect().bottom >
-        box.getBoundingClientRect().top + 4,
-    );
-    if (node)
-      readingPosition(user, id, {
-        sequence: Number(
-          node.closest<HTMLElement>(".message")?.dataset.sequence,
-        ),
-        offset:
-          box.getBoundingClientRect().top - node.getBoundingClientRect().top,
-      });
+    captureReading();
     if (remaining <= 3) {
       setNewCount(0);
       markRead();
     }
-  }, [id, user, markRead, chat.error]);
+  }, [captureReading, markRead, chat.error]);
   useLayoutEffect(() => {
     const box = history.current;
     if (!chat.thread) {

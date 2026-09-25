@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { z } from "../validation";
+import { useState } from "react";
+import { useProtectedReveal } from "../identity/protected-reveal";
 import { Action, ErrorNotice, Text } from "../catalog/controls";
 import { post } from "../identity/api";
 import { secretSchema } from "./model";
@@ -71,36 +71,7 @@ export function SecretUpload({
   );
 }
 export function SecretReveal({ path }: { path: string }) {
-  const [value, setValue] = useState(""),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState<unknown>(null);
-  useEffect(() => {
-    if (!value) return;
-    const hide = () => {
-      setValue("");
-    };
-    const timer = setTimeout(hide, 60000);
-    window.addEventListener("blur", hide);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("blur", hide);
-    };
-  }, [value]);
-  async function reveal() {
-    setBusy(true);
-    setError(null);
-    setValue("");
-    try {
-      const result = await post(path, {}, z.object({ value: z.string() }));
-      const bytes = Uint8Array.from(atob(result.value), (c) => c.charCodeAt(0));
-      setValue(new TextDecoder().decode(bytes));
-      bytes.fill(0);
-    } catch (cause) {
-      setError(cause);
-    } finally {
-      setBusy(false);
-    }
-  }
+  const { value, busy, error, reveal, hide } = useProtectedReveal(path, 60000);
   return (
     <section className="catalog-section">
       <h3>Protected access</h3>
@@ -115,13 +86,7 @@ export function SecretReveal({ path }: { path: string }) {
       {value && (
         <>
           <pre className="payment-policy">{value}</pre>
-          <Action
-            onClick={() => {
-              setValue("");
-            }}
-          >
-            Hide protected details
-          </Action>
+          <Action onClick={hide}>Hide protected details</Action>
         </>
       )}
     </section>

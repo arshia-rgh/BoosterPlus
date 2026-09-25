@@ -40,6 +40,16 @@ export default [
     route("account/preferences", "routes/portal.tsx", {
       id: "account-preferences",
     }),
+    route("booster/login", "routes/login.tsx", { id: "booster-login" }),
+    route("booster/account/settings", "routes/portal.tsx", {
+      id: "booster-settings",
+    }),
+    route("booster/account/security", "routes/portal.tsx", {
+      id: "booster-security",
+    }),
+    route("booster/account/preferences", "routes/portal.tsx", {
+      id: "booster-preferences",
+    }),
     route("booster/support/:id", "routes/conversation-booster.tsx"),
     route("booster/calendar", "routes/booster-calendar.tsx"),
     route("booster/orders", "routes/booster-orders.tsx"),

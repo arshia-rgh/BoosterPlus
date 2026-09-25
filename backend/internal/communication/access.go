@@ -16,10 +16,13 @@ func Member(ctx context.Context, client *ent.Client, p *identity.Principal, row 
 	if admin {
 		return identity.Require(p, "admin")
 	}
-	if err := identity.Require(p, "account"); err != nil {
+	if err := identity.Require(p, "self"); err != nil {
 		return err
 	}
-	if row.UserID == p.User.ID {
+	if p.Session.Portal == string(identity.PortalCustomer) {
+		if row.UserID != p.User.ID {
+			return identity.ErrForbidden
+		}
 		return nil
 	}
 	if row.Kind != "fulfillment" || row.FulfillmentOrderID == nil || !row.BoosterShared {

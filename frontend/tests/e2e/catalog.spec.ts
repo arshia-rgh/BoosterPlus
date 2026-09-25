@@ -52,18 +52,27 @@ test("keyboard users can skip navigation", async ({ page }, info) => {
 });
 
 for (const [path, title] of [
-  ["/account", "Your account"],
-  ["/admin", "Administration"],
-  ["/admin/coupons", "Coupons"],
-  ["/booster", "Booster portal"],
+  ["/account", "Sign in"],
+  ["/admin", "Admin sign-in"],
+  ["/admin/coupons", "Admin sign-in"],
+  ["/booster", "Booster sign-in"],
 ] as const) {
   test(`${path} shell is accessible and exposes no account data`, async ({
     page,
   }, info) => {
     await page.goto(path);
-    await expect(page.getByRole("heading", { name: title })).toBeVisible();
     await expect(
-      page.getByText("Sign in with Google or an email code.", { exact: false }),
+      page.getByRole("heading", { name: title, exact: true }),
+    ).toBeVisible();
+    const login = path.startsWith("/admin")
+      ? "/admin/login"
+      : path.startsWith("/booster")
+        ? "/booster/login"
+        : "/login";
+    expect(new URL(page.url()).pathname).toBe(login);
+    expect(new URL(page.url()).searchParams.get("returnTo")).toBe(path);
+    await expect(
+      page.getByRole("button", { name: "Send verification code", exact: true }),
     ).toBeVisible();
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
     if (path === "/account")

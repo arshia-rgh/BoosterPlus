@@ -17,6 +17,8 @@ type AuthFlow struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// Portal holds the value of the "portal" field.
+	Portal string `json:"portal,omitempty"`
 	// BrowserHash holds the value of the "browser_hash" field.
 	BrowserHash string `json:"browser_hash,omitempty"`
 	// Purpose holds the value of the "purpose" field.
@@ -47,7 +49,7 @@ func (*AuthFlow) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case authflow.FieldConsumed:
 			values[i] = new(sql.NullBool)
-		case authflow.FieldID, authflow.FieldBrowserHash, authflow.FieldPurpose, authflow.FieldUserID, authflow.FieldSessionID, authflow.FieldNonce, authflow.FieldTermsVersion:
+		case authflow.FieldID, authflow.FieldPortal, authflow.FieldBrowserHash, authflow.FieldPurpose, authflow.FieldUserID, authflow.FieldSessionID, authflow.FieldNonce, authflow.FieldTermsVersion:
 			values[i] = new(sql.NullString)
 		case authflow.FieldExpiresAt:
 			values[i] = new(sql.NullTime)
@@ -71,6 +73,12 @@ func (_m *AuthFlow) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				_m.ID = value.String
+			}
+		case authflow.FieldPortal:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field portal", values[i])
+			} else if value.Valid {
+				_m.Portal = value.String
 			}
 		case authflow.FieldBrowserHash:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -162,6 +170,9 @@ func (_m *AuthFlow) String() string {
 	var builder strings.Builder
 	builder.WriteString("AuthFlow(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("portal=")
+	builder.WriteString(_m.Portal)
+	builder.WriteString(", ")
 	builder.WriteString("browser_hash=")
 	builder.WriteString(_m.BrowserHash)
 	builder.WriteString(", ")

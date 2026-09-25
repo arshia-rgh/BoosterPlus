@@ -36,6 +36,7 @@ func userView(account *ent.User) UserView {
 
 type requestState struct {
 	principal          *Principal
+	portal             Portal
 	browser, token, ip string
 }
 type endpoint func(http.ResponseWriter, *http.Request, requestState) error
@@ -72,21 +73,27 @@ func (s *Service) Register(mux *http.ServeMux) {
 	}
 	for pattern, handler := range routes {
 		mux.HandleFunc(pattern, s.handle(handler))
+		if strings.Contains(pattern, " /api/v1/auth/") {
+			portalPattern := strings.Replace(pattern, "/api/v1/auth/", "/api/v1/auth/portals/{portal}/", 1)
+			mux.HandleFunc(portalPattern, s.handle(handler))
+		}
 	}
 }
 
-func (s *Service) cookieName(kind string) string {
+func (s *Service) cookieName(portal Portal, kind string) string {
 	prefix := ""
 	if s.config.SecureCookies {
 		prefix = "__Host-"
 	}
-	return prefix + "bp-" + kind
+	return prefix + "bp-" + string(portal) + "-" + kind
 }
-func (s *Service) cookie(w http.ResponseWriter, kind, value string, maxAge int) {
+func (s *Service) cookie(w http.ResponseWriter, portal Portal, kind, value string, maxAge int) {
 	// #nosec G124 -- runtime config enforces Secure outside development/test; local HTTP uses unprefixed cookies.
-	http.SetCookie(w, &http.Cookie{Name: s.cookieName(kind), Value: value, Path: "/", MaxAge: maxAge, HttpOnly: true, Secure: s.config.SecureCookies, SameSite: http.SameSiteLaxMode})
+	http.SetCookie(w, &http.Cookie{Name: s.cookieName(portal, kind), Value: value, Path: "/", MaxAge: maxAge, HttpOnly: true, Secure: s.config.SecureCookies, SameSite: http.SameSiteLaxMode})
 }
-func (s *Service) csrf(browser, token string) string { return s.digest("csrf", browser, token) }
+func (s *Service) csrf(portal Portal, browser, token string) string {
+	return s.digest("csrf.portal", string(portal), browser, token)
+}
 
 func (s *Service) handle(next endpoint) http.HandlerFunc {
 	return s.handleLimit(next, 16<<10)
@@ -95,22 +102,27 @@ func (s *Service) handle(next endpoint) http.HandlerFunc {
 func (s *Service) handleLimit(next endpoint, bodyLimit int64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
-		w.Header().Set("Vary", "Cookie, Origin")
-		state := requestState{}
-		if cookie, cookieErr := r.Cookie(s.cookieName("browser")); cookieErr == nil && len(cookie.Value) >= 40 && len(cookie.Value) <= 128 {
+		w.Header().Set("Vary", "Cookie, Origin, X-Playora-Portal")
+		portal, portalErr := requestPortal(r)
+		if portalErr != nil {
+			respondError(w, portalErr)
+			return
+		}
+		state := requestState{portal: portal}
+		if cookie, cookieErr := r.Cookie(s.cookieName(state.portal, "browser")); cookieErr == nil && len(cookie.Value) >= 40 && len(cookie.Value) <= 128 {
 			state.browser = cookie.Value
 		} else {
 			state.browser = randomToken()
-			s.cookie(w, "browser", state.browser, 30*24*3600)
+			s.cookie(w, state.portal, "browser", state.browser, 30*24*3600)
 		}
-		if cookie, cookieErr := r.Cookie(s.cookieName("session")); cookieErr == nil {
-			principal, authErr := s.Authenticate(r.Context(), cookie.Value)
+		if cookie, cookieErr := r.Cookie(s.cookieName(state.portal, "session")); cookieErr == nil {
+			principal, authErr := s.Authenticate(r.Context(), cookie.Value, state.portal)
 			switch {
 			case authErr == nil:
 				state.principal = principal
 				state.token = cookie.Value
 			case errors.Is(authErr, ErrUnauthenticated):
-				s.cookie(w, "session", "", -1)
+				s.cookie(w, state.portal, "session", "", -1)
 			default:
 				respondError(w, authErr)
 				return
@@ -123,7 +135,7 @@ func (s *Service) handleLimit(next endpoint, bodyLimit int64) http.HandlerFunc {
 			for _, candidate := range s.config.AllowedOrigins {
 				allowed = allowed || origin == candidate
 			}
-			if origin == "" || !allowed || !hmac.Equal([]byte(r.Header.Get("X-Csrf-Token")), []byte(s.csrf(state.browser, state.token))) {
+			if origin == "" || !allowed || !hmac.Equal([]byte(r.Header.Get("X-Csrf-Token")), []byte(s.csrf(state.portal, state.browser, state.token))) {
 				respondError(w, ErrForbidden)
 				return
 			}
@@ -223,7 +235,7 @@ func (s *Service) bootstrap(w http.ResponseWriter, r *http.Request, state reques
 		if findErr != nil {
 			return findErr
 		}
-		for _, capability := range []string{"account", "booster", "admin", "owner"} {
+		for _, capability := range []string{"self", "account", "booster", "admin", "owner"} {
 			if Require(state.principal, capability) == nil {
 				capabilities = append(capabilities, capability)
 			}
@@ -233,7 +245,7 @@ func (s *Service) bootstrap(w http.ResponseWriter, r *http.Request, state reques
 	if termsErr != nil {
 		return termsErr
 	}
-	return respond(w, http.StatusOK, map[string]any{"user": account, "csrf_token": s.csrf(state.browser, state.token), "google_enabled": s.google != nil, "google_linked": linked, "mfa_required": needsMFA, "capabilities": capabilities, "terms_version": termsVersion, "terms_url": s.config.TermsURL})
+	return respond(w, http.StatusOK, map[string]any{"portal": state.portal, "user": account, "csrf_token": s.csrf(state.portal, state.browser, state.token), "google_enabled": s.google != nil, "google_linked": linked, "mfa_required": needsMFA, "capabilities": capabilities, "terms_version": termsVersion, "terms_url": s.config.TermsURL})
 }
 func (s *Service) requestEmail(w http.ResponseWriter, r *http.Request, state requestState) error {
 	var input struct {
@@ -249,7 +261,7 @@ func (s *Service) requestEmail(w http.ResponseWriter, r *http.Request, state req
 	if input.Purpose == "reauth" && state.principal != nil {
 		input.Email = state.principal.User.Email
 	}
-	id, err := s.RequestEmail(r.Context(), EmailRequest{Email: input.Email, AccountEmail: input.AccountEmail, Purpose: input.Purpose, Browser: state.browser, IP: state.ip, AcceptTerms: input.AcceptTerms, TermsVersion: input.TermsVersion, Principal: state.principal})
+	id, err := s.RequestEmail(r.Context(), EmailRequest{Portal: state.portal, Email: input.Email, AccountEmail: input.AccountEmail, Purpose: input.Purpose, Browser: state.browser, IP: state.ip, AcceptTerms: input.AcceptTerms, TermsVersion: input.TermsVersion, Principal: state.principal})
 	if err != nil {
 		return err
 	}
@@ -263,14 +275,14 @@ func (s *Service) verifyEmail(w http.ResponseWriter, r *http.Request, state requ
 	if err := decode(r, &input); err != nil {
 		return err
 	}
-	result, err := s.VerifyEmail(r.Context(), input.ChallengeID, input.Code, state.browser, state.ip, state.principal)
+	result, err := s.VerifyEmail(r.Context(), input.ChallengeID, input.Code, state.browser, state.ip, state.principal, state.portal)
 	if err != nil {
 		return err
 	}
 	if result.Token != "" {
-		s.cookie(w, "session", result.Token, 7*24*3600)
+		s.cookie(w, state.portal, "session", result.Token, 7*24*3600)
 	} else if result.Purpose == "email_change" {
-		s.cookie(w, "session", "", -1)
+		s.cookie(w, state.portal, "session", "", -1)
 	}
 	return respond(w, http.StatusOK, map[string]string{"purpose": result.Purpose})
 }
@@ -283,14 +295,14 @@ func (s *Service) startGoogle(w http.ResponseWriter, r *http.Request, state requ
 	if err := decode(r, &input); err != nil {
 		return err
 	}
-	url, err := s.StartGoogle(r.Context(), state.principal, state.browser, state.ip, input.Purpose, input.AcceptTerms, input.TermsVersion)
+	url, err := s.StartGoogle(r.Context(), state.principal, state.browser, state.ip, input.Purpose, input.AcceptTerms, state.portal, input.TermsVersion)
 	if err != nil {
 		return err
 	}
 	return respond(w, http.StatusOK, map[string]string{"url": url})
 }
 func (s *Service) finishGoogle(w http.ResponseWriter, r *http.Request, state requestState) error {
-	token, err := s.FinishGoogle(r.Context(), state.principal, state.browser, r.URL.Query().Get("state"), r.URL.Query().Get("code"))
+	token, err := s.FinishGoogle(r.Context(), state.principal, state.browser, r.URL.Query().Get("state"), r.URL.Query().Get("code"), state.portal)
 	if err != nil {
 		reason := "verification"
 		if errors.Is(err, ErrConflict) {
@@ -299,11 +311,11 @@ func (s *Service) finishGoogle(w http.ResponseWriter, r *http.Request, state req
 		if errors.Is(err, ErrTerms) {
 			reason = "terms"
 		}
-		http.Redirect(w, r, s.config.PublicOrigin+"/login?error="+reason, http.StatusSeeOther)
+		http.Redirect(w, r, s.config.PublicOrigin+state.portal.login()+"?error="+reason, http.StatusSeeOther)
 		return nil
 	}
-	s.cookie(w, "session", token, 7*24*3600)
-	http.Redirect(w, r, s.config.PublicOrigin+"/account", http.StatusSeeOther)
+	s.cookie(w, state.portal, "session", token, 7*24*3600)
+	http.Redirect(w, r, s.config.PublicOrigin+state.portal.home(), http.StatusSeeOther)
 	return nil
 }
 func (s *Service) logout(w http.ResponseWriter, r *http.Request, state requestState) error {
@@ -312,7 +324,7 @@ func (s *Service) logout(w http.ResponseWriter, r *http.Request, state requestSt
 			return err
 		}
 	}
-	s.cookie(w, "session", "", -1)
+	s.cookie(w, state.portal, "session", "", -1)
 	w.WriteHeader(http.StatusNoContent)
 	return nil
 }
@@ -331,13 +343,13 @@ func (s *Service) revokeSessions(w http.ResponseWriter, r *http.Request, state r
 		return err
 	}
 	if input.All || state.principal.Session.ID == input.ID {
-		s.cookie(w, "session", "", -1)
+		s.cookie(w, state.portal, "session", "", -1)
 	}
 	w.WriteHeader(http.StatusNoContent)
 	return nil
 }
 func (s *Service) me(w http.ResponseWriter, _ *http.Request, state requestState) error {
-	if err := Require(state.principal, "account"); err != nil {
+	if err := Require(state.principal, "self"); err != nil {
 		return err
 	}
 	return respond(w, http.StatusOK, userView(state.principal.User))
@@ -367,7 +379,7 @@ func (s *Service) sessions(w http.ResponseWriter, r *http.Request, state request
 	}
 	output := make([]map[string]any, 0, len(entries))
 	for _, entry := range entries {
-		output = append(output, map[string]any{"id": entry.ID, "created_at": entry.CreatedAt, "last_seen_at": entry.LastSeenAt, "expires_at": entry.ExpiresAt, "current": entry.ID == state.principal.Session.ID})
+		output = append(output, map[string]any{"id": entry.ID, "portal": entry.Portal, "created_at": entry.CreatedAt, "last_seen_at": entry.LastSeenAt, "expires_at": entry.ExpiresAt, "current": entry.ID == state.principal.Session.ID})
 	}
 	return respond(w, http.StatusOK, map[string]any{"sessions": output})
 }
@@ -397,7 +409,7 @@ func (s *Service) verifyMFA(w http.ResponseWriter, r *http.Request, state reques
 	if err != nil {
 		return err
 	}
-	s.cookie(w, "session", result.Token, 7*24*3600)
+	s.cookie(w, state.portal, "session", result.Token, 7*24*3600)
 	codes := result.RecoveryCodes
 	if codes == nil {
 		codes = []string{}
@@ -408,7 +420,7 @@ func (s *Service) disableMFA(w http.ResponseWriter, r *http.Request, state reque
 	if err := s.DisableMFA(r.Context(), state.principal); err != nil {
 		return err
 	}
-	s.cookie(w, "session", "", -1)
+	s.cookie(w, state.portal, "session", "", -1)
 	w.WriteHeader(http.StatusNoContent)
 	return nil
 }
@@ -417,14 +429,14 @@ func (s *Service) regenerateCodes(w http.ResponseWriter, r *http.Request, state 
 	if err != nil {
 		return err
 	}
-	s.cookie(w, "session", result.Token, 7*24*3600)
+	s.cookie(w, state.portal, "session", result.Token, 7*24*3600)
 	return respond(w, http.StatusOK, map[string]any{"recovery_codes": result.RecoveryCodes})
 }
 func (s *Service) unlinkGoogle(w http.ResponseWriter, r *http.Request, state requestState) error {
 	if err := s.UnlinkGoogle(r.Context(), state.principal); err != nil {
 		return err
 	}
-	s.cookie(w, "session", "", -1)
+	s.cookie(w, state.portal, "session", "", -1)
 	w.WriteHeader(http.StatusNoContent)
 	return nil
 }

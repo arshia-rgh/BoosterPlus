@@ -18,7 +18,12 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
   request,
 }, info) => {
   test.setTimeout(120000);
-  await signIn(page, request, fixture(info.project.name, "supportadmin"));
+  await signIn(
+    page,
+    request,
+    fixture(info.project.name, "supportadmin"),
+    "/admin/login",
+  );
   await enroll(page);
   const context = await browser.newContext({
       baseURL: "http://127.0.0.1:4173",
@@ -275,7 +280,7 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
       expect((await other.request.get(downloadURL)).status()).toBe(403);
       expect(
         (await other.request.get(`/api/v1/admin/conversations/${id}`)).status(),
-      ).toBe(403);
+      ).toBe(401);
     } finally {
       await strangerContext.close();
     }

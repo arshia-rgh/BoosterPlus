@@ -29,7 +29,7 @@ func catalogAdmin(t *testing.T, f *authFixture) *identity.Principal {
 	if _, err := f.client.User.UpdateOneID(p.User.ID).SetRole(identity.RoleAdmin).Save(t.Context()); err != nil {
 		t.Fatal(err)
 	}
-	p = f.principalFromSession(t, p)
+	p = f.enterPortal(t, p, identity.PortalAdmin)
 	_, _, p = f.enroll(t, p)
 	return p
 }
@@ -235,7 +235,7 @@ func TestCatalogStaffAuthorizationAndHTTP(t *testing.T) {
 	if res := call("/api/v1/catalog/games/http-game/validate", body, "https://evil.test"); res.Code != http.StatusForbidden {
 		t.Fatal("CSRF", res.Code)
 	}
-	if res := call("/api/v1/admin/catalog/games", `{}`, "http://localhost"); res.Code != http.StatusUnauthorized {
+	if res := call("/api/v1/admin/catalog/games", `{}`, "http://localhost"); res.Code != http.StatusForbidden {
 		t.Fatal("admin boundary", res.Code)
 	}
 	for _, bad := range []string{strings.Replace(body, draft.CurrentRelease, "stale", 1), strings.Replace(body, `"estimate"`, `"fulfillment"`, 1), strings.Replace(body, `"service"`, `"unexpected"`, 1), strings.Repeat("x", 262145)} {

@@ -1,3 +1,4 @@
+import { portalFromPath, authPath } from "../../app/identity/portal";
 import { readFileSync } from "node:fs";
 import { createHmac } from "node:crypto";
 import { expect, type Page, type APIRequestContext } from "@playwright/test";
@@ -64,6 +65,11 @@ async function mailCode(request: APIRequestContext, email: string) {
     .toMatch(/^\d{6}$/);
   return code;
 }
+export function authURL(page: Page, action: string) {
+  return (
+    "/api/v1" + authPath(portalFromPath(new URL(page.url()).pathname), action)
+  );
+}
 export async function signIn(
   page: Page,
   request: APIRequestContext,
@@ -71,7 +77,14 @@ export async function signIn(
   entry = "/account",
 ) {
   await page.goto(entry);
-  await page.getByLabel("Email address", { exact: true }).fill(email);
+  await page
+    .getByLabel(
+      portalFromPath(new URL(page.url()).pathname) === "customer"
+        ? "Email address"
+        : "Work email address",
+      { exact: true },
+    )
+    .fill(email);
   await page.getByRole("checkbox", { name: /I accept/ }).check();
   await page.getByRole("button", { name: "Send verification code" }).click();
   await page
@@ -115,7 +128,7 @@ export async function signOut(page: Page) {
   if (await more.isVisible()) await more.click();
   const result = page.waitForResponse(
     (response) =>
-      response.url().endsWith("/api/v1/auth/logout") &&
+      response.url().endsWith(authURL(page, "logout")) &&
       response.request().method() === "POST",
   );
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
@@ -136,7 +149,7 @@ export async function enroll(page: Page) {
     await accountDestination(page, "Security");
   const enrollment = page.waitForResponse(
     (response) =>
-      response.url().endsWith("/api/v1/auth/mfa/enroll") &&
+      response.url().endsWith(authURL(page, "mfa/enroll")) &&
       response.request().method() === "POST",
   );
   await page.getByRole("button", { name: "Set up authenticator" }).click();

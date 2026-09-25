@@ -1,3 +1,4 @@
+import { authURL } from "./identity-fixtures";
 import { randomUUID } from "node:crypto";
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -11,7 +12,7 @@ import {
 import { submissionSchema } from "../../app/submissions/model";
 async function api(page: Page, path: string, body: unknown) {
   const session = sessionSchema.parse(
-    await (await page.request.get("/api/v1/auth/session")).json(),
+    await (await page.request.get(authURL(page, "session"))).json(),
   );
   const response = await page.request.post("/api/v1" + path, {
     data: body,
@@ -47,7 +48,12 @@ test("seller drafts, clarification and review stay private and create no commerc
   request,
 }, info) => {
   test.setTimeout(150000);
-  await signIn(page, request, fixture(info.project.name, "selleradmin"));
+  await signIn(
+    page,
+    request,
+    fixture(info.project.name, "selleradmin"),
+    "/admin/login",
+  );
   await enroll(page);
   const slug = `intake-${info.project.name}-${randomUUID()}`,
     config = emptyConfiguration(`Intake ${info.project.name}`),
@@ -234,7 +240,7 @@ test("seller drafts, clarification and review stay private and create no commerc
         (
           await stranger.request.get(`/api/v1/admin/submissions/${id}`)
         ).status(),
-      ).toBe(403);
+      ).toBe(401);
       expect(
         (
           await stranger.request.get(

@@ -17,6 +17,8 @@ type AuthSession struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// Portal holds the value of the "portal" field.
+	Portal string `json:"portal,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID string `json:"user_id,omitempty"`
 	// TokenHash holds the value of the "token_hash" field.
@@ -45,7 +47,7 @@ func (*AuthSession) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case authsession.FieldAuthVersion:
 			values[i] = new(sql.NullInt64)
-		case authsession.FieldID, authsession.FieldUserID, authsession.FieldTokenHash:
+		case authsession.FieldID, authsession.FieldPortal, authsession.FieldUserID, authsession.FieldTokenHash:
 			values[i] = new(sql.NullString)
 		case authsession.FieldAuthenticatedAt, authsession.FieldMfaVerifiedAt, authsession.FieldCreatedAt, authsession.FieldLastSeenAt, authsession.FieldExpiresAt, authsession.FieldRevokedAt:
 			values[i] = new(sql.NullTime)
@@ -69,6 +71,12 @@ func (_m *AuthSession) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				_m.ID = value.String
+			}
+		case authsession.FieldPortal:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field portal", values[i])
+			} else if value.Valid {
+				_m.Portal = value.String
 			}
 		case authsession.FieldUserID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -162,6 +170,9 @@ func (_m *AuthSession) String() string {
 	var builder strings.Builder
 	builder.WriteString("AuthSession(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("portal=")
+	builder.WriteString(_m.Portal)
+	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(_m.UserID)
 	builder.WriteString(", ")

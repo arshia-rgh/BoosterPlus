@@ -17,16 +17,20 @@ test("workspace shortcuts remain readable with enlarged text and restore drawer 
           mfa_enabled: role === "booster",
           notify_updates: true,
         },
+        portal: role,
         csrf_token: "fixture".repeat(10),
         google_enabled: false,
         google_linked: false,
         mfa_required: false,
-        capabilities: role === "booster" ? ["account", "booster"] : ["account"],
+        capabilities:
+          role === "booster" ? ["self", "booster"] : ["self", "account"],
         terms_version: "fixture",
         terms_url: "/terms",
       };
       await route.fulfill({
-        json: new URL(route.request().url()).pathname.endsWith("/auth/session")
+        json: new URL(route.request().url()).pathname.endsWith(
+          `/auth/portals/${role}/session`,
+        )
           ? session
           : { items: [], orders: [], next: "", next_before: 0, limit: 20 },
       });

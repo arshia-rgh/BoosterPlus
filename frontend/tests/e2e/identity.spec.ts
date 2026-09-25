@@ -52,7 +52,7 @@ test("email signup, profile, sessions, MFA enrollment and logout", async ({
     .click();
   await page.getByRole("button", { name: "Load sessions" }).click();
   await expect(
-    page.getByRole("heading", { name: "This session" }),
+    page.getByRole("heading", { name: "Customer · This session" }),
   ).toBeVisible();
   await enroll(page);
   await page
@@ -80,36 +80,36 @@ for (const role of ["booster", "administrator", "owner"] as const) {
     request,
   }, info) => {
     const email = fixture(info.project.name, role);
-    await signIn(page, request, email);
+    const portal = role === "booster" ? "booster" : "admin";
+    await signIn(page, request, email, `/${portal}/login`);
     await expect(
       page.getByText(
         "Authenticator verification is required to finish signing in.",
       ),
     ).toBeVisible();
-    expect((await page.request.get("/api/v1/admin/users")).status()).toBe(403);
-    expect((await page.request.get("/api/v1/admin/jobs")).status()).toBe(403);
-    expect((await page.request.get("/api/v1/me/sessions")).status()).toBe(403);
-    expect((await page.request.get("/api/v1/me/overview")).status()).toBe(403);
-    await enroll(page);
-    expect((await page.request.get("/api/v1/me/overview")).status()).toBe(200);
     expect((await page.request.get("/api/v1/admin/users")).status()).toBe(
-      role === "booster" ? 403 : 200,
+      portal === "admin" ? 403 : 401,
+    );
+    expect((await page.request.get("/api/v1/admin/jobs")).status()).toBe(
+      portal === "admin" ? 403 : 401,
+    );
+    expect(
+      (
+        await page.request.get("/api/v1/me/sessions", {
+          headers: { "X-Playora-Portal": portal },
+        })
+      ).status(),
+    ).toBe(403);
+    expect((await page.request.get("/api/v1/me/overview")).status()).toBe(401);
+    await enroll(page);
+    expect((await page.request.get("/api/v1/me/overview")).status()).toBe(401);
+    expect((await page.request.get("/api/v1/admin/users")).status()).toBe(
+      role === "booster" ? 401 : 200,
     );
     expect((await page.request.get("/api/v1/admin/audit")).status()).toBe(
-      role === "owner" ? 200 : 403,
+      role === "owner" ? 200 : role === "booster" ? 401 : 403,
     );
-    if (role === "booster") await page.goto("/booster");
-    else {
-      // Exercise the consumed navigation state without simulating authentication.
-      await page.evaluate(() => {
-        sessionStorage.setItem(
-          "playora.google-return",
-          JSON.stringify({ path: "/admin", expires: Date.now() + 60_000 }),
-        );
-      });
-      await page.goto("/account");
-      await expect(page).toHaveURL(/\/admin$/);
-    }
+    await expect(page).toHaveURL(new RegExp(`/${portal}$`));
     if (role === "booster") {
       await expect(page.getByText(/assigned-order workspace/)).toBeVisible();
     } else {
@@ -205,11 +205,49 @@ for (const role of ["booster", "administrator", "owner"] as const) {
         path: `test-results/admin-queue-${info.project.name}-${role}.png`,
         fullPage: true,
       });
+      // The admin session never silently authenticates the customer portal.
       await page.goto("/account");
+      await expect(page).toHaveURL(/\/login\?returnTo=/);
       await expect(
-        page.getByRole("button", { name: "Refresh overview" }),
+        page.getByRole("button", { name: "Send verification code" }),
       ).toBeVisible();
-      await accountDestination(page, "Administration ↗");
+      await page.goto("/admin");
+      await expect(
+        page.getByRole("heading", { name: "Operations overview", exact: true }),
+      ).toBeVisible();
+    }
+    if (role === "owner") {
+      // Real cookie coexistence in one browser: a new customer sign-in must not
+      // overwrite the previously verified admin session or borrow its role.
+      await signIn(
+        page,
+        request,
+        `portal-coexist-${info.project.name}-${String(Date.now())}@example.test`,
+      );
+      await expect(
+        page.getByRole("button", { name: "Refresh overview", exact: true }),
+      ).toBeVisible();
+      expect((await page.request.get("/api/v1/me/overview")).status()).toBe(
+        200,
+      );
+      expect((await page.request.get("/api/v1/admin/users")).status()).toBe(
+        200,
+      );
+      expect(
+        (
+          await page.request.get("/api/v1/admin/users", {
+            headers: { "X-Playora-Portal": "customer" },
+          })
+        ).status(),
+      ).toBe(403);
+      await signOut(page);
+      expect((await page.request.get("/api/v1/me/overview")).status()).toBe(
+        401,
+      );
+      expect((await page.request.get("/api/v1/admin/users")).status()).toBe(
+        200,
+      );
+      await page.goto("/admin");
       await expect(
         page.getByRole("heading", { name: "Operations overview", exact: true }),
       ).toBeVisible();

@@ -166,7 +166,7 @@ func TestVaultAuthorizationRecentFactorsAndEnvelopeStorage(t *testing.T) {
 	if _, err = f.auth.client.User.UpdateOneID(booster.User.ID).SetRole(identity.RoleBooster).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
-	booster = f.auth.principalFromSession(t, booster)
+	booster = f.auth.enterPortal(t, booster, identity.PortalBooster)
 	_, _, booster = f.auth.enroll(t, booster)
 	if _, err = store.RevealForStaff(ctx, booster, scope); !errors.Is(err, identity.ErrForbidden) {
 		t.Fatal("unassigned staff read credentials", err)

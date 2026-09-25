@@ -269,7 +269,7 @@ func TestCoordinationLiveStreamStopsAfterSharingPause(t *testing.T) {
 	if _, err := f.auth.client.User.UpdateOneID(staff.User.ID).SetRole(identity.RoleBooster).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
-	staff = f.auth.principalFromSession(t, staff)
+	staff = f.auth.enterPortal(t, staff, identity.PortalBooster)
 	enrollment, err := f.auth.service.EnrollMFA(ctx, staff)
 	if err != nil {
 		t.Fatal(err)
@@ -282,7 +282,7 @@ func TestCoordinationLiveStreamStopsAfterSharingPause(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.booster = f.auth.principal(t, verified.Token)
+	f.booster = f.auth.principal(t, verified.Token, identity.PortalBooster)
 	v := f.assign(t, f.paid(t, "solo"))
 	thread, err := chat.OpenCoordination(ctx, f.admin, v.OrderID, v.Version)
 	if err != nil {
@@ -295,11 +295,11 @@ func TestCoordinationLiveStreamStopsAfterSharingPause(t *testing.T) {
 	defer server.Close()
 	requestContext, cancel := context.WithTimeout(ctx, 6*time.Second)
 	defer cancel()
-	req, err := http.NewRequestWithContext(requestContext, http.MethodGet, server.URL+"/api/v1/conversations/"+thread.ID+"/stream", nil)
+	req, err := http.NewRequestWithContext(requestContext, http.MethodGet, server.URL+"/api/v1/conversations/"+thread.ID+"/stream?portal=booster", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	req.AddCookie(&http.Cookie{Name: "bp-session", Value: verified.Token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
+	req.AddCookie(&http.Cookie{Name: "bp-booster-session", Value: verified.Token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
 	response, err := server.Client().Do(req)
 	if err != nil {
 		t.Fatal(err)

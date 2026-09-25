@@ -28,7 +28,7 @@ func TestFulfillmentHTTPAndResponseContract(t *testing.T) {
 	f.buyer = buyer
 	v := f.assign(t, f.paid(t, "duo"))
 	handler := httpapi.New(f.auth.db.PingContext, slog.New(slog.DiscardHandler), false, f.auth.service.Register, f.work.Register)
-	cookie := &http.Cookie{Name: "bp-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
+	cookie := &http.Cookie{Name: "bp-customer-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
 	bootstrap := httptest.NewRecorder()
 	r := httptest.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/auth/session", nil)
 	r.AddCookie(cookie)
@@ -81,7 +81,7 @@ func TestFulfillmentHTTPAndResponseContract(t *testing.T) {
 	if err = schema.Validate(view); err != nil {
 		t.Fatal(err)
 	}
-	if out := call(http.MethodGet, "/api/v1/booster/fulfillment/"+v.OrderID, "", "", nil); out.Code != http.StatusForbidden {
+	if out := call(http.MethodGet, "/api/v1/booster/fulfillment/"+v.OrderID, "", "", nil); out.Code != http.StatusUnauthorized {
 		t.Fatal("customer entered staff view", out.Code)
 	}
 	body, err := json.Marshal(map[string]any{"version": v.Version, "order_version": v.OrderVersion, "answers": map[string]string{"player": "synthetic-player"}})
@@ -124,7 +124,7 @@ func TestFulfillmentHTTPAndResponseContract(t *testing.T) {
 	if out = call(http.MethodGet, path+"/slots?week=13", "", "", nil); out.Code != http.StatusUnprocessableEntity {
 		t.Fatal("invalid week", out.Code)
 	}
-	if out = call(http.MethodGet, "/api/v1/booster/calendar", "", "", nil); out.Code != http.StatusForbidden {
+	if out = call(http.MethodGet, "/api/v1/booster/calendar", "", "", nil); out.Code != http.StatusUnauthorized {
 		t.Fatal("customer calendar access", out.Code)
 	}
 	if out = call(http.MethodPost, path+"/bookings", "application/json", "https://evil.test", proposalBody); out.Code != http.StatusForbidden {

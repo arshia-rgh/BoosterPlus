@@ -20,6 +20,12 @@ type AuthFlowCreate struct {
 	hooks    []Hook
 }
 
+// SetPortal sets the "portal" field.
+func (_c *AuthFlowCreate) SetPortal(v string) *AuthFlowCreate {
+	_c.mutation.SetPortal(v)
+	return _c
+}
+
 // SetBrowserHash sets the "browser_hash" field.
 func (_c *AuthFlowCreate) SetBrowserHash(v string) *AuthFlowCreate {
 	_c.mutation.SetBrowserHash(v)
@@ -167,6 +173,14 @@ func (_c *AuthFlowCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *AuthFlowCreate) check() error {
+	if _, ok := _c.mutation.Portal(); !ok {
+		return &ValidationError{Name: "portal", err: errors.New(`ent: missing required field "AuthFlow.portal"`)}
+	}
+	if v, ok := _c.mutation.Portal(); ok {
+		if err := authflow.PortalValidator(v); err != nil {
+			return &ValidationError{Name: "portal", err: fmt.Errorf(`ent: validator failed for field "AuthFlow.portal": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.BrowserHash(); !ok {
 		return &ValidationError{Name: "browser_hash", err: errors.New(`ent: missing required field "AuthFlow.browser_hash"`)}
 	}
@@ -263,6 +277,10 @@ func (_c *AuthFlowCreate) createSpec() (*AuthFlow, *sqlgraph.CreateSpec) {
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := _c.mutation.Portal(); ok {
+		_spec.SetField(authflow.FieldPortal, field.TypeString, value)
+		_node.Portal = value
 	}
 	if value, ok := _c.mutation.BrowserHash(); ok {
 		_spec.SetField(authflow.FieldBrowserHash, field.TypeString, value)

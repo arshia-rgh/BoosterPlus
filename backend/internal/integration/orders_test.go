@@ -454,7 +454,7 @@ func TestOrderHTTPBoundariesAndContract(t *testing.T) {
 	f.store.Register(mux)
 	bootstrap := httptest.NewRecorder()
 	req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/auth/session", nil)
-	req.AddCookie(&http.Cookie{Name: "bp-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
+	req.AddCookie(&http.Cookie{Name: "bp-customer-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
 	mux.ServeHTTP(bootstrap, req)
 	var session struct {
 		CSRF string `json:"csrf_token"`
@@ -469,7 +469,7 @@ func TestOrderHTTPBoundariesAndContract(t *testing.T) {
 	}
 	call := func(path, body, origin string) *httptest.ResponseRecorder {
 		r := httptest.NewRequestWithContext(ctx, http.MethodPost, path, strings.NewReader(body))
-		r.AddCookie(&http.Cookie{Name: "bp-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
+		r.AddCookie(&http.Cookie{Name: "bp-customer-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
 		for _, c := range cookies {
 			r.AddCookie(c)
 		}

@@ -126,7 +126,7 @@ func (s *Service) ProtectUpload(capability string, next func(http.ResponseWriter
 
 // RecentAccountTransaction requires a recent primary factor and, when enrolled, a recent second factor for personal-data operations.
 func (s *Service) RecentAccountTransaction(ctx context.Context, p *Principal, fn func(*ent.Tx, *Principal) error) error {
-	return s.AuthorizedTransaction(ctx, p, "account", false, func(tx *ent.Tx, current *Principal) error {
+	return s.AuthorizedTransaction(ctx, p, "self", false, func(tx *ent.Tx, current *Principal) error {
 		if e := s.recent(current); e != nil {
 			return e
 		}

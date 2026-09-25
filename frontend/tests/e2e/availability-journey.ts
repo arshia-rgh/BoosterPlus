@@ -1,3 +1,4 @@
+import { authURL } from "./identity-fixtures";
 import {
   expect,
   type Page,
@@ -11,7 +12,7 @@ import { sessionSchema } from "../../app/identity/api";
 import { listingSchema } from "../../app/availability/model";
 async function api(page: Page, path: string, body: unknown) {
   const session = sessionSchema.parse(
-    await (await page.request.get("/api/v1/auth/session")).json(),
+    await (await page.request.get(authURL(page, "session"))).json(),
   );
   const response = await page.request.post("/api/v1" + path, {
     data: body,

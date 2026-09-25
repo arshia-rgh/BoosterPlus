@@ -226,11 +226,11 @@ func (s *Service) reissueMFA(ctx context.Context, tx *ent.Tx, actor *Principal, 
 	if revokeErr := revokeAll(ctx, tx, actor.User.ID, s.now()); revokeErr != nil {
 		return "", revokeErr
 	}
-	token, issueErr := s.issueSession(ctx, tx, changed, "")
+	token, issueErr := s.issueSession(ctx, tx, changed, "", Portal(actor.Session.Portal))
 	if issueErr != nil {
 		return "", issueErr
 	}
-	session, sessionErr := tx.AuthSession.Query().Where(authsession.TokenHashEQ(s.digest("session", token))).Only(ctx)
+	session, sessionErr := tx.AuthSession.Query().Where(authsession.TokenHashEQ(s.sessionDigest(Portal(actor.Session.Portal), token))).Only(ctx)
 	if sessionErr != nil {
 		return "", sessionErr
 	}

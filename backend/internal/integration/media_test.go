@@ -396,7 +396,7 @@ func TestPrivateMediaHTTPBoundaries(t *testing.T) {
 	store.Register(mux)
 	bootstrap := httptest.NewRecorder()
 	request := httptest.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/auth/session", nil)
-	sessionCookie := &http.Cookie{Name: "bp-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
+	sessionCookie := &http.Cookie{Name: "bp-customer-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
 	request.AddCookie(sessionCookie)
 	mux.ServeHTTP(bootstrap, request)
 	var session struct {

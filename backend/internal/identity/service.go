@@ -90,10 +90,11 @@ func (p *Principal) NeedsMFA() bool {
 
 // Require is the common capability boundary for every protected resource.
 func Require(p *Principal, capability string) error {
-	if p == nil {
+	if p == nil || p.User == nil || p.Session == nil {
 		return ErrUnauthenticated
 	}
-	if validateRole(p.User.Role) != nil {
+	portal := Portal(p.Session.Portal)
+	if !portal.permitsRole(p.User.Role) {
 		return ErrForbidden
 	}
 	if p.NeedsMFA() {
@@ -101,14 +102,16 @@ func Require(p *Principal, capability string) error {
 	}
 	allowed := false
 	switch capability {
-	case "account":
+	case "self":
 		allowed = true
+	case "account":
+		allowed = portal == PortalCustomer
 	case "booster":
-		allowed = p.User.Role == RoleBooster || p.User.Role == RoleAdmin || p.User.Role == RoleOwner
+		allowed = portal == PortalBooster
 	case "admin", "users.read":
-		allowed = p.User.Role == RoleAdmin || p.User.Role == RoleOwner
+		allowed = portal == PortalAdmin
 	case "owner", "audit", "staff.manage", "recovery":
-		allowed = p.User.Role == RoleOwner
+		allowed = portal == PortalAdmin && p.User.Role == RoleOwner
 	}
 	if !allowed {
 		return ErrForbidden

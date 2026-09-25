@@ -15,7 +15,7 @@ import (
 
 // UpdateProfile allows only self-owned display and notification fields.
 func (s *Service) UpdateProfile(ctx context.Context, p *Principal, name, alias string, notify bool) error {
-	if err := Require(p, "account"); err != nil {
+	if err := Require(p, "self"); err != nil {
 		return err
 	}
 	name = strings.TrimSpace(name)
@@ -23,17 +23,14 @@ func (s *Service) UpdateProfile(ctx context.Context, p *Principal, name, alias s
 	if len(name) > 100 || len(alias) > 80 || strings.IndexFunc(name+alias, unicode.IsControl) >= 0 {
 		return ErrInvalid
 	}
-	if p.User.Role == RoleCustomer && alias != "" {
-		return ErrForbidden
-	}
-	count, err := s.client.User.Update().Where(user.IDEQ(p.User.ID), user.AuthVersionEQ(p.User.AuthVersion), user.SuspendedEQ(false)).SetDisplayName(name).SetStaffAlias(alias).SetNotifyUpdates(notify).Save(ctx)
-	if err != nil {
+	return s.AuthorizedTransaction(ctx, p, "self", false, func(tx *ent.Tx, current *Principal) error {
+		// A staff member using the customer portal cannot edit their staff identity.
+		if (current.User.Role == RoleCustomer || current.Session.Portal == string(PortalCustomer)) && alias != current.User.StaffAlias {
+			return ErrForbidden
+		}
+		_, err := tx.User.UpdateOneID(current.User.ID).SetDisplayName(name).SetStaffAlias(alias).SetNotifyUpdates(notify).Save(ctx)
 		return err
-	}
-	if count != 1 {
-		return ErrUnauthenticated
-	}
-	return nil
+	})
 }
 
 // Users is deliberately unavailable to customers/boosters, even for direct API calls.

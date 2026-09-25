@@ -4272,6 +4272,226 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/auth/portals/{portal}/session": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * getAuthSession
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     */
+    get: operations["portalGetAuthSession"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/portals/{portal}/email/request": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * requestEmailCode
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     */
+    post: operations["portalRequestEmailCode"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/portals/{portal}/email/verify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * verifyEmailCode
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     */
+    post: operations["portalVerifyEmailCode"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/portals/{portal}/google/start": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * startGoogle
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     */
+    post: operations["portalStartGoogle"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/portals/{portal}/google/callback": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * finishGoogle
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     */
+    get: operations["portalFinishGoogle"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/portals/{portal}/logout": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * logout
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     */
+    post: operations["portalLogout"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/portals/{portal}/mfa/disable": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * disableMFA
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     */
+    post: operations["portalDisableMFA"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/portals/{portal}/sessions/revoke": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * revokeSessions
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     */
+    post: operations["portalRevokeSessions"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/portals/{portal}/mfa/enroll": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * enrollMFA
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     */
+    post: operations["portalEnrollMFA"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/portals/{portal}/mfa/verify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * verifyMFA
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     */
+    post: operations["portalVerifyMFA"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/portals/{portal}/mfa/recovery-codes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * regenerateRecoveryCodes
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     */
+    post: operations["portalRegenerateRecoveryCodes"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4315,6 +4535,7 @@ export interface components {
       capabilities: string[];
       terms_version: string;
       terms_url: string;
+      portal: components["schemas"]["AuthPortal"];
     };
     EmailRequest: {
       email?: string;
@@ -4376,6 +4597,7 @@ export interface components {
         /** Format: date-time */
         expires_at: string;
         current: boolean;
+        portal: components["schemas"]["AuthPortal"];
       }[];
     };
     Users: {
@@ -6212,6 +6434,11 @@ export interface components {
       /** @enum {string} */
       copy_side: "left" | "right";
     };
+    /**
+     * @description Authentication audience; never grants role or resource authority.
+     * @enum {string}
+     */
+    AuthPortal: "customer" | "booster" | "admin";
   };
   responses: never;
   parameters: never;
@@ -6523,6 +6750,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path?: never;
       cookie?: never;
@@ -6684,7 +6913,10 @@ export interface operations {
   getProfile: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
       path?: never;
       cookie?: never;
     };
@@ -6716,6 +6948,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path?: never;
       cookie?: never;
@@ -6747,7 +6981,10 @@ export interface operations {
   getSessions: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
       path?: never;
       cookie?: never;
     };
@@ -9454,7 +9691,10 @@ export interface operations {
         assigned?: string;
         order_id?: string;
       };
-      header?: never;
+      header?: {
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
       path?: never;
       cookie?: never;
     };
@@ -9504,6 +9744,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path?: never;
       cookie?: never;
@@ -9555,7 +9797,10 @@ export interface operations {
   customerConversation: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
       path: {
         id: string;
       };
@@ -9607,7 +9852,10 @@ export interface operations {
         after?: string;
         before?: string;
       };
-      header?: never;
+      header?: {
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
       path: {
         id: string;
       };
@@ -9659,6 +9907,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path: {
         id: string;
@@ -9715,6 +9965,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path: {
         id: string;
@@ -9767,9 +10019,13 @@ export interface operations {
     parameters: {
       query?: {
         after?: string;
+        /** @description Native EventSource/download audience selection. Must agree with any header; never an authentication credential. */
+        portal?: components["schemas"]["AuthPortal"];
       };
       header?: {
         "Last-Event-ID"?: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path: {
         id: string;
@@ -10360,7 +10616,10 @@ export interface operations {
       query?: {
         after?: string;
       };
-      header?: never;
+      header?: {
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
       path?: never;
       cookie?: never;
     };
@@ -10410,6 +10669,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path: {
         id: string;
@@ -10539,6 +10800,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path?: never;
       cookie?: never;
@@ -10590,7 +10853,10 @@ export interface operations {
   customerGetMedia: {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
       path: {
         id: string;
       };
@@ -10642,6 +10908,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path: {
         id: string;
@@ -10696,6 +10964,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path: {
         id: string;
@@ -10748,6 +11018,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path: {
         id: string;
@@ -10799,8 +11071,13 @@ export interface operations {
       query: {
         expires: string;
         signature: string;
+        /** @description Native EventSource/download audience selection. Must agree with any header; never an authentication credential. */
+        portal?: components["schemas"]["AuthPortal"];
       };
-      header?: never;
+      header?: {
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
+      };
       path: {
         id: string;
       };
@@ -10853,6 +11130,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path: {
         id: string;
@@ -10903,6 +11182,8 @@ export interface operations {
       header: {
         "X-CSRF-Token": string;
         Origin: string;
+        /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
+        "X-Playora-Portal"?: components["schemas"]["AuthPortal"];
       };
       path: {
         id: string;
@@ -19023,6 +19304,389 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["OrderProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  portalGetAuthSession: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        portal: components["schemas"]["AuthPortal"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AuthSession"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  portalRequestEmailCode: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        portal: components["schemas"]["AuthPortal"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmailRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful response */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["EmailChallenge"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  portalVerifyEmailCode: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        portal: components["schemas"]["AuthPortal"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmailVerification"];
+      };
+    };
+    responses: {
+      /** @description Successful response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["VerificationResult"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  portalStartGoogle: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        portal: components["schemas"]["AuthPortal"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["GoogleRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["GoogleLocation"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  portalFinishGoogle: {
+    parameters: {
+      query: {
+        state: string;
+        code: string;
+      };
+      header?: never;
+      path: {
+        portal: components["schemas"]["AuthPortal"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful response */
+      303: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  portalLogout: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        portal: components["schemas"]["AuthPortal"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  portalDisableMFA: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        portal: components["schemas"]["AuthPortal"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  portalRevokeSessions: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        portal: components["schemas"]["AuthPortal"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RevokeSessions"];
+      };
+    };
+    responses: {
+      /** @description Successful response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  portalEnrollMFA: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        portal: components["schemas"]["AuthPortal"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Enrollment"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  portalVerifyMFA: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        portal: components["schemas"]["AuthPortal"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MFAVerification"];
+      };
+    };
+    responses: {
+      /** @description Successful response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RecoveryCodes"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  portalRegenerateRecoveryCodes: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        portal: components["schemas"]["AuthPortal"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RecoveryCodes"];
         };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */

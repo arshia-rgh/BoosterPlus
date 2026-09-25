@@ -7,12 +7,14 @@ import {
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
-import { APIError, get } from "../identity/api";
+import { APIError, command, get } from "../identity/api";
 import Thread from "./thread";
 import type { Conversation } from "./model";
+import { readingPosition } from "./chat-state";
 vi.mock("../identity/api", async (original) => ({
   ...(await original<typeof import("../identity/api")>()),
   get: vi.fn(),
+  command: vi.fn(),
 }));
 vi.mock("../media/attachment", () => ({
   UploadImage: () => null,
@@ -178,4 +180,89 @@ it("recovers when online arrives before the initial request reports failure", as
     screen.queryByText(/Messages are hidden while access is checked/),
   ).not.toBeInTheDocument();
   expect(screen.getByLabelText("Message", { exact: true })).toBeEnabled();
+});
+
+it("captures the latest reading position before an outage even when the scroll event is pending", async () => {
+  vi.mocked(command).mockResolvedValue(undefined);
+  let offline = false;
+  const date = "2026-09-25T10:00:00Z";
+  vi.mocked(get).mockImplementation((path) => {
+    if (path === "/conversations")
+      return Promise.resolve({ conversations: [], next: "" });
+    if (offline) return Promise.reject(new Error("Offline"));
+    if (path.includes("/messages"))
+      return Promise.resolve({
+        messages: [
+          {
+            id: "reading-message",
+            sequence: 80,
+            purpose: "message",
+            body: "Keep this reading position",
+            sender_role: "customer",
+            sender_label: "Customer",
+            visibility: "public",
+            created_at: date,
+          },
+        ],
+        next: 0,
+        latest: 80,
+      });
+    return Promise.resolve({
+      id: "thread",
+      subject: "Reading recovery",
+      kind: "presales",
+      state: "open",
+      version: 1,
+      sequence: 80,
+      unread: 0,
+      order_id: "",
+      linked_order_id: "",
+      slug: "",
+      booster_shared: false,
+      created_at: date,
+      updated_at: date,
+    });
+  });
+  render(
+    <MemoryRouter>
+      <Thread />
+    </MemoryRouter>,
+  );
+  await screen.findByText("Keep this reading position");
+  const history = screen.getByRole("region", { name: "Conversation messages" });
+  const bubble = screen
+    .getByText("Keep this reading position")
+    .closest(".message-bubble");
+  if (!(bubble instanceof HTMLElement))
+    throw new Error("Missing message bubble");
+  Object.defineProperties(history, {
+    scrollHeight: { configurable: true, value: 5000 },
+    clientHeight: { configurable: true, value: 400 },
+  });
+  history.scrollTop = 2100;
+  vi.spyOn(history, "getBoundingClientRect").mockReturnValue(
+    new DOMRect(0, 100, 300, 400),
+  );
+  vi.spyOn(bubble, "getBoundingClientRect").mockReturnValue(
+    new DOMRect(0, 76, 300, 100),
+  );
+  // Deliberately do not dispatch scroll: the response can win the browser frame.
+  readingPosition("isolated-view", "", { sequence: 71, offset: 0 });
+  offline = true;
+  fireEvent.click(screen.getByRole("button", { name: "Refresh conversation" }));
+  await screen.findByText(/Messages are hidden while access is checked/);
+  expect(
+    screen.queryByText("Keep this reading position"),
+  ).not.toBeInTheDocument();
+  expect(readingPosition("isolated-view", "")).toEqual({
+    sequence: 80,
+    offset: 24,
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Refresh conversation" }));
+  await waitFor(() => {
+    expect(readingPosition("isolated-view", "")).toEqual({
+      sequence: 80,
+      offset: 24,
+    });
+  });
 });

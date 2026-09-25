@@ -119,7 +119,7 @@ func (f *resaleFixture) reserve(t *testing.T) orders.Detail {
 func (f *resaleFixture) freshBuyer(t *testing.T) {
 	t.Helper()
 	ctx := t.Context()
-	id, err := f.base.auth.service.RequestEmail(ctx, identity.EmailRequest{Email: f.base.buyer.User.Email, Purpose: "login", Browser: f.base.auth.browser, IP: "127.0.0.1", AcceptTerms: true})
+	id, err := f.base.auth.service.RequestEmail(ctx, identity.EmailRequest{Portal: identity.PortalCustomer, Email: f.base.buyer.User.Email, Purpose: "login", Browser: f.base.auth.browser, IP: "127.0.0.1", AcceptTerms: true})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -139,7 +139,7 @@ func (f *resaleFixture) freshBuyer(t *testing.T) {
 		t.Fatal("fresh challenge was not delivered")
 	}
 	code := regexp.MustCompile(`\b[0-9]{6}\b`).FindString(sender.messages[0].Body)
-	result, err := f.base.auth.service.VerifyEmail(ctx, id, code, f.base.auth.browser, "127.0.0.1", nil)
+	result, err := f.base.auth.service.VerifyEmail(ctx, id, code, f.base.auth.browser, "127.0.0.1", nil, identity.PortalCustomer)
 	if err != nil {
 		t.Fatal(err)
 	}

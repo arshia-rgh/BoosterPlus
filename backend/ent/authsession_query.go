@@ -262,12 +262,12 @@ func (_q *AuthSessionQuery) Clone() *AuthSessionQuery {
 // Example:
 //
 //	var v []struct {
-//		UserID string `json:"user_id,omitempty"`
+//		Portal string `json:"portal,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.AuthSession.Query().
-//		GroupBy(authsession.FieldUserID).
+//		GroupBy(authsession.FieldPortal).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *AuthSessionQuery) GroupBy(field string, fields ...string) *AuthSessionGroupBy {
@@ -285,11 +285,11 @@ func (_q *AuthSessionQuery) GroupBy(field string, fields ...string) *AuthSession
 // Example:
 //
 //	var v []struct {
-//		UserID string `json:"user_id,omitempty"`
+//		Portal string `json:"portal,omitempty"`
 //	}
 //
 //	client.AuthSession.Query().
-//		Select(authsession.FieldUserID).
+//		Select(authsession.FieldPortal).
 //		Scan(ctx, &v)
 func (_q *AuthSessionQuery) Select(fields ...string) *AuthSessionSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

@@ -11,6 +11,7 @@ vi.mock("../identity/api", async (importOriginal) => ({
 }));
 afterEach(() => vi.clearAllMocks());
 const session: Session = {
+  portal: "customer",
   csrf_token: "x".repeat(48),
   user: {
     id: "buyer",
@@ -150,7 +151,12 @@ it("uses local sign-in return and ignores stale session responses", async () => 
     )
     .mockResolvedValueOnce(session);
   fireEvent(window, new Event("focus"));
-  fireEvent(window, new Event("boosterplus:session-changed"));
+  fireEvent(
+    window,
+    new CustomEvent("boosterplus:session-changed", {
+      detail: { portal: "customer" },
+    }),
+  );
   expect(
     await screen.findByRole("button", { name: "Submit quote request" }),
   ).toBeDisabled();

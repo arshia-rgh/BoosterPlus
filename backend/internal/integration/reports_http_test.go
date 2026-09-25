@@ -25,7 +25,7 @@ func TestReportsHTTPAuthorityCSRFDownloadAndContract(t *testing.T) {
 	if _, err := f.client.User.UpdateOneID(p.User.ID).SetRole(identity.RoleAdmin).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
-	p = f.principalFromSession(t, p)
+	p = f.enterPortal(t, p, identity.PortalAdmin)
 	enrollment, err := f.service.EnrollMFA(ctx, p)
 	if err != nil {
 		t.Fatal(err)
@@ -39,15 +39,15 @@ func TestReportsHTTPAuthorityCSRFDownloadAndContract(t *testing.T) {
 		t.Fatal(err)
 	}
 	token := verified.Token
-	p = f.principal(t, token)
+	p = f.principal(t, token, identity.PortalAdmin)
 	buyerToken, _ := f.login(t, "operations-http-buyer@example.test")
 	s := reports.New(f.service, nil)
 	mux := http.NewServeMux()
 	f.service.Register(mux)
 	s.Register(mux)
 	bootstrap := httptest.NewRecorder()
-	request := httptest.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/auth/session", nil)
-	request.AddCookie(&http.Cookie{Name: "bp-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
+	request := httptest.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/auth/portals/admin/session", nil)
+	request.AddCookie(&http.Cookie{Name: "bp-admin-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
 	mux.ServeHTTP(bootstrap, request)
 	var session struct {
 		CSRF string `json:"csrf_token"`
@@ -63,7 +63,7 @@ func TestReportsHTTPAuthorityCSRFDownloadAndContract(t *testing.T) {
 	call := func(method, path, body, origin, credential string) *httptest.ResponseRecorder {
 		r := httptest.NewRequestWithContext(ctx, method, path, strings.NewReader(body))
 		if credential != "" {
-			r.AddCookie(&http.Cookie{Name: "bp-session", Value: credential, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
+			r.AddCookie(&http.Cookie{Name: "bp-admin-session", Value: credential, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
 		}
 		for _, cookie := range cookies {
 			r.AddCookie(cookie)

@@ -11,6 +11,8 @@ const (
 	Label = "auth_challenge"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldPortal holds the string denoting the portal field in the database.
+	FieldPortal = "portal"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
 	// FieldPurpose holds the string denoting the purpose field in the database.
@@ -40,6 +42,7 @@ const (
 // Columns holds all SQL columns for authchallenge fields.
 var Columns = []string{
 	FieldID,
+	FieldPortal,
 	FieldEmail,
 	FieldPurpose,
 	FieldUserID,
@@ -64,6 +67,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// PortalValidator is a validator for the "portal" field. It is called by the builders before save.
+	PortalValidator func(string) error
 	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	EmailValidator func(string) error
 	// PurposeValidator is a validator for the "purpose" field. It is called by the builders before save.
@@ -98,6 +103,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByPortal orders the results by the portal field.
+func ByPortal(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPortal, opts...).ToFunc()
 }
 
 // ByEmail orders the results by the email field.

@@ -75,7 +75,7 @@ func TestPricingReleaseAndTransport(t *testing.T) {
 	if res := call(endpoint, body, "https://evil.test"); res.Code != 403 {
 		t.Fatal("CSRF accepted", res.Code)
 	}
-	if res := call("/api/v1/admin/catalog/games/"+d.ID+"/estimate-preview", body, "http://localhost"); res.Code != 401 {
+	if res := call("/api/v1/admin/catalog/games/"+d.ID+"/estimate-preview", body, "http://localhost"); res.Code != 403 {
 		t.Fatal("anonymous draft access", res.Code)
 	}
 	for _, bad := range []string{strings.Replace(body, d.CurrentRelease, "stale", 1), strings.Replace(body, `"service"`, `"amount_minor"`, 1), body + body, strings.Repeat("x", 262145)} {

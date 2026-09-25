@@ -11,6 +11,8 @@ const (
 	Label = "auth_flow"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldPortal holds the string denoting the portal field in the database.
+	FieldPortal = "portal"
 	// FieldBrowserHash holds the string denoting the browser_hash field in the database.
 	FieldBrowserHash = "browser_hash"
 	// FieldPurpose holds the string denoting the purpose field in the database.
@@ -36,6 +38,7 @@ const (
 // Columns holds all SQL columns for authflow fields.
 var Columns = []string{
 	FieldID,
+	FieldPortal,
 	FieldBrowserHash,
 	FieldPurpose,
 	FieldUserID,
@@ -58,6 +61,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// PortalValidator is a validator for the "portal" field. It is called by the builders before save.
+	PortalValidator func(string) error
 	// BrowserHashValidator is a validator for the "browser_hash" field. It is called by the builders before save.
 	BrowserHashValidator func(string) error
 	// PurposeValidator is a validator for the "purpose" field. It is called by the builders before save.
@@ -88,6 +93,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByPortal orders the results by the portal field.
+func ByPortal(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPortal, opts...).ToFunc()
 }
 
 // ByBrowserHash orders the results by the browser_hash field.

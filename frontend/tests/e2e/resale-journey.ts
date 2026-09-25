@@ -1,3 +1,4 @@
+import { authURL } from "./identity-fixtures";
 import { createHmac, randomUUID } from "node:crypto";
 import {
   expect,
@@ -19,7 +20,7 @@ import { settingsSchema } from "../../app/payments/model";
 import { listingSchema, publicListingSchema } from "../../app/resale/model";
 async function api(page: Page, path: string, body: unknown) {
   const session = sessionSchema.parse(
-    await (await page.request.get("/api/v1/auth/session")).json(),
+    await (await page.request.get(authURL(page, "session"))).json(),
   );
   const response = await page.request.post("/api/v1" + path, {
     data: body,

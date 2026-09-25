@@ -28,7 +28,7 @@ func TestPrivacyHTTPAuthorityCSRFAndPrivateExportContract(t *testing.T) {
 	sitecontent.New(f.client, f.service, now).Register(mux)
 	bootstrap := httptest.NewRecorder()
 	r := httptest.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/auth/session", nil)
-	r.AddCookie(&http.Cookie{Name: "bp-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
+	r.AddCookie(&http.Cookie{Name: "bp-customer-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
 	mux.ServeHTTP(bootstrap, r)
 	var session struct {
 		CSRF string `json:"csrf_token"`
@@ -43,7 +43,7 @@ func TestPrivacyHTTPAuthorityCSRFAndPrivateExportContract(t *testing.T) {
 	}
 	call := func(method, path, body, origin string) *httptest.ResponseRecorder {
 		req := httptest.NewRequestWithContext(ctx, method, path, strings.NewReader(body))
-		req.AddCookie(&http.Cookie{Name: "bp-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
+		req.AddCookie(&http.Cookie{Name: "bp-customer-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode})
 		for _, cookie := range cookies {
 			req.AddCookie(cookie)
 		}
@@ -55,7 +55,7 @@ func TestPrivacyHTTPAuthorityCSRFAndPrivateExportContract(t *testing.T) {
 		return result
 	}
 	for _, path := range []string{"/api/v1/admin/privacy/requests", "/api/v1/admin/site/legal", "/api/v1/admin/users"} {
-		if got := call(http.MethodGet, path, "", "http://localhost"); got.Code != http.StatusForbidden {
+		if got := call(http.MethodGet, path, "", "http://localhost"); got.Code != http.StatusUnauthorized {
 			t.Fatal("customer staff boundary", path, got.Code)
 		}
 	}

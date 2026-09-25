@@ -44,7 +44,10 @@ test("shared layouts reflow with long labels, narrow screens and enlarged text",
     await page.goto(route);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(
-      page.getByRole("textbox", { name: "Email address", exact: true }),
+      page.getByRole("textbox", {
+        name: route === "/admin" ? "Work email address" : "Email address",
+        exact: true,
+      }),
     ).toBeVisible();
     for (const width of [320, 360, 390, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 900 });

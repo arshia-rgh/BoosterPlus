@@ -206,7 +206,7 @@ func (s *Store) SubmitDeliverySecret(ctx context.Context, p *identity.Principal,
 	if err != nil {
 		return SecretView{}, err
 	}
-	result, err := store.Put(ctx, p, vault.Scope{Purpose: "account_transfer", ResourceID: id, OwnerID: p.User.ID}, input.Version, input.RequestKey, input.ExpiresAt, input.Value)
+	result, err := store.PutForStaff(ctx, p, vault.Scope{Purpose: "account_transfer", ResourceID: id, OwnerID: p.User.ID}, input.Version, input.RequestKey, input.ExpiresAt, input.Value)
 	return secretView(result), err
 }
 

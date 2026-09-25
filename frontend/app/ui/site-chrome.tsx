@@ -3,7 +3,9 @@ import { BrandLogo } from "../brand/brand";
 import { setMotionPreference, useMotionPreference } from "./motion";
 
 export function SiteHeader() {
-  const booster = useLocation().pathname.startsWith("/booster");
+  const pathname = useLocation().pathname;
+  const booster = pathname.startsWith("/booster");
+  const entry = pathname === "/booster/login";
   return (
     <header className="site-header minimal-header">
       <Link
@@ -14,14 +16,16 @@ export function SiteHeader() {
         <BrandLogo />
       </Link>
       {booster && <span className="workspace-label">Booster workspace</span>}
-      <nav aria-label="Main navigation">
-        <NavLink to={booster ? "/booster/orders" : "/support"}>
-          {booster ? "Assigned work" : "Support"}
-        </NavLink>
-        <NavLink end to={booster ? "/booster" : "/account"}>
-          {booster ? "Workspace overview" : "My account"}
-        </NavLink>
-      </nav>
+      {!entry && (
+        <nav aria-label="Main navigation">
+          <NavLink to={booster ? "/booster/orders" : "/support"}>
+            {booster ? "Assigned work" : "Support"}
+          </NavLink>
+          <NavLink end to={booster ? "/booster" : "/account"}>
+            {booster ? "Workspace overview" : "My account"}
+          </NavLink>
+        </nav>
+      )}
     </header>
   );
 }
@@ -102,12 +106,6 @@ export function SiteFooter() {
           </button>
         </div>
       </div>
-      {!staff && !booster && (
-        <nav className="footer-workspaces" aria-label="Team access">
-          <a href="/admin/">Admin access ↗</a>
-          <Link to="/booster">Booster access ↗</Link>
-        </nav>
-      )}
     </footer>
   );
 }

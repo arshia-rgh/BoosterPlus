@@ -9,7 +9,12 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
   request,
 }, info) => {
   test.setTimeout(300000);
-  await signIn(page, request, fixture(info.project.name, "payadmin"));
+  await signIn(
+    page,
+    request,
+    fixture(info.project.name, "payadmin"),
+    "/admin/login",
+  );
   await enroll(page);
   await page.goto("/admin/finance?view=policy");
   await page
@@ -149,7 +154,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       ),
     ).toBe(true);
     expect((await customer.request.get("/api/v1/admin/finance")).status()).toBe(
-      403,
+      401,
     );
     await page
       .getByRole("navigation", { name: "Finance workspace" })

@@ -262,12 +262,12 @@ func (_q *AuthChallengeQuery) Clone() *AuthChallengeQuery {
 // Example:
 //
 //	var v []struct {
-//		Email string `json:"email,omitempty"`
+//		Portal string `json:"portal,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.AuthChallenge.Query().
-//		GroupBy(authchallenge.FieldEmail).
+//		GroupBy(authchallenge.FieldPortal).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *AuthChallengeQuery) GroupBy(field string, fields ...string) *AuthChallengeGroupBy {
@@ -285,11 +285,11 @@ func (_q *AuthChallengeQuery) GroupBy(field string, fields ...string) *AuthChall
 // Example:
 //
 //	var v []struct {
-//		Email string `json:"email,omitempty"`
+//		Portal string `json:"portal,omitempty"`
 //	}
 //
 //	client.AuthChallenge.Query().
-//		Select(authchallenge.FieldEmail).
+//		Select(authchallenge.FieldPortal).
 //		Scan(ctx, &v)
 func (_q *AuthChallengeQuery) Select(fields ...string) *AuthChallengeSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

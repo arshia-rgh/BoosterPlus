@@ -4,9 +4,13 @@ import AxeBuilder from "@axe-core/playwright";
 import { z } from "zod";
 import { exportSchema } from "../../app/reports/model";
 export async function reportsJourney(page: Page, device: string) {
-  const own = z
-    .object({ id: z.string(), email: z.string() })
-    .parse(await (await page.request.get("/api/v1/me")).json());
+  const own = z.object({ id: z.string(), email: z.string() }).parse(
+    await (
+      await page.request.get("/api/v1/me", {
+        headers: { "X-Playora-Portal": "admin" },
+      })
+    ).json(),
+  );
   await page.goto("/admin/reports");
   if (device === "mobile")
     await page.getByRole("button", { name: "Menu", exact: true }).click();

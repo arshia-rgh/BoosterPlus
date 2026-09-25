@@ -211,6 +211,7 @@ var (
 	// AuthChallengesColumns holds the columns for the "auth_challenges" table.
 	AuthChallengesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "portal", Type: field.TypeString, Size: 16},
 		{Name: "email", Type: field.TypeString, Size: 254},
 		{Name: "purpose", Type: field.TypeString, Size: 32},
 		{Name: "user_id", Type: field.TypeString, Size: 36, Default: ""},
@@ -232,18 +233,19 @@ var (
 			{
 				Name:    "authchallenge_email_purpose",
 				Unique:  false,
-				Columns: []*schema.Column{AuthChallengesColumns[1], AuthChallengesColumns[2]},
+				Columns: []*schema.Column{AuthChallengesColumns[2], AuthChallengesColumns[3]},
 			},
 			{
 				Name:    "authchallenge_expires_at",
 				Unique:  false,
-				Columns: []*schema.Column{AuthChallengesColumns[11]},
+				Columns: []*schema.Column{AuthChallengesColumns[12]},
 			},
 		},
 	}
 	// AuthFlowsColumns holds the columns for the "auth_flows" table.
 	AuthFlowsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "portal", Type: field.TypeString, Size: 16},
 		{Name: "browser_hash", Type: field.TypeString, Size: 64},
 		{Name: "purpose", Type: field.TypeString, Size: 32},
 		{Name: "user_id", Type: field.TypeString, Size: 36, Default: ""},
@@ -263,7 +265,7 @@ var (
 			{
 				Name:    "authflow_expires_at",
 				Unique:  false,
-				Columns: []*schema.Column{AuthFlowsColumns[9]},
+				Columns: []*schema.Column{AuthFlowsColumns[10]},
 			},
 		},
 	}
@@ -360,6 +362,7 @@ var (
 	// AuthSessionsColumns holds the columns for the "auth_sessions" table.
 	AuthSessionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "portal", Type: field.TypeString, Size: 16},
 		{Name: "user_id", Type: field.TypeString, Size: 36},
 		{Name: "token_hash", Type: field.TypeString, Unique: true, Size: 64},
 		{Name: "auth_version", Type: field.TypeInt64},
@@ -379,12 +382,12 @@ var (
 			{
 				Name:    "authsession_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{AuthSessionsColumns[1]},
+				Columns: []*schema.Column{AuthSessionsColumns[2]},
 			},
 			{
 				Name:    "authsession_expires_at",
 				Unique:  false,
-				Columns: []*schema.Column{AuthSessionsColumns[8]},
+				Columns: []*schema.Column{AuthSessionsColumns[9]},
 			},
 		},
 	}

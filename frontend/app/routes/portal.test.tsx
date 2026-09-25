@@ -17,6 +17,12 @@ for (const [path, title, capability] of [
   ["/account/security", "Account security", "account"],
   ["/account/preferences", "Your preferences", "account"],
   ["/booster", "Booster portal", "booster"],
+  ["/admin/account/settings", "Your profile", "self"],
+  ["/admin/account/security", "Account security", "self"],
+  ["/admin/account/preferences", "Your preferences", "self"],
+  ["/booster/account/settings", "Your profile", "self"],
+  ["/booster/account/security", "Account security", "self"],
+  ["/booster/account/preferences", "Your preferences", "self"],
 ] as const) {
   it(`selects the ${path} permission boundary`, () => {
     render(
@@ -30,8 +36,14 @@ for (const [path, title, capability] of [
   });
 }
 it("renders the sign-in entry", () => {
-  render(<Login />);
-  expect(screen.getByRole("heading", { name: "Sign in" })).toBeInTheDocument();
+  render(
+    <MemoryRouter initialEntries={["/login"]}>
+      <Login />
+    </MemoryRouter>,
+  );
+  expect(
+    screen.getByRole("heading", { name: "Sign in account" }),
+  ).toBeInTheDocument();
 });
 it("marks preview terms as unsuitable for public launch", async () => {
   vi.stubGlobal(

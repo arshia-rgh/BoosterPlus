@@ -1,9 +1,15 @@
+import {
+  activePortal,
+  sessionEventMatches,
+  streamURL,
+} from "../identity/portal";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { get } from "../identity/api";
+import { APIError, get } from "../identity/api";
 import { conversationSchema, messagesSchema, type Conversation } from "./model";
 import { denied, mergeMessages, type Message } from "./chat-state";
 
-export function useChat(base: string, start?: number) {
+export function useChat(base: string, start?: number, beforeHide?: () => void) {
+  const portal = activePortal();
   const [thread, setThread] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<unknown>(null);
@@ -23,17 +29,23 @@ export function useChat(base: string, start?: number) {
   const invalidate = useCallback(() => {
     generation.current++;
   }, []);
-  const fail = useCallback((cause: unknown) => {
-    setError(cause);
-    setLive(false);
-    if (denied(cause)) {
-      generation.current++;
-      cursor.current = null;
-      setThread(null);
-      setMessages([]);
-      setEarlier(0);
-    }
-  }, []);
+  const fail = useCallback(
+    (cause: unknown) => {
+      // Scroll events may still be queued when an outage hides the history.
+      // Capture its current geometry before React removes those messages.
+      if (!denied(cause)) beforeHide?.();
+      setError(cause);
+      setLive(false);
+      if (denied(cause)) {
+        generation.current++;
+        cursor.current = null;
+        setThread(null);
+        setMessages([]);
+        setEarlier(0);
+      }
+    },
+    [beforeHide],
+  );
   const refresh = useCallback(
     async (force = false) => {
       if (!alive.current) return;
@@ -48,7 +60,7 @@ export function useChat(base: string, start?: number) {
       const latestRequest = () => alive.current && request === requests.current;
       const current = () => alive.current && token === generation.current;
       try {
-        const detail = await get(base, conversationSchema);
+        const detail = await get(base, conversationSchema, portal);
         if (!current()) return;
         const initial = cursor.current === null;
         const marker = Math.max(
@@ -62,6 +74,7 @@ export function useChat(base: string, start?: number) {
               ? "/messages?before=0"
               : `/messages?after=${String(after)}`),
           messagesSchema,
+          portal,
         );
         if (!current()) return;
         if (initial) {
@@ -87,6 +100,7 @@ export function useChat(base: string, start?: number) {
           page = await get(
             base + `/messages?after=${String(after)}`,
             messagesSchema,
+            portal,
           );
           if (!current()) return;
           batch = mergeMessages(batch, page.messages);
@@ -109,7 +123,7 @@ export function useChat(base: string, start?: number) {
         }
       }
     },
-    [base, fail, start],
+    [base, fail, start, portal],
   );
   useEffect(() => {
     alive.current = true;
@@ -120,9 +134,7 @@ export function useChat(base: string, start?: number) {
     let source: EventSource | null = null;
     let disconnect: ReturnType<typeof setTimeout> | undefined;
     if (typeof EventSource !== "undefined") {
-      source = new EventSource(
-        "/api/v1" + base + "/stream?after=" + String(revision.current),
-      );
+      source = new EventSource(streamURL(base, revision.current, portal));
       source.onopen = () => {
         clearTimeout(disconnect);
         setLive(true);
@@ -140,6 +152,22 @@ export function useChat(base: string, start?: number) {
         void refresh();
       });
     }
+    const sessionChanged = (event: Event) => {
+      if (!sessionEventMatches(event, portal)) return;
+      source?.close();
+      alive.current = false;
+      generation.current++;
+      cursor.current = null;
+      setThread(null);
+      setMessages([]);
+      setLive(false);
+      const error = new APIError(
+        "Your session changed. Sign in again to reopen this conversation.",
+      );
+      error.status = 401;
+      fail(error);
+    };
+    window.addEventListener("boosterplus:session-changed", sessionChanged);
     const retry = () => {
       void refresh(true);
     };
@@ -161,13 +189,14 @@ export function useChat(base: string, start?: number) {
       invalidate();
       clearTimeout(initial);
       source?.close();
+      window.removeEventListener("boosterplus:session-changed", sessionChanged);
       clearTimeout(disconnect);
       clearInterval(poll);
       clearInterval(pending);
       window.removeEventListener("online", retry);
       document.removeEventListener("visibilitychange", visible);
     };
-  }, [base, refresh, invalidate]);
+  }, [base, refresh, invalidate, portal, fail]);
   async function loadEarlier() {
     if (!earlier || olderBusy) return false;
     const token = generation.current;
@@ -176,6 +205,7 @@ export function useChat(base: string, start?: number) {
       const page = await get(
         base + `/messages?before=${String(earlier)}`,
         messagesSchema,
+        portal,
       );
       if (!alive.current || token !== generation.current) return false;
       setMessages((current) => mergeMessages(page.messages, current));

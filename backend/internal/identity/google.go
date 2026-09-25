@@ -24,10 +24,11 @@ type GoogleIdentity struct {
 
 // GoogleProvider separates verified OIDC communication from transactional account linking.
 type GoogleProvider interface {
-	AuthorizationURL(state, nonce, verifier string) string
-	Exchange(context.Context, string, string, string) (GoogleIdentity, error)
+	AuthorizationURL(state, nonce, verifier string, portal Portal) string
+	Exchange(context.Context, string, string, string, Portal) (GoogleIdentity, error)
 }
 type oidcGoogle struct {
+	origin   string
 	oauth    oauth2.Config
 	verifier *oidc.IDTokenVerifier
 	client   *http.Client
@@ -45,13 +46,23 @@ func newOIDC(ctx context.Context, issuer string, cfg Config, client *http.Client
 	if err != nil {
 		return nil, errors.New("google discovery unavailable")
 	}
-	return &oidcGoogle{oauth: oauth2.Config{ClientID: cfg.GoogleClientID, ClientSecret: cfg.GoogleClientSecret, RedirectURL: cfg.PublicOrigin + "/api/v1/auth/google/callback", Endpoint: provider.Endpoint(), Scopes: []string{oidc.ScopeOpenID, "email"}}, verifier: provider.VerifierContext(oidc.ClientContext(ctx, client), &oidc.Config{ClientID: cfg.GoogleClientID, SupportedSigningAlgs: []string{"RS256"}}), client: client}, nil
+	return &oidcGoogle{origin: cfg.PublicOrigin, oauth: oauth2.Config{ClientID: cfg.GoogleClientID, ClientSecret: cfg.GoogleClientSecret, Endpoint: provider.Endpoint(), Scopes: []string{oidc.ScopeOpenID, "email"}}, verifier: provider.VerifierContext(oidc.ClientContext(ctx, client), &oidc.Config{ClientID: cfg.GoogleClientID, SupportedSigningAlgs: []string{"RS256"}}), client: client}, nil
 }
-func (g *oidcGoogle) AuthorizationURL(state, nonce, verifier string) string {
-	return g.oauth.AuthCodeURL(state, oidc.Nonce(nonce), oauth2.S256ChallengeOption(verifier), oauth2.SetAuthURLParam("prompt", "select_account"), oauth2.SetAuthURLParam("max_age", "0"))
+func (g *oidcGoogle) AuthorizationURL(state, nonce, verifier string, portal Portal) string {
+	if !portal.valid() {
+		return ""
+	}
+	config := g.oauth
+	config.RedirectURL = g.origin + "/api/v1/auth/portals/" + string(portal) + "/google/callback"
+	return config.AuthCodeURL(state, oidc.Nonce(nonce), oauth2.S256ChallengeOption(verifier), oauth2.SetAuthURLParam("prompt", "select_account"), oauth2.SetAuthURLParam("max_age", "0"))
 }
-func (g *oidcGoogle) Exchange(ctx context.Context, code, verifier, nonce string) (GoogleIdentity, error) {
-	token, err := g.oauth.Exchange(oidc.ClientContext(ctx, g.client), code, oauth2.VerifierOption(verifier))
+func (g *oidcGoogle) Exchange(ctx context.Context, code, verifier, nonce string, portal Portal) (GoogleIdentity, error) {
+	if !portal.valid() {
+		return GoogleIdentity{}, ErrInvalid
+	}
+	config := g.oauth
+	config.RedirectURL = g.origin + "/api/v1/auth/portals/" + string(portal) + "/google/callback"
+	token, err := config.Exchange(oidc.ClientContext(ctx, g.client), code, oauth2.VerifierOption(verifier))
 	if err != nil {
 		return GoogleIdentity{}, ErrInvalid
 	}
@@ -86,17 +97,20 @@ func (g *oidcGoogle) Exchange(ctx context.Context, code, verifier, nonce string)
 }
 
 // StartGoogle stores a short-lived, browser-bound, one-use flow; verifier material is encrypted at rest.
-func (s *Service) StartGoogle(ctx context.Context, p *Principal, browser, ip, purpose string, acceptTerms bool, acceptedVersion ...string) (string, error) {
+func (s *Service) StartGoogle(ctx context.Context, p *Principal, browser, ip, purpose string, acceptTerms bool, portal Portal, acceptedVersion ...string) (string, error) {
 	if s.google == nil {
 		return "", ErrUnavailable
 	}
-	if len(browser) < 40 || len(browser) > 128 {
+	if !portal.valid() || len(browser) < 40 || len(browser) > 128 {
 		return "", ErrInvalid
+	}
+	if err := portalMatches(p, portal); err != nil {
+		return "", err
 	}
 	switch purpose {
 	case "login":
 	case "link":
-		if err := Require(p, "account"); err != nil {
+		if err := Require(p, "self"); err != nil {
 			return "", err
 		}
 		if err := s.recent(p); err != nil {
@@ -124,7 +138,7 @@ func (s *Service) StartGoogle(ctx context.Context, p *Principal, browser, ip, pu
 	state := randomToken()
 	nonce := randomToken()
 	verifier := oauth2.GenerateVerifier()
-	id := s.digest("flow", state)
+	id := s.digest("flow.portal", string(portal), state)
 	encrypted, encryptErr := s.seal("flow:"+id, []byte(verifier))
 	if encryptErr != nil {
 		return "", encryptErr
@@ -144,28 +158,35 @@ func (s *Service) StartGoogle(ctx context.Context, p *Principal, browser, ip, pu
 			return "", termsErr
 		}
 	}
-	create := s.client.AuthFlow.Create().SetID(id).SetBrowserHash(s.digest("browser", browser)).SetPurpose(purpose).SetNonce(nonce).SetVerifier(encrypted).SetTermsVersion(terms).SetExpiresAt(s.now().Add(10 * time.Minute))
+	create := s.client.AuthFlow.Create().SetID(id).SetPortal(string(portal)).SetBrowserHash(s.browserDigest(portal, browser)).SetPurpose(purpose).SetNonce(nonce).SetVerifier(encrypted).SetTermsVersion(terms).SetExpiresAt(s.now().Add(10 * time.Minute))
 	if p != nil && purpose != "login" {
 		create.SetUserID(p.User.ID).SetSessionID(p.Session.ID)
 	}
 	if _, createErr := create.Save(ctx); createErr != nil {
 		return "", createErr
 	}
-	return s.google.AuthorizationURL(state, nonce, verifier), nil
+	destination := s.google.AuthorizationURL(state, nonce, verifier, portal)
+	if destination == "" {
+		return "", ErrUnavailable
+	}
+	return destination, nil
 }
 
 // FinishGoogle consumes state before contacting the provider; failed flows cannot be replayed.
-func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state, code string) (string, error) {
+func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state, code string, portal Portal) (string, error) {
 	if s.google == nil {
 		return "", ErrUnavailable
 	}
-	if len(state) > 128 || len(code) > 4096 || state == "" || code == "" {
+	if !portal.valid() || len(browser) < 40 || len(browser) > 128 || len(state) > 128 || len(code) > 4096 || state == "" || code == "" {
 		return "", ErrInvalid
 	}
-	id := s.digest("flow", state)
+	if err := portalMatches(p, portal); err != nil {
+		return "", err
+	}
+	id := s.digest("flow.portal", string(portal), state)
 	var flow *ent.AuthFlow
 	claimErr := s.transaction(ctx, func(tx *ent.Tx) error {
-		count, updateErr := tx.AuthFlow.Update().Where(authflow.IDEQ(id), authflow.ConsumedEQ(false), authflow.ExpiresAtGT(s.now()), authflow.BrowserHashEQ(s.digest("browser", browser))).SetConsumed(true).Save(ctx)
+		count, updateErr := tx.AuthFlow.Update().Where(authflow.IDEQ(id), authflow.PortalEQ(string(portal)), authflow.ConsumedEQ(false), authflow.ExpiresAtGT(s.now()), authflow.BrowserHashEQ(s.browserDigest(portal, browser))).SetConsumed(true).Save(ctx)
 		if updateErr != nil {
 			return updateErr
 		}
@@ -186,7 +207,7 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 	if decryptErr != nil {
 		return "", decryptErr
 	}
-	assertion, providerErr := s.google.Exchange(ctx, code, string(verifier), flow.Nonce)
+	assertion, providerErr := s.google.Exchange(ctx, code, string(verifier), flow.Nonce, portal)
 	if providerErr != nil {
 		return "", ErrInvalid
 	}
@@ -214,7 +235,7 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 		var account *ent.User
 		switch flow.Purpose {
 		case "link":
-			if err := Require(p, "account"); err != nil {
+			if err := Require(p, "self"); err != nil {
 				return err
 			}
 			if err := s.recent(p); err != nil {
@@ -256,6 +277,9 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 				return rotateErr
 			}
 		case "login":
+			if portal != PortalCustomer && (!assertion.AuthenticatedAt.Add(RecentTTL).After(s.now()) || assertion.AuthenticatedAt.After(s.now().Add(time.Minute))) {
+				return ErrRecent
+			}
 			if linked != nil {
 				var accountErr error
 				account, accountErr = activeUser(ctx, tx, linked.UserID)
@@ -263,6 +287,10 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 					return accountErr
 				}
 			} else {
+				// Staff identities must already be provisioned and explicitly linked.
+				if portal != PortalCustomer {
+					return ErrInvalid
+				}
 				exists, existsErr := tx.User.Query().Where(user.EmailEQ(assertion.Email)).Exist(ctx)
 				if existsErr != nil {
 					return existsErr
@@ -288,6 +316,9 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 					return identityErr
 				}
 			}
+			if !portal.permitsRole(account.Role) {
+				return ErrInvalid
+			}
 			if account.TermsVersion != currentTerms {
 				if flow.TermsVersion == "" || flow.TermsVersion != currentTerms {
 					return ErrTerms
@@ -303,7 +334,7 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 				old = p.Session.ID
 			}
 			var issueErr error
-			token, issueErr = s.issueSession(ctx, tx, account, old)
+			token, issueErr = s.issueSession(ctx, tx, account, old, portal)
 			if issueErr != nil {
 				return issueErr
 			}
@@ -322,7 +353,7 @@ func (s *Service) UnlinkGoogle(ctx context.Context, p *Principal) error {
 		if actorErr != nil {
 			return actorErr
 		}
-		if err := Require(actor, "account"); err != nil {
+		if err := Require(actor, "self"); err != nil {
 			return err
 		}
 		if err := s.recent(actor); err != nil {

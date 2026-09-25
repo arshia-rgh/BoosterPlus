@@ -24,7 +24,7 @@ func TestRefundHTTPPrivateHistoryCSRFAndStrictRecipient(t *testing.T) {
 	v := f.proposal(t, "1")
 	handler := httpapi.New(f.base.auth.db.PingContext, slog.New(slog.DiscardHandler), false, f.base.auth.service.Register, f.store.Register)
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/auth/session", nil)
-	cookie := &http.Cookie{Name: "bp-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
+	cookie := &http.Cookie{Name: "bp-customer-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
 	request.AddCookie(cookie)
 	bootstrap := httptest.NewRecorder()
 	handler.ServeHTTP(bootstrap, request)
@@ -65,7 +65,7 @@ func TestRefundHTTPPrivateHistoryCSRFAndStrictRecipient(t *testing.T) {
 		}
 	}
 	for _, path := range []string{"/api/v1/admin/cases", "/api/v1/admin/finance/outgoing", "/api/v1/admin/orders/" + f.orderID + "/refunds"} {
-		if got := call(http.MethodGet, path, "", "", ""); got.Code != http.StatusForbidden {
+		if got := call(http.MethodGet, path, "", "", ""); got.Code != http.StatusUnauthorized {
 			t.Fatal("customer accessed staff financial data", got.Code)
 		}
 	}

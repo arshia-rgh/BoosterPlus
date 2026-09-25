@@ -33,7 +33,7 @@ func (s *Store) secretPolicy(ctx context.Context, tx *ent.Tx, p *identity.Princi
 	}
 	if operation == vault.Revoke || operation == vault.Inspect {
 		if p.User.ID == row.UserID {
-			return nil
+			return identity.Require(p, "account")
 		}
 		return identity.Require(p, "admin")
 	}
@@ -60,7 +60,7 @@ func (s *Store) secretPolicy(ctx context.Context, tx *ent.Tx, p *identity.Princi
 		if blocked {
 			return identity.ErrForbidden
 		}
-		if p.User.Role == "administrator" || p.User.Role == "owner" {
+		if identity.Require(p, "admin") == nil {
 			return nil
 		}
 		if p.User.ID == work.AssignedID {
@@ -175,6 +175,9 @@ func (s *Store) RevealSecret(ctx context.Context, p *identity.Principal, id, aud
 	bound, err := vault.New(s.client, s.auth, s.keys, func(ctx context.Context, tx *ent.Tx, current *identity.Principal, scope vault.Scope, operation vault.Operation) error {
 		work, e := record(ctx, tx.Client(), id)
 		if e != nil {
+			return e
+		}
+		if e = identity.Require(current, audience); e != nil {
 			return e
 		}
 		if audience == "booster" && work.AssignedID != current.User.ID {

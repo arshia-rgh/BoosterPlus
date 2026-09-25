@@ -36,7 +36,12 @@ test("@global-policy owner publishes content and retention, customer exports dat
   browser,
 }, info) => {
   test.setTimeout(180000);
-  await signIn(page, request, fixture(info.project.name, "contentowner"));
+  await signIn(
+    page,
+    request,
+    fixture(info.project.name, "contentowner"),
+    "/admin/login",
+  );
   await enroll(page);
   await page.goto("/admin/content");
   await expect(page.getByLabel("Headline", { exact: true })).toBeVisible();

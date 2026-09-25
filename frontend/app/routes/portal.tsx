@@ -1,15 +1,15 @@
+import { portalFromPath } from "../identity/portal";
 import { useLocation } from "react-router";
 import Identity from "../identity/identity";
 export default function Portal() {
   const { pathname } = useLocation();
-  const view =
-    pathname === "/account/settings"
-      ? "profile"
-      : pathname === "/account/security"
-        ? "security"
-        : pathname === "/account/preferences"
-          ? "preferences"
-          : "overview";
+  const view = pathname.endsWith("/settings")
+    ? "profile"
+    : pathname.endsWith("/security")
+      ? "security"
+      : pathname.endsWith("/preferences")
+        ? "preferences"
+        : "overview";
   const title =
     pathname === "/booster"
       ? "Booster portal"
@@ -24,7 +24,13 @@ export default function Portal() {
     <Identity
       title={title}
       view={view}
-      capability={pathname === "/booster" ? "booster" : "account"}
+      capability={
+        pathname === "/booster"
+          ? "booster"
+          : portalFromPath(pathname) === "customer"
+            ? "account"
+            : "self"
+      }
     />
   );
 }

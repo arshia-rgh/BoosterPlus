@@ -31,7 +31,7 @@ func TestPaymentsHTTPStrictInputOwnershipCSRFAndDurableInbox(t *testing.T) {
 	handler := httpapi.New(f.base.auth.db.PingContext, slog.New(slog.DiscardHandler), false, f.base.auth.service.Register, f.store.Register)
 	bootstrap := httptest.NewRecorder()
 	request := httptest.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/auth/session", nil)
-	cookie := &http.Cookie{Name: "bp-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
+	cookie := &http.Cookie{Name: "bp-customer-session", Value: token, Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
 	request.AddCookie(cookie)
 	handler.ServeHTTP(bootstrap, request)
 	var session struct {
@@ -83,7 +83,7 @@ func TestPaymentsHTTPStrictInputOwnershipCSRFAndDurableInbox(t *testing.T) {
 	if history.Code != http.StatusOK || history.Header().Get("Cache-Control") != "no-store" {
 		t.Fatal("private history cache", history.Code)
 	}
-	if w := call(http.MethodGet, "/api/v1/admin/finance", "", "", nil); w.Code != http.StatusForbidden {
+	if w := call(http.MethodGet, "/api/v1/admin/finance", "", "", nil); w.Code != http.StatusUnauthorized {
 		t.Fatal("customer finance access", w.Code)
 	}
 	var document any

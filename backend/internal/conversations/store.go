@@ -37,7 +37,7 @@ func capability(admin bool) string {
 	if admin {
 		return "admin"
 	}
-	return "account"
+	return "self"
 }
 func audience(admin bool) conversationread.Audience {
 	if admin {
@@ -117,6 +117,9 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, aft
 	}
 	q := s.client.Conversation.Query().Order(ent.Desc(conversation.FieldID)).Limit(51)
 	if !admin {
+		if err = identity.Require(p, "account"); err != nil {
+			return result, err
+		}
 		q.Where(conversation.UserIDEQ(p.User.ID))
 	}
 	if len(customer) == 1 && customer[0] != "" {
@@ -195,6 +198,11 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, admin bool, i
 	digest := s.auth.RequestDigest("conversation-create", raw)
 	var result View
 	err = s.auth.AuthorizedTransaction(ctx, p, capability(admin), false, func(tx *ent.Tx, current *identity.Principal) error {
+		if !admin {
+			if e := identity.Require(current, "account"); e != nil {
+				return e
+			}
+		}
 		existing, e := tx.Conversation.Query().Where(conversation.CreatedByEQ(current.User.ID), conversation.RequestKeyEQ(input.RequestKey)).Only(ctx)
 		if e == nil {
 			if existing.RequestHash != digest {
