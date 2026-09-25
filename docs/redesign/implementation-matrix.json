@@ -3308,7 +3308,7 @@
       "title": "This page isn’t available.",
       "phase": "DI01",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "verified",
       "baselineRoute": "*",
       "targetRoute": "*",
       "apiFamily": "error",
@@ -3335,7 +3335,8 @@
         "docs/redesign/DI01_QUALIFICATION.md",
         "docs/redesign/reviews/2026-09-25-di01-recovery-foundation.md",
         "frontend/tests/e2e/recovery-foundation.spec.ts"
-      ]
+      ],
+      "verifiedCommit": "677907da5eafd31b103d1e43a2faf380838b0924"
     },
     {
       "id": "I08",

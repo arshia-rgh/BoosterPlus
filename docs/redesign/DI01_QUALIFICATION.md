@@ -1,6 +1,6 @@
 # DI01 shared foundation qualification
 
-25 September 2026. **Implementation and scoped design reviews complete; full tracked commit gate pending.** This document qualifies the shared foundation, not all 130 designed views or the later connected feature journeys. DI02–DI15 and held R10/R11 keep their own acceptance requirements.
+25 September 2026. **Delivered — scoped senior reviews and complete tracked commit gate passed.** This document qualifies the shared foundation, not all 130 designed views or the later connected feature journeys. DI02–DI15 and held R10/R11 keep their own acceptance requirements.
 
 ## Component inventory
 
@@ -40,3 +40,9 @@ DI01 does not claim separate authenticated sessions (DI02), the final homepage/g
 A subsequent full hook passed the complete backend suite (407.129s integration), frontend 233 local unit cases, all 42 ordinary + 1 policy scenario in **each** browser project, builds, audits and image/container checks. It then failed isolated deployment migration with database/DNS timeouts under VM pressure; it is not a complete pass. The deployment-only rerun exposed an independent fixture IPAM collision. The staging fixture now explicitly selects three unused non-overlapping /24 subnets instead of mixing a fixed edge subnet with automatic network allocation. Collision/exhaustion/malformed-inventory tests pass. A complete hook is still required after this bounded existing-regression repair; production launch implementation remains held.
 
 The corrected isolated deployment regression passed explicit migrations, TLS authentication/cookies/authorization/CSRF, gateway routing/headers/private caching, dependency outages/recovery and graceful shutdown. On this memory-constrained workstation, completed PLAYORA development/test services must stop after the frontend browser fixtures clean up and before the independent staging services start. Development volumes are retained and services restored afterward. The complete tracked hook remains unchanged and is rerun in full; isolated success alone is not a commit-gate pass.
+
+## Final verified result
+
+The unchanged full tracked commit hook passed for `677907da5eafd31b103d1e43a2faf380838b0924`. Backend evidence includes formatting/generated-code checks, vet, golangci-lint, standalone gosec, govulncheck, module verification, race tests, TiDB/storage/scanner integration (**408.016s**), migration/build and image/config checks. Frontend evidence includes strict types/lint, formatting, contracts, **233 local unit/component cases** (223 tracked cases plus ten held untracked cameo cases), dependency audit, both builds/budgets, server tests, **42 ordinary + 1 policy scenario on each desktop/mobile project**, axe and both container/image checks. Existing isolated deployment regressions passed TLS routing/sign-in/cookies/CSRF, migrations, private caching/headers, dependency outages/recovery and graceful shutdown.
+
+The resource handoff stopped only completed PLAYORA test services after browser cleanup, before the independent staging suite. Development services were restored afterward. No test was skipped, assertion weakened or hook bypassed. Earlier failed attempts above remain recorded. X01 is verified for this phase; every other feature view and DI02–DI15 retain their separate status. This is scoped automated and senior evidence-based qualification, with physical-device/true-zoom/subjective motion and final owner design-match acceptance still open under DI15. R10/R11 remain held.
