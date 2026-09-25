@@ -1039,7 +1039,7 @@
       "title": "Welcome to PLAYORA.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "delivered",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1074,14 +1074,15 @@
       "evidence": [
         "docs/redesign/reviews/2026-09-25-di02-portals.md",
         "docs/redesign/DI02_QUALIFICATION.md"
-      ]
+      ],
+      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c"
     },
     {
       "id": "I02",
       "title": "Check your email.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "delivered",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1118,14 +1119,15 @@
       "evidence": [
         "docs/redesign/reviews/2026-09-25-di02-portals.md",
         "docs/redesign/DI02_QUALIFICATION.md"
-      ]
+      ],
+      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c"
     },
     {
       "id": "I03",
       "title": "Verify your staff sign-in.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "delivered",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1150,14 +1152,15 @@
       "evidence": [
         "docs/redesign/reviews/2026-09-25-di02-portals.md",
         "docs/redesign/DI02_QUALIFICATION.md"
-      ]
+      ],
+      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c"
     },
     {
       "id": "I04",
       "title": "Set up your authenticator.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "delivered",
       "baselineRoute": "/account/security",
       "targetRoute": "/account/security",
       "apiFamily": "identity",
@@ -1181,14 +1184,15 @@
       "evidence": [
         "docs/redesign/reviews/2026-09-25-di02-portals.md",
         "docs/redesign/DI02_QUALIFICATION.md"
-      ]
+      ],
+      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c"
     },
     {
       "id": "I05",
       "title": "Recover staff access.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "delivered",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1212,7 +1216,8 @@
       "evidence": [
         "docs/redesign/reviews/2026-09-25-di02-portals.md",
         "docs/redesign/DI02_QUALIFICATION.md"
-      ]
+      ],
+      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c"
     },
     {
       "id": "I06",
@@ -1252,7 +1257,7 @@
       "title": "Admin sign-in.",
       "phase": "DI02",
       "mode": "new",
-      "status": "in_progress",
+      "status": "delivered",
       "baselineRoute": "/admin/login",
       "targetRoute": "/admin/login",
       "apiFamily": "identity",
@@ -1280,14 +1285,15 @@
       "evidence": [
         "docs/redesign/reviews/2026-09-25-di02-portals.md",
         "docs/redesign/DI02_QUALIFICATION.md"
-      ]
+      ],
+      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c"
     },
     {
       "id": "I10",
       "title": "Booster sign-in.",
       "phase": "DI02",
       "mode": "new",
-      "status": "in_progress",
+      "status": "delivered",
       "baselineRoute": "/booster/login",
       "targetRoute": "/booster/login",
       "apiFamily": "identity",
@@ -1315,7 +1321,8 @@
       "evidence": [
         "docs/redesign/reviews/2026-09-25-di02-portals.md",
         "docs/redesign/DI02_QUALIFICATION.md"
-      ]
+      ],
+      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c"
     },
     {
       "id": "C01",
