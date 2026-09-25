@@ -4438,6 +4438,7 @@ export interface components {
       faqs: components["schemas"]["CatalogFAQ"][] | null;
       intake?: components["schemas"]["CatalogIntakeForm"];
       review_policy?: components["schemas"]["CatalogReviewPolicy"];
+      hero_layout?: components["schemas"]["CatalogHeroLayout"];
     };
     CatalogReference: {
       key: string;
@@ -6202,6 +6203,14 @@ export interface components {
         subject: string;
         unread: number;
       }[];
+    };
+    CatalogHeroLayout: {
+      desktop_x: number;
+      desktop_y: number;
+      mobile_x: number;
+      mobile_y: number;
+      /** @enum {string} */
+      copy_side: "left" | "right";
     };
   };
   responses: never;

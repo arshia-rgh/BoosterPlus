@@ -1,3 +1,4 @@
+import { retryTime } from "../ui/retry-time";
 import { z } from "../validation";
 import { listingSchema, releaseSchema } from "./model";
 
@@ -10,7 +11,15 @@ async function read<T>(path: string, schema: z.ZodType<T>): Promise<T> {
       signal: AbortSignal.timeout(8000),
       redirect: "error",
     });
-    if (response.status === 404) return failure(404);
+    if ([401, 403, 404].includes(response.status))
+      return failure(response.status);
+    if (response.status === 429) {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error -- React Router consumes thrown Responses as loader HTTP errors.
+      throw Response.json(
+        { retry_at: retryTime(response.headers.get("Retry-After")) },
+        { status: 429 },
+      );
+    }
     if (!response.ok) throw new Error("Catalog unavailable");
     return schema.parse(await response.json());
   } catch (error) {

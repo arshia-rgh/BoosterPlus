@@ -1,0 +1,51 @@
+.artwork-framing-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+}
+.artwork-framing-previews figure {
+  margin: 0;
+  min-width: 0;
+}
+.artwork-framing-previews figcaption {
+  margin-bottom: 0.6rem;
+  color: var(--muted);
+}
+.artwork-framing-image {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  aspect-ratio: 16 / 7;
+}
+.artwork-framing-image.mobile {
+  aspect-ratio: 3 / 4;
+  max-width: 20rem;
+}
+.artwork-framing-image img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--art-desktop-x, 50%) var(--art-desktop-y, 30%);
+}
+.artwork-framing-image span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 58%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(90deg, #071611ee, #07161160);
+  text-shadow: 0 1px 3px #000;
+  padding: 0.5rem;
+}
+.artwork-framing-image[data-copy-side="right"] span {
+  inset: 0 0 0 auto;
+  background: linear-gradient(270deg, #071611ee, #07161160);
+}
+.artwork-framing-image.mobile span {
+  inset: auto 0 0;
+  width: 100%;
+  height: 45%;
+  background: linear-gradient(0deg, #071611ff, #07161190);
+}

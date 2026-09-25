@@ -123,6 +123,18 @@ test("staff builds, previews, publishes and archives another game through the ge
     .getByLabel("Game description", { exact: true })
     .fill("Isolated browser fixture — not a live offering.");
   await page
+    .getByLabel("Public asset path", { exact: true })
+    .fill("/catalog-assets/game-placeholder.svg");
+  await page
+    .getByLabel("Image alternative text", { exact: true })
+    .fill("Synthetic catalog artwork");
+  await page.getByLabel("Customize game artwork framing").check();
+  await page.getByLabel("Desktop text placement").selectOption("right");
+  await page.getByLabel("Desktop horizontal focus").focus();
+  await page.keyboard.press("Home");
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByLabel("Desktop horizontal focus")).toHaveValue("1");
+  await page
     .getByRole("button", { name: "Add reference catalog", exact: true })
     .click();
   const references = page.locator('[data-catalog-reference="0"]');
@@ -278,9 +290,30 @@ test("staff builds, previews, publishes and archives another game through the ge
     await expect(
       customer.getByRole("heading", { name: "Synthetic UI game", exact: true }),
     ).toBeVisible();
+    await expect(customer.locator(".game-shell")).toHaveAttribute(
+      "data-copy-side",
+      "right",
+    );
+    await expect(customer.locator(".game-shell")).toHaveCSS(
+      "--art-desktop-x",
+      "1%",
+    );
     expect(
       (await new AxeBuilder({ page: customer }).analyze()).violations,
     ).toEqual([]);
+    await expect(customer.locator(".game-stage-art")).toHaveCSS(
+      "object-position",
+      info.project.name === "mobile" ? "50% 20%" : "1% 30%",
+    );
+    await customer.route("**/catalog-assets/game-placeholder.svg", (route) =>
+      route.abort(),
+    );
+    await customer.reload();
+    await expect(customer.locator(".game-stage-compact")).toBeVisible();
+    await expect(customer.locator(".game-backdrop")).toHaveCount(0);
+    await customer.unroute("**/catalog-assets/game-placeholder.svg");
+    await customer.reload();
+    await expect(customer.locator(".game-stage-art")).toBeVisible();
     await customer.getByRole("link", { name: "Configure Duo boost" }).click();
     await customer.getByLabel("Play mode (required)").selectOption("solo");
     await customer.getByLabel("Matches (required)").fill("2");

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { expect, it, vi } from "vitest";
+import { beforeAll, afterAll, expect, it, vi } from "vitest";
+import { GameShell } from "./game-shell";
 import { GamePage, offeringPath } from "./public";
 import { emptyConfiguration, type Release } from "./model";
 const release: Release = {
@@ -13,6 +14,7 @@ const release: Release = {
   configuration: {
     ...emptyConfiguration("A game with a long descriptive title"),
     asset: "/failed-art.png",
+    asset_alt: "Example game artwork",
   },
 };
 vi.mock("react-router", async (importOriginal) => ({
@@ -22,7 +24,9 @@ vi.mock("react-router", async (importOriginal) => ({
 it("keeps paused, empty offerings navigable and compacts broken hero artwork", () => {
   render(
     <MemoryRouter initialEntries={["/games/game?path=packages"]}>
-      <GamePage />
+      <GameShell release={release}>
+        <GamePage />
+      </GameShell>
     </MemoryRouter>,
   );
   expect(screen.getByText("Ordering is paused for this game.")).toBeVisible();
@@ -30,8 +34,8 @@ it("keeps paused, empty offerings navigable and compacts broken hero artwork", (
     screen.getByText("No fixed packages are published yet."),
   ).toBeVisible();
   fireEvent.error(screen.getByRole("img"));
-  expect(document.querySelector(".game-hero-compact")).not.toBeNull();
-  expect(document.querySelector(".game-hero-art")).toBeNull();
+  expect(document.querySelector(".game-stage-compact")).not.toBeNull();
+  expect(document.querySelector(".game-stage-art")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Custom boosting" }));
   expect(
     screen.getByText("No custom boosting services are published yet."),
@@ -47,4 +51,15 @@ it("ignores unknown offering paths without constructing destinations from arbitr
   expect(offeringPath(new URLSearchParams("path=https://example.test"))).toBe(
     "all",
   );
+});
+
+vi.mock("../ui/motion", () => ({ useMotionPreference: () => "reduced" }));
+beforeAll(() => {
+  Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+    value: vi.fn(),
+    configurable: true,
+  });
+});
+afterAll(() => {
+  Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
 });

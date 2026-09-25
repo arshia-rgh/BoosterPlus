@@ -71,6 +71,13 @@ services:
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     mem_limit: 128m
+networks:
+  application:
+    ipam:
+      config: [{subnet: "${STAGING_APPLICATION_SUBNET:?}"}]
+  outbound:
+    ipam:
+      config: [{subnet: "${STAGING_OUTBOUND_SUBNET:?}"}]
 volumes:
   scanner-data:
     external: true

@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, createMemoryRouter, RouterProvider } from "react-router";
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import Home, { meta as homeMeta, loader as homeLoader } from "./home";
 import Games, { meta as gamesMeta } from "./games";
@@ -35,9 +35,11 @@ describe("prelaunch catalog", () => {
   });
   it("shows an unavailable catalog without invented prices", () => {
     render(
-      <MemoryRouter>
-        <Games />
-      </MemoryRouter>,
+      <RouterProvider
+        router={createMemoryRouter([{ path: "/games", element: <Games /> }], {
+          initialEntries: ["/games"],
+        })}
+      />,
     );
     expect(
       screen.getByRole("heading", { name: "Mobile Legends" }),

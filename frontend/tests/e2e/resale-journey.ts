@@ -167,9 +167,19 @@ export async function resaleJourney(
     await seller
       .getByLabel("I confirm these exact terms and this decision")
       .check();
-    await seller
-      .getByRole("button", { name: "Accept seller agreement" })
-      .click();
+    // Acceptance is followed by an authoritative read. Wait for that read,
+    // then assert the rendered result; a five-second DOM wait can end mid-fetch.
+    const [refreshedOffers] = await Promise.all([
+      seller.waitForResponse(
+        (response) =>
+          response.request().method() === "GET" &&
+          new URL(response.url()).pathname ===
+            `/api/v1/submissions/${id}/offers`,
+      ),
+      seller.getByRole("button", { name: "Accept seller agreement" }).click(),
+    ]);
+    expect(refreshedOffers.ok()).toBe(true);
+
     await expect(
       seller.getByText("Offer: accepted", { exact: true }),
     ).toBeVisible();

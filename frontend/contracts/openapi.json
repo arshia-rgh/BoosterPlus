@@ -19641,6 +19641,9 @@
           },
           "review_policy": {
             "$ref": "#/components/schemas/CatalogReviewPolicy"
+          },
+          "hero_layout": {
+            "$ref": "#/components/schemas/CatalogHeroLayout"
           }
         },
         "required": [
@@ -26149,6 +26152,43 @@
             }
           }
         }
+      },
+      "CatalogHeroLayout": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "desktop_x": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "desktop_y": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "mobile_x": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "mobile_y": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "copy_side": {
+            "type": "string",
+            "enum": ["left", "right"]
+          }
+        },
+        "required": [
+          "desktop_x",
+          "desktop_y",
+          "mobile_x",
+          "mobile_y",
+          "copy_side"
+        ]
       }
     },
     "securitySchemes": {

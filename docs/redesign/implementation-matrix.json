@@ -1,6 +1,6 @@
 {
   "baseline": "29238851367d949070bfc9a900cc0e3b0e6d255b",
-  "note": "API families are inventories; operation-level binding is refined with each phase. All delivery states start planned; no runtime qualification implied.",
+  "note": "API families are inventories; operation-level binding is refined with each phase. Delivery status and scoped evidence are updated as implementation is qualified.",
   "apiFamilies": {
     "identity": {
       "status": "existing-adapt",
@@ -3308,7 +3308,7 @@
       "title": "This page isn’t available.",
       "phase": "DI01",
       "mode": "adapt",
-      "status": "planned",
+      "status": "in_progress",
       "baselineRoute": "*",
       "targetRoute": "*",
       "apiFamily": "error",
@@ -3331,7 +3331,11 @@
         "keyboard and narrow layout",
         "F25"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI01_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-25-di01-recovery-foundation.md",
+        "frontend/tests/e2e/recovery-foundation.spec.ts"
+      ]
     },
     {
       "id": "I08",

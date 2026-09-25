@@ -3,7 +3,7 @@
   --muted: #b1c5b8;
   --line: #304b3c;
   color: #edf4ee;
-  background: #102018;
+  background: transparent;
   position: relative;
   isolation: isolate;
   min-height: 65vh;

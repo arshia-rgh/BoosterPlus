@@ -1,3 +1,4 @@
+import { TableRegion } from "../ui/primitives";
 import { useState, type SubmitEvent } from "react";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { post } from "../identity/api";
@@ -232,24 +233,9 @@ export default function Reports() {
           {preview.count === 0 ? (
             <p>No records match these filters.</p>
           ) : (
-            // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Focusable scroll region needs arrow-key scrolling on iOS WebKit; it has no button/grid activation semantics.
-            <div
+            <TableRegion
               className="report-scroll"
-              role="region"
-              aria-label="Operational report table"
-              tabIndex={0}
-              onKeyDown={(event) => {
-                // iOS WebKit does not consistently scroll a focused region with hardware arrow keys.
-                if (
-                  event.target !== event.currentTarget ||
-                  !["ArrowLeft", "ArrowRight"].includes(event.key)
-                )
-                  return;
-                event.preventDefault();
-                event.currentTarget.scrollBy({
-                  left: event.key === "ArrowRight" ? 80 : -80,
-                });
-              }}
+              label="Operational report table"
             >
               <table>
                 <caption>{preview.kind} report page</caption>
@@ -274,7 +260,7 @@ export default function Reports() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </TableRegion>
           )}
           <Text
             label="Reason for export"

@@ -45,3 +45,29 @@ it("returns 404 for unknown offerings and 503 for outages or malformed responses
     loadOffering("game", "missing", "package"),
   ).rejects.toMatchObject({ status: 404 });
 });
+
+it("preserves a bounded server retry deadline for the page recovery UI", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() =>
+      Promise.resolve(
+        new Response("upstream body must remain private", {
+          status: 429,
+          headers: { "Retry-After": "60" },
+        }),
+      ),
+    ),
+  );
+  try {
+    await loadCatalog(new Request("https://booster.example/games"));
+    throw new Error("Expected rate limit");
+  } catch (error) {
+    if (!(error instanceof Response)) throw error;
+    expect(error.status).toBe(429);
+    const body: unknown = await error.json();
+    if (typeof body !== "object" || body === null || !("retry_at" in body))
+      throw new Error("Missing retry deadline");
+    expect(typeof body.retry_at).toBe("number");
+    expect(JSON.stringify(body)).not.toContain("private");
+  }
+});

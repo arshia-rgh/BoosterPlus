@@ -8,10 +8,12 @@ export default function PublicReviews() {
   next.set("after", feed.next);
   first.delete("after");
   return (
-    <main id="main" className="page catalog-page">
-      <Link to="/games">← Game catalog</Link>
+    <section className="game-panel">
+      <Link preventScrollReset to={`/games/${feed.game.slug}`}>
+        ← Back to game services
+      </Link>
       <p className="eyebrow">Verified-purchase feedback</p>
-      <h1>{feed.game.configuration.name} customer reviews</h1>
+      <h2>{feed.game.configuration.name} customer reviews</h2>
       <p>
         Customers write feedback after completed paid purchases. Administrators
         moderate publication under the accepted content policy and may add a
@@ -50,7 +52,7 @@ export default function PublicReviews() {
       )}
       {(params.has("service") || params.has("package")) && (
         <p>
-          <Link to={`/games/${feed.game.slug}/reviews`}>
+          <Link preventScrollReset to={`/games/${feed.game.slug}/reviews`}>
             Show all game reviews
           </Link>
         </p>
@@ -113,12 +115,12 @@ export default function PublicReviews() {
         ))}
       </section>
       {feed.next && (
-        <Link className="button" to={`?${next.toString()}`}>
+        <Link preventScrollReset className="button" to={`?${next.toString()}`}>
           Older published reviews
         </Link>
       )}
       {params.has("after") && (
-        <Link className="button" to={`?${first.toString()}`}>
+        <Link preventScrollReset className="button" to={`?${first.toString()}`}>
           Newest published reviews
         </Link>
       )}
@@ -130,6 +132,6 @@ export default function PublicReviews() {
           </p>
         </details>
       )}
-    </main>
+    </section>
   );
 }

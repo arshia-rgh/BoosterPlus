@@ -62,6 +62,7 @@ func TestCatalogPublicationAndConcurrency(t *testing.T) {
 		t.Fatal("draft leaked", err)
 	}
 	c := catalogConfig()
+	c.HeroLayout = &catalog.HeroLayout{DesktopX: 18, DesktopY: 30, MobileX: 25, MobileY: 20, CopySide: "right"}
 	draft, err := store.Create(ctx, p, "synthetic", c)
 	if err != nil {
 		t.Fatal(err)
@@ -89,10 +90,14 @@ func TestCatalogPublicationAndConcurrency(t *testing.T) {
 	if err != nil || published.Configuration.Name != c.Name {
 		t.Fatal(err)
 	}
+	if published.Configuration.HeroLayout == nil || published.Configuration.HeroLayout.DesktopX != 18 {
+		t.Fatal("published artwork framing missing")
+	}
 	current, err := store.Draft(ctx, p, draft.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
+	c.HeroLayout = &catalog.HeroLayout{DesktopX: 70, DesktopY: 20, MobileX: 80, MobileY: 25, CopySide: "left"}
 	c.Name = "Unpublished name"
 	c.Packages[0].Variants[0].AmountMinor = "9999"
 	current, err = store.Mutate(ctx, p, draft.ID, "save", catalog.Change{Revision: current.Revision, Configuration: c})
@@ -102,6 +107,9 @@ func TestCatalogPublicationAndConcurrency(t *testing.T) {
 	view, err := store.Published(ctx, "synthetic")
 	if err != nil || view.ID != published.ID || view.Configuration.Name == c.Name || view.Configuration.Packages[0].Variants[0].AmountMinor != "1234" {
 		t.Fatal("draft changed release", err)
+	}
+	if view.Configuration.HeroLayout == nil || view.Configuration.HeroLayout.DesktopX != 18 || view.Configuration.HeroLayout.CopySide != "right" {
+		t.Fatal("draft framing changed immutable release")
 	}
 	if _, err = store.Mutate(ctx, p, draft.ID, "save", catalog.Change{Revision: 1, Configuration: c}); !errors.Is(err, catalog.ErrConflict) {
 		t.Fatal("stale save accepted", err)

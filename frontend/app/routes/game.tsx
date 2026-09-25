@@ -11,3 +11,5 @@ export function loader({
   return loadGame(params.slug);
 }
 export default GamePage;
+
+export { GameContentError as ErrorBoundary } from "../catalog/game-shell";

@@ -1,3 +1,4 @@
+import { retryTime, retryLabel } from "../ui/retry-time";
 import { z } from "../validation";
 import type { components } from "../api/schema";
 
@@ -186,6 +187,7 @@ const messages = new Map([
 export class APIError extends Error {
   code = "";
   status = 0;
+  retryAt?: number;
   issues: { path: string; message: string }[] = [];
 }
 async function read(
@@ -232,6 +234,13 @@ async function read(
         : "The service is unavailable. Please try again.",
     );
     error.status = response.status;
+    if (response.status === 429) {
+      const retryAt = retryTime(response.headers.get("Retry-After"));
+      if (retryAt !== undefined) {
+        error.retryAt = retryAt;
+        error.message = `Too many attempts. Try again after ${retryLabel(retryAt)}.`;
+      }
+    }
     if (problem.success) {
       error.issues = problem.data.issues ?? [];
       error.code = problem.data.code;

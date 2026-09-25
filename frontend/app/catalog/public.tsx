@@ -1,3 +1,5 @@
+import { CursorPagination, filterQuery } from "../ui/list-navigation";
+import { StatusBadge } from "../ui/primitives";
 import { Subscribe } from "../availability/pages";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLoaderData, useParams, useSearchParams } from "react-router";
@@ -29,10 +31,9 @@ function PathPicker() {
           key={key}
           aria-pressed={key === current}
           onClick={() => {
-            const next = new URLSearchParams(params);
-            next.delete("after");
-            if (key === "all") next.delete("path");
-            else if (key) next.set("path", key);
+            const next = filterQuery(params, {
+              path: key === "all" ? null : (key ?? null),
+            });
             setParams(next);
           }}
         >
@@ -40,30 +41,6 @@ function PathPicker() {
         </button>
       ))}
     </nav>
-  );
-}
-function GameHero({ release }: { release: Release }) {
-  const [failed, setFailed] = useState(false);
-  const source = release.configuration.asset;
-  return (
-    <div
-      className={`game-hero ${!source || failed ? "game-hero-compact" : ""}`}
-    >
-      <div>
-        <Intro release={release} />
-      </div>
-      {source && !failed && (
-        <img
-          src={source}
-          alt={release.configuration.asset_alt}
-          width="640"
-          height="400"
-          onError={() => {
-            setFailed(true);
-          }}
-        />
-      )}
-    </div>
   );
 }
 export function GameCatalog() {
@@ -127,9 +104,9 @@ export function GameCatalog() {
                   decoding="async"
                 />
               )}
-              <span className="status">
+              <StatusBadge tone={game.paused ? "warning" : "neutral"}>
                 {game.paused ? "Ordering paused" : "Published catalog"}
-              </span>
+              </StatusBadge>
               <h2>
                 <Link to={`/games/${game.slug}${pathQuery(path)}`}>
                   {game.name}
@@ -146,14 +123,11 @@ export function GameCatalog() {
           ))}
         </div>
       )}
-      {listing.next && (
-        <Link
-          className="button"
-          to={`/games?after=${encodeURIComponent(listing.next)}${path === "all" ? "" : `&path=${path}`}`}
-        >
-          Next games
-        </Link>
-      )}
+      <CursorPagination
+        next={listing.next}
+        label="Game pages"
+        nextLabel="Next games"
+      />
       <p className="quiet">
         Custom requests receive a reviewed quote. Fixed packages use their
         published price. Both use direct payment after an agreement is saved.
@@ -161,36 +135,18 @@ export function GameCatalog() {
     </main>
   );
 }
-function Intro({ release }: { release: Release }) {
-  return (
-    <>
-      <p className="eyebrow">GAME BOOSTING</p>
-      <h1>{release.configuration.name}</h1>
-      <p className="intro">{release.configuration.description}</p>
-      {release.paused && (
-        <p className="status">Ordering is paused for this game.</p>
-      )}
-    </>
-  );
-}
 export function GamePage() {
   const release = useLoaderData<Release>();
   const [params] = useSearchParams();
   const path = offeringPath(params);
   return (
-    <main id="main" className="page catalog-page">
-      <Link to={`/games${pathQuery(path)}`}>← All games</Link>
-      <GameHero
-        key={release.id + release.configuration.asset}
-        release={release}
-      />
-      <FavoriteButton kind="game" slug={release.slug} />
+    <section className="game-panel">
       <PathPicker />
       <Offerings release={release} path={path} />
-      <Link to={`/games/${release.slug}/reviews`}>
+      <Link preventScrollReset to={`/games/${release.slug}/reviews`}>
         Read verified customer reviews
       </Link>
-    </main>
+    </section>
   );
 }
 export function Offerings({
@@ -219,6 +175,7 @@ export function Offerings({
                   Final price follows administrator review.
                 </p>
                 <Link
+                  preventScrollReset
                   className="button"
                   to={`/games/${release.slug}/services/${service.key}`}
                 >
@@ -250,6 +207,7 @@ export function Offerings({
                   ))}
                 </ul>
                 <Link
+                  preventScrollReset
                   className="button"
                   to={`/games/${release.slug}/packages/${pack.key}`}
                 >
@@ -291,12 +249,12 @@ export function ServicePage() {
   }, [stage]);
   if (!service) throw new Error("Catalog offering is unavailable");
   return (
-    <main id="main" className="page catalog-page">
-      <Link to={`/games/${release.slug}?path=custom`}>
+    <section className="game-panel">
+      <Link preventScrollReset to={`/games/${release.slug}?path=custom`}>
         ← {release.configuration.name}
       </Link>
       <p className="eyebrow">CUSTOM BOOSTING</p>
-      <h1>{service.name}</h1>
+      <h2>{service.name}</h2>
       <FavoriteButton
         kind="service"
         slug={release.slug}
@@ -359,7 +317,7 @@ export function ServicePage() {
           Continue to order information →
         </button>
       )}
-    </main>
+    </section>
   );
 }
 function PackageDetails({
@@ -383,7 +341,7 @@ function PackageDetails({
   return (
     <>
       <p className="eyebrow">FIXED PACKAGE</p>
-      <h1>{pack.name}</h1>
+      <h2>{pack.name}</h2>
       <FavoriteButton kind="package" slug={release.slug} pack={pack.key} />
       <p>{pack.description}</p>
       <Select
@@ -449,8 +407,8 @@ export function PackagePage() {
   );
   if (!pack) throw new Error("Catalog offering is unavailable");
   return (
-    <main id="main" className="page catalog-page">
-      <Link to={`/games/${release.slug}?path=packages`}>
+    <section className="game-panel">
+      <Link preventScrollReset to={`/games/${release.slug}?path=packages`}>
         ← {release.configuration.name}
       </Link>
       <PackageDetails
@@ -458,6 +416,6 @@ export function PackagePage() {
         release={release}
         pack={pack}
       />
-    </main>
+    </section>
   );
 }

@@ -1,3 +1,4 @@
+import ErrorPage from "../app/ui/error-page";
 import {
   Links,
   Meta,
@@ -5,7 +6,6 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteLoaderData,
-  isRouteErrorResponse,
   type LoaderFunctionArgs,
 } from "react-router";
 import type { ReactNode } from "react";
@@ -58,19 +58,5 @@ export default function App() {
   );
 }
 export function ErrorBoundary({ error }: { error: unknown }) {
-  const missing = isRouteErrorResponse(error) && error.status === 404;
-  return (
-    <main id="main" className="page">
-      <p className="eyebrow">PLAYORA staff</p>
-      <h1>{missing ? "Page not found" : "Workspace unavailable"}</h1>
-      <p>
-        {missing
-          ? "This staff page does not exist."
-          : "Please try again shortly."}
-      </p>
-      <a className="button" href="/admin">
-        Return to administration
-      </a>
-    </main>
-  );
+  return <ErrorPage error={error} admin />;
 }

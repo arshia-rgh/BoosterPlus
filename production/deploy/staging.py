@@ -1,5 +1,6 @@
 """Boot the real deployment images against disposable TLS-enabled local services."""
 import http.cookiejar
+import ipaddress
 import json
 import os
 from pathlib import Path
@@ -36,6 +37,38 @@ def image_id(name):
     return subprocess.check_output(["docker", "image", "inspect", "--format", "{{.Id}}", name], text=True).strip()
 
 
+def fixture_subnets(occupied):
+    """Use disjoint explicit fixture networks, outside Docker's usual 172 pool.
+
+    Automatic application/outbound allocation can otherwise consume the fixed
+    edge subnet before Compose creates it. Never delete another project's network.
+    Concurrent conflicting allocation still fails closed in Docker.
+    """
+    networks = [ipaddress.ip_network(value) for value in occupied if value]
+    selected = []
+    for candidate in ipaddress.ip_network("10.253.0.0/16").subnets(new_prefix=24):
+        if any(candidate.overlaps(other) for other in networks if other.version == 4):
+            continue
+        selected.append(candidate)
+        if len(selected) == 3:
+            return selected
+    raise ValueError("No free isolated qualification subnets; release test networks or configure Docker capacity")
+
+
+def network_settings():
+    identifiers = subprocess.check_output(["docker", "network", "ls", "--quiet"], text=True).split()
+    models = json.loads(subprocess.check_output(["docker", "network", "inspect", *identifiers], text=True)) if identifiers else []
+    occupied = [config.get("Subnet", "") for model in models for config in model.get("IPAM", {}).get("Config", []) or []]
+    edge, application, outbound = fixture_subnets(occupied)
+    return {
+        "EDGE_SUBNET": str(edge),
+        "EDGE_DYNAMIC_RANGE": str(list(edge.subnets(new_prefix=25))[1]),
+        "GATEWAY_IP": str(edge.network_address + 2),
+        "STAGING_APPLICATION_SUBNET": str(application),
+        "STAGING_OUTBOUND_SUBNET": str(outbound),
+    }
+
+
 def prepare(directory):
     certs = directory / "certs"
     certs.mkdir()
@@ -55,7 +88,7 @@ def prepare(directory):
     manifest = {
         "DEPLOY_PROJECT": "boosterplus-stage-" + secrets.token_hex(5),
         "SITE_ADDRESS": "localhost", "ACME_EMAIL": "staging@example.test",
-        "EDGE_SUBNET": "172.29.194.0/24", "EDGE_DYNAMIC_RANGE": "172.29.194.128/25", "GATEWAY_IP": "172.29.194.2",
+        **network_settings(),
         "STAGING_DIRECTORY": str(directory), "STAGING_HTTP_PORT": str(free_port()), "STAGING_HTTPS_PORT": str(https_port),
         "STAGING_SIGNATURE_VOLUME": "boosterplus-qualification-signatures",
         **{key: image_id(name) for key, name in (("BACKEND_IMAGE", "boosterplus-backend:local"), ("STOREFRONT_IMAGE", "boosterplus-frontend:local"), ("ADMIN_IMAGE", "boosterplus-admin:local"), ("SCANNER_IMAGE", "boosterplus-scanner:local"), ("GATEWAY_IMAGE", "boosterplus-gateway:local"))},

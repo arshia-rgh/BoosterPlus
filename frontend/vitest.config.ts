@@ -4,11 +4,11 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     setupFiles: ["./tests/setup.ts"],
-    include: ["app/**/*.test.tsx"],
+    include: ["app/**/*.test.{ts,tsx}"],
     coverage: {
       provider: "v8",
       include: ["app/routes/*.tsx"],
-      exclude: ["app/**/*.test.tsx"],
+      exclude: ["app/**/*.test.{ts,tsx}"],
       thresholds: {
         statements: 100,
         branches: 100,

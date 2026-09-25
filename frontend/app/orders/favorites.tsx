@@ -10,11 +10,13 @@ export function FavoriteButton({
   slug,
   service = "",
   pack = "",
+  gameLabel = false,
 }: {
   kind: string;
   slug: string;
   service?: string;
   pack?: string;
+  gameLabel?: boolean;
 }) {
   const [saved, setSaved] = useState(false),
     [busy, setBusy] = useState(false),
@@ -43,7 +45,13 @@ export function FavoriteButton({
         disabled={busy || saved}
         onClick={() => void save()}
       >
-        {saved ? "Saved to favorites" : "Save to favorites"}
+        {saved
+          ? gameLabel
+            ? "Game saved to favorites"
+            : "Saved to favorites"
+          : gameLabel
+            ? "Save game to favorites"
+            : "Save to favorites"}
       </button>
       <ErrorNotice error={error} />
       {saved && <Link to="/favorites">View favorites</Link>}

@@ -1,0 +1,81 @@
+.ui-panel-state {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  margin-block: 1.5rem;
+}
+.ui-panel-state > div {
+  min-width: 0;
+}
+.ui-panel-state h2 {
+  margin: 0 0 0.5rem;
+}
+.ui-state-symbol {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  font-weight: 700;
+}
+.ui-panel-state[data-kind="error"] .ui-state-symbol {
+  color: var(--danger);
+}
+.ui-feedback {
+  margin-block: 0.75rem;
+  overflow-wrap: anywhere;
+}
+.ui-feedback:empty {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ui-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.ui-state-actions > * {
+  max-width: 100%;
+}
+@media (max-width: 400px) {
+  .ui-panel-state {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.system-error-page {
+  max-width: 64rem;
+  min-height: 65vh;
+  margin: auto;
+  padding: clamp(2rem, 6vw, 5rem);
+}
+.system-error-page h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+.system-error-page > p:not(.eyebrow):not(.system-error-mark) {
+  max-width: 42rem;
+}
+.system-error-mark {
+  color: var(--accent);
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-block: 1.5rem;
+}
+.system-error-page .ui-state-actions {
+  align-items: center;
+  margin-block: 2rem;
+}
+.system-error-page a,
+.system-error-page button {
+  min-height: 44px;
+  align-content: center;
+}

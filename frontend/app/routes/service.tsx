@@ -11,3 +11,5 @@ export function loader({
   return loadOffering(params.slug, params.service, "service");
 }
 export default ServicePage;
+
+export { GameContentError as ErrorBoundary } from "../catalog/game-shell";

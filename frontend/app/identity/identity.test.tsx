@@ -1,7 +1,13 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import {
+  act,
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
-import Identity from "./identity";
+import Identity, { Form, Text } from "./identity";
 import { command, get, errorMessage, APIError, sessionSchema } from "./api";
 const user = {
   id: "test-id",
@@ -175,7 +181,10 @@ it("ignores older session responses after a newer refresh", async () => {
     );
   vi.stubGlobal("fetch", fetcher);
   show();
-  fireEvent(window, new Event("focus"));
+  await waitFor(() => {
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+  fireEvent(window, new Event("boosterplus:session-changed"));
   await screen.findByRole("button", { name: "Save profile" });
   if (!older) throw new Error("Missing response resolver");
   older(new Response(JSON.stringify(session)));
@@ -184,4 +193,175 @@ it("ignores older session responses after a newer refresh", async () => {
       screen.getByRole("button", { name: "Save profile" }),
     ).toBeInTheDocument(),
   );
+});
+
+it("keeps safe input and blocks repeated form submission during a server cooldown", async () => {
+  vi.useFakeTimers();
+  try {
+    const limited = new APIError("Wait for the supplied retry time.");
+    limited.status = 429;
+    limited.retryAt = Date.now() + 2000;
+    const submit = vi.fn().mockRejectedValue(limited);
+    render(
+      <MemoryRouter>
+        <Form title="Send request" submit={submit}>
+          <Text name="note" label="Safe note" />
+        </Form>
+      </MemoryRouter>,
+    );
+    expect(screen.getByLabelText("Safe note").closest("form")).toHaveAttribute(
+      "method",
+      "post",
+    );
+    fireEvent.change(screen.getByLabelText("Safe note"), {
+      target: { value: "Preserve this draft" },
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Send request" }));
+      await Promise.resolve();
+    });
+    expect(
+      screen.getByRole("button", { name: "Wait before trying again" }),
+    ).toBeDisabled();
+    expect(screen.getByLabelText("Safe note")).toHaveValue(
+      "Preserve this draft",
+    );
+    fireEvent.submit(
+      screen
+        .getByRole("button", { name: "Wait before trying again" })
+        .closest("form") ?? document.body,
+    );
+    expect(submit).toHaveBeenCalledTimes(1);
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    expect(screen.getByRole("button", { name: "Send request" })).toBeEnabled();
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+it("respects cooldown on focus and allows only one explicit retry in flight", async () => {
+  vi.useFakeTimers();
+  try {
+    let finish: ((response: Response) => void) | undefined;
+    const retry = new Promise<Response>((resolve) => {
+      finish = resolve;
+    });
+    const fetcher = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ code: "rate_limited" }), {
+          status: 429,
+          headers: { "Retry-After": "2" },
+        }),
+      )
+      .mockReturnValueOnce(retry);
+    vi.stubGlobal("fetch", fetcher);
+    await act(async () => {
+      show();
+      await Promise.resolve();
+    });
+    expect(
+      screen.getByRole("heading", { name: "Please wait before trying again" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Retry connection" }),
+    ).toBeDisabled();
+    fireEvent(window, new Event("focus"));
+    fireEvent(window, new Event("boosterplus:session-changed"));
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Retry connection" }));
+    expect(
+      screen.getByRole("button", { name: "Checking connection…" }),
+    ).toBeDisabled();
+    fireEvent(window, new Event("focus"));
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      finish?.(new Response(JSON.stringify(session)));
+      await Promise.resolve();
+    });
+    expect(
+      screen.getByRole("button", { name: "Send verification code" }),
+    ).toBeVisible();
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+it("names rate limiting even without a valid Retry-After header", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ code: "rate_limited" }), {
+        status: 429,
+        headers: { "Retry-After": "invalid" },
+      }),
+    ),
+  );
+  show();
+  await screen.findByRole("heading", {
+    name: "Please wait before trying again",
+  });
+  expect(
+    screen.getByRole("button", { name: "Retry connection" }),
+  ).toBeEnabled();
+});
+
+it("links server validation to the matching field and preserves other inputs", async () => {
+  const error = new APIError("Check these fields.");
+  error.issues = [
+    { path: "display_name", message: "Use at least three characters." },
+  ];
+  const submit = vi
+    .fn()
+    .mockRejectedValueOnce(error)
+    .mockResolvedValueOnce(undefined);
+  render(
+    <MemoryRouter>
+      <Form title="Profile" submit={submit}>
+        <Text
+          name="display_name"
+          label="Display name"
+          help="Your visible name"
+        />
+        <Text name="note" label="Note" />
+      </Form>
+    </MemoryRouter>,
+  );
+  fireEvent.change(screen.getByLabelText("Display name"), {
+    target: { value: "Al" },
+  });
+  fireEvent.change(screen.getByLabelText("Note"), {
+    target: { value: "Retain this" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Profile" }));
+  const link = await screen.findByRole("link", {
+    name: "Display name: Use at least three characters.",
+  });
+  expect(screen.getByLabelText("Display name")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  expect(screen.getByLabelText("Display name")).toHaveAccessibleDescription(
+    "Your visible name Use at least three characters.",
+  );
+  fireEvent.click(link);
+  expect(screen.getByLabelText("Display name")).toHaveFocus();
+  fireEvent.change(screen.getByLabelText("Display name"), {
+    target: { value: "Alice" },
+  });
+  expect(screen.getByLabelText("Display name")).not.toHaveAttribute(
+    "aria-invalid",
+  );
+  expect(screen.getByLabelText("Note")).toHaveValue("Retain this");
+  expect(
+    screen.getByText("Changes entered. Submit again to check them."),
+  ).toBeVisible();
+  expect(screen.queryByText("Check these fields.")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Profile" }));
+  await screen.findByText("Request completed.");
 });

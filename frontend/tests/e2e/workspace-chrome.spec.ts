@@ -37,6 +37,36 @@ test("workspace shortcuts remain readable with enlarged text and restore drawer 
       name: role === "booster" ? "Booster shortcuts" : "Account shortcuts",
     });
     await expect(navigation).toBeVisible();
+    await expect(page.locator(".page-heading .eyebrow")).toHaveText(
+      role === "booster" ? "Booster workspace" : "My account",
+    );
+    expect(
+      await page
+        .locator(".experience")
+        .evaluate((el) => getComputedStyle(el).backgroundColor),
+    ).toBe("rgba(0, 0, 0, 0)");
+    const ambient = page.locator(".site-ambient");
+    expect(
+      await ambient.evaluate(
+        (el) => getComputedStyle(el, "::before").backgroundImage,
+      ),
+    ).toContain("ascension-768.jpg");
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await expect
+      .poll(() =>
+        ambient.evaluate(
+          (el) => getComputedStyle(el, "::before").animationName,
+        ),
+      )
+      .toBe("ambient-drift");
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await expect
+      .poll(() =>
+        ambient.evaluate(
+          (el) => getComputedStyle(el, "::before").animationName,
+        ),
+      )
+      .toBe("none");
     await page.evaluate(() => {
       document.documentElement.style.fontSize = "200%";
     });

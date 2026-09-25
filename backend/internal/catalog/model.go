@@ -6,6 +6,7 @@ import "encoding/json"
 // Configuration is a complete publication unit. All its copy is customer-visible;
 // credentials, internal costs and executable expressions are deliberately absent.
 type Configuration struct {
+	HeroLayout    *HeroLayout         `json:"hero_layout,omitempty"`
 	ReviewPolicy  *ReviewPolicy       `json:"review_policy,omitempty"`
 	SchemaVersion int                 `json:"schema_version"`
 	Name          string              `json:"name"`

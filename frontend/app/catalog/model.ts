@@ -197,7 +197,23 @@ export function reviewService(policy: ReviewPolicy): Service {
     rules: policy.rules,
   });
 }
+export const heroLayoutSchema = z.object({
+  desktop_x: z.number().int().min(0).max(100),
+  desktop_y: z.number().int().min(0).max(100),
+  mobile_x: z.number().int().min(0).max(100),
+  mobile_y: z.number().int().min(0).max(100),
+  copy_side: z.enum(["left", "right"]),
+});
+export type HeroLayout = z.infer<typeof heroLayoutSchema>;
+export const defaultHeroLayout: HeroLayout = Object.freeze({
+  desktop_x: 50,
+  desktop_y: 30,
+  mobile_x: 50,
+  mobile_y: 20,
+  copy_side: "left",
+});
 export const configurationSchema = z.object({
+  hero_layout: heroLayoutSchema.optional(),
   review_policy: reviewPolicySchema.optional(),
   intake: intakeSchema.optional(),
   schema_version: z.literal(1),

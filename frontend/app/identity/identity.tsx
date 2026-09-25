@@ -1,3 +1,12 @@
+import { Button, Skeleton } from "../ui/primitives";
+import {
+  FieldValidation,
+  TextField as Text,
+  ValidationSummary,
+  type RegisteredField,
+  type FieldIssue,
+} from "../ui/form-validation";
+export { TextField as Text } from "../ui/form-validation";
 import { clearConfigurationDraft } from "../catalog/configuration-draft";
 import {
   SignInReturn,
@@ -9,6 +18,9 @@ import {
 } from "../account/return-path";
 import AccountNavigation from "../account/navigation";
 import AccountOverview from "../account/overview";
+import { RetryButton, useRetryPending } from "../ui/retry-button";
+import { Feedback, PanelState } from "../ui/feedback";
+import "../ui/feedback.css";
 import { PageHeader } from "../ui/page-header";
 import { createElement, useContext } from "react";
 import { AuthorizedIdentity, IdentityFrame } from "./frame";
@@ -27,6 +39,7 @@ import {
   post,
   command,
   errorMessage,
+  APIError,
   sessionSchema,
   codesSchema,
   sessionsSchema,
@@ -53,6 +66,32 @@ export function Form({
     [message, setMessage] = useState(""),
     [failed, setFailed] = useState(false),
     [problem, setProblem] = useState<unknown>(null);
+  const cooling = useRetryPending(
+    problem instanceof APIError ? problem.retryAt : undefined,
+  );
+  const [fields, setFields] = useState<RegisteredField[]>([]);
+  const [issues, setIssues] = useState<FieldIssue[]>([]);
+  const register = useCallback((field: RegisteredField) => {
+    setFields((current) => [
+      ...current.filter((item) => item.id !== field.id),
+      field,
+    ]);
+    return () => {
+      setFields((current) => current.filter((item) => item.id !== field.id));
+    };
+  }, []);
+  const correct = useCallback(
+    (name: string) => {
+      if (!issues.some((issue) => issue.path === name)) return;
+      const remaining = issues.filter((issue) => issue.path !== name);
+      setIssues(remaining);
+      if (remaining.length === 0) {
+        setFailed(false);
+        setMessage("Changes entered. Submit again to check them.");
+      }
+    },
+    [issues],
+  );
   const lock = useRef(false);
   const feedback = useRef<HTMLParagraphElement>(null);
   useEffect(() => {
@@ -60,13 +99,14 @@ export function Form({
   }, [failed]);
   async function send(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (lock.current) return;
+    if (lock.current || cooling) return;
     lock.current = true;
     const data = new FormData(event.currentTarget);
     setBusy(true);
     setMessage("");
     setFailed(false);
     setProblem(null);
+    setIssues([]);
     try {
       await submit(data);
       setMessage(success);
@@ -74,62 +114,38 @@ export function Form({
       setMessage(errorMessage(error));
       setFailed(true);
       setProblem(error);
+      setIssues(error instanceof APIError ? error.issues : []);
     } finally {
       lock.current = false;
       setBusy(false);
     }
   }
   return (
-    <form
-      className={compact ? "identity-session-action" : "identity-card"}
-      onSubmit={(event) => void send(event)}
-    >
-      {!compact && <h2>{title}</h2>}
-      <fieldset disabled={busy}>
-        {children}
-        <button className="button" type="submit">
-          {busy ? "Please wait…" : label}
-        </button>
-      </fieldset>
-      <p ref={feedback} tabIndex={-1} role={failed ? "alert" : "status"}>
-        {message}
-      </p>
-      <VerificationLink error={problem} />
-    </form>
-  );
-}
-export function Text({
-  name,
-  label,
-  type = "text",
-  required = true,
-  autoComplete = "off",
-  maxLength = 254,
-  inputMode,
-  pattern,
-}: {
-  name: string;
-  label: string;
-  type?: string;
-  required?: boolean;
-  autoComplete?: string;
-  maxLength?: number;
-  inputMode?: "numeric" | "text";
-  pattern?: string;
-}) {
-  return (
-    <label>
-      {label}
-      <input
-        name={name}
-        type={type}
-        required={required}
-        autoComplete={autoComplete}
-        maxLength={maxLength}
-        inputMode={inputMode}
-        pattern={pattern}
-      />
-    </label>
+    <FieldValidation value={{ issues, register, correct }}>
+      <form
+        method="post"
+        className={compact ? "identity-session-action" : "identity-card"}
+        onSubmit={(event) => void send(event)}
+      >
+        {!compact && <h2>{title}</h2>}
+        <fieldset disabled={busy}>
+          {children}
+          <Button
+            className="button"
+            type="submit"
+            disabled={cooling}
+            busy={busy}
+          >
+            {cooling ? "Wait before trying again" : label}
+          </Button>
+        </fieldset>
+        <Feedback feedbackRef={feedback} kind={failed ? "error" : "status"}>
+          {message}
+        </Feedback>
+        <ValidationSummary issues={issues} fields={fields} />
+        <VerificationLink error={problem} />
+      </form>
+    </FieldValidation>
   );
 }
 export const value = (data: FormData, name: string) => {
@@ -696,11 +712,22 @@ export default function Identity({
   ]).get(search.get("error") ?? "");
   const [session, setSession] = useState<Session | null>(null),
     [failure, setFailure] = useState(""),
+    [failureStatus, setFailureStatus] = useState<number | undefined>(undefined),
+    [retryAt, setRetryAt] = useState<number | undefined>(undefined),
+    [refreshing, setRefreshing] = useState(false),
     [codes, setCodes] = useState<string[]>([]);
   const revision = useRef(0);
   const currentUser = useRef<string | null>(null);
-  const refresh = useCallback(async () => {
+  const pending = useRef(false);
+  const cooldown = useRef<number | undefined>(undefined);
+  const refresh = useCallback(async (sessionChanged = true) => {
+    // Focus and manual retry share the same lock. A completed auth mutation can
+    // supersede an older read, but even that must respect the server cooldown.
+    if (cooldown.current !== undefined && cooldown.current > Date.now()) return;
+    if (pending.current && !sessionChanged) return;
     const requestRevision = ++revision.current;
+    pending.current = true;
+    setRefreshing(true);
     try {
       const result = await get("/auth/session", sessionSchema);
       if (requestRevision !== revision.current) return;
@@ -708,41 +735,49 @@ export default function Identity({
       if ((result.user?.id ?? null) !== currentUser.current) setCodes([]);
       currentUser.current = result.user?.id ?? null;
       setFailure("");
+      setFailureStatus(undefined);
+      cooldown.current = undefined;
+      setRetryAt(undefined);
     } catch (error) {
       if (requestRevision !== revision.current) return;
       setSession(null);
       setFailure(errorMessage(error));
+      setFailureStatus(error instanceof APIError ? error.status : undefined);
+      cooldown.current = error instanceof APIError ? error.retryAt : undefined;
+      setRetryAt(cooldown.current);
+    } finally {
+      if (requestRevision === revision.current) {
+        pending.current = false;
+        setRefreshing(false);
+      }
     }
+  }, []);
+  const cancelRefresh = useCallback(() => {
+    revision.current++;
+    pending.current = false;
   }, []);
   useEffect(() => {
     const changed = () => {
       void refresh();
     };
-    window.addEventListener("boosterplus:session-changed", changed);
-    window.addEventListener("focus", changed);
-    return () => {
-      window.removeEventListener("boosterplus:session-changed", changed);
-      window.removeEventListener("focus", changed);
+    const focused = () => {
+      void refresh(false);
     };
-  }, [refresh]);
-  useEffect(() => {
+    window.addEventListener("boosterplus:session-changed", changed);
+    window.addEventListener("focus", focused);
     let active = true;
-    const requestRevision = ++revision.current;
-    void get("/auth/session", sessionSchema)
-      .then((result) => {
-        if (active && requestRevision === revision.current) {
-          setSession(result);
-          currentUser.current = result.user?.id ?? null;
-        }
-      })
-      .catch((error: unknown) => {
-        if (active && requestRevision === revision.current)
-          setFailure(errorMessage(error));
-      });
+    // Start the bootstrap read asynchronously; unmount cancels queued work and
+    // invalidates any read already in flight without changing another session.
+    void Promise.resolve().then(async () => {
+      if (active) await refresh();
+    });
     return () => {
       active = false;
+      window.removeEventListener("boosterplus:session-changed", changed);
+      window.removeEventListener("focus", focused);
+      cancelRefresh();
     };
-  }, []);
+  }, [refresh, cancelRefresh]);
   return createElement(Frame, {
     session,
     title,
@@ -782,19 +817,39 @@ export default function Identity({
           eyebrow={
             capability === "admin" || capability === "owner"
               ? "Staff workspace"
-              : "PLAYORA account"
+              : capability === "booster"
+                ? "Booster workspace"
+                : "My account"
           }
         />
         {googleError && <p role="alert">{googleError}</p>}
         {failure ? (
-          <div role="alert">
-            <p>{failure}</p>
-            <button className="button" onClick={() => void refresh()}>
-              Retry connection
-            </button>
-          </div>
+          <PanelState
+            kind="error"
+            title={
+              failureStatus === 429
+                ? "Please wait before trying again"
+                : "Connection unavailable"
+            }
+            description={failure}
+          >
+            <RetryButton
+              deadline={retryAt}
+              busy={refreshing}
+              onRetry={() => {
+                void refresh(false);
+              }}
+            >
+              {refreshing ? "Checking connection…" : "Retry connection"}
+            </RetryButton>
+          </PanelState>
         ) : !session ? (
-          <p role="status">Loading sign-in…</p>
+          <PanelState
+            title="Checking your sign-in"
+            description="Loading sign-in…"
+          >
+            <Skeleton label="" />
+          </PanelState>
         ) : (
           <>
             {codes.length > 0 && (

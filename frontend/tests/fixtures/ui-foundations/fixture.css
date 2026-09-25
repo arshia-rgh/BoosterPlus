@@ -1,0 +1,52 @@
+.fixture-page {
+  max-width: 68rem;
+  margin: auto;
+  padding: 2rem 1rem 4rem;
+}
+.fixture-page h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+}
+.fixture-page section {
+  margin-block: 2rem;
+}
+.fixture-row,
+.fixture-page nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+.fixture-page label {
+  display: grid;
+  gap: 0.5rem;
+}
+.fixture-page input,
+.fixture-page select {
+  max-width: 100%;
+  min-width: 0;
+  padding: 0.75rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  font: inherit;
+  border-radius: 0.5rem;
+}
+.fixture-page table {
+  min-width: 48rem;
+  width: 100%;
+  border-collapse: collapse;
+}
+.fixture-page th,
+.fixture-page td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.fixture-page caption {
+  padding: 1rem;
+  text-align: left;
+  color: var(--muted);
+}

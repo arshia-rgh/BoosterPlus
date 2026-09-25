@@ -1,0 +1,1214 @@
+/* Bounded publication data selects static rules: no inline styles or relaxed CSP.
+   Keep all integer positions 0..100 available for each viewport axis. */
+[data-art-desktop-x="0"] {
+  --art-desktop-x: 0%;
+}
+[data-art-desktop-x="1"] {
+  --art-desktop-x: 1%;
+}
+[data-art-desktop-x="2"] {
+  --art-desktop-x: 2%;
+}
+[data-art-desktop-x="3"] {
+  --art-desktop-x: 3%;
+}
+[data-art-desktop-x="4"] {
+  --art-desktop-x: 4%;
+}
+[data-art-desktop-x="5"] {
+  --art-desktop-x: 5%;
+}
+[data-art-desktop-x="6"] {
+  --art-desktop-x: 6%;
+}
+[data-art-desktop-x="7"] {
+  --art-desktop-x: 7%;
+}
+[data-art-desktop-x="8"] {
+  --art-desktop-x: 8%;
+}
+[data-art-desktop-x="9"] {
+  --art-desktop-x: 9%;
+}
+[data-art-desktop-x="10"] {
+  --art-desktop-x: 10%;
+}
+[data-art-desktop-x="11"] {
+  --art-desktop-x: 11%;
+}
+[data-art-desktop-x="12"] {
+  --art-desktop-x: 12%;
+}
+[data-art-desktop-x="13"] {
+  --art-desktop-x: 13%;
+}
+[data-art-desktop-x="14"] {
+  --art-desktop-x: 14%;
+}
+[data-art-desktop-x="15"] {
+  --art-desktop-x: 15%;
+}
+[data-art-desktop-x="16"] {
+  --art-desktop-x: 16%;
+}
+[data-art-desktop-x="17"] {
+  --art-desktop-x: 17%;
+}
+[data-art-desktop-x="18"] {
+  --art-desktop-x: 18%;
+}
+[data-art-desktop-x="19"] {
+  --art-desktop-x: 19%;
+}
+[data-art-desktop-x="20"] {
+  --art-desktop-x: 20%;
+}
+[data-art-desktop-x="21"] {
+  --art-desktop-x: 21%;
+}
+[data-art-desktop-x="22"] {
+  --art-desktop-x: 22%;
+}
+[data-art-desktop-x="23"] {
+  --art-desktop-x: 23%;
+}
+[data-art-desktop-x="24"] {
+  --art-desktop-x: 24%;
+}
+[data-art-desktop-x="25"] {
+  --art-desktop-x: 25%;
+}
+[data-art-desktop-x="26"] {
+  --art-desktop-x: 26%;
+}
+[data-art-desktop-x="27"] {
+  --art-desktop-x: 27%;
+}
+[data-art-desktop-x="28"] {
+  --art-desktop-x: 28%;
+}
+[data-art-desktop-x="29"] {
+  --art-desktop-x: 29%;
+}
+[data-art-desktop-x="30"] {
+  --art-desktop-x: 30%;
+}
+[data-art-desktop-x="31"] {
+  --art-desktop-x: 31%;
+}
+[data-art-desktop-x="32"] {
+  --art-desktop-x: 32%;
+}
+[data-art-desktop-x="33"] {
+  --art-desktop-x: 33%;
+}
+[data-art-desktop-x="34"] {
+  --art-desktop-x: 34%;
+}
+[data-art-desktop-x="35"] {
+  --art-desktop-x: 35%;
+}
+[data-art-desktop-x="36"] {
+  --art-desktop-x: 36%;
+}
+[data-art-desktop-x="37"] {
+  --art-desktop-x: 37%;
+}
+[data-art-desktop-x="38"] {
+  --art-desktop-x: 38%;
+}
+[data-art-desktop-x="39"] {
+  --art-desktop-x: 39%;
+}
+[data-art-desktop-x="40"] {
+  --art-desktop-x: 40%;
+}
+[data-art-desktop-x="41"] {
+  --art-desktop-x: 41%;
+}
+[data-art-desktop-x="42"] {
+  --art-desktop-x: 42%;
+}
+[data-art-desktop-x="43"] {
+  --art-desktop-x: 43%;
+}
+[data-art-desktop-x="44"] {
+  --art-desktop-x: 44%;
+}
+[data-art-desktop-x="45"] {
+  --art-desktop-x: 45%;
+}
+[data-art-desktop-x="46"] {
+  --art-desktop-x: 46%;
+}
+[data-art-desktop-x="47"] {
+  --art-desktop-x: 47%;
+}
+[data-art-desktop-x="48"] {
+  --art-desktop-x: 48%;
+}
+[data-art-desktop-x="49"] {
+  --art-desktop-x: 49%;
+}
+[data-art-desktop-x="50"] {
+  --art-desktop-x: 50%;
+}
+[data-art-desktop-x="51"] {
+  --art-desktop-x: 51%;
+}
+[data-art-desktop-x="52"] {
+  --art-desktop-x: 52%;
+}
+[data-art-desktop-x="53"] {
+  --art-desktop-x: 53%;
+}
+[data-art-desktop-x="54"] {
+  --art-desktop-x: 54%;
+}
+[data-art-desktop-x="55"] {
+  --art-desktop-x: 55%;
+}
+[data-art-desktop-x="56"] {
+  --art-desktop-x: 56%;
+}
+[data-art-desktop-x="57"] {
+  --art-desktop-x: 57%;
+}
+[data-art-desktop-x="58"] {
+  --art-desktop-x: 58%;
+}
+[data-art-desktop-x="59"] {
+  --art-desktop-x: 59%;
+}
+[data-art-desktop-x="60"] {
+  --art-desktop-x: 60%;
+}
+[data-art-desktop-x="61"] {
+  --art-desktop-x: 61%;
+}
+[data-art-desktop-x="62"] {
+  --art-desktop-x: 62%;
+}
+[data-art-desktop-x="63"] {
+  --art-desktop-x: 63%;
+}
+[data-art-desktop-x="64"] {
+  --art-desktop-x: 64%;
+}
+[data-art-desktop-x="65"] {
+  --art-desktop-x: 65%;
+}
+[data-art-desktop-x="66"] {
+  --art-desktop-x: 66%;
+}
+[data-art-desktop-x="67"] {
+  --art-desktop-x: 67%;
+}
+[data-art-desktop-x="68"] {
+  --art-desktop-x: 68%;
+}
+[data-art-desktop-x="69"] {
+  --art-desktop-x: 69%;
+}
+[data-art-desktop-x="70"] {
+  --art-desktop-x: 70%;
+}
+[data-art-desktop-x="71"] {
+  --art-desktop-x: 71%;
+}
+[data-art-desktop-x="72"] {
+  --art-desktop-x: 72%;
+}
+[data-art-desktop-x="73"] {
+  --art-desktop-x: 73%;
+}
+[data-art-desktop-x="74"] {
+  --art-desktop-x: 74%;
+}
+[data-art-desktop-x="75"] {
+  --art-desktop-x: 75%;
+}
+[data-art-desktop-x="76"] {
+  --art-desktop-x: 76%;
+}
+[data-art-desktop-x="77"] {
+  --art-desktop-x: 77%;
+}
+[data-art-desktop-x="78"] {
+  --art-desktop-x: 78%;
+}
+[data-art-desktop-x="79"] {
+  --art-desktop-x: 79%;
+}
+[data-art-desktop-x="80"] {
+  --art-desktop-x: 80%;
+}
+[data-art-desktop-x="81"] {
+  --art-desktop-x: 81%;
+}
+[data-art-desktop-x="82"] {
+  --art-desktop-x: 82%;
+}
+[data-art-desktop-x="83"] {
+  --art-desktop-x: 83%;
+}
+[data-art-desktop-x="84"] {
+  --art-desktop-x: 84%;
+}
+[data-art-desktop-x="85"] {
+  --art-desktop-x: 85%;
+}
+[data-art-desktop-x="86"] {
+  --art-desktop-x: 86%;
+}
+[data-art-desktop-x="87"] {
+  --art-desktop-x: 87%;
+}
+[data-art-desktop-x="88"] {
+  --art-desktop-x: 88%;
+}
+[data-art-desktop-x="89"] {
+  --art-desktop-x: 89%;
+}
+[data-art-desktop-x="90"] {
+  --art-desktop-x: 90%;
+}
+[data-art-desktop-x="91"] {
+  --art-desktop-x: 91%;
+}
+[data-art-desktop-x="92"] {
+  --art-desktop-x: 92%;
+}
+[data-art-desktop-x="93"] {
+  --art-desktop-x: 93%;
+}
+[data-art-desktop-x="94"] {
+  --art-desktop-x: 94%;
+}
+[data-art-desktop-x="95"] {
+  --art-desktop-x: 95%;
+}
+[data-art-desktop-x="96"] {
+  --art-desktop-x: 96%;
+}
+[data-art-desktop-x="97"] {
+  --art-desktop-x: 97%;
+}
+[data-art-desktop-x="98"] {
+  --art-desktop-x: 98%;
+}
+[data-art-desktop-x="99"] {
+  --art-desktop-x: 99%;
+}
+[data-art-desktop-x="100"] {
+  --art-desktop-x: 100%;
+}
+[data-art-desktop-y="0"] {
+  --art-desktop-y: 0%;
+}
+[data-art-desktop-y="1"] {
+  --art-desktop-y: 1%;
+}
+[data-art-desktop-y="2"] {
+  --art-desktop-y: 2%;
+}
+[data-art-desktop-y="3"] {
+  --art-desktop-y: 3%;
+}
+[data-art-desktop-y="4"] {
+  --art-desktop-y: 4%;
+}
+[data-art-desktop-y="5"] {
+  --art-desktop-y: 5%;
+}
+[data-art-desktop-y="6"] {
+  --art-desktop-y: 6%;
+}
+[data-art-desktop-y="7"] {
+  --art-desktop-y: 7%;
+}
+[data-art-desktop-y="8"] {
+  --art-desktop-y: 8%;
+}
+[data-art-desktop-y="9"] {
+  --art-desktop-y: 9%;
+}
+[data-art-desktop-y="10"] {
+  --art-desktop-y: 10%;
+}
+[data-art-desktop-y="11"] {
+  --art-desktop-y: 11%;
+}
+[data-art-desktop-y="12"] {
+  --art-desktop-y: 12%;
+}
+[data-art-desktop-y="13"] {
+  --art-desktop-y: 13%;
+}
+[data-art-desktop-y="14"] {
+  --art-desktop-y: 14%;
+}
+[data-art-desktop-y="15"] {
+  --art-desktop-y: 15%;
+}
+[data-art-desktop-y="16"] {
+  --art-desktop-y: 16%;
+}
+[data-art-desktop-y="17"] {
+  --art-desktop-y: 17%;
+}
+[data-art-desktop-y="18"] {
+  --art-desktop-y: 18%;
+}
+[data-art-desktop-y="19"] {
+  --art-desktop-y: 19%;
+}
+[data-art-desktop-y="20"] {
+  --art-desktop-y: 20%;
+}
+[data-art-desktop-y="21"] {
+  --art-desktop-y: 21%;
+}
+[data-art-desktop-y="22"] {
+  --art-desktop-y: 22%;
+}
+[data-art-desktop-y="23"] {
+  --art-desktop-y: 23%;
+}
+[data-art-desktop-y="24"] {
+  --art-desktop-y: 24%;
+}
+[data-art-desktop-y="25"] {
+  --art-desktop-y: 25%;
+}
+[data-art-desktop-y="26"] {
+  --art-desktop-y: 26%;
+}
+[data-art-desktop-y="27"] {
+  --art-desktop-y: 27%;
+}
+[data-art-desktop-y="28"] {
+  --art-desktop-y: 28%;
+}
+[data-art-desktop-y="29"] {
+  --art-desktop-y: 29%;
+}
+[data-art-desktop-y="30"] {
+  --art-desktop-y: 30%;
+}
+[data-art-desktop-y="31"] {
+  --art-desktop-y: 31%;
+}
+[data-art-desktop-y="32"] {
+  --art-desktop-y: 32%;
+}
+[data-art-desktop-y="33"] {
+  --art-desktop-y: 33%;
+}
+[data-art-desktop-y="34"] {
+  --art-desktop-y: 34%;
+}
+[data-art-desktop-y="35"] {
+  --art-desktop-y: 35%;
+}
+[data-art-desktop-y="36"] {
+  --art-desktop-y: 36%;
+}
+[data-art-desktop-y="37"] {
+  --art-desktop-y: 37%;
+}
+[data-art-desktop-y="38"] {
+  --art-desktop-y: 38%;
+}
+[data-art-desktop-y="39"] {
+  --art-desktop-y: 39%;
+}
+[data-art-desktop-y="40"] {
+  --art-desktop-y: 40%;
+}
+[data-art-desktop-y="41"] {
+  --art-desktop-y: 41%;
+}
+[data-art-desktop-y="42"] {
+  --art-desktop-y: 42%;
+}
+[data-art-desktop-y="43"] {
+  --art-desktop-y: 43%;
+}
+[data-art-desktop-y="44"] {
+  --art-desktop-y: 44%;
+}
+[data-art-desktop-y="45"] {
+  --art-desktop-y: 45%;
+}
+[data-art-desktop-y="46"] {
+  --art-desktop-y: 46%;
+}
+[data-art-desktop-y="47"] {
+  --art-desktop-y: 47%;
+}
+[data-art-desktop-y="48"] {
+  --art-desktop-y: 48%;
+}
+[data-art-desktop-y="49"] {
+  --art-desktop-y: 49%;
+}
+[data-art-desktop-y="50"] {
+  --art-desktop-y: 50%;
+}
+[data-art-desktop-y="51"] {
+  --art-desktop-y: 51%;
+}
+[data-art-desktop-y="52"] {
+  --art-desktop-y: 52%;
+}
+[data-art-desktop-y="53"] {
+  --art-desktop-y: 53%;
+}
+[data-art-desktop-y="54"] {
+  --art-desktop-y: 54%;
+}
+[data-art-desktop-y="55"] {
+  --art-desktop-y: 55%;
+}
+[data-art-desktop-y="56"] {
+  --art-desktop-y: 56%;
+}
+[data-art-desktop-y="57"] {
+  --art-desktop-y: 57%;
+}
+[data-art-desktop-y="58"] {
+  --art-desktop-y: 58%;
+}
+[data-art-desktop-y="59"] {
+  --art-desktop-y: 59%;
+}
+[data-art-desktop-y="60"] {
+  --art-desktop-y: 60%;
+}
+[data-art-desktop-y="61"] {
+  --art-desktop-y: 61%;
+}
+[data-art-desktop-y="62"] {
+  --art-desktop-y: 62%;
+}
+[data-art-desktop-y="63"] {
+  --art-desktop-y: 63%;
+}
+[data-art-desktop-y="64"] {
+  --art-desktop-y: 64%;
+}
+[data-art-desktop-y="65"] {
+  --art-desktop-y: 65%;
+}
+[data-art-desktop-y="66"] {
+  --art-desktop-y: 66%;
+}
+[data-art-desktop-y="67"] {
+  --art-desktop-y: 67%;
+}
+[data-art-desktop-y="68"] {
+  --art-desktop-y: 68%;
+}
+[data-art-desktop-y="69"] {
+  --art-desktop-y: 69%;
+}
+[data-art-desktop-y="70"] {
+  --art-desktop-y: 70%;
+}
+[data-art-desktop-y="71"] {
+  --art-desktop-y: 71%;
+}
+[data-art-desktop-y="72"] {
+  --art-desktop-y: 72%;
+}
+[data-art-desktop-y="73"] {
+  --art-desktop-y: 73%;
+}
+[data-art-desktop-y="74"] {
+  --art-desktop-y: 74%;
+}
+[data-art-desktop-y="75"] {
+  --art-desktop-y: 75%;
+}
+[data-art-desktop-y="76"] {
+  --art-desktop-y: 76%;
+}
+[data-art-desktop-y="77"] {
+  --art-desktop-y: 77%;
+}
+[data-art-desktop-y="78"] {
+  --art-desktop-y: 78%;
+}
+[data-art-desktop-y="79"] {
+  --art-desktop-y: 79%;
+}
+[data-art-desktop-y="80"] {
+  --art-desktop-y: 80%;
+}
+[data-art-desktop-y="81"] {
+  --art-desktop-y: 81%;
+}
+[data-art-desktop-y="82"] {
+  --art-desktop-y: 82%;
+}
+[data-art-desktop-y="83"] {
+  --art-desktop-y: 83%;
+}
+[data-art-desktop-y="84"] {
+  --art-desktop-y: 84%;
+}
+[data-art-desktop-y="85"] {
+  --art-desktop-y: 85%;
+}
+[data-art-desktop-y="86"] {
+  --art-desktop-y: 86%;
+}
+[data-art-desktop-y="87"] {
+  --art-desktop-y: 87%;
+}
+[data-art-desktop-y="88"] {
+  --art-desktop-y: 88%;
+}
+[data-art-desktop-y="89"] {
+  --art-desktop-y: 89%;
+}
+[data-art-desktop-y="90"] {
+  --art-desktop-y: 90%;
+}
+[data-art-desktop-y="91"] {
+  --art-desktop-y: 91%;
+}
+[data-art-desktop-y="92"] {
+  --art-desktop-y: 92%;
+}
+[data-art-desktop-y="93"] {
+  --art-desktop-y: 93%;
+}
+[data-art-desktop-y="94"] {
+  --art-desktop-y: 94%;
+}
+[data-art-desktop-y="95"] {
+  --art-desktop-y: 95%;
+}
+[data-art-desktop-y="96"] {
+  --art-desktop-y: 96%;
+}
+[data-art-desktop-y="97"] {
+  --art-desktop-y: 97%;
+}
+[data-art-desktop-y="98"] {
+  --art-desktop-y: 98%;
+}
+[data-art-desktop-y="99"] {
+  --art-desktop-y: 99%;
+}
+[data-art-desktop-y="100"] {
+  --art-desktop-y: 100%;
+}
+[data-art-mobile-x="0"] {
+  --art-mobile-x: 0%;
+}
+[data-art-mobile-x="1"] {
+  --art-mobile-x: 1%;
+}
+[data-art-mobile-x="2"] {
+  --art-mobile-x: 2%;
+}
+[data-art-mobile-x="3"] {
+  --art-mobile-x: 3%;
+}
+[data-art-mobile-x="4"] {
+  --art-mobile-x: 4%;
+}
+[data-art-mobile-x="5"] {
+  --art-mobile-x: 5%;
+}
+[data-art-mobile-x="6"] {
+  --art-mobile-x: 6%;
+}
+[data-art-mobile-x="7"] {
+  --art-mobile-x: 7%;
+}
+[data-art-mobile-x="8"] {
+  --art-mobile-x: 8%;
+}
+[data-art-mobile-x="9"] {
+  --art-mobile-x: 9%;
+}
+[data-art-mobile-x="10"] {
+  --art-mobile-x: 10%;
+}
+[data-art-mobile-x="11"] {
+  --art-mobile-x: 11%;
+}
+[data-art-mobile-x="12"] {
+  --art-mobile-x: 12%;
+}
+[data-art-mobile-x="13"] {
+  --art-mobile-x: 13%;
+}
+[data-art-mobile-x="14"] {
+  --art-mobile-x: 14%;
+}
+[data-art-mobile-x="15"] {
+  --art-mobile-x: 15%;
+}
+[data-art-mobile-x="16"] {
+  --art-mobile-x: 16%;
+}
+[data-art-mobile-x="17"] {
+  --art-mobile-x: 17%;
+}
+[data-art-mobile-x="18"] {
+  --art-mobile-x: 18%;
+}
+[data-art-mobile-x="19"] {
+  --art-mobile-x: 19%;
+}
+[data-art-mobile-x="20"] {
+  --art-mobile-x: 20%;
+}
+[data-art-mobile-x="21"] {
+  --art-mobile-x: 21%;
+}
+[data-art-mobile-x="22"] {
+  --art-mobile-x: 22%;
+}
+[data-art-mobile-x="23"] {
+  --art-mobile-x: 23%;
+}
+[data-art-mobile-x="24"] {
+  --art-mobile-x: 24%;
+}
+[data-art-mobile-x="25"] {
+  --art-mobile-x: 25%;
+}
+[data-art-mobile-x="26"] {
+  --art-mobile-x: 26%;
+}
+[data-art-mobile-x="27"] {
+  --art-mobile-x: 27%;
+}
+[data-art-mobile-x="28"] {
+  --art-mobile-x: 28%;
+}
+[data-art-mobile-x="29"] {
+  --art-mobile-x: 29%;
+}
+[data-art-mobile-x="30"] {
+  --art-mobile-x: 30%;
+}
+[data-art-mobile-x="31"] {
+  --art-mobile-x: 31%;
+}
+[data-art-mobile-x="32"] {
+  --art-mobile-x: 32%;
+}
+[data-art-mobile-x="33"] {
+  --art-mobile-x: 33%;
+}
+[data-art-mobile-x="34"] {
+  --art-mobile-x: 34%;
+}
+[data-art-mobile-x="35"] {
+  --art-mobile-x: 35%;
+}
+[data-art-mobile-x="36"] {
+  --art-mobile-x: 36%;
+}
+[data-art-mobile-x="37"] {
+  --art-mobile-x: 37%;
+}
+[data-art-mobile-x="38"] {
+  --art-mobile-x: 38%;
+}
+[data-art-mobile-x="39"] {
+  --art-mobile-x: 39%;
+}
+[data-art-mobile-x="40"] {
+  --art-mobile-x: 40%;
+}
+[data-art-mobile-x="41"] {
+  --art-mobile-x: 41%;
+}
+[data-art-mobile-x="42"] {
+  --art-mobile-x: 42%;
+}
+[data-art-mobile-x="43"] {
+  --art-mobile-x: 43%;
+}
+[data-art-mobile-x="44"] {
+  --art-mobile-x: 44%;
+}
+[data-art-mobile-x="45"] {
+  --art-mobile-x: 45%;
+}
+[data-art-mobile-x="46"] {
+  --art-mobile-x: 46%;
+}
+[data-art-mobile-x="47"] {
+  --art-mobile-x: 47%;
+}
+[data-art-mobile-x="48"] {
+  --art-mobile-x: 48%;
+}
+[data-art-mobile-x="49"] {
+  --art-mobile-x: 49%;
+}
+[data-art-mobile-x="50"] {
+  --art-mobile-x: 50%;
+}
+[data-art-mobile-x="51"] {
+  --art-mobile-x: 51%;
+}
+[data-art-mobile-x="52"] {
+  --art-mobile-x: 52%;
+}
+[data-art-mobile-x="53"] {
+  --art-mobile-x: 53%;
+}
+[data-art-mobile-x="54"] {
+  --art-mobile-x: 54%;
+}
+[data-art-mobile-x="55"] {
+  --art-mobile-x: 55%;
+}
+[data-art-mobile-x="56"] {
+  --art-mobile-x: 56%;
+}
+[data-art-mobile-x="57"] {
+  --art-mobile-x: 57%;
+}
+[data-art-mobile-x="58"] {
+  --art-mobile-x: 58%;
+}
+[data-art-mobile-x="59"] {
+  --art-mobile-x: 59%;
+}
+[data-art-mobile-x="60"] {
+  --art-mobile-x: 60%;
+}
+[data-art-mobile-x="61"] {
+  --art-mobile-x: 61%;
+}
+[data-art-mobile-x="62"] {
+  --art-mobile-x: 62%;
+}
+[data-art-mobile-x="63"] {
+  --art-mobile-x: 63%;
+}
+[data-art-mobile-x="64"] {
+  --art-mobile-x: 64%;
+}
+[data-art-mobile-x="65"] {
+  --art-mobile-x: 65%;
+}
+[data-art-mobile-x="66"] {
+  --art-mobile-x: 66%;
+}
+[data-art-mobile-x="67"] {
+  --art-mobile-x: 67%;
+}
+[data-art-mobile-x="68"] {
+  --art-mobile-x: 68%;
+}
+[data-art-mobile-x="69"] {
+  --art-mobile-x: 69%;
+}
+[data-art-mobile-x="70"] {
+  --art-mobile-x: 70%;
+}
+[data-art-mobile-x="71"] {
+  --art-mobile-x: 71%;
+}
+[data-art-mobile-x="72"] {
+  --art-mobile-x: 72%;
+}
+[data-art-mobile-x="73"] {
+  --art-mobile-x: 73%;
+}
+[data-art-mobile-x="74"] {
+  --art-mobile-x: 74%;
+}
+[data-art-mobile-x="75"] {
+  --art-mobile-x: 75%;
+}
+[data-art-mobile-x="76"] {
+  --art-mobile-x: 76%;
+}
+[data-art-mobile-x="77"] {
+  --art-mobile-x: 77%;
+}
+[data-art-mobile-x="78"] {
+  --art-mobile-x: 78%;
+}
+[data-art-mobile-x="79"] {
+  --art-mobile-x: 79%;
+}
+[data-art-mobile-x="80"] {
+  --art-mobile-x: 80%;
+}
+[data-art-mobile-x="81"] {
+  --art-mobile-x: 81%;
+}
+[data-art-mobile-x="82"] {
+  --art-mobile-x: 82%;
+}
+[data-art-mobile-x="83"] {
+  --art-mobile-x: 83%;
+}
+[data-art-mobile-x="84"] {
+  --art-mobile-x: 84%;
+}
+[data-art-mobile-x="85"] {
+  --art-mobile-x: 85%;
+}
+[data-art-mobile-x="86"] {
+  --art-mobile-x: 86%;
+}
+[data-art-mobile-x="87"] {
+  --art-mobile-x: 87%;
+}
+[data-art-mobile-x="88"] {
+  --art-mobile-x: 88%;
+}
+[data-art-mobile-x="89"] {
+  --art-mobile-x: 89%;
+}
+[data-art-mobile-x="90"] {
+  --art-mobile-x: 90%;
+}
+[data-art-mobile-x="91"] {
+  --art-mobile-x: 91%;
+}
+[data-art-mobile-x="92"] {
+  --art-mobile-x: 92%;
+}
+[data-art-mobile-x="93"] {
+  --art-mobile-x: 93%;
+}
+[data-art-mobile-x="94"] {
+  --art-mobile-x: 94%;
+}
+[data-art-mobile-x="95"] {
+  --art-mobile-x: 95%;
+}
+[data-art-mobile-x="96"] {
+  --art-mobile-x: 96%;
+}
+[data-art-mobile-x="97"] {
+  --art-mobile-x: 97%;
+}
+[data-art-mobile-x="98"] {
+  --art-mobile-x: 98%;
+}
+[data-art-mobile-x="99"] {
+  --art-mobile-x: 99%;
+}
+[data-art-mobile-x="100"] {
+  --art-mobile-x: 100%;
+}
+[data-art-mobile-y="0"] {
+  --art-mobile-y: 0%;
+}
+[data-art-mobile-y="1"] {
+  --art-mobile-y: 1%;
+}
+[data-art-mobile-y="2"] {
+  --art-mobile-y: 2%;
+}
+[data-art-mobile-y="3"] {
+  --art-mobile-y: 3%;
+}
+[data-art-mobile-y="4"] {
+  --art-mobile-y: 4%;
+}
+[data-art-mobile-y="5"] {
+  --art-mobile-y: 5%;
+}
+[data-art-mobile-y="6"] {
+  --art-mobile-y: 6%;
+}
+[data-art-mobile-y="7"] {
+  --art-mobile-y: 7%;
+}
+[data-art-mobile-y="8"] {
+  --art-mobile-y: 8%;
+}
+[data-art-mobile-y="9"] {
+  --art-mobile-y: 9%;
+}
+[data-art-mobile-y="10"] {
+  --art-mobile-y: 10%;
+}
+[data-art-mobile-y="11"] {
+  --art-mobile-y: 11%;
+}
+[data-art-mobile-y="12"] {
+  --art-mobile-y: 12%;
+}
+[data-art-mobile-y="13"] {
+  --art-mobile-y: 13%;
+}
+[data-art-mobile-y="14"] {
+  --art-mobile-y: 14%;
+}
+[data-art-mobile-y="15"] {
+  --art-mobile-y: 15%;
+}
+[data-art-mobile-y="16"] {
+  --art-mobile-y: 16%;
+}
+[data-art-mobile-y="17"] {
+  --art-mobile-y: 17%;
+}
+[data-art-mobile-y="18"] {
+  --art-mobile-y: 18%;
+}
+[data-art-mobile-y="19"] {
+  --art-mobile-y: 19%;
+}
+[data-art-mobile-y="20"] {
+  --art-mobile-y: 20%;
+}
+[data-art-mobile-y="21"] {
+  --art-mobile-y: 21%;
+}
+[data-art-mobile-y="22"] {
+  --art-mobile-y: 22%;
+}
+[data-art-mobile-y="23"] {
+  --art-mobile-y: 23%;
+}
+[data-art-mobile-y="24"] {
+  --art-mobile-y: 24%;
+}
+[data-art-mobile-y="25"] {
+  --art-mobile-y: 25%;
+}
+[data-art-mobile-y="26"] {
+  --art-mobile-y: 26%;
+}
+[data-art-mobile-y="27"] {
+  --art-mobile-y: 27%;
+}
+[data-art-mobile-y="28"] {
+  --art-mobile-y: 28%;
+}
+[data-art-mobile-y="29"] {
+  --art-mobile-y: 29%;
+}
+[data-art-mobile-y="30"] {
+  --art-mobile-y: 30%;
+}
+[data-art-mobile-y="31"] {
+  --art-mobile-y: 31%;
+}
+[data-art-mobile-y="32"] {
+  --art-mobile-y: 32%;
+}
+[data-art-mobile-y="33"] {
+  --art-mobile-y: 33%;
+}
+[data-art-mobile-y="34"] {
+  --art-mobile-y: 34%;
+}
+[data-art-mobile-y="35"] {
+  --art-mobile-y: 35%;
+}
+[data-art-mobile-y="36"] {
+  --art-mobile-y: 36%;
+}
+[data-art-mobile-y="37"] {
+  --art-mobile-y: 37%;
+}
+[data-art-mobile-y="38"] {
+  --art-mobile-y: 38%;
+}
+[data-art-mobile-y="39"] {
+  --art-mobile-y: 39%;
+}
+[data-art-mobile-y="40"] {
+  --art-mobile-y: 40%;
+}
+[data-art-mobile-y="41"] {
+  --art-mobile-y: 41%;
+}
+[data-art-mobile-y="42"] {
+  --art-mobile-y: 42%;
+}
+[data-art-mobile-y="43"] {
+  --art-mobile-y: 43%;
+}
+[data-art-mobile-y="44"] {
+  --art-mobile-y: 44%;
+}
+[data-art-mobile-y="45"] {
+  --art-mobile-y: 45%;
+}
+[data-art-mobile-y="46"] {
+  --art-mobile-y: 46%;
+}
+[data-art-mobile-y="47"] {
+  --art-mobile-y: 47%;
+}
+[data-art-mobile-y="48"] {
+  --art-mobile-y: 48%;
+}
+[data-art-mobile-y="49"] {
+  --art-mobile-y: 49%;
+}
+[data-art-mobile-y="50"] {
+  --art-mobile-y: 50%;
+}
+[data-art-mobile-y="51"] {
+  --art-mobile-y: 51%;
+}
+[data-art-mobile-y="52"] {
+  --art-mobile-y: 52%;
+}
+[data-art-mobile-y="53"] {
+  --art-mobile-y: 53%;
+}
+[data-art-mobile-y="54"] {
+  --art-mobile-y: 54%;
+}
+[data-art-mobile-y="55"] {
+  --art-mobile-y: 55%;
+}
+[data-art-mobile-y="56"] {
+  --art-mobile-y: 56%;
+}
+[data-art-mobile-y="57"] {
+  --art-mobile-y: 57%;
+}
+[data-art-mobile-y="58"] {
+  --art-mobile-y: 58%;
+}
+[data-art-mobile-y="59"] {
+  --art-mobile-y: 59%;
+}
+[data-art-mobile-y="60"] {
+  --art-mobile-y: 60%;
+}
+[data-art-mobile-y="61"] {
+  --art-mobile-y: 61%;
+}
+[data-art-mobile-y="62"] {
+  --art-mobile-y: 62%;
+}
+[data-art-mobile-y="63"] {
+  --art-mobile-y: 63%;
+}
+[data-art-mobile-y="64"] {
+  --art-mobile-y: 64%;
+}
+[data-art-mobile-y="65"] {
+  --art-mobile-y: 65%;
+}
+[data-art-mobile-y="66"] {
+  --art-mobile-y: 66%;
+}
+[data-art-mobile-y="67"] {
+  --art-mobile-y: 67%;
+}
+[data-art-mobile-y="68"] {
+  --art-mobile-y: 68%;
+}
+[data-art-mobile-y="69"] {
+  --art-mobile-y: 69%;
+}
+[data-art-mobile-y="70"] {
+  --art-mobile-y: 70%;
+}
+[data-art-mobile-y="71"] {
+  --art-mobile-y: 71%;
+}
+[data-art-mobile-y="72"] {
+  --art-mobile-y: 72%;
+}
+[data-art-mobile-y="73"] {
+  --art-mobile-y: 73%;
+}
+[data-art-mobile-y="74"] {
+  --art-mobile-y: 74%;
+}
+[data-art-mobile-y="75"] {
+  --art-mobile-y: 75%;
+}
+[data-art-mobile-y="76"] {
+  --art-mobile-y: 76%;
+}
+[data-art-mobile-y="77"] {
+  --art-mobile-y: 77%;
+}
+[data-art-mobile-y="78"] {
+  --art-mobile-y: 78%;
+}
+[data-art-mobile-y="79"] {
+  --art-mobile-y: 79%;
+}
+[data-art-mobile-y="80"] {
+  --art-mobile-y: 80%;
+}
+[data-art-mobile-y="81"] {
+  --art-mobile-y: 81%;
+}
+[data-art-mobile-y="82"] {
+  --art-mobile-y: 82%;
+}
+[data-art-mobile-y="83"] {
+  --art-mobile-y: 83%;
+}
+[data-art-mobile-y="84"] {
+  --art-mobile-y: 84%;
+}
+[data-art-mobile-y="85"] {
+  --art-mobile-y: 85%;
+}
+[data-art-mobile-y="86"] {
+  --art-mobile-y: 86%;
+}
+[data-art-mobile-y="87"] {
+  --art-mobile-y: 87%;
+}
+[data-art-mobile-y="88"] {
+  --art-mobile-y: 88%;
+}
+[data-art-mobile-y="89"] {
+  --art-mobile-y: 89%;
+}
+[data-art-mobile-y="90"] {
+  --art-mobile-y: 90%;
+}
+[data-art-mobile-y="91"] {
+  --art-mobile-y: 91%;
+}
+[data-art-mobile-y="92"] {
+  --art-mobile-y: 92%;
+}
+[data-art-mobile-y="93"] {
+  --art-mobile-y: 93%;
+}
+[data-art-mobile-y="94"] {
+  --art-mobile-y: 94%;
+}
+[data-art-mobile-y="95"] {
+  --art-mobile-y: 95%;
+}
+[data-art-mobile-y="96"] {
+  --art-mobile-y: 96%;
+}
+[data-art-mobile-y="97"] {
+  --art-mobile-y: 97%;
+}
+[data-art-mobile-y="98"] {
+  --art-mobile-y: 98%;
+}
+[data-art-mobile-y="99"] {
+  --art-mobile-y: 99%;
+}
+[data-art-mobile-y="100"] {
+  --art-mobile-y: 100%;
+}

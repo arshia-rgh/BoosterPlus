@@ -13,3 +13,5 @@ export function loader({
   return loadReviews(params.slug, request);
 }
 export default PublicReviews;
+
+export { GameContentError as ErrorBoundary } from "../catalog/game-shell";

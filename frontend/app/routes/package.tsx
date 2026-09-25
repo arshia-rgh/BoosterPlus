@@ -11,3 +11,5 @@ export function loader({
   return loadOffering(params.slug, params.pack, "package");
 }
 export default PackagePage;
+
+export { GameContentError as ErrorBoundary } from "../catalog/game-shell";

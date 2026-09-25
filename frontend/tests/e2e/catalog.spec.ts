@@ -31,11 +31,11 @@ test("missing pages return 404 without reflecting malicious input", async ({
   );
   expect(response?.status()).toBe(404);
   await expect(
-    page.getByRole("heading", { name: "Page not found" }),
+    page.getByRole("heading", { name: "This page isn’t available." }),
   ).toBeVisible();
   await expect(page.getByText("alert(1)")).toHaveCount(0);
-  await page.getByRole("link", { name: "Back to home" }).click();
-  await expect(page).toHaveURL("/");
+  await page.getByRole("link", { name: "Explore games" }).click();
+  await expect(page).toHaveURL("/games");
 });
 
 test("keyboard users can skip navigation", async ({ page }, info) => {

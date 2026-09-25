@@ -10,12 +10,14 @@ export default [
     route("accounts", "routes/accounts.tsx"),
     route("accounts/:id", "routes/account-product.tsx"),
     route("availability/unsubscribe", "routes/availability-unsubscribe.tsx"),
-    route("games/:slug/reviews", "routes/game-reviews.tsx"),
     route("terms", "routes/terms.tsx"),
     route("games", "routes/games.tsx"),
-    route("games/:slug", "routes/game.tsx"),
-    route("games/:slug/services/:service", "routes/service.tsx"),
-    route("games/:slug/packages/:pack", "routes/package.tsx"),
+    layout("routes/game-shell.tsx", [
+      route("games/:slug", "routes/game.tsx"),
+      route("games/:slug/services/:service", "routes/service.tsx"),
+      route("games/:slug/packages/:pack", "routes/package.tsx"),
+      route("games/:slug/reviews", "routes/game-reviews.tsx"),
+    ]),
   ]),
   layout("routes/workspace.tsx", [
     route("availability", "routes/availability.tsx"),

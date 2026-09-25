@@ -28,8 +28,8 @@ test("homepage choice survives game selection, reload and back; form results sta
         exact: true,
       }),
     ).toHaveCount(0);
-    await expect(page.locator(".game-hero-art")).toHaveCount(0);
-    await expect(page.locator(".game-hero-compact")).toBeVisible();
+    await expect(page.locator(".game-stage-art")).toHaveCount(0);
+    await expect(page.locator(".game-stage-compact")).toBeVisible();
     await page.getByRole("link", { name: "← All games" }).click();
     await expect(page).toHaveURL(`/games?path=${path}`);
     await page.goBack();

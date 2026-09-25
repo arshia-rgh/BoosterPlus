@@ -1,3 +1,4 @@
+import HeroLayoutEditor from "./hero-layout-editor";
 import { useEffect, useRef, useState } from "react";
 import { Link, useBlocker } from "react-router";
 import { z } from "../validation";
@@ -397,6 +398,12 @@ function Editor({
                 value={draft.configuration.description}
                 change={(description) => {
                   update({ description });
+                }}
+              />
+              <HeroLayoutEditor
+                config={draft.configuration}
+                change={(hero_layout) => {
+                  update({ hero_layout });
                 }}
               />
               <ReferencesEditor
