@@ -104,6 +104,18 @@ func TestOrdersOwnershipIdempotencyAndQuoteJourney(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if recovered, recoverErr := f.store.Recover(ctx, f.buyer, input.RequestKey); recoverErr != nil || recovered != detail.Order.ID {
+		t.Fatal("owner could not recover interrupted request", recovered, recoverErr)
+	}
+	if recovered, recoverErr := f.store.Recover(ctx, f.other, input.RequestKey); recoverErr != nil || recovered != "" {
+		t.Fatal("recovery disclosed another buyer's order", recovered, recoverErr)
+	}
+	if recovered, recoverErr := f.store.Recover(ctx, f.buyer, uuid.NewString()); recoverErr != nil || recovered != "" {
+		t.Fatal("unknown request was not empty", recovered, recoverErr)
+	}
+	if _, recoverErr := f.store.Recover(ctx, f.buyer, "invalid"); recoverErr == nil {
+		t.Fatal("malformed recovery reference accepted")
+	}
 	different := input
 	different.CouponCode = "OTHER"
 	if _, err = f.store.Create(ctx, f.buyer, different); !errors.Is(err, orders.ErrConflict) {
@@ -342,6 +354,9 @@ func TestOrderQuoteExpiryAndAuthority(t *testing.T) {
 	}
 	if _, err = f.store.Transition(ctx, f.buyer, detail.Order.ID, "decline", false, action); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal("stale customer authority mutated order", err)
+	}
+	if _, err = f.store.Recover(ctx, f.buyer, uuid.NewString()); !errors.Is(err, identity.ErrUnauthenticated) {
+		t.Fatal("suspended customer could query request recovery", err)
 	}
 }
 func TestOrderContractRollsBackWithTimeline(t *testing.T) {

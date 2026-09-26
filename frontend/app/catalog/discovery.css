@@ -1,10 +1,12 @@
 .configuration-steps {
+  padding: 0;
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
   gap: 0.7rem;
   margin: 1.6rem 0;
 }
-.configuration-steps button {
+.configuration-steps li {
   border: 1px solid #466751;
   background: #10271b;
   color: #c5dccd;
@@ -12,7 +14,6 @@
   padding: 0.8rem 1.2rem;
   min-height: 44px;
   font: inherit;
-  cursor: pointer;
 }
 .configuration-steps [aria-current="step"] {
   background: #bddf9c;
@@ -131,12 +132,12 @@
     grid-row: auto;
     max-height: none;
   }
-  .configuration-steps button {
+  .configuration-steps li {
     flex: 1 1 12rem;
   }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .configuration-steps button {
+  .configuration-steps li {
     transition:
       background 0.18s,
       color 0.18s;
@@ -188,4 +189,31 @@
 .experience .guided-configuration > p,
 .experience .guided-configuration > [aria-label="Price estimate"] {
   margin-block: 0;
+}
+
+.configuration-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+.configuration-actions .button {
+  margin: 0;
+}
+.guided-configuration .button.secondary,
+.game-panel .button.secondary {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid #718562;
+}
+.game-panel .button.secondary {
+  margin-inline-start: 0.75rem;
+}
+.configuration-actions .button.secondary {
+  margin-inline-start: 0;
+}
+
+.experience .game-panel .button.secondary:hover:not(:disabled) {
+  background: #263d30;
+  color: #d2f3bf;
 }

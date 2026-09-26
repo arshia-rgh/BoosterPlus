@@ -225,6 +225,7 @@ function ConfigurationForm({
   initialAnswers = {},
   initialCoupon = "",
   onCommit,
+  journey,
 }: {
   config: Configuration;
   service: Service;
@@ -239,6 +240,7 @@ function ConfigurationForm({
   initialAnswers?: Answers;
   initialCoupon?: string;
   onCommit?: (answers: Answers, coupon: string) => Promise<void>;
+  journey?: { review: () => void; invalidate: () => void; edit: () => void };
 }) {
   const [raw, setRaw] = useState<Answers>(initialAnswers),
     [issues, setIssues] = useState<Issue[]>([]),
@@ -253,10 +255,17 @@ function ConfigurationForm({
     setLastStage(stage);
     setChanged(false);
     setValid(false);
-    setEstimate(null);
+    if (!journey) setEstimate(null);
     setIssues([]);
     setError(null);
   }
+  const requestSequence = useRef(0);
+  useEffect(
+    () => () => {
+      requestSequence.current += 1;
+    },
+    [stage, releaseID, service.key, pack, variant?.key],
+  );
   const form = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (!busy && issues.length > 0) {
@@ -268,13 +277,26 @@ function ConfigurationForm({
   const couponID = useId();
   const values = visibleAnswers(service, raw, stage);
   const unavailable = paused || variant?.capacity === 0;
-  async function submit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function retainOrderDetails(next: Answers): Answers {
+    if (!journey || stage !== "estimate") return next;
+    const details = Object.fromEntries(
+      Object.entries(raw).filter(([key]) =>
+        service.fields.some(
+          (field) => field.key === key && field.stage === "order",
+        ),
+      ),
+    );
+    return visibleAnswers(service, { ...details, ...next }, "order");
+  }
+  async function submit(event?: SubmitEvent<HTMLFormElement>, advance = false) {
+    event?.preventDefault();
+    if (busy || unavailable) return;
+    const sequence = ++requestSequence.current;
     setBusy(true);
     setError(null);
     setIssues([]);
     setValid(false);
-    setEstimate(null);
+    if (!journey || stage === "estimate") setEstimate(null);
     setChanged(false);
     try {
       const result = await post(
@@ -291,8 +313,9 @@ function ConfigurationForm({
         },
         validationSchema,
       );
+      if (sequence !== requestSequence.current) return;
       setIssues(result.issues);
-      setRaw(result.answers);
+      setRaw(retainOrderDetails(result.answers));
       if (
         result.issues.length === 0 &&
         !onCommit &&
@@ -321,13 +344,22 @@ function ConfigurationForm({
           },
           estimateSchema,
         );
+        if (sequence !== requestSequence.current) return;
         setEstimate(price);
         setIssues(price.issues);
         setValid(price.issues.length === 0);
+        if (
+          advance &&
+          price.issues.length === 0 &&
+          ["estimated", "manual_review"].includes(price.outcome)
+        )
+          journey?.review();
       } else {
         setValid(result.issues.length === 0);
+        if (advance && result.issues.length === 0) journey?.review();
       }
     } catch (cause) {
+      if (sequence !== requestSequence.current) return;
       setValid(false);
       setError(cause);
     } finally {
@@ -398,6 +430,7 @@ function ConfigurationForm({
               fields: group.fields.filter(
                 (field) =>
                   stageIndex(field.stage) <= stageIndex(stage) &&
+                  (!journey || stage !== "order" || field.stage === "order") &&
                   matches(field.visible_when, values, service.fields),
               ),
             }))
@@ -433,12 +466,17 @@ function ConfigurationForm({
                           ),
                         );
                         if (value !== undefined) next[field.key] = value;
-                        setRaw(visibleAnswers(service, next, stage));
+                        setRaw(
+                          retainOrderDetails(
+                            visibleAnswers(service, next, stage),
+                          ),
+                        );
+                        if (stage === "estimate") journey?.invalidate();
                         setChanged(true);
                         setError(null);
                         setIssues([]);
                         setValid(false);
-                        setEstimate(null);
+                        if (!journey || stage === "estimate") setEstimate(null);
                       }}
                       error={
                         issues.find((issue) => issue.path === field.key)
@@ -449,31 +487,62 @@ function ConfigurationForm({
                 </div>
               </section>
             ))}
-          {!previewPath && (stage === "estimate" || stage === "order") && (
-            <div className="catalog-input">
-              <label htmlFor={couponID}>Coupon code (optional)</label>
-              <input
-                id={couponID}
-                value={coupon}
-                maxLength={40}
-                onChange={(event) => {
-                  setCoupon(event.target.value);
-                  setChanged(true);
-                  setIssues([]);
-                  setEstimate(null);
-                  setValid(false);
-                  setError(null);
-                }}
-              />
-              <p className="quiet">
-                One code per order. Eligibility is rechecked when you accept the
-                final price.
-              </p>
-            </div>
+          {!previewPath &&
+            (!journey || stage === "estimate") &&
+            (stage === "estimate" || stage === "order") && (
+              <div className="catalog-input">
+                <label htmlFor={couponID}>Coupon code (optional)</label>
+                <input
+                  id={couponID}
+                  value={coupon}
+                  maxLength={40}
+                  onChange={(event) => {
+                    setCoupon(event.target.value);
+                    journey?.invalidate();
+                    setChanged(true);
+                    setIssues([]);
+                    setEstimate(null);
+                    setValid(false);
+                    setError(null);
+                  }}
+                />
+                <p className="quiet">
+                  One code per order. Eligibility is rechecked when you accept
+                  the final price.
+                </p>
+              </div>
+            )}
+          {journey && stage === "order" && (
+            <p>
+              Your goal and preferences are shown in the summary.{" "}
+              <button
+                type="button"
+                className="button compact"
+                onClick={journey.edit}
+              >
+                Edit choices
+              </button>
+            </p>
           )}
-          <button className="button" type="submit">
-            {busy ? "Checking…" : "Check selections"}
-          </button>
+          <div className="configuration-actions">
+            <button
+              className={
+                journey && stage === "estimate" ? "button secondary" : "button"
+              }
+              type="submit"
+            >
+              {busy ? "Checking…" : "Check selections"}
+            </button>
+            {journey && stage === "estimate" && (
+              <button
+                className="button"
+                type="button"
+                onClick={() => void submit(undefined, true)}
+              >
+                {busy ? "Checking…" : "Continue to order information →"}
+              </button>
+            )}
+          </div>
         </fieldset>
         {!previewPath && !onCommit && (
           <SelectionSummary

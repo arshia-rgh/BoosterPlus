@@ -1,6 +1,6 @@
 # PLAYORA — accepted design implementation roadmap
 
-25 September 2026 · **Implementation authorized by the owner; DI00–DI04 delivered; DI05–DI15 planned. R10/R11 held.**
+25 September 2026 · **Implementation authorized by the owner; DI00–DI04 delivered; DI05 in progress; DI06–DI15 planned. R10/R11 held.**
 
 The owner accepted the current design as complete for now and requested this implementation plan before development resumes. This is the next application roadmap, replacing the execution order in the historical UI/UX and homepage-refinement roadmaps. R00–R09 and earlier UX deliveries remain existing code to preserve and improve. R10/R11 remain separately held in [final-launch.md](../../final-launch.md).
 
@@ -146,6 +146,8 @@ DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 dis
 **Exit/tests:** six current game templates plus a newly configured fixture game; paused/missing services, unavailable images, no reviews/metrics, long names, mobile focal framing, scroll targets and motion preferences. Direct links and history preserve game context. Stats and promotions remain correct when service changes.
 
 ### DI05 — boost request, package and checkout flows
+
+**In progress:** configuration/review and interrupted-creation increment A; see [qualification](DI05_QUALIFICATION.md). Remaining checkout and traceability work keeps the phase open.
 
 - Connect dynamic custom forms and package eligibility to real catalog versions. Support both playing on the customer's account and together; rank/hero/role/region and other fields come from the published configuration. Invalid combinations have local explanations. Manual estimate paths may submit without a numeric promise.
 - Review summaries show selected scope, estimate versus final quote, delivery prerequisites and terms. Preserve safe drafts through sign-in and return to exact game/service; private credentials do not belong in general draft storage.

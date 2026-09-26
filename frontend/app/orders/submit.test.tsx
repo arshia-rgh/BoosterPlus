@@ -31,7 +31,11 @@ const session: Session = {
   terms_url: "/terms",
 };
 it("requires explicit price acceptance and reuses the idempotency key after an uncertain failure", async () => {
-  vi.mocked(get).mockResolvedValue(session);
+  vi.mocked(get).mockImplementation((path) =>
+    Promise.resolve(
+      path.includes("/me/order-requests/") ? { order_id: "" } : session,
+    ),
+  );
   vi.mocked(post).mockRejectedValue(
     new APIError("A connection failed. Retry this request."),
   );
@@ -140,7 +144,7 @@ it("uses local sign-in return and ignores stale session responses", async () => 
   const link = await screen.findByRole("link", {
     name: "Sign in and complete verification",
   });
-  expect(link).toHaveAttribute("href", "/login?returnTo=%2F");
+  expect(link).toHaveAttribute("href", "/login?returnTo=%2F%3Fstep%3Dreview");
   expect(link).not.toHaveAttribute("target");
   vi.mocked(get)
     .mockImplementationOnce(

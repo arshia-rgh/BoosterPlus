@@ -20269,6 +20269,78 @@
           }
         }
       }
+    },
+    "/api/v1/me/order-requests/{key}": {
+      "get": {
+        "operationId": "recoverCustomerOrder",
+        "summary": "Recover only the signed-in customer’s order identifier by creation request reference",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["order_id"],
+                  "properties": {
+                    "order_id": {
+                      "type": "string",
+                      "description": "Owned order ID, or empty when no request has been saved."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {

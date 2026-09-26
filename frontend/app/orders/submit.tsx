@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { clearConfigurationDraft } from "../catalog/configuration-draft";
 import { sessionEventMatches } from "../identity/portal";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { get, post, sessionSchema, type Session } from "../identity/api";
 import { Check, ErrorNotice, Action } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
 import type { Answers, Estimate, Variant } from "../catalog/model";
 import { detailSchema } from "./model";
+import {
+  recoverySchema,
+  requestReference,
+  RequestSubmission,
+} from "./request-recovery";
 
 export default function SubmitOrder({
   slug,
@@ -33,11 +38,16 @@ export default function SubmitOrder({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [params, setParams] = useSearchParams();
+  const lock = useRef(false);
+  const submitting = useContext(RequestSubmission);
   const [session, setSession] = useState<Session | null>(null),
     [error, setError] = useState<unknown>(null),
     [accepted, setAccepted] = useState(false),
     [pending, setPending] = useState(false),
-    [requestKey] = useState(() => crypto.randomUUID());
+    [requestKey] = useState(
+      () => requestReference(params) || crypto.randomUUID(),
+    );
   useEffect(() => {
     let active = true,
       sequence = 0;
@@ -75,14 +85,32 @@ export default function SubmitOrder({
     ? (estimate?.amount_minor ?? variant.amount_minor)
     : "";
   async function create() {
+    if (lock.current || !accepted || !session?.user || session.mfa_required)
+      return;
+    lock.current = true;
+    submitting(true);
+    const reference = requestReference(params) || requestKey;
+    const next = new URLSearchParams(params);
+    next.set("request", reference);
+    setParams(next, { replace: true, preventScrollReset: true });
     setPending(true);
     setBusy(true);
     setError(null);
     try {
+      const recovered = await get(
+        `/me/order-requests/${reference}`,
+        recoverySchema,
+        "customer",
+      );
+      if (recovered.order_id) {
+        clearConfigurationDraft();
+        await navigate(`/orders/${recovered.order_id}`);
+        return;
+      }
       const result = await post(
         "/orders",
         {
-          request_key: requestKey,
+          request_key: reference,
           release_id: releaseID,
           slug,
           service,
@@ -92,7 +120,7 @@ export default function SubmitOrder({
           answers,
           coupon_code: coupon,
           accept_terms: accepted,
-          terms_version: session?.terms_version ?? "",
+          terms_version: session.terms_version,
           expected_amount: amount,
           expected_coupon_version: variant
             ? (estimate?.discount?.version ?? 0)
@@ -105,6 +133,8 @@ export default function SubmitOrder({
     } catch (cause) {
       setError(cause);
     } finally {
+      lock.current = false;
+      submitting(false);
       setPending(false);
       setBusy(false);
     }
@@ -144,9 +174,16 @@ export default function SubmitOrder({
               "/login?returnTo=" +
               encodeURIComponent(
                 location.pathname +
-                  (variant
-                    ? "?variant=" + encodeURIComponent(variant.key)
-                    : ""),
+                  "?" +
+                  new URLSearchParams({
+                    ...(variant
+                      ? { variant: variant.key }
+                      : { step: "review" }),
+                    ...(coupon ? { coupon } : {}),
+                    ...(requestReference(params)
+                      ? { request: requestReference(params) }
+                      : {}),
+                  }).toString(),
               )
             }
             onClick={onSignIn}

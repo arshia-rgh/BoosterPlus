@@ -77,6 +77,27 @@ export function portalReturn(
       /^[a-zA-Z0-9_-]{1,64}$/.test(variant)
     )
       params.set("variant", variant);
+    if (
+      portal === "customer" &&
+      /^\/games\/[^/]+\/(services|packages)\/[^/]+$/.test(path)
+    ) {
+      const coupon = url.searchParams.get("coupon");
+      if (coupon && /^[a-zA-Z0-9_-]{1,40}$/.test(coupon))
+        params.set("coupon", coupon);
+      if (
+        path.includes("/services/") &&
+        url.searchParams.get("step") === "review"
+      )
+        params.set("step", "review");
+      const request = url.searchParams.get("request");
+      if (
+        request &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
+          request,
+        )
+      )
+        params.set("request", request);
+    }
     const query = params.toString();
     return path + (query ? `?${query}` : "");
   } catch {

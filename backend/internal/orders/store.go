@@ -108,6 +108,27 @@ func (s *Store) Get(ctx context.Context, p *identity.Principal, id string, admin
 	return view(ctx, s.client, row)
 }
 
+// Recover returns only an owned record identifier for an interrupted creation.
+// A request key is not an access credential and never reveals another customer's order.
+func (s *Store) Recover(ctx context.Context, p *identity.Principal, key string) (string, error) {
+	id, err := uuid.Parse(key)
+	if err != nil || id.String() != key {
+		return "", invalid("request_key", "Use a canonical UUID request reference.")
+	}
+	current, err := s.auth.Recheck(ctx, p, "account")
+	if err != nil {
+		return "", err
+	}
+	row, err := s.client.Order.Query().Where(order.UserIDEQ(current.User.ID), order.RequestKeyEQ(key)).Select(order.FieldID).Only(ctx)
+	if ent.IsNotFound(err) {
+		return "", nil
+	}
+	if err != nil {
+		return "", err
+	}
+	return row.ID, nil
+}
+
 // List returns 50 chronological summaries; private form/quote payloads stay in detail endpoints.
 func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, cursor, state, search string, filters ...Filters) (Listing, error) {
 	result := Listing{Orders: []Summary{}}

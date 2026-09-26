@@ -19,9 +19,16 @@ import {
 } from "react-router";
 import { FavoriteButton } from "../orders/favorites";
 import DynamicForm from "./dynamic-form";
+import RequestJourney from "../orders/request-recovery";
 import "./discovery.css";
 import { Select } from "./controls";
-import { price, type Listing, type Release, type Package } from "./model";
+import {
+  price,
+  type Listing,
+  type Release,
+  type Package,
+  type Service,
+} from "./model";
 
 export function offeringPath(params: URLSearchParams) {
   const value = params.get("path");
@@ -302,7 +309,34 @@ export function ServicePage() {
   const service = release.configuration.services.find(
     (s) => s.key === params.service,
   );
-  const [stage, setStage] = useState("estimate");
+  if (!service) throw new Error("Catalog offering is unavailable");
+  return (
+    <ServiceDetails
+      key={release.id + ":" + service.key}
+      release={release}
+      service={service}
+    />
+  );
+}
+function ServiceDetails({
+  release,
+  service,
+}: {
+  release: Release;
+  service: Service;
+}) {
+  const [query, setQuery] = useSearchParams();
+  const [reviewed, setReviewed] = useState(false);
+  const stage =
+    query.get("step") === "review" && reviewed ? "order" : "estimate";
+  function setStage(next: "estimate" | "order") {
+    const params = new URLSearchParams(query);
+    if (next === "order") {
+      setReviewed(true);
+      params.set("step", "review");
+    } else params.delete("step");
+    setQuery(params, { preventScrollReset: true });
+  }
   const stepTitle = useRef<HTMLHeadingElement>(null);
   const previousStage = useRef(stage);
   useEffect(() => {
@@ -311,7 +345,6 @@ export function ServicePage() {
       stepTitle.current?.focus();
     }
   }, [stage]);
-  if (!service) throw new Error("Catalog offering is unavailable");
   return (
     <section className="game-panel">
       <Link preventScrollReset to={`/games/${release.slug}?path=custom`}>
@@ -329,26 +362,20 @@ export function ServicePage() {
         Custom pricing requires an administrator’s final quote. Select your
         options to check availability and request a provisional estimate.
       </p>
-      <nav className="configuration-steps" aria-label="Configure your boost">
-        <button
-          type="button"
-          aria-current={stage === "estimate" ? "step" : undefined}
-          onClick={() => {
-            setStage("estimate");
-          }}
-        >
+      <ol className="configuration-steps" aria-label="Configure your boost">
+        <li aria-current={stage === "estimate" ? "step" : undefined}>
           1. Your goal & estimate
-        </button>
-        <button
-          type="button"
-          aria-current={stage === "order" ? "step" : undefined}
-          onClick={() => {
-            setStage("order");
-          }}
-        >
+        </li>
+        <li aria-current={stage === "order" ? "step" : undefined}>
           2. Review & request
-        </button>
-      </nav>
+        </li>
+      </ol>
+      {query.get("step") === "review" && !reviewed && (
+        <p role="status">
+          Check your restored selections before reviewing the request. Private
+          details and consent are never restored after a reload.
+        </p>
+      )}
       <h2 ref={stepTitle} tabIndex={-1} className="configuration-step-title">
         {stage === "estimate"
           ? "1. Your goal & estimate"
@@ -356,31 +383,34 @@ export function ServicePage() {
       </h2>
       {stage === "order" && (
         <p>
-          Review your choices and any order details below, then check selections
-          to continue to your quote request. No order is created until you
-          submit it.
+          Review your goal, preferences and provisional estimate. Add only the
+          order details requested below. Nothing is charged when you submit a
+          quote request; our team confirms the final price before payment.
         </p>
       )}
-      <DynamicForm
-        key={release.id + service.key}
-        config={release.configuration}
-        service={service}
-        slug={release.slug}
-        releaseID={release.id}
-        stage={stage}
-        paused={!serviceAvailable(release, "boost")}
-      />
-      {stage === "estimate" && (
-        <button
-          className="button"
-          type="button"
-          onClick={() => {
-            setStage("order");
+      <RequestJourney>
+        <DynamicForm
+          key={release.id + service.key}
+          config={release.configuration}
+          service={service}
+          slug={release.slug}
+          releaseID={release.id}
+          stage={stage}
+          initialCoupon={query.get("coupon")?.slice(0, 40) ?? ""}
+          journey={{
+            review: () => {
+              setStage("order");
+            },
+            invalidate: () => {
+              setReviewed(false);
+            },
+            edit: () => {
+              setStage("estimate");
+            },
           }}
-        >
-          Continue to order information →
-        </button>
-      )}
+          paused={!serviceAvailable(release, "boost")}
+        />
+      </RequestJourney>
     </section>
   );
 }
@@ -391,13 +421,17 @@ function PackageDetails({
   release: Release;
   pack: Package;
 }) {
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const selected = params.get("variant");
-  const [key, setKey] = useState(
-    pack.variants.find((v) => v.key === selected)?.key ??
-      pack.variants[0]?.key ??
-      "",
-  );
+  const key =
+    (selected === null
+      ? pack.variants[0]?.key
+      : pack.variants.find((v) => v.key === selected)?.key) ?? "";
+  function setKey(value: string) {
+    const next = new URLSearchParams(params);
+    next.set("variant", value);
+    setParams(next, { preventScrollReset: true });
+  }
   const variant = pack.variants.find((v) => v.key === key),
     service = release.configuration.services.find(
       (s) => s.key === pack.service,
@@ -412,8 +446,19 @@ function PackageDetails({
         label="Package variant"
         value={key}
         change={setKey}
-        options={pack.variants.map((v) => [v.key, `${v.name} · ${price(v)}`])}
+        options={[
+          ["", "Choose a package variant"],
+          ...pack.variants.map(
+            (v) => [v.key, `${v.name} · ${price(v)}`] as const,
+          ),
+        ]}
       />
+      {!variant && (
+        <p role="status">
+          This package variant is unavailable. Choose a current variant and
+          review its price before continuing.
+        </p>
+      )}
       {variant && (
         <section className="package-summary">
           <div className="package-overview">
@@ -453,7 +498,7 @@ function PackageDetails({
               slug={release.slug}
               releaseID={release.id}
               stage="order"
-              initialCoupon={params.get("coupon")?.slice(0, 80) ?? ""}
+              initialCoupon={params.get("coupon")?.slice(0, 40) ?? ""}
               pack={pack.key}
               variant={variant}
               paused={!serviceAvailable(release, "boost")}
@@ -476,11 +521,13 @@ export function PackagePage() {
       <Link preventScrollReset to={`/games/${release.slug}?path=packages`}>
         ← {release.configuration.name}
       </Link>
-      <PackageDetails
-        key={release.id + pack.key}
-        release={release}
-        pack={pack}
-      />
+      <RequestJourney>
+        <PackageDetails
+          key={release.id + pack.key}
+          release={release}
+          pack={pack}
+        />
+      </RequestJourney>
     </section>
   );
 }

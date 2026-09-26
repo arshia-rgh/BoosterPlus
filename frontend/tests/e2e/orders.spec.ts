@@ -152,7 +152,9 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     await expect(buyer).toHaveURL(/\/login\?returnTo=/);
     const entry = buyer.url();
     await signIn(buyer, request, fixture(info.project.name, "orders"), entry);
-    await expect(buyer).toHaveURL(new RegExp(`/games/${slug}/services/boost$`));
+    await expect(buyer).toHaveURL(
+      new RegExp(`/games/${slug}/services/boost\\?step=review$`),
+    );
     await expect(buyer.getByLabel("Play mode (required)")).toHaveValue("duo");
     await buyer
       .getByRole("button", { name: "Continue to order information →" })
@@ -184,7 +186,10 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     await buyer
       .getByRole("button", { name: "Continue to order information →" })
       .click();
-    await expect(buyer.getByLabel("Play mode (required)")).toHaveValue("solo");
+    await expect(buyer.getByLabel("Play mode (required)")).toHaveCount(0);
+    await expect(
+      buyer.getByRole("complementary", { name: "Selection summary" }),
+    ).toContainText("Solo");
     await buyer
       .getByLabel("Ordinary instructions")
       .fill("Keep this ordinary note on the original order only");
@@ -210,9 +215,40 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     await buyer
       .getByLabel("I accept the terms and request a final quote")
       .check();
+    // Persist the order but lose its response, then recover after a full reload.
+    await buyer.route(
+      "**/api/v1/orders",
+      async (route) => {
+        if (route.request().method() !== "POST") return route.continue();
+        const response = await route.fetch();
+        expect(response.ok()).toBe(true);
+        await expect(
+          buyer.getByRole("region", { name: "Interrupted request" }),
+        ).toHaveCount(0);
+        await route.abort("failed");
+      },
+      { times: 1 },
+    );
     await buyer
       .getByRole("button", { name: "Submit quote request", exact: true })
       .click();
+    await expect(buyer).toHaveURL(/request=[a-f0-9-]+/);
+    await expect(
+      buyer.getByRole("heading", { name: "Your request was saved" }),
+    ).toBeVisible();
+    await buyer.reload();
+    await expect(
+      buyer.getByRole("heading", { name: "Your request was saved" }),
+    ).toBeVisible();
+    await expect(
+      buyer.getByRole("heading", { name: "Your request was saved" }),
+    ).toBeFocused();
+    await buyer.screenshot({
+      path: `.cache/di05-recovery-${info.project.name}.png`,
+      fullPage: true,
+    });
+    await accessible(buyer);
+    await buyer.getByRole("link", { name: "View your saved order" }).click();
     await expect(buyer).toHaveURL(/\/orders\/[a-f0-9-]+$/);
     const orderID = buyer.url().split("/").at(-1);
     if (!orderID) throw new Error("Missing order");

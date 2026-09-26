@@ -145,3 +145,21 @@ it("uses the selected staff cookie audience for bootstrap and mutation", async (
     }),
   );
 });
+
+it("preserves only bounded public configurator intent through customer sign-in", () => {
+  const reference = "58b15562-a8bb-46a0-b8d5-0926b6166bb6";
+  expect(
+    portalReturn(
+      `/games/mlbb/services/boost?step=review&coupon=SAVE10&request=${reference}&note=private`,
+      "customer",
+    ),
+  ).toBe(
+    `/games/mlbb/services/boost?coupon=SAVE10&step=review&request=${reference}`,
+  );
+  expect(
+    portalReturn(
+      "/games/mlbb/packages/rank?variant=solo&request=wrong&coupon=private%20text&step=review",
+      "customer",
+    ),
+  ).toBe("/games/mlbb/packages/rank?variant=solo");
+});

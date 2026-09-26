@@ -76,7 +76,7 @@ test("legacy boosting intent survives the game directory, reload and back; form 
   await expect(
     page.getByRole("heading", { name: "2. Review & request" }),
   ).toBeFocused();
-  await expect(result).toHaveCount(0);
+  await expect(result).toContainText("manual price review");
   await page.setViewportSize({ width: 320, height: 480 });
   const nav = page.getByRole("navigation", { name: "Main navigation" });
   for (const name of ["Support", "My account"])

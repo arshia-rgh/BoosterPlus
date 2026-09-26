@@ -4543,6 +4543,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/me/order-requests/{key}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Recover only the signed-in customer’s order identifier by creation request reference */
+    get: operations["recoverCustomerOrder"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -20019,6 +20036,58 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  recoverCustomerOrder: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        key: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Owned order ID, or empty when no request has been saved. */
+            order_id: string;
+          };
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OrderProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OrderProblem"];
         };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */
