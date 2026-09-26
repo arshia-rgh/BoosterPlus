@@ -155,7 +155,7 @@ test("cursor links retain filters and record sections retain caller-owned drafts
   await expect(page.locator(".record-content")).toBeFocused();
 });
 
-test("actual catalog pagination preserves intent, resets changed filters and recovers failures", async ({
+test("actual catalog pagination preserves intent, returns to the first page and recovers failures", async ({
   page,
 }) => {
   await page.goto(`${origin}/games?path=custom`);
@@ -170,10 +170,8 @@ test("actual catalog pagination preserves intent, resets changed filters and rec
     page.getByRole("heading", { name: "Second fixture game" }),
   ).toBeVisible();
   await expect(page).toHaveURL(`${origin}/games?path=custom&after=second`);
-  await page
-    .getByRole("button", { name: "Fixed packages", exact: true })
-    .click();
-  await expect(page).toHaveURL(`${origin}/games?path=packages`);
+  await page.getByRole("link", { name: "First page", exact: true }).click();
+  await expect(page).toHaveURL(`${origin}/games?path=custom`);
   await expect(
     page.getByRole("heading", { name: "First fixture game" }),
   ).toBeVisible();

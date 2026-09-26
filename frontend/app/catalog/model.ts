@@ -250,6 +250,7 @@ export const releaseSchema = z.object({
   configuration: configurationSchema,
 });
 export const summarySchema = z.object({
+  hero_layout: heroLayoutSchema.optional(),
   capabilities: z.array(capabilitySchema).optional(),
   intake_enabled: z.boolean().optional(),
   id: z.string(),

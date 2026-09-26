@@ -1,9 +1,9 @@
-import { qualifyCharacters } from "./character-journey";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { writeFile } from "node:fs/promises";
+import { fixture } from "./identity-fixtures";
 
-test("hero and showcase reflow without overlapping actions", async ({
+test("equal-game homepage reflows without overlapping content and all introductions reach the picker", async ({
   page,
 }, info) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -13,7 +13,7 @@ test("hero and showcase reflow without overlapping actions", async ({
     [360, 740],
     [390, 844],
     [768, 1024],
-    [1024, 768],
+    [1280, 900],
     [1440, 900],
     [844, 390],
   ] as const) {
@@ -21,202 +21,174 @@ test("hero and showcase reflow without overlapping actions", async ({
     await page.evaluate(() => {
       scrollTo(0, 0);
     });
-    const hero = page.locator(".ascend-hero");
-    await expect(hero.locator(".character-art")).toHaveCount(0);
-    const geometry = await hero.evaluate((element) => {
-      const content = element.querySelector(".hero-content");
-      const bottom = element
-        .querySelector(".hero-bottom")
-        ?.getBoundingClientRect();
-      if (!content || !bottom) throw new Error("Missing hero regions");
+    await expect(page.locator(".ascend-hero a")).toHaveCount(0);
+    await expect(page.locator(".world-showcase, #rank-journey")).toHaveCount(0);
+    const boxes = await page.locator(".hero-content").evaluate((element) => {
+      const hero = element.closest(".ascend-hero")?.getBoundingClientRect();
+      const text = element.getBoundingClientRect();
+      if (!hero) throw new Error("Hero missing");
       return {
-        contentBottom:
-          content.getBoundingClientRect().bottom -
-          parseFloat(getComputedStyle(content).paddingBottom),
-        footerTop: bottom.top,
-        bottom: element.getBoundingClientRect().bottom,
+        top: text.top,
+        bottom: text.bottom,
+        heroTop: hero.top,
+        heroBottom: hero.bottom,
       };
     });
-    expect(geometry.contentBottom).toBeLessThanOrEqual(geometry.footerTop);
-    expect(geometry.footerTop).toBeLessThan(geometry.bottom);
+    expect(boxes.top).toBeGreaterThanOrEqual(boxes.heroTop);
+    expect(boxes.bottom).toBeLessThanOrEqual(boxes.heroBottom);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),
     ).toBeLessThanOrEqual(width);
-    await hero.screenshot({
-      path: `.cache/hf02-hero-${info.project.name}-${String(width)}.png`,
+    await page.locator(".ascend-hero").screenshot({
+      path: `.cache/di04-home-hero-${info.project.name}-${String(width)}.png`,
     });
-    const showcase = page.locator(".world-showcase");
-    await showcase.scrollIntoViewIfNeeded();
-    await expect(
-      showcase.getByRole("link", { name: "Browse available games" }),
-    ).toBeVisible();
-    await showcase.screenshot({
-      path: `.cache/hf02-showcase-${info.project.name}-${String(width)}.png`,
+    await page.locator(".introduction-boost").screenshot({
+      path: `.cache/di04-home-boost-${info.project.name}-${String(width)}.png`,
     });
   }
-  // Text-only enlargement must expand the hero instead of clipping governed copy.
+  for (const link of await page
+    .getByRole("link", { name: "Choose your game" })
+    .all()) {
+    await link.click();
+    await expect(page.locator("#game-selection-title")).toBeFocused();
+    await expect(page.locator("#game-selection-title")).toBeInViewport();
+  }
+  await expect(page.locator(".discovery-game-card.is-paused a")).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => {
     document.documentElement.style.fontSize = "200%";
   });
-  await expect(
-    page.getByRole("link", { name: "Explore games", exact: true }),
-  ).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(390);
   await page
     .locator(".ascend-hero")
-    .screenshot({ path: `.cache/hf02-hero-${info.project.name}-text200.png` });
+    .screenshot({ path: `.cache/di04-home-${info.project.name}-text200.png` });
 });
 
-async function seek(page: Page, progress: number) {
-  await page.locator("#rank-journey").evaluate((scene, value) => {
-    const rect = scene.getBoundingClientRect();
-    window.scrollTo(
-      0,
-      rect.top + window.scrollY + (rect.height - window.innerHeight) * value,
-    );
-  }, progress);
-  await expect(page.locator("#rank-journey")).toHaveAttribute(
-    "data-progress",
-    String(Math.round(progress * 100)),
-  );
-}
-async function opacity(page: Page, selector: string) {
-  return page
-    .locator(selector)
-    .evaluate((element) => Number(getComputedStyle(element).opacity));
-}
-
-test("rank journey scrubs smoothly forward/backward and survives resize and navigation", async ({
+test("game discovery keeps the hero through services, account browsing, reload and history", async ({
   page,
 }, info) => {
-  const errors: string[] = [];
-  page.on("pageerror", (error) => {
-    errors.push(error.message);
-  });
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  await expect(page.locator("#rank-journey")).toHaveAttribute(
-    "data-enhanced",
-    "true",
-  );
-  await expect(page.locator(".hero-content")).toHaveCSS(
-    "transform",
-    "matrix(1, 0, 0, 1, 0, 0)",
-  );
-  await expect(page.locator(".ascend-hero .character-art")).toHaveCount(0);
-  await expect(page.locator(".hero-art img")).toBeVisible();
-  await page.screenshot({
-    path: `.cache/home-${info.project.name}.png`,
-    fullPage: false,
-  });
-  for (const progress of [0, 0.25, 0.5, 0.75, 1]) {
-    await seek(page, progress);
-    await expect(
-      page.getByRole("heading", { name: "Same player. Different league." }),
-    ).toBeInViewport();
-    await page.screenshot({
-      path: `.cache/rank-${info.project.name}-${String(progress * 100)}.png`,
-    });
-  }
-  expect(await opacity(page, ".rank-finish")).toBe(1);
-  expect(await opacity(page, ".rank-start")).toBe(0);
-  if (info.project.name === "mobile")
-    await page.evaluate(() => {
-      scrollBy(0, -275);
-    });
-  else await page.mouse.wheel(0, -275);
-  await expect
-    .poll(async () =>
-      Number(await page.locator("#rank-journey").getAttribute("data-progress")),
-    )
-    .toBeLessThan(100);
-  await seek(page, 0.5);
-  expect(await opacity(page, ".rank-finish")).toBeGreaterThan(0);
-  expect(await opacity(page, ".rank-finish")).toBeLessThan(1);
-  await seek(page, 0.25);
-  expect(await opacity(page, ".rank-start")).toBe(1);
-  const viewport = page.viewportSize();
-  if (!viewport) throw new Error("A viewport is required");
-  await page.setViewportSize({ width: viewport.height, height: 500 });
-  await expect(page.locator(".journey-sticky")).toHaveCSS(
-    "position",
-    "relative",
-  );
-  expect(await opacity(page, ".rank-finish")).toBe(1);
-  await page.setViewportSize(viewport);
-  await seek(page, 0.75);
-  await page.getByRole("link", { name: /find your boost/i }).click();
-  await expect(page).toHaveURL(/\/games$/);
-  await page.goBack();
-  await expect(page.locator("#rank-journey")).toHaveAttribute(
-    "data-enhanced",
-    "true",
-  );
-  await seek(page, 0.25);
-  expect(await opacity(page, ".rank-start")).toBe(1);
-  await page.goto("/#rank-journey");
+  const slug = fixture(info.project.name, "discovery_mlbb");
+  await page.goto(`/games/${slug}`);
+  const hero = page.getByRole("heading", { level: 1, name: "Mobile Legends" });
   await expect(
-    page.getByRole("heading", { name: "Same player. Different league." }),
-  ).toBeInViewport();
-  await qualifyCharacters(page, info.project.name);
-  expect(errors).toEqual([]);
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
-});
-
-test("motion preference persists, OS changes are respected and FAQs work with keyboard", async ({
-  page,
-}, info) => {
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  await page.getByRole("button", { name: "Reduced", exact: true }).click();
-  await expect(page.locator("#rank-journey")).not.toHaveAttribute(
-    "data-enhanced",
-  );
-  await expect(page.locator(".journey-sticky")).toHaveCSS("position", "static");
-  expect(await opacity(page, ".rank-start")).toBe(1);
-  expect(await opacity(page, ".rank-finish")).toBe(1);
+    page.getByRole("heading", { name: "Featured for your game" }),
+  ).toBeVisible();
+  const top = await page.locator(".public-metrics").boundingBox();
+  const offer = await page.locator(".featured-offers").boundingBox();
+  const chooser = await page.locator(".game-services").boundingBox();
+  expect(top?.y).toBeLessThan(offer?.y ?? 0);
+  expect(offer?.y).toBeLessThan(chooser?.y ?? 0);
+  await hero.evaluate((element) => {
+    element.dataset.identity = "preserved";
+  });
+  await page
+    .locator(".game-service-card")
+    .filter({ hasText: "Boosting" })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Boosting for Mobile Legends" }),
+  ).toBeFocused();
+  await expect(hero).toHaveAttribute("data-identity", "preserved");
+  await expect(
+    page.getByRole("heading", { name: "Boosting highlights" }),
+  ).toBeVisible();
+  await expect(page.locator(".game-service-grid")).toHaveCount(0);
+  await page.getByRole("link", { name: "← Back to choose a service" }).click();
+  await page
+    .locator(".game-service-card")
+    .filter({ hasText: "Accounts" })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Find your next account" }),
+  ).toBeFocused();
+  await expect(page.getByRole("main")).toHaveCount(1);
+  await expect(hero).toHaveAttribute("data-identity", "preserved");
+  await expect(page.locator(".featured-offers")).toHaveCount(0);
+  if (info.project.name === "mobile")
+    await page
+      .getByRole("button", { name: "Filter accounts", exact: true })
+      .click();
+  await page
+    .getByLabel("Search accounts", { exact: true })
+    .fill("no matching fixture");
+  await page.getByRole("button", { name: "Apply account filters" }).click();
+  await expect(page).toHaveURL(/search=no\+matching\+fixture/);
+  await expect(
+    page.getByRole("heading", { name: "Find your next account" }),
+  ).toBeVisible();
   await page.reload();
   await expect(
-    page.getByRole("button", { name: "Reduced", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.getByRole("button", { name: "System", exact: true }).click();
+    page.getByRole("heading", { name: "Find your next account" }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(
+    page.getByRole("heading", { name: "Find your next account" }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "← Back to choose a service" }).click();
+  for (const game of ["mlbb", "wow", "lol", "valorant", "dota", "wildrift"]) {
+    await page.goto(
+      `/games/${fixture(info.project.name, `discovery_${game}`)}`,
+    );
+    for (const width of [1280, 768, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.locator(".game-stage-art")).toBeVisible();
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth),
+      ).toBeLessThanOrEqual(width);
+      await page.locator(".game-stage").screenshot({
+        path: `.cache/di04-game-${game}-${info.project.name}-${String(width)}.png`,
+      });
+    }
+  }
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test("motion preferences and FAQ keyboard controls remain usable", async ({
+  page,
+}, info) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Reduce background motion", exact: true })
+    .click();
   await expect(page.getByRole("main")).toHaveAttribute(
     "data-motion",
     "reduced",
   );
-  await expect(page.locator("#rank-journey")).not.toHaveAttribute(
-    "data-enhanced",
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Reduce background motion", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page
+    .getByRole("button", { name: "Use device motion setting", exact: true })
+    .click();
+  await expect(page.getByRole("main")).toHaveAttribute(
+    "data-motion",
+    "reduced",
   );
+  await page
+    .getByText("How these statistics are measured", { exact: true })
+    .click();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  const question = page
-    .locator("summary")
-    .filter({ hasText: "How does custom boosting work?" });
+  const question = page.locator(".home-faq summary").first();
   await question.focus();
   await page.keyboard.press("Enter");
-  await expect(page.locator("details[open]")).toContainText("final quote");
+  await expect(page.locator(".home-faq details[open]")).toHaveCount(1);
   await page.keyboard.press("Enter");
-  await expect(page.locator("details[open]")).toHaveCount(0);
-  await expect(page.locator(".hero-content")).toHaveCSS("transform", "none");
+  await expect(page.locator(".home-faq details[open]")).toHaveCount(0);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.screenshot({
-    path: `.cache/home-static-${info.project.name}.png`,
+    path: `.cache/di04-home-static-${info.project.name}.png`,
     fullPage: true,
   });
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect(page.locator("#rank-journey")).toHaveAttribute(
-    "data-enhanced",
-    "true",
-  );
+  await expect(page.getByRole("main")).toHaveAttribute("data-motion", "full");
 });
 
-test("no-JS and failed artwork retain readable content, navigation and static rank cards", async ({
+test("no-JS and failed artwork preserve readable content and native game anchors", async ({
   browser,
 }, info) => {
   const context = await browser.newContext({
@@ -227,23 +199,20 @@ test("no-JS and failed artwork retain readable content, navigation and static ra
     const page = await context.newPage();
     await page.route("**/artwork/**", (route) => route.abort());
     await page.goto("http://127.0.0.1:4173/");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      "YOUR NEXT",
-    );
-    await expect(page.locator("#rank-journey")).not.toHaveAttribute(
-      "data-enhanced",
-    );
-    await expect(page.locator(".rank-start")).toBeVisible();
-    await expect(page.locator(".rank-finish")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await page.locator(".home-faq summary").first().click();
+    await expect(page.locator(".home-faq details[open]")).toHaveCount(1);
+    await page.getByRole("link", { name: "Choose your game" }).first().click();
+    await expect(page).toHaveURL(/#game-selection$/);
+    await expect(page.locator("#game-selection-title")).toBeInViewport();
     await page
-      .locator("summary")
-      .filter({ hasText: "What is different about fixed packages?" })
+      .locator(
+        `a[href="/games/${fixture(info.project.name, "discovery_mlbb")}"]`,
+      )
       .click();
-    await expect(page.locator("details[open]")).toContainText(
-      "Payment is required before fulfillment.",
-    );
-    await page.getByRole("link", { name: /explore games/i }).click();
-    await expect(page).toHaveURL(/\/games$/);
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Mobile Legends" }),
+    ).toBeVisible();
   } finally {
     await context.close();
   }
@@ -291,14 +260,9 @@ test("homepage respects transfer and layout-shift budgets under production CSP",
         .evaluate((image) => (image as HTMLImageElement).naturalWidth),
     )
     .toBeGreaterThan(0);
-  await expect(page.locator("#rank-journey")).toHaveAttribute(
-    "data-enhanced",
-    "true",
-  );
-  await seek(page, 0.5);
-  await seek(page, 1);
+  await page.locator(".introduction-boost").scrollIntoViewIfNeeded();
   const frameIntervals = await page
-    .locator("#rank-journey")
+    .locator(".introduction-boost")
     .evaluate(async (scene) => {
       const rect = scene.getBoundingClientRect();
       const top = rect.top + window.scrollY;
@@ -363,8 +327,7 @@ test("homepage respects transfer and layout-shift budgets under production CSP",
         0,
       ),
   );
-  expect(characterBytes).toBeGreaterThan(0);
-  expect(characterBytes).toBeLessThan(200_000);
+  expect(characterBytes).toBe(0);
   const evidence = JSON.stringify(
     {
       profile: `Local production SSR, unthrottled ${info.project.use.browserName ?? "chromium"}; unsupported performance metrics are null, not field Web Vitals`,
@@ -379,4 +342,117 @@ test("homepage respects transfer and layout-shift budgets under production CSP",
     body: evidence,
     contentType: "application/json",
   });
+});
+
+test("public evidence states and manual review carousel remain clear and keyboard operable", async ({
+  page,
+}, info) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  let failed = true;
+  await page.route("**/api/v1/site/metrics", (route) =>
+    route.fulfill({
+      status: failed ? 503 : 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        failed
+          ? { code: "unavailable" }
+          : {
+              metrics: [
+                {
+                  key: "active",
+                  label: "Active orders",
+                  definition:
+                    "Synthetic measured evidence for this isolated presentation check",
+                  state: "insufficient_sample",
+                  value: 3,
+                  period_end: "2026-09-26T12:00:00Z",
+                  refreshed_at: "2026-09-26T12:00:00Z",
+                },
+              ],
+            },
+      ),
+    }),
+  );
+  await page.route("**/api/v1/public/reviews", (route) =>
+    route.fulfill({
+      status: failed ? 503 : 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        failed
+          ? { code: "unavailable" }
+          : {
+              items: Array.from({ length: 8 }, (_, index) => ({
+                slug: "synthetic",
+                game: `Fixture game ${String(index + 1)}`,
+                review: {
+                  id: `review-${String(index)}`,
+                  rating: index % 2 ? 1 : 5,
+                  body: "Synthetic feedback used only to verify this carousel. The complete customer text remains accessible from its review page.",
+                  feedback: [],
+                  response: "",
+                  policy_content: "Fixture policy",
+                  purchase_status:
+                    index === 0 ? "refund_recorded" : "verified_purchase",
+                  published_at: "2026-09-26T12:00:00Z",
+                  updated_at: "2026-09-26T12:00:00Z",
+                },
+              })),
+            },
+      ),
+    }),
+  );
+  await page.goto("/");
+  await expect(
+    page.getByText("Reviews are temporarily unavailable."),
+  ).toBeVisible();
+  await expect(page.locator(".public-metric strong")).toHaveText([
+    "—",
+    "—",
+    "—",
+  ]);
+  failed = false;
+  await page.getByRole("button", { name: "Refresh activity" }).click();
+  await expect(page.getByText("Not enough eligible records")).toBeVisible();
+  await page.getByRole("button", { name: "Try reviews again" }).click();
+  await expect(
+    page.getByRole("button", { name: "Previous reviews" }),
+  ).toBeDisabled();
+  await expect(page.locator(".review-track li")).toHaveCount(8);
+  await expect(
+    page.getByText(/Purchase status changed after this feedback/),
+  ).toBeVisible();
+  await page
+    .locator(".home-reviews")
+    .screenshot({ path: `.cache/di04-reviews-${info.project.name}.png` });
+  const next = page.getByRole("button", { name: "Next reviews" });
+  for (let i = 0; i < 8; i++) {
+    if (await next.isDisabled()) break;
+    const before = await page
+      .locator(".review-track")
+      .evaluate((element) => element.scrollLeft);
+    await next.click();
+    await expect
+      .poll(() =>
+        page.locator(".review-track").evaluate((element) => element.scrollLeft),
+      )
+      .toBeGreaterThan(before);
+    const atEnd = await page
+      .locator(".review-track")
+      .evaluate(
+        (element) =>
+          element.scrollLeft + element.clientWidth >= element.scrollWidth - 2,
+      );
+    if (atEnd) {
+      await expect(next).toBeDisabled();
+      break;
+    }
+  }
+  await expect(next).toBeDisabled();
+  const previous = page.getByRole("button", { name: "Previous reviews" });
+  await previous.focus();
+  await page.keyboard.press("Enter");
+  await expect(next).toBeEnabled();
+  await page.locator(".review-track").focus();
+  await expect(page.locator(".review-track")).toBeFocused();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });

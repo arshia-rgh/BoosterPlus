@@ -14,6 +14,8 @@ import {
   useSearchParams,
   useRevalidator,
 } from "react-router";
+import { GameDiscovery } from "./game-discovery";
+import { selectedService } from "./public-discovery";
 import { FavoriteButton } from "../orders/favorites";
 import { useMotionPreference } from "../ui/motion";
 import { defaultHeroLayout, type Release } from "./model";
@@ -43,10 +45,16 @@ export function GameShell({
   const { pathname } = useLocation();
   const requested = query.get("path");
   const localContent = useRef<HTMLDivElement>(null);
-  const previousPath = useRef(pathname);
+  const focusPath =
+    pathname +
+    ":" +
+    (query.get("service") ?? "") +
+    ":" +
+    (query.get("path") ?? "");
+  const previousPath = useRef(focusPath);
   useEffect(() => {
-    if (previousPath.current === pathname) return;
-    previousPath.current = pathname;
+    if (previousPath.current === focusPath) return;
+    previousPath.current = focusPath;
     const heading = localContent.current?.querySelector<HTMLElement>("h2");
     if (heading) {
       heading.tabIndex = -1;
@@ -56,7 +64,7 @@ export function GameShell({
         behavior: motion === "system-full" ? "smooth" : "instant",
       });
     }
-  }, [pathname, motion]);
+  }, [focusPath, motion]);
   const path = pathname.includes("/services/")
     ? "custom"
     : pathname.includes("/packages/")
@@ -117,9 +125,26 @@ export function GameShell({
           />
         </div>
       </header>
+      <GameDiscovery
+        release={release}
+        selected={selectedService(pathname, query)}
+      />
       <div ref={localContent} className="game-local-content">
         {children}
       </div>
+      {release.configuration.faqs.length > 0 && (
+        <section className="game-faq" aria-labelledby="game-faq-title">
+          <h2 id="game-faq-title">
+            Questions about {release.configuration.name}
+          </h2>
+          {release.configuration.faqs.map((faq, i) => (
+            <details key={i}>
+              <summary>{faq.question}</summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
+        </section>
+      )}
     </main>
   );
 }

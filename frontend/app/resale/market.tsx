@@ -63,11 +63,22 @@ export function ProductTerms({ listing }: { listing: PublicListing }) {
     </section>
   );
 }
-export function AccountMarket() {
+export function AccountMarket({ gameSlug }: { gameSlug?: string | undefined }) {
   const [params] = useSearchParams();
-  return <MarketResults key={params.toString()} />;
+  return (
+    <MarketResults
+      key={(gameSlug ?? "") + params.toString()}
+      gameSlug={gameSlug}
+    />
+  );
 }
-function MarketResults() {
+function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
+  const Container = gameSlug ? "section" : "main";
+  const Heading = gameSlug ? "h2" : "h1";
+  const CardHeading = gameSlug ? "h3" : "h2";
+  const base = gameSlug
+    ? `/games/${encodeURIComponent(gameSlug)}/accounts`
+    : "/accounts";
   const [params, setParams] = useSearchParams();
   const navigation = useLocation();
   const focusResults = z
@@ -84,7 +95,7 @@ function MarketResults() {
     search: params.get("search")?.slice(0, 200) ?? "",
     region: params.get("region")?.slice(0, 80) ?? "",
     rank: params.get("rank")?.slice(0, 80) ?? "",
-    slug: params.get("slug")?.slice(0, 64) ?? "",
+    slug: gameSlug ?? params.get("slug")?.slice(0, 64) ?? "",
     after,
   }).toString();
   const resource = useResource(`/accounts?${query}`, publicListingsSchema);
@@ -92,23 +103,42 @@ function MarketResults() {
   useEffect(() => {
     if (focusResults && ready) resultSummary.current?.focus();
   }, [focusResults, ready]);
+  const serviceContext =
+    gameSlug && !navigation.pathname.includes("/accounts")
+      ? { service: "accounts" }
+      : {};
   function pageAfter(value: string) {
     const next = new URLSearchParams(query);
+    if (serviceContext.service) next.set("service", serviceContext.service);
     next.set("after", value);
     setParams(next);
   }
   return (
-    <main id="main" className="page catalog-page marketplace">
+    <Container
+      id={gameSlug ? undefined : "main"}
+      className={
+        gameSlug
+          ? "marketplace game-account-market"
+          : "page catalog-page marketplace"
+      }
+    >
       <p className="eyebrow">PLAYORA marketplace</p>
-      <h1>Find your next account</h1>
+      <Heading>Find your next account</Heading>
       <p>
         Reviewed listings with clear ownership terms, direct crypto checkout and
         protected delivery.
       </p>
-      <Link to="/sell">Sell an account</Link>
+      <Link
+        to={
+          gameSlug ? `/sell/new?slug=${encodeURIComponent(gameSlug)}` : "/sell"
+        }
+      >
+        Sell an account{" "}
+        <span className="quiet">· Opens your seller workspace</span>
+      </Link>
       <details className="market-alerts">
         <summary>Get notified about accounts</summary>
-        <AccountAlerts />
+        <AccountAlerts {...(gameSlug ? { slug: gameSlug } : {})} />
       </details>
       <MarketFilterPanel>
         <form
@@ -119,10 +149,11 @@ function MarketResults() {
             resultSummary.current?.focus();
             setParams(
               new URLSearchParams({
+                ...serviceContext,
                 search,
                 region,
                 rank,
-                slug: params.get("slug") ?? "",
+                slug: gameSlug ?? params.get("slug") ?? "",
               }),
               { state: { filtersApplied: true } },
             );
@@ -143,8 +174,11 @@ function MarketResults() {
               <Action
                 onClick={() => {
                   setParams(
-                    params.get("slug")
-                      ? { slug: params.get("slug") ?? "" }
+                    (gameSlug ?? params.get("slug"))
+                      ? {
+                          ...serviceContext,
+                          slug: gameSlug ?? params.get("slug") ?? "",
+                        }
                       : {},
                   );
                 }}
@@ -176,10 +210,12 @@ function MarketResults() {
           </ul>
           <Link
             to={
-              params.get("slug")
-                ? "/accounts?slug=" +
-                  encodeURIComponent(params.get("slug") ?? "")
-                : "/accounts"
+              gameSlug
+                ? base
+                : params.get("slug")
+                  ? "/accounts?slug=" +
+                    encodeURIComponent(params.get("slug") ?? "")
+                  : "/accounts"
             }
           >
             Clear all filters
@@ -217,11 +253,15 @@ function MarketResults() {
                 <p>
                   {row.game} · {row.product.region}
                 </p>
-                <h2>
-                  <Link to={`/accounts/${row.id}`} state={{ market: query }}>
+                <CardHeading>
+                  <Link
+                    preventScrollReset
+                    to={`${base}/${row.id}`}
+                    state={{ market: query }}
+                  >
                     {row.product.title}
                   </Link>
-                </h2>
+                </CardHeading>
                 <p>{row.product.rank}</p>
                 <p className="package-price">
                   {row.product.currency}{" "}
@@ -229,7 +269,8 @@ function MarketResults() {
                 </p>
                 <Link
                   className="button compact"
-                  to={`/accounts/${row.id}`}
+                  preventScrollReset
+                  to={`${base}/${row.id}`}
                   state={{ market: query }}
                 >
                   Review account
@@ -268,10 +309,16 @@ function MarketResults() {
           First accounts
         </Action>
       )}
-    </main>
+    </Container>
   );
 }
-function Purchase({ listing }: { listing: PublicListing }) {
+function Purchase({
+  listing,
+  base = "/accounts",
+}: {
+  listing: PublicListing;
+  base?: string;
+}) {
   const session = useResource("/auth/session", sessionSchema),
     [accept, setAccept] = useState(false),
     [busy, setBusy] = useState(false),
@@ -317,7 +364,10 @@ function Purchase({ listing }: { listing: PublicListing }) {
     return (
       <p role="status">
         This account is {listing.state}.{" "}
-        <Link to="/accounts">Browse available accounts</Link>.
+        <Link preventScrollReset to={base}>
+          Browse available accounts
+        </Link>
+        .
       </p>
     );
   return (
@@ -329,7 +379,7 @@ function Purchase({ listing }: { listing: PublicListing }) {
       {session.loading && <p role="status">Checking sign-in…</p>}
       {!session.data?.user || session.data.mfa_required ? (
         <Link
-          to={`/login?returnTo=${encodeURIComponent(`/accounts/${listing.id}`)}`}
+          to={`/login?returnTo=${encodeURIComponent(`${base}/${listing.id}`)}`}
         >
           Sign in to reserve this account
         </Link>
@@ -337,8 +387,9 @@ function Purchase({ listing }: { listing: PublicListing }) {
         <fieldset disabled={busy || session.loading}>
           <legend>Reserve this exact account</legend>
           <p>
-            Payment is required before delivery. Your reservation has a limited
-            checkout window; the order page shows its expiry.
+            The next step opens this purchase in My account. Payment is required
+            before delivery. Your reservation has a limited checkout window; the
+            order page shows its expiry.
           </p>
           <Link to="/terms">Read site terms</Link>
           <Check
@@ -354,7 +405,16 @@ function Purchase({ listing }: { listing: PublicListing }) {
     </section>
   );
 }
-export function AccountProduct() {
+export function AccountProduct({
+  gameSlug,
+}: {
+  gameSlug?: string | undefined;
+}) {
+  const Container = gameSlug ? "section" : "main";
+  const Heading = gameSlug ? "h2" : "h1";
+  const base = gameSlug
+    ? `/games/${encodeURIComponent(gameSlug)}/accounts`
+    : "/accounts";
   const location = useLocation();
   const navigation: unknown = location.state;
   const market =
@@ -371,44 +431,60 @@ export function AccountProduct() {
       publicListingSchema,
     );
   return (
-    <main id="main" className="page catalog-page marketplace">
+    <Container
+      id={gameSlug ? undefined : "main"}
+      className={
+        gameSlug
+          ? "marketplace game-account-market"
+          : "page catalog-page marketplace"
+      }
+    >
       <Link
-        to={
-          "/accounts" +
-          (market ? "?" + new URLSearchParams(market).toString() : "")
-        }
+        to={base + (market ? "?" + new URLSearchParams(market).toString() : "")}
       >
         ← Account marketplace
       </Link>
-      <h1>Account details</h1>
+      <Heading>Account details</Heading>
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Loading account…</p>}
       {!!resource.error && (
         <Action onClick={resource.reload}>Try account again</Action>
       )}
-      {resource.data && !resource.error && (
-        <>
-          <ProductTerms listing={resource.data} />
-          <FavoriteButton
-            kind="account"
-            slug={resource.data.slug}
-            pack={resource.data.id}
-          />
-          <details className="market-alerts">
-            <summary>Availability notifications</summary>
-            <AccountAlerts
-              slug={resource.data.slug}
-              listingID={resource.data.id}
-            />
-          </details>
-          <Link
-            to={`/games/${resource.data.slug}/reviews?service=account_sale`}
-          >
-            Account purchase reviews
-          </Link>
-          <Purchase key={resource.data.release_id} listing={resource.data} />
-        </>
+      {resource.data && gameSlug && resource.data.slug !== gameSlug && (
+        <p role="status">
+          This account is not available for this game. Choose an account from
+          this game’s marketplace.
+        </p>
       )}
-    </main>
+      {resource.data &&
+        !resource.error &&
+        (!gameSlug || resource.data.slug === gameSlug) && (
+          <>
+            <ProductTerms listing={resource.data} />
+            <FavoriteButton
+              kind="account"
+              slug={resource.data.slug}
+              pack={resource.data.id}
+            />
+            <details className="market-alerts">
+              <summary>Availability notifications</summary>
+              <AccountAlerts
+                slug={resource.data.slug}
+                listingID={resource.data.id}
+              />
+            </details>
+            <Link
+              to={`/games/${resource.data.slug}/reviews?service=account_sale`}
+            >
+              Account purchase reviews
+            </Link>
+            <Purchase
+              key={resource.data.release_id}
+              listing={resource.data}
+              base={base}
+            />
+          </>
+        )}
+    </Container>
   );
 }

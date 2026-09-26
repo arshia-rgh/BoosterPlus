@@ -1,5 +1,6 @@
 import { publicOrigin, shareMetadata } from "../brand/share";
 import { loadHome } from "../site/loaders.server";
+import { loadCatalog } from "../catalog/loaders.server";
 import { HomePage } from "../home/page";
 
 export function meta({
@@ -11,13 +12,18 @@ export function meta({
     {
       name: "description",
       content:
-        "Your next level starts here. Explore Mobile Legends boosting, custom rank journeys and fixed packages with PLAYORA. Track your order and talk to our team in one place.",
+        "Explore PLAYORA game services, custom boosting, fixed packages and reviewed accounts. Choose your game and discover what is available.",
     },
   ];
 }
 export async function loader() {
+  const [content, catalog] = await Promise.all([
+    loadHome(),
+    loadCatalog(new Request("https://playora.invalid/games")).catch(() => null),
+  ]);
   return {
-    ...(await loadHome()),
+    ...content,
+    catalog,
     shareOrigin: publicOrigin(process.env.PUBLIC_SITE_ORIGIN),
   };
 }

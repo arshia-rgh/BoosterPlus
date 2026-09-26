@@ -715,6 +715,7 @@ export default function CatalogAdmin() {
           {listing.games.map((game) => (
             <article className="game-card" key={game.id}>
               <h2>{game.name}</h2>
+              <p className="quiet">{game.slug}</p>
               <p>
                 {game.archived
                   ? "Archived"

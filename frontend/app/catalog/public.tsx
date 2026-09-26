@@ -1,8 +1,22 @@
 import { CursorPagination, filterQuery } from "../ui/list-navigation";
-import { StatusBadge } from "../ui/primitives";
+import GameCards from "./game-cards";
+import {
+  capabilitiesFor,
+  selectedService,
+  serviceAvailable,
+  serviceNames,
+  serviceLabel,
+} from "./public-discovery";
+import { AccountMarket } from "../resale/market";
 import { Subscribe } from "../availability/pages";
 import { useEffect, useRef, useState } from "react";
-import { Link, useLoaderData, useParams, useSearchParams } from "react-router";
+import {
+  Link,
+  useLoaderData,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router";
 import { FavoriteButton } from "../orders/favorites";
 import DynamicForm from "./dynamic-form";
 import "./discovery.css";
@@ -22,7 +36,7 @@ function PathPicker() {
   return (
     <nav className="offering-paths" aria-label="Boosting type">
       {[
-        ["all", "All services"],
+        ["all", "All boosting"],
         ["custom", "Custom boosting"],
         ["packages", "Fixed packages"],
       ].map(([key, label]) => (
@@ -34,7 +48,8 @@ function PathPicker() {
             const next = filterQuery(params, {
               path: key === "all" ? null : (key ?? null),
             });
-            setParams(next);
+            next.set("service", "boost");
+            setParams(next, { preventScrollReset: true });
           }}
         >
           {label}
@@ -47,104 +62,164 @@ export function GameCatalog() {
   const listing = useLoaderData<Listing>();
   const [params] = useSearchParams();
   const path = offeringPath(params);
+  const [search, setSearch] = useState("");
+  const games = listing.games.filter((game) =>
+    game.name.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()),
+  );
   return (
     <main id="main" className="page catalog-page">
       <div className="catalog-introduction">
         <div>
           <p className="eyebrow">THE LINEUP</p>
-          <h1>
-            Choose your game.
-            <br />
-            Shape your climb.
-          </h1>
+          <h1>Find your game.</h1>
         </div>
         <p>
-          A boost built around your goals. Explore custom requests and fixed
-          packages, with a clear scope and a conversation with our team.
+          Choose a game to see its available services, current offers and latest
+          information.
         </p>
       </div>
-      <ol className="catalog-route-map">
-        <li>
-          <strong>01 · Find your game</strong>Explore the published lineup.
-        </li>
-        <li>
-          <strong>02 · Choose your path</strong>A custom request or a fixed
-          package.
-        </li>
-        <li>
-          <strong>03 · Stay in the loop</strong>Private updates, chat and proof.
-        </li>
-      </ol>
-      <PathPicker />
-      {listing.games.length === 0 ? (
-        <section className="game-card">
-          <span className="status">Coming soon</span>
-          <h2>Mobile Legends</h2>
-          <p>
-            We’re verifying our first catalog. Prices and availability will
-            appear when services are published.
-          </p>
-        </section>
+      <label className="game-search">
+        Search this game list
+        <input
+          type="search"
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+          }}
+          maxLength={100}
+        />
+      </label>
+      <p role="status" className="quiet">
+        {games.length} games in this view
+        {listing.next ? " · More games on the next page" : ""}
+      </p>
+      {games.length ? (
+        <GameCards games={games} intent={pathQuery(path)} headingLevel={2} />
       ) : (
-        <div className="catalog-cards">
-          {listing.games.map((game) => (
-            <article className="game-card" key={game.id}>
-              {!game.asset && (
-                <span className="game-letter" aria-hidden="true">
-                  {game.name.slice(0, 1)}
-                </span>
-              )}
-              {game.asset && (
-                <img
-                  src={game.asset}
-                  alt={game.asset_alt}
-                  width="640"
-                  height="360"
-                  loading="lazy"
-                  decoding="async"
-                />
-              )}
-              <StatusBadge tone={game.paused ? "warning" : "neutral"}>
-                {game.paused ? "Ordering paused" : "Published catalog"}
-              </StatusBadge>
-              <h2>
-                <Link to={`/games/${game.slug}${pathQuery(path)}`}>
-                  {game.name}
-                </Link>
-              </h2>
-              <p>{game.description}</p>
-              <Link
-                className="button"
-                to={`/games/${game.slug}${pathQuery(path)}`}
-              >
-                Explore services
-              </Link>
-            </article>
-          ))}
-        </div>
+        <section className="game-card">
+          <h2>
+            {listing.games.length
+              ? "No games match your search"
+              : "The lineup is being prepared"}
+          </h2>
+          <p>
+            {listing.games.length
+              ? "Try a different game name or clear your search."
+              : "Published games and their available services will appear here."}
+          </p>
+          {search && (
+            <button
+              className="button"
+              type="button"
+              onClick={() => {
+                setSearch("");
+              }}
+            >
+              Clear search
+            </button>
+          )}
+        </section>
       )}
       <CursorPagination
         next={listing.next}
         label="Game pages"
         nextLabel="Next games"
       />
-      <p className="quiet">
-        Custom requests receive a reviewed quote. Fixed packages use their
-        published price. Both use direct payment after an agreement is saved.
-      </p>
     </main>
   );
 }
 export function GamePage() {
   const release = useLoaderData<Release>();
   const [params] = useSearchParams();
-  const path = offeringPath(params);
+  const location = useLocation();
+  const selected = selectedService(location.pathname, params);
+  const capabilities = capabilitiesFor(release);
+  const policy = capabilities.find((item) => item.service === selected);
+  if (selected)
+    return (
+      <section className="game-panel">
+        {policy?.state !== "active" ? (
+          <section className="game-service-unavailable">
+            <h2>{serviceLabel(selected)} is currently unavailable</h2>
+            <p>
+              {policy?.reason ||
+                "This service is not accepting new requests. Your existing orders remain available in My account."}
+            </p>
+          </section>
+        ) : selected === "accounts" ? (
+          <AccountMarket gameSlug={release.slug} />
+        ) : selected === "boost" ? (
+          <>
+            <h2>Boosting for {release.configuration.name}</h2>
+            <p>
+              A fixed package or a custom request. Choose the option that fits
+              your goal.
+            </p>
+            <PathPicker />
+            <Offerings release={release} path={offeringPath(params)} />
+          </>
+        ) : null}
+      </section>
+    );
+  const offered = capabilities.filter((item) => item.state !== "off");
   return (
-    <section className="game-panel">
-      <PathPicker />
-      <Offerings release={release} path={path} />
+    <section
+      className="game-panel game-services"
+      aria-labelledby="choose-game-service"
+    >
+      <p className="eyebrow">YOUR NEXT MOVE</p>
+      <h2 id="choose-game-service">Choose a service</h2>
+      <p>
+        Everything available for {release.configuration.name}, in one place.
+      </p>
+      <div className="game-service-grid">
+        {offered.map((item) => {
+          const body = (
+            <>
+              <span className="game-service-symbol" aria-hidden="true">
+                {item.service === "boost" ? "↗" : "◇"}
+              </span>
+              <h3>{serviceNames[item.service]}</h3>
+              <p>
+                {item.description ||
+                  (item.service === "boost"
+                    ? "Explore fixed packages and custom goals with clear scope and private updates."
+                    : "Browse reviewed accounts or submit your own for review.")}
+              </p>
+              {item.state === "paused" ? (
+                <p className="status">
+                  {item.reason || "Temporarily unavailable"}
+                </p>
+              ) : (
+                <span className="service-card-action">
+                  Explore {serviceNames[item.service].toLowerCase()} →
+                </span>
+              )}
+            </>
+          );
+          return item.state === "active" ? (
+            <Link
+              preventScrollReset
+              className="game-service-card"
+              key={item.service}
+              to={
+                item.service === "accounts"
+                  ? `/games/${release.slug}/accounts`
+                  : `/games/${release.slug}?service=${item.service}`
+              }
+            >
+              {body}
+            </Link>
+          ) : (
+            <article className="game-service-card is-paused" key={item.service}>
+              {body}
+            </article>
+          );
+        })}
+      </div>
+      {!offered.length && <p>No services are published for this game yet.</p>}
       <Link preventScrollReset to={`/games/${release.slug}/reviews`}>
-        Read verified customer reviews
+        Read customer reviews
       </Link>
     </section>
   );
@@ -216,17 +291,6 @@ export function Offerings({
               </article>
             ))}
           </div>
-        </section>
-      )}
-      {config.faqs.length > 0 && (
-        <section>
-          <h2>Frequently asked questions</h2>
-          {config.faqs.map((faq, i) => (
-            <details className="catalog-section" key={i}>
-              <summary>{faq.question}</summary>
-              <p>{faq.answer}</p>
-            </details>
-          ))}
         </section>
       )}
     </>
@@ -304,7 +368,7 @@ export function ServicePage() {
         slug={release.slug}
         releaseID={release.id}
         stage={stage}
-        paused={release.paused}
+        paused={!serviceAvailable(release, "boost")}
       />
       {stage === "estimate" && (
         <button
@@ -389,9 +453,10 @@ function PackageDetails({
               slug={release.slug}
               releaseID={release.id}
               stage="order"
+              initialCoupon={params.get("coupon")?.slice(0, 80) ?? ""}
               pack={pack.key}
               variant={variant}
-              paused={release.paused}
+              paused={!serviceAvailable(release, "boost")}
             />
           )}
         </section>

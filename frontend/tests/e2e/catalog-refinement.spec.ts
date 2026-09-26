@@ -2,17 +2,12 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { fixture } from "./identity-fixtures";
 
-test("homepage choice survives game selection, reload and back; form results stay clear", async ({
+test("legacy boosting intent survives the game directory, reload and back; form results stay clear", async ({
   page,
 }, info) => {
   const slug = fixture(info.project.name, "work_slug");
-  for (const [path, name] of [
-    ["custom", "Explore custom boosting"],
-    ["packages", "Browse published packages"],
-  ] as const) {
-    await page.goto("/");
-    await page.getByRole("link", { name, exact: true }).click();
-    await expect(page).toHaveURL(`/games?path=${path}`);
+  for (const path of ["custom", "packages"] as const) {
+    await page.goto(`/games?path=${path}`);
     await page.locator(`a[href="/games/${slug}?path=${path}"]`).first().click();
     await expect(page).toHaveURL(`/games/${slug}?path=${path}`);
     await page.reload();

@@ -1,9 +1,9 @@
 import type { HomeContent } from "./model";
 export const defaultHome: HomeContent = {
-  headline: "YOUR NEXT\nLEVEL.",
-  accent: "Starts here.",
+  headline: "Your next level.",
+  accent: "Closer than ever.",
   description:
-    "Less grind. More game.\nMobile Legends boosting, on your terms.",
+    "Boost your progress. Find your next account.\nDiscover more of the games you love.",
   notice:
     "Review the scope and terms of each published offering before checkout.",
   start_rank: "Warrior",

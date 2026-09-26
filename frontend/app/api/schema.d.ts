@@ -4526,6 +4526,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/public/reviews": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** At most eight recent moderated reviews across publicly listed games, with current purchase status and no private identities */
+    get: operations["publicReviewShowcase"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4827,6 +4844,7 @@ export interface components {
       revision: number;
       intake_enabled?: boolean;
       capabilities: components["schemas"]["CatalogCapabilityPolicy"][];
+      hero_layout?: components["schemas"]["CatalogHeroLayout"];
     };
     CatalogRelease: {
       id: string;
@@ -6588,6 +6606,13 @@ export interface components {
         | "complaints";
       title: string;
       text: string;
+    };
+    ReviewShowcase: {
+      items: {
+        slug: string;
+        game: string;
+        review: components["schemas"]["PublicPurchaseReview"];
+      }[];
     };
   };
   responses: never;
@@ -19948,6 +19973,53 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  publicReviewShowcase: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Validated review response; public representations omit private identities and moderation notes. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewShowcase"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
+      };
+      /** @description Refresh changed review or correct input. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReviewProblem"];
+        };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */
       default: {

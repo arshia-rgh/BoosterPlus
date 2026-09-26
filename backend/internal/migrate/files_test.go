@@ -4,6 +4,7 @@ import (
 	"testing"
 	"testing/fstest"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/migrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/migration"
 )
@@ -14,8 +15,11 @@ func TestPackagedMigrations(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(files) != 27 || len(files[0].Checksum) != 64 {
+	if len(files) != 28 || len(files[0].Checksum) != 64 {
 		t.Fatalf("unexpected manifest: %+v", files)
+	}
+	if len(files) != database.SchemaVersion {
+		t.Fatal("runtime readiness version must match the packaged migration manifest")
 	}
 }
 

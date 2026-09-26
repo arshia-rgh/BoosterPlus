@@ -216,12 +216,16 @@ def main():
             run(manifest, ["start", "tidb"], True)
             wait_call(lambda: run(manifest, ["exec", "-T", "api", "/app/boosterplus", "healthcheck"], True))
             public_smoke(origin, ca)
+            # The API can recover before the worker's restart backoff elapses.
+            # Prove the restarted worker delivers a new queued message before
+            # separately asserting graceful termination of the recovered process.
+            identity_smoke(manifest, origin, ca)
             run(manifest, ["stop", "--timeout", "20", "api", "worker"], True)
             for service in ("api", "worker"):
                 container = run(manifest, ["ps", "-a", "-q", service], True, capture=True).strip()
                 code = subprocess.check_output(["docker", "inspect", "--format", "{{.State.ExitCode}}", container], text=True).strip()
                 if code != "0":
-                    raise RuntimeError("Application did not shut down gracefully")
+                    raise RuntimeError("Application did not shut down gracefully: " + service + " exit=" + code)
             print("Explicit migrations, TLS storage, Unix scanner, dependency outages/recovery and graceful shutdown passed")
         except Exception:
             # Runtime logs remain private; never emit configuration or secret values.

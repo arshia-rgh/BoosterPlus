@@ -88,10 +88,27 @@ test("staff builds, previews, publishes and archives another game through the ge
   if (info.project.name === "mobile")
     await page.getByRole("button", { name: "Menu", exact: true }).click();
   await page.getByRole("link", { name: "Catalog editor", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Edit Mobile Legends", exact: true }),
-  ).toBeVisible();
-  await page
+  const starter = page.locator(".game-card").filter({
+    has: page.getByText("mobile-legends", { exact: true }),
+  });
+  await expect(starter).toHaveCount(1);
+  if (info.project.name === "desktop") {
+    const viewport = page.viewportSize();
+    for (const width of [1280, 768, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      await starter.scrollIntoViewIfNeeded();
+      await page.screenshot({
+        path: info.outputPath(`di04-admin-identities-${String(width)}.png`),
+      });
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+    }
+    if (viewport) await page.setViewportSize(viewport);
+  }
+  await starter
     .getByRole("button", { name: "Edit Mobile Legends", exact: true })
     .click();
   // The starter has over 16 KiB of real configuration; exercise the bounded catalog proxy path.
@@ -481,6 +498,10 @@ test("staff builds, previews, publishes and archives another game through the ge
     await customer.unroute("**/catalog-assets/game-placeholder.svg");
     await customer.reload();
     await expect(customer.locator(".game-stage-art")).toBeVisible();
+    await customer
+      .locator(".game-service-card")
+      .filter({ hasText: "Boosting" })
+      .click();
     await customer.getByRole("link", { name: "Configure Duo boost" }).click();
     await customer.getByLabel("Play mode (required)").selectOption("solo");
     await customer.getByLabel("Matches (required)").fill("2");

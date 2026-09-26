@@ -49,6 +49,7 @@ func (Review) Indexes() []ent.Index {
 		index.Fields("user_id", "request_key").Unique().StorageKey("review_request"),
 		index.Fields("user_id", "created_at", "id").StorageKey("review_customer"),
 		index.Fields("state", "updated_at", "id").StorageKey("review_queue"),
+		index.Fields("state", "published_at", "id").StorageKey("review_showcase"),
 		index.Fields("game_id", "state", "rating", "id").StorageKey("review_public"),
 	}
 }

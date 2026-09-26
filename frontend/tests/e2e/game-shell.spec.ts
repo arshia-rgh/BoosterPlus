@@ -12,6 +12,11 @@ test("game identity persists through service, package, review and missing-option
   await heading.evaluate((element) => {
     element.setAttribute("data-persistence-check", "original");
   });
+  await page
+    .locator(".game-service-card")
+    .filter({ hasText: "Boosting" })
+    .click();
+  await expect(page).toHaveURL(`/games/${slug}?service=boost`);
   const custom = page.locator(`a[href="/games/${slug}/services/boost"]`);
   await custom.click();
   await expect(page).toHaveURL(`/games/${slug}/services/boost`);
@@ -20,12 +25,14 @@ test("game identity persists through service, package, review and missing-option
   await expect(page.getByRole("main")).toHaveCount(1);
   await expect(heading).toHaveText(name ?? "");
   await page.goBack();
-  await expect(page).toHaveURL(`/games/${slug}`);
+  await expect(page).toHaveURL(`/games/${slug}?service=boost`);
   await expect(heading).toHaveAttribute("data-persistence-check", "original");
   await page.locator(`a[href="/games/${slug}/packages/pack"]`).click();
   await expect(page).toHaveURL(`/games/${slug}/packages/pack`);
   await expect(heading).toHaveAttribute("data-persistence-check", "original");
   await page.goBack();
+  await expect(page).toHaveURL(`/games/${slug}?service=boost`);
+  await page.getByRole("link", { name: "← Back to choose a service" }).click();
   await expect(page).toHaveURL(`/games/${slug}`);
   await page.locator(`a[href="/games/${slug}/reviews"]`).click();
   await expect(page).toHaveURL(`/games/${slug}/reviews`);

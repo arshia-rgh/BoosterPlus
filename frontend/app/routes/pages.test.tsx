@@ -23,9 +23,11 @@ describe("prelaunch catalog", () => {
       </MemoryRouter>,
     );
     expect(
-      screen.getByRole("link", { name: /explore games/i }),
+      screen.getByRole("link", { name: /Try the game directory/i }),
     ).toHaveAttribute("href", "/games");
-    expect(screen.getByText(/Review the scope and terms/i)).toBeVisible();
+    expect(
+      screen.getByRole("heading", { name: /Before you jump in/i }),
+    ).toBeVisible();
     expect(
       screen.queryByRole("button", { name: /buy|pay/i }),
     ).not.toBeInTheDocument();
@@ -42,9 +44,13 @@ describe("prelaunch catalog", () => {
       />,
     );
     expect(
-      screen.getByRole("heading", { name: "Mobile Legends" }),
+      screen.getByRole("heading", { name: "The lineup is being prepared" }),
     ).toBeVisible();
-    expect(screen.getByText("Coming soon")).toBeVisible();
+    expect(
+      screen.getByText(
+        "Published games and their available services will appear here.",
+      ),
+    ).toBeVisible();
     expect(gamesMeta()[0]).toEqual({ title: "Games — PLAYORA" });
   });
 });

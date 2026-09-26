@@ -21,7 +21,7 @@ vi.mock("react-router", async (importOriginal) => ({
   ...(await importOriginal<typeof import("react-router")>()),
   useLoaderData: () => release,
 }));
-it("keeps paused, empty offerings navigable and compacts broken hero artwork", () => {
+it("blocks paused service entry and preserves game identity after failed artwork", () => {
   render(
     <MemoryRouter initialEntries={["/games/game?path=packages"]}>
       <GameShell release={release}>
@@ -31,19 +31,20 @@ it("keeps paused, empty offerings navigable and compacts broken hero artwork", (
   );
   expect(screen.getByText("Ordering is paused for this game.")).toBeVisible();
   expect(
-    screen.getByText("No fixed packages are published yet."),
+    screen.getByRole("heading", { name: "Boosting is currently unavailable" }),
   ).toBeVisible();
+  expect(screen.queryByRole("link", { name: /Configure/ })).toBeNull();
   fireEvent.error(screen.getByRole("img"));
   expect(document.querySelector(".game-stage-compact")).not.toBeNull();
-  expect(document.querySelector(".game-stage-art")).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Custom boosting" }));
+  fireEvent.click(
+    screen.getByRole("link", { name: "← Back to choose a service" }),
+  );
   expect(
-    screen.getByText("No custom boosting services are published yet."),
+    screen.getByRole("heading", { name: "Choose a service" }),
   ).toBeVisible();
-  expect(screen.queryByRole("heading", { name: "Fixed packages" })).toBeNull();
   expect(screen.getByRole("link", { name: "← All games" })).toHaveAttribute(
     "href",
-    "/games?path=custom",
+    "/games",
   );
 });
 it("ignores unknown offering paths without constructing destinations from arbitrary input", () => {

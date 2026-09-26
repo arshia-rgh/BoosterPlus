@@ -59,7 +59,11 @@ export default function PublicReviews() {
       )}
       <section aria-label="Published customer reviews">
         {feed.items.map((item) => (
-          <article className="catalog-section" key={item.id}>
+          <article
+            className="catalog-section"
+            id={`review-${item.id}`}
+            key={item.id}
+          >
             <h2>Verified customer · {item.rating}/5</h2>
             <time dateTime={item.published_at}>
               {new Date(item.published_at).toLocaleDateString()}

@@ -1,6 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
+import GameAccounts, {
+  meta as gameAccountsMeta,
+  loader as gameAccountsLoader,
+} from "./game-accounts";
+import GameAccount, {
+  meta as gameAccountMeta,
+  loader as gameAccountLoader,
+} from "./game-account";
+import { loadGame } from "../catalog/loaders.server";
 import Market, { meta as marketMeta } from "./accounts";
 import Product, { meta as productMeta } from "./account-product";
 import Inventory, { meta as inventoryMeta } from "./accounts-admin";
@@ -37,4 +46,26 @@ it("exposes public listings and protects both inventory routes", () => {
   expect(screen.getByText("Available account market")).toBeVisible();
   expect(screen.getByText("Public product agreement")).toBeVisible();
   expect(screen.getByText("Reviewed listing editor")).toBeVisible();
+});
+
+vi.mock("../catalog/game-accounts", () => ({
+  GameAccounts: ({ detail }: { detail?: boolean }) => (
+    <p>{detail ? "Embedded detail" : "Embedded market"}</p>
+  ),
+}));
+vi.mock("../catalog/loaders.server", () => ({ loadGame: vi.fn() }));
+it("binds account browsing routes to the authoritative game loader", async () => {
+  await gameAccountsLoader({ params: { slug: "example" } });
+  await gameAccountLoader({ params: { slug: "example", id: "listing" } });
+  expect(loadGame).toHaveBeenCalledWith("example");
+  for (const meta of [gameAccountsMeta, gameAccountMeta])
+    expect(meta()[0]?.title).toContain("PLAYORA");
+  render(
+    <>
+      <GameAccounts />
+      <GameAccount />
+    </>,
+  );
+  expect(screen.getByText("Embedded market")).toBeVisible();
+  expect(screen.getByText("Embedded detail")).toBeVisible();
 });

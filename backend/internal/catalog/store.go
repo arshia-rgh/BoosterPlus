@@ -52,6 +52,7 @@ type Listing struct {
 
 // Summary deliberately takes the public name/description from a release, not a draft.
 type Summary struct {
+	HeroLayout    *HeroLayout        `json:"hero_layout,omitempty"`
 	Capabilities  []CapabilityPolicy `json:"capabilities"`
 	IntakeEnabled bool               `json:"intake_enabled,omitempty"`
 	ID            string             `json:"id"`
@@ -155,6 +156,7 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, aft
 			return result, err
 		}
 		result.Games = append(result.Games, Summary{
+			HeroLayout:   c.HeroLayout,
 			Capabilities: Capabilities(c, g.Paused), IntakeEnabled: c.Intake != nil && Available(c, g.Paused, "accounts"),
 			ID: g.ID, Slug: g.Slug, Name: c.Name, Description: c.Description, Asset: c.Asset, AssetAlt: c.AssetAlt,
 			Paused: g.Paused, Published: g.Published, Archived: g.Archived, Revision: g.Version,

@@ -7,13 +7,14 @@ test("home and game catalog are accessible and navigate correctly", async ({
   await page.goto("/");
   await expect(page).toHaveTitle(/PLAYORA/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "YOUR NEXT",
+    "Your next level.",
   );
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  await page.getByRole("link", { name: /explore games/i }).click();
-  await expect(page).toHaveURL(/\/games$/);
+  await page.getByRole("link", { name: "Choose your game" }).first().click();
+  await expect(page.locator("#game-selection-title")).toBeFocused();
+  await page.goto("/games");
   await expect(
-    page.getByRole("heading", { name: "Choose your game. Shape your climb." }),
+    page.getByRole("heading", { name: "Find your game." }),
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   expect(

@@ -53,7 +53,10 @@ test(
       );
       const home = await fetch(origin);
       assert.equal(home.status, 200);
-      assert.match(await home.text(), /rank-journey/);
+      const homeHTML = await home.text();
+      assert.match(homeHTML, /discovery-home/);
+      assert.match(homeHTML, /id="game-selection"/);
+      assert.doesNotMatch(homeHTML, /rank-journey/);
       const asset = await fetch(origin + "/admin/@vite/client");
       assert.equal(asset.status, 200);
       assert.match(asset.headers.get("content-type"), /javascript/);

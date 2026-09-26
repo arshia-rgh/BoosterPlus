@@ -123,6 +123,16 @@
     align-items: end;
     min-height: 530px;
   }
+  .game-stage .game-stage-art {
+    height: 380px;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 9%,
+      #000 74%,
+      transparent
+    );
+  }
   .game-stage .game-stage-art,
   .game-backdrop img {
     object-position: var(--art-mobile-x, 50%) var(--art-mobile-y, 20%);
@@ -142,7 +152,7 @@
     width: 100%;
     max-width: none;
     margin: 0;
-    padding: 220px 1.5rem 2.25rem;
+    padding: 300px 1.5rem 2.25rem;
   }
   .experience .game-stage-copy h1 {
     font-size: clamp(2.125rem, 8vw, 3rem);
@@ -158,4 +168,127 @@
   .game-shell[data-motion="full"] .game-backdrop img {
     animation: none;
   }
+}
+.game-discovery,
+.game-faq {
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 clamp(1rem, 5vw, 5rem);
+}
+.game-faq {
+  padding-bottom: 5rem;
+}
+.game-faq details {
+  border-bottom: 1px solid var(--line);
+  padding: 1.25rem 0;
+}
+.game-faq summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.game-faq p {
+  max-width: 70ch;
+  color: var(--muted);
+}
+.featured-offers {
+  margin-top: 3rem;
+}
+.featured-offer-grid,
+.game-service-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.featured-offer {
+  border: 1px solid #89e75955;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, #193c27eb, #0d211cf5);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.featured-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.featured-price del {
+  font-size: 0.95rem;
+  color: var(--muted);
+  font-weight: 400;
+  margin-right: 0.5rem;
+}
+.game-service-card {
+  display: block;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: #112b22ed;
+  border: 1px solid var(--line);
+  border-radius: 1.5rem;
+  color: var(--text);
+  text-decoration: none;
+  min-width: 0;
+}
+.game-service-card p {
+  color: var(--muted);
+  max-width: 44ch;
+}
+.game-service-symbol {
+  display: inline-grid;
+  place-items: center;
+  border-radius: 1rem;
+  background: #9eed6720;
+  color: var(--accent);
+  width: 3.5rem;
+  height: 3.5rem;
+  font-size: 2rem;
+}
+.service-card-action {
+  display: block;
+  color: var(--accent);
+  margin-top: 1.5rem;
+  font-weight: 600;
+}
+a.game-service-card:hover {
+  border-color: var(--accent);
+  background: #16382aed;
+}
+.game-service-card.is-paused {
+  background: #12251eed;
+}
+.game-services > a:last-child {
+  display: inline-block;
+  margin-top: 2rem;
+}
+.game-account-market {
+  margin-top: 2rem;
+}
+.game-panel > .context-back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+.game-shell[data-motion="full"] .game-local-content > .game-panel {
+  animation: game-section-in 0.32s ease-out;
+}
+@keyframes game-section-in {
+  from {
+    transform: translateY(8px);
+  }
+  to {
+    transform: none;
+  }
+}
+@media (max-width: 700px) {
+  .featured-offer-grid,
+  .game-service-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-shell[data-motion="full"] .game-local-content > .game-panel {
+    animation: none;
+  }
+}
+.service-return {
+  display: inline-block;
+  padding-block: 0.6rem;
+  margin-block: 0.5rem;
 }

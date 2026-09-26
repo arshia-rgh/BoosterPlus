@@ -122,6 +122,7 @@ export function useSectionReveals(enabled: boolean) {
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
+            (entry.target as HTMLElement).dataset.entered = "true";
             pending.get(entry.target)?.play();
             observer.unobserve(entry.target);
           }
@@ -130,7 +131,7 @@ export function useSectionReveals(enabled: boolean) {
       { threshold: 0.08 },
     );
     for (const element of root.current.querySelectorAll(
-      ".pathway-card, .steps-grid > li, .control-copy, .journey-preview, .faq-section > div, .final-ascent h2",
+      ".service-introduction-copy, .service-visual, .home-faq > div, .game-destination .home-section-heading",
     )) {
       if (element.getBoundingClientRect().top < window.innerHeight) continue;
       try {

@@ -54,6 +54,14 @@ func (s *Store) Register(mux *http.ServeMux) {
 			return failure(w, handler(w, r, p))
 		}))
 	}
+	register("GET /api/v1/public/reviews", "", func(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
+		w.Header().Set("Cache-Control", "no-store")
+		v, e := s.Showcase(r.Context())
+		if e != nil {
+			return e
+		}
+		return write(w, v)
+	})
 	register("GET /api/v1/public/reviews/{slug}", "", func(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
 		v, e := s.Public(r.Context(), r.PathValue("slug"), r.URL.Query().Get("service"), r.URL.Query().Get("package"), r.URL.Query().Get("after"))
 		if e != nil {

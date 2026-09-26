@@ -94,6 +94,7 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	seedBrowserChat(t, f, fixtures)
 	seedBrowserFulfillment(t, f, fixtures)
+	seedBrowserDiscovery(t, f, fixtures)
 	seedBrowserOperations(t, f, fixtures)
 	seedBrowserPayments(t, f, fixtures)
 	ring, ringErr := vault.NewKeyring("v1", map[string][]byte{"v1": vaultKey(t)})

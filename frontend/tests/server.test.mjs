@@ -246,7 +246,12 @@ for (const application of ["storefront", "admin", "both"]) {
       assert.equal(games.status, application === "admin" ? 404 : 200);
       if (application !== "admin") {
         const html = await games.text();
-        assert.match(html, /Coming soon/);
+        assert.match(html, /Find your game\./);
+        assert.match(html, /The lineup is being prepared/);
+        assert.match(
+          html,
+          /Published games and their available services will appear here\./,
+        );
         assert.doesNotMatch(html, /Admin workspace/);
       }
       for (const route of [

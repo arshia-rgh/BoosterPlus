@@ -1514,6 +1514,11 @@ var (
 				Columns: []*schema.Column{ReviewsColumns[12], ReviewsColumns[22], ReviewsColumns[0]},
 			},
 			{
+				Name:    "review_showcase",
+				Unique:  false,
+				Columns: []*schema.Column{ReviewsColumns[12], ReviewsColumns[23], ReviewsColumns[0]},
+			},
+			{
 				Name:    "review_public",
 				Unique:  false,
 				Columns: []*schema.Column{ReviewsColumns[4], ReviewsColumns[12], ReviewsColumns[13], ReviewsColumns[0]},

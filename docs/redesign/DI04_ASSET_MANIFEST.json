@@ -1,0 +1,98 @@
+[
+  {
+    "file": "game-mlbb-640.jpg",
+    "source": "docs/redesign/design/assets/game-mlbb.png",
+    "source_sha256": "b2f52218ca43203cecd5d1a8a658473ff96cb19e96b27fd9342432a5e15dbc48",
+    "sha256": "255c2160af8dbbf6af3d0a03eeef53e73cb1fce7dfc5ecc41ffc4e8eb95fdf0a",
+    "bytes": 78875,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "file": "game-mlbb-1536.jpg",
+    "source": "docs/redesign/design/assets/game-mlbb.png",
+    "source_sha256": "b2f52218ca43203cecd5d1a8a658473ff96cb19e96b27fd9342432a5e15dbc48",
+    "sha256": "b3a183b0031e2fc068012f864276284ce8db97fe4167acaab86970b7731aab02",
+    "bytes": 382748,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "file": "game-wow-640.jpg",
+    "source": "docs/redesign/design/assets/game-wow.jpg",
+    "source_sha256": "e9073e85dc49a1024e9cdf7cde7dd38e53b4b50380eeaf817c279c335c97231a",
+    "sha256": "d76bfb2cf9e1d40105457146f84fd72368f69b4c2e7f7b0faa09fdcf6258d34a",
+    "bytes": 24296,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "file": "game-wow-1536.jpg",
+    "source": "docs/redesign/design/assets/game-wow.jpg",
+    "source_sha256": "e9073e85dc49a1024e9cdf7cde7dd38e53b4b50380eeaf817c279c335c97231a",
+    "sha256": "5bda95a6a15e2a983ca6406113fbf1f3cb81d981ae4ecc44aa312a9eb7b06d95",
+    "bytes": 105016,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "file": "game-lol-640.jpg",
+    "source": "docs/redesign/design/assets/game-lol.jpg",
+    "source_sha256": "afe0ce6622095ce8a818b68162b88f916ba0e79f7a3621ce7a556ddc21d87770",
+    "sha256": "7913bced00e2646656cee1e8bee87b044cb149102d0bdde9f29425042723f6cd",
+    "bytes": 60404,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "file": "game-lol-1536.jpg",
+    "source": "docs/redesign/design/assets/game-lol.jpg",
+    "source_sha256": "afe0ce6622095ce8a818b68162b88f916ba0e79f7a3621ce7a556ddc21d87770",
+    "sha256": "6ccd9ff67a23ba613c975ae0a31c233a36f03e010fe1697ff5492ad11e4aca98",
+    "bytes": 235384,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "file": "game-valorant-640.png",
+    "source": "docs/redesign/design/assets/game-valorant.png",
+    "source_sha256": "122b618d5a6ab127ce700600a319b15b92db539efb2cee24233c252d3d3a116c",
+    "sha256": "1046e611300a322fc1108e784acd80e5ac617fe2e667289bfd7ff2a0a4d1fc3f",
+    "bytes": 61189,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "file": "game-valorant-1536.png",
+    "source": "docs/redesign/design/assets/game-valorant.png",
+    "source_sha256": "122b618d5a6ab127ce700600a319b15b92db539efb2cee24233c252d3d3a116c",
+    "sha256": "5ccae77ac8ed71bf15395933b05f108d77847e14a78ae780815c68102e35000c",
+    "bytes": 261411,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "file": "game-dota-640.jpg",
+    "source": "docs/redesign/design/assets/game-dota.jpg",
+    "source_sha256": "2614d8907eb35e33718869553bc1a5bf467b4c12405aca6bca9807d0e3308950",
+    "sha256": "f53a2ffc9442b745993eaa41f8df13d960551b337df705932819eaf46973f903",
+    "bytes": 50972,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "file": "game-dota-1536.jpg",
+    "source": "docs/redesign/design/assets/game-dota.jpg",
+    "source_sha256": "2614d8907eb35e33718869553bc1a5bf467b4c12405aca6bca9807d0e3308950",
+    "sha256": "84a025cde1899955e23595c43df3fd26e1f5162a9c4c5da6b60a4872f5ab1182",
+    "bytes": 191751,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "file": "game-wildrift-640.jpg",
+    "source": "docs/redesign/design/assets/game-wildrift.jpg",
+    "source_sha256": "a2c60272662c92db6df6ba76cc8ec5ee536102d6bf56bcefe1af961390c422cf",
+    "sha256": "34edc615ee8b766d670a59f2b60045b924339cda385027c144e9872e012ca095",
+    "bytes": 70392,
+    "use": "Local design review; public-release asset qualification remains open"
+  },
+  {
+    "file": "game-wildrift-1536.jpg",
+    "source": "docs/redesign/design/assets/game-wildrift.jpg",
+    "source_sha256": "a2c60272662c92db6df6ba76cc8ec5ee536102d6bf56bcefe1af961390c422cf",
+    "sha256": "075f81639ece01f6ff92a7b4df14505550e115b7d065f7220d262f3fc5b84c0d",
+    "bytes": 249895,
+    "use": "Local design review; public-release asset qualification remains open"
+  }
+]

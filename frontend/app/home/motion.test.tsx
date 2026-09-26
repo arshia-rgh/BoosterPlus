@@ -1,13 +1,15 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { SiteFooter } from "../ui/site-chrome";
 import { HomePage } from "./page";
 import { sceneProgress, setMotionPreference, useRankScene } from "./motion";
 
 let reduced = false;
-let mediaChange: (() => void) | undefined;
+const mediaChanges = new Set<() => void>();
 beforeEach(() => {
   reduced = false;
+  mediaChanges.clear();
   localStorage.clear();
   setMotionPreference(false);
   vi.stubGlobal(
@@ -15,9 +17,11 @@ beforeEach(() => {
     vi.fn(() => ({
       matches: reduced,
       addEventListener: (_: string, callback: () => void) => {
-        mediaChange = callback;
+        mediaChanges.add(callback);
       },
-      removeEventListener: vi.fn(),
+      removeEventListener: (_: string, callback: () => void) => {
+        mediaChanges.delete(callback);
+      },
     })),
   );
 });
@@ -29,6 +33,7 @@ function renderHome() {
   return render(
     <MemoryRouter>
       <HomePage />
+      <SiteFooter />
     </MemoryRouter>,
   );
 }
@@ -42,15 +47,19 @@ describe("accessible homepage motion", () => {
   it("persists reduced motion and still honors OS reduction in system mode", () => {
     renderHome();
     expect(screen.getByRole("main")).toHaveAttribute("data-motion", "full");
-    fireEvent.click(screen.getByRole("button", { name: "Reduced" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Reduce background motion" }),
+    );
     expect(localStorage.getItem("boosterplus.motion")).toBe("reduced");
     expect(screen.getByRole("main")).toHaveAttribute("data-motion", "reduced");
     reduced = true;
-    fireEvent.click(screen.getByRole("button", { name: "System" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Use device motion setting" }),
+    );
     expect(screen.getByRole("main")).toHaveAttribute("data-motion", "reduced");
     reduced = false;
     act(() => {
-      mediaChange?.();
+      for (const notify of mediaChanges) notify();
     });
     expect(screen.getByRole("main")).toHaveAttribute("data-motion", "full");
   });
@@ -66,9 +75,13 @@ describe("accessible homepage motion", () => {
     });
     setMotionPreference(false);
     renderHome();
-    fireEvent.click(screen.getByRole("button", { name: "Reduced" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Reduce background motion" }),
+    );
     expect(screen.getByRole("main")).toHaveAttribute("data-motion", "reduced");
-    fireEvent.click(screen.getByRole("button", { name: "System" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Use device motion setting" }),
+    );
     expect(screen.getByRole("main")).toHaveAttribute("data-motion", "full");
   });
   it("uses the selected preference when only storage writes fail", () => {
@@ -76,7 +89,9 @@ describe("accessible homepage motion", () => {
       throw new Error("Quota exceeded");
     });
     renderHome();
-    fireEvent.click(screen.getByRole("button", { name: "Reduced" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Reduce background motion" }),
+    );
     expect(screen.getByRole("main")).toHaveAttribute("data-motion", "reduced");
   });
   it("cancels paused animations and removes scroll observers on unmount", () => {
@@ -110,7 +125,7 @@ describe("accessible homepage motion", () => {
     expect(remove).toHaveBeenCalledWith("scroll", expect.any(Function));
     Reflect.deleteProperty(Element.prototype, "animate");
   });
-  it("retains static profiles if the animation API fails", () => {
+  it("retains visible service navigation if the animation API fails", () => {
     Object.defineProperty(Element.prototype, "animate", {
       configurable: true,
       value: vi.fn(() => {
@@ -118,12 +133,10 @@ describe("accessible homepage motion", () => {
       }),
     });
     const { container } = renderHome();
-    expect(container.querySelector(".rank-journey")).not.toHaveAttribute(
-      "data-enhanced",
-    );
+    expect(container.querySelector(".rank-journey")).toBeNull();
     expect(
-      screen.getByRole("link", { name: /find your boost/i }),
-    ).toHaveAttribute("href", "/games");
+      screen.getAllByRole("link", { name: /Choose your game/i })[0],
+    ).toHaveAttribute("href", "#game-selection");
     Reflect.deleteProperty(Element.prototype, "animate");
   });
 });
