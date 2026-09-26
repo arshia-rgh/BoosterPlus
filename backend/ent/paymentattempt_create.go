@@ -88,6 +88,54 @@ func (_c *PaymentAttemptCreate) SetAmountMinor(v string) *PaymentAttemptCreate {
 	return _c
 }
 
+// SetNativeCheckout sets the "native_checkout" field.
+func (_c *PaymentAttemptCreate) SetNativeCheckout(v bool) *PaymentAttemptCreate {
+	_c.mutation.SetNativeCheckout(v)
+	return _c
+}
+
+// SetNillableNativeCheckout sets the "native_checkout" field if the given value is not nil.
+func (_c *PaymentAttemptCreate) SetNillableNativeCheckout(v *bool) *PaymentAttemptCreate {
+	if v != nil {
+		_c.SetNativeCheckout(*v)
+	}
+	return _c
+}
+
+// SetDepositClaimed sets the "deposit_claimed" field.
+func (_c *PaymentAttemptCreate) SetDepositClaimed(v bool) *PaymentAttemptCreate {
+	_c.mutation.SetDepositClaimed(v)
+	return _c
+}
+
+// SetNillableDepositClaimed sets the "deposit_claimed" field if the given value is not nil.
+func (_c *PaymentAttemptCreate) SetNillableDepositClaimed(v *bool) *PaymentAttemptCreate {
+	if v != nil {
+		_c.SetDepositClaimed(*v)
+	}
+	return _c
+}
+
+// SetDepositPaymentID sets the "deposit_payment_id" field.
+func (_c *PaymentAttemptCreate) SetDepositPaymentID(v string) *PaymentAttemptCreate {
+	_c.mutation.SetDepositPaymentID(v)
+	return _c
+}
+
+// SetNillableDepositPaymentID sets the "deposit_payment_id" field if the given value is not nil.
+func (_c *PaymentAttemptCreate) SetNillableDepositPaymentID(v *string) *PaymentAttemptCreate {
+	if v != nil {
+		_c.SetDepositPaymentID(*v)
+	}
+	return _c
+}
+
+// SetDepositData sets the "deposit_data" field.
+func (_c *PaymentAttemptCreate) SetDepositData(v map[string]interface{}) *PaymentAttemptCreate {
+	_c.mutation.SetDepositData(v)
+	return _c
+}
+
 // SetPostClaimed sets the "post_claimed" field.
 func (_c *PaymentAttemptCreate) SetPostClaimed(v bool) *PaymentAttemptCreate {
 	_c.mutation.SetPostClaimed(v)
@@ -239,6 +287,18 @@ func (_c *PaymentAttemptCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *PaymentAttemptCreate) defaults() {
+	if _, ok := _c.mutation.NativeCheckout(); !ok {
+		v := paymentattempt.DefaultNativeCheckout
+		_c.mutation.SetNativeCheckout(v)
+	}
+	if _, ok := _c.mutation.DepositClaimed(); !ok {
+		v := paymentattempt.DefaultDepositClaimed
+		_c.mutation.SetDepositClaimed(v)
+	}
+	if _, ok := _c.mutation.DepositPaymentID(); !ok {
+		v := paymentattempt.DefaultDepositPaymentID
+		_c.mutation.SetDepositPaymentID(v)
+	}
 	if _, ok := _c.mutation.PostClaimed(); !ok {
 		v := paymentattempt.DefaultPostClaimed
 		_c.mutation.SetPostClaimed(v)
@@ -328,6 +388,20 @@ func (_c *PaymentAttemptCreate) check() error {
 	if v, ok := _c.mutation.AmountMinor(); ok {
 		if err := paymentattempt.AmountMinorValidator(v); err != nil {
 			return &ValidationError{Name: "amount_minor", err: fmt.Errorf(`ent: validator failed for field "PaymentAttempt.amount_minor": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.NativeCheckout(); !ok {
+		return &ValidationError{Name: "native_checkout", err: errors.New(`ent: missing required field "PaymentAttempt.native_checkout"`)}
+	}
+	if _, ok := _c.mutation.DepositClaimed(); !ok {
+		return &ValidationError{Name: "deposit_claimed", err: errors.New(`ent: missing required field "PaymentAttempt.deposit_claimed"`)}
+	}
+	if _, ok := _c.mutation.DepositPaymentID(); !ok {
+		return &ValidationError{Name: "deposit_payment_id", err: errors.New(`ent: missing required field "PaymentAttempt.deposit_payment_id"`)}
+	}
+	if v, ok := _c.mutation.DepositPaymentID(); ok {
+		if err := paymentattempt.DepositPaymentIDValidator(v); err != nil {
+			return &ValidationError{Name: "deposit_payment_id", err: fmt.Errorf(`ent: validator failed for field "PaymentAttempt.deposit_payment_id": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.PostClaimed(); !ok {
@@ -450,6 +524,22 @@ func (_c *PaymentAttemptCreate) createSpec() (*PaymentAttempt, *sqlgraph.CreateS
 	if value, ok := _c.mutation.AmountMinor(); ok {
 		_spec.SetField(paymentattempt.FieldAmountMinor, field.TypeString, value)
 		_node.AmountMinor = value
+	}
+	if value, ok := _c.mutation.NativeCheckout(); ok {
+		_spec.SetField(paymentattempt.FieldNativeCheckout, field.TypeBool, value)
+		_node.NativeCheckout = value
+	}
+	if value, ok := _c.mutation.DepositClaimed(); ok {
+		_spec.SetField(paymentattempt.FieldDepositClaimed, field.TypeBool, value)
+		_node.DepositClaimed = value
+	}
+	if value, ok := _c.mutation.DepositPaymentID(); ok {
+		_spec.SetField(paymentattempt.FieldDepositPaymentID, field.TypeString, value)
+		_node.DepositPaymentID = value
+	}
+	if value, ok := _c.mutation.DepositData(); ok {
+		_spec.SetField(paymentattempt.FieldDepositData, field.TypeJSON, value)
+		_node.DepositData = value
 	}
 	if value, ok := _c.mutation.PostClaimed(); ok {
 		_spec.SetField(paymentattempt.FieldPostClaimed, field.TypeBool, value)

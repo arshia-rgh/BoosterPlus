@@ -100,7 +100,8 @@ func (s *Store) Start(ctx context.Context, p *identity.Principal, id string, inp
 			return err
 		}
 		now := s.instant()
-		attempt, err := tx.PaymentAttempt.Create().SetPostClaimed(false).SetOrderID(id).SetContractID(contract.ID).SetActiveContractID(contract.ID).SetUserID(current.User.ID).SetAccount(s.account).SetPolicyID(policy.ID).SetPolicy(policyDoc).SetRoute(routeDoc).SetCurrency(commercial.Currency).SetAmountMinor(commercial.AmountMinor).SetState("new").SetCreatedAt(now).SetUpdatedAt(now).SetExpiresAt(now.Add(time.Duration(policy.Data.WindowMinutes) * time.Minute)).Save(ctx)
+		_, native := s.provider.(InvoicePaymentProvider)
+		attempt, err := tx.PaymentAttempt.Create().SetPostClaimed(false).SetNativeCheckout(native).SetDepositClaimed(!native).SetOrderID(id).SetContractID(contract.ID).SetActiveContractID(contract.ID).SetUserID(current.User.ID).SetAccount(s.account).SetPolicyID(policy.ID).SetPolicy(policyDoc).SetRoute(routeDoc).SetCurrency(commercial.Currency).SetAmountMinor(commercial.AmountMinor).SetState("new").SetCreatedAt(now).SetUpdatedAt(now).SetExpiresAt(now.Add(time.Duration(policy.Data.WindowMinutes) * time.Minute)).Save(ctx)
 		if err != nil {
 			return err
 		}
@@ -124,7 +125,7 @@ func (s *Store) Start(ctx context.Context, p *identity.Principal, id string, inp
 
 // History enforces ownership before returning any checkout URL or receipt.
 func (s *Store) History(ctx context.Context, p *identity.Principal, id string, admin bool) (History, error) {
-	result := History{Enabled: s.enabled && s.provider != nil, Attempts: []Attempt{}, Receipts: []Receipt{}}
+	result := History{ServerTime: s.instant(), Enabled: s.enabled && s.provider != nil, Attempts: []Attempt{}, Receipts: []Receipt{}}
 	if _, err := owned(ctx, s.client, p, id, admin); err != nil {
 		return result, err
 	}
@@ -145,6 +146,7 @@ func (s *Store) History(ctx context.Context, p *identity.Principal, id string, a
 		if row.Account != s.account || !row.ExpiresAt.After(s.instant()) || row.State != "awaiting_payment" {
 			view.CheckoutURL = ""
 		}
+		s.projectDeposit(row, &view)
 		result.Attempts = append(result.Attempts, view)
 	}
 	receipts, err := s.client.PaymentReceipt.Query().Where(paymentreceipt.OrderIDEQ(id)).Order(ent.Desc(paymentreceipt.FieldCreatedAt), ent.Desc(paymentreceipt.FieldID)).Limit(100).All(ctx)

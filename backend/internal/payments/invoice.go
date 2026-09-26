@@ -50,8 +50,11 @@ func (s *Store) issue(ctx context.Context, id string) error {
 		claimed, e = tx.PaymentAttempt.UpdateOneID(id).SetState("creating").SetPostClaimed(true).SetUpdatedAt(s.instant()).Save(ctx)
 		return e
 	})
-	if err != nil || claimed == nil {
+	if err != nil {
 		return err
+	}
+	if claimed == nil {
+		return s.prepareDeposit(ctx, id)
 	}
 	policy, err := decode[Policy](claimed.Policy)
 	if err != nil {
@@ -61,7 +64,7 @@ func (s *Store) issue(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	invoice, remoteErr := s.provider.CreateInvoice(ctx, nowpayments.InvoiceRequest{AttemptID: id, AmountMinor: claimed.AmountMinor, Currency: claimed.Currency, PayCurrency: route.Code, FixedRate: policy.RateMode == "fixed", FeePaidByUser: policy.FeeMode == "customer"})
+	invoice, remoteErr := s.provider.CreateInvoice(ctx, nowpayments.InvoiceRequest{OrderID: claimed.OrderID, AttemptID: id, AmountMinor: claimed.AmountMinor, Currency: claimed.Currency, PayCurrency: route.Code, FixedRate: policy.RateMode == "fixed", FeePaidByUser: policy.FeeMode == "customer"})
 	// The attempt remains claimed if persistence fails. Reconciliation, not a second POST, repairs it.
 	saveErr := s.fenced(ctx, func(tx *ent.Tx) error {
 		row, e := tx.PaymentAttempt.Get(ctx, id)
@@ -86,7 +89,11 @@ func (s *Store) issue(ctx context.Context, id string) error {
 		if row.State != "creating" && row.State != "uncertain" {
 			return nil
 		}
-		_, e = tx.PaymentAttempt.UpdateOneID(id).SetInvoiceID(invoice.ID).SetCheckoutURL(invoice.URL).SetState("awaiting_payment").SetIssue("").SetUpdatedAt(s.instant()).Save(ctx)
+		checkoutURL := invoice.URL
+		if row.NativeCheckout {
+			checkoutURL = ""
+		}
+		_, e = tx.PaymentAttempt.UpdateOneID(id).SetInvoiceID(invoice.ID).SetCheckoutURL(checkoutURL).SetState("awaiting_payment").SetIssue("").SetUpdatedAt(s.instant()).Save(ctx)
 		if e != nil {
 			return e
 		}
@@ -100,7 +107,7 @@ func (s *Store) issue(ctx context.Context, id string) error {
 	if remoteErr != nil && !errors.Is(remoteErr, nowpayments.ErrAmbiguous) {
 		return remoteErr
 	}
-	return nil
+	return s.prepareDeposit(ctx, id)
 }
 func (s *Store) expire(ctx context.Context) error {
 	return s.fenced(ctx, func(tx *ent.Tx) error {

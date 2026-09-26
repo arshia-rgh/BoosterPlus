@@ -38,6 +38,14 @@ type PaymentAttempt struct {
 	Currency string `json:"currency,omitempty"`
 	// AmountMinor holds the value of the "amount_minor" field.
 	AmountMinor string `json:"amount_minor,omitempty"`
+	// NativeCheckout holds the value of the "native_checkout" field.
+	NativeCheckout bool `json:"native_checkout,omitempty"`
+	// DepositClaimed holds the value of the "deposit_claimed" field.
+	DepositClaimed bool `json:"deposit_claimed,omitempty"`
+	// DepositPaymentID holds the value of the "deposit_payment_id" field.
+	DepositPaymentID string `json:"deposit_payment_id,omitempty"`
+	// DepositData holds the value of the "deposit_data" field.
+	DepositData map[string]interface{} `json:"deposit_data,omitempty"`
 	// PostClaimed holds the value of the "post_claimed" field.
 	PostClaimed bool `json:"post_claimed,omitempty"`
 	// State holds the value of the "state" field.
@@ -64,11 +72,11 @@ func (*PaymentAttempt) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case paymentattempt.FieldPolicy, paymentattempt.FieldRoute:
+		case paymentattempt.FieldPolicy, paymentattempt.FieldRoute, paymentattempt.FieldDepositData:
 			values[i] = new([]byte)
-		case paymentattempt.FieldPostClaimed:
+		case paymentattempt.FieldNativeCheckout, paymentattempt.FieldDepositClaimed, paymentattempt.FieldPostClaimed:
 			values[i] = new(sql.NullBool)
-		case paymentattempt.FieldID, paymentattempt.FieldOrderID, paymentattempt.FieldContractID, paymentattempt.FieldActiveContractID, paymentattempt.FieldUserID, paymentattempt.FieldAccount, paymentattempt.FieldPolicyID, paymentattempt.FieldCurrency, paymentattempt.FieldAmountMinor, paymentattempt.FieldState, paymentattempt.FieldInvoiceID, paymentattempt.FieldCheckoutURL, paymentattempt.FieldIssue:
+		case paymentattempt.FieldID, paymentattempt.FieldOrderID, paymentattempt.FieldContractID, paymentattempt.FieldActiveContractID, paymentattempt.FieldUserID, paymentattempt.FieldAccount, paymentattempt.FieldPolicyID, paymentattempt.FieldCurrency, paymentattempt.FieldAmountMinor, paymentattempt.FieldDepositPaymentID, paymentattempt.FieldState, paymentattempt.FieldInvoiceID, paymentattempt.FieldCheckoutURL, paymentattempt.FieldIssue:
 			values[i] = new(sql.NullString)
 		case paymentattempt.FieldCreatedAt, paymentattempt.FieldFundsDetectedAt, paymentattempt.FieldExpiresAt, paymentattempt.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -157,6 +165,32 @@ func (_m *PaymentAttempt) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field amount_minor", values[i])
 			} else if value.Valid {
 				_m.AmountMinor = value.String
+			}
+		case paymentattempt.FieldNativeCheckout:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field native_checkout", values[i])
+			} else if value.Valid {
+				_m.NativeCheckout = value.Bool
+			}
+		case paymentattempt.FieldDepositClaimed:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_claimed", values[i])
+			} else if value.Valid {
+				_m.DepositClaimed = value.Bool
+			}
+		case paymentattempt.FieldDepositPaymentID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_payment_id", values[i])
+			} else if value.Valid {
+				_m.DepositPaymentID = value.String
+			}
+		case paymentattempt.FieldDepositData:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_data", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.DepositData); err != nil {
+					return fmt.Errorf("unmarshal field deposit_data: %w", err)
+				}
 			}
 		case paymentattempt.FieldPostClaimed:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -281,6 +315,18 @@ func (_m *PaymentAttempt) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("amount_minor=")
 	builder.WriteString(_m.AmountMinor)
+	builder.WriteString(", ")
+	builder.WriteString("native_checkout=")
+	builder.WriteString(fmt.Sprintf("%v", _m.NativeCheckout))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_claimed=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DepositClaimed))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_payment_id=")
+	builder.WriteString(_m.DepositPaymentID)
+	builder.WriteString(", ")
+	builder.WriteString("deposit_data=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DepositData))
 	builder.WriteString(", ")
 	builder.WriteString("post_claimed=")
 	builder.WriteString(fmt.Sprintf("%v", _m.PostClaimed))

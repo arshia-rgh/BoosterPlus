@@ -1240,6 +1240,10 @@ var (
 		{Name: "route", Type: field.TypeJSON},
 		{Name: "currency", Type: field.TypeString, Size: 3},
 		{Name: "amount_minor", Type: field.TypeString, Size: 12},
+		{Name: "native_checkout", Type: field.TypeBool, Default: false},
+		{Name: "deposit_claimed", Type: field.TypeBool, Default: true},
+		{Name: "deposit_payment_id", Type: field.TypeString, Size: 32, Default: ""},
+		{Name: "deposit_data", Type: field.TypeJSON, Nullable: true},
 		{Name: "post_claimed", Type: field.TypeBool, Default: true},
 		{Name: "state", Type: field.TypeString, Size: 32, Default: "new"},
 		{Name: "invoice_id", Type: field.TypeString, Nullable: true, Size: 32},
@@ -1264,17 +1268,17 @@ var (
 			{
 				Name:    "payment_invoice",
 				Unique:  true,
-				Columns: []*schema.Column{PaymentAttemptsColumns[5], PaymentAttemptsColumns[13]},
+				Columns: []*schema.Column{PaymentAttemptsColumns[5], PaymentAttemptsColumns[17]},
 			},
 			{
 				Name:    "payment_order_history",
 				Unique:  false,
-				Columns: []*schema.Column{PaymentAttemptsColumns[1], PaymentAttemptsColumns[16], PaymentAttemptsColumns[0]},
+				Columns: []*schema.Column{PaymentAttemptsColumns[1], PaymentAttemptsColumns[20], PaymentAttemptsColumns[0]},
 			},
 			{
 				Name:    "payment_attempt_queue",
 				Unique:  false,
-				Columns: []*schema.Column{PaymentAttemptsColumns[12], PaymentAttemptsColumns[19], PaymentAttemptsColumns[0]},
+				Columns: []*schema.Column{PaymentAttemptsColumns[16], PaymentAttemptsColumns[23], PaymentAttemptsColumns[0]},
 			},
 		},
 	}

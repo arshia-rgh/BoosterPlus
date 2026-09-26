@@ -263,3 +263,85 @@ it("hides an expired link without fabricating provider failure or settlement", (
   ).not.toBeInTheDocument();
   expect(changed).not.toHaveBeenCalled();
 });
+
+it("withholds native instructions across reconnect until a fresh response", () => {
+  const { data, reload, changed } = setup();
+  const server = Date.parse("2026-09-27T12:00:00Z");
+  let monotonic = 100;
+  vi.spyOn(performance, "now").mockImplementation(() => monotonic);
+  const deposit = {
+    payment_id: "100",
+    address: "synthetic-not-payable-address",
+    memo: "123",
+    amount: "12.34000001",
+    currency: "usdttrc20",
+    network: "trx",
+    checked_at: new Date(server).toISOString(),
+    valid_until: new Date(server + 120000).toISOString(),
+    expires_at: new Date(server + 600000).toISOString(),
+    qr: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6pAAAAABJRU5ErkJggg==",
+  };
+  const response = {
+    data: {
+      ...data,
+      server_time: new Date(server).toISOString(),
+      attempts: [
+        {
+          id: "attempt",
+          order_id: "order",
+          state: "awaiting_payment",
+          issue: "",
+          currency: "USD",
+          amount_minor: "1234",
+          route: policy.data.routes[0],
+          policy,
+          checkout_url: "",
+          created_at: new Date(server).toISOString(),
+          expires_at: new Date(server + 1800000).toISOString(),
+          native_checkout: true,
+          instruction_status: "ready",
+          deposit,
+        },
+      ],
+    },
+    requestedAt: 100,
+    loading: false,
+    error: null,
+    reload,
+  };
+  vi.mocked(useResource).mockReturnValue(response);
+  const view = render(
+    <Checkout detail={detail} admin={false} changed={changed} />,
+  );
+  expect(screen.getByRole("button", { name: "Copy address" })).toBeVisible();
+  monotonic = 200;
+  fireEvent(window, new Event("offline"));
+  fireEvent(window, new Event("online"));
+  expect(
+    screen.queryByRole("button", { name: "Copy address" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("heading", { name: "Refreshing payment instructions" }),
+  ).toBeVisible();
+  vi.mocked(useResource).mockReturnValue({ ...response, requestedAt: 201 });
+  view.rerender(<Checkout detail={detail} admin={false} changed={changed} />);
+  expect(screen.getByRole("button", { name: "Copy address" })).toBeVisible();
+  vi.restoreAllMocks();
+});
+
+it("keeps payment uncertainty guidance when status retrieval fails", () => {
+  const { reload, changed } = setup();
+  vi.mocked(useResource).mockReturnValue({
+    data: null,
+    error: new Error("offline"),
+    loading: false,
+    reload,
+  });
+  render(<Checkout detail={detail} admin={false} changed={changed} />);
+  expect(
+    screen.getByText(/Payment status cannot be verified right now/),
+  ).toHaveTextContent("do not send again");
+  expect(
+    screen.queryByRole("button", { name: "Create secure checkout" }),
+  ).not.toBeInTheDocument();
+});

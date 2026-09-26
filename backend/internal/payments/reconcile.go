@@ -10,6 +10,7 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentattempt"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentreceipt"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
 )
@@ -56,6 +57,11 @@ func (s *Store) Reconcile(ctx context.Context, id string) error {
 		}
 		update := tx.PaymentRecord.UpdateOneID(id).SetLeaseOwner("").ClearLeaseUntil().SetCheckedAt(s.instant())
 		if remoteErr != nil {
+			if row.AttemptID != "" {
+				if _, e = tx.PaymentAttempt.Update().Where(paymentattempt.IDEQ(row.AttemptID), paymentattempt.NativeCheckoutEQ(true), paymentattempt.StateEQ("awaiting_payment")).SetIssue("provider_unavailable").ClearDepositData().Save(ctx); e != nil {
+					return e
+				}
+			}
 			_, e = update.SetIssue("provider_unavailable").Save(ctx)
 			return e
 		}
@@ -70,6 +76,14 @@ func (s *Store) Reconcile(ctx context.Context, id string) error {
 		state, issue, attemptID, e := s.observe(ctx, tx, row, observation, observed)
 		if e != nil {
 			return e
+		}
+		if issue != "" && row.AttemptID != "" {
+			if _, e = tx.PaymentAttempt.Update().Where(paymentattempt.IDEQ(row.AttemptID), paymentattempt.NativeCheckoutEQ(true), paymentattempt.StateEQ("awaiting_payment")).SetIssue(issue).ClearDepositData().Save(ctx); e != nil {
+				return e
+			}
+			if attemptID == "" {
+				attemptID = row.AttemptID
+			}
 		}
 		_, e = update.SetData(data).SetState(state).SetIssue(issue).SetAttemptID(attemptID).Save(ctx)
 		return e
@@ -186,7 +200,25 @@ func (s *Store) observe(ctx context.Context, tx *ent.Tx, record *ent.PaymentReco
 			issue = attempt.Issue
 		}
 	}
-	_, err = tx.PaymentAttempt.UpdateOneID(attempt.ID).SetState(state).SetIssue(issue).SetUpdatedAt(s.instant()).Save(ctx)
+	update := tx.PaymentAttempt.UpdateOneID(attempt.ID).SetState(state).SetIssue(issue).SetUpdatedAt(s.instant()).ClearDepositData()
+	if attempt.NativeCheckout && issue == "" {
+		deposit, e := depositView(attempt, p, s.instant())
+		if e != nil {
+			return "", "", "", e
+		}
+		if deposit == nil && state == "awaiting_payment" && attempt.FundsDetectedAt == nil {
+			issue = "instructions_unavailable"
+			update.SetIssue(issue)
+		}
+		if deposit != nil && state == "awaiting_payment" {
+			data, e := document(deposit)
+			if e != nil {
+				return "", "", "", e
+			}
+			update.SetDepositData(data).SetDepositPaymentID(p.ID).SetDepositClaimed(true)
+		}
+	}
+	_, err = update.Save(ctx)
 	return state, issue, attempt.ID, err
 }
 func (s *Store) decision(ctx context.Context, tx *ent.Tx, attempt *ent.PaymentAttempt, receipt *ent.PaymentReceipt, p nowpayments.Payment, paid *big.Rat) (string, string, error) {

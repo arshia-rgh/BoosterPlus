@@ -37,7 +37,7 @@ func TestDiscoveryReviewShowcaseMigrationReadiness(t *testing.T) {
 	if err := database.Ready(ctx, db); err != nil {
 		t.Fatal(err)
 	}
-	if err := r.Down(ctx, 1); err != nil {
+	if err := r.Down(ctx, len(r.Files())-27); err != nil {
 		t.Fatal(err)
 	}
 	if err := database.Ready(ctx, db); err == nil {

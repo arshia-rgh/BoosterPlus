@@ -29,8 +29,34 @@ func (p *browserPaymentProvider) CreateInvoice(ctx context.Context, input nowpay
 		return invoice, nowpayments.ErrInvalid
 	}
 	amount := nowpayments.Decimal(new(big.Rat).SetFrac(minor, big.NewInt(100)).FloatString(2))
-	p.set(nowpayments.Payment{ID: invoice.ID, InvoiceID: invoice.ID, AttemptID: input.AttemptID, Status: "finished", PriceAmount: amount, PriceCurrency: "usd", PayAmount: "12.34000001", ActuallyPaid: "12.34000001", PayCurrency: input.PayCurrency, Network: "trx"})
+	p.set(nowpayments.Payment{ID: invoice.ID, InvoiceID: invoice.ID, AttemptID: input.AttemptID, Destination: &nowpayments.Destination{Address: "synthetic-browser-address-not-payable", Memo: "synthetic-memo", ExpiresAt: time.Now().Add(20 * time.Minute)}, Status: "waiting", PriceAmount: amount, PriceCurrency: "usd", PayAmount: "12.34000001", ActuallyPaid: "0", PayCurrency: input.PayCurrency, Network: "trx"})
 	return invoice, nil
+}
+
+// Only the isolated browser provider changes its synthetic evidence in response
+// to a signed fixture signal; production always reads the remote provider.
+func (p *browserPaymentProvider) VerifyWebhook(body []byte, signature string) (nowpayments.Notice, error) {
+	notice, err := p.paymentProvider.VerifyWebhook(body, signature)
+	if err != nil {
+		return notice, err
+	}
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if row, ok := p.rows[notice.PaymentID]; ok {
+		row.Status = "finished"
+		row.ActuallyPaid = row.PayAmount
+		p.rows[notice.PaymentID] = row
+	}
+	return notice, nil
+}
+func (p *browserPaymentProvider) CreateInvoicePayment(_ context.Context, invoice, asset string) (string, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	row, ok := p.rows[invoice]
+	if !ok || row.PayCurrency != asset {
+		return "", nowpayments.ErrInvalid
+	}
+	return row.ID, nil
 }
 func seedBrowserPayments(t *testing.T, f *authFixture, fixtures map[string]string) {
 	t.Helper()

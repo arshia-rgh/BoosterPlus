@@ -131,3 +131,73 @@
     text-align: center;
   }
 }
+
+.deposit-instructions {
+  margin-block: 1.5rem;
+  border-top: 1px solid #496852;
+  padding-top: 1rem;
+}
+.deposit-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+.deposit-grid figure {
+  margin: 0;
+}
+.deposit-grid img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 0.4rem;
+  background: white;
+}
+.deposit-grid figcaption {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #c2d5c9;
+  margin-top: 0.8rem;
+}
+.deposit-copy-field {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  min-width: 0;
+}
+.deposit-copy-field h4,
+.deposit-copy-field p {
+  margin: 0;
+}
+.deposit-copy-field code,
+.deposit-instructions code {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.deposit-copy-field code {
+  padding: 0.8rem;
+  background: #0c2016;
+  border: 1px solid #496852;
+  border-radius: 0.5rem;
+}
+.deposit-copy-field .button {
+  justify-self: start;
+}
+@media (max-width: 640px) {
+  .deposit-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .deposit-grid figure {
+    max-width: 16rem;
+    justify-self: center;
+  }
+}
+
+.deposit-deadline {
+  font-weight: 600;
+  line-height: 1.7;
+  padding: 0.85rem 1rem;
+  background: #0c2016;
+  border: 1px solid #496852;
+  border-radius: 0.6rem;
+}

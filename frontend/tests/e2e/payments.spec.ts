@@ -1,3 +1,4 @@
+import { writeFile } from "node:fs/promises";
 import { resaleJourney } from "./resale-journey";
 import { createHmac } from "node:crypto";
 import { test, expect } from "@playwright/test";
@@ -90,10 +91,77 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       .getByRole("button", { name: "Create secure checkout" })
       .click();
     await expect(
-      customer.getByRole("link", { name: "Continue to NOWPayments" }),
-    ).toHaveAttribute("href", "https://nowpayments.io/payment/?iid=1", {
-      timeout: 20000,
-    });
+      customer.getByRole("heading", { name: "Send your payment", exact: true }),
+    ).toBeVisible({ timeout: 20000 });
+    await expect(
+      customer.getByText("synthetic-browser-address-not-payable", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      customer.getByRole("link", { name: /Continue to NOWPayments/ }),
+    ).toHaveCount(0);
+    await expect(
+      customer.getByRole("img", { name: "QR code for the payment address" }),
+    ).toBeVisible();
+    await customerContext.setOffline(true);
+    await expect(
+      customer.getByRole("button", { name: "Copy address", exact: true }),
+    ).toHaveCount(0);
+    await customerContext.setOffline(false);
+    await expect(
+      customer.getByRole("button", { name: "Copy address", exact: true }),
+    ).toBeVisible({ timeout: 15000 });
+    await expect(
+      customer.getByText("Checkout deadline", { exact: true }),
+    ).toHaveCount(0);
+    await expect(customer.getByText(/Send before/)).toBeVisible();
+    await customer.route(`**/api/v1/orders/${id}/payments`, (route) =>
+      route.abort("failed"),
+    );
+    await customer
+      .getByRole("button", { name: "Refresh payment", exact: true })
+      .click();
+    await expect(
+      customer.getByText(/Payment status cannot be verified right now/),
+    ).toBeVisible();
+    await expect(
+      customer.getByRole("button", { name: "Copy address", exact: true }),
+    ).toHaveCount(0);
+    await customer.unroute(`**/api/v1/orders/${id}/payments`);
+    await customer
+      .getByRole("button", {
+        name: "Try payment information again",
+        exact: true,
+      })
+      .click();
+    await expect(
+      customer.getByRole("button", { name: "Copy address", exact: true }),
+    ).toBeVisible();
+    await customer.reload();
+    await expect(
+      customer.getByRole("heading", { name: "Send your payment", exact: true }),
+    ).toBeVisible();
+    // Synthetic browser environment only; private runtime credentials are never captured.
+    const reviewFixture: Record<string, unknown> = {};
+    for (const path of [
+      "/auth/portals/customer/session",
+      `/orders/${id}`,
+      `/orders/${id}/payments`,
+      `/orders/${id}/cases`,
+      `/orders/${id}/refunds`,
+      `/orders/${id}/events`,
+      "/site/published",
+      "/me/overview",
+    ]) {
+      const response = await customer.request.get("/api/v1" + path);
+      if (response.ok())
+        reviewFixture["/api/v1" + path] = (await response.json()) as unknown;
+    }
+    await writeFile(
+      `.cache/di05b-review-fixture-${info.project.name}.json`,
+      JSON.stringify(reviewFixture),
+    );
     await customer.screenshot({
       path: `.cache/checkout-${info.project.name}.png`,
       fullPage: true,

@@ -104,3 +104,72 @@ export function caseNextStep(state: string, admin: boolean) {
     ? "Review the customer's evidence and propose a resolution. Replies are visible to the customer."
     : "The support team is reviewing your case. Add relevant details below; active work stays on hold.";
 }
+
+export function instructionTitle(status: string, expired = false) {
+  if (expired || status === "expired") return "Deposit window ended";
+  switch (status) {
+    case "ready":
+      return "Complete your payment";
+    case "refreshing":
+      return "Refreshing payment instructions";
+    case "review_required":
+      return "Checking with the provider";
+    case "closed":
+      return "Payment instructions closed";
+    default:
+      return "Preparing payment instructions";
+  }
+}
+export function instructionMessage(status: string, expired = false) {
+  if (expired || status === "expired")
+    return "Do not send using expired instructions. If you already paid, wait for reconciliation or contact support before sending anything else.";
+  switch (status) {
+    case "ready":
+      return "Use the exact amount, asset and network below. Payment is confirmed separately after the provider verifies received funds.";
+    case "refreshing":
+      return "Instructions are temporarily hidden while fresh provider information is checked. Do not pay again if you already sent funds.";
+    case "review_required":
+      return "The provider result needs reconciliation. Your existing checkout is retained; do not start another payment.";
+    case "closed":
+      return "Do not send funds using these instructions. Your payment history remains available.";
+    default:
+      return "We are requesting and checking your destination with the provider. No payment has been confirmed.";
+  }
+}
+
+export function effectiveInstructionStatus(
+  attempt: {
+    instruction_status: string;
+    expires_at: string;
+    deposit: {
+      expires_at: string;
+      valid_until: string;
+      checked_at: string;
+    } | null;
+  },
+  now: number,
+  unavailable: boolean,
+) {
+  if (
+    ["closed", "review_required", "expired"].includes(
+      attempt.instruction_status,
+    )
+  )
+    return attempt.instruction_status;
+  if (!Number.isFinite(now)) return "refreshing";
+  const expiry = Math.min(
+    Date.parse(attempt.expires_at),
+    attempt.deposit ? Date.parse(attempt.deposit.expires_at) : Infinity,
+  );
+  if (!Number.isFinite(expiry) || now >= expiry) return "expired";
+  if (unavailable) return "refreshing";
+  if (attempt.instruction_status === "ready") {
+    if (
+      !attempt.deposit ||
+      now >= Date.parse(attempt.deposit.valid_until) ||
+      now < Date.parse(attempt.deposit.checked_at)
+    )
+      return "refreshing";
+  }
+  return attempt.instruction_status;
+}

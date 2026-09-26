@@ -31,7 +31,7 @@ func attach(t *testing.T, c *Client, handler http.HandlerFunc) {
 	c.baseURL = server.URL + "/v1"
 }
 func sampleRequest() InvoiceRequest {
-	return InvoiceRequest{AttemptID: uuid.NewString(), AmountMinor: "12345", Currency: "USD", PayCurrency: "usdttrc20", FixedRate: true, FeePaidByUser: false}
+	return InvoiceRequest{OrderID: uuid.NewString(), AttemptID: uuid.NewString(), AmountMinor: "12345", Currency: "USD", PayCurrency: "usdttrc20", FixedRate: true, FeePaidByUser: false}
 }
 func respond(t *testing.T, w http.ResponseWriter, value any) {
 	t.Helper()
@@ -62,7 +62,7 @@ func TestInvoiceExactAmountPrivacyAndFixedDestination(t *testing.T) {
 		if doc["price_amount"] != json.Number("123.45") || doc["order_id"] != input.AttemptID || doc["price_currency"] != "usd" || doc["pay_currency"] != "usdttrc20" || doc["is_fee_paid_by_user"] != false || doc["is_fixed_rate"] != true {
 			t.Error("commercial input changed")
 		}
-		if doc["ipn_callback_url"] != "https://booster.example.test/api/v1/webhooks/payments/nowpayments" || doc["success_url"] != "https://booster.example.test/orders" {
+		if doc["ipn_callback_url"] != "https://booster.example.test/api/v1/webhooks/payments/nowpayments" || doc["success_url"] != "https://booster.example.test/orders/"+input.OrderID+"?section=payment" || doc["cancel_url"] != doc["success_url"] || doc["partially_paid_url"] != doc["success_url"] {
 			t.Error("unexpected callbacks")
 		}
 		for _, private := range []string{"email", "answers", "credential", c.ipnSecret, c.apiKey} {
@@ -92,7 +92,7 @@ func TestInvoiceLocalValidationAndSmallAmounts(t *testing.T) {
 		}
 		respond(t, w, map[string]any{"id": "1", "invoice_url": "https://nowpayments.io/payment/?iid=1"})
 	})
-	for _, change := range []func(*InvoiceRequest){func(v *InvoiceRequest) { v.AttemptID = "../other" }, func(v *InvoiceRequest) { v.AmountMinor = "0" }, func(v *InvoiceRequest) { v.AmountMinor = "1.5" }, func(v *InvoiceRequest) { v.AmountMinor = "1000000000000" }, func(v *InvoiceRequest) { v.Currency = "BTC" }, func(v *InvoiceRequest) { v.PayCurrency = "btc&next=evil" }} {
+	for _, change := range []func(*InvoiceRequest){func(v *InvoiceRequest) { v.OrderID = "../evil" }, func(v *InvoiceRequest) { v.AttemptID = "../other" }, func(v *InvoiceRequest) { v.AmountMinor = "0" }, func(v *InvoiceRequest) { v.AmountMinor = "1.5" }, func(v *InvoiceRequest) { v.AmountMinor = "1000000000000" }, func(v *InvoiceRequest) { v.Currency = "BTC" }, func(v *InvoiceRequest) { v.PayCurrency = "btc&next=evil" }} {
 		v := input
 		change(&v)
 		if _, err := c.CreateInvoice(t.Context(), v); !errors.Is(err, ErrInvalid) {

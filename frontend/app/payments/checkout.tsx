@@ -12,6 +12,12 @@ import {
   remedyText,
 } from "./model";
 import { paymentTitle } from "./presentation";
+import DepositInstructions from "./deposit-instructions";
+import {
+  effectiveInstructionStatus,
+  instructionMessage,
+  instructionTitle,
+} from "./presentation";
 import "./workspace.css";
 export default function Checkout({
   detail,
@@ -25,7 +31,14 @@ export default function Checkout({
   const base = (admin ? "/admin/orders/" : "/orders/") + detail.order.id;
   const resource = useResource(base + "/payments", historySchema);
   const reload = resource.reload;
-  const [now, setNow] = useState(() => Date.now());
+  const [tick, setNow] = useState(() => ({
+    local: Date.now(),
+    monotonic: performance.now(),
+  }));
+  const [connection, setConnection] = useState({
+    blocked: false,
+    after: -Infinity,
+  });
   const [route, setRoute] = useState(""),
     [acceptedPolicy, setAcceptedPolicy] = useState(""),
     [busy, setBusy] = useState(false),
@@ -33,6 +46,22 @@ export default function Checkout({
   const data = resource.data,
     policy = data?.policy,
     latest = data?.attempts[0];
+  const serverTime = Date.parse(data?.server_time ?? "");
+  const requestTime = resource.requestedAt ?? NaN;
+  // Start at request dispatch, conservatively including network latency.
+  const currentTime = () =>
+    serverTime + Math.max(0, performance.now() - requestTime);
+  const nativeNow = serverTime + Math.max(0, tick.monotonic - requestTime);
+  const now = Number.isFinite(nativeNow) ? nativeNow : tick.local;
+  const unavailable =
+    connection.blocked ||
+    (connection.after !== -Infinity &&
+      (!Number.isFinite(requestTime) || requestTime < connection.after));
+  const effectiveInstructions = latest
+    ? effectiveInstructionStatus(latest, nativeNow, unavailable)
+    : "not_applicable";
+  const nativeWaiting =
+    latest?.native_checkout && latest.state === "awaiting_payment";
   const consentKey = `${policy?.id ?? ""}:${detail.contract?.id ?? ""}:${route}`;
   const accepted = !!policy && acceptedPolicy === consentKey;
   const lock = useRef(false);
@@ -49,17 +78,28 @@ export default function Checkout({
   useEffect(() => {
     if (!polling) return;
     const clock = window.setInterval(() => {
-      setNow(Date.now());
+      setNow({ local: Date.now(), monotonic: performance.now() });
     }, 1000);
     const refresh = () => {
-      if (!document.hidden) reload();
+      if (!document.hidden && navigator.onLine) reload();
+    };
+    const reconnect = () => {
+      setConnection({
+        blocked: document.hidden || !navigator.onLine,
+        after: performance.now(),
+      });
+      refresh();
     };
     const timer = window.setInterval(refresh, 10000);
-    document.addEventListener("visibilitychange", refresh);
+    document.addEventListener("visibilitychange", reconnect);
+    window.addEventListener("online", reconnect);
+    window.addEventListener("offline", reconnect);
     return () => {
       window.clearInterval(timer);
       window.clearInterval(clock);
-      document.removeEventListener("visibilitychange", refresh);
+      document.removeEventListener("visibilitychange", reconnect);
+      window.removeEventListener("online", reconnect);
+      window.removeEventListener("offline", reconnect);
     };
   }, [polling, reload]);
   useEffect(() => {
@@ -119,9 +159,16 @@ export default function Checkout({
         <p role="status">Loading payment information…</p>
       )}
       {!!resource.error && (
-        <Action disabled={resource.loading} onClick={reload}>
-          Try payment information again
-        </Action>
+        <div className="payment-status-unavailable">
+          <p role="status">
+            Payment status cannot be verified right now. This order remains
+            available. If you already sent funds, do not send again; retry the
+            status check or contact support from this order.
+          </p>
+          <Action disabled={resource.loading} onClick={reload}>
+            Try payment information again
+          </Action>
+        </div>
       )}
       {data && (
         <ol className="payment-steps" aria-label="Payment progress">
@@ -134,7 +181,7 @@ export default function Checkout({
                 : undefined
             }
           >
-            2. Pay with provider
+            2. Complete payment
           </li>
           <li aria-current={latest?.state === "settled" ? "step" : undefined}>
             3. Verified receipt
@@ -235,11 +282,17 @@ export default function Checkout({
       {latest && (
         <div className="payment-current">
           <p className="eyebrow">Current payment</p>
-          <h3>{paymentTitle(latest.state, latest.issue, expired)}</h3>
+          <h3>
+            {nativeWaiting
+              ? instructionTitle(effectiveInstructions, expired)
+              : paymentTitle(latest.state, latest.issue, expired)}
+          </h3>
           <p role="status">
-            {expired && latest.state === "awaiting_payment" && !latest.issue
-              ? "Waiting for the provider to reconcile this checkout. Expiry alone does not confirm whether funds were received."
-              : paymentMessage(latest.state, latest.issue)}
+            {nativeWaiting
+              ? instructionMessage(effectiveInstructions, expired)
+              : expired && latest.state === "awaiting_payment" && !latest.issue
+                ? "Waiting for the provider to reconcile this checkout. Expiry alone does not confirm whether funds were received."
+                : paymentMessage(latest.state, latest.issue)}
           </p>
           <dl className="payment-facts">
             <div>
@@ -256,23 +309,41 @@ export default function Checkout({
               <dt>Network</dt>
               <dd>{latest.route.network}</dd>
             </div>
-            <div>
-              <dt>Checkout deadline</dt>
-              <dd>
-                <time dateTime={latest.expires_at}>
-                  {new Date(latest.expires_at).toLocaleString()}
-                </time>
-              </dd>
-            </div>
+            {!latest.native_checkout && (
+              <div>
+                <dt>Checkout deadline</dt>
+                <dd>
+                  <time dateTime={latest.expires_at}>
+                    {new Date(latest.expires_at).toLocaleString()}
+                  </time>
+                </dd>
+              </div>
+            )}
           </dl>
           {latest.state === "awaiting_payment" && expired && (
             <p className="payment-route-note">
               This local checkout window has ended. Do not use the old payment
-              link. If you already sent funds, wait for reconciliation or
-              contact support.
+              instructions or link. If you already sent funds, wait for
+              reconciliation or contact support.
             </p>
           )}
+          {latest.native_checkout && latest.deposit && !admin && (
+            <DepositInstructions
+              deposit={latest.deposit}
+              route={latest.route}
+              now={nativeNow}
+              currentTime={currentTime}
+              unavailable={
+                unavailable ||
+                !!resource.error ||
+                effectiveInstructions !== "ready"
+              }
+            />
+          )}
           {latest.checkout_url &&
+            !latest.native_checkout &&
+            !unavailable &&
+            !resource.error &&
             latest.state === "awaiting_payment" &&
             !expired &&
             !admin && (

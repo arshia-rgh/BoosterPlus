@@ -66,7 +66,50 @@ export function safeCheckout(value: string): boolean {
     return false;
   }
 }
+// New fields have closed defaults for rolling responses; absent evidence never
+// produces an address or a native payment instruction.
+export const depositSchema = z.object({
+  payment_id: z.string().regex(/^[1-9][0-9]{0,31}$/),
+  address: z.string().regex(/^[a-zA-Z0-9_-]{8,256}$/),
+  memo: z
+    .string()
+    .max(128)
+    .regex(/^[\x20-\x7e]*$/),
+  amount: z
+    .string()
+    .max(200)
+    .refine((value) => {
+      const parts = value.split(".");
+      return (
+        parts.length <= 2 &&
+        /^(0|[1-9][0-9]*)$/.test(parts[0] ?? "") &&
+        (parts.length === 1 || /^[0-9]+$/.test(parts[1] ?? ""))
+      );
+    }),
+  currency: z.string(),
+  network: z.string(),
+  expires_at: z.iso.datetime({ offset: true }),
+  checked_at: z.iso.datetime({ offset: true }),
+  valid_until: z.iso.datetime({ offset: true }),
+  qr: z
+    .string()
+    .max(30000)
+    .regex(/^data:image\/png;base64,iVBORw0KGgo[A-Za-z0-9+/]+=*$/),
+});
 export const attemptSchema = z.object({
+  native_checkout: z.boolean().default(false),
+  instruction_status: z
+    .enum([
+      "not_applicable",
+      "preparing",
+      "ready",
+      "refreshing",
+      "expired",
+      "review_required",
+      "closed",
+    ])
+    .default("not_applicable"),
+  deposit: depositSchema.nullable().default(null),
   id: z.string(),
   order_id: z.string(),
   state: z.string(),
@@ -90,6 +133,7 @@ export const receiptSchema = z.object({
   created_at: z.string(),
 });
 export const historySchema = z.object({
+  server_time: z.string().default(""),
   enabled: z.boolean(),
   policy: publishedSchema.nullable(),
   attempts: z.array(attemptSchema),

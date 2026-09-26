@@ -94,6 +94,7 @@ func New(cfg Config) (*Client, error) {
 // PayCurrency names the provider's asset/network code. Empty permits the merchant-enabled chooser.
 // FeePaidByUser must come from the accepted fee policy; this adapter supplies no policy default.
 type InvoiceRequest struct {
+	OrderID       string
 	AttemptID     string
 	AmountMinor   string
 	Currency      string
@@ -110,6 +111,10 @@ type Invoice struct{ ID, URL string }
 func (c *Client) CreateInvoice(ctx context.Context, input InvoiceRequest) (Invoice, error) {
 	if c.readOnly {
 		return Invoice{}, ErrUnavailable
+	}
+	orderID, orderErr := uuid.Parse(input.OrderID)
+	if orderErr != nil || orderID.String() != input.OrderID {
+		return Invoice{}, ErrInvalid
 	}
 	id, err := uuid.Parse(input.AttemptID)
 	if err != nil || id.String() != input.AttemptID || !minorPattern.MatchString(input.AmountMinor) || (input.Currency != "USD" && input.Currency != "EUR" && input.Currency != "GBP") || (input.PayCurrency != "" && !coinPattern.MatchString(input.PayCurrency)) {
@@ -132,7 +137,7 @@ func (c *Client) CreateInvoice(ctx context.Context, input InvoiceRequest) (Invoi
 		Partial     string      `json:"partially_paid_url"`
 		Fixed       bool        `json:"is_fixed_rate"`
 		Fee         bool        `json:"is_fee_paid_by_user"`
-	}{json.Number(amount), strings.ToLower(input.Currency), input.PayCurrency, input.AttemptID, "PLAYORA order", c.origin + "/api/v1/webhooks/payments/nowpayments", c.origin + "/orders", c.origin + "/orders", c.origin + "/orders", input.FixedRate, input.FeePaidByUser}
+	}{json.Number(amount), strings.ToLower(input.Currency), input.PayCurrency, input.AttemptID, "PLAYORA order", c.origin + "/api/v1/webhooks/payments/nowpayments", c.origin + "/orders/" + input.OrderID + "?section=payment", c.origin + "/orders/" + input.OrderID + "?section=payment", c.origin + "/orders/" + input.OrderID + "?section=payment", input.FixedRate, input.FeePaidByUser}
 	raw, err := json.Marshal(payload)
 	if err != nil {
 		return Invoice{}, ErrInvalid

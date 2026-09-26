@@ -31,6 +31,14 @@ const (
 	FieldCurrency = "currency"
 	// FieldAmountMinor holds the string denoting the amount_minor field in the database.
 	FieldAmountMinor = "amount_minor"
+	// FieldNativeCheckout holds the string denoting the native_checkout field in the database.
+	FieldNativeCheckout = "native_checkout"
+	// FieldDepositClaimed holds the string denoting the deposit_claimed field in the database.
+	FieldDepositClaimed = "deposit_claimed"
+	// FieldDepositPaymentID holds the string denoting the deposit_payment_id field in the database.
+	FieldDepositPaymentID = "deposit_payment_id"
+	// FieldDepositData holds the string denoting the deposit_data field in the database.
+	FieldDepositData = "deposit_data"
 	// FieldPostClaimed holds the string denoting the post_claimed field in the database.
 	FieldPostClaimed = "post_claimed"
 	// FieldState holds the string denoting the state field in the database.
@@ -66,6 +74,10 @@ var Columns = []string{
 	FieldRoute,
 	FieldCurrency,
 	FieldAmountMinor,
+	FieldNativeCheckout,
+	FieldDepositClaimed,
+	FieldDepositPaymentID,
+	FieldDepositData,
 	FieldPostClaimed,
 	FieldState,
 	FieldInvoiceID,
@@ -104,6 +116,14 @@ var (
 	CurrencyValidator func(string) error
 	// AmountMinorValidator is a validator for the "amount_minor" field. It is called by the builders before save.
 	AmountMinorValidator func(string) error
+	// DefaultNativeCheckout holds the default value on creation for the "native_checkout" field.
+	DefaultNativeCheckout bool
+	// DefaultDepositClaimed holds the default value on creation for the "deposit_claimed" field.
+	DefaultDepositClaimed bool
+	// DefaultDepositPaymentID holds the default value on creation for the "deposit_payment_id" field.
+	DefaultDepositPaymentID string
+	// DepositPaymentIDValidator is a validator for the "deposit_payment_id" field. It is called by the builders before save.
+	DepositPaymentIDValidator func(string) error
 	// DefaultPostClaimed holds the default value on creation for the "post_claimed" field.
 	DefaultPostClaimed bool
 	// DefaultState holds the default value on creation for the "state" field.
@@ -172,6 +192,21 @@ func ByCurrency(opts ...sql.OrderTermOption) OrderOption {
 // ByAmountMinor orders the results by the amount_minor field.
 func ByAmountMinor(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAmountMinor, opts...).ToFunc()
+}
+
+// ByNativeCheckout orders the results by the native_checkout field.
+func ByNativeCheckout(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNativeCheckout, opts...).ToFunc()
+}
+
+// ByDepositClaimed orders the results by the deposit_claimed field.
+func ByDepositClaimed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositClaimed, opts...).ToFunc()
+}
+
+// ByDepositPaymentID orders the results by the deposit_payment_id field.
+func ByDepositPaymentID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositPaymentID, opts...).ToFunc()
 }
 
 // ByPostClaimed orders the results by the post_claimed field.

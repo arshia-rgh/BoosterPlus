@@ -48,6 +48,46 @@ func (_u *PaymentAttemptUpdate) ClearActiveContractID() *PaymentAttemptUpdate {
 	return _u
 }
 
+// SetDepositClaimed sets the "deposit_claimed" field.
+func (_u *PaymentAttemptUpdate) SetDepositClaimed(v bool) *PaymentAttemptUpdate {
+	_u.mutation.SetDepositClaimed(v)
+	return _u
+}
+
+// SetNillableDepositClaimed sets the "deposit_claimed" field if the given value is not nil.
+func (_u *PaymentAttemptUpdate) SetNillableDepositClaimed(v *bool) *PaymentAttemptUpdate {
+	if v != nil {
+		_u.SetDepositClaimed(*v)
+	}
+	return _u
+}
+
+// SetDepositPaymentID sets the "deposit_payment_id" field.
+func (_u *PaymentAttemptUpdate) SetDepositPaymentID(v string) *PaymentAttemptUpdate {
+	_u.mutation.SetDepositPaymentID(v)
+	return _u
+}
+
+// SetNillableDepositPaymentID sets the "deposit_payment_id" field if the given value is not nil.
+func (_u *PaymentAttemptUpdate) SetNillableDepositPaymentID(v *string) *PaymentAttemptUpdate {
+	if v != nil {
+		_u.SetDepositPaymentID(*v)
+	}
+	return _u
+}
+
+// SetDepositData sets the "deposit_data" field.
+func (_u *PaymentAttemptUpdate) SetDepositData(v map[string]interface{}) *PaymentAttemptUpdate {
+	_u.mutation.SetDepositData(v)
+	return _u
+}
+
+// ClearDepositData clears the value of the "deposit_data" field.
+func (_u *PaymentAttemptUpdate) ClearDepositData() *PaymentAttemptUpdate {
+	_u.mutation.ClearDepositData()
+	return _u
+}
+
 // SetPostClaimed sets the "post_claimed" field.
 func (_u *PaymentAttemptUpdate) SetPostClaimed(v bool) *PaymentAttemptUpdate {
 	_u.mutation.SetPostClaimed(v)
@@ -197,6 +237,11 @@ func (_u *PaymentAttemptUpdate) check() error {
 			return &ValidationError{Name: "active_contract_id", err: fmt.Errorf(`ent: validator failed for field "PaymentAttempt.active_contract_id": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.DepositPaymentID(); ok {
+		if err := paymentattempt.DepositPaymentIDValidator(v); err != nil {
+			return &ValidationError{Name: "deposit_payment_id", err: fmt.Errorf(`ent: validator failed for field "PaymentAttempt.deposit_payment_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.State(); ok {
 		if err := paymentattempt.StateValidator(v); err != nil {
 			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "PaymentAttempt.state": %w`, err)}
@@ -237,6 +282,18 @@ func (_u *PaymentAttemptUpdate) sqlSave(ctx context.Context) (_node int, err err
 	}
 	if _u.mutation.ActiveContractIDCleared() {
 		_spec.ClearField(paymentattempt.FieldActiveContractID, field.TypeString)
+	}
+	if value, ok := _u.mutation.DepositClaimed(); ok {
+		_spec.SetField(paymentattempt.FieldDepositClaimed, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.DepositPaymentID(); ok {
+		_spec.SetField(paymentattempt.FieldDepositPaymentID, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.DepositData(); ok {
+		_spec.SetField(paymentattempt.FieldDepositData, field.TypeJSON, value)
+	}
+	if _u.mutation.DepositDataCleared() {
+		_spec.ClearField(paymentattempt.FieldDepositData, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.PostClaimed(); ok {
 		_spec.SetField(paymentattempt.FieldPostClaimed, field.TypeBool, value)
@@ -302,6 +359,46 @@ func (_u *PaymentAttemptUpdateOne) SetNillableActiveContractID(v *string) *Payme
 // ClearActiveContractID clears the value of the "active_contract_id" field.
 func (_u *PaymentAttemptUpdateOne) ClearActiveContractID() *PaymentAttemptUpdateOne {
 	_u.mutation.ClearActiveContractID()
+	return _u
+}
+
+// SetDepositClaimed sets the "deposit_claimed" field.
+func (_u *PaymentAttemptUpdateOne) SetDepositClaimed(v bool) *PaymentAttemptUpdateOne {
+	_u.mutation.SetDepositClaimed(v)
+	return _u
+}
+
+// SetNillableDepositClaimed sets the "deposit_claimed" field if the given value is not nil.
+func (_u *PaymentAttemptUpdateOne) SetNillableDepositClaimed(v *bool) *PaymentAttemptUpdateOne {
+	if v != nil {
+		_u.SetDepositClaimed(*v)
+	}
+	return _u
+}
+
+// SetDepositPaymentID sets the "deposit_payment_id" field.
+func (_u *PaymentAttemptUpdateOne) SetDepositPaymentID(v string) *PaymentAttemptUpdateOne {
+	_u.mutation.SetDepositPaymentID(v)
+	return _u
+}
+
+// SetNillableDepositPaymentID sets the "deposit_payment_id" field if the given value is not nil.
+func (_u *PaymentAttemptUpdateOne) SetNillableDepositPaymentID(v *string) *PaymentAttemptUpdateOne {
+	if v != nil {
+		_u.SetDepositPaymentID(*v)
+	}
+	return _u
+}
+
+// SetDepositData sets the "deposit_data" field.
+func (_u *PaymentAttemptUpdateOne) SetDepositData(v map[string]interface{}) *PaymentAttemptUpdateOne {
+	_u.mutation.SetDepositData(v)
+	return _u
+}
+
+// ClearDepositData clears the value of the "deposit_data" field.
+func (_u *PaymentAttemptUpdateOne) ClearDepositData() *PaymentAttemptUpdateOne {
+	_u.mutation.ClearDepositData()
 	return _u
 }
 
@@ -467,6 +564,11 @@ func (_u *PaymentAttemptUpdateOne) check() error {
 			return &ValidationError{Name: "active_contract_id", err: fmt.Errorf(`ent: validator failed for field "PaymentAttempt.active_contract_id": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.DepositPaymentID(); ok {
+		if err := paymentattempt.DepositPaymentIDValidator(v); err != nil {
+			return &ValidationError{Name: "deposit_payment_id", err: fmt.Errorf(`ent: validator failed for field "PaymentAttempt.deposit_payment_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.State(); ok {
 		if err := paymentattempt.StateValidator(v); err != nil {
 			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "PaymentAttempt.state": %w`, err)}
@@ -524,6 +626,18 @@ func (_u *PaymentAttemptUpdateOne) sqlSave(ctx context.Context) (_node *PaymentA
 	}
 	if _u.mutation.ActiveContractIDCleared() {
 		_spec.ClearField(paymentattempt.FieldActiveContractID, field.TypeString)
+	}
+	if value, ok := _u.mutation.DepositClaimed(); ok {
+		_spec.SetField(paymentattempt.FieldDepositClaimed, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.DepositPaymentID(); ok {
+		_spec.SetField(paymentattempt.FieldDepositPaymentID, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.DepositData(); ok {
+		_spec.SetField(paymentattempt.FieldDepositData, field.TypeJSON, value)
+	}
+	if _u.mutation.DepositDataCleared() {
+		_spec.ClearField(paymentattempt.FieldDepositData, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.PostClaimed(); ok {
 		_spec.SetField(paymentattempt.FieldPostClaimed, field.TypeBool, value)

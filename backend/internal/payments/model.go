@@ -197,17 +197,20 @@ type StartInput struct {
 
 // Attempt is a safe customer projection; mode/account credentials and internal leases are absent.
 type Attempt struct {
-	ID          string     `json:"id"`
-	OrderID     string     `json:"order_id"`
-	State       string     `json:"state"`
-	Issue       string     `json:"issue"`
-	Currency    string     `json:"currency"`
-	AmountMinor string     `json:"amount_minor"`
-	Route       Route      `json:"route"`
-	Policy      PolicyView `json:"policy"`
-	CheckoutURL string     `json:"checkout_url"`
-	CreatedAt   time.Time  `json:"created_at"`
-	ExpiresAt   time.Time  `json:"expires_at"`
+	NativeCheckout    bool       `json:"native_checkout"`
+	InstructionStatus string     `json:"instruction_status"`
+	Deposit           *Deposit   `json:"deposit"`
+	ID                string     `json:"id"`
+	OrderID           string     `json:"order_id"`
+	State             string     `json:"state"`
+	Issue             string     `json:"issue"`
+	Currency          string     `json:"currency"`
+	AmountMinor       string     `json:"amount_minor"`
+	Route             Route      `json:"route"`
+	Policy            PolicyView `json:"policy"`
+	CheckoutURL       string     `json:"checkout_url"`
+	CreatedAt         time.Time  `json:"created_at"`
+	ExpiresAt         time.Time  `json:"expires_at"`
 }
 
 func attemptView(row *ent.PaymentAttempt) (Attempt, error) {
@@ -219,7 +222,12 @@ func attemptView(row *ent.PaymentAttempt) (Attempt, error) {
 	if err != nil {
 		return Attempt{}, err
 	}
-	return Attempt{row.ID, row.OrderID, row.State, row.Issue, row.Currency, row.AmountMinor, route, PolicyView{row.PolicyID, policy}, row.CheckoutURL, row.CreatedAt, row.ExpiresAt}, nil
+	view := Attempt{ID: row.ID, OrderID: row.OrderID, State: row.State, Issue: row.Issue, Currency: row.Currency, AmountMinor: row.AmountMinor, Route: route, Policy: PolicyView{row.PolicyID, policy}, CheckoutURL: row.CheckoutURL, CreatedAt: row.CreatedAt, ExpiresAt: row.ExpiresAt, NativeCheckout: row.NativeCheckout, InstructionStatus: "not_applicable"}
+	if row.NativeCheckout {
+		view.CheckoutURL = ""
+		view.InstructionStatus = "preparing"
+	}
+	return view, nil
 }
 
 // Receipt records exact received crypto separately from its allocated order currency.
@@ -236,8 +244,9 @@ type Receipt struct {
 
 // History is bounded to an order's immutable commercial attempt history.
 type History struct {
-	Enabled  bool        `json:"enabled"`
-	Policy   *PolicyView `json:"policy"`
-	Attempts []Attempt   `json:"attempts"`
-	Receipts []Receipt   `json:"receipts"`
+	ServerTime time.Time   `json:"server_time"`
+	Enabled    bool        `json:"enabled"`
+	Policy     *PolicyView `json:"policy"`
+	Attempts   []Attempt   `json:"attempts"`
+	Receipts   []Receipt   `json:"receipts"`
 }

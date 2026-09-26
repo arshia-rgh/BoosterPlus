@@ -104,6 +104,21 @@ func AmountMinor(v string) predicate.PaymentAttempt {
 	return predicate.PaymentAttempt(sql.FieldEQ(FieldAmountMinor, v))
 }
 
+// NativeCheckout applies equality check predicate on the "native_checkout" field. It's identical to NativeCheckoutEQ.
+func NativeCheckout(v bool) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldEQ(FieldNativeCheckout, v))
+}
+
+// DepositClaimed applies equality check predicate on the "deposit_claimed" field. It's identical to DepositClaimedEQ.
+func DepositClaimed(v bool) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldEQ(FieldDepositClaimed, v))
+}
+
+// DepositPaymentID applies equality check predicate on the "deposit_payment_id" field. It's identical to DepositPaymentIDEQ.
+func DepositPaymentID(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldEQ(FieldDepositPaymentID, v))
+}
+
 // PostClaimed applies equality check predicate on the "post_claimed" field. It's identical to PostClaimedEQ.
 func PostClaimed(v bool) predicate.PaymentAttempt {
 	return predicate.PaymentAttempt(sql.FieldEQ(FieldPostClaimed, v))
@@ -677,6 +692,101 @@ func AmountMinorEqualFold(v string) predicate.PaymentAttempt {
 // AmountMinorContainsFold applies the ContainsFold predicate on the "amount_minor" field.
 func AmountMinorContainsFold(v string) predicate.PaymentAttempt {
 	return predicate.PaymentAttempt(sql.FieldContainsFold(FieldAmountMinor, v))
+}
+
+// NativeCheckoutEQ applies the EQ predicate on the "native_checkout" field.
+func NativeCheckoutEQ(v bool) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldEQ(FieldNativeCheckout, v))
+}
+
+// NativeCheckoutNEQ applies the NEQ predicate on the "native_checkout" field.
+func NativeCheckoutNEQ(v bool) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldNEQ(FieldNativeCheckout, v))
+}
+
+// DepositClaimedEQ applies the EQ predicate on the "deposit_claimed" field.
+func DepositClaimedEQ(v bool) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldEQ(FieldDepositClaimed, v))
+}
+
+// DepositClaimedNEQ applies the NEQ predicate on the "deposit_claimed" field.
+func DepositClaimedNEQ(v bool) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldNEQ(FieldDepositClaimed, v))
+}
+
+// DepositPaymentIDEQ applies the EQ predicate on the "deposit_payment_id" field.
+func DepositPaymentIDEQ(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldEQ(FieldDepositPaymentID, v))
+}
+
+// DepositPaymentIDNEQ applies the NEQ predicate on the "deposit_payment_id" field.
+func DepositPaymentIDNEQ(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldNEQ(FieldDepositPaymentID, v))
+}
+
+// DepositPaymentIDIn applies the In predicate on the "deposit_payment_id" field.
+func DepositPaymentIDIn(vs ...string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldIn(FieldDepositPaymentID, vs...))
+}
+
+// DepositPaymentIDNotIn applies the NotIn predicate on the "deposit_payment_id" field.
+func DepositPaymentIDNotIn(vs ...string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldNotIn(FieldDepositPaymentID, vs...))
+}
+
+// DepositPaymentIDGT applies the GT predicate on the "deposit_payment_id" field.
+func DepositPaymentIDGT(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldGT(FieldDepositPaymentID, v))
+}
+
+// DepositPaymentIDGTE applies the GTE predicate on the "deposit_payment_id" field.
+func DepositPaymentIDGTE(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldGTE(FieldDepositPaymentID, v))
+}
+
+// DepositPaymentIDLT applies the LT predicate on the "deposit_payment_id" field.
+func DepositPaymentIDLT(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldLT(FieldDepositPaymentID, v))
+}
+
+// DepositPaymentIDLTE applies the LTE predicate on the "deposit_payment_id" field.
+func DepositPaymentIDLTE(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldLTE(FieldDepositPaymentID, v))
+}
+
+// DepositPaymentIDContains applies the Contains predicate on the "deposit_payment_id" field.
+func DepositPaymentIDContains(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldContains(FieldDepositPaymentID, v))
+}
+
+// DepositPaymentIDHasPrefix applies the HasPrefix predicate on the "deposit_payment_id" field.
+func DepositPaymentIDHasPrefix(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldHasPrefix(FieldDepositPaymentID, v))
+}
+
+// DepositPaymentIDHasSuffix applies the HasSuffix predicate on the "deposit_payment_id" field.
+func DepositPaymentIDHasSuffix(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldHasSuffix(FieldDepositPaymentID, v))
+}
+
+// DepositPaymentIDEqualFold applies the EqualFold predicate on the "deposit_payment_id" field.
+func DepositPaymentIDEqualFold(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldEqualFold(FieldDepositPaymentID, v))
+}
+
+// DepositPaymentIDContainsFold applies the ContainsFold predicate on the "deposit_payment_id" field.
+func DepositPaymentIDContainsFold(v string) predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldContainsFold(FieldDepositPaymentID, v))
+}
+
+// DepositDataIsNil applies the IsNil predicate on the "deposit_data" field.
+func DepositDataIsNil() predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldIsNull(FieldDepositData))
+}
+
+// DepositDataNotNil applies the NotNil predicate on the "deposit_data" field.
+func DepositDataNotNil() predicate.PaymentAttempt {
+	return predicate.PaymentAttempt(sql.FieldNotNull(FieldDepositData))
 }
 
 // PostClaimedEQ applies the EQ predicate on the "post_claimed" field.

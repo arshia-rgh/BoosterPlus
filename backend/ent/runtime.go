@@ -1661,28 +1661,42 @@ func init() {
 	paymentattemptDescAmountMinor := paymentattemptFields[10].Descriptor()
 	// paymentattempt.AmountMinorValidator is a validator for the "amount_minor" field. It is called by the builders before save.
 	paymentattempt.AmountMinorValidator = paymentattemptDescAmountMinor.Validators[0].(func(string) error)
+	// paymentattemptDescNativeCheckout is the schema descriptor for native_checkout field.
+	paymentattemptDescNativeCheckout := paymentattemptFields[11].Descriptor()
+	// paymentattempt.DefaultNativeCheckout holds the default value on creation for the native_checkout field.
+	paymentattempt.DefaultNativeCheckout = paymentattemptDescNativeCheckout.Default.(bool)
+	// paymentattemptDescDepositClaimed is the schema descriptor for deposit_claimed field.
+	paymentattemptDescDepositClaimed := paymentattemptFields[12].Descriptor()
+	// paymentattempt.DefaultDepositClaimed holds the default value on creation for the deposit_claimed field.
+	paymentattempt.DefaultDepositClaimed = paymentattemptDescDepositClaimed.Default.(bool)
+	// paymentattemptDescDepositPaymentID is the schema descriptor for deposit_payment_id field.
+	paymentattemptDescDepositPaymentID := paymentattemptFields[13].Descriptor()
+	// paymentattempt.DefaultDepositPaymentID holds the default value on creation for the deposit_payment_id field.
+	paymentattempt.DefaultDepositPaymentID = paymentattemptDescDepositPaymentID.Default.(string)
+	// paymentattempt.DepositPaymentIDValidator is a validator for the "deposit_payment_id" field. It is called by the builders before save.
+	paymentattempt.DepositPaymentIDValidator = paymentattemptDescDepositPaymentID.Validators[0].(func(string) error)
 	// paymentattemptDescPostClaimed is the schema descriptor for post_claimed field.
-	paymentattemptDescPostClaimed := paymentattemptFields[11].Descriptor()
+	paymentattemptDescPostClaimed := paymentattemptFields[15].Descriptor()
 	// paymentattempt.DefaultPostClaimed holds the default value on creation for the post_claimed field.
 	paymentattempt.DefaultPostClaimed = paymentattemptDescPostClaimed.Default.(bool)
 	// paymentattemptDescState is the schema descriptor for state field.
-	paymentattemptDescState := paymentattemptFields[12].Descriptor()
+	paymentattemptDescState := paymentattemptFields[16].Descriptor()
 	// paymentattempt.DefaultState holds the default value on creation for the state field.
 	paymentattempt.DefaultState = paymentattemptDescState.Default.(string)
 	// paymentattempt.StateValidator is a validator for the "state" field. It is called by the builders before save.
 	paymentattempt.StateValidator = paymentattemptDescState.Validators[0].(func(string) error)
 	// paymentattemptDescInvoiceID is the schema descriptor for invoice_id field.
-	paymentattemptDescInvoiceID := paymentattemptFields[13].Descriptor()
+	paymentattemptDescInvoiceID := paymentattemptFields[17].Descriptor()
 	// paymentattempt.InvoiceIDValidator is a validator for the "invoice_id" field. It is called by the builders before save.
 	paymentattempt.InvoiceIDValidator = paymentattemptDescInvoiceID.Validators[0].(func(string) error)
 	// paymentattemptDescCheckoutURL is the schema descriptor for checkout_url field.
-	paymentattemptDescCheckoutURL := paymentattemptFields[14].Descriptor()
+	paymentattemptDescCheckoutURL := paymentattemptFields[18].Descriptor()
 	// paymentattempt.DefaultCheckoutURL holds the default value on creation for the checkout_url field.
 	paymentattempt.DefaultCheckoutURL = paymentattemptDescCheckoutURL.Default.(string)
 	// paymentattempt.CheckoutURLValidator is a validator for the "checkout_url" field. It is called by the builders before save.
 	paymentattempt.CheckoutURLValidator = paymentattemptDescCheckoutURL.Validators[0].(func(string) error)
 	// paymentattemptDescIssue is the schema descriptor for issue field.
-	paymentattemptDescIssue := paymentattemptFields[15].Descriptor()
+	paymentattemptDescIssue := paymentattemptFields[19].Descriptor()
 	// paymentattempt.DefaultIssue holds the default value on creation for the issue field.
 	paymentattempt.DefaultIssue = paymentattemptDescIssue.Default.(string)
 	// paymentattempt.IssueValidator is a validator for the "issue" field. It is called by the builders before save.

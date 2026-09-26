@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 28
+const SchemaVersion = 29
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,6 +47,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"payment_attempts.native_checkout": "tinyint", "payment_attempts.deposit_claimed": "tinyint", "payment_attempts.deposit_payment_id": "varchar", "payment_attempts.deposit_data": "json",
 		"site_settings.draft": "json", "site_releases.data": "json", "privacy_requests.manual_hold": "tinyint", "privacy_requests.active_user_id": "varchar", "users.deleted_at": "datetime",
 		"availability_targets.criteria": "json", "availability_targets.stock_marker": "varchar", "payment_attempts.post_claimed": "tinyint", "seller_offers.data": "json", "seller_offers.active_submission_id": "varchar", "seller_offer_events.version": "bigint", "account_listings.draft": "json", "account_listing_releases.data": "json", "account_reservations.active_listing_id": "varchar", "account_deliveries.dispute_until": "datetime", "money_transfers.seller_offer_id": "varchar", "orders.listing_id": "varchar", "orders.account_snapshot": "json",
 		"service_cases.request_hash": "varchar", "service_cases.active_order_id": "varchar", "service_cases.policy": "json", "service_cases.version": "bigint", "case_events.version": "bigint", "case_events.actor_role": "varchar", "money_transfers.recipient": "json", "money_transfers.amount": "varchar", "transfer_attempts.active_transfer_id": "varchar", "transfer_observations.data": "json", "transfer_records.lease_until": "datetime", "transfer_events.version": "bigint", "payment_settings.outgoing_page": "bigint",

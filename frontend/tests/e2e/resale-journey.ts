@@ -381,14 +381,18 @@ export async function resaleJourney(
       .getByLabel("I accept this payment policy and the agreed order price")
       .check();
     await buyer.getByRole("button", { name: "Create secure checkout" }).click();
-    const checkout = buyer.getByRole("link", {
-      name: "Continue to NOWPayments",
+    const instructions = buyer.getByRole("region", {
+      name: "Provider deposit instructions",
     });
-    await expect(checkout).toBeVisible({ timeout: 20000 });
-    const link = await checkout.getAttribute("href");
-    if (!link) throw new Error("Missing invoice link");
-    const paymentID = new URL(link).searchParams.get("iid");
-    if (!paymentID) throw new Error("Missing invoice reference");
+    await expect(
+      instructions.getByRole("heading", {
+        name: "Send your payment",
+        exact: true,
+      }),
+    ).toBeVisible({ timeout: 20000 });
+    const paymentID = await instructions.locator("p code").first().innerText();
+    if (!/^[1-9][0-9]*$/.test(paymentID))
+      throw new Error("Missing payment reference");
     const body = JSON.stringify({
         payment_id: paymentID,
         payment_status: "finished",

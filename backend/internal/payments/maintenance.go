@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentattempt"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentrecord"
 )
 
@@ -67,6 +68,17 @@ func (s *Store) Maintain(ctx context.Context) error {
 	}
 	if err = s.expire(ctx); err != nil {
 		return err
+	}
+	if s.enabled {
+		pending, e := s.client.PaymentAttempt.Query().Where(paymentattempt.AccountEQ(s.account), paymentattempt.NativeCheckoutEQ(true), paymentattempt.DepositClaimedEQ(false), paymentattempt.InvoiceIDNotNil(), paymentattempt.ActiveContractIDNotNil(), paymentattempt.StateEQ("awaiting_payment"), paymentattempt.ExpiresAtGT(s.instant())).Order(ent.Asc(paymentattempt.FieldCreatedAt)).Limit(10).IDs(ctx)
+		if e != nil {
+			return e
+		}
+		for _, id := range pending {
+			if e = s.prepareDeposit(ctx, id); e != nil {
+				return e
+			}
+		}
 	}
 	return s.expireAccountReservations(ctx)
 }

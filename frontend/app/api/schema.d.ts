@@ -5998,6 +5998,17 @@ export interface components {
       created_at: string;
       /** Format: date-time */
       expires_at: string;
+      native_checkout: boolean;
+      /** @enum {string} */
+      instruction_status:
+        | "not_applicable"
+        | "preparing"
+        | "ready"
+        | "refreshing"
+        | "expired"
+        | "review_required"
+        | "closed";
+      deposit: components["schemas"]["PaymentDeposit"] | null;
     };
     PaymentReceipt: {
       id: string;
@@ -6015,6 +6026,8 @@ export interface components {
       policy: components["schemas"]["PublishedPaymentPolicy"] | null;
       attempts: components["schemas"]["PaymentAttempt"][];
       receipts: components["schemas"]["PaymentReceipt"][];
+      /** Format: date-time */
+      server_time: string;
     };
     PaymentSettings: {
       version: number;
@@ -6630,6 +6643,21 @@ export interface components {
         game: string;
         review: components["schemas"]["PublicPurchaseReview"];
       }[];
+    };
+    PaymentDeposit: {
+      payment_id: string;
+      address: string;
+      memo: string;
+      amount: string;
+      currency: string;
+      network: string;
+      qr: string;
+      /** Format: date-time */
+      expires_at: string;
+      /** Format: date-time */
+      checked_at: string;
+      /** Format: date-time */
+      valid_until: string;
     };
   };
   responses: never;

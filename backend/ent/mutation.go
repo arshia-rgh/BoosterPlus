@@ -32847,6 +32847,10 @@ type PaymentAttemptMutation struct {
 	route              *map[string]interface{}
 	currency           *string
 	amount_minor       *string
+	native_checkout    *bool
+	deposit_claimed    *bool
+	deposit_payment_id *string
+	deposit_data       *map[string]interface{}
 	post_claimed       *bool
 	state              *string
 	invoice_id         *string
@@ -33339,6 +33343,163 @@ func (m *PaymentAttemptMutation) ResetAmountMinor() {
 	m.amount_minor = nil
 }
 
+// SetNativeCheckout sets the "native_checkout" field.
+func (m *PaymentAttemptMutation) SetNativeCheckout(b bool) {
+	m.native_checkout = &b
+}
+
+// NativeCheckout returns the value of the "native_checkout" field in the mutation.
+func (m *PaymentAttemptMutation) NativeCheckout() (r bool, exists bool) {
+	v := m.native_checkout
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNativeCheckout returns the old "native_checkout" field's value of the PaymentAttempt entity.
+// If the PaymentAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaymentAttemptMutation) OldNativeCheckout(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNativeCheckout is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNativeCheckout requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNativeCheckout: %w", err)
+	}
+	return oldValue.NativeCheckout, nil
+}
+
+// ResetNativeCheckout resets all changes to the "native_checkout" field.
+func (m *PaymentAttemptMutation) ResetNativeCheckout() {
+	m.native_checkout = nil
+}
+
+// SetDepositClaimed sets the "deposit_claimed" field.
+func (m *PaymentAttemptMutation) SetDepositClaimed(b bool) {
+	m.deposit_claimed = &b
+}
+
+// DepositClaimed returns the value of the "deposit_claimed" field in the mutation.
+func (m *PaymentAttemptMutation) DepositClaimed() (r bool, exists bool) {
+	v := m.deposit_claimed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDepositClaimed returns the old "deposit_claimed" field's value of the PaymentAttempt entity.
+// If the PaymentAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaymentAttemptMutation) OldDepositClaimed(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDepositClaimed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDepositClaimed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDepositClaimed: %w", err)
+	}
+	return oldValue.DepositClaimed, nil
+}
+
+// ResetDepositClaimed resets all changes to the "deposit_claimed" field.
+func (m *PaymentAttemptMutation) ResetDepositClaimed() {
+	m.deposit_claimed = nil
+}
+
+// SetDepositPaymentID sets the "deposit_payment_id" field.
+func (m *PaymentAttemptMutation) SetDepositPaymentID(s string) {
+	m.deposit_payment_id = &s
+}
+
+// DepositPaymentID returns the value of the "deposit_payment_id" field in the mutation.
+func (m *PaymentAttemptMutation) DepositPaymentID() (r string, exists bool) {
+	v := m.deposit_payment_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDepositPaymentID returns the old "deposit_payment_id" field's value of the PaymentAttempt entity.
+// If the PaymentAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaymentAttemptMutation) OldDepositPaymentID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDepositPaymentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDepositPaymentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDepositPaymentID: %w", err)
+	}
+	return oldValue.DepositPaymentID, nil
+}
+
+// ResetDepositPaymentID resets all changes to the "deposit_payment_id" field.
+func (m *PaymentAttemptMutation) ResetDepositPaymentID() {
+	m.deposit_payment_id = nil
+}
+
+// SetDepositData sets the "deposit_data" field.
+func (m *PaymentAttemptMutation) SetDepositData(value map[string]interface{}) {
+	m.deposit_data = &value
+}
+
+// DepositData returns the value of the "deposit_data" field in the mutation.
+func (m *PaymentAttemptMutation) DepositData() (r map[string]interface{}, exists bool) {
+	v := m.deposit_data
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDepositData returns the old "deposit_data" field's value of the PaymentAttempt entity.
+// If the PaymentAttempt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaymentAttemptMutation) OldDepositData(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDepositData is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDepositData requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDepositData: %w", err)
+	}
+	return oldValue.DepositData, nil
+}
+
+// ClearDepositData clears the value of the "deposit_data" field.
+func (m *PaymentAttemptMutation) ClearDepositData() {
+	m.deposit_data = nil
+	m.clearedFields[paymentattempt.FieldDepositData] = struct{}{}
+}
+
+// DepositDataCleared returns if the "deposit_data" field was cleared in this mutation.
+func (m *PaymentAttemptMutation) DepositDataCleared() bool {
+	_, ok := m.clearedFields[paymentattempt.FieldDepositData]
+	return ok
+}
+
+// ResetDepositData resets all changes to the "deposit_data" field.
+func (m *PaymentAttemptMutation) ResetDepositData() {
+	m.deposit_data = nil
+	delete(m.clearedFields, paymentattempt.FieldDepositData)
+}
+
 // SetPostClaimed sets the "post_claimed" field.
 func (m *PaymentAttemptMutation) SetPostClaimed(b bool) {
 	m.post_claimed = &b
@@ -33723,7 +33884,7 @@ func (m *PaymentAttemptMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PaymentAttemptMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 23)
 	if m.order_id != nil {
 		fields = append(fields, paymentattempt.FieldOrderID)
 	}
@@ -33753,6 +33914,18 @@ func (m *PaymentAttemptMutation) Fields() []string {
 	}
 	if m.amount_minor != nil {
 		fields = append(fields, paymentattempt.FieldAmountMinor)
+	}
+	if m.native_checkout != nil {
+		fields = append(fields, paymentattempt.FieldNativeCheckout)
+	}
+	if m.deposit_claimed != nil {
+		fields = append(fields, paymentattempt.FieldDepositClaimed)
+	}
+	if m.deposit_payment_id != nil {
+		fields = append(fields, paymentattempt.FieldDepositPaymentID)
+	}
+	if m.deposit_data != nil {
+		fields = append(fields, paymentattempt.FieldDepositData)
 	}
 	if m.post_claimed != nil {
 		fields = append(fields, paymentattempt.FieldPostClaimed)
@@ -33809,6 +33982,14 @@ func (m *PaymentAttemptMutation) Field(name string) (ent.Value, bool) {
 		return m.Currency()
 	case paymentattempt.FieldAmountMinor:
 		return m.AmountMinor()
+	case paymentattempt.FieldNativeCheckout:
+		return m.NativeCheckout()
+	case paymentattempt.FieldDepositClaimed:
+		return m.DepositClaimed()
+	case paymentattempt.FieldDepositPaymentID:
+		return m.DepositPaymentID()
+	case paymentattempt.FieldDepositData:
+		return m.DepositData()
 	case paymentattempt.FieldPostClaimed:
 		return m.PostClaimed()
 	case paymentattempt.FieldState:
@@ -33856,6 +34037,14 @@ func (m *PaymentAttemptMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldCurrency(ctx)
 	case paymentattempt.FieldAmountMinor:
 		return m.OldAmountMinor(ctx)
+	case paymentattempt.FieldNativeCheckout:
+		return m.OldNativeCheckout(ctx)
+	case paymentattempt.FieldDepositClaimed:
+		return m.OldDepositClaimed(ctx)
+	case paymentattempt.FieldDepositPaymentID:
+		return m.OldDepositPaymentID(ctx)
+	case paymentattempt.FieldDepositData:
+		return m.OldDepositData(ctx)
 	case paymentattempt.FieldPostClaimed:
 		return m.OldPostClaimed(ctx)
 	case paymentattempt.FieldState:
@@ -33953,6 +34142,34 @@ func (m *PaymentAttemptMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAmountMinor(v)
 		return nil
+	case paymentattempt.FieldNativeCheckout:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNativeCheckout(v)
+		return nil
+	case paymentattempt.FieldDepositClaimed:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDepositClaimed(v)
+		return nil
+	case paymentattempt.FieldDepositPaymentID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDepositPaymentID(v)
+		return nil
+	case paymentattempt.FieldDepositData:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDepositData(v)
+		return nil
 	case paymentattempt.FieldPostClaimed:
 		v, ok := value.(bool)
 		if !ok {
@@ -34049,6 +34266,9 @@ func (m *PaymentAttemptMutation) ClearedFields() []string {
 	if m.FieldCleared(paymentattempt.FieldActiveContractID) {
 		fields = append(fields, paymentattempt.FieldActiveContractID)
 	}
+	if m.FieldCleared(paymentattempt.FieldDepositData) {
+		fields = append(fields, paymentattempt.FieldDepositData)
+	}
 	if m.FieldCleared(paymentattempt.FieldInvoiceID) {
 		fields = append(fields, paymentattempt.FieldInvoiceID)
 	}
@@ -34071,6 +34291,9 @@ func (m *PaymentAttemptMutation) ClearField(name string) error {
 	switch name {
 	case paymentattempt.FieldActiveContractID:
 		m.ClearActiveContractID()
+		return nil
+	case paymentattempt.FieldDepositData:
+		m.ClearDepositData()
 		return nil
 	case paymentattempt.FieldInvoiceID:
 		m.ClearInvoiceID()
@@ -34115,6 +34338,18 @@ func (m *PaymentAttemptMutation) ResetField(name string) error {
 		return nil
 	case paymentattempt.FieldAmountMinor:
 		m.ResetAmountMinor()
+		return nil
+	case paymentattempt.FieldNativeCheckout:
+		m.ResetNativeCheckout()
+		return nil
+	case paymentattempt.FieldDepositClaimed:
+		m.ResetDepositClaimed()
+		return nil
+	case paymentattempt.FieldDepositPaymentID:
+		m.ResetDepositPaymentID()
+		return nil
+	case paymentattempt.FieldDepositData:
+		m.ResetDepositData()
 		return nil
 	case paymentattempt.FieldPostClaimed:
 		m.ResetPostClaimed()

@@ -45,6 +45,7 @@ func decimal(value any) (Decimal, error) {
 // The service layer must match every commercial/asset identifier and allocate receipts transactionally.
 // OutcomeAmount is denominated in OutcomeCurrency, never implicitly in PriceCurrency.
 type Payment struct {
+	Destination     *Destination
 	ID              string
 	InvoiceID       string
 	AttemptID       string
@@ -74,7 +75,8 @@ func (c *Client) GetPayment(ctx context.Context, id string) (Payment, error) {
 	if err != nil || p.ID != id {
 		return Payment{}, ErrEvidence
 	}
-	return p, nil
+	p.Destination, err = destination(v)
+	return p, err
 }
 func payment(v map[string]any) (Payment, error) {
 	var p Payment
