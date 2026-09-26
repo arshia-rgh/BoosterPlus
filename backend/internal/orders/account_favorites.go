@@ -8,6 +8,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlisting"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -57,5 +58,5 @@ func accountFavoriteAvailable(ctx context.Context, client *ent.Client, row *ent.
 	if err != nil {
 		return false, err
 	}
-	return game.Published && !game.Paused && !game.Archived, nil
+	return catalog.GameAvailable(ctx, client, game, "accounts")
 }

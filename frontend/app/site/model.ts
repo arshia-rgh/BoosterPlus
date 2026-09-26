@@ -1,3 +1,4 @@
+import { metricPolicySchema } from "../catalog/discovery-model";
 import { z } from "../validation";
 export const contentSchema = z.object({
   kind: z.string(),
@@ -8,7 +9,39 @@ export const contentSchema = z.object({
   updated_at: z.string(),
 });
 export type Content = z.infer<typeof contentSchema>;
+export const policySectionSchema = z.object({
+  kind: z.enum([
+    "terms",
+    "privacy",
+    "refunds",
+    "account_sales",
+    "contact",
+    "delivery",
+    "cookies",
+    "complaints",
+  ]),
+  title: z.string().min(1).max(120),
+  text: z.string().min(20).max(10000),
+});
+export const legalSchema = z.object({
+  text: z.string(),
+  sections: z.array(policySectionSchema).max(8).optional(),
+});
+export const homeDiscoverySchema = z.object({
+  metrics: metricPolicySchema.optional(),
+  introductions: z
+    .array(
+      z.object({
+        kind: z.enum(["boost", "accounts", "shop", "payment", "news"]),
+        title: z.string().min(1).max(100),
+        description: z.string().min(1).max(1200),
+      }),
+    )
+    .length(5)
+    .optional(),
+});
 export const homeSchema = z.object({
+  ...homeDiscoverySchema.shape,
   headline: z.string(),
   accent: z.string(),
   description: z.string(),
@@ -38,3 +71,5 @@ export const retentionSchema = z.object({
   backup_policy: z.string(),
   preserve_evidence: z.literal(true),
 });
+
+export type PolicySection = z.infer<typeof policySectionSchema>;

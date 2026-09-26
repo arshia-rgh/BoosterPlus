@@ -1,3 +1,4 @@
+import DiscoveryEditor from "./discovery-editor";
 import HeroLayoutEditor from "./hero-layout-editor";
 import { useEffect, useRef, useState } from "react";
 import { Link, useBlocker } from "react-router";
@@ -398,6 +399,13 @@ function Editor({
                 value={draft.configuration.description}
                 change={(description) => {
                   update({ description });
+                }}
+              />
+              <DiscoveryEditor
+                config={draft.configuration}
+                slug={draft.slug}
+                change={(discovery) => {
+                  update({ discovery });
                 }}
               />
               <HeroLayoutEditor

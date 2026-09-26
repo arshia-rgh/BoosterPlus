@@ -1,3 +1,4 @@
+import { HomeDiscoveryFields, PolicyFields } from "./discovery-fields";
 import { useState, useId, useContext } from "react";
 import { AuthorizedIdentity } from "../identity/frame";
 import { Link } from "react-router";
@@ -5,8 +6,11 @@ import { z } from "../validation";
 import { Action, ErrorNotice, Text } from "../catalog/controls";
 import { Form, value } from "../identity/identity";
 import { post } from "../identity/api";
+import { parseContent } from "./validation";
 import { useResource } from "../orders/resource";
 import {
+  homeDiscoverySchema,
+  legalSchema,
   contentSchema,
   defaultHome,
   homeSchema,
@@ -147,6 +151,7 @@ function HomeFields({ data }: { data: Content["data"] }) {
         initial={initial.support_hours}
         required={false}
       />
+      <HomeDiscoveryFields data={data} />
       <h3>Frequently asked questions</h3>
       {faqs.map((faq, i) => (
         <fieldset key={i}>
@@ -309,7 +314,11 @@ function RetentionFields({ data }: { data: Content["data"] }) {
   );
 }
 function contentData(kind: string, data: FormData): Record<string, unknown> {
-  if (kind === "legal") return { text: value(data, "text") };
+  if (kind === "legal")
+    return parseContent(legalSchema, {
+      text: value(data, "text"),
+      sections: JSON.parse(value(data, "sections")) as unknown,
+    });
   if (kind === "notifications")
     return Object.fromEntries(
       [
@@ -321,7 +330,7 @@ function contentData(kind: string, data: FormData): Record<string, unknown> {
       ].map((key) => [key, value(data, key)]),
     );
   if (kind === "retention")
-    return retentionSchema.parse({
+    return parseContent(retentionSchema, {
       enabled: data.has("enabled"),
       preserve_evidence: data.has("preserve_evidence"),
       policy_text: value(data, "policy_text"),
@@ -339,7 +348,11 @@ function contentData(kind: string, data: FormData): Record<string, unknown> {
         ]),
       ),
     });
-  return homeSchema.parse({
+  return parseContent(homeSchema, {
+    ...parseContent(
+      homeDiscoverySchema,
+      JSON.parse(value(data, "discovery_content")) as unknown,
+    ),
     ...Object.fromEntries(
       [
         "headline",
@@ -496,6 +509,7 @@ export default function ContentEditor() {
                 }
                 multiline
               />
+              <PolicyFields data={resource.data.data} />
             </>
           )}
           <label className="check">

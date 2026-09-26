@@ -272,7 +272,7 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, input CreateI
 		if readErr != nil {
 			return readErr
 		}
-		if release.Paused || release.ID != input.ReleaseID {
+		if !catalog.Available(release.Configuration, release.Paused, "boost") || release.ID != input.ReleaseID {
 			return ErrConflict
 		}
 		var variant *catalog.Variant

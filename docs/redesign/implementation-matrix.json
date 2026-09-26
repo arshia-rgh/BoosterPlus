@@ -56,7 +56,9 @@
         "/api/v1/catalog/games/{slug}/discount",
         "/api/v1/public/reviews/{slug}",
         "/api/v1/site/{kind}",
-        "/api/v1/site/{kind}/versions/{label}"
+        "/api/v1/site/{kind}/versions/{label}",
+        "/api/v1/catalog/games/{slug}/discovery",
+        "/api/v1/site/metrics"
       ]
     },
     "catalog": {
@@ -82,7 +84,8 @@
         "/api/v1/admin/catalog/coupons",
         "/api/v1/admin/catalog/coupons/{id}/save",
         "/api/v1/admin/catalog/coupons/{id}/history",
-        "/api/v1/catalog/games/{slug}/discount"
+        "/api/v1/catalog/games/{slug}/discount",
+        "/api/v1/catalog/games/{slug}/discovery"
       ]
     },
     "orders": {
@@ -1039,7 +1042,7 @@
       "title": "Welcome to PLAYORA.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "delivered",
+      "status": "verified",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1082,7 +1085,7 @@
       "title": "Check your email.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "delivered",
+      "status": "verified",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1127,7 +1130,7 @@
       "title": "Verify your staff sign-in.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "delivered",
+      "status": "verified",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1160,7 +1163,7 @@
       "title": "Set up your authenticator.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "delivered",
+      "status": "verified",
       "baselineRoute": "/account/security",
       "targetRoute": "/account/security",
       "apiFamily": "identity",
@@ -1192,7 +1195,7 @@
       "title": "Recover staff access.",
       "phase": "DI02",
       "mode": "adapt",
-      "status": "delivered",
+      "status": "verified",
       "baselineRoute": "/login",
       "targetRoute": "/login",
       "apiFamily": "identity",
@@ -1257,7 +1260,7 @@
       "title": "Admin sign-in.",
       "phase": "DI02",
       "mode": "new",
-      "status": "delivered",
+      "status": "verified",
       "baselineRoute": "/admin/login",
       "targetRoute": "/admin/login",
       "apiFamily": "identity",
@@ -1293,7 +1296,7 @@
       "title": "Booster sign-in.",
       "phase": "DI02",
       "mode": "new",
-      "status": "delivered",
+      "status": "verified",
       "baselineRoute": "/booster/login",
       "targetRoute": "/booster/login",
       "apiFamily": "identity",

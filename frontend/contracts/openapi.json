@@ -20104,6 +20104,122 @@
         ],
         "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
       }
+    },
+    "/api/v1/catalog/games/{slug}/discovery": {
+      "get": {
+        "operationId": "getGameDiscovery",
+        "summary": "Published service availability, indicative offers and source-derived metrics; checkout revalidates all terms.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Bounded public evidence; no private identities. Responses are not cached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogDiscoveryView"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Public query rate limit; respect Retry-After."
+          }
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/site/metrics": {
+      "get": {
+        "operationId": "getPublicMetrics",
+        "summary": "Aggregate evidence under the explicitly published homepage metric policy; unavailable evidence never becomes zero.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Bounded public evidence; no private identities. Responses are not cached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicMetrics"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision changed or availability conflicts; reload the current catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Configuration/request validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Public query rate limit; respect Retry-After."
+          }
+        },
+        "parameters": []
+      }
     }
   },
   "components": {
@@ -20671,6 +20787,9 @@
           },
           "hero_layout": {
             "$ref": "#/components/schemas/CatalogHeroLayout"
+          },
+          "discovery": {
+            "$ref": "#/components/schemas/CatalogDiscoveryPolicy"
           }
         },
         "required": [
@@ -21165,6 +21284,13 @@
           },
           "intake_enabled": {
             "type": "boolean"
+          },
+          "capabilities": {
+            "type": "array",
+            "maxItems": 4,
+            "items": {
+              "$ref": "#/components/schemas/CatalogCapabilityPolicy"
+            }
           }
         },
         "required": [
@@ -21177,7 +21303,8 @@
           "paused",
           "published",
           "archived",
-          "revision"
+          "revision",
+          "capabilities"
         ]
       },
       "CatalogRelease": {
@@ -27221,6 +27348,423 @@
         "type": "string",
         "enum": ["customer", "booster", "admin"],
         "description": "Authentication audience; never grants role or resource authority."
+      },
+      "PublicMetricPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "window_days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 366
+          },
+          "minimum_sample": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 1000000
+          },
+          "maximum_age_seconds": {
+            "type": "integer",
+            "minimum": 30,
+            "maximum": 86400
+          }
+        },
+        "required": ["window_days", "minimum_sample", "maximum_age_seconds"]
+      },
+      "PublicMetric": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "enum": ["active_orders", "completed_orders", "win_rate"]
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "definition": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "available",
+              "unconfigured",
+              "unavailable",
+              "insufficient_sample"
+            ]
+          },
+          "value": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "sample_size": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "period_start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "period_end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "refreshed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stale_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "definition",
+          "state",
+          "period_end",
+          "refreshed_at"
+        ]
+      },
+      "CatalogCapabilityPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "service": {
+            "type": "string",
+            "enum": ["boost", "accounts", "shop", "news"]
+          },
+          "state": {
+            "type": "string",
+            "enum": ["off", "active", "paused"]
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 600
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": ["service", "state", "description", "reason"]
+      },
+      "CatalogPromotion": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 48
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "target": {
+            "type": "string",
+            "enum": ["package", "account"]
+          },
+          "package": {
+            "type": "string",
+            "maxLength": 48
+          },
+          "variant": {
+            "type": "string",
+            "maxLength": 48
+          },
+          "listing_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "release_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "coupon_code": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "coupon_version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "show_quantity": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "key",
+          "title",
+          "description",
+          "enabled",
+          "target",
+          "package",
+          "variant",
+          "listing_id",
+          "release_id",
+          "coupon_code",
+          "coupon_version",
+          "starts_at",
+          "ends_at",
+          "priority",
+          "show_quantity"
+        ]
+      },
+      "CatalogDiscoveryPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "capabilities": {
+            "type": "array",
+            "maxItems": 4,
+            "items": {
+              "$ref": "#/components/schemas/CatalogCapabilityPolicy"
+            },
+            "minItems": 4
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/PublicMetricPolicy"
+          },
+          "promotions": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/CatalogPromotion"
+            }
+          }
+        },
+        "required": ["capabilities"]
+      },
+      "CatalogPromotionView": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 48
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "service": {
+            "type": "string",
+            "enum": ["boost", "accounts"]
+          },
+          "target": {
+            "type": "string",
+            "enum": ["package", "account"]
+          },
+          "package": {
+            "type": "string",
+            "maxLength": 48
+          },
+          "variant": {
+            "type": "string",
+            "maxLength": 48
+          },
+          "listing_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "release_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "currency": {
+            "type": "string",
+            "enum": ["USD", "EUR", "GBP"]
+          },
+          "amount_minor": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,11}$"
+          },
+          "original_minor": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,11}$"
+          },
+          "coupon_code": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "coupon_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483645
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "remaining": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "indicative": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "key",
+          "title",
+          "description",
+          "service",
+          "target",
+          "release_id",
+          "currency",
+          "amount_minor",
+          "starts_at",
+          "ends_at",
+          "priority",
+          "indicative"
+        ]
+      },
+      "CatalogDiscoveryView": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "game_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "release_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "capabilities": {
+            "type": "array",
+            "maxItems": 4,
+            "items": {
+              "$ref": "#/components/schemas/CatalogCapabilityPolicy"
+            }
+          },
+          "promotions": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/CatalogPromotionView"
+            }
+          },
+          "metrics": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "$ref": "#/components/schemas/PublicMetric"
+            }
+          }
+        },
+        "required": [
+          "game_id",
+          "release_id",
+          "capabilities",
+          "promotions",
+          "metrics"
+        ]
+      },
+      "PublicMetrics": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "metrics": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "$ref": "#/components/schemas/PublicMetric"
+            }
+          }
+        },
+        "required": ["metrics"]
+      },
+      "HomeIntroduction": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["boost", "accounts", "shop", "payment", "news"]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1200
+          }
+        },
+        "required": ["kind", "title", "description"]
+      },
+      "PolicySection": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "terms",
+              "privacy",
+              "refunds",
+              "account_sales",
+              "contact",
+              "delivery",
+              "cookies",
+              "complaints"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "text": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 10000
+          }
+        },
+        "required": ["kind", "title", "text"]
       }
     },
     "securitySchemes": {

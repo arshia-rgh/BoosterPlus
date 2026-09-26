@@ -53,7 +53,7 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, input CreateI
 		if e != nil {
 			return e
 		}
-		if release.ID != input.ReleaseID || release.Paused || release.Configuration.Intake == nil {
+		if release.ID != input.ReleaseID || !catalog.Available(release.Configuration, release.Paused, "accounts") || release.Configuration.Intake == nil {
 			return ErrConflict
 		}
 		snapshot, e := document(release)

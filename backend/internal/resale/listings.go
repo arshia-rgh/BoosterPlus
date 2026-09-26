@@ -12,6 +12,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountreservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -284,7 +285,11 @@ func publicListing(ctx context.Context, client *ent.Client, row *ent.AccountList
 		if e != nil {
 			return PublicListing{}, e
 		}
-		if !game.Published || game.Paused || game.Archived {
+		available, e := catalog.GameAvailable(ctx, client, game, "accounts")
+		if e != nil {
+			return PublicListing{}, e
+		}
+		if !available {
 			state = "unavailable"
 		}
 	}

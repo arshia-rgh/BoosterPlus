@@ -1,0 +1,142 @@
+import MetricPolicyEditor from "./metric-policy-editor";
+import PromotionEditor from "./promotion-editor";
+import { Select, Text } from "./controls";
+import type { Configuration } from "./model";
+
+const services = [
+  ["boost", "Boosting"],
+  ["accounts", "Accounts"],
+  ["shop", "Shop"],
+  ["news", "News"],
+] as const;
+
+type Discovery = NonNullable<Configuration["discovery"]>;
+
+function initialDiscovery(config: Configuration): Discovery {
+  return (
+    config.discovery ?? {
+      capabilities: services.map(([service]) => ({
+        service,
+        state:
+          (service === "boost" && config.services.length > 0) ||
+          service === "accounts"
+            ? ("active" as const)
+            : ("off" as const),
+        description: "",
+        reason: "",
+      })),
+      promotions: [],
+    }
+  );
+}
+
+export default function DiscoveryEditor({
+  config,
+  slug,
+  change,
+}: {
+  config: Configuration;
+  slug: string;
+  change: (value: Discovery) => void;
+}) {
+  const value = initialDiscovery(config);
+  const update = (patch: Partial<Discovery>) => {
+    change({ ...value, ...patch });
+  };
+  return (
+    <section aria-label="Service availability and public statistics">
+      <h3>Services on this game page</h3>
+      <p>
+        Choose what customers can explore. Pausing stops new orders; existing
+        orders remain available to their customers and assigned staff. Changes
+        take effect only when you publish this catalog.
+      </p>
+      <div className="discovery-editor-grid">
+        {services.map(([service, label]) => {
+          const policy = value.capabilities.find(
+            (item) => item.service === service,
+          ) ?? {
+            service,
+            state: "off" as const,
+            description: "",
+            reason: "",
+          };
+          const supported = service === "boost" || service === "accounts";
+          const patch = (fields: Partial<typeof policy>) => {
+            update({
+              capabilities: services.map(([key]) =>
+                key === service
+                  ? { ...policy, ...fields }
+                  : (value.capabilities.find(
+                      (item) => item.service === key,
+                    ) ?? {
+                      service: key,
+                      state: "off",
+                      description: "",
+                      reason: "",
+                    }),
+              ),
+            });
+          };
+          return (
+            <fieldset className="catalog-item" key={service}>
+              <legend>{label}</legend>
+              {!supported && (
+                <p className="quiet">
+                  This service is being prepared and cannot be activated yet.
+                </p>
+              )}
+              <Select
+                label={`${label} availability`}
+                value={policy.state}
+                change={(state) => {
+                  patch({ state: state as typeof policy.state });
+                }}
+                options={[
+                  ["off", "Not offered"],
+                  ...(supported
+                    ? [["active", "Available"] as [string, string]]
+                    : []),
+                  ["paused", "Temporarily unavailable"],
+                ]}
+              />
+              <Text
+                label={`${label} description`}
+                value={policy.description}
+                multiline
+                change={(description) => {
+                  patch({ description });
+                }}
+                help="Short customer-facing introduction, up to 600 characters."
+              />
+              {policy.state === "paused" && (
+                <Text
+                  label={`${label} unavailable reason`}
+                  value={policy.reason}
+                  change={(reason) => {
+                    patch({ reason });
+                  }}
+                  help="Explain what customers should expect. Do not promise a return date unless it is confirmed."
+                />
+              )}
+            </fieldset>
+          );
+        })}
+      </div>
+      <MetricPolicyEditor
+        value={value.metrics}
+        change={(metrics) => {
+          update({ metrics });
+        }}
+      />
+      <PromotionEditor
+        config={config}
+        slug={slug}
+        value={value.promotions ?? []}
+        change={(promotions) => {
+          update({ promotions });
+        }}
+      />
+    </section>
+  );
+}

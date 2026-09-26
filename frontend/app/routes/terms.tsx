@@ -17,6 +17,12 @@ export default function Terms({
       </h1>
       <p>Version: {loaderData.version}</p>
       <div className="legal-text">{loaderData.text}</div>
+      {loaderData.sections.map((section) => (
+        <section key={section.kind} aria-labelledby={`policy-${section.kind}`}>
+          <h2 id={`policy-${section.kind}`}>{section.title}</h2>
+          <div className="legal-text">{section.text}</div>
+        </section>
+      ))}
     </main>
   );
 }

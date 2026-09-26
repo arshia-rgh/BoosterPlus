@@ -74,7 +74,11 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 		if e != nil {
 			return e
 		}
-		if !game.Published || game.Paused || game.Archived {
+		available, e := catalog.GameAvailable(ctx, tx.Client(), game, "accounts")
+		if e != nil {
+			return e
+		}
+		if !available {
 			return ErrConflict
 		}
 		offer, e := tx.SellerOffer.Get(ctx, row.OfferID)

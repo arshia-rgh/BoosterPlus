@@ -45,6 +45,7 @@ func failure(w http.ResponseWriter, e error) error {
 
 // Register exposes published read-only content and guarded draft/publication commands.
 func (s *Store) Register(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/v1/site/metrics", s.auth.ProtectRate("", "site-metrics", 60, time.Minute, s.metrics))
 	mux.HandleFunc("GET /api/v1/site/{kind}/versions/{label}", s.auth.Protect("", func(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
 		v, e := s.Version(r.Context(), r.PathValue("kind"), r.PathValue("label"))
 		if e != nil {

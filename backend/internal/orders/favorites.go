@@ -70,6 +70,15 @@ func favoriteView(row *ent.Favorite, available bool) FavoriteView {
 	return FavoriteView{row.ID, string(row.Kind), row.Slug, row.Service, row.PackageKey, row.Name, available}
 }
 
+func favoriteAvailable(release catalog.Release, kind string) bool {
+	if kind == "game" {
+		return slices.ContainsFunc(catalog.Capabilities(release.Configuration, release.Paused), func(policy catalog.CapabilityPolicy) bool {
+			return policy.State == "active"
+		})
+	}
+	return catalog.Available(release.Configuration, release.Paused, "boost")
+}
+
 // SaveFavorite is unique and idempotent per customer/offer, without reserving stock.
 func (s *Store) SaveFavorite(ctx context.Context, p *identity.Principal, input FavoriteInput) (FavoriteView, error) {
 	if len(input.Slug) > 80 || len(input.Service) > 48 || len(input.Package) > 48 {
@@ -96,7 +105,7 @@ func (s *Store) SaveFavorite(ctx context.Context, p *identity.Principal, input F
 		if readErr != nil {
 			return readErr
 		}
-		result = favoriteView(row, !release.Paused)
+		result = favoriteView(row, favoriteAvailable(release, input.Kind))
 		return nil
 	})
 	return result, err
@@ -139,7 +148,7 @@ func (s *Store) Favorites(ctx context.Context, p *identity.Principal, after stri
 		}
 		if readErr == nil {
 			_, nameErr := favoriteName(release, FavoriteInput{string(row.Kind), row.Slug, row.Service, row.PackageKey})
-			available = nameErr == nil && !release.Paused
+			available = nameErr == nil && favoriteAvailable(release, string(row.Kind))
 		}
 		result.Favorites = append(result.Favorites, favoriteView(row, available))
 	}
@@ -175,7 +184,7 @@ func (s *Store) Reorder(ctx context.Context, p *identity.Principal, id string) (
 	if err != nil {
 		return ReorderDraft{}, err
 	}
-	if release.Paused {
+	if !catalog.Available(release.Configuration, release.Paused, "boost") {
 		return ReorderDraft{}, ErrConflict
 	}
 	i := slices.IndexFunc(release.Configuration.Services, func(service catalog.ServiceDefinition) bool { return service.Key == row.Service })

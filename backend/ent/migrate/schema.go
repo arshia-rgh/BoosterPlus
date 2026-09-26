@@ -1083,6 +1083,11 @@ var (
 		PrimaryKey: []*schema.Column{OrdersColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "orders_discovery_game_state",
+				Unique:  false,
+				Columns: []*schema.Column{OrdersColumns[2], OrdersColumns[14], OrdersColumns[0]},
+			},
+			{
 				Name:    "orders_report_created",
 				Unique:  false,
 				Columns: []*schema.Column{OrdersColumns[23], OrdersColumns[0]},
@@ -1158,6 +1163,11 @@ var (
 		Columns:    OrderEventsColumns,
 		PrimaryKey: []*schema.Column{OrderEventsColumns[0]},
 		Indexes: []*schema.Index{
+			{
+				Name:    "order_events_completion_period",
+				Unique:  false,
+				Columns: []*schema.Column{OrderEventsColumns[1], OrderEventsColumns[3], OrderEventsColumns[7]},
+			},
 			{
 				Name:    "order_event_revision",
 				Unique:  true,

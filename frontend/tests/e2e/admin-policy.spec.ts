@@ -49,6 +49,62 @@ test("@global-policy owner publishes content and retention, customer exports dat
   await page
     .getByLabel("Support hours and timezone")
     .fill("Synthetic test support · UTC");
+
+  await page.getByLabel("Use reviewed service introductions").check();
+  await page
+    .getByRole("button", { name: "Save private draft", exact: true })
+    .click();
+  await expect(
+    page.getByRole("alert").filter({ hasText: "Review the content fields" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("list", { name: "Fields to check" }),
+  ).toBeVisible();
+  await page
+    .getByRole("list", { name: "Fields to check" })
+    .getByRole("link")
+    .first()
+    .click();
+  await expect(page.getByLabel("boost section title")).toBeFocused();
+  await page
+    .getByRole("region", {
+      name: "Homepage services and statistics",
+      exact: true,
+    })
+    .screenshot({ path: info.outputPath("di03-content-validation.png") });
+  for (const kind of ["boost", "accounts", "shop", "payment", "news"]) {
+    await page.getByLabel(`${kind} section title`).fill(`Reviewed ${kind}`);
+    await page
+      .getByLabel(`${kind} section description`)
+      .fill(`Approved synthetic ${kind} service description.`);
+  }
+  await page.getByLabel("Use reviewed service introductions").uncheck();
+  await page.getByLabel("Use reviewed service introductions").check();
+  await expect(page.getByLabel("boost section title")).toHaveValue(
+    "Reviewed boost",
+  );
+  await page
+    .getByLabel("Allow source-based public statistics after publication")
+    .check();
+  const viewport = page.viewportSize();
+  for (const width of info.project.name === "desktop" ? [1280, 768] : [320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await accessible(page);
+    await page
+      .getByRole("region", {
+        name: "Homepage services and statistics",
+        exact: true,
+      })
+      .screenshot({
+        path: info.outputPath(`di03-content-${String(width)}.png`),
+      });
+  }
+  await page.getByLabel("boost section title").scrollIntoViewIfNeeded();
+  await page.screenshot({
+    path: info.outputPath(`di03-content-viewport-${info.project.name}.png`),
+    scale: "css",
+  });
+  if (viewport) await page.setViewportSize(viewport);
   await publish(page, "home-" + randomUUID());
   await page.goto("/");
   await expect(
@@ -229,9 +285,33 @@ test("@global-policy owner publishes content and retention, customer exports dat
     .fill(
       "Synthetic published legal terms for isolated browser qualification. This text does not authorize a production launch.",
     );
+  await page
+    .getByRole("button", { name: "Add policy section", exact: true })
+    .click();
+  await page.getByLabel("Policy kind").focus();
+  await page.getByLabel("Policy kind").selectOption("privacy");
+  await expect(page.getByLabel("Policy kind")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByLabel("Policy section title")).toBeFocused();
+  await page
+    .getByLabel("Policy section title")
+    .fill("Reviewed privacy details");
+  await page
+    .getByLabel("Policy section text")
+    .fill("Synthetic approved privacy details for an isolated test only.");
   const version = "legal-" + randomUUID();
   await publish(page, version);
-  await page.goto("/terms");
+  await page.goto("/terms?version=" + version);
+  await expect(
+    page.getByRole("heading", {
+      name: "Reviewed privacy details",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: info.outputPath("di03-historical-policy.png"),
+    fullPage: true,
+  });
   await expect(
     page.getByText("Version: " + version, { exact: true }),
   ).toBeVisible();

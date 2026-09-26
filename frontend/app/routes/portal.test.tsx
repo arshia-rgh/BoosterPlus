@@ -126,17 +126,27 @@ it("loads a named immutable legal version", async () => {
           version: 2,
           release_id: "published",
           label: "v2",
-          data: { text: "Historical published terms" },
+          data: {
+            text: "Historical published terms",
+            sections: [
+              {
+                kind: "privacy",
+                title: "Historical privacy",
+                text: "Approved historical privacy details.",
+              },
+            ],
+          },
           updated_at: "2026-01-01T00:00:00Z",
         }),
       ),
     ),
   );
+  const historical = await termsLoader({
+    request: new Request("http://localhost/terms?version=v2"),
+  });
+  expect(historical.version).toBe("v2");
+  render(<Terms loaderData={historical} />);
   expect(
-    (
-      await termsLoader({
-        request: new Request("http://localhost/terms?version=v2"),
-      })
-    ).version,
-  ).toBe("v2");
+    screen.getByRole("heading", { name: "Historical privacy" }),
+  ).toBeInTheDocument();
 });

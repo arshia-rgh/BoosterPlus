@@ -35,6 +35,7 @@ it("renders published content and fails closed for unavailable legal terms", asy
   });
   expect(await loadTerms()).toEqual({
     text: "Approved policy text",
+    sections: [],
     preview: false,
     version: "approved-v2",
   });

@@ -192,7 +192,7 @@ func (s *Store) CheckCoupon(ctx context.Context, p *identity.Principal, slug str
 	if err != nil {
 		return Estimate{}, err
 	}
-	if release.ID != input.ReleaseID || release.Paused {
+	if release.ID != input.ReleaseID || !Available(release.Configuration, release.Paused, "boost") {
 		return Estimate{}, ErrConflict
 	}
 	now := time.Now().UTC()

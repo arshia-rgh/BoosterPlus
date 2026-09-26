@@ -29,6 +29,7 @@ func (OrderEvent) Fields() []ent.Field {
 // Indexes mirrors the explicit SQL constraints.
 func (OrderEvent) Indexes() []ent.Index {
 	return []ent.Index{
+		index.Fields("order_id", "action", "created_at").StorageKey("order_events_completion_period"),
 		index.Fields("order_id", "version").Unique().StorageKey("order_event_revision"),
 	}
 }

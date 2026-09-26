@@ -28,6 +28,7 @@ func (s *Store) Register(mux *http.ServeMux) {
 		"POST /api/v1/admin/catalog/games/{id}/estimate-preview": {"admin", s.estimate(true)},
 		"GET /api/v1/catalog/games":                              {"", s.list(false)},
 		"GET /api/v1/catalog/games/{slug}":                       {"", s.published},
+		"GET /api/v1/catalog/games/{slug}/discovery":             {"", s.discovery},
 		"POST /api/v1/catalog/games/{slug}/validate":             {"", s.validate},
 		"GET /api/v1/admin/catalog/games":                        {"admin", s.list(true)},
 		"POST /api/v1/admin/catalog/games":                       {"admin", s.create},
@@ -49,9 +50,12 @@ func (s *Store) Register(mux *http.ServeMux) {
 			}
 			return err
 		}
-		if pattern == "POST /api/v1/catalog/games/{slug}/discount" {
+		switch pattern {
+		case "POST /api/v1/catalog/games/{slug}/discount":
 			mux.HandleFunc(pattern, s.auth.ProtectRate(route.capability, "coupon-check", 30, time.Minute, handler))
-		} else {
+		case "GET /api/v1/catalog/games/{slug}/discovery":
+			mux.HandleFunc(pattern, s.auth.ProtectRate(route.capability, "catalog-discovery", 60, time.Minute, handler))
+		default:
 			mux.HandleFunc(pattern, s.auth.Protect(route.capability, handler))
 		}
 	}
@@ -123,11 +127,11 @@ func (s *Store) mutate(w http.ResponseWriter, r *http.Request, p *identity.Princ
 	return write(w, http.StatusOK, result)
 }
 func (s *Store) preview(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
-	result, err := s.Draft(r.Context(), p, r.PathValue("id"))
+	result, issues, err := s.publicationPreview(r.Context(), p, r.PathValue("id"))
 	if err != nil {
 		return err
 	}
-	return write(w, http.StatusOK, map[string]any{"draft": result, "issues": ValidateConfiguration(result.Configuration, true)})
+	return write(w, http.StatusOK, map[string]any{"draft": result, "issues": issues})
 }
 func (s *Store) history(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 	before := 0
@@ -151,6 +155,15 @@ func (s *Store) published(w http.ResponseWriter, r *http.Request, _ *identity.Pr
 	}
 	return write(w, http.StatusOK, result)
 }
+
+func (s *Store) discovery(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
+	w.Header().Set("Cache-Control", "no-store")
+	result, err := s.DiscoveryProjection(r.Context(), r.PathValue("slug"), time.Now())
+	if err != nil {
+		return err
+	}
+	return write(w, http.StatusOK, result)
+}
 func (s *Store) validate(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
 	var input struct {
 		ReleaseID string  `json:"release_id"`
@@ -167,7 +180,7 @@ func (s *Store) validate(w http.ResponseWriter, r *http.Request, _ *identity.Pri
 	if err != nil {
 		return err
 	}
-	if input.ReleaseID != release.ID || release.Paused {
+	if input.ReleaseID != release.ID || !Available(release.Configuration, release.Paused, "boost") {
 		return ErrConflict
 	}
 	// Anonymous catalog validation never collects post-payment identifiers or secrets.
@@ -255,7 +268,7 @@ func (s *Store) estimate(preview bool) func(http.ResponseWriter, *http.Request, 
 			if err != nil {
 				return err
 			}
-			if release.ID != input.ReleaseID || release.Paused {
+			if release.ID != input.ReleaseID || !Available(release.Configuration, release.Paused, "boost") {
 				return ErrConflict
 			}
 		}

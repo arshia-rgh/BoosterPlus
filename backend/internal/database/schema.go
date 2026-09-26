@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 26
+const SchemaVersion = 27
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -133,6 +133,7 @@ func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 func checkReportIndexes(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
 		"payment_receipts.receipt_report_created": "created_at,id", "money_transfers.transfer_report_created": "kind,created_at,id",
+		"orders.orders_discovery_game_state": "game_id,state,id", "order_events.order_events_completion_period": "order_id,action,created_at",
 		"orders.orders_report_created": "created_at,id", "games.games_report_created": "created_at,id", "users.users_report_created": "created_at,id"}
 	rows, err := db.QueryContext(ctx, "SELECT table_name,index_name,GROUP_CONCAT(column_name ORDER BY seq_in_index) FROM information_schema.statistics WHERE table_schema=DATABASE() AND non_unique=1 GROUP BY table_name,index_name")
 	if err != nil {

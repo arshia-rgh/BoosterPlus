@@ -65,6 +65,8 @@ func ValidateConfiguration(c Configuration, publish bool) []Issue {
 		add("reviewed", "Review actual catalog data, availability, prices and customer promises before publication.")
 	}
 	validateHeroLayout(c.HeroLayout, add)
+	validateDiscovery(c, publish, add)
+	validatePromotions(c, publish, add)
 	refs := map[string]Reference{}
 	for i, ref := range c.References {
 		path := fmt.Sprintf("references.%d", i)

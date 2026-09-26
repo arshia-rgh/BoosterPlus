@@ -56,7 +56,7 @@ func readOffering(ctx context.Context, c *ent.Client, slug, packKey, variantKey 
 			result.label = config.Name + " / " + pack.Name + " / " + variant.Name
 			result.exists = !g.Archived
 			result.limited = variant.Capacity != nil
-			if g.Paused || g.Archived {
+			if !catalog.Available(config, g.Paused, "boost") || g.Archived {
 				return result, nil
 			}
 			result.available = true

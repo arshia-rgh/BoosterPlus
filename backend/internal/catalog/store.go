@@ -52,17 +52,18 @@ type Listing struct {
 
 // Summary deliberately takes the public name/description from a release, not a draft.
 type Summary struct {
-	IntakeEnabled bool   `json:"intake_enabled,omitempty"`
-	ID            string `json:"id"`
-	Slug          string `json:"slug"`
-	Name          string `json:"name"`
-	Description   string `json:"description"`
-	Asset         string `json:"asset"`
-	AssetAlt      string `json:"asset_alt"`
-	Paused        bool   `json:"paused"`
-	Published     bool   `json:"published"`
-	Archived      bool   `json:"archived"`
-	Revision      int    `json:"revision"`
+	Capabilities  []CapabilityPolicy `json:"capabilities"`
+	IntakeEnabled bool               `json:"intake_enabled,omitempty"`
+	ID            string             `json:"id"`
+	Slug          string             `json:"slug"`
+	Name          string             `json:"name"`
+	Description   string             `json:"description"`
+	Asset         string             `json:"asset"`
+	AssetAlt      string             `json:"asset_alt"`
+	Paused        bool               `json:"paused"`
+	Published     bool               `json:"published"`
+	Archived      bool               `json:"archived"`
+	Revision      int                `json:"revision"`
 }
 
 // Release is customer-safe, excludes actor identity and always pins all components.
@@ -125,21 +126,39 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, admin bool, aft
 		result.Next = rows[49].Slug
 		rows = rows[:50]
 	}
+	releases := map[string]*ent.CatalogRelease{}
+	if !admin && len(rows) > 0 {
+		ids := make([]string, 0, len(rows))
+		for _, g := range rows {
+			ids = append(ids, g.CurrentRelease)
+		}
+		published, readErr := s.client.CatalogRelease.Query().Where(catalogrelease.IDIn(ids...)).All(ctx)
+		if readErr != nil {
+			return result, readErr
+		}
+		for _, release := range published {
+			releases[release.ID] = release
+		}
+	}
 	for _, g := range rows {
 		var c Configuration
 		if admin {
 			c, err = configuration(g.Configuration)
 		} else {
-			release, readErr := s.client.CatalogRelease.Query().Where(catalogrelease.IDEQ(g.CurrentRelease), catalogrelease.GameIDEQ(g.ID)).Only(ctx)
-			if readErr != nil {
-				return result, readErr
+			release, ok := releases[g.CurrentRelease]
+			if !ok || release.GameID != g.ID {
+				return result, ErrConflict
 			}
 			c, err = configuration(release.Configuration)
 		}
 		if err != nil {
 			return result, err
 		}
-		result.Games = append(result.Games, Summary{c.Intake != nil, g.ID, g.Slug, c.Name, c.Description, c.Asset, c.AssetAlt, g.Paused, g.Published, g.Archived, g.Version})
+		result.Games = append(result.Games, Summary{
+			Capabilities: Capabilities(c, g.Paused), IntakeEnabled: c.Intake != nil && Available(c, g.Paused, "accounts"),
+			ID: g.ID, Slug: g.Slug, Name: c.Name, Description: c.Description, Asset: c.Asset, AssetAlt: c.AssetAlt,
+			Paused: g.Paused, Published: g.Published, Archived: g.Archived, Revision: g.Version,
+		})
 	}
 	return result, nil
 }
@@ -231,6 +250,9 @@ func (s *Store) Mutate(ctx context.Context, p *identity.Principal, id, action st
 			if issues := ValidateConfiguration(c, true); len(issues) > 0 {
 				return &Invalid{issues}
 			}
+			if err := validatePromotionTargets(ctx, tx.Client(), Release{GameID: g.ID, Slug: g.Slug, Configuration: c}, time.Now()); err != nil {
+				return err
+			}
 			release, createErr := tx.CatalogRelease.Create().SetGameID(id).SetVersion(g.Version).SetConfiguration(g.Configuration).SetCreatedBy(current.User.ID).Save(ctx)
 			if createErr != nil {
 				return createErr
@@ -299,6 +321,20 @@ func record(ctx context.Context, tx *ent.Tx, p *identity.Principal, action, id s
 // Published resolves only the current visible release; drafts and historical URLs
 // never become anonymous routes just because their IDs can be guessed.
 func (s *Store) Published(ctx context.Context, slug string) (Release, error) {
+	view, err := s.publishedRelease(ctx, slug)
+	// Test cases and inactive/future promotion definitions are staff planning
+	// data. Public offers use the bounded, current eligibility projection only.
+	for i := range view.Configuration.Services {
+		if plan := view.Configuration.Services[i].Pricing; plan != nil {
+			plan.Cases = nil
+		}
+	}
+	if view.Configuration.Discovery != nil {
+		view.Configuration.Discovery.Promotions = nil
+	}
+	return view, err
+}
+func (s *Store) publishedRelease(ctx context.Context, slug string) (Release, error) {
 	g, err := s.client.Game.Query().Where(game.SlugEQ(slug), game.PublishedEQ(true), game.ArchivedEQ(false)).Only(ctx)
 	if err != nil {
 		return Release{}, err
@@ -307,14 +343,7 @@ func (s *Store) Published(ctx context.Context, slug string) (Release, error) {
 	if err != nil {
 		return Release{}, err
 	}
-	view, err := releaseView(g, r)
-	// Saved test selections are staff workspace data, not storefront content.
-	for i := range view.Configuration.Services {
-		if plan := view.Configuration.Services[i].Pricing; plan != nil {
-			plan.Cases = nil
-		}
-	}
-	return view, err
+	return releaseView(g, r)
 }
 func releaseView(g *ent.Game, r *ent.CatalogRelease) (Release, error) {
 	c, err := configuration(r.Configuration)

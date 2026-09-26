@@ -4492,6 +4492,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/catalog/games/{slug}/discovery": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Published service availability, indicative offers and source-derived metrics; checkout revalidates all terms. */
+    get: operations["getGameDiscovery"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/site/metrics": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Aggregate evidence under the explicitly published homepage metric policy; unavailable evidence never becomes zero. */
+    get: operations["getPublicMetrics"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4661,6 +4695,7 @@ export interface components {
       intake?: components["schemas"]["CatalogIntakeForm"];
       review_policy?: components["schemas"]["CatalogReviewPolicy"];
       hero_layout?: components["schemas"]["CatalogHeroLayout"];
+      discovery?: components["schemas"]["CatalogDiscoveryPolicy"];
     };
     CatalogReference: {
       key: string;
@@ -4791,6 +4826,7 @@ export interface components {
       archived: boolean;
       revision: number;
       intake_enabled?: boolean;
+      capabilities: components["schemas"]["CatalogCapabilityPolicy"][];
     };
     CatalogRelease: {
       id: string;
@@ -6439,6 +6475,120 @@ export interface components {
      * @enum {string}
      */
     AuthPortal: "customer" | "booster" | "admin";
+    PublicMetricPolicy: {
+      window_days: number;
+      minimum_sample: number;
+      maximum_age_seconds: number;
+    };
+    PublicMetric: {
+      /** @enum {string} */
+      key: "active_orders" | "completed_orders" | "win_rate";
+      label: string;
+      definition: string;
+      /** @enum {string} */
+      state:
+        "available" | "unconfigured" | "unavailable" | "insufficient_sample";
+      value?: number;
+      sample_size?: number;
+      /** Format: date-time */
+      period_start?: string;
+      /** Format: date-time */
+      period_end: string;
+      /** Format: date-time */
+      refreshed_at: string;
+      /** Format: date-time */
+      stale_at?: string;
+    };
+    CatalogCapabilityPolicy: {
+      /** @enum {string} */
+      service: "boost" | "accounts" | "shop" | "news";
+      /** @enum {string} */
+      state: "off" | "active" | "paused";
+      description: string;
+      reason: string;
+    };
+    CatalogPromotion: {
+      key: string;
+      title: string;
+      description: string;
+      enabled: boolean;
+      /** @enum {string} */
+      target: "package" | "account";
+      package: string;
+      variant: string;
+      listing_id: string;
+      release_id: string;
+      coupon_code: string;
+      coupon_version: number;
+      /** Format: date-time */
+      starts_at: string;
+      /** Format: date-time */
+      ends_at: string;
+      priority: number;
+      show_quantity: boolean;
+    };
+    CatalogDiscoveryPolicy: {
+      capabilities: components["schemas"]["CatalogCapabilityPolicy"][];
+      metrics?: components["schemas"]["PublicMetricPolicy"];
+      promotions?: components["schemas"]["CatalogPromotion"][];
+    };
+    CatalogPromotionView: {
+      key: string;
+      title: string;
+      description: string;
+      /** @enum {string} */
+      service: "boost" | "accounts";
+      /** @enum {string} */
+      target: "package" | "account";
+      package?: string;
+      variant?: string;
+      listing_id?: string;
+      release_id: string;
+      /** @enum {string} */
+      currency: "USD" | "EUR" | "GBP";
+      amount_minor: string;
+      original_minor?: string;
+      coupon_code?: string;
+      coupon_version?: number;
+      /** Format: date-time */
+      starts_at: string;
+      /** Format: date-time */
+      ends_at: string;
+      priority: number;
+      remaining?: number;
+      /** @constant */
+      indicative: true;
+    };
+    CatalogDiscoveryView: {
+      game_id: string;
+      release_id: string;
+      capabilities: components["schemas"]["CatalogCapabilityPolicy"][];
+      promotions: components["schemas"]["CatalogPromotionView"][];
+      metrics: components["schemas"]["PublicMetric"][];
+    };
+    PublicMetrics: {
+      metrics: components["schemas"]["PublicMetric"][];
+    };
+    HomeIntroduction: {
+      /** @enum {string} */
+      kind: "boost" | "accounts" | "shop" | "payment" | "news";
+      title: string;
+      description: string;
+    };
+    PolicySection: {
+      /** @enum {string} */
+      kind:
+        | "terms"
+        | "privacy"
+        | "refunds"
+        | "account_sales"
+        | "contact"
+        | "delivery"
+        | "cookies"
+        | "complaints";
+      title: string;
+      text: string;
+    };
   };
   responses: never;
   parameters: never;
@@ -19688,6 +19838,116 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["RecoveryCodes"];
         };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getGameDiscovery: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded public evidence; no private identities. Responses are not cached. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogDiscoveryView"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Public query rate limit; respect Retry-After. */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getPublicMetrics: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded public evidence; no private identities. Responses are not cached. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PublicMetrics"];
+        };
+      };
+      /** @description Revision changed or availability conflicts; reload the current catalog. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Configuration/request validation failed. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CatalogProblem"];
+        };
+      };
+      /** @description Public query rate limit; respect Retry-After. */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */
       default: {

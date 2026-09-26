@@ -1,3 +1,4 @@
+import { discoverySchema, capabilitySchema } from "./discovery-model";
 import { z } from "../validation";
 
 const list = <T extends z.ZodType>(item: T) =>
@@ -213,6 +214,7 @@ export const defaultHeroLayout: HeroLayout = Object.freeze({
   copy_side: "left",
 });
 export const configurationSchema = z.object({
+  discovery: discoverySchema.optional(),
   hero_layout: heroLayoutSchema.optional(),
   review_policy: reviewPolicySchema.optional(),
   intake: intakeSchema.optional(),
@@ -248,6 +250,7 @@ export const releaseSchema = z.object({
   configuration: configurationSchema,
 });
 export const summarySchema = z.object({
+  capabilities: z.array(capabilitySchema).optional(),
   intake_enabled: z.boolean().optional(),
   id: z.string(),
   slug: z.string(),
@@ -440,7 +443,9 @@ export function visibleAnswers(
   service.fields.forEach(visit);
   return result;
 }
-export function price(variant: Variant): string {
+export function price(
+  variant: Pick<Variant, "amount_minor" | "currency">,
+): string {
   if (!/^[1-9][0-9]{0,11}$/.test(variant.amount_minor))
     return "Price pending review";
   const amount = BigInt(variant.amount_minor);

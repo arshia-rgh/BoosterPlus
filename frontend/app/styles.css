@@ -815,3 +815,16 @@ footer {
     padding: 0.4rem;
   }
 }
+
+/* Versioned discovery controls stay readable within the staff workspace. */
+.discovery-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+}
+.discovery-editor-grid > fieldset {
+  min-width: 0;
+}
+.record-id {
+  overflow-wrap: anywhere;
+}

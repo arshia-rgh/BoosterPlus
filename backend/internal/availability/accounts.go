@@ -17,6 +17,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlisting"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlistingrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 )
 
 // AccountCriteria is an explicit public inventory filter; it never contains seller data.
@@ -72,7 +73,11 @@ func readAccounts(ctx context.Context, client *ent.Client, slug string, c Accoun
 	}
 	result.gameID = g.ID
 	result.exists = g.Published && !g.Archived
-	if !result.exists || g.Paused {
+	available, err := catalog.GameAvailable(ctx, client, g, "accounts")
+	if err != nil {
+		return result, err
+	}
+	if !available {
 		return result, nil
 	}
 	table := sql.Table(accountlisting.Table)

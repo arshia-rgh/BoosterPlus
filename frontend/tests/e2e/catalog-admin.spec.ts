@@ -199,6 +199,130 @@ test("staff builds, previews, publishes and archives another game through the ge
     .getByLabel("Play mode", { exact: true })
     .check();
   await condition(variant, "Variant eligibility", "mode", "solo");
+  // DI03: publication controls are real draft data, not anonymous fixture badges.
+  await expect(
+    page
+      .getByLabel("Shop availability")
+      .getByRole("option", { name: "Available", exact: true }),
+  ).toHaveCount(0);
+  await page.getByLabel("Boosting availability").selectOption("active");
+  await page.getByLabel("Accounts availability").selectOption("paused");
+  await page
+    .getByLabel("Accounts unavailable reason")
+    .fill("Synthetic inventory review.");
+  await page
+    .getByLabel("Allow source-based public statistics after publication")
+    .check();
+  await page.getByLabel("Minimum eligible records").fill("25");
+  await page
+    .getByLabel("Allow source-based public statistics after publication")
+    .uncheck();
+  await page
+    .getByLabel("Allow source-based public statistics after publication")
+    .check();
+  await expect(page.getByLabel("Minimum eligible records")).toHaveValue("25");
+  await page
+    .getByRole("button", { name: "Add featured offer", exact: true })
+    .click();
+  const promotion = page.getByRole("region", {
+    name: "Featured offers",
+    exact: true,
+  });
+  await promotion
+    .getByLabel("Offer title", { exact: true })
+    .fill("Synthetic featured package");
+  await promotion.getByLabel("Offer type").selectOption("account");
+  await expect(
+    promotion.getByText("No published accounts on this page."),
+  ).toBeVisible();
+  const accountPath = `**/api/v1/accounts?slug=${slug}&after=*`;
+  await page.route(accountPath, (route) =>
+    route.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: '{"code":"unavailable"}',
+    }),
+  );
+  await promotion.getByLabel("Offer type").selectOption("package");
+  await promotion.getByLabel("Offer type").selectOption("account");
+  await expect(
+    promotion.getByRole("button", { name: "Retry accounts" }),
+  ).toBeVisible();
+  await promotion.screenshot({
+    path: info.outputPath("di03-account-selection-error.png"),
+  });
+  await page.unroute(accountPath);
+  // Public response fixture qualifies selector recovery only. Real reserve,
+  // release binding and payment boundaries are covered by TiDB tests.
+  const syntheticAccount = {
+    id: randomUUID(),
+    release_id: randomUUID(),
+    game: "Synthetic UI game",
+    slug,
+    state: "published",
+    images: [],
+    product: {
+      title: "Synthetic reviewed account",
+      description: "Public response fixture",
+      region: "Fixture region",
+      rank: "Fixture rank",
+      attributes: [],
+      media_ids: [],
+      currency: "USD",
+      amount_minor: "12345",
+      sale_terms: "Approved fixture sale terms",
+      transfer_requirements: "Fixture transfer requirements",
+      dispute_terms: "Fixture dispute terms",
+      acknowledgement_terms: "Fixture acknowledgement terms",
+      dispute_hours: 48,
+      delivery_min_hours: 1,
+      delivery_max_hours: 24,
+    },
+  };
+  await page.route(accountPath, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ items: [syntheticAccount], next: "" }),
+    }),
+  );
+  await promotion.getByRole("button", { name: "Retry accounts" }).click();
+  await expect(
+    promotion.getByLabel("Published account").getByRole("option", {
+      name: "Synthetic reviewed account · USD 123.45",
+      exact: true,
+    }),
+  ).toHaveCount(1);
+  await promotion
+    .getByLabel("Published account")
+    .selectOption(syntheticAccount.id);
+  await promotion.screenshot({
+    path: info.outputPath("di03-account-selection-restored.png"),
+  });
+  await page.unroute(accountPath);
+  await promotion.getByLabel("Offer type").selectOption("package");
+  await promotion
+    .getByLabel("Package", { exact: true })
+    .selectOption("starter");
+  await promotion.getByLabel("Package variant").selectOption("standard");
+  await promotion
+    .getByLabel("Starts at (UTC)")
+    .fill(new Date(Date.now() - 60000).toISOString());
+  await promotion
+    .getByLabel("Ends at (UTC)")
+    .fill(new Date(Date.now() + 86400000).toISOString());
+  await promotion
+    .getByText("Optional reviewed coupon", { exact: true })
+    .click();
+  await promotion.getByLabel("Coupon code", { exact: true }).fill(couponCode);
+  await promotion.getByLabel("Reviewed coupon version").fill("2");
+  await promotion
+    .getByLabel("Show remaining quantity from real inventory")
+    .check();
+  await promotion
+    .getByLabel("Include this offer when the catalog is published")
+    .check();
+
   await page.getByLabel(/I verified the actual/).check();
   await page.getByRole("button", { name: "Save draft", exact: true }).click();
   await expect(page.getByText("Changes saved.", { exact: true })).toBeVisible();
@@ -272,6 +396,49 @@ test("staff builds, previews, publishes and archives another game through the ge
   await page
     .locator(".catalog-preview")
     .screenshot({ path: `.cache/catalog-preview-${info.project.name}.png` });
+  const originalViewport = page.viewportSize();
+  for (const width of info.project.name === "desktop" ? [1280, 768] : [320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page
+      .getByRole("region", {
+        name: "Service availability and public statistics",
+        exact: true,
+      })
+      .scrollIntoViewIfNeeded();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await page
+      .getByRole("region", {
+        name: "Service availability and public statistics",
+        exact: true,
+      })
+      .screenshot({
+        path: info.outputPath(`di03-catalog-${String(width)}.png`),
+      });
+    await page
+      .getByLabel("Accounts unavailable reason")
+      .scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: info.outputPath(`di03-availability-viewport-${String(width)}.png`),
+      scale: "css",
+    });
+    await page.getByLabel("Minimum eligible records").scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: info.outputPath(`di03-metrics-viewport-${String(width)}.png`),
+      scale: "css",
+    });
+    await promotion.getByLabel("Starts at (UTC)").scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: info.outputPath(`di03-offer-viewport-${String(width)}.png`),
+      scale: "css",
+    });
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  }
+  if (originalViewport) await page.setViewportSize(originalViewport);
+
   await page
     .getByRole("button", { name: "Publish catalog", exact: true })
     .click();

@@ -1,9 +1,11 @@
-import { useId, type ReactNode } from "react";
+import { useId, useContext, useCallback, type ReactNode } from "react";
+import { FieldValidation } from "../ui/form-validation";
 import { APIError, errorMessage } from "../identity/api";
 import { VerificationLink } from "../account/return-path";
 import type { Issue, Option, Condition, Field } from "./model";
 
 export function Text({
+  name,
   label,
   value,
   change,
@@ -11,6 +13,7 @@ export function Text({
   type = "text",
   help = "",
 }: {
+  name?: string | undefined;
   label: string;
   value: string;
   change: (value: string) => void;
@@ -20,27 +23,53 @@ export function Text({
 }) {
   const id = useId();
   const helpID = id + "-help";
+  const validation = useContext(FieldValidation);
+  const register = validation?.register;
+  const fieldRef = useCallback(
+    (input: HTMLInputElement | HTMLTextAreaElement | null) => {
+      if (input && name && register) return register({ name, id, label });
+    },
+    [name, id, label, register],
+  );
+  const error = name
+    ? validation?.issues
+        .filter((issue) => issue.path === name)
+        .map((issue) => issue.message)
+        .join(" ")
+    : undefined;
+  const described =
+    [help ? helpID : "", error ? id + "-error" : ""]
+      .filter(Boolean)
+      .join(" ") || undefined;
   return (
     <div className="catalog-label">
       <label htmlFor={id}>{label}</label>
       {multiline ? (
         <textarea
+          ref={fieldRef}
+          name={name}
           id={id}
           value={value}
           onChange={(event) => {
             change(event.target.value);
+            if (name) validation?.correct(name);
           }}
-          aria-describedby={help ? helpID : undefined}
+          aria-describedby={described}
+          aria-invalid={error ? true : undefined}
         />
       ) : (
         <input
+          ref={fieldRef}
+          name={name}
           id={id}
           type={type}
           value={value}
           onChange={(event) => {
             change(event.target.value);
+            if (name) validation?.correct(name);
           }}
-          aria-describedby={help ? helpID : undefined}
+          aria-describedby={described}
+          aria-invalid={error ? true : undefined}
         />
       )}{" "}
       {help && (
@@ -48,21 +77,29 @@ export function Text({
           {help}
         </span>
       )}
+      {error && (
+        <p className="field-error" id={id + "-error"}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }
 
 export function NumberInput({
+  name,
   label,
   value,
   change,
 }: {
+  name?: string | undefined;
   label: string;
   value: number;
   change: (value: number) => void;
 }) {
   return (
     <Text
+      name={name}
       label={label}
       type="number"
       value={String(value)}

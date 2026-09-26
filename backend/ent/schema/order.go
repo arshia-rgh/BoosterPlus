@@ -46,6 +46,7 @@ func (Order) Fields() []ent.Field {
 // Indexes mirrors the explicit SQL constraints.
 func (Order) Indexes() []ent.Index {
 	return []ent.Index{
+		index.Fields("game_id", "state", "id").StorageKey("orders_discovery_game_state"),
 		index.Fields("created_at", "id").StorageKey("orders_report_created"),
 		index.Fields("user_id", "request_key").Unique().StorageKey("order_request"),
 		index.Fields("user_id", "created_at", "id").StorageKey("order_customer_history"),

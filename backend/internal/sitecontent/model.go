@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/publicmetrics"
 )
 
 // ErrInvalid rejects unsupported content, unsafe destinations and missing policies.
@@ -32,26 +34,29 @@ type Featured struct {
 
 // Home configures editorial text and vetted local artwork without accepting scripts or remote fetch targets.
 type Home struct {
-	Headline         string     `json:"headline"`
-	Accent           string     `json:"accent"`
-	Description      string     `json:"description"`
-	Notice           string     `json:"notice"`
-	StartRank        string     `json:"start_rank"`
-	EndRank          string     `json:"end_rank"`
-	SceneDescription string     `json:"scene_description"`
-	Artwork          string     `json:"artwork"`
-	ShowScene        bool       `json:"show_scene"`
-	ShowPathways     bool       `json:"show_pathways"`
-	ShowSteps        bool       `json:"show_steps"`
-	ContactEmail     string     `json:"contact_email"`
-	SupportHours     string     `json:"support_hours"`
-	FAQs             []FAQ      `json:"faqs"`
-	Featured         []Featured `json:"featured"`
+	Introductions    []Introduction        `json:"introductions,omitempty"`
+	Metrics          *publicmetrics.Policy `json:"metrics,omitempty"`
+	Headline         string                `json:"headline"`
+	Accent           string                `json:"accent"`
+	Description      string                `json:"description"`
+	Notice           string                `json:"notice"`
+	StartRank        string                `json:"start_rank"`
+	EndRank          string                `json:"end_rank"`
+	SceneDescription string                `json:"scene_description"`
+	Artwork          string                `json:"artwork"`
+	ShowScene        bool                  `json:"show_scene"`
+	ShowPathways     bool                  `json:"show_pathways"`
+	ShowSteps        bool                  `json:"show_steps"`
+	ContactEmail     string                `json:"contact_email"`
+	SupportHours     string                `json:"support_hours"`
+	FAQs             []FAQ                 `json:"faqs"`
+	Featured         []Featured            `json:"featured"`
 }
 
 // Legal is operator-authored account and privacy terms; the release label is the accepted version.
 type Legal struct {
-	Text string `json:"text"`
+	Text     string          `json:"text"`
+	Sections []PolicySection `json:"sections,omitempty"`
 }
 
 // Retention sets explicit minimum retention periods before requested profile erasure. No periods default to zero.
@@ -98,6 +103,9 @@ func validate(kind string, data map[string]any) error {
 		if e := decode(data, &h); e != nil {
 			return e
 		}
+		if !validIntroductions(h.Introductions) || h.Metrics != nil && !h.Metrics.Valid() {
+			return ErrInvalid
+		}
 		if !clean(h.Headline, 1, 80) || !clean(h.Accent, 1, 80) || !clean(h.Description, 1, 400) || !clean(h.Notice, 0, 300) || !clean(h.StartRank, 1, 60) || !clean(h.EndRank, 1, 60) || !clean(h.SceneDescription, 1, 400) || !clean(h.SupportHours, 0, 300) || len(h.FAQs) > 20 || len(h.Featured) > 8 {
 			return ErrInvalid
 		}
@@ -138,7 +146,7 @@ func validate(kind string, data map[string]any) error {
 		if e := decode(data, &l); e != nil {
 			return e
 		}
-		if !clean(l.Text, 30, 50000) {
+		if !clean(l.Text, 30, 50000) || !validPolicySections(l.Sections) {
 			return ErrInvalid
 		}
 	case "retention":
