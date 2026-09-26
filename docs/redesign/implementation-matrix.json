@@ -407,7 +407,7 @@
       "title": "Your next level starts here.",
       "phase": "DI04",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "verified",
       "baselineRoute": "/",
       "targetRoute": "/",
       "apiFamily": "public",
@@ -428,14 +428,17 @@
         "keyboard and narrow layout",
         "F01"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-26-di04-discovery.md",
+        "docs/redesign/DI04_QUALIFICATION.md"
+      ]
     },
     {
       "id": "P02",
       "title": "Find your game.",
       "phase": "DI04",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "verified",
       "baselineRoute": "/games",
       "targetRoute": "/games",
       "apiFamily": "public",
@@ -459,14 +462,17 @@
         "F29",
         "F30"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-26-di04-discovery.md",
+        "docs/redesign/DI04_QUALIFICATION.md"
+      ]
     },
     {
       "id": "G01",
       "title": "Mobile Legends",
       "phase": "DI04",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "verified",
       "baselineRoute": "/games/:slug",
       "targetRoute": "/games/:slug",
       "apiFamily": "public",
@@ -490,14 +496,17 @@
         "F11",
         "F14"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-26-di04-discovery.md",
+        "docs/redesign/DI04_QUALIFICATION.md"
+      ]
     },
     {
       "id": "G02",
       "title": "World of Warcraft",
       "phase": "DI04",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "verified",
       "baselineRoute": "/games/:slug",
       "targetRoute": "/games/:slug",
       "apiFamily": "public",
@@ -518,14 +527,17 @@
         "keyboard and narrow layout",
         "F26"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-26-di04-discovery.md",
+        "docs/redesign/DI04_QUALIFICATION.md"
+      ]
     },
     {
       "id": "G03",
       "title": "League of Legends",
       "phase": "DI04",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "verified",
       "baselineRoute": "/games/:slug",
       "targetRoute": "/games/:slug",
       "apiFamily": "public",
@@ -546,14 +558,17 @@
         "keyboard and narrow layout",
         "F27"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-26-di04-discovery.md",
+        "docs/redesign/DI04_QUALIFICATION.md"
+      ]
     },
     {
       "id": "G04",
       "title": "VALORANT",
       "phase": "DI04",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "verified",
       "baselineRoute": "/games/:slug",
       "targetRoute": "/games/:slug",
       "apiFamily": "public",
@@ -574,14 +589,17 @@
         "keyboard and narrow layout",
         "F28"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-26-di04-discovery.md",
+        "docs/redesign/DI04_QUALIFICATION.md"
+      ]
     },
     {
       "id": "G05",
       "title": "Dota 2",
       "phase": "DI04",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "verified",
       "baselineRoute": "/games/:slug",
       "targetRoute": "/games/:slug",
       "apiFamily": "public",
@@ -602,14 +620,17 @@
         "keyboard and narrow layout",
         "F29"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-26-di04-discovery.md",
+        "docs/redesign/DI04_QUALIFICATION.md"
+      ]
     },
     {
       "id": "G06",
       "title": "Wild Rift",
       "phase": "DI04",
       "mode": "adapt",
-      "status": "in_progress",
+      "status": "verified",
       "baselineRoute": "/games/:slug",
       "targetRoute": "/games/:slug",
       "apiFamily": "public",
@@ -630,7 +651,10 @@
         "keyboard and narrow layout",
         "F30"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/reviews/2026-09-26-di04-discovery.md",
+        "docs/redesign/DI04_QUALIFICATION.md"
+      ]
     },
     {
       "id": "P04",

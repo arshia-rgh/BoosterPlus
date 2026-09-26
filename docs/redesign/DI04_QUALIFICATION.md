@@ -1,8 +1,8 @@
 # DI04 — homepage and persistent game hubs
 
-26 September 2026. **Implementation in progress; senior review PASS; complete gate pending.** Base: `61ba66248738f54c114a62ca8d63372b597a13be`. R10/R11 remain held.
+27 September 2026. **Delivered.** Implementation `8858cfe10451c890a9bfa7659364857afa07e1a6` is pushed and verified at `origin/main`. Scoped senior review and the complete unchanged gate passed. Base: `61ba66248738f54c114a62ca8d63372b597a13be`. R10/R11 remain held.
 
-## Implemented scope
+## Delivered scope
 
 - Quiet illustrated homepage, equal game prominence, five service introductions with finite entry motion and native game-selection anchors, evidence-backed activity, manually controlled recent-review carousel, FAQ and bottom game picker. Shop/news descriptions clearly communicate that their routes are not released yet.
 - Released service tags, non-interactive paused cards, readable unavailable states, bounded game-list search, published artwork focal positions and compact failed-image fallbacks.
@@ -49,8 +49,16 @@ Final full-browser follow-up corrected two harness errors: the catalog journey n
 
 DI04 complete frontend preflight passed: contracts/formatting/types/lint,276 local component cases (266 tracked plus ten held cameo cases), unchanged route coverage, dependency audit, both builds, nine server/launcher cases and94 desktop/mobile browser journeys (46 ordinary plus one policy on each). Storefront/admin image scans and non-root read-only container smoke passed. Scoped senior review is PASS. Log: `/tmp/playora-di04-frontend-preflight.log`. The unchanged full tracked hook is now the remaining pre-commit requirement; no launch is authorized.
 
-DI04 fifth unchanged full hook passed all backend checks (TiDB integration451.385s),276 local frontend cases,94 browser journeys and application image/smoke checks. It stopped at isolated deployment smoke because `/games` still asserted the retired “Choose your game” copy despite HTTP200. Updated only that expected heading to the accepted “Find your game.”; TLS, route status, CSP, caching and authorization assertions remain intact. This is an existing deployment regression correction, not resumed R10/R11 work. Deployment preflight and another unchanged full hook follow; no commit from the failed gate.
+DI04 fifth unchanged full hook passed all backend checks (TiDB integration451.385s), 276 local frontend cases, 94 browser journeys and application image/smoke checks. It stopped at isolated deployment smoke because `/games` still asserted the retired “Choose your game” copy despite HTTP200. Updated only that expected heading to the accepted “Find your game.”; TLS, route status, CSP, caching and authorization assertions remain intact. This is an existing deployment regression correction, not resumed R10/R11 work. Deployment preflight and another unchanged full hook follow; no commit from the failed gate.
 
 The isolated deployment preflight passed corrected HTTPS routing and identity, then caught a shutdown assertion racing worker restart after the intentionally injected database outage. Private fixture logs identified worker dependency exits before restart, not a failed graceful signal on a recovered process. Added a second real queued-email sign-in after database recovery before asserting zero-exit shutdown; this strengthens worker recovery evidence without extending deadlines or relaxing the exit assertion. Failure diagnostics now name only the service and exit code. A complete isolated deployment rerun is required before the final full hook.
 
 The corrected full isolated deployment preflight passed: explicit migrations, TLS dependencies, HTTPS redirect/routing/security headers, actual email sign-in and portal/CSRF boundaries, scanner/storage/database outages and recovery, a fresh queued email from the recovered worker, and zero-exit API/worker graceful shutdown. Log: `/tmp/playora-di04-production-preflight.log`. Sixth unchanged full tracked hook follows against the final staged tree.
+
+## Final verified delivery — 27 September 2026
+
+The sixth complete unchanged tracked hook passed: repository/secret/workflow/contracts, Go formatting/generated-code/vet/golangci-lint/standalone gosec/current govulncheck, race unit tests, complete isolated TiDB integration (468.036s), all 28 explicit SQL migrations, backend/scanner images, frontend formatting/types/lint/276 local component cases and unchanged route coverage, dependency audit, both builds, nine server cases, 94 browser journeys, frontend/admin image scans and smoke, and the complete isolated deployment regression including recovered-worker queued-email delivery and graceful shutdown. Live govulncheck found no vulnerabilities affecting code or imported packages; one module-only advisory remains outside affected call paths.
+
+Implementation `8858cfe10451c890a9bfa7659364857afa07e1a6` was committed directly on main, pushed, and verified against origin/main. Final scoped senior review: PASS, four recorded rounds. Prior failures remain above; two stale Git-lock recovery attempts did not run or pass a hook. Log: `/tmp/playora-di04-resource-gate.log`. Held untracked prototypes/cameo and private runtime captures were excluded. The 276 local component count comprises 266 tracked tests and ten held cameo tests; held work is not delivered. Development-service states were restored.
+
+Eight DI04 views (P01/P02/G01–G06) are now marked verified for this scope. DI05–DI15 remain subsequent authorized application work; the new corner activity panel, deeper checkout/account flows and Shop/News are not claimed as delivered by this stage. R10/R11 and owner/physical-device/real-funds/asset-rights qualification remain held or separate as recorded above.
