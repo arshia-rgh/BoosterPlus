@@ -661,7 +661,7 @@
       "title": "Build your Mobile Legends boost.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -684,14 +684,19 @@
         "F01",
         "F18"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "P05",
       "title": "Review your request.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -714,14 +719,19 @@
         "F01",
         "F08"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "P06",
       "title": "Your request is with our team.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -741,14 +751,19 @@
         "keyboard and narrow layout",
         "F01"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "P07",
       "title": "Rank progress package.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/packages/:pack",
       "targetRoute": "/games/:slug/packages/:pack",
       "apiFamily": "catalog",
@@ -769,14 +784,19 @@
         "keyboard and narrow layout",
         "F02"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "P08",
       "title": "Check your package details.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/packages/:pack",
       "targetRoute": "/games/:slug/packages/:pack",
       "apiFamily": "catalog",
@@ -796,14 +816,19 @@
         "keyboard and narrow layout",
         "F02"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "P09",
       "title": "Choose how to pay.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -828,14 +853,19 @@
         "F03",
         "F04"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "P10",
       "title": "Complete your payment.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -863,14 +893,19 @@
         "F03",
         "F04"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "P11",
       "title": "We’re confirming your payment.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -894,7 +929,12 @@
         "F03",
         "F04"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "P12",
@@ -1413,7 +1453,7 @@
       "title": "Your quote is ready.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -1439,7 +1479,12 @@
         "F15",
         "F20"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "C04",
@@ -3491,7 +3536,7 @@
       "title": "Build your World of Warcraft request.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -3512,14 +3557,19 @@
         "keyboard and narrow layout",
         "F26"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "G12",
       "title": "Review your World of Warcraft request.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -3539,14 +3589,19 @@
         "keyboard and narrow layout",
         "F26"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "G08",
       "title": "Build your League of Legends request.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -3567,14 +3622,19 @@
         "keyboard and narrow layout",
         "F27"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "G13",
       "title": "Review your League of Legends request.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -3594,14 +3654,19 @@
         "keyboard and narrow layout",
         "F27"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "G09",
       "title": "Build your VALORANT request.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -3622,14 +3687,19 @@
         "keyboard and narrow layout",
         "F28"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "G14",
       "title": "Review your VALORANT request.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -3649,14 +3719,19 @@
         "keyboard and narrow layout",
         "F28"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "G10",
       "title": "Build your Dota 2 request.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -3677,14 +3752,19 @@
         "keyboard and narrow layout",
         "F29"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "G15",
       "title": "Review your Dota 2 request.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -3704,14 +3784,19 @@
         "keyboard and narrow layout",
         "F29"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "G11",
       "title": "Build your Wild Rift request.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -3732,14 +3817,19 @@
         "keyboard and narrow layout",
         "F30"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "G16",
       "title": "Review your Wild Rift request.",
       "phase": "DI05",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/services/:service",
       "targetRoute": "/games/:slug/services/:service",
       "apiFamily": "catalog",
@@ -3759,7 +3849,12 @@
         "keyboard and narrow layout",
         "F30"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI05_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di05-request-review.md",
+        "docs/redesign/reviews/2026-09-27-di05-native-checkout.md",
+        "docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md"
+      ]
     },
     {
       "id": "SH01",

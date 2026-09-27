@@ -1,6 +1,6 @@
-# DI05 qualification — in progress
+# DI05 qualification — delivered
 
-27 September 2026. The owner authorized application implementation through DI15. This report tracks verified increments within DI05; it does not mark the entire phase delivered. R10/R11 remain held.
+27 September 2026. The owner authorized application implementation through DI15. Increments A–C and the final receipt below qualify the DI05-owned runtime scope. R10/R11 remain held.
 
 ## Increment A: configuration, review and interrupted creation
 
@@ -73,3 +73,12 @@ The second unchanged DI05C hook again passed live Go security checks and race un
 
 
 The third unchanged full hook failed during integration after 778.890s with database read/context timeouts. The container remained alive and was not OOM-killed; Docker itself responded slowly under the shared VM load. Recreated only the stopped, mount-free qualification database (identity `8471ba51578c1aba43ad13a3e7cd1ef7fef0faf052fcbb9e4052f1b64f2d8bd9`) with 2.5 GiB/no swap, TiDB server limit 2 GiB, GC trigger 0.65, GOGC 50 and GOMEMLIMIT 1536 MiB. Startup accepted the explicit memory configuration. Reference: [TiDB memory controls](https://docs.pingcap.com/tidb/stable/configure-memory-usage/). No query semantics, test deadlines, assertions or gate scope changed. The fourth complete gate remains required.
+
+
+## Increment C delivery and DI05 phase exit
+
+The fourth unchanged complete tracked hook passed against implementation `6a122d7234ff4c15b967b95bf82aae0865c671d2`, pushed directly to `origin/main` with matching remote SHA verified. Root repository/secret/contract checks; Go formatting, generation, vet, golangci-lint, standalone gosec, live govulncheck and dependency verification; race units, complete TiDB/storage/scanner integration (483.808s), all 30 SQL migrations and backend builds/image scans passed. Govulncheck reported no called-code vulnerabilities; its summary also noted one advisory in an uncalled required module. Frontend passed strict types/lint, unchanged coverage, 303 local cases (293 tracked plus ten held experiments), dependency audit, both builds, nine server cases and 106 desktop/mobile browser journeys. Storefront/admin image scans and non-root read-only smoke passed. Existing isolated TLS deployment regression passed, including email sign-in/portal boundaries, dependency outages/recovery and graceful API/worker shutdown. Log: `/tmp/playora-di05c-resource-gate-4.log`. Development services were restored.
+
+The 19 DI05-owned views (P04–P11, C03 and G07–G16) now have scoped runtime evidence from increments A–C. Generic configuration/review is exercised for six isolated published game templates; MLBB custom/package request, clarification/revision, quote decisions and immutable purchase terms use actual local APIs. Native crypto instructions, retry/reconnect, receipt and financial exception/concurrency paths use isolated provider fixtures. Private screenshots exercise real quarantine/scanning, ownership, transaction rollback, retention and explicit migration upgrade/rollback/drift. Scoped senior review for each increment is PASS after recorded fixes.
+
+DI05 is delivered within its phase boundary. The 31 full cross-role journeys are still pending DI14 integration and DI15 independent qualification; existing counterpart screens used here are not thereby accepted as redesigned. DI06 owns customer record sections/activity, DI07 chat, and later phases retain their own scopes. Real merchant compatibility/assets, funds movement, physical-device/human review and public activation remain unqualified here. No live merchant calls, credentials, runtime captures or held experiments were committed. R10/R11 remain held.
