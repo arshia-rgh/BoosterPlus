@@ -1,29 +1,32 @@
 import "../resale/marketplace.css";
-import SellerOffers from "../resale/offers";
-import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { useRef, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { listingSchema as gamesSchema, releaseSchema } from "../catalog/model";
+import { uncertain } from "../support/chat-state";
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";
-import SubmissionEditor from "./form";
 import {
-  actionLabel,
-  historySchema,
   listingSchema,
   stateLabel,
   stateSchema,
   submissionSchema,
-  type Submission,
 } from "./model";
 
 export function SubmissionList({ admin = false }: { admin?: boolean }) {
-  const [after, setAfter] = useState(""),
-    [state, setState] = useState(admin ? "submitted" : ""),
-    resource = useResource(
-      `${admin ? "/admin" : ""}/submissions?after=${encodeURIComponent(after)}&state=${encodeURIComponent(state)}`,
-      listingSchema,
-    );
+  const [params, setParams] = useSearchParams();
+  const after = params.get("after") ?? "";
+  const state = params.get("state") ?? (admin ? "submitted" : "");
+  const setAfter = (after: string) => {
+    setParams({ ...Object.fromEntries(params), after });
+  };
+  const setState = (state: string) => {
+    setParams({ ...Object.fromEntries(params), state, after: "" });
+  };
+  const resource = useResource(
+    `${admin ? "/admin" : ""}/submissions?after=${encodeURIComponent(after)}&state=${encodeURIComponent(state)}`,
+    listingSchema,
+  );
   return (
     <section>
       <h2>
@@ -49,7 +52,6 @@ export function SubmissionList({ admin = false }: { admin?: boolean }) {
         ]}
         change={(value) => {
           setState(value);
-          setAfter("");
         }}
       />
       <Action onClick={resource.reload}>Refresh submissions</Action>
@@ -61,7 +63,8 @@ export function SubmissionList({ admin = false }: { admin?: boolean }) {
             {resource.data.items.map((row) => (
               <li key={row.id}>
                 <Link
-                  to={`${admin ? "/admin/submissions" : "/sell"}/${row.id}`}
+                  to={`${admin ? "/admin/submissions" : "/sell"}/${row.id}?section=${["draft", "needs_information"].includes(row.state) ? "details" : "overview"}`}
+                  state={{ submissionListSearch: params.toString() }}
                 >
                   {row.title}
                 </Link>
@@ -100,7 +103,13 @@ export function SubmissionList({ admin = false }: { admin?: boolean }) {
   );
 }
 
-function DraftStart({ slug }: { slug: string }) {
+function DraftStart({
+  slug,
+  lockGame,
+}: {
+  slug: string;
+  lockGame: (locked: boolean) => void;
+}) {
   const resource = useResource(
       `/catalog/games/${encodeURIComponent(slug)}`,
       releaseSchema,
@@ -109,9 +118,13 @@ function DraftStart({ slug }: { slug: string }) {
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
     [requestKey] = useState(() => crypto.randomUUID()),
+    [unknown, setUnknown] = useState(false),
     navigate = useNavigate();
+  const lock = useRef(false);
   async function create() {
-    if (!resource.data) return;
+    if (!resource.data || lock.current) return;
+    lock.current = true;
+    lockGame(true);
     setBusy(true);
     setError(null);
     try {
@@ -123,7 +136,10 @@ function DraftStart({ slug }: { slug: string }) {
       void navigate(`/sell/${value.submission.id}`);
     } catch (cause) {
       setError(cause);
+      setUnknown((previous) => previous || uncertain(cause));
+      if (!unknown && !uncertain(cause)) lockGame(false);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
@@ -131,6 +147,9 @@ function DraftStart({ slug }: { slug: string }) {
     <section className="catalog-section">
       <ErrorNotice error={resource.error ?? error} />
       {resource.loading && <p role="status">Loading intake form…</p>}
+      {!!resource.error && (
+        <Action onClick={resource.reload}>Retry account intake</Action>
+      )}
       {resource.data && !resource.error && (
         <>
           <h3>
@@ -138,12 +157,22 @@ function DraftStart({ slug }: { slug: string }) {
               "Account intake unavailable"}
           </h3>
           <p>{resource.data.configuration.intake?.description}</p>
-          <Text
-            label="Private account title"
-            value={title}
-            change={setTitle}
-            help="A short label for your submission. Do not enter login or recovery information."
-          />
+          <fieldset disabled={busy || unknown}>
+            <legend>Private draft title</legend>
+            <Text
+              label="Private account title"
+              value={title}
+              change={setTitle}
+              help="A short label for your submission. Do not enter login or recovery information."
+            />
+          </fieldset>
+          {unknown && (
+            <p role="status">
+              Creation was not confirmed. Keep this page open and retry to
+              recover the same submission. Game selection is locked until the
+              request is recovered.
+            </p>
+          )}
           <Action
             disabled={
               busy ||
@@ -156,7 +185,9 @@ function DraftStart({ slug }: { slug: string }) {
               void create();
             }}
           >
-            Create private draft
+            {unknown
+              ? "Check the same submission request"
+              : "Create private draft"}
           </Action>
           {resource.data.paused && (
             <p>This game is not accepting new submissions right now.</p>
@@ -167,8 +198,13 @@ function DraftStart({ slug }: { slug: string }) {
   );
 }
 export function NewSubmission() {
+  const [gameLocked, setGameLocked] = useState(false);
+  const [params] = useSearchParams();
+  const requested = params.get("slug") ?? "";
   const [after, setAfter] = useState(""),
-    [slug, setSlug] = useState(""),
+    [slug, setSlug] = useState(() =>
+      /^[a-z][a-z0-9-]{0,79}$/.test(requested) ? requested : "",
+    ),
     resource = useResource(
       `/catalog/games?after=${encodeURIComponent(after)}`,
       gamesSchema,
@@ -190,6 +226,7 @@ export function NewSubmission() {
               .map((game) => (
                 <li key={game.id}>
                   <Action
+                    disabled={gameLocked}
                     onClick={() => {
                       setSlug(game.slug);
                     }}
@@ -222,282 +259,9 @@ export function NewSubmission() {
           First games
         </Action>
       )}
-      {slug && <DraftStart key={slug} slug={slug} />}
+      {slug && <DraftStart key={slug} slug={slug} lockGame={setGameLocked} />}
     </section>
   );
 }
 
-function History({ id, admin }: { id: string; admin: boolean }) {
-  const [after, setAfter] = useState(0),
-    resource = useResource(
-      `${admin ? "/admin" : ""}/submissions/${id}/history?after=${String(after)}`,
-      historySchema,
-    );
-  return (
-    <section className="catalog-section">
-      <h3>Submission history</h3>
-      <ErrorNotice error={resource.error} />
-      {!resource.error && resource.data && (
-        <>
-          <ol>
-            {resource.data.events.map((event) => (
-              <li key={event.version}>
-                <p>
-                  {actionLabel(event.action)} · {event.actor_role} ·{" "}
-                  {new Date(event.created_at).toLocaleString()}
-                </p>
-                <p>{event.message}</p>
-              </li>
-            ))}
-          </ol>
-          {resource.data.events.length === 50 && (
-            <Action
-              onClick={() => {
-                setAfter(resource.data?.events.at(-1)?.version ?? 0);
-              }}
-            >
-              Later history
-            </Action>
-          )}
-        </>
-      )}
-      {after > 0 && (
-        <Action
-          onClick={() => {
-            setAfter(0);
-          }}
-        >
-          First history
-        </Action>
-      )}
-    </section>
-  );
-}
-function ReviewActions({
-  value,
-  admin,
-  reload,
-}: {
-  value: Submission;
-  admin: boolean;
-  reload: () => void;
-}) {
-  const [note, setNote] = useState(""),
-    [error, setError] = useState<unknown>(null),
-    [busy, setBusy] = useState(false),
-    row = value.submission;
-  async function change(action: string) {
-    setBusy(true);
-    setError(null);
-    try {
-      await post(
-        `${admin ? "/admin" : ""}/submissions/${row.id}/${action}`,
-        { version: row.version, note },
-        submissionSchema,
-      );
-      reload();
-    } catch (cause) {
-      setError(cause);
-    } finally {
-      setBusy(false);
-    }
-  }
-  if (
-    row.state === "accepted" ||
-    row.state === "withdrawn" ||
-    row.state === "rejected" ||
-    (admin && row.state === "draft")
-  )
-    return null;
-  return (
-    <section className="catalog-section">
-      <h3>{admin ? "Review decision" : "Before commercial acceptance"}</h3>
-      <ErrorNotice error={error} />
-      {admin ? (
-        <>
-          <Text
-            label="Seller-visible review reason"
-            value={note}
-            change={setNote}
-            multiline
-          />
-          <fieldset disabled={busy || !note.trim()}>
-            <legend>Review actions</legend>
-            {row.state !== "needs_information" && (
-              <Action
-                onClick={() => {
-                  void change("clarify");
-                }}
-              >
-                Request account information
-              </Action>
-            )}
-            <Action
-              onClick={() => {
-                void change("reject");
-              }}
-            >
-              Reject account submission
-            </Action>
-            {row.state === "submitted" && (
-              <Action
-                onClick={() => {
-                  void change("approve_review");
-                }}
-              >
-                Approve review pending terms
-              </Action>
-            )}
-          </fieldset>
-          <p>
-            This decision does not verify a transfer, publish a listing, accept
-            commercial terms or create a payout.
-          </p>
-        </>
-      ) : (
-        <details>
-          <summary>Submission options</summary>
-          <p>
-            You may withdraw this submission before accepting any commercial
-            agreement.
-          </p>
-          <Action
-            disabled={busy}
-            onClick={() => {
-              void change("withdraw");
-            }}
-          >
-            Withdraw account submission
-          </Action>
-        </details>
-      )}
-    </section>
-  );
-}
-export function SubmissionDetail({ admin = false }: { admin?: boolean }) {
-  const { id = "" } = useParams(),
-    resource = useResource(
-      `${admin ? "/admin" : ""}/submissions/${encodeURIComponent(id)}`,
-      submissionSchema,
-    ),
-    value = resource.error ? null : resource.data;
-  return (
-    <section>
-      <Link to={admin ? "/admin/submissions" : "/sell"}>← Submissions</Link>
-      <Action disabled={resource.loading} onClick={resource.reload}>
-        Refresh submission
-      </Action>
-      <ErrorNotice error={resource.error} />
-      {resource.loading && <p role="status">Refreshing submission…</p>}
-      {value && (
-        <fieldset disabled={resource.loading}>
-          <legend>Private account review</legend>
-          <h2>{value.submission.title}</h2>
-          <p>
-            {value.submission.game} · {stateLabel(value.submission.state)}
-          </p>
-          <ol className="seller-progress" aria-label="Selling progress">
-            <li
-              aria-current={
-                ["draft", "needs_information"].includes(value.submission.state)
-                  ? "step"
-                  : undefined
-              }
-            >
-              1. Prepare account
-            </li>
-            <li
-              aria-current={
-                value.submission.state === "submitted" ? "step" : undefined
-              }
-            >
-              2. Private review
-            </li>
-            <li
-              aria-current={
-                value.submission.state === "approved_pending_terms"
-                  ? "step"
-                  : undefined
-              }
-            >
-              3. Agree terms
-            </li>
-            <li
-              aria-current={
-                value.submission.state === "accepted" ? "step" : undefined
-              }
-            >
-              4. Transfer & payout
-            </li>
-          </ol>
-          <p>{value.note}</p>
-          <Link
-            to={`${admin ? "/admin" : ""}/support/${value.conversation_id}`}
-          >
-            Open private review conversation
-          </Link>
-          <p>
-            Upload ownership screenshots in that conversation. It is separate
-            from buyer support and booster coordination. Never send login
-            passwords or recovery codes in ordinary form fields or chat.
-          </p>
-          {!admin &&
-          ["draft", "needs_information"].includes(value.submission.state) ? (
-            <SubmissionEditor
-              key={value.submission.version}
-              value={value}
-              reload={resource.reload}
-            />
-          ) : (
-            <details className="submitted-information" open={admin}>
-              <summary>Submitted account information</summary>
-              <dl>
-                {value.offer.configuration.intake?.fields.map((field) => {
-                  const answer = value.answers[field.key];
-                  return answer === undefined ? null : (
-                    <div key={field.key}>
-                      <dt>{field.label}</dt>
-                      <dd>
-                        {Array.isArray(answer)
-                          ? answer.join(", ")
-                          : String(answer)}
-                      </dd>
-                    </div>
-                  );
-                })}
-              </dl>
-              <h3>Ownership and control</h3>
-              <p>{value.ownership_notes || "Not provided"}</p>
-              <p>
-                {value.ownership_declared
-                  ? "Seller declared authority to submit this account."
-                  : "Authority has not been declared."}
-              </p>
-            </details>
-          )}
-          <ReviewActions
-            key={`actions-${String(value.submission.version)}`}
-            value={value}
-            admin={admin}
-            reload={resource.reload}
-          />
-          <SellerOffers
-            id={id}
-            version={value.submission.version}
-            state={value.submission.state}
-            admin={admin}
-            changed={resource.reload}
-          />
-          <details>
-            <summary>Submission activity</summary>
-            <History
-              key={`history-${String(value.submission.version)}`}
-              id={id}
-              admin={admin}
-            />
-          </details>
-        </fieldset>
-      )}
-    </section>
-  );
-}
+export { default as SubmissionDetail } from "./workspace";

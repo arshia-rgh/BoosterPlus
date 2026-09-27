@@ -1,13 +1,17 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { z } from "../validation";
 import { Action, ErrorNotice, Text } from "../catalog/controls";
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";
 import { caseQueueSchema, outgoingQueueSchema } from "./cases-model";
 export default function CaseQueue() {
-  const [after, setAfter] = useState(""),
-    [payment, setPayment] = useState(""),
+  const [params, setParams] = useSearchParams();
+  const after = params.get("casesAfter") ?? "";
+  const setAfter = (after: string) => {
+    setParams({ ...Object.fromEntries(params), casesAfter: after });
+  };
+  const [payment, setPayment] = useState(""),
     [reason, setReason] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
@@ -16,7 +20,10 @@ export default function CaseQueue() {
     `/admin/cases?after=${encodeURIComponent(after)}`,
     caseQueueSchema,
   );
-  const [outgoingAfter, setOutgoingAfter] = useState("");
+  const outgoingAfter = params.get("outgoingAfter") ?? "";
+  const setOutgoingAfter = (after: string) => {
+    setParams({ ...Object.fromEntries(params), outgoingAfter: after });
+  };
   const outgoing = useResource(
     `/admin/finance/outgoing?after=${encodeURIComponent(outgoingAfter)}`,
     outgoingQueueSchema,
@@ -48,7 +55,10 @@ export default function CaseQueue() {
       {resource.data?.cases.length === 0 && <p>No open cases.</p>}
       {resource.data?.cases.map((record) => (
         <article key={record.id}>
-          <Link to={`/admin/orders/${record.order_id}`}>
+          <Link
+            to={`/admin/orders/${record.order_id}?section=payment`}
+            state={{ financeSearch: params.toString() }}
+          >
             {record.kind.replaceAll("_", " ")} · Order{" "}
             {record.order_id.slice(0, 8)}
           </Link>

@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { sessionSchema } from "../identity/api";
@@ -18,8 +17,12 @@ const queueSchema = z.object({
   next: z.string(),
 });
 export default function SellerPayoutQueue() {
-  const [after, setAfter] = useState(""),
-    resource = useResource(
+  const [params, setParams] = useSearchParams();
+  const after = params.get("payoutAfter") ?? "";
+  const setAfter = (after: string) => {
+    setParams({ ...Object.fromEntries(params), payoutAfter: after });
+  };
+  const resource = useResource(
       `/admin/finance/payouts?after=${encodeURIComponent(after)}`,
       queueSchema,
     ),
@@ -38,8 +41,11 @@ export default function SellerPayoutQueue() {
       <ErrorNotice error={resource.error ?? session.error} />
       {resource.data?.items.map((item) => (
         <section key={item.transfer.id}>
-          <Link to={`/admin/submissions/${item.submission_id}`}>
-            Review seller agreement
+          <Link
+            to={`/admin/submissions/${item.submission_id}?section=payout`}
+            state={{ financeSearch: params.toString() }}
+          >
+            Review seller payout and agreement
           </Link>
           <p>
             {item.eligible

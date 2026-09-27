@@ -22,26 +22,38 @@ export default function SubmissionEditor({
     [notes, setNotes] = useState(value.ownership_notes),
     [declared, setDeclared] = useState(value.ownership_declared),
     [dirty, setDirty] = useState(false),
+    [baseVersion, setBaseVersion] = useState(value.submission.version),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
     form = value.offer.configuration.intake;
   const lock = useRef(false);
+  function reset(current: Submission) {
+    setTitle(current.submission.title);
+    setAnswers(current.answers);
+    setNotes(current.ownership_notes);
+    setDeclared(current.ownership_declared);
+    setBaseVersion(current.submission.version);
+    setDirty(false);
+    setError(null);
+  }
+  const stale = value.submission.version > baseVersion;
+  if (stale && !dirty && !busy) reset(value);
   if (!form)
     return <p>The pinned intake form is unavailable; contact support.</p>;
   const service = intakeService(form),
     values = visibleAnswers(service, answers, "order");
   async function save(submit: boolean) {
-    if (lock.current || (submit && dirty)) return;
+    if (lock.current || stale || (submit && dirty)) return;
     lock.current = true;
     setBusy(true);
     setError(null);
     try {
-      await post(
+      const saved = await post(
         `/submissions/${value.submission.id}/${submit ? "submit" : "edit"}`,
         submit
-          ? { version: value.submission.version, note: "" }
+          ? { version: baseVersion, note: "" }
           : {
-              version: value.submission.version,
+              version: baseVersion,
               title,
               answers: values,
               ownership_notes: notes,
@@ -49,6 +61,7 @@ export default function SubmissionEditor({
             },
         submissionSchema,
       );
+      reset(saved);
       reload();
     } catch (cause) {
       setError(cause);
@@ -62,7 +75,22 @@ export default function SubmissionEditor({
       <h3>{form.name}</h3>
       <p>{form.description}</p>
       <ErrorNotice error={error} />
-      <fieldset disabled={busy}>
+      {stale && dirty && (
+        <section role="alert">
+          <p>
+            This submission changed since you started editing. Your draft is
+            still here; compare it with the latest record before continuing.
+          </p>
+          <Action
+            onClick={() => {
+              reset(value);
+            }}
+          >
+            Discard this draft and load current details
+          </Action>
+        </section>
+      )}
+      <fieldset disabled={busy || stale}>
         <legend>Private submission details</legend>
         <h4>1. Describe the account</h4>
         <div className="seller-intake-fields">

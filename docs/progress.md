@@ -1160,3 +1160,13 @@ Remaining: restore official vulnerability database access and complete/deliver D
 
 
 DI09 delivered as `dee0d3e691602283af042fccf19965f412f98b28` after network access recovered. Complete tracked hook passed (TiDB race integration593.983s, 357 local component cases, 106 desktop/mobile journeys, security/build/container/TLS checks); pushed main and verified the same SHA on origin/main. [Delivery evidence](redesign/DI09_QUALIFICATION.md). DI10 application work resumes; DI11–DI15 remain authorized; R10/R11 stay held.
+
+## DI10 first application increment — in progress (27 September 2026)
+
+Applied the hash-checked preparation after DI09 delivery, then completed game-local account inspection/purchase review, owner-scoped lost-response recovery, seller intake context and buyer/staff delivery navigation. Persistent seller/inventory/finance sections retain ordinary drafts and exact bounded return context; protected controls unmount when hidden or authority is uncertain. Backend commercial/payment rules are unchanged. [Detailed qualification](redesign/DI10_QUALIFICATION.md).
+
+Focused real-API seller, resale/payment and support journeys passed on desktop/mobile (six cases). Initial actual type/lint/component checks passed (371 cases, 100% required route coverage). Senior designer feedback corrected merged listing links, Back focus, delivery read/write denial recovery and uncertain-intake game switching. Added focused regression tests and rendered recovery captures; final re-review and frontend/root commit gate are pending. DI10 remains incomplete overall, with server marketplace price/sort and remaining finance qualification still open. DI11–DI15 continue afterward; R10/R11 remain held.
+
+DI10A standalone full frontend qualification passed: 374 component cases (364 tracked plus ten held), 100% required route coverage, 106 desktop/mobile journeys, dependency audit, builds and container security/smokes. Root checks passed. Final independent review and the tracked commit hook still gate delivery; no DI10 commit yet. In a separate ignored temporary copy, prepared explicit-currency marketplace filtering and stable keyset pagination passed Go unit/lint/standalonegosec plus targeted TiDB race integration (8.615s). That backend preparation is not applied to the staged frontend increment and does not complete DI10.
+
+The independent final DI10A review is PASS from `/root/di10_final_design_review`, closing purchase/delivery/intake findings after source and rendered re-review; [record](redesign/reviews/2026-09-27-di10-purchase-delivery.md). The earlier workspace review remains separately scoped. Preparing direct-main delivery through the unchanged tracked hook. No full-DI10 or launch completion is claimed.

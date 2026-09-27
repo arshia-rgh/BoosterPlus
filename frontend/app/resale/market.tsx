@@ -1,7 +1,7 @@
 import MarketFilterPanel from "./filter-panel";
 import AccountAlerts from "../availability/accounts";
 import { FavoriteButton } from "../orders/favorites";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { z } from "../validation";
 import {
   Link,
@@ -9,10 +9,17 @@ import {
   useNavigate,
   useParams,
   useSearchParams,
+  type Location,
 } from "react-router";
 import { Action, Check, ErrorNotice, Text } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
-import { post, sessionSchema } from "../identity/api";
+import { get, post, sessionSchema } from "../identity/api";
+import RequestJourney, {
+  requestReference,
+  recoverySchema,
+  RequestSubmission,
+} from "../orders/request-recovery";
+import { sessionEventMatches } from "../identity/portal";
 import { detailSchema } from "../orders/model";
 import { useResource } from "../orders/resource";
 import {
@@ -319,13 +326,48 @@ function Purchase({
   listing: PublicListing;
   base?: string;
 }) {
+  const [params, setParams] = useSearchParams();
+  const location: Location<unknown> = useLocation();
+  const submitting = useContext(RequestSubmission);
+  const review = params.get("step") === "review";
+  const reviewPanel = useRef<HTMLElement>(null);
+  const inspectionPanel = useRef<HTMLElement>(null);
+  const previousReview = useRef(review);
+  useEffect(() => {
+    if (review) reviewPanel.current?.focus();
+    else if (previousReview.current)
+      inspectionPanel.current
+        ?.querySelector<HTMLButtonElement>("button")
+        ?.focus();
+    previousReview.current = review;
+  }, [review]);
+  function step(value: string) {
+    const next = new URLSearchParams(params);
+    if (value) next.set("step", value);
+    else next.delete("step");
+    setParams(next, { state: location.state, preventScrollReset: true });
+  }
   const session = useResource("/auth/session", sessionSchema),
     [accept, setAccept] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
-    [key] = useState(() => crypto.randomUUID()),
+    [key] = useState(() => requestReference(params) || crypto.randomUUID()),
     navigate = useNavigate();
   const lock = useRef(false);
+  const reloadSession = session.reload;
+  useEffect(() => {
+    const changed = (event: Event) => {
+      if (sessionEventMatches(event, "customer")) {
+        setAccept(false);
+        setError(null);
+        reloadSession();
+      }
+    };
+    window.addEventListener("boosterplus:session-changed", changed);
+    return () => {
+      window.removeEventListener("boosterplus:session-changed", changed);
+    };
+  }, [reloadSession]);
   async function reserve() {
     if (
       lock.current ||
@@ -337,13 +379,31 @@ function Purchase({
     )
       return;
     lock.current = true;
+    submitting(true);
+    const reference = requestReference(params) || key;
+    const next = new URLSearchParams(params);
+    next.set("request", reference);
+    setParams(next, {
+      state: location.state,
+      replace: true,
+      preventScrollReset: true,
+    });
     setBusy(true);
     setError(null);
     try {
+      const existing = await get(
+        `/me/order-requests/${reference}`,
+        recoverySchema,
+        "customer",
+      );
+      if (existing.order_id) {
+        await navigate(`/orders/${existing.order_id}`);
+        return;
+      }
       const result = await post(
         `/accounts/${listing.id}/reserve`,
         {
-          request_key: key,
+          request_key: reference,
           release_id: listing.release_id,
           expected_amount: listing.product.amount_minor,
           currency: listing.product.currency,
@@ -357,6 +417,7 @@ function Purchase({
       setError(cause);
     } finally {
       lock.current = false;
+      submitting(false);
       setBusy(false);
     }
   }
@@ -370,8 +431,55 @@ function Purchase({
         .
       </p>
     );
+  if (!review)
+    return (
+      <section
+        ref={inspectionPanel}
+        className="catalog-section account-purchase"
+      >
+        <p>
+          Review the exact account and transfer terms before reserving it.
+          Viewing this listing does not reserve stock or create a payment.
+        </p>
+        <Action
+          onClick={() => {
+            step("review");
+          }}
+        >
+          Review this account purchase
+        </Action>
+      </section>
+    );
   return (
-    <section className="catalog-section account-purchase">
+    <section
+      ref={reviewPanel}
+      tabIndex={-1}
+      aria-label="Account purchase review"
+      className="catalog-section account-purchase"
+    >
+      <Action
+        disabled={busy}
+        onClick={() => {
+          step("");
+        }}
+      >
+        Back to account listing
+      </Action>
+      <h3>{listing.product.title}</h3>
+      <p>
+        {listing.game} · {listing.product.region} · {listing.product.rank}
+      </p>
+      <p className="package-price">
+        {listing.product.currency} {minorDisplay(listing.product.amount_minor)}
+      </p>
+      <p>
+        One unique account. A reservation is confirmed only after the server
+        accepts this request.
+      </p>
+      <details>
+        <summary>Review the exact account and transfer terms</summary>
+        <ProductTerms listing={listing} />
+      </details>
       <ErrorNotice error={error ?? session.error} />
       {!!session.error && (
         <Action onClick={session.reload}>Check sign-in again</Action>
@@ -379,7 +487,7 @@ function Purchase({
       {session.loading && <p role="status">Checking sign-in…</p>}
       {!session.data?.user || session.data.mfa_required ? (
         <Link
-          to={`/login?returnTo=${encodeURIComponent(`${base}/${listing.id}`)}`}
+          to={`/login?returnTo=${encodeURIComponent(`${base}/${listing.id}?step=review`)}`}
         >
           Sign in to reserve this account
         </Link>
@@ -391,7 +499,9 @@ function Purchase({
             before delivery. Your reservation has a limited checkout window; the
             order page shows its expiry.
           </p>
-          <Link to="/terms">Read site terms</Link>
+          <a href="/terms" target="_blank" rel="noopener noreferrer">
+            Read site terms in a new tab
+          </a>
           <Check
             label="I accept this account's price, sale, transfer, dispute and acknowledgement terms and the site terms"
             value={accept}
@@ -415,7 +525,8 @@ export function AccountProduct({
   const base = gameSlug
     ? `/games/${encodeURIComponent(gameSlug)}/accounts`
     : "/accounts";
-  const location = useLocation();
+  const location: Location<unknown> = useLocation();
+  const review = new URLSearchParams(location.search).get("step") === "review";
   const navigation: unknown = location.state;
   const market =
     typeof navigation === "object" &&
@@ -444,7 +555,12 @@ export function AccountProduct({
       >
         ← Account marketplace
       </Link>
-      <Heading>Account details</Heading>
+      <Heading>
+        {review ? "Review your account purchase" : "Account details"}
+      </Heading>
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh listing availability and terms
+      </Action>
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Loading account…</p>}
       {!!resource.error && (
@@ -460,29 +576,40 @@ export function AccountProduct({
         !resource.error &&
         (!gameSlug || resource.data.slug === gameSlug) && (
           <>
-            <ProductTerms listing={resource.data} />
-            <FavoriteButton
-              kind="account"
-              slug={resource.data.slug}
-              pack={resource.data.id}
-            />
-            <details className="market-alerts">
-              <summary>Availability notifications</summary>
-              <AccountAlerts
+            <div hidden={review}>
+              <ProductTerms listing={resource.data} />
+              <FavoriteButton
+                kind="account"
                 slug={resource.data.slug}
-                listingID={resource.data.id}
+                pack={resource.data.id}
               />
-            </details>
-            <Link
-              to={`/games/${resource.data.slug}/reviews?service=account_sale`}
-            >
-              Account purchase reviews
-            </Link>
-            <Purchase
-              key={resource.data.release_id}
-              listing={resource.data}
-              base={base}
-            />
+              <details className="market-alerts">
+                <summary>Availability notifications</summary>
+                <AccountAlerts
+                  slug={resource.data.slug}
+                  listingID={resource.data.id}
+                />
+              </details>
+              <div className="catalog-actions">
+                <Link
+                  to={`/games/${resource.data.slug}/reviews?service=account_sale`}
+                >
+                  Account purchase reviews
+                </Link>
+                <Link
+                  to={`/support?listing=${encodeURIComponent(resource.data.id)}`}
+                >
+                  Ask about this account
+                </Link>
+              </div>
+            </div>
+            <RequestJourney>
+              <Purchase
+                key={resource.data.release_id}
+                listing={resource.data}
+                base={base}
+              />
+            </RequestJourney>
           </>
         )}
     </Container>

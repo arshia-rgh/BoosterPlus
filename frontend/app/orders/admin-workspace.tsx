@@ -9,6 +9,7 @@ import { denied } from "../support/chat-state";
 import { RecordShell } from "../ui/record-shell";
 import OrderMessages from "../support/order-messages";
 import FulfillmentPanel from "../fulfillment/panel";
+import { financeReturn } from "../payments/finance-context";
 import Checkout from "../payments/checkout";
 import Cases from "../payments/cases";
 import AccountDelivery from "../resale/delivery";
@@ -64,7 +65,12 @@ function Workspace({
         headingLevel={2}
         stickyStatus={stateLabel(detail.order.state)}
         compactReference
-        back={{ to: back, label: "Order queue" }}
+        back={{
+          to: back,
+          label: back.startsWith("/admin/finance?")
+            ? "Finance workspace"
+            : "Order queue",
+        }}
         sections={sections}
         keepMounted={["request", "quote", "fulfillment", "messages", "payment"]}
         status={
@@ -164,19 +170,16 @@ function Workspace({
                     Verified payment is required before assignment or delivery.
                   </p>
                 ) : detail.order.kind === "account" ? (
-                  visible &&
-                  !suspended &&
-                  !loading && (
-                    <AccountDelivery
-                      id={detail.order.id}
-                      admin
-                      owner={owner}
-                      paid={["queued", "in_progress", "completed"].includes(
-                        detail.order.state,
-                      )}
-                      changed={reload}
-                    />
-                  )
+                  <AccountDelivery
+                    visible={visible && !suspended && !loading}
+                    id={detail.order.id}
+                    admin
+                    owner={owner}
+                    paid={["queued", "in_progress", "completed"].includes(
+                      detail.order.state,
+                    )}
+                    changed={reload}
+                  />
                 ) : (
                   <FulfillmentPanel
                     detail={detail}
@@ -233,10 +236,11 @@ function AdminOrderSession() {
     .object({ orderListSearch: z.string().max(2048) })
     .safeParse(location.state);
   const back =
+    financeReturn(location.state) ??
     "/admin/orders" +
-    (source.success
-      ? "?" + new URLSearchParams(source.data.orderListSearch).toString()
-      : "");
+      (source.success
+        ? "?" + new URLSearchParams(source.data.orderListSearch).toString()
+        : "");
   const resource = useResource(
     `/admin/orders/${encodeURIComponent(id)}`,
     detailSchema,

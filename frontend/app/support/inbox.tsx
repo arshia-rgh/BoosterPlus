@@ -141,7 +141,11 @@ export default function Inbox({ admin = false }: { admin?: boolean }) {
         </span>
       </div>
       {!admin && (
-        <details>
+        <details
+          open={/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+            params.get("listing") ?? "",
+          )}
+        >
           <summary>New conversation</summary>
           <NewSupport />
         </details>

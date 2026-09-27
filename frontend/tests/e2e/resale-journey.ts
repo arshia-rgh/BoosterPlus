@@ -127,7 +127,7 @@ export async function resaleJourney(
       version: submission.submission.version,
       note: "Synthetic independent ownership review completed.",
     });
-    await page.goto(`/admin/submissions/${id}`);
+    await page.goto(`/admin/submissions/${id}?section=agreement`);
     await page
       .getByLabel("Seller payment arrangement")
       .selectOption("consignment");
@@ -157,7 +157,7 @@ export async function resaleJourney(
       page.getByText("Offer: offered", { exact: true }),
     ).toBeVisible();
     await accessible(page);
-    await seller.goto(`/sell/${id}`);
+    await seller.goto(`/sell/${id}?section=agreement`);
     await seller.screenshot({
       path: `.cache/seller-offer-${info.project.name}.png`,
       fullPage: true,
@@ -185,6 +185,9 @@ export async function resaleJourney(
       seller.getByText("Offer: accepted", { exact: true }),
     ).toBeVisible();
     await seller
+      .getByRole("link", { name: "Secure handover", exact: true })
+      .click();
+    await seller
       .getByLabel("Protected transfer details")
       .fill("synthetic seller-origin ownership bundle");
     await seller
@@ -196,7 +199,7 @@ export async function resaleJourney(
     await expect(seller.getByLabel("Protected transfer details")).toHaveValue(
       "",
     );
-    await page.reload();
+    await page.goto(`/admin/submissions/${id}?section=handover`);
     await page
       .getByRole("button", { name: "Reveal protected details" })
       .click();
@@ -216,7 +219,9 @@ export async function resaleJourney(
       .getByRole("button", { name: "Verify ownership control" })
       .click();
     await page.getByRole("button", { name: "Open inventory listing" }).click();
-    await expect(page).toHaveURL(/\/admin\/accounts\/[a-f0-9-]+$/);
+    await expect(page).toHaveURL(
+      /\/admin\/accounts\/[a-f0-9-]+\?section=details$/,
+    );
     const title = `Reviewed account ${info.project.name}`;
     for (const [label, value] of [
       ["Public account title", title],
@@ -230,6 +235,7 @@ export async function resaleJourney(
       ["Exact price in minor units", "1234"],
     ] as const)
       await page.getByLabel(label, { exact: true }).fill(value);
+    await page.getByRole("link", { name: "Buyer terms", exact: true }).click();
     for (const label of [
       "Buyer sale terms",
       "Buyer transfer requirements",
@@ -244,6 +250,22 @@ export async function resaleJourney(
     await page.getByLabel("Buyer dispute window hours").fill("48");
     await page.getByLabel("Earliest delivery hours").fill("1");
     await page.getByLabel("Latest delivery hours").fill("24");
+    const savedListing = page.waitForResponse(
+      (r) => r.request().method() === "POST" && r.url().endsWith("/save"),
+    );
+    await page
+      .getByRole("button", { name: "Save account listing", exact: true })
+      .click();
+    expect((await savedListing).status()).toBe(200);
+    await expect(
+      page.getByRole("button", { name: "Save account listing", exact: true }),
+    ).toBeDisabled();
+    await page
+      .getByRole("link", { name: "Preview & publication", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Show listing preview", exact: true })
+      .click();
     await page
       .getByLabel(
         "I reviewed every public field and selected image, with permission to publish, and removed private information",
@@ -363,6 +385,18 @@ export async function resaleJourney(
     await expect(
       buyer.getByText("synthetic seller-origin ownership bundle"),
     ).toHaveCount(0);
+    await buyer
+      .getByRole("button", {
+        name: "Review this account purchase",
+        exact: true,
+      })
+      .click();
+    await expect(
+      buyer.getByRole("heading", {
+        name: "Review your account purchase",
+        exact: true,
+      }),
+    ).toBeVisible();
     await buyer
       .getByLabel(
         "I accept this account's price, sale, transfer, dispute and acknowledgement terms and the site terms",

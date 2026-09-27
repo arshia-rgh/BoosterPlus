@@ -188,7 +188,7 @@ export default function CustomerWorkspace({
         }
         back={{ to: back, label: "Order list" }}
         sections={sections}
-        keepMounted={["overview", "messages", "progress", "help"]}
+        keepMounted={["overview", "messages", "progress", "delivery", "help"]}
       >
         {(section, visible) => (
           <>
@@ -353,10 +353,11 @@ export default function CustomerWorkspace({
                   )}
                 </>
               )}
-              {section === "delivery" && !suspended && (
+              {section === "delivery" && (
                 <>
                   <h2>Account delivery</h2>
                   <AccountDelivery
+                    visible={visible && !suspended && !refreshing}
                     id={detail.order.id}
                     admin={false}
                     owner={false}

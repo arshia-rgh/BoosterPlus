@@ -1,6 +1,6 @@
 import { uncertain } from "./chat-state";
 import { useRef, useState, type SubmitEvent } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { z } from "../validation";
 import { post } from "../identity/api";
 import { Action, ErrorNotice, Text } from "../catalog/controls";
@@ -56,8 +56,16 @@ export function OrderSupport({
   );
 }
 export default function NewSupport() {
+  const [params] = useSearchParams();
+  const listing = params.get("listing") ?? "";
   const navigate = useNavigate(),
-    [subject, setSubject] = useState(""),
+    [subject, setSubject] = useState(() =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+        listing,
+      )
+        ? "Question about account " + listing
+        : "",
+    ),
     [key, setKey] = useState(() => crypto.randomUUID()),
     [busy, setBusy] = useState(false),
     [unknown, setUnknown] = useState(false),

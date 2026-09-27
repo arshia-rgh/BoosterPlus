@@ -17,9 +17,19 @@ export default function Finance() {
   )
     ? requested
     : "payments";
-  const [after, setAfter] = useState(""),
-    [filter, setFilter] = useState("exceptions"),
-    [paymentID, setPaymentID] = useState(""),
+  const after = params.get("after") ?? "";
+  const filter = params.get("filter") === "all" ? "" : "exceptions";
+  const setAfter = (after: string) => {
+    setParams({ ...Object.fromEntries(params), after });
+  };
+  const setFilter = (filter: string) => {
+    setParams({
+      ...Object.fromEntries(params),
+      filter: filter ? "exceptions" : "all",
+      after: "",
+    });
+  };
+  const [paymentID, setPaymentID] = useState(""),
     [reason, setReason] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
@@ -69,7 +79,10 @@ export default function Finance() {
             key={key}
             aria-current={view === key ? "page" : undefined}
             onClick={() => {
-              setParams({ view: key ?? "payments" });
+              setParams({
+                ...Object.fromEntries(params),
+                view: key ?? "payments",
+              });
             }}
           >
             {label}
@@ -94,7 +107,6 @@ export default function Finance() {
             value={filter}
             change={(value) => {
               setFilter(value);
-              setAfter("");
             }}
             options={[
               ["exceptions", "Needs attention"],
@@ -113,7 +125,10 @@ export default function Finance() {
             {queue.data?.attempts.map((a) => (
               <article className="catalog-section" key={a.id}>
                 <h3>
-                  <Link to={`/admin/orders/${a.order_id}`}>
+                  <Link
+                    to={`/admin/orders/${a.order_id}?section=payment`}
+                    state={{ financeSearch: params.toString() }}
+                  >
                     Order {a.order_id.slice(0, 8)}
                   </Link>
                 </h3>

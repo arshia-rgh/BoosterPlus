@@ -75,6 +75,15 @@ export function portalReturn(
       ).test(section)
     )
       params.set("section", section);
+    if (
+      section &&
+      /^(overview|details|messages|agreement|handover|payout|activity)$/.test(
+        section,
+      ) &&
+      ((portal === "customer" && /^\/sell\/[^/]+$/.test(path)) ||
+        (portal === "admin" && /^\/admin\/submissions\/[^/]+$/.test(path)))
+    )
+      params.set("section", section);
     const channel = url.searchParams.get("channel");
     if (
       (portal === "customer" || portal === "admin") &&
@@ -134,6 +143,48 @@ export function portalReturn(
         )
           params.set("section", section);
       }
+    }
+    if (portal === "admin" && path === "/admin/finance") {
+      const view = url.searchParams.get("view");
+      if (view && /^(payments|cases|payouts|policy|reconcile)$/.test(view))
+        params.set("view", view);
+    }
+    if (
+      portal === "admin" &&
+      /^\/admin\/accounts\/[^/]+$/.test(path) &&
+      section &&
+      /^(details|images|terms|publication)$/.test(section)
+    )
+      params.set("section", section);
+    if (
+      portal === "customer" &&
+      (/^\/accounts\/[^/]+$/.test(path) ||
+        /^\/games\/[^/]+\/accounts\/[^/]+$/.test(path))
+    ) {
+      if (url.searchParams.get("step") === "review")
+        params.set("step", "review");
+      const reference = url.searchParams.get("request");
+      if (
+        reference &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
+          reference,
+        )
+      )
+        params.set("request", reference);
+    }
+    if (portal === "customer" && path === "/support") {
+      const listing = url.searchParams.get("listing");
+      if (
+        listing &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+          listing,
+        )
+      )
+        params.set("listing", listing);
+    }
+    if (portal === "customer" && path === "/sell/new") {
+      const slug = url.searchParams.get("slug");
+      if (slug && /^[a-z][a-z0-9-]{0,79}$/.test(slug)) params.set("slug", slug);
     }
     const query = params.toString();
     return path + (query ? `?${query}` : "");

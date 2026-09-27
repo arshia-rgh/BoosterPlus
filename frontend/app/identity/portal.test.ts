@@ -14,6 +14,14 @@ afterEach(() => {
   vi.unstubAllGlobals();
   window.history.replaceState({}, "", "/");
 });
+it("keeps a bounded game selection for seller intake without private query data", () => {
+  expect(
+    portalReturn("/sell/new?slug=mobile-legends&title=private", "customer"),
+  ).toBe("/sell/new?slug=mobile-legends");
+  expect(portalReturn("/sell/new?slug=../private", "customer")).toBe(
+    "/sell/new",
+  );
+});
 it("rejects cross-portal routes, normalized traversal and secret query data", () => {
   for (const path of [
     "//evil.test",

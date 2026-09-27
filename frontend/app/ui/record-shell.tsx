@@ -25,7 +25,7 @@ export function RecordShell({
   title: string;
   workspace: "My account" | "Booster workspace" | "Admin workspace";
   status: ReactNode;
-  back: { to: string; label: string };
+  back: { to: string; label: string; state?: unknown };
   sections: readonly RecordSection[];
   children: (section: string, visible: boolean) => ReactNode;
   headingLevel?: 1 | 2;
@@ -72,7 +72,7 @@ export function RecordShell({
   return (
     <section className="record-shell" aria-label={`${title} ${id}`}>
       <header className="record-heading">
-        <Link className="context-back" to={back.to}>
+        <Link className="context-back" to={back.to} state={back.state}>
           ← {back.label}
         </Link>
         <p className="eyebrow">{workspace}</p>

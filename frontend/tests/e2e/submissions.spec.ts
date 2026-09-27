@@ -108,6 +108,9 @@ test("seller drafts, clarification and review stay private and create no commerc
     await expect(seller).toHaveURL(/\/sell\/[a-f0-9-]+$/);
     const id = seller.url().split("/").at(-1);
     if (!id) throw new Error("Missing submission ID");
+    await seller
+      .getByRole("link", { name: "Account details", exact: true })
+      .click();
     const submit = seller.getByRole("button", {
       name: "Submit saved account for review",
     });
@@ -139,7 +142,10 @@ test("seller drafts, clarification and review stay private and create no commerc
       `/submissions/${id}/submit`,
     );
     await expect(
-      seller.getByText("Submitted account information", { exact: true }),
+      seller.getByRole("heading", {
+        name: "Private account details",
+        exact: true,
+      }),
     ).toBeVisible();
     await accessible(seller);
     await page.goto("/admin/submissions");
@@ -170,7 +176,10 @@ test("seller drafts, clarification and review stay private and create no commerc
       `/submissions/${id}/submit`,
     );
     await expect(
-      seller.getByText("Submitted account information", { exact: true }),
+      seller.getByRole("heading", {
+        name: "Private account details",
+        exact: true,
+      }),
     ).toBeVisible();
     await page
       .getByRole("button", { name: "Refresh submission", exact: true })
@@ -189,11 +198,9 @@ test("seller drafts, clarification and review stay private and create no commerc
     await seller
       .getByRole("button", { name: "Refresh submission", exact: true })
       .click();
-    await expect(
-      seller.getByText(
-        /Intake .* · Review approved · commercial terms pending/,
-      ),
-    ).toBeVisible();
+    await expect(seller.locator(".record-status .status")).toHaveText(
+      "Review approved · commercial terms pending",
+    );
     const accepted = submissionSchema.parse(
       await (await seller.request.get(`/api/v1/submissions/${id}`)).json(),
     );
@@ -204,7 +211,7 @@ test("seller drafts, clarification and review stay private and create no commerc
       fullPage: true,
     });
     await seller
-      .getByRole("link", { name: "Open private review conversation" })
+      .getByRole("link", { name: "Messages & evidence", exact: true })
       .click();
     await expect(seller.locator(".chat-title")).toContainText(
       "Private seller review · Needs staff reply",
@@ -212,9 +219,15 @@ test("seller drafts, clarification and review stay private and create no commerc
     await accessible(seller);
     await seller.goto(`/sell/${id}`);
     await seller.getByText("Submission options", { exact: true }).click();
+    await seller
+      .getByRole("button", { name: "Withdraw account submission", exact: true })
+      .click();
+    await expect(
+      seller.getByRole("button", { name: "Confirm account withdrawal" }),
+    ).toBeVisible();
     await action(
       seller,
-      "Withdraw account submission",
+      "Confirm account withdrawal",
       `/submissions/${id}/withdraw`,
     );
     await expect(

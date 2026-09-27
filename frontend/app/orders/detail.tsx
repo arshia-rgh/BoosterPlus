@@ -76,11 +76,16 @@ function OrderSession() {
           Order access is no longer available. Sign in to your customer account
           to continue.
         </p>
-        <Link to="/login">Customer sign-in</Link>
-        <Action disabled={resource.loading || session.loading} onClick={reload}>
-          Check order access again
-        </Action>
-        <Link to={back}>Return to order list</Link>
+        <div className="configuration-actions">
+          <Link to="/login">Customer sign-in</Link>
+          <Action
+            disabled={resource.loading || session.loading}
+            onClick={reload}
+          >
+            Check order access again
+          </Action>
+          <Link to={back}>Return to order list</Link>
+        </div>
       </section>
     );
   const current =

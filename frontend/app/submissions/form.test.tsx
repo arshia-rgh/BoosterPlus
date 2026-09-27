@@ -97,3 +97,93 @@ it("retains unsaved input on a conflict and never retries with an invented versi
   expect(reload).not.toHaveBeenCalled();
   expect(post).toHaveBeenCalledOnce();
 });
+
+it("preserves a dirty draft across a newer server revision until explicitly discarded", () => {
+  const value = fixture();
+  const reload = vi.fn();
+  const { rerender } = render(
+    <SubmissionEditor value={value} reload={reload} />,
+  );
+  fireEvent.change(screen.getByLabelText("Private account title"), {
+    target: { value: "Unsaved ordinary draft" },
+  });
+  const current = {
+    ...value,
+    submission: {
+      ...value.submission,
+      version: 5,
+      title: "Changed by another tab",
+    },
+  };
+  rerender(<SubmissionEditor value={current} reload={reload} />);
+  expect(screen.getByLabelText("Private account title")).toHaveValue(
+    "Unsaved ordinary draft",
+  );
+  expect(
+    screen.getByRole("button", { name: "Save account draft" }),
+  ).toBeDisabled();
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "This submission changed",
+  );
+  expect(post).not.toHaveBeenCalled();
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Discard this draft and load current details",
+    }),
+  );
+  expect(screen.getByLabelText("Private account title")).toHaveValue(
+    "Changed by another tab",
+  );
+  expect(
+    screen.getByRole("button", { name: "Save account draft" }),
+  ).toBeEnabled();
+});
+it("submits only the acknowledged saved revision without waiting for a parent refresh", async () => {
+  const value = fixture(),
+    saved = {
+      ...value,
+      submission: { ...value.submission, version: 5, title: "Saved title" },
+    };
+  vi.mocked(post).mockResolvedValue(saved);
+  render(<SubmissionEditor value={value} reload={vi.fn()} />);
+  fireEvent.change(screen.getByLabelText("Private account title"), {
+    target: { value: "Saved title" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Save account draft" }));
+  await waitFor(() => {
+    expect(
+      screen.getByRole("button", { name: "Submit saved account for review" }),
+    ).toBeEnabled();
+  });
+  expect(screen.getByLabelText("Private account title")).toHaveValue(
+    "Saved title",
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Submit saved account for review" }),
+  );
+  await waitFor(() => {
+    expect(post).toHaveBeenLastCalledWith(
+      "/submissions/submission/submit",
+      { version: 5, note: "" },
+      expect.anything(),
+    );
+  });
+});
+it("updates an untouched form when current details change", () => {
+  const value = fixture();
+  const { rerender } = render(
+    <SubmissionEditor value={value} reload={vi.fn()} />,
+  );
+  rerender(
+    <SubmissionEditor
+      value={{
+        ...value,
+        submission: { ...value.submission, version: 5, title: "Fresh record" },
+      }}
+      reload={vi.fn()}
+    />,
+  );
+  expect(screen.getByLabelText("Private account title")).toHaveValue(
+    "Fresh record",
+  );
+});

@@ -1,8 +1,10 @@
+import { Link, useLocation, type Location } from "react-router";
 import { useRef, useState } from "react";
 import { Action, Check, ErrorNotice, Text } from "../catalog/controls";
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";
 import { deliverySchema } from "./model";
+import { denied } from "../support/chat-state";
 import { ProductTerms } from "./market";
 import { SecretReveal, SecretUpload } from "./secret";
 
@@ -12,13 +14,16 @@ export default function AccountDelivery({
   owner = false,
   paid,
   changed,
+  visible = true,
 }: {
+  visible?: boolean;
   id: string;
   admin: boolean;
   owner?: boolean;
   paid: boolean;
   changed: () => void;
 }) {
+  const location: Location<unknown> = useLocation();
   const base = `${admin ? "/admin" : ""}/account-orders/${id}`,
     resource = useResource(`${base}/delivery`, deliverySchema);
   const [note, setNote] = useState(""),
@@ -26,9 +31,16 @@ export default function AccountDelivery({
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
   const lock = useRef(false);
+  if ((denied(resource.error) || denied(error)) && (note || accept)) {
+    setNote("");
+    setAccept(false);
+  }
   async function act(action = admin ? "deliver" : "acknowledge") {
     if (
+      !visible ||
       !resource.data ||
+      !!resource.error ||
+      denied(error) ||
       resource.loading ||
       lock.current ||
       !paid ||
@@ -61,12 +73,38 @@ export default function AccountDelivery({
       setBusy(false);
     }
   }
-  const row = resource.error ? null : resource.data;
+  const row = resource.error || denied(error) ? null : resource.data;
   return (
     <section aria-label="Account ownership delivery">
       <h2>Account ownership delivery</h2>
+      <p>
+        <Link
+          to="?section=messages&channel=support"
+          state={location.state}
+          preventScrollReset
+        >
+          {admin
+            ? "Add delivery evidence or message the buyer"
+            : "Ask about this delivery"}
+        </Link>
+        {!admin && (
+          <>
+            {" "}
+            ·{" "}
+            <Link to="?section=help" state={location.state} preventScrollReset>
+              Report a delivery issue
+            </Link>
+          </>
+        )}
+      </p>
       <ErrorNotice error={resource.error ?? error} />
-      <Action disabled={resource.loading} onClick={resource.reload}>
+      <Action
+        disabled={resource.loading}
+        onClick={() => {
+          setError(null);
+          resource.reload();
+        }}
+      >
         Refresh account delivery
       </Action>
       {resource.loading && <p role="status">Checking account handoff…</p>}
@@ -95,20 +133,46 @@ export default function AccountDelivery({
             </p>
           )}
           <p className="payment-policy">{row.instructions}</p>
+          {admin && (
+            <details>
+              <summary>Buyer view preview</summary>
+              <section aria-label="Private buyer delivery preview">
+                <h3>Customer view · this order</h3>
+                <p>
+                  This preview stays inside the admin workspace. Protected
+                  credentials are never included.
+                </p>
+                <p>
+                  {row.state === "pending"
+                    ? "Your account is being prepared for secure delivery."
+                    : row.state === "delivered"
+                      ? "Your account access is ready. Verify ownership and acknowledge receipt after testing it."
+                      : "Receipt is recorded. Your published support and dispute terms still apply."}
+                </p>
+                <p>{row.instructions}</p>
+              </section>
+            </details>
+          )}
           {row.dispute_until && (
             <p>
               Dispute deadline: {new Date(row.dispute_until).toLocaleString()}
             </p>
           )}
-          {admin && paid && row.state === "pending" && (
-            <SecretUpload
-              key={`${String(row.version)}:${String(row.secret.version)}`}
-              path={`/admin/account-orders/${id}/secret`}
-              version={row.secret.version}
-              changed={resource.reload}
-            />
-          )}
-          {!admin &&
+          {visible &&
+            !resource.loading &&
+            admin &&
+            paid &&
+            row.state === "pending" && (
+              <SecretUpload
+                key={`${String(row.version)}:${String(row.secret.version)}`}
+                path={`/admin/account-orders/${id}/secret`}
+                version={row.secret.version}
+                changed={resource.reload}
+              />
+            )}
+          {visible &&
+            !resource.loading &&
+            !admin &&
             paid &&
             ["delivered", "acknowledged"].includes(row.state) && (
               <SecretReveal path={`/account-orders/${id}/secret/reveal`} />
@@ -116,7 +180,7 @@ export default function AccountDelivery({
           {paid &&
             ((admin && row.state === "pending") ||
               (!admin && row.state === "delivered")) && (
-              <fieldset disabled={busy || resource.loading}>
+              <fieldset disabled={busy || resource.loading || !visible}>
                 <legend>
                   {admin
                     ? "Confirm protected handoff"

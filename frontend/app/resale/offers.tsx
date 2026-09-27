@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { z } from "../validation";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate, type Location } from "react-router";
 import {
   Action,
   Check,
@@ -21,6 +21,7 @@ import {
   type Offer,
   type SellerTerms,
 } from "./model";
+import { denied } from "../support/chat-state";
 import { SecretReveal, SecretUpload } from "./secret";
 
 import "./marketplace.css";
@@ -257,7 +258,11 @@ function OfferRecord({
   admin,
   owner,
   changed,
+  view = "all",
+  visible = true,
 }: {
+  view?: "all" | "agreement" | "handover";
+  visible?: boolean;
   offer: Offer;
   admin: boolean;
   owner: boolean;
@@ -318,7 +323,9 @@ function OfferRecord({
         {},
         listingSchema,
       );
-      void navigate(`/admin/accounts/${row.id}`);
+      void navigate(`/admin/accounts/${row.id}?section=details`, {
+        state: { submissionID: offer.submission_id },
+      });
     } catch (cause) {
       setError(cause);
     } finally {
@@ -341,39 +348,48 @@ function OfferRecord({
             : "Review the exact amount, fees and timing below before making your decision."
           : offer.state === "accepted"
             ? offer.control_verified_at
-              ? "Ownership control is verified. Track the agreed payout below."
+              ? "Ownership control is verified. Review the accepted payout terms and current eligibility."
               : "Your agreement is accepted. Complete protected ownership transfer; do not send access details in chat."
             : "This offer is no longer open for acceptance. Its terms remain available for your records."}
       </p>
-      <p className="package-price">
-        {offer.terms.amount} {offer.terms.currency.toUpperCase()} ·{" "}
-        {offer.terms.network}
-      </p>
-      <dl className="seller-term-list">
-        {termFields.map(([key, label]) => (
-          <div key={key}>
-            <dt>{label}</dt>
-            <dd className="payment-policy">{sellerTerm(offer.terms, key)}</dd>
-          </div>
-        ))}
-      </dl>
-      <p>
-        Payout delay {offer.terms.payout_delay_hours} hours; deadline{" "}
-        {offer.terms.payout_deadline_hours} hours after{" "}
-        {offer.terms.model === "buy_first"
-          ? "verified ownership control"
-          : "buyer acknowledgement and the delivery dispute window"}
-        .
-      </p>
-      <p>
-        Offer expires:{" "}
-        <time dateTime={offer.expires_at}>
-          {new Date(offer.expires_at).toLocaleString()}
-        </time>
-      </p>
+      {view !== "handover" && (
+        <>
+          <p className="package-price">
+            {offer.terms.amount} {offer.terms.currency.toUpperCase()} ·{" "}
+            {offer.terms.network}
+          </p>
+          <dl className="seller-term-list">
+            {termFields.map(([key, label]) => (
+              <div key={key}>
+                <dt>{label}</dt>
+                <dd className="payment-policy">
+                  {sellerTerm(offer.terms, key)}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p>
+            Payout delay {offer.terms.payout_delay_hours} hours; deadline{" "}
+            {offer.terms.payout_deadline_hours} hours after{" "}
+            {offer.terms.model === "buy_first"
+              ? "verified ownership control"
+              : "buyer acknowledgement and the delivery dispute window"}
+            .
+          </p>
+          <p>
+            Offer expires:{" "}
+            <time dateTime={offer.expires_at}>
+              {new Date(offer.expires_at).toLocaleString()}
+            </time>
+          </p>
+        </>
+      )}
       <ErrorNotice error={error} />
-      {((offer.state === "offered" && (!admin || owner)) ||
-        (offer.state === "accepted" &&
+      {((view !== "handover" &&
+        offer.state === "offered" &&
+        (!admin || owner)) ||
+        (view !== "agreement" &&
+          offer.state === "accepted" &&
           owner &&
           !offer.control_verified_at)) && (
         <fieldset disabled={busy}>
@@ -418,12 +434,12 @@ function OfferRecord({
           )}
         </fieldset>
       )}
-      {offer.state === "accepted" && (
+      {offer.state === "accepted" && view !== "agreement" && (
         <>
-          {!admin && !offer.control_verified_at && (
+          {visible && !admin && !offer.control_verified_at && (
             <SellerBundle id={offer.id} />
           )}{" "}
-          {owner && (
+          {visible && owner && (
             <SecretReveal
               path={`/admin/seller-offers/${offer.id}/secret/reveal`}
             />
@@ -495,24 +511,50 @@ export default function SellerOffers({
   state,
   admin,
   changed,
+  view = "all",
+  visible = true,
 }: {
+  view?: "all" | "agreement" | "handover" | "payout";
+  visible?: boolean;
   id: string;
   version: number;
   state: string;
   admin: boolean;
   changed: () => void;
 }) {
+  const location: Location<unknown> = useLocation();
   const resource = useResource(
       `${admin ? "/admin" : ""}/submissions/${id}/offers`,
       offersSchema,
     ),
     session = useResource("/auth/session", sessionSchema),
     owner = admin && session.data?.user?.role === "owner";
+  const [saved, setSaved] = useState<z.infer<typeof offersSchema> | null>(null);
+  if (denied(resource.error) && saved) setSaved(null);
+  else if (!resource.error && resource.data && saved !== resource.data)
+    setSaved(resource.data);
+  const current = denied(resource.error) ? null : (resource.data ?? saved);
+  const refreshOffers = resource.reload;
+  useEffect(() => {
+    refreshOffers();
+  }, [version, refreshOffers]);
   const reload = () => {
     resource.reload();
     changed();
   };
+  if (view === "payout")
+    return (
+      <section aria-label="Seller payout">
+        <h3>Your direct payout</h3>
+        <p>
+          Payouts follow the accepted arrangement and its eligibility, fees and
+          timing. There is no account wallet.
+        </p>
+        <SellerPayouts id={id} admin={admin} owner={owner} />
+      </section>
+    );
   if (
+    view === "all" &&
     !admin &&
     !resource.loading &&
     !resource.error &&
@@ -533,21 +575,71 @@ export default function SellerOffers({
     );
   return (
     <section aria-label="Seller agreements">
-      <h2>Seller agreements</h2>
+      <h2>
+        {view === "handover" ? "Secure account handover" : "Seller agreements"}
+      </h2>
+      {view === "handover" && (
+        <p>
+          Only an accepted agreement allows protected ownership transfer. Login
+          and recovery details belong only in the protected field.
+        </p>
+      )}
+      {view !== "all" &&
+        current?.offers.some((offer) => offer.state === "accepted") && (
+          <p>
+            <Link
+              to="?section=payout"
+              state={location.state}
+              preventScrollReset
+            >
+              Track this agreement’s direct payout
+            </Link>
+            {view === "agreement" && (
+              <>
+                {" "}
+                ·{" "}
+                <Link
+                  to="?section=handover"
+                  state={location.state}
+                  preventScrollReset
+                >
+                  Continue to secure handover
+                </Link>
+              </>
+            )}
+          </p>
+        )}
       <Action disabled={resource.loading} onClick={resource.reload}>
         Refresh seller agreements
       </Action>
       {resource.loading && <p role="status">Checking seller agreements…</p>}
       <ErrorNotice error={resource.error} />
-      {resource.data && !resource.error && (
-        <fieldset disabled={resource.loading}>
-          {resource.data.offers.length === 0 && (
+      {current && (
+        <fieldset
+          hidden={!!resource.error}
+          disabled={resource.loading || !!resource.error}
+        >
+          {view === "handover" &&
+            !current.offers.some((offer) => offer.state === "accepted") && (
+              <p>
+                No accepted agreement is ready for handover.{" "}
+                <Link
+                  to="?section=agreement"
+                  state={location.state}
+                  preventScrollReset
+                >
+                  Review Sale agreement
+                </Link>{" "}
+                for the next step.
+              </p>
+            )}
+          {view !== "handover" && current.offers.length === 0 && (
             <p>
               No offer yet. Review approval does not set a price or create a
               payout obligation.
             </p>
           )}
-          {resource.data.offers.length > 1 && (
+          {view !== "handover" && current.offers.length > 1 && (
             <details>
               <summary>Compare offer amounts and timing</summary>
               {/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- Focus permits native keyboard scrolling of this bounded comparison table. */}
@@ -568,7 +660,7 @@ export default function SellerOffers({
                     </tr>
                   </thead>
                   <tbody>
-                    {resource.data.offers.map((offer) => (
+                    {current.offers.map((offer) => (
                       <tr key={offer.id}>
                         <td>
                           {offer.terms.model === "buy_first"
@@ -594,53 +686,62 @@ export default function SellerOffers({
               {/* eslint-enable jsx-a11y/no-noninteractive-tabindex */}
             </details>
           )}
-          {resource.data.offers
-            .filter((offer) => ["offered", "accepted"].includes(offer.state))
+          {current.offers
+            .filter((offer) =>
+              view === "handover"
+                ? offer.state === "accepted"
+                : ["offered", "accepted"].includes(offer.state),
+            )
             .map((offer) => (
               <OfferRecord
                 key={`${offer.id}:${String(offer.version)}`}
                 offer={offer}
+                view={view}
+                visible={visible && !resource.loading && !resource.error}
                 admin={admin}
                 owner={owner}
                 changed={reload}
               />
             ))}
-          {resource.data.offers.some(
-            (offer) => !["offered", "accepted"].includes(offer.state),
-          ) && (
-            <details>
-              <summary>Previous offers</summary>
-              {resource.data.offers
-                .filter(
-                  (offer) => !["offered", "accepted"].includes(offer.state),
-                )
-                .map((offer) => (
-                  <OfferRecord
-                    key={`${offer.id}:${String(offer.version)}`}
-                    offer={offer}
-                    admin={admin}
-                    owner={owner}
-                    changed={reload}
-                  />
-                ))}
-            </details>
-          )}
-          {owner &&
+          {view !== "handover" &&
+            current.offers.some(
+              (offer) => !["offered", "accepted"].includes(offer.state),
+            ) && (
+              <details>
+                <summary>Previous offers</summary>
+                {current.offers
+                  .filter(
+                    (offer) => !["offered", "accepted"].includes(offer.state),
+                  )
+                  .map((offer) => (
+                    <OfferRecord
+                      key={`${offer.id}:${String(offer.version)}`}
+                      offer={offer}
+                      admin={admin}
+                      owner={owner}
+                      changed={reload}
+                    />
+                  ))}
+              </details>
+            )}
+          {view !== "handover" &&
+            owner &&
             state === "approved_pending_terms" &&
-            !resource.data.offers.some(
+            !current.offers.some(
               (v) => v.state === "offered" || v.state === "accepted",
             ) && <Proposal id={id} version={version} changed={reload} />}
         </fieldset>
       )}
-      {admin ||
-      resource.data?.offers.some((offer) => offer.state === "accepted") ? (
-        <SellerPayouts id={id} admin={admin} owner={owner} />
-      ) : (
-        <details>
-          <summary>Payout history</summary>
+      {view === "all" &&
+        (admin ||
+        resource.data?.offers.some((offer) => offer.state === "accepted") ? (
           <SellerPayouts id={id} admin={admin} owner={owner} />
-        </details>
-      )}
+        ) : (
+          <details>
+            <summary>Payout history</summary>
+            <SellerPayouts id={id} admin={admin} owner={owner} />
+          </details>
+        ))}
       {admin && <Link to="/admin/accounts">Account inventory</Link>}
     </section>
   );
