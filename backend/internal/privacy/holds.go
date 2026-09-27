@@ -18,6 +18,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentreceipt"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/selleroffer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopreservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/sitecontent"
 )
 
@@ -27,6 +28,7 @@ func (s *Store) eligibility(ctx context.Context, tx *ent.Tx, row *ent.PrivacyReq
 	checks := []func(context.Context) (bool, error){
 		tx.Order.Query().Where(order.StateNotIn(order.StateCompleted, order.StateCancelled, order.StateRejected, order.StateExpired), func(q *sql.Selector) { q.Where(sql.In(q.C(order.FieldID), sellerOrders(id))) }).Exist,
 		tx.ServiceCase.Query().Where(servicecase.Or(servicecase.ActiveOrderIDNotNil(), servicecase.AppealUntilGT(s.now())), func(q *sql.Selector) { q.Where(sql.In(q.C(servicecase.FieldOrderID), sellerOrders(id))) }).Exist,
+		tx.ShopReservation.Query().Where(shopreservation.UserIDEQ(id), shopreservation.StateEQ("reserved")).Exist,
 		tx.AccountReservation.Query().Where(accountreservation.UserIDEQ(id), accountreservation.StateEQ("reserved")).Exist,
 		tx.Order.Query().Where(order.UserIDEQ(id), order.StateNotIn(order.StateCompleted, order.StateCancelled, order.StateRejected, order.StateExpired)).Exist,
 		tx.ServiceCase.Query().Where(servicecase.UserIDEQ(id), servicecase.Or(servicecase.ActiveOrderIDNotNil(), servicecase.AppealUntilGT(s.now()))).Exist,

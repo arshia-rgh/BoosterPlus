@@ -1260,3 +1260,11 @@ DI11B1 delivery: `ee6a5ae` passed the corrected focused hook and was pushed; rem
 Connected shop commitments to checkout/verified settlement, unissued cancellation, paid-case cancellation and evidence-based bounded expiry. Missing inventory becomes a preserved financial exception before mutation; database/audit failures remain rollback errors. Shop continuation cannot mutate booster work. Focused fixture/TiDB scenarios and account-expiry regression passed in 106.282 seconds; additional fault injection and focused hook remain pending. The full repository gate remains deferred to DI15. No live merchant calls or public shop activation.
 
 DI11B2 additional fault/payment-regression verification passed in 32.482 seconds; broad Go lint has zero issues. An earlier isolated migration run timed out under Docker resource contention; rerun passed after the authorized temporary pause of blucaps/kind, with restoration afterward. Missing inventory preserves the receipt; injected audit failure atomically rolls settlement/stock back. No aggregate gate, live provider call or public shop activation was run.
+
+DI11B2 delivered: `15fcb08` passed the focused hook, was pushed to main and matched the remote SHA. The five temporarily stopped blucaps/kind containers were restored and verified running. Continuing the shop privacy foundation; DI11 remains in progress.
+
+### DI11B3 shop privacy foundation — in verification
+
+Expanded protected order export with owned recipient/reservation records using bounded queries; ordinary order responses still omit recipient identifiers. Added an independent unresolved-shop-reservation erasure hold and owner-policy-controlled cleanup of ordinary recipient values. Financial agreements/history remain preserved. Five focused privacy/TiDB cases passed in 21.129 seconds; cursor/recent-auth qualification and tracked focused hook follow. No UI renderer, public shop route or real recipient capture activated.
+
+DI11B3 cursor/recent-auth test passed in 8.583 seconds: 100+1 records, correct per-order recipient association, no duplicates and stale primary verification rejected. Full aggregate qualification remains deferred to DI15.

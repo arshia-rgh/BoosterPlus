@@ -115,7 +115,7 @@ func exportUser(ctx context.Context, tx *ent.Tx, userID, after string) ([]map[st
 	return out, nil
 }
 func exportOrder(ctx context.Context, tx *ent.Tx, userID, after string) ([]map[string]any, error) {
-	fields := []string{"id", "game_name", "slug", "service", "package_key", "variant_key", "kind", "state", "answers", "snapshot", "estimate", "terms_version", "created_at", "updated_at"}
+	fields := []string{"id", "game_name", "slug", "service", "package_key", "variant_key", "kind", "state", "answers", "snapshot", "estimate", "terms_version", "shop_product_id", "shop_snapshot", "created_at", "updated_at"}
 	q := tx.Order.Query().Order(ent.Asc(order.FieldID)).Limit(101)
 	q.Where(order.UserIDEQ(userID))
 	if after != "" {
@@ -132,6 +132,9 @@ func exportOrder(ctx context.Context, tx *ent.Tx, userID, after string) ([]map[s
 			return nil, readErr
 		}
 		out = append(out, record)
+	}
+	if e = exportShopOrders(ctx, tx, userID, rows, out); e != nil {
+		return nil, e
 	}
 	return out, nil
 }

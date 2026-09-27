@@ -14,6 +14,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/predicate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shoprecipient"
 )
 
 func (s *Store) erase(ctx context.Context, tx *ent.Tx, target *ent.User) error {
@@ -34,6 +35,10 @@ func (s *Store) erase(ctx context.Context, tx *ent.Tx, target *ent.User) error {
 		return e
 	}
 	if _, e := tx.Notification.Update().Where(notification.UserIDEQ(id)).SetEmailState(notification.EmailStateSuppressed).Save(ctx); e != nil {
+		return e
+	}
+	// Recipient values are ordinary delivery data, separate from retained contracts/evidence.
+	if _, e := tx.ShopRecipient.Update().Where(shoprecipient.UserIDEQ(id), shoprecipient.ErasedAtIsNil()).SetRecipientValues(map[string]string{}).SetErasedAt(s.now()).AddVersion(1).Save(ctx); e != nil {
 		return e
 	}
 	if _, e := tx.Favorite.Delete().Where(favorite.UserIDEQ(id)).Exec(ctx); e != nil {
