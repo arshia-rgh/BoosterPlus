@@ -217,7 +217,7 @@ DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 dis
 
 ### DI11 — shop with manual staff fulfillment
 
-Status: in progress. DI11A private authoring is under scoped qualification; public purchase and staff delivery remain pending. Follow [DI11_QUALIFICATION.md](DI11_QUALIFICATION.md) for increment boundaries and evidence. SH06/SH07 are not yet verified complete.
+Status: in progress. DI11A private authoring is delivered as `cbee093` with a scoped senior-design PASS and focused checks; public purchase and staff delivery remain pending. Follow [DI11_QUALIFICATION.md](DI11_QUALIFICATION.md) for increment boundaries and evidence. SH06/SH07 are not yet verified complete.
 
 **New domain integrated into the existing order/payment system, not a cosmetic catalog page.** Implement only products and delivery methods approved under DI00; no provider/supplier API or automatic fulfillment at launch.
 
