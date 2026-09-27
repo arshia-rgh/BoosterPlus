@@ -2,6 +2,7 @@ package identity
 
 import (
 	"context"
+	"slices"
 	"strings"
 	"unicode/utf8"
 
@@ -15,6 +16,7 @@ import (
 // UserQuery defines stable bounded staff directory filters.
 type UserQuery struct {
 	Search string
+	Role   string
 	State  string
 	After  string
 }
@@ -42,6 +44,12 @@ func (s *Service) Directory(ctx context.Context, p *Principal, input UserQuery) 
 		if input.Search != "" {
 			q.Where(user.Or(user.IDEQ(input.Search), user.EmailContains(input.Search), user.DisplayNameContains(input.Search)))
 		}
+		if input.Role != "" {
+			if !slices.Contains([]string{RoleCustomer, RoleBooster, RoleAdmin, RoleOwner}, input.Role) {
+				return ErrInvalid
+			}
+			q.Where(user.RoleEQ(input.Role))
+		}
 		switch input.State {
 		case "":
 		case "active":
@@ -67,7 +75,7 @@ func (s *Service) Directory(ctx context.Context, p *Principal, input UserQuery) 
 		for _, row := range rows {
 			out.Users = append(out.Users, userView(row))
 		}
-		return audit(ctx, tx, s.now(), current.User.ID, "", "users.directory", "", map[string]string{"filter_digest": s.RequestDigest("directory", []byte(input.Search+"|"+input.State+"|"+input.After))})
+		return audit(ctx, tx, s.now(), current.User.ID, "", "users.directory", "", map[string]string{"filter_digest": s.RequestDigest("directory", []byte(input.Search+"|"+input.State+"|"+input.Role+"|"+input.After))})
 	})
 	return out, err
 }
@@ -96,12 +104,12 @@ func (s *Service) UserSessions(ctx context.Context, p *Principal, id string) (ou
 		if _, e := tx.User.Get(ctx, id); e != nil {
 			return e
 		}
-		rows, e := tx.AuthSession.Query().Where(authsession.UserIDEQ(id), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(s.now()), authsession.LastSeenAtGT(s.now().Add(-IdleTTL))).Order(ent.Desc(authsession.FieldCreatedAt)).Limit(100).Select(authsession.FieldID, authsession.FieldCreatedAt, authsession.FieldLastSeenAt, authsession.FieldExpiresAt).All(ctx)
+		rows, e := tx.AuthSession.Query().Where(authsession.UserIDEQ(id), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(s.now()), authsession.LastSeenAtGT(s.now().Add(-IdleTTL))).Order(ent.Desc(authsession.FieldCreatedAt)).Limit(100).Select(authsession.FieldID, authsession.FieldPortal, authsession.FieldCreatedAt, authsession.FieldLastSeenAt, authsession.FieldExpiresAt).All(ctx)
 		if e != nil {
 			return e
 		}
 		for _, row := range rows {
-			out = append(out, map[string]any{"id": row.ID, "created_at": row.CreatedAt, "last_seen_at": row.LastSeenAt, "expires_at": row.ExpiresAt, "current": row.ID == current.Session.ID})
+			out = append(out, map[string]any{"id": row.ID, "portal": row.Portal, "created_at": row.CreatedAt, "last_seen_at": row.LastSeenAt, "expires_at": row.ExpiresAt, "current": row.ID == current.Session.ID})
 		}
 		return audit(ctx, tx, s.now(), current.User.ID, "", "users.sessions_read", id, map[string]string{})
 	})

@@ -1,0 +1,130 @@
+.admin-order-workspace {
+  min-width: 0;
+  max-width: 76rem;
+  margin: auto;
+}
+.admin-order-workspace .record-status > * {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.admin-order-workspace .record-sections a[aria-current]:not(.button) {
+  background: #89efb0;
+  color: #092015;
+}
+.admin-record-content {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.admin-order-workspace .record-heading h2 {
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  overflow-wrap: anywhere;
+}
+.admin-order-workspace [hidden] {
+  display: none;
+}
+.admin-order-workspace dd {
+  margin: 0.4rem 0 1rem;
+  overflow-wrap: anywhere;
+}
+.admin-order-workspace dt {
+  color: #bdd3c4;
+  font-size: 0.875rem;
+}
+.admin-order-workspace .catalog-section {
+  min-width: 0;
+}
+
+.admin-order-workspace .record-sticky-context {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  background: #102019;
+  border-bottom: 1px solid #395640;
+  padding: 0.4rem 0 0;
+}
+.admin-order-workspace .record-context-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  font-size: 0.75rem;
+  margin: 0;
+}
+.admin-order-workspace .record-sticky-context .record-sections {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  margin: 0;
+  padding: 0.3rem 0;
+}
+.admin-order-workspace .record-sticky-context .record-sections a {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.admin-order-workspace
+  .record-content
+  :is(h3, input, textarea, select, button) {
+  scroll-margin-top: 8rem;
+}
+.admin-order-table .order-triage-summary {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 760px) {
+  .admin-order-table-wrap {
+    overflow: visible;
+  }
+  .admin-order-table {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+  .admin-order-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .admin-order-table tbody {
+    display: grid;
+    gap: 1rem;
+  }
+  .admin-order-table tr {
+    display: block;
+    border: 1px solid #395640;
+    border-radius: 0.75rem;
+    padding: 0.5rem;
+    min-width: 0;
+  }
+  .admin-order-table td,
+  .admin-order-table td:first-child {
+    display: block;
+    min-width: 0;
+    padding: 0.4rem;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+  .admin-order-table td::before {
+    content: attr(data-label);
+    display: block;
+    color: #bdd3c4;
+    font-size: 0.7rem;
+    margin-bottom: 0.2rem;
+  }
+  .admin-order-table td a {
+    min-height: 44px;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 100%;
+  }
+  .admin-order-table strong,
+  .admin-order-table small {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

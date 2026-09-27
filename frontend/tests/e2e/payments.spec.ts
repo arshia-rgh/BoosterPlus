@@ -254,7 +254,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     await expect(
       customer.getByRole("heading", { name: "cancellation · open" }),
     ).toBeVisible();
-    await page.goto(`/admin/orders/${id}`);
+    await page.goto(`/admin/orders/${id}?section=payment`);
     await page
       .getByLabel("Case message")
       .fill(

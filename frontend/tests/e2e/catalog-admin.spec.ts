@@ -108,9 +108,16 @@ test("staff builds, previews, publishes and archives another game through the ge
     }
     if (viewport) await page.setViewportSize(viewport);
   }
+  async function section(label: string) {
+    await page
+      .getByRole("navigation", { name: "Catalog sections" })
+      .getByRole("link", { name: label, exact: true })
+      .click();
+  }
   await starter
     .getByRole("button", { name: "Edit Mobile Legends", exact: true })
     .click();
+  await section("Review & publish");
   // The starter has over 16 KiB of real configuration; exercise the bounded catalog proxy path.
   if (info.project.name === "desktop") {
     await page.getByRole("button", { name: "Save draft", exact: true }).click();
@@ -163,6 +170,7 @@ test("staff builds, previews, publishes and archives another game through the ge
   await references.getByLabel("Catalog kind").selectOption("hero");
   await option(references, 0, "alpha", "Alpha");
   await option(references, 1, "beta", "Beta");
+  await section("Boosting forms");
   await page.getByRole("button", { name: "Add service", exact: true }).click();
   const service = page.locator('[data-catalog-service="0"]');
   await service.locator("summary").first().click();
@@ -196,6 +204,7 @@ test("staff builds, previews, publishes and archives another game through the ge
   await matches.getByLabel("Required field", { exact: true }).check();
   await matches.getByLabel("Minimum value", { exact: true }).fill("1");
   await matches.getByLabel("Maximum value", { exact: true }).fill("5");
+  await section("Packages");
   await page.getByRole("button", { name: "Add package", exact: true }).click();
   const pack = page.locator('[data-catalog-package="0"]');
   await pack.locator("summary").first().click();
@@ -216,6 +225,7 @@ test("staff builds, previews, publishes and archives another game through the ge
     .getByLabel("Play mode", { exact: true })
     .check();
   await condition(variant, "Variant eligibility", "mode", "solo");
+  await section("Game & ranks");
   // DI03: publication controls are real draft data, not anonymous fixture badges.
   await expect(
     page
@@ -340,16 +350,21 @@ test("staff builds, previews, publishes and archives another game through the ge
     .getByLabel("Include this offer when the catalog is published")
     .check();
 
+  await section("Review & publish");
   await page.getByLabel(/I verified the actual/).check();
   await page.getByRole("button", { name: "Save draft", exact: true }).click();
   await expect(page.getByText("Changes saved.", { exact: true })).toBeVisible();
   await page
-    .getByRole("button", { name: "Publish catalog", exact: true })
+    .getByRole("button", { name: "Preview saved draft", exact: true })
     .click();
+  await expect(
+    page.getByRole("button", { name: "Publish catalog", exact: true }),
+  ).toBeDisabled();
   await expect(
     page.getByText(/Field dependencies contain a cycle/),
   ).toBeVisible();
   // Locators now use stable keys because names changed during editing.
+  await section("Boosting forms");
   const savedHero = service.locator('[data-catalog-field="2"]');
   const show = savedHero.getByRole("group", {
     name: "Show field when",
@@ -357,43 +372,53 @@ test("staff builds, previews, publishes and archives another game through the ge
   });
   await show.getByLabel("Condition field").selectOption("restrict");
   await show.getByLabel("Condition values").fill("true");
+  await section("Review & publish");
   await page.getByLabel(/I verified the actual/).check();
   await page.getByRole("button", { name: "Save draft", exact: true }).click();
   await expect(page.getByText("Changes saved.", { exact: true })).toBeVisible();
-  await service.getByLabel("Price evaluator").selectOption("pricing-v1");
-  await service.getByLabel("Estimate currency").selectOption("USD");
-  await service
+  await section("Price estimation");
+  const pricing = page.locator("#catalog-pricing details").first();
+  await pricing.locator("summary").first().click();
+  await pricing.getByLabel("Price evaluator").selectOption("pricing-v1");
+  await pricing.getByLabel("Estimate currency").selectOption("USD");
+  await pricing
     .getByLabel("Base amount in minor units", { exact: true })
     .fill("100.25");
-  await service.getByLabel("Maximum estimate in minor units").fill("999999");
-  await service
+  await pricing.getByLabel("Maximum estimate in minor units").fill("999999");
+  await pricing
     .getByRole("button", { name: "Add price operation", exact: true })
     .click();
-  const priceRule = service.locator('[data-price-rule="0"]');
+  const priceRule = pricing.locator('[data-price-rule="0"]');
   await priceRule.locator("summary").click();
   await priceRule
     .getByLabel("Price operation", { exact: true })
     .selectOption("per_unit");
   await priceRule.getByLabel("Operation value").fill("100.25");
   await priceRule.getByLabel("Quantity field").selectOption("matches");
-  await service
+  await pricing
     .getByRole("button", { name: "Add price example", exact: true })
     .click();
-  const priceCase = service.locator('[data-price-case="0"]');
+  const priceCase = pricing.locator('[data-price-case="0"]');
   await priceCase.locator("summary").click();
   await priceCase.getByLabel("Play mode (required)").selectOption("solo");
   await priceCase.getByLabel("Matches (required)").fill("2");
   await priceCase.getByLabel("Expected amount in minor units").fill("300");
+  await section("Review & publish");
   await page.getByLabel(/I verified the actual/).check();
   await page.getByRole("button", { name: "Save draft", exact: true }).click();
   await expect(page.getByText("Changes saved.", { exact: true })).toBeVisible();
   await page
-    .getByRole("button", { name: "Publish catalog", exact: true })
+    .getByRole("button", { name: "Preview saved draft", exact: true })
     .click();
+  await expect(
+    page.getByRole("button", { name: "Publish catalog", exact: true }),
+  ).toBeDisabled();
   await expect(
     page.getByText("Expected result differs from the current pricing rules."),
   ).toBeVisible();
+  await section("Price estimation");
   await priceCase.getByLabel("Expected amount in minor units").fill("301");
+  await section("Review & publish");
   await page.getByLabel(/I verified the actual/).check();
   await page.getByRole("button", { name: "Save draft", exact: true }).click();
   await expect(page.getByText("Changes saved.", { exact: true })).toBeVisible();
@@ -404,8 +429,15 @@ test("staff builds, previews, publishes and archives another game through the ge
     page.getByText("Publication checks passed.", { exact: true }),
   ).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  for (const section of [references, service, pack])
-    await section.locator("summary").first().click();
+  for (const [label, group] of [
+    ["Game & ranks", references],
+    ["Boosting forms", service],
+    ["Packages", pack],
+  ] as const) {
+    await section(label);
+    await group.locator("summary").first().click();
+  }
+  await section("Review & publish");
   await page.screenshot({
     path: `.cache/catalog-editor-${info.project.name}.png`,
     fullPage: true,
@@ -416,6 +448,7 @@ test("staff builds, previews, publishes and archives another game through the ge
   const originalViewport = page.viewportSize();
   for (const width of info.project.name === "desktop" ? [1280, 768] : [320]) {
     await page.setViewportSize({ width, height: 900 });
+    await section("Game & ranks");
     await page
       .getByRole("region", {
         name: "Service availability and public statistics",
@@ -455,6 +488,7 @@ test("staff builds, previews, publishes and archives another game through the ge
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   }
   if (originalViewport) await page.setViewportSize(originalViewport);
+  await section("Review & publish");
 
   await page
     .getByRole("button", { name: "Publish catalog", exact: true })
@@ -598,8 +632,10 @@ test("staff builds, previews, publishes and archives another game through the ge
         () => document.documentElement.scrollWidth <= window.innerWidth,
       ),
     ).toBe(true);
+    await section("Packages");
     await pack.locator("summary").first().click();
     await page.getByLabel("Price in minor units").fill("1500");
+    await section("Review & publish");
     await page.getByLabel(/I verified the actual/).check();
     await page.getByRole("button", { name: "Save draft", exact: true }).click();
     await expect(
@@ -607,6 +643,9 @@ test("staff builds, previews, publishes and archives another game through the ge
     ).toBeVisible();
     await customer.reload();
     await expect(customer.locator(".package-price")).toHaveText("USD 12.34");
+    await page
+      .getByRole("button", { name: "Preview saved draft", exact: true })
+      .click();
     await page
       .getByRole("button", { name: "Publish catalog", exact: true })
       .click();

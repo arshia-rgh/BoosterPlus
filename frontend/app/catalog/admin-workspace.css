@@ -1,0 +1,31 @@
+.catalog-editor [hidden] {
+  display: none;
+}
+.catalog-editor .catalog-section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.catalog-editor .catalog-section-nav a {
+  min-height: 44px;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #466751;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  color: #dceade;
+}
+.catalog-editor .catalog-section-nav a[aria-current] {
+  color: #092015;
+  background: #89efb0;
+}
+.catalog-editor .catalog-heading {
+  overflow-wrap: anywhere;
+}
+.catalog-editor .catalog-edit-section {
+  min-width: 0;
+  scroll-margin-top: 7rem;
+}
+.catalog-editor .catalog-edit-section:focus {
+  outline: 2px solid #89efb0;
+  outline-offset: 4px;
+}

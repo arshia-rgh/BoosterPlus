@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { test, expect, type Page } from "@playwright/test";
 import { reviewJourney } from "./review-journey";
 import AxeBuilder from "@axe-core/playwright";
@@ -45,7 +46,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     const accountID = fixture(info.project.name, "work_solo"),
       togetherID = fixture(info.project.name, "work_duo");
     async function assign(id: string) {
-      await page.goto(`/admin/orders/${id}`);
+      await page.goto(`/admin/orders/${id}?section=fulfillment`);
       await page
         .getByLabel("Assigned staff", { exact: true })
         .selectOption(fixture(info.project.name, "workbooster_id"));
@@ -152,6 +153,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     await expect(shared).toBeVisible();
     const sharedHref = await shared.getAttribute("href");
     expect(sharedHref).toBeTruthy();
+    expect(sharedHref).toContain(`/admin/orders/${accountID}?`);
     await shared.click();
     await page.getByLabel("Message audience").selectOption("internal");
     await page
@@ -173,7 +175,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     await expect(buyer.locator(".message-list")).toContainText(
       "Ready to coordinate with assigned staff",
     );
-    await page.goto(`/admin/orders/${accountID}`);
+    await page.goto(`/admin/orders/${accountID}?section=fulfillment`);
     await staff.goto("/booster/orders");
     await staff.getByRole("link", { name: /Fulfillment journey game/ }).click();
     const work = await staff.request.get(
@@ -181,6 +183,9 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     );
     expect(work.ok()).toBe(true);
     const raw = await work.text();
+    const coordination = z
+      .object({ coordination_id: z.string() })
+      .parse(await work.json());
     expect(raw).not.toContain("amount_minor");
     expect(raw).not.toContain(fixture(info.project.name, "workbuyer"));
     expect(
@@ -274,13 +279,11 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     await expect(
       page.getByRole("button", { name: "Pause booster sharing", exact: true }),
     ).toBeVisible();
-    await staff.goto(
-      sharedHref?.replace("/admin/", "/booster/") ?? "/booster/orders",
-    );
+    await staff.goto(`/booster/support/${coordination.coordination_id}`);
     await expect(staff.locator(".message-list")).toContainText(
       "Published proof",
     );
-    await page.goto(`/admin/orders/${accountID}`);
+    await page.goto(`/admin/orders/${accountID}?section=fulfillment`);
     await buyer.goto(`/orders/${accountID}?section=progress`);
     await staff.goto(`/booster/orders/${accountID}?section=progress`);
     await staff

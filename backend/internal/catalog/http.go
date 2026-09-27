@@ -83,7 +83,13 @@ func write(w http.ResponseWriter, status int, v any) error {
 }
 func (s *Store) list(admin bool) func(http.ResponseWriter, *http.Request, *identity.Principal) error {
 	return func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
-		result, err := s.List(r.Context(), p, admin, r.URL.Query().Get("after"))
+		var result Listing
+		var err error
+		if admin {
+			result, err = s.StaffList(r.Context(), p, StaffFilters{Search: r.URL.Query().Get("search"), State: r.URL.Query().Get("state"), After: r.URL.Query().Get("after")})
+		} else {
+			result, err = s.List(r.Context(), p, false, r.URL.Query().Get("after"))
+		}
 		if err != nil {
 			return err
 		}

@@ -164,7 +164,7 @@ it("preserves only bounded public configurator intent through customer sign-in",
   ).toBe("/games/mlbb/packages/rank?variant=solo");
 });
 
-it("keeps only bounded customer order conversation channels through sign-in", () => {
+it("keeps only bounded customer and admin order conversation channels through sign-in", () => {
   expect(
     portalReturn(
       "/orders/owned?section=messages&channel=coordination&secret=x",
@@ -185,5 +185,37 @@ it("keeps only bounded customer order conversation channels through sign-in", ()
       "/admin/orders/owned?section=messages&channel=coordination",
       "admin",
     ),
-  ).toBe("/admin/orders/owned?section=messages");
+  ).toBe("/admin/orders/owned?section=messages&channel=coordination");
+});
+
+it("preserves bounded staff record and editor destinations without carrying private query data", () => {
+  expect(
+    portalReturn("/admin/orders/one?section=quote&scope=private", "admin"),
+  ).toBe("/admin/orders/one?section=quote");
+  expect(
+    portalReturn(
+      "/admin/orders/one?section=messages&channel=coordination&message=private",
+      "admin",
+    ),
+  ).toBe("/admin/orders/one?section=messages&channel=coordination");
+  expect(
+    portalReturn(
+      "/booster/orders/one?section=access&secret=private",
+      "booster",
+    ),
+  ).toBe("/booster/orders/one?section=access");
+  expect(portalReturn("/admin?view=audit&actor=private", "admin")).toBe(
+    "/admin?view=audit",
+  );
+  expect(
+    portalReturn(
+      "/admin/catalog?game=11111111-1111-4111-8111-111111111111&section=catalog-pricing&draft=private",
+      "admin",
+    ),
+  ).toBe(
+    "/admin/catalog?game=11111111-1111-4111-8111-111111111111&section=catalog-pricing",
+  );
+  expect(
+    portalReturn("/admin/catalog?game=../bad&section=catalog-pricing", "admin"),
+  ).toBe("/admin/catalog");
 });

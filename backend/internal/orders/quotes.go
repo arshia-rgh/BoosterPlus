@@ -59,23 +59,21 @@ func (s *Store) IssueQuote(ctx context.Context, p *identity.Principal, id string
 			return ErrConflict
 		}
 		now := s.instant()
-		discount, total, readErr := catalog.ContractDiscount(ctx, tx, row.UserID, row.CouponCode, catalog.CouponOffer{Slug: row.Slug, Service: row.Service, Currency: input.Currency, SubtotalMinor: input.AmountMinor}, now)
+		data, readErr := s.quoteCommercial(ctx, tx, row, input, now)
 		if readErr != nil {
 			return readErr
 		}
+		if input.PreviewHash != "" {
+			digest, digestErr := s.quotePreviewDigest(row, data)
+			if digestErr != nil {
+				return digestErr
+			}
+			if digest != input.PreviewHash {
+				return ErrConflict
+			}
+		}
 		quoteID := uuid.NewString()
-		lines := slices.Clone(input.Lines)
-		if len(lines) == 0 {
-			lines = []catalog.PriceLine{{Key: "scope", Label: "Quoted scope", AmountMinor: input.AmountMinor}}
-		}
-		if discount != nil {
-			lines = append(lines, catalog.PriceLine{Key: "coupon", Label: "Coupon " + discount.Code, AmountMinor: "-" + discount.AmountMinor})
-		}
-		termsVersion, termsErr := s.auth.TermsVersion(ctx, tx.Client())
-		if termsErr != nil {
-			return termsErr
-		}
-		data := Commercial{QuoteID: quoteID, Revision: row.QuoteCount + 1, Currency: input.Currency, SubtotalMinor: input.AmountMinor, AmountMinor: total, Discount: discount, Lines: lines, Scope: input.Scope, Reason: input.Reason, DeliveryMinHours: input.DeliveryMinHours, DeliveryMaxHours: input.DeliveryMaxHours, ExpiresAt: input.ExpiresAt.UTC().Truncate(time.Microsecond), TermsVersion: termsVersion}
+		data.QuoteID = quoteID
 		doc, readErr := document(data)
 		if readErr != nil {
 			return readErr

@@ -4645,6 +4645,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/orders/{id}/quote/preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Preview the customer agreement without issuing a quote */
+    post: operations["previewOrderQuote"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4781,6 +4798,7 @@ export interface components {
         /** Format: date-time */
         created_at: string;
       }[];
+      next?: string;
     };
     Recoveries: {
       recoveries: {
@@ -5173,6 +5191,12 @@ export interface components {
         amount_minor: string;
       };
       unread?: boolean;
+      /** @description Internal references included only in authorized administrative lists. */
+      staff?: {
+        customer_id: string;
+        assigned_id: string;
+        payment_state: string;
+      };
     };
     OrderCommercial: {
       quote_id: string;
@@ -5238,6 +5262,8 @@ export interface components {
       delivery_max_hours: number;
       /** Format: date-time */
       expires_at: string;
+      /** @description Optional server preview binding for clients using the review-before-issue flow. Rechecked against current order, terms and discounts at issue. */
+      preview_hash?: string;
     };
     OrderAction: {
       version: number;
@@ -6810,6 +6836,11 @@ export interface components {
     AvailabilitySeriesResult: {
       windows: components["schemas"]["AvailabilityWindow"][];
     };
+    OrderQuotePreview: {
+      data: components["schemas"]["OrderCommercial"];
+      preview_hash: string;
+      order_version: number;
+    };
   };
   responses: never;
   parameters: never;
@@ -7445,6 +7476,7 @@ export interface operations {
         after?: string;
         search?: string;
         state?: string;
+        role?: "" | "customer" | "booster" | "administrator" | "owner";
       };
       header?: never;
       path?: never;
@@ -7577,7 +7609,14 @@ export interface operations {
   };
   getAudit: {
     parameters: {
-      query?: never;
+      query?: {
+        actor?: string;
+        action?: string;
+        target?: string;
+        from?: string;
+        to?: string;
+        after?: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -7826,6 +7865,8 @@ export interface operations {
     parameters: {
       query?: {
         after?: string;
+        search?: string;
+        state?: string;
       };
       header?: never;
       path?: never;
@@ -20559,6 +20600,62 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  previewOrderQuote: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["OrderQuoteInput"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OrderQuotePreview"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OrderProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OrderProblem"];
         };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */

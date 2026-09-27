@@ -967,6 +967,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["", "customer", "booster", "administrator", "owner"]
+            }
           }
         ]
       }
@@ -1171,7 +1179,63 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "actor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 10
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 10
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ]
       }
     },
     "/api/v1/admin/recoveries": {
@@ -1521,6 +1585,24 @@
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 160
             }
           }
         ]
@@ -20824,6 +20906,95 @@
           }
         }
       }
+    },
+    "/api/v1/admin/orders/{id}/quote/preview": {
+      "post": {
+        "operationId": "previewOrderQuote",
+        "summary": "Preview the customer agreement without issuing a quote",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderQuotePreview"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderQuoteInput"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -21274,6 +21445,9 @@
               },
               "required": ["id", "action", "created_at"]
             }
+          },
+          "next": {
+            "type": "string"
           }
         },
         "required": ["audits"]
@@ -22771,6 +22945,22 @@
           },
           "unread": {
             "type": "boolean"
+          },
+          "staff": {
+            "type": "object",
+            "description": "Internal references included only in authorized administrative lists.",
+            "required": ["customer_id", "assigned_id", "payment_state"],
+            "properties": {
+              "customer_id": {
+                "type": "string"
+              },
+              "assigned_id": {
+                "type": "string"
+              },
+              "payment_state": {
+                "type": "string"
+              }
+            }
           }
         }
       },
@@ -22995,6 +23185,11 @@
           "expires_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "preview_hash": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Optional server preview binding for clients using the review-before-issue flow. Rechecked against current order, terms and discounts at issue."
           }
         }
       },
@@ -28680,6 +28875,22 @@
             "items": {
               "$ref": "#/components/schemas/AvailabilityWindow"
             }
+          }
+        }
+      },
+      "OrderQuotePreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "preview_hash", "order_version"],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/OrderCommercial"
+          },
+          "preview_hash": {
+            "type": "string"
+          },
+          "order_version": {
+            "type": "integer"
           }
         }
       }

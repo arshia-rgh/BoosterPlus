@@ -422,7 +422,7 @@ export async function resaleJourney(
       .getByRole("navigation", { name: "Order sections" })
       .getByRole("link", { name: "Delivery", exact: true })
       .click();
-    await page.goto(`/admin/orders/${order}`);
+    await page.goto(`/admin/orders/${order}?section=fulfillment`);
     await page
       .getByLabel("Protected transfer details")
       .fill("synthetic distinct buyer ownership bundle");

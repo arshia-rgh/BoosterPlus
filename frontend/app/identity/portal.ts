@@ -67,13 +67,18 @@ export function portalReturn(
     if (
       /\/orders\/[^/]+$/.test(path) &&
       section &&
-      /^(overview|messages|progress|delivery|payment|help)$/.test(section)
+      (portal === "admin"
+        ? /^(overview|request|quote|fulfillment|messages|payment|history)$/
+        : portal === "booster"
+          ? /^(overview|progress|messages|sessions|access)$/
+          : /^(overview|messages|progress|delivery|payment|help)$/
+      ).test(section)
     )
       params.set("section", section);
     const channel = url.searchParams.get("channel");
     if (
-      portal === "customer" &&
-      /^\/orders\/[^/]+$/.test(path) &&
+      (portal === "customer" || portal === "admin") &&
+      /^\/(?:admin\/)?orders\/[^/]+$/.test(path) &&
       params.get("section") === "messages" &&
       (channel === "support" || channel === "coordination")
     )
@@ -105,6 +110,30 @@ export function portalReturn(
         )
       )
         params.set("request", request);
+    }
+    if (
+      portal === "admin" &&
+      path === "/admin" &&
+      url.searchParams.get("view") === "audit"
+    )
+      params.set("view", "audit");
+    if (portal === "admin" && path === "/admin/catalog") {
+      const game = url.searchParams.get("game");
+      if (
+        game &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+          game,
+        )
+      ) {
+        params.set("game", game);
+        if (
+          section &&
+          /^catalog-(basics|intake|services|pricing|packages|faq|publish)$/.test(
+            section,
+          )
+        )
+          params.set("section", section);
+      }
     }
     const query = params.toString();
     return path + (query ? `?${query}` : "");

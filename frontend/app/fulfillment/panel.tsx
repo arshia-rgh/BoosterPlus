@@ -64,32 +64,24 @@ export default function FulfillmentPanel({
             {admin ? (
               <>
                 {active(work) && (
-                  <ForecastControls
-                    key={`forecast-${String(work.version)}`}
+                  <ForecastControls work={work} reload={refresh} />
+                )}
+                {visible && !resource.loading && (
+                  <StaffSecret
+                    key={`secret-${String(work.access_version)}`}
                     work={work}
-                    reload={refresh}
+                    admin
                   />
                 )}
-                <StaffSecret
-                  key={`secret-${String(work.access_version)}`}
-                  work={work}
-                  admin
-                />
                 {active(work) && (
                   <Assignment
-                    key={`assignment-${String(work.version)}`}
                     id={work.order_id}
                     orderVersion={work.order_version}
                     work={work}
                     reload={refresh}
                   />
                 )}
-                <ExecutionActions
-                  key={`actions-${String(work.version)}`}
-                  work={work}
-                  admin
-                  reload={refresh}
-                />
+                <ExecutionActions work={work} admin reload={refresh} />
               </>
             ) : (
               <>

@@ -119,12 +119,16 @@ export function VerificationLink({ error }: { error: unknown }) {
       : safeReturnPath(window.location.pathname + window.location.search);
   return (
     <a
+      target={activePortal() === "admin" ? "_blank" : undefined}
+      rel={activePortal() === "admin" ? "noopener noreferrer" : undefined}
       href={
         portalSecurity(activePortal()) +
         (target ? "?returnTo=" + encodeURIComponent(target) : "")
       }
     >
-      Verify your identity to continue
+      {activePortal() === "admin"
+        ? "Verify identity in a new tab, then retry here"
+        : "Verify your identity to continue"}
     </a>
   );
 }

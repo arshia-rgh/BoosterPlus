@@ -1,7 +1,10 @@
+import { PricingEditor } from "./pricing-editor";
+import "./admin-workspace.css";
+import { useResource } from "../orders/resource";
 import DiscoveryEditor from "./discovery-editor";
 import HeroLayoutEditor from "./hero-layout-editor";
 import { useEffect, useRef, useState } from "react";
-import { Link, useBlocker } from "react-router";
+import { Link, useBlocker, useSearchParams } from "react-router";
 import { z } from "../validation";
 import { get, post } from "../identity/api";
 import {
@@ -31,7 +34,6 @@ import {
   price,
   type Configuration,
   type Draft,
-  type Listing,
   type Release,
   type Issue,
 } from "./model";
@@ -149,8 +151,34 @@ function Editor({
     [history, setHistory] = useState<Release[] | null>(null),
     [deleteConfirmed, setDeleteConfirmed] = useState(false),
     [reload, setReload] = useState(0);
+  const [params, setParams] = useSearchParams();
+  const tabs = [
+    ["catalog-basics", "Game & ranks"],
+    ["catalog-intake", "Seller intake"],
+    ["catalog-services", "Boosting forms"],
+    ["catalog-pricing", "Price estimation"],
+    ["catalog-packages", "Packages"],
+    ["catalog-faq", "FAQ"],
+    ["catalog-publish", "Review & publish"],
+  ] as const;
+  const section =
+    tabs.find(([key]) => key === params.get("section"))?.[0] ??
+    "catalog-basics";
+  const choose = (section: string) => {
+    const next = new URLSearchParams(params);
+    next.set("section", section);
+    setParams(next, { preventScrollReset: true });
+  };
+  useEffect(() => {
+    document.getElementById(section)?.focus({ preventScroll: true });
+  }, [section]);
   const generation = useRef(0);
-  const blocker = useBlocker(dirty || busy);
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      (dirty || busy) &&
+      (nextLocation.pathname !== currentLocation.pathname ||
+        new URLSearchParams(nextLocation.search).get("game") !== id),
+  );
   useEffect(() => {
     if (!dirty && !busy) return;
     const prevent = (event: BeforeUnloadEvent) => {
@@ -164,7 +192,7 @@ function Editor({
 
   useEffect(() => {
     let active = true;
-    void get(`/admin/catalog/games/${id}`, draftSchema)
+    void get(`/admin/catalog/games/${encodeURIComponent(id)}`, draftSchema)
       .then((value) => {
         if (active) {
           setDraft(value);
@@ -203,9 +231,10 @@ function Editor({
     setError(null);
     setStatus("");
     try {
-      const path = `/admin/catalog/games/${id}`;
+      const path = `/admin/catalog/games/${encodeURIComponent(id)}`;
       if (action === "preview") {
         setPreview(await get(path + "/preview", previewSchema));
+        choose("catalog-publish");
       } else if (action === "history" || action === "more-history") {
         const before =
           action === "more-history" ? history?.at(-1)?.version : undefined;
@@ -306,15 +335,7 @@ function Editor({
                 {draft.paused ? " · Ordering paused" : ""}
               </p>
             </div>
-            {draft.published && !draft.archived && (
-              <Link
-                reloadDocument
-                className="button compact"
-                to={`/games/${draft.slug}`}
-              >
-                Open public page
-              </Link>
-            )}
+            <p>Admin catalog workspace · private draft</p>
           </div>
           <p className="quiet">
             {dirty
@@ -325,25 +346,15 @@ function Editor({
             className="admin-view-nav catalog-section-nav"
             aria-label="Catalog sections"
           >
-            {[
-              ["catalog-basics", "Game & ranks"],
-              ["catalog-intake", "Seller intake"],
-              ["catalog-services", "Boosting forms"],
-              ["catalog-packages", "Packages"],
-              ["catalog-faq", "FAQ"],
-              ["catalog-publish", "Review & publish"],
-            ].map(([target, label]) => (
-              <button
+            {tabs.map(([target, label]) => (
+              <Link
                 key={target}
-                type="button"
-                onClick={() => {
-                  const section = document.getElementById(target ?? "");
-                  section?.scrollIntoView({ block: "start" });
-                  section?.focus({ preventScroll: true });
-                }}
+                to={`?${new URLSearchParams({ ...Object.fromEntries(params), section: target }).toString()}`}
+                preventScrollReset
+                aria-current={section === target ? "page" : undefined}
               >
                 {label}
-              </button>
+              </Link>
             ))}
           </nav>
           <div className="catalog-save-bar">
@@ -364,6 +375,7 @@ function Editor({
             <legend>Catalog configuration</legend>
             <section
               id="catalog-basics"
+              hidden={section !== "catalog-basics"}
               tabIndex={-1}
               className="catalog-edit-section"
               aria-label="Game and rank references"
@@ -423,6 +435,7 @@ function Editor({
             </section>
             <section
               id="catalog-intake"
+              hidden={section !== "catalog-intake"}
               tabIndex={-1}
               className="catalog-edit-section"
               aria-label="Seller intake and review policy"
@@ -443,11 +456,13 @@ function Editor({
             </section>
             <section
               id="catalog-services"
+              hidden={section !== "catalog-services"}
               tabIndex={-1}
               className="catalog-edit-section"
               aria-label="Boosting form editor"
             >
               <ServicesEditor
+                showPricing={false}
                 config={draft.configuration}
                 change={(services) => {
                   update({ services });
@@ -455,7 +470,47 @@ function Editor({
               />
             </section>
             <section
+              id="catalog-pricing"
+              hidden={section !== "catalog-pricing"}
+              tabIndex={-1}
+              className="catalog-edit-section"
+              aria-label="Price estimation rules"
+            >
+              <h2>Price estimation rules</h2>
+              <p>
+                Estimates are provisional. Customers accept a staff quote for
+                custom services; package prices use their own configured
+                variants.
+              </p>
+              {draft.configuration.services.length === 0 && (
+                <p>
+                  Add a service in Boosting forms before configuring its
+                  estimate.
+                </p>
+              )}
+              {draft.configuration.services.map((service, index) => (
+                <details key={service.key} className="catalog-section">
+                  <summary>
+                    {service.name} · {service.key}
+                  </summary>
+                  <PricingEditor
+                    service={service}
+                    config={draft.configuration}
+                    change={(patch) => {
+                      update({
+                        services: draft.configuration.services.map(
+                          (current, i) =>
+                            i === index ? { ...current, ...patch } : current,
+                        ),
+                      });
+                    }}
+                  />
+                </details>
+              ))}
+            </section>
+            <section
               id="catalog-packages"
+              hidden={section !== "catalog-packages"}
               tabIndex={-1}
               className="catalog-edit-section"
               aria-label="Fixed packages editor"
@@ -469,6 +524,7 @@ function Editor({
             </section>
             <section
               id="catalog-faq"
+              hidden={section !== "catalog-faq"}
               tabIndex={-1}
               className="catalog-edit-section"
             >
@@ -533,6 +589,7 @@ function Editor({
             </section>
             <section
               id="catalog-publish"
+              hidden={section !== "catalog-publish"}
               tabIndex={-1}
               className="catalog-publication catalog-edit-section"
             >
@@ -566,7 +623,12 @@ function Editor({
                 </Action>
                 <Action
                   disabled={
-                    dirty || draft.archived || !draft.configuration.reviewed
+                    dirty ||
+                    draft.archived ||
+                    !draft.configuration.reviewed ||
+                    !preview ||
+                    preview.draft.revision !== draft.revision ||
+                    preview.issues.length > 0
                   }
                   onClick={() => void run("publish")}
                 >
@@ -610,14 +672,14 @@ function Editor({
               )}
             </section>
           </fieldset>
-          {preview && (
+          {section === "catalog-publish" && preview && (
             <Preview
               key={preview.draft.revision}
               draft={preview.draft}
               issues={preview.issues}
             />
           )}{" "}
-          {history && (
+          {section === "catalog-publish" && history && (
             <History entries={history} more={() => void run("more-history")} />
           )}
         </>
@@ -626,29 +688,38 @@ function Editor({
   );
 }
 export default function CatalogAdmin() {
-  const [listing, setListing] = useState<Listing | null>(null),
-    [selected, setSelected] = useState(""),
-    [name, setName] = useState(""),
+  const [params, setParams] = useSearchParams();
+  const selected = params.get("game") ?? "";
+  const setSelected = (game: string) => {
+    const next = new URLSearchParams(params);
+    if (game) next.set("game", game);
+    else next.delete("game");
+    next.delete("section");
+    setParams(next);
+  };
+  const [name, setName] = useState(""),
     [slug, setSlug] = useState(""),
     [error, setError] = useState<unknown>(null),
-    [busy, setBusy] = useState(false),
-    [reload, setReload] = useState(0);
-  useEffect(() => {
-    let active = true;
-    void get("/admin/catalog/games", listingSchema)
-      .then((value) => {
-        if (active) {
-          setListing(value);
-          setError(null);
-        }
-      })
-      .catch((cause: unknown) => {
-        if (active) setError(cause);
-      });
-    return () => {
-      active = false;
-    };
-  }, [reload]);
+    [busy, setBusy] = useState(false);
+  const query = new URLSearchParams({
+    search: params.get("search") ?? "",
+    state: params.get("state") ?? "",
+    after: params.get("after") ?? "",
+  });
+  const resource = useResource(
+    `/admin/catalog/games?${query.toString()}`,
+    listingSchema,
+  );
+  const listing = resource.data;
+  const [search, setSearch] = useState(params.get("search") ?? "");
+  const [state, setState] = useState(params.get("state") ?? "");
+  const filters = JSON.stringify([params.get("search"), params.get("state")]);
+  const [previous, setPrevious] = useState(filters);
+  if (previous !== filters) {
+    setPrevious(filters);
+    setSearch(params.get("search") ?? "");
+    setState(params.get("state") ?? "");
+  }
   async function create() {
     setBusy(true);
     setError(null);
@@ -661,23 +732,7 @@ export default function CatalogAdmin() {
       setSelected(draft.id);
       setName("");
       setSlug("");
-      setReload((value) => value + 1);
-    } catch (cause) {
-      setError(cause);
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function more() {
-    if (!listing?.next) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const result = await get(
-        "/admin/catalog/games?after=" + encodeURIComponent(listing.next),
-        listingSchema,
-      );
-      setListing({ ...result, games: [...listing.games, ...result.games] });
+      resource.reload();
     } catch (cause) {
       setError(cause);
     } finally {
@@ -693,25 +748,60 @@ export default function CatalogAdmin() {
           setSelected("");
         }}
         onSaved={() => {
-          setReload((value) => value + 1);
+          resource.reload();
         }}
       />
     );
   return (
     <section className="catalog-admin">
-      <ErrorNotice error={error} />
+      <ErrorNotice error={error ?? resource.error} />
+      <form
+        className="orders-filters"
+        onSubmit={(event) => {
+          event.preventDefault();
+          setParams({ search, state });
+        }}
+      >
+        <Text
+          label="Search catalog name or slug"
+          value={search}
+          change={setSearch}
+        />
+        <Select
+          label="Catalog state"
+          value={state}
+          change={setState}
+          options={[
+            ["", "All states"],
+            ["draft", "Draft"],
+            ["published", "Published"],
+            ["paused", "Paused"],
+            ["archived", "Archived"],
+          ]}
+        />
+        <button type="submit" className="button">
+          Filter catalogs
+        </button>
+      </form>
       <Action
         onClick={() => {
-          setReload((value) => value + 1);
+          resource.reload();
         }}
         disabled={busy}
       >
         Reload catalogs
       </Action>
       {!listing ? (
-        <p role="status">Loading catalog drafts…</p>
+        <p role="status">
+          {resource.error
+            ? "Catalog unavailable. Retry loading drafts."
+            : "Loading catalog drafts…"}
+        </p>
       ) : (
         <div className="catalog-cards">
+          {!listing.games.length && (
+            <p>No catalog drafts match these filters.</p>
+          )}
           {listing.games.map((game) => (
             <article className="game-card" key={game.id}>
               <h2>{game.name}</h2>
@@ -735,10 +825,19 @@ export default function CatalogAdmin() {
           ))}
         </div>
       )}
+      {params.get("after") && (
+        <Link
+          to={`?${new URLSearchParams({ ...Object.fromEntries(query), after: "" }).toString()}`}
+        >
+          First catalog page
+        </Link>
+      )}
       {listing?.next && (
-        <Action onClick={() => void more()} disabled={busy}>
+        <Link
+          to={`?${new URLSearchParams({ ...Object.fromEntries(query), after: listing.next }).toString()}`}
+        >
           More drafts
-        </Action>
+        </Link>
       )}
       <form
         className="catalog-create"

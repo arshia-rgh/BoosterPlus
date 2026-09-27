@@ -1134,3 +1134,26 @@ The corrected booster sign-in journey now passes against real isolated APIs on d
 
 
 DI08 delivered as `6aa13d67e9e6b123db62011c5c5ead1887d31f30`, pushed directly to main and verified against origin/main. The third unchanged complete hook passed: live security/dependency scans, standalone gosec/lint, TiDB race integration (564.925s), 30 migrations, 342 local component cases (332 tracked plus ten held), 100% required route coverage, 106 desktop/mobile browser journeys, builds and container/TLS deployment regressions. Final scoped senior designer review is PASS. The earlier route-coverage and obsolete browser assertion failures are retained; no check was bypassed. Five owned views now have scoped traceability. DI09 continues, DI10–DI15 remain authorized, and final launch stays held.
+
+
+## DI09 — admin workspaces and governance, in progress (27 September 2026)
+
+Applied after verified DI08 receipt `b59495b`. Persistent admin order sections, server quote preview/binding, private triage, catalog sections/publication preview, server catalog discovery and directory role/audit filters are implemented. Detailed scope, corrections and limits: [DI09 qualification](redesign/DI09_QUALIFICATION.md).
+
+Targeted TiDB race integration passed in 30.658s; changed real-API browser journeys passed nine desktop and nine mobile cases. Initial role-validator and obsolete-selector failures were corrected. Browser tracing exposed concurrent anonymous session bootstraps setting competing cookies; portal-scoped in-flight coordination plus session-change invalidation corrects CSRF without caching completed authority. Existing stale-response tests were retained. Independent scoped designer review passed after three correction rounds, including complete phone cards and settled chat navigation. Final complete gate and delivery are pending. R10/R11 remain held.
+
+
+First complete DI09 hook stopped at govulncheck: `https://vuln.go.dev/index/modules.json.gz` returned HTTP 403. The official Google storage mirror returned the same status in an independent access check. Formatting, generated-code checks, vet, golangci-lint and standalone gosec had passed; the remaining full-gate checks are not claimed. No commit was created. Requested network restoration while continuing isolated DI10 preparation. Evidence: `/tmp/playora-di09-resource-gate.log`.
+
+
+## DI10 independent preparation while DI09 security access is blocked (27 September 2026)
+
+Two further access checks still returned HTTP403 from both official live Go vulnerability database endpoints. DI09 remains staged and uncommitted; its complete gate is not passed. Root repository/secret/contract/workflow/diff checks passed on the current DI09 tree. The prepared DI10 increment is isolated in `.cache/di10-prepared/` (ignored local checkpoint), with 17 source/test files, baseline and prepared SHA256 manifests, reproduction scripts, captures and explicit remaining work. No DI10 application files were applied over the staged DI09 baseline.
+
+Prepared seller submission, inventory and finance work keeps record identity and local sections; preserves ordinary drafts across local navigation and connection failures; clears private content after access loss; restores bounded originating record/tab/filter context; separates protected handover and direct payout; adds seller withdrawal confirmation and an unsaved listing leave choice. Saved/current private previews are required before publication. No payment success, payout eligibility or backend commercial rules were changed.
+
+Temporary-copy strict types, ESLint, both production builds/public budgets and the component suite passed: 366 local cases, including ten held experimental cases; 100% required route-boundary coverage. New tests exercise stale draft revisions, save acknowledgement, navigation blocking, conflict/no-publication, recoverable failure versus access loss, and bounded return state. Initial test API/mocking mistakes were fixed; assertions and coverage thresholds were retained. Temporary Vite cache overrides are excluded from the prepared manifest.
+
+Senior designer review found five scoped issues (lost review reason, missing source return, outdated directional copy, missing withdrawal confirmation, silent listing draft loss). Desktop1440, phone320 and tablet768 captures, source/queue and finance round trips, withdrawal cancellation, focused leave confirmation, 503 draft recovery and403 clearing were inspected. A subsequent heading-order finding was corrected; its final narrow capture has no axe violations or document overflow and the leave prompt receives focus. The senior designer issued **PASS — no remaining actionable findings in the scoped workspace changes** after re-review. Review records and final scope verdict are retained in the local checkpoint. These fixture checks do not complete DI10 or qualify real backend/financial journeys.
+
+Remaining: restore official vulnerability database access and complete/deliver DI09; apply the hash-checked DI10 increment, finish marketplace/buyer receipt and all DI10 real-API journeys, run its required full stage checks and review; then DI11–DI15. R10/R11 and launch remain held. Do not mark this preparation as delivered or use it to bypass the blocked security scan.

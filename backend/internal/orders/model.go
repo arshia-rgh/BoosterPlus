@@ -69,6 +69,7 @@ type CreateInput struct {
 
 // QuoteInput is an administrator's proposed agreement, never automatic charging.
 type QuoteInput struct {
+	PreviewHash      string              `json:"preview_hash,omitempty"`
 	Version          int                 `json:"version"`
 	AmountMinor      string              `json:"amount_minor"`
 	Currency         string              `json:"currency"`
@@ -105,19 +106,27 @@ type ListPrice struct {
 
 // Summary omits form snapshots and personal selections from bounded lists.
 type Summary struct {
-	AcceptedPrice *ListPrice `json:"accepted_price,omitempty"`
-	Unread        *bool      `json:"unread,omitempty"`
-	ID            string     `json:"id"`
-	Version       int        `json:"version"`
-	Kind          string     `json:"kind"`
-	State         string     `json:"state"`
-	Slug          string     `json:"slug"`
-	Service       string     `json:"service"`
-	Package       string     `json:"package"`
-	Variant       string     `json:"variant"`
-	GameName      string     `json:"game_name"`
-	CreatedAt     time.Time  `json:"created_at"`
-	UpdatedAt     time.Time  `json:"updated_at"`
+	Staff         *StaffSummary `json:"staff,omitempty"`
+	AcceptedPrice *ListPrice    `json:"accepted_price,omitempty"`
+	Unread        *bool         `json:"unread,omitempty"`
+	ID            string        `json:"id"`
+	Version       int           `json:"version"`
+	Kind          string        `json:"kind"`
+	State         string        `json:"state"`
+	Slug          string        `json:"slug"`
+	Service       string        `json:"service"`
+	Package       string        `json:"package"`
+	Variant       string        `json:"variant"`
+	GameName      string        `json:"game_name"`
+	CreatedAt     time.Time     `json:"created_at"`
+	UpdatedAt     time.Time     `json:"updated_at"`
+}
+
+// StaffSummary contains internal references only in an authorized staff queue.
+type StaffSummary struct {
+	CustomerID   string `json:"customer_id"`
+	AssignedID   string `json:"assigned_id"`
+	PaymentState string `json:"payment_state"`
 }
 
 // QuoteView exposes the customer's agreement but excludes internal staff identity.
@@ -178,6 +187,9 @@ type Event struct {
 }
 
 func validateQuote(input QuoteInput, now time.Time) error {
+	if len(input.PreviewHash) > 128 {
+		return invalid("preview_hash", "Preview is invalid. Review the quote again.")
+	}
 	if !moneyPattern.MatchString(input.AmountMinor) || !slices.Contains([]string{"USD", "EUR", "GBP"}, input.Currency) {
 		return invalid("amount_minor", "Choose a supported currency and a positive whole-minor-unit amount.")
 	}

@@ -162,9 +162,12 @@ for (const role of ["booster", "administrator", "owner"] as const) {
           page.locator(".staff-person > summary").getByText(/booster · Active/),
         ).toBeVisible();
         await page
-          .getByText("Security audit and recovery review", { exact: true })
+          .getByRole("link", { name: "Audit & recovery review", exact: true })
           .click();
-        await page.getByRole("button", { name: "Load audit" }).click();
+        await page
+          .getByLabel("Exact target ID")
+          .fill(fixture(info.project.name, "target_id"));
+        await page.getByRole("button", { name: "Filter audit" }).click();
         await expect(
           page
             .locator(".audit-list li")

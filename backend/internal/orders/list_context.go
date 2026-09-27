@@ -8,6 +8,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
@@ -24,6 +25,16 @@ func (s *Store) listContext(ctx context.Context, p *identity.Principal, admin bo
 		ids = append(ids, row.ID)
 		if row.CurrentContract != "" {
 			contracts = append(contracts, row.CurrentContract)
+		}
+	}
+	assignments := map[string]string{}
+	if admin {
+		work, err := s.client.Fulfillment.Query().Where(fulfillment.OrderIDIn(ids...)).Select(fulfillment.FieldOrderID, fulfillment.FieldAssignedID).Limit(50).All(ctx)
+		if err != nil {
+			return err
+		}
+		for _, item := range work {
+			assignments[item.OrderID] = item.AssignedID
 		}
 	}
 	prices := map[string]*ent.OrderContract{}
@@ -63,6 +74,9 @@ func (s *Store) listContext(ctx context.Context, p *identity.Principal, admin bo
 	}
 	for _, row := range rows {
 		item := summary(row)
+		if admin {
+			item.Staff = &StaffSummary{CustomerID: row.UserID, AssignedID: assignments[row.ID], PaymentState: "no_agreement"}
+		}
 		flag := flags[row.ID]
 		item.Unread = &flag
 		if row.CurrentContract != "" {
@@ -73,6 +87,9 @@ func (s *Store) listContext(ctx context.Context, p *identity.Principal, admin bo
 			price, decodeErr := decode[Commercial](contract.Data)
 			if decodeErr != nil {
 				return decodeErr
+			}
+			if item.Staff != nil {
+				item.Staff.PaymentState = string(contract.PaymentState)
 			}
 			item.AcceptedPrice = &ListPrice{Currency: price.Currency, AmountMinor: price.AmountMinor}
 		}

@@ -3,6 +3,8 @@ import {
   portalAPIPath,
   portalHeaders,
   notifySession,
+  sessionEvent,
+  sessionEventMatches,
   type Portal,
 } from "./portal";
 import { retryTime, retryLabel } from "../ui/retry-time";
@@ -49,6 +51,7 @@ export const sessionsSchema = z.object({
   ),
 });
 export const auditsSchema = z.object({
+  next: z.string().optional(),
   audits: z.array(
     z.object({
       id: z.string(),
@@ -261,13 +264,36 @@ async function read(
   }
   return result;
 }
+// Share only simultaneous browser session reads. On first visit two independent
+// bootstraps could otherwise set different anonymous cookies and invalidate CSRF.
+// No resolved session is cached, and portals never share pending identity data.
+const pendingSessions = new Map<Portal, Promise<unknown>>();
+if (typeof window !== "undefined")
+  window.addEventListener(sessionEvent, (event) => {
+    for (const portal of pendingSessions.keys()) {
+      if (sessionEventMatches(event, portal)) pendingSessions.delete(portal);
+    }
+  });
+function sessionRead(path: string, portal: Portal): Promise<unknown> {
+  if (typeof window === "undefined") return read(path, portal);
+  const current = pendingSessions.get(portal);
+  if (current) return current;
+  const pending = read(path, portal).finally(() => {
+    if (pendingSessions.get(portal) === pending) pendingSessions.delete(portal);
+  });
+  pendingSessions.set(portal, pending);
+  return pending;
+}
 export async function get<T>(
   path: string,
   schema: z.ZodType<T>,
   portal: Portal = activePortal(),
 ): Promise<T> {
-  const result = await read(path, portal);
-  if (portalAPIPath(path, portal).endsWith("/session")) {
+  const sessionPath = portalAPIPath(path, portal).endsWith("/session");
+  const result = await (sessionPath
+    ? sessionRead(path, portal)
+    : read(path, portal));
+  if (sessionPath) {
     const session = sessionSchema.parse(result);
     if (session.portal !== portal)
       throw new APIError(

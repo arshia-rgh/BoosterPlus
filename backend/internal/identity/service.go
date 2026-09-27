@@ -11,7 +11,6 @@ import (
 	"github.com/go-sql-driver/mysql"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
-	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authsession"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
@@ -201,10 +200,8 @@ func lockSecurity(ctx context.Context, tx *ent.Tx) error {
 
 // Audits returns a bounded owner-only audit view, preserving internal actor IDs.
 func (s *Service) Audits(ctx context.Context, p *Principal) ([]*ent.AuthAudit, error) {
-	if err := Require(p, "audit"); err != nil {
-		return nil, err
-	}
-	return s.client.AuthAudit.Query().Order(ent.Desc(authaudit.FieldCreatedAt)).Limit(100).All(ctx)
+	result, err := s.ListAudits(ctx, p, AuditQuery{})
+	return result.Entries, err
 }
 
 func activeUser(ctx context.Context, tx *ent.Tx, id string) (*ent.User, error) {

@@ -306,17 +306,17 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       .click();
     await page.getByRole("link", { name: new RegExp(orderID) }).click();
     await page
+      .getByRole("link", { name: "Request & decisions", exact: true })
+      .click();
+    await page
       .getByLabel("Customer-visible explanation")
       .fill("Please select duo before review.");
     await page
       .getByRole("button", { name: "Request clarification", exact: true })
       .click();
-    await expect(
-      page.getByRole("heading", {
-        name: "Order journey game · needs information",
-        exact: true,
-      }),
-    ).toBeVisible();
+    await expect(page.locator(".record-status .status")).toHaveText(
+      "needs information",
+    );
     await buyer
       .getByRole("button", { name: "Refresh order", exact: true })
       .click();
@@ -343,12 +343,23 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       .getByRole("button", { name: "Refresh order", exact: true })
       .click();
     async function quote(amount: string, reason: string) {
+      await page
+        .getByRole("link", { name: "Quote & agreement", exact: true })
+        .click();
       await page.getByLabel("Pre-discount amount in minor units").fill(amount);
       await page.getByLabel("Quote currency").selectOption("USD");
       await page
         .getByLabel("Agreed scope", { exact: true })
         .fill("Reviewed duo boost");
       await page.getByLabel("Quote explanation").fill(reason);
+      await page
+        .getByRole("button", { name: "Preview quote", exact: true })
+        .click();
+      await page
+        .getByLabel(
+          "I reviewed the customer-visible price, scope, deadline and terms",
+        )
+        .check();
       await page
         .getByRole("button", { name: "Issue quote", exact: true })
         .click();

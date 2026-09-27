@@ -1,13 +1,33 @@
-import { useState, type SubmitEvent } from "react";
+import { useRef, useState, type SubmitEvent } from "react";
 import {
   Action,
+  Check,
   ErrorNotice,
   NumberInput,
   Select,
   Text,
 } from "../catalog/controls";
-import { post } from "../identity/api";
-import { detailSchema, type Detail } from "./model";
+import { get, post } from "../identity/api";
+import { commercialSchema, detailSchema, type Detail } from "./model";
+import { z } from "../validation";
+import { uncertain } from "../support/chat-state";
+import { Agreement } from "./parts";
+const previewSchema = z.object({
+  data: commercialSchema,
+  preview_hash: z.string().min(1),
+  order_version: z.number().int(),
+});
+interface QuoteRequest {
+  version: number;
+  amount_minor: string;
+  currency: string;
+  scope: string;
+  reason: string;
+  lines: { key: string; label: string; amount_minor: string }[];
+  delivery_min_hours: number;
+  delivery_max_hours: number;
+  expires_at: string;
+}
 export default function QuoteEditor({
   detail,
   done,
@@ -27,36 +47,113 @@ export default function QuoteEditor({
     >([]),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
+  const [review, setReview] = useState<{
+    input: QuoteRequest;
+    preview: z.infer<typeof previewSchema>;
+  } | null>(null);
+  const [approved, setApproved] = useState(false);
+  const [unknown, setUnknown] = useState(false);
+  const [message, setMessage] = useState("");
+  const lock = useRef(false);
+  const stale =
+    !!review && review.preview.order_version !== detail.order.version;
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (lock.current || unknown) return;
+    lock.current = true;
+    setBusy(true);
+    setError(null);
+    setApproved(false);
+    setReview(null);
+    setMessage("");
+    try {
+      const input = {
+        version: detail.order.version,
+        amount_minor: amount,
+        currency,
+        scope,
+        reason,
+        lines,
+        delivery_min_hours: minimum,
+        delivery_max_hours: maximum,
+        expires_at: new Date(Date.now() + hours * 3600000).toISOString(),
+      };
+      const preview = await post(
+        `/admin/orders/${detail.order.id}/quote/preview`,
+        input,
+        previewSchema,
+      );
+      setReview({ input, preview });
+    } catch (cause) {
+      setError(cause);
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  }
+  async function issue() {
+    if (lock.current || !review || !approved || stale || unknown) return;
+    lock.current = true;
     setBusy(true);
     setError(null);
     try {
       await post(
         `/admin/orders/${detail.order.id}/quote`,
-        {
-          version: detail.order.version,
-          amount_minor: amount,
-          currency,
-          scope,
-          reason,
-          lines,
-          delivery_min_hours: minimum,
-          delivery_max_hours: maximum,
-          expires_at: new Date(Date.now() + hours * 3600000).toISOString(),
-        },
+        { ...review.input, preview_hash: review.preview.preview_hash },
         detailSchema,
+      );
+      setReview(null);
+      setApproved(false);
+      setMessage("Quote issued for customer acceptance.");
+      done();
+    } catch (cause) {
+      setError(cause);
+      setUnknown(uncertain(cause));
+      if (!uncertain(cause)) {
+        setReview(null);
+        setApproved(false);
+      }
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  }
+  async function checkOutcome() {
+    if (lock.current || !review) return;
+    lock.current = true;
+    setBusy(true);
+    setError(null);
+    try {
+      const current = await get(
+        `/admin/orders/${detail.order.id}`,
+        detailSchema,
+      );
+      setUnknown(false);
+      setApproved(false);
+      setReview(null);
+      setMessage(
+        current.order.version === review.input.version
+          ? "No new quote was found. Preview again before issuing."
+          : "The order changed. Review its current agreement before preparing another quote.",
       );
       done();
     } catch (cause) {
       setError(cause);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
   return (
     <form onSubmit={(event) => void submit(event)} className="catalog-section">
-      <fieldset disabled={busy}>
+      <fieldset
+        disabled={busy || unknown}
+        onChange={() => {
+          setReview(null);
+          setApproved(false);
+          setMessage("");
+        }}
+      >
         <legend>
           {detail.quote ? "Issue a replacement quote" : "Issue final quote"}
         </legend>
@@ -135,6 +232,8 @@ export default function QuoteEditor({
             />
             <Action
               onClick={() => {
+                setReview(null);
+                setApproved(false);
                 setLines(lines.filter((v) => v.key !== line.key));
               }}
             >
@@ -145,6 +244,8 @@ export default function QuoteEditor({
         <Action
           disabled={lines.length >= 20}
           onClick={() => {
+            setReview(null);
+            setApproved(false);
             setLines([
               ...lines,
               { key: crypto.randomUUID(), label: "", amount_minor: "" },
@@ -154,9 +255,60 @@ export default function QuoteEditor({
           Add quote line
         </Action>
         <button className="button" type="submit">
-          {busy ? "Issuing…" : "Issue quote"}
+          {busy ? "Preparing…" : "Preview quote"}
         </button>
       </fieldset>
+      {message && <p role="status">{message}</p>}
+      {review && (
+        <section
+          aria-label="Customer quote preview"
+          className="catalog-section"
+        >
+          <h3>Customer quote preview · not issued</h3>
+          <p>
+            This is the exact agreement proposed for this order. Previewing does
+            not charge the customer or replace a quote.
+          </p>
+          {detail.quote && (
+            <details>
+              <summary>
+                Compare with current quote · revision{" "}
+                {detail.quote.data.revision}
+              </summary>
+              <Agreement data={detail.quote.data} />
+            </details>
+          )}
+          <Agreement data={review.preview.data} />
+          {stale && (
+            <p role="alert">
+              This order changed. Preview again before issuing; your edited
+              fields are retained.
+            </p>
+          )}
+          <Check
+            label="I reviewed the customer-visible price, scope, deadline and terms"
+            value={approved}
+            change={setApproved}
+          />
+          <Action
+            disabled={busy || unknown || stale || !approved}
+            onClick={() => void issue()}
+          >
+            {busy ? "Working…" : "Issue quote"}
+          </Action>
+        </section>
+      )}
+      {unknown && (
+        <section aria-label="Quote outcome recovery">
+          <p role="alert">
+            Issuing was not confirmed. Do not create another quote until the
+            latest order has been checked.
+          </p>
+          <Action disabled={busy} onClick={() => void checkOutcome()}>
+            Check latest quote
+          </Action>
+        </section>
+      )}
       <ErrorNotice error={error} />
     </form>
   );

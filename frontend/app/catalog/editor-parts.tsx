@@ -507,8 +507,10 @@ export function RuleEditor({
 export function ServicesEditor({
   config,
   change,
+  showPricing = true,
 }: {
   config: Configuration;
+  showPricing?: boolean;
   change: (services: Service[]) => void;
 }) {
   const update = (index: number, patch: Partial<Service>) => {
@@ -554,13 +556,15 @@ export function ServicesEditor({
               update(i, { description });
             }}
           />
-          <PricingEditor
-            service={service}
-            config={config}
-            change={(patch) => {
-              update(i, patch);
-            }}
-          />
+          {showPricing && (
+            <PricingEditor
+              service={service}
+              config={config}
+              change={(patch) => {
+                update(i, patch);
+              }}
+            />
+          )}
           <FulfillmentEditor
             service={service}
             change={(patch) => {

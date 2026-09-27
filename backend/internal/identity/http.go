@@ -441,7 +441,7 @@ func (s *Service) unlinkGoogle(w http.ResponseWriter, r *http.Request, state req
 	return nil
 }
 func (s *Service) users(w http.ResponseWriter, r *http.Request, state requestState) error {
-	page, err := s.Directory(r.Context(), state.principal, UserQuery{Search: r.URL.Query().Get("search"), State: r.URL.Query().Get("state"), After: r.URL.Query().Get("after")})
+	page, err := s.Directory(r.Context(), state.principal, UserQuery{Role: r.URL.Query().Get("role"), Search: r.URL.Query().Get("search"), State: r.URL.Query().Get("state"), After: r.URL.Query().Get("after")})
 	if err != nil {
 		return err
 	}
@@ -484,7 +484,7 @@ func (s *Service) suspension(w http.ResponseWriter, r *http.Request, state reque
 	return nil
 }
 func (s *Service) audits(w http.ResponseWriter, r *http.Request, state requestState) error {
-	entries, err := s.Audits(r.Context(), state.principal)
+	page, err := s.ListAudits(r.Context(), state.principal, AuditQuery{Actor: r.URL.Query().Get("actor"), Action: r.URL.Query().Get("action"), Target: r.URL.Query().Get("target"), From: r.URL.Query().Get("from"), To: r.URL.Query().Get("to"), After: r.URL.Query().Get("after")})
 	if err != nil {
 		return err
 	}
@@ -497,11 +497,11 @@ func (s *Service) audits(w http.ResponseWriter, r *http.Request, state requestSt
 		Metadata       map[string]string `json:"metadata"`
 		CreatedAt      time.Time         `json:"created_at"`
 	}
-	output := make([]auditView, 0, len(entries))
-	for _, entry := range entries {
+	output := make([]auditView, 0, len(page.Entries))
+	for _, entry := range page.Entries {
 		output = append(output, auditView{ID: entry.ID, ActorID: entry.ActorID, ActorReference: entry.ActorReference, Action: entry.Action, TargetID: entry.TargetID, Metadata: entry.Metadata, CreatedAt: entry.CreatedAt})
 	}
-	return respond(w, http.StatusOK, map[string]any{"audits": output})
+	return respond(w, http.StatusOK, map[string]any{"audits": output, "next": page.Next})
 }
 func (s *Service) recoveries(w http.ResponseWriter, r *http.Request, state requestState) error {
 	entries, err := s.Recoveries(r.Context(), state.principal)

@@ -12,9 +12,11 @@ import Thread from "./thread";
 function PrivateOrderThread({
   detail,
   visible,
+  admin = false,
 }: {
   detail: Detail;
   visible: boolean;
+  admin?: boolean;
 }) {
   const [id, setID] = useState("");
   const [attempt, setAttempt] = useState(0);
@@ -25,7 +27,7 @@ function PrivateOrderThread({
     if (!visible || id) return;
     let active = true;
     void post(
-      "/conversations",
+      (admin ? "/admin" : "") + "/conversations",
       {
         request_key: key,
         kind: "order",
@@ -44,12 +46,12 @@ function PrivateOrderThread({
     return () => {
       active = false;
     };
-  }, [visible, id, attempt, key, order.id, order.game_name]);
+  }, [visible, id, attempt, key, order.id, order.game_name, admin]);
   return (
     <>
       <p>
-        Private conversation with PLAYORA support. Your booster cannot read this
-        conversation.
+        Private customer and PLAYORA support conversation. Boosters cannot read
+        this conversation. Internal notes are visible only to administrators.
       </p>
       {!id && (
         <>
@@ -68,12 +70,25 @@ function PrivateOrderThread({
           )}
         </>
       )}
-      {id && <Thread conversationID={id} embedded visible={visible} />}
+      {id && (
+        <Thread conversationID={id} admin={admin} embedded visible={visible} />
+      )}
     </>
   );
 }
-function CoordinationThread({ id, visible }: { id: string; visible: boolean }) {
-  const work = useResource(`/fulfillment/${id}`, workSchema);
+function CoordinationThread({
+  id,
+  visible,
+  admin = false,
+}: {
+  id: string;
+  visible: boolean;
+  admin?: boolean;
+}) {
+  const work = useResource(
+    `${admin ? "/admin" : ""}/fulfillment/${id}`,
+    workSchema,
+  );
   const [threadID, setThreadID] = useState("");
   const denied =
     work.error instanceof APIError &&
@@ -109,6 +124,7 @@ function CoordinationThread({ id, visible }: { id: string; visible: boolean }) {
         <div hidden={checking}>
           <Thread
             conversationID={threadID}
+            admin={admin}
             embedded
             visible={visible && !checking}
           />
@@ -120,9 +136,11 @@ function CoordinationThread({ id, visible }: { id: string; visible: boolean }) {
 export default function OrderMessages({
   detail,
   visible,
+  admin = false,
 }: {
   detail: Detail;
   visible: boolean;
+  admin?: boolean;
 }) {
   const location: Location<unknown> = useLocation();
   const query = new URLSearchParams(location.search);
@@ -168,13 +186,18 @@ export default function OrderMessages({
       )}
       {visited.support && (
         <div hidden={shared}>
-          <PrivateOrderThread detail={detail} visible={visible && !shared} />
+          <PrivateOrderThread
+            detail={detail}
+            admin={admin}
+            visible={visible && !shared}
+          />
         </div>
       )}
       {allowed && visited.coordination && (
         <div hidden={!shared}>
           <CoordinationThread
             id={detail.order.id}
+            admin={admin}
             visible={visible && shared}
           />
         </div>

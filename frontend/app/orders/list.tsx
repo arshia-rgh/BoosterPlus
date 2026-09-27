@@ -13,6 +13,7 @@ import { listingSchema, states, stateLabel } from "./model";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { nextAction, orderKind } from "./presentation";
 import "./order-workspace.css";
+import "./admin-workspace.css";
 import { AuthorizedIdentity } from "../identity/frame";
 import { useResource } from "./resource";
 // Only order IDs and filters, never form bodies. Clear at every identity boundary.
@@ -36,6 +37,27 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
         ]),
       ),
     );
+  const appliedFilters = JSON.stringify([
+    params.get("search"),
+    params.get("state"),
+    ...["game", "kind", "customer", "assigned", "from", "to"].map((key) =>
+      params.get(key),
+    ),
+  ]);
+  const [previousFilters, setPreviousFilters] = useState(appliedFilters);
+  if (previousFilters !== appliedFilters) {
+    setPreviousFilters(appliedFilters);
+    setSearch(params.get("search") ?? "");
+    setState(params.get("state") ?? "");
+    setAdvanced(
+      Object.fromEntries(
+        ["game", "kind", "customer", "assigned", "from", "to"].map((key) => [
+          key,
+          params.get(key) ?? "",
+        ]),
+      ),
+    );
+  }
   const base = admin ? "/admin/orders" : "/orders",
     query = new URLSearchParams({
       after: params.get("after") ?? "",
@@ -201,11 +223,13 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
         <>
           {resource.data.orders.length === 0 && (
             <p>
-              {query.get("search") || query.get("state")
-                ? "No orders match these filters. "
-                : "No orders yet. Your requests and purchases will appear here. "}
+              {admin
+                ? "No orders match the current queue filters. "
+                : query.get("search") || query.get("state")
+                  ? "No orders match these filters. "
+                  : "No orders yet. Your requests and purchases will appear here. "}
               {admin ? (
-                "Try a different search or status."
+                "Adjust or clear the filters to continue."
               ) : (
                 <Link to="/games">Explore games</Link>
               )}
@@ -222,13 +246,15 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
                     <th scope="col">Game / order</th>
                     <th scope="col">Service</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Customer / assignment / payment</th>
+                    <th scope="col">Next action</th>
                     <th scope="col">Updated</th>
                   </tr>
                 </thead>
                 <tbody>
                   {resource.data.orders.map((order) => (
                     <tr key={order.id} data-order-id={order.id}>
-                      <td>
+                      <td data-label="Game / order">
                         <Link
                           to={`${base}/${order.id}`}
                           state={{ orderListSearch: params.toString() }}
@@ -240,19 +266,53 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
                           <small>Order {order.id}</small>
                         </Link>
                       </td>
-                      <td>
+                      <td data-label="Service">
                         {order.kind === "package"
                           ? "Fixed package"
                           : order.kind === "account"
                             ? "Account purchase"
                             : "Custom request"}
                       </td>
-                      <td>
+                      <td data-label="Status">
                         <span className="status">
                           {stateLabel(order.state)}
                         </span>
                       </td>
-                      <td>
+                      <td data-label="Customer / assignment / payment">
+                        <div className="order-triage-summary">
+                          {order.staff ? (
+                            <>
+                              <span>
+                                Customer {order.staff.customer_id.slice(0, 8)}
+                              </span>
+                              <span>
+                                {order.staff.assigned_id
+                                  ? `Assignee ${order.staff.assigned_id.slice(0, 8)}`
+                                  : "Unassigned"}
+                              </span>
+                              <span>
+                                Payment: {stateLabel(order.staff.payment_state)}
+                              </span>
+                            </>
+                          ) : (
+                            <span>
+                              Queue context unavailable — review the record
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td data-label="Next action">
+                        <Link
+                          to={`${base}/${order.id}?section=${staffAction(order.state).section}`}
+                          state={{ orderListSearch: params.toString() }}
+                          onClick={() => {
+                            anchor.current = order.id;
+                          }}
+                        >
+                          {staffAction(order.state).label}
+                        </Link>
+                      </td>
+                      <td data-label="Updated">
                         <time dateTime={order.updated_at}>
                           {new Date(order.updated_at).toLocaleString()}
                         </time>
@@ -329,4 +389,17 @@ export default function OrderList({ admin = false }: { admin?: boolean }) {
       admin={admin}
     />
   );
+}
+
+function staffAction(state: string) {
+  if (state === "submitted")
+    return { section: "request", label: "Review request" };
+  if (state === "needs_information")
+    return { section: "messages", label: "Review clarification" };
+  if (state === "quoted") return { section: "quote", label: "Review quote" };
+  if (state === "awaiting_payment")
+    return { section: "payment", label: "Check payment" };
+  if (["queued", "in_progress", "on_hold"].includes(state))
+    return { section: "fulfillment", label: "Review fulfillment" };
+  return { section: "history", label: "Review history" };
 }

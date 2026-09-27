@@ -19,6 +19,7 @@ export function RecordShell({
   headingLevel = 1,
   keepMounted = [],
   compactReference = false,
+  stickyStatus,
 }: {
   id: string;
   title: string;
@@ -30,6 +31,7 @@ export function RecordShell({
   headingLevel?: 1 | 2;
   keepMounted?: readonly string[];
   compactReference?: boolean;
+  stickyStatus?: string;
 }) {
   const location: Location<unknown> = useLocation();
   const { pathname, search, state } = location;
@@ -42,6 +44,19 @@ export function RecordShell({
   const [visited, setVisited] = useState([active]);
   if (!visited.includes(active)) setVisited([...visited, active]);
   const content = useRef<HTMLDivElement>(null);
+  const sectionNavigation = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!stickyStatus) return;
+    const navigation = sectionNavigation.current;
+    const selectedLink =
+      navigation?.querySelector<HTMLElement>("[aria-current]");
+    if (navigation && selectedLink) {
+      const frame = navigation.getBoundingClientRect();
+      const link = selectedLink.getBoundingClientRect();
+      navigation.scrollLeft +=
+        link.left - frame.left - (frame.width - link.width) / 2;
+    }
+  }, [active, stickyStatus]);
   const previous = useRef(active);
   useEffect(() => {
     if (previous.current !== active) {
@@ -69,23 +84,37 @@ export function RecordShell({
         </Heading>
         <div className="record-status">{status}</div>
       </header>
-      <nav className="record-sections" aria-label={`${title} sections`}>
-        {sections.map((section) => {
-          const query = new URLSearchParams(search);
-          query.set("section", section.id);
-          return (
-            <Link
-              key={section.id}
-              to={{ pathname, search: `?${query.toString()}` }}
-              state={state}
-              preventScrollReset
-              aria-current={active === section.id ? "page" : undefined}
-            >
-              {section.label}
-            </Link>
-          );
-        })}
-      </nav>
+      <div className={stickyStatus ? "record-sticky-context" : undefined}>
+        {stickyStatus && (
+          <p className="record-context-line">
+            <strong>
+              {workspace} · {title} {id.slice(0, 8)}
+            </strong>
+            <span>{stickyStatus}</span>
+          </p>
+        )}
+        <nav
+          ref={sectionNavigation}
+          className="record-sections"
+          aria-label={`${title} sections`}
+        >
+          {sections.map((section) => {
+            const query = new URLSearchParams(search);
+            query.set("section", section.id);
+            return (
+              <Link
+                key={section.id}
+                to={{ pathname, search: `?${query.toString()}` }}
+                state={state}
+                preventScrollReset
+                aria-current={active === section.id ? "page" : undefined}
+              >
+                {section.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
       <div ref={content} tabIndex={-1} className="record-content">
         {sections.map((section) => {
           const visible = section.id === active;
