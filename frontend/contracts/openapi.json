@@ -21066,6 +21066,262 @@
           }
         }
       }
+    },
+    "/api/v1/refunds/{id}/history": {
+      "get": {
+        "operationId": "getCustomerRefundsEvidenceHistory",
+        "summary": "Read authorized private transfer events and provider attempts",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/payouts/{id}/history": {
+      "get": {
+        "operationId": "getCustomerPayoutsEvidenceHistory",
+        "summary": "Read authorized private transfer events and provider attempts",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/refunds/{id}/history": {
+      "get": {
+        "operationId": "getAdminRefundsEvidenceHistory",
+        "summary": "Read authorized private transfer events and provider attempts",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/payouts/{id}/history": {
+      "get": {
+        "operationId": "getAdminPayoutsEvidenceHistory",
+        "summary": "Read authorized private transfer events and provider attempts",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/finance/reconciliation": {
+      "get": {
+        "operationId": "inspectFinanceReconciliation",
+        "summary": "Inspect an account-bound provider reference and its latest manual read",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private payment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReconciliationReview"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authentication, authorization or payment validation rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentProblem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "direction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["incoming", "outgoing"]
+            }
+          },
+          {
+            "name": "payment_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -26435,6 +26691,10 @@
           "created_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "refundable_amount": {
+            "type": "string",
+            "description": "Staff-only exact remaining receipt reserve at read time. Absence means unavailable. Creation still rechecks eligibility and reserve transactionally."
           }
         }
       },
@@ -26483,7 +26743,14 @@
       "PaymentSettings": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["version", "draft", "published", "configured", "enabled"],
+        "required": [
+          "version",
+          "draft",
+          "published",
+          "configured",
+          "enabled",
+          "outgoing_enabled"
+        ],
         "properties": {
           "version": {
             "type": "integer"
@@ -26506,6 +26773,10 @@
           },
           "enabled": {
             "type": "boolean"
+          },
+          "outgoing_enabled": {
+            "type": "boolean",
+            "description": "Independent outgoing provider configuration and activation; does not follow checkout pause."
           }
         }
       },
@@ -26556,7 +26827,7 @@
           "attempts": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PaymentAttempt"
+              "$ref": "#/components/schemas/FinanceAttempt"
             }
           },
           "records": {
@@ -26812,6 +27083,11 @@
           },
           "outcome": {
             "type": "string"
+          },
+          "internal_rationale": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Authorized staff only; omitted from customer case events."
           }
         }
       },
@@ -26849,6 +27125,11 @@
           },
           "role": {
             "type": "string"
+          },
+          "internal_rationale": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Authorized staff only; omitted from customer case events."
           }
         }
       },
@@ -27004,6 +27285,9 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "seller_agreement": {
+            "$ref": "#/components/schemas/SellerPaymentAgreement"
           }
         }
       },
@@ -28987,6 +29271,388 @@
           "next": {
             "type": "string",
             "description": "After cursor; a filtered empty page may still have another page."
+          }
+        }
+      },
+      "IncomingPaymentEvidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "payment_id",
+          "state",
+          "issue",
+          "expected_amount",
+          "received_amount",
+          "currency",
+          "network",
+          "checked_at",
+          "observed_at",
+          "reading"
+        ],
+        "properties": {
+          "payment_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "expected_amount": {
+            "type": "string"
+          },
+          "received_amount": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "network": {
+            "type": "string"
+          },
+          "checked_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "observed_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "reading": {
+            "type": "boolean"
+          }
+        }
+      },
+      "FinanceAttempt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "order_id",
+          "state",
+          "issue",
+          "currency",
+          "amount_minor",
+          "route",
+          "policy",
+          "checkout_url",
+          "created_at",
+          "expires_at",
+          "native_checkout",
+          "instruction_status",
+          "deposit",
+          "evidence",
+          "more_evidence"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "amount_minor": {
+            "type": "string"
+          },
+          "route": {
+            "$ref": "#/components/schemas/PaymentRoute"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/PublishedPaymentPolicy"
+          },
+          "checkout_url": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "native_checkout": {
+            "type": "boolean"
+          },
+          "instruction_status": {
+            "type": "string",
+            "enum": [
+              "not_applicable",
+              "preparing",
+              "ready",
+              "refreshing",
+              "expired",
+              "review_required",
+              "closed"
+            ]
+          },
+          "deposit": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PaymentDeposit"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "$ref": "#/components/schemas/IncomingPaymentEvidence"
+            }
+          },
+          "more_evidence": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TransferSnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["amount", "currency", "network", "state", "recipient"],
+        "properties": {
+          "amount": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "network": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/RefundRecipient"
+          }
+        }
+      },
+      "TransferEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "action", "created_at", "snapshot"],
+        "properties": {
+          "version": {
+            "type": "integer"
+          },
+          "action": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TransferSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "TransferAttemptEvidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "state",
+          "issue",
+          "provider_id",
+          "checked_at",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "provider_id": {
+            "type": "string"
+          },
+          "checked_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TransferHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["events", "next", "attempts", "more_attempts"],
+        "properties": {
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransferEntry"
+            }
+          },
+          "next": {
+            "type": "integer"
+          },
+          "attempts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransferAttemptEvidence"
+            }
+          },
+          "more_attempts": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReconciliationJob": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "state", "attempts"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "attempts": {
+            "type": "integer"
+          }
+        }
+      },
+      "ReconciliationReview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "direction",
+          "payment_id",
+          "state",
+          "issue",
+          "order_id",
+          "case_id",
+          "transfer_id",
+          "submission_id",
+          "found",
+          "reading",
+          "checked_at",
+          "observed_at",
+          "job"
+        ],
+        "properties": {
+          "direction": {
+            "type": "string"
+          },
+          "payment_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "case_id": {
+            "type": "string"
+          },
+          "transfer_id": {
+            "type": "string"
+          },
+          "submission_id": {
+            "type": "string"
+          },
+          "found": {
+            "type": "boolean"
+          },
+          "reading": {
+            "type": "boolean"
+          },
+          "checked_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "observed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "job": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReconciliationJob"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "SellerPaymentAgreement": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "accepted_at", "terms"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "accepted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "terms": {
+            "$ref": "#/components/schemas/SellerTerms"
           }
         }
       }

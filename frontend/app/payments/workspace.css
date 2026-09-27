@@ -201,3 +201,14 @@
   border: 1px solid #496852;
   border-radius: 0.6rem;
 }
+
+.finance-evidence {
+  overflow-wrap: anywhere;
+}
+.finance-evidence details {
+  margin-top: 1rem;
+}
+.finance-evidence summary {
+  cursor: pointer;
+  padding-block: 0.6rem;
+}

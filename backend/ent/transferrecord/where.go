@@ -79,6 +79,11 @@ func AttemptID(v string) predicate.TransferRecord {
 	return predicate.TransferRecord(sql.FieldEQ(FieldAttemptID, v))
 }
 
+// ManualJobID applies equality check predicate on the "manual_job_id" field. It's identical to ManualJobIDEQ.
+func ManualJobID(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldEQ(FieldManualJobID, v))
+}
+
 // Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
 func Version(v int) predicate.TransferRecord {
 	return predicate.TransferRecord(sql.FieldEQ(FieldVersion, v))
@@ -307,6 +312,71 @@ func AttemptIDEqualFold(v string) predicate.TransferRecord {
 // AttemptIDContainsFold applies the ContainsFold predicate on the "attempt_id" field.
 func AttemptIDContainsFold(v string) predicate.TransferRecord {
 	return predicate.TransferRecord(sql.FieldContainsFold(FieldAttemptID, v))
+}
+
+// ManualJobIDEQ applies the EQ predicate on the "manual_job_id" field.
+func ManualJobIDEQ(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldEQ(FieldManualJobID, v))
+}
+
+// ManualJobIDNEQ applies the NEQ predicate on the "manual_job_id" field.
+func ManualJobIDNEQ(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldNEQ(FieldManualJobID, v))
+}
+
+// ManualJobIDIn applies the In predicate on the "manual_job_id" field.
+func ManualJobIDIn(vs ...string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldIn(FieldManualJobID, vs...))
+}
+
+// ManualJobIDNotIn applies the NotIn predicate on the "manual_job_id" field.
+func ManualJobIDNotIn(vs ...string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldNotIn(FieldManualJobID, vs...))
+}
+
+// ManualJobIDGT applies the GT predicate on the "manual_job_id" field.
+func ManualJobIDGT(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldGT(FieldManualJobID, v))
+}
+
+// ManualJobIDGTE applies the GTE predicate on the "manual_job_id" field.
+func ManualJobIDGTE(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldGTE(FieldManualJobID, v))
+}
+
+// ManualJobIDLT applies the LT predicate on the "manual_job_id" field.
+func ManualJobIDLT(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldLT(FieldManualJobID, v))
+}
+
+// ManualJobIDLTE applies the LTE predicate on the "manual_job_id" field.
+func ManualJobIDLTE(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldLTE(FieldManualJobID, v))
+}
+
+// ManualJobIDContains applies the Contains predicate on the "manual_job_id" field.
+func ManualJobIDContains(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldContains(FieldManualJobID, v))
+}
+
+// ManualJobIDHasPrefix applies the HasPrefix predicate on the "manual_job_id" field.
+func ManualJobIDHasPrefix(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldHasPrefix(FieldManualJobID, v))
+}
+
+// ManualJobIDHasSuffix applies the HasSuffix predicate on the "manual_job_id" field.
+func ManualJobIDHasSuffix(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldHasSuffix(FieldManualJobID, v))
+}
+
+// ManualJobIDEqualFold applies the EqualFold predicate on the "manual_job_id" field.
+func ManualJobIDEqualFold(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldEqualFold(FieldManualJobID, v))
+}
+
+// ManualJobIDContainsFold applies the ContainsFold predicate on the "manual_job_id" field.
+func ManualJobIDContainsFold(v string) predicate.TransferRecord {
+	return predicate.TransferRecord(sql.FieldContainsFold(FieldManualJobID, v))
 }
 
 // VersionEQ applies the EQ predicate on the "version" field.

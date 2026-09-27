@@ -123,6 +123,7 @@ export const attemptSchema = z.object({
   expires_at: z.string(),
 });
 export const receiptSchema = z.object({
+  refundable_amount: z.string().optional(),
   id: z.string(),
   state: z.string(),
   currency: z.string(),
@@ -140,6 +141,7 @@ export const historySchema = z.object({
   receipts: z.array(receiptSchema),
 });
 export const settingsSchema = z.object({
+  outgoing_enabled: z.boolean().optional(),
   version: z.number().int(),
   draft: policySchema,
   published: publishedSchema.nullable(),
@@ -147,10 +149,28 @@ export const settingsSchema = z.object({
   enabled: z.boolean(),
 });
 export type Settings = z.infer<typeof settingsSchema>;
+export const incomingEvidenceSchema = z.object({
+  payment_id: z.string(),
+  state: z.string(),
+  issue: z.string(),
+  expected_amount: z.string(),
+  received_amount: z.string(),
+  currency: z.string(),
+  network: z.string(),
+  checked_at: z.string().nullable(),
+  observed_at: z.string().nullable(),
+  reading: z.boolean(),
+});
+export type IncomingEvidence = z.infer<typeof incomingEvidenceSchema>;
 export const financeSchema = z.object({
   enabled: z.boolean(),
   next: z.string(),
-  attempts: z.array(attemptSchema),
+  attempts: z.array(
+    attemptSchema.extend({
+      evidence: z.array(incomingEvidenceSchema),
+      more_evidence: z.boolean(),
+    }),
+  ),
   records: z.array(
     z.object({
       id: z.string(),

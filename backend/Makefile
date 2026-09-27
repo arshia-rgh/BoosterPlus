@@ -68,6 +68,13 @@ pre-commit ci:
 	$(MAKE) fmt-check
 	go mod tidy -diff
 	$(MAKE) test-scripts generate-check vet lint security test-race test-integration migrate-validate build compose-check docker-build image-security
+.PHONY: stage-check
+# Owner-authorized DI00-DI15 window: retain static/security/unit/build checks;
+# changed integration scenarios run explicitly, full suite runs at DI15.
+stage-check:
+	$(MAKE) fmt-check
+	go mod tidy -diff
+	$(MAKE) test-scripts generate-check vet lint security test-race migrate-validate build
 clean:
 	rm -rf bin coverage.out
 

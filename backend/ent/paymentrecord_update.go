@@ -42,6 +42,20 @@ func (_u *PaymentRecordUpdate) SetNillableAttemptID(v *string) *PaymentRecordUpd
 	return _u
 }
 
+// SetManualJobID sets the "manual_job_id" field.
+func (_u *PaymentRecordUpdate) SetManualJobID(v string) *PaymentRecordUpdate {
+	_u.mutation.SetManualJobID(v)
+	return _u
+}
+
+// SetNillableManualJobID sets the "manual_job_id" field if the given value is not nil.
+func (_u *PaymentRecordUpdate) SetNillableManualJobID(v *string) *PaymentRecordUpdate {
+	if v != nil {
+		_u.SetManualJobID(*v)
+	}
+	return _u
+}
+
 // SetVersion sets the "version" field.
 func (_u *PaymentRecordUpdate) SetVersion(v int) *PaymentRecordUpdate {
 	_u.mutation.ResetVersion()
@@ -184,6 +198,11 @@ func (_u *PaymentRecordUpdate) check() error {
 			return &ValidationError{Name: "attempt_id", err: fmt.Errorf(`ent: validator failed for field "PaymentRecord.attempt_id": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.ManualJobID(); ok {
+		if err := paymentrecord.ManualJobIDValidator(v); err != nil {
+			return &ValidationError{Name: "manual_job_id", err: fmt.Errorf(`ent: validator failed for field "PaymentRecord.manual_job_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.LeaseOwner(); ok {
 		if err := paymentrecord.LeaseOwnerValidator(v); err != nil {
 			return &ValidationError{Name: "lease_owner", err: fmt.Errorf(`ent: validator failed for field "PaymentRecord.lease_owner": %w`, err)}
@@ -216,6 +235,9 @@ func (_u *PaymentRecordUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	}
 	if value, ok := _u.mutation.AttemptID(); ok {
 		_spec.SetField(paymentrecord.FieldAttemptID, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.ManualJobID(); ok {
+		_spec.SetField(paymentrecord.FieldManualJobID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(paymentrecord.FieldVersion, field.TypeInt, value)
@@ -274,6 +296,20 @@ func (_u *PaymentRecordUpdateOne) SetAttemptID(v string) *PaymentRecordUpdateOne
 func (_u *PaymentRecordUpdateOne) SetNillableAttemptID(v *string) *PaymentRecordUpdateOne {
 	if v != nil {
 		_u.SetAttemptID(*v)
+	}
+	return _u
+}
+
+// SetManualJobID sets the "manual_job_id" field.
+func (_u *PaymentRecordUpdateOne) SetManualJobID(v string) *PaymentRecordUpdateOne {
+	_u.mutation.SetManualJobID(v)
+	return _u
+}
+
+// SetNillableManualJobID sets the "manual_job_id" field if the given value is not nil.
+func (_u *PaymentRecordUpdateOne) SetNillableManualJobID(v *string) *PaymentRecordUpdateOne {
+	if v != nil {
+		_u.SetManualJobID(*v)
 	}
 	return _u
 }
@@ -433,6 +469,11 @@ func (_u *PaymentRecordUpdateOne) check() error {
 			return &ValidationError{Name: "attempt_id", err: fmt.Errorf(`ent: validator failed for field "PaymentRecord.attempt_id": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.ManualJobID(); ok {
+		if err := paymentrecord.ManualJobIDValidator(v); err != nil {
+			return &ValidationError{Name: "manual_job_id", err: fmt.Errorf(`ent: validator failed for field "PaymentRecord.manual_job_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.LeaseOwner(); ok {
 		if err := paymentrecord.LeaseOwnerValidator(v); err != nil {
 			return &ValidationError{Name: "lease_owner", err: fmt.Errorf(`ent: validator failed for field "PaymentRecord.lease_owner": %w`, err)}
@@ -482,6 +523,9 @@ func (_u *PaymentRecordUpdateOne) sqlSave(ctx context.Context) (_node *PaymentRe
 	}
 	if value, ok := _u.mutation.AttemptID(); ok {
 		_spec.SetField(paymentrecord.FieldAttemptID, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.ManualJobID(); ok {
+		_spec.SetField(paymentrecord.FieldManualJobID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(paymentrecord.FieldVersion, field.TypeInt, value)

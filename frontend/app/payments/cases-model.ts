@@ -1,6 +1,6 @@
 import { z } from "../validation";
 import { remedySchema } from "./model";
-import { productSchema } from "../resale/model";
+import { sellerTermsSchema, productSchema } from "../resale/model";
 export const caseSchema = z.object({
   account_terms: productSchema.nullable().optional(),
   id: z.string(),
@@ -27,12 +27,20 @@ export const caseDetailSchema = z.object({
       action: z.string(),
       role: z.string(),
       note: z.string(),
+      internal_rationale: z.string().optional(),
       message_id: z.string(),
       created_at: z.string(),
     }),
   ),
 });
 export const transferSchema = z.object({
+  seller_agreement: z
+    .object({
+      id: z.string(),
+      accepted_at: z.string().nullable(),
+      terms: sellerTermsSchema,
+    })
+    .optional(),
   id: z.string(),
   case_id: z.string(),
   receipt_id: z.string(),
@@ -65,6 +73,37 @@ export const outgoingQueueSchema = z.object({
       state: z.string(),
       issue: z.string(),
       checked_at: z.string(),
+    }),
+  ),
+});
+
+export const transferHistorySchema = z.object({
+  next: z.number().int(),
+  more_attempts: z.boolean(),
+  events: z.array(
+    z.object({
+      version: z.number().int(),
+      action: z.string(),
+      created_at: z.string(),
+      snapshot: z
+        .object({
+          amount: z.string(),
+          currency: z.string(),
+          network: z.string(),
+          state: z.string(),
+          recipient: z.object({ address: z.string(), memo: z.string() }),
+        })
+        .nullable(),
+    }),
+  ),
+  attempts: z.array(
+    z.object({
+      id: z.string(),
+      state: z.string(),
+      issue: z.string(),
+      provider_id: z.string(),
+      checked_at: z.string().nullable(),
+      created_at: z.string(),
     }),
   ),
 });

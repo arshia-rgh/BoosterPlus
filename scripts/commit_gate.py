@@ -1,6 +1,11 @@
-"""Select checks from staged paths; unknown or infrastructure changes fail to full."""
+"""Select staged checks; the owner deferred aggregate qualification until DI15."""
 from pathlib import PurePosixPath
 import subprocess
+
+# Owner instruction, 28 September 2026: retain focused stage verification and run
+# the complete repository gate at DI15. Restore normal selection at that exit.
+# CI and root/project pre-commit targets always retain their complete gates.
+FOCUSED_UNTIL_DI15 = True
 
 
 def scope(paths):
@@ -26,13 +31,22 @@ def main():
         "git", "diff", "--cached", "--no-renames", "--name-only", "-z",
     ])
     selected = scope([item.decode() for item in raw.split(b"\0") if item])
-    print(f"Required staged-change gate: {selected}", flush=True)
+    mode = "focused until DI15" if FOCUSED_UNTIL_DI15 else "complete"
+    print(f"Required staged-change gate: {selected} ({mode})", flush=True)
+    for command in commands(selected, FOCUSED_UNTIL_DI15):
+        subprocess.run(command, check=True)
+
+
+def commands(selected, focused):
+    """Keep the full gate available without an environment-variable bypass."""
     if selected == "full":
-        subprocess.run(["make", "pre-commit"], check=True)
-    else:
-        subprocess.run(["make", "check-repository"], check=True)
-        if selected == "frontend":
-            subprocess.run(["make", "-C", "frontend", "pre-commit"], check=True)
+        return [["make", "stage-check" if focused else "pre-commit"]]
+    result = [["make", "check-repository"]]
+    if selected == "frontend":
+        result.append(["make", "-C", "frontend", "stage-check" if focused else "pre-commit"])
+    elif selected != "repository":
+        raise ValueError("Unknown gate scope")
+    return result
 
 
 if __name__ == "__main__":

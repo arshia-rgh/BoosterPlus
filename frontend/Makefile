@@ -32,6 +32,18 @@ pre-commit ci:
 	npm run pre-commit
 	$(MAKE) docker-build image-security
 	python3 scripts/container-smoke.py
+.PHONY: stage-check
+# Keep aggregate browser/container qualification for DI15; run changed browser
+# scenarios explicitly and retain their evidence with the stage record.
+stage-check:
+	npm run contract:check
+	npm run format:check
+	npm run typecheck
+	npm run lint
+	npm run test
+	npm run security
+	npm run build
+	npm run test:server
 clean:
 	rm -rf build coverage test-results playwright-report .react-router
 docker-build:

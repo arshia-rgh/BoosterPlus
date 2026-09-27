@@ -20,6 +20,7 @@ func (CaseEvent) Fields() []ent.Field {
 		field.String("actor_id").MaxLen(36).Immutable(),
 		field.String("actor_role").MaxLen(32).Immutable(),
 		field.String("note").MaxLen(2000).Immutable(),
+		field.String("internal_rationale").MaxLen(2000).Immutable().Default(""),
 		field.String("message_id").MaxLen(36).Immutable().Default(""),
 		field.Time("created_at").Immutable(),
 	}

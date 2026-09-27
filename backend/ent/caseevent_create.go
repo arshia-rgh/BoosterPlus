@@ -56,6 +56,20 @@ func (_c *CaseEventCreate) SetNote(v string) *CaseEventCreate {
 	return _c
 }
 
+// SetInternalRationale sets the "internal_rationale" field.
+func (_c *CaseEventCreate) SetInternalRationale(v string) *CaseEventCreate {
+	_c.mutation.SetInternalRationale(v)
+	return _c
+}
+
+// SetNillableInternalRationale sets the "internal_rationale" field if the given value is not nil.
+func (_c *CaseEventCreate) SetNillableInternalRationale(v *string) *CaseEventCreate {
+	if v != nil {
+		_c.SetInternalRationale(*v)
+	}
+	return _c
+}
+
 // SetMessageID sets the "message_id" field.
 func (_c *CaseEventCreate) SetMessageID(v string) *CaseEventCreate {
 	_c.mutation.SetMessageID(v)
@@ -125,6 +139,10 @@ func (_c *CaseEventCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *CaseEventCreate) defaults() {
+	if _, ok := _c.mutation.InternalRationale(); !ok {
+		v := caseevent.DefaultInternalRationale
+		_c.mutation.SetInternalRationale(v)
+	}
 	if _, ok := _c.mutation.MessageID(); !ok {
 		v := caseevent.DefaultMessageID
 		_c.mutation.SetMessageID(v)
@@ -178,6 +196,14 @@ func (_c *CaseEventCreate) check() error {
 	if v, ok := _c.mutation.Note(); ok {
 		if err := caseevent.NoteValidator(v); err != nil {
 			return &ValidationError{Name: "note", err: fmt.Errorf(`ent: validator failed for field "CaseEvent.note": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.InternalRationale(); !ok {
+		return &ValidationError{Name: "internal_rationale", err: errors.New(`ent: missing required field "CaseEvent.internal_rationale"`)}
+	}
+	if v, ok := _c.mutation.InternalRationale(); ok {
+		if err := caseevent.InternalRationaleValidator(v); err != nil {
+			return &ValidationError{Name: "internal_rationale", err: fmt.Errorf(`ent: validator failed for field "CaseEvent.internal_rationale": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.MessageID(); !ok {
@@ -254,6 +280,10 @@ func (_c *CaseEventCreate) createSpec() (*CaseEvent, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Note(); ok {
 		_spec.SetField(caseevent.FieldNote, field.TypeString, value)
 		_node.Note = value
+	}
+	if value, ok := _c.mutation.InternalRationale(); ok {
+		_spec.SetField(caseevent.FieldInternalRationale, field.TypeString, value)
+		_node.InternalRationale = value
 	}
 	if value, ok := _c.mutation.MessageID(); ok {
 		_spec.SetField(caseevent.FieldMessageID, field.TypeString, value)

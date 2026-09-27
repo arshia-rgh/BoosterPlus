@@ -51,6 +51,14 @@ it("requires owner authorization on the payout endpoint and cannot cancel accept
     screen.getByLabelText("Seller payout authorization reason"),
     { target: { value: "Authorize the accepted exact seller obligation." } },
   );
+  expect(action).toBeDisabled();
+  fireEvent.click(action);
+  expect(post).not.toHaveBeenCalled();
+  fireEvent.click(
+    screen.getByLabelText(
+      "I reviewed the recipient, exact amount, fees and due conditions",
+    ),
+  );
   fireEvent.click(action);
   await waitFor(() => {
     expect(reload).toHaveBeenCalled();

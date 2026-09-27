@@ -23,6 +23,8 @@ const (
 	FieldActorRole = "actor_role"
 	// FieldNote holds the string denoting the note field in the database.
 	FieldNote = "note"
+	// FieldInternalRationale holds the string denoting the internal_rationale field in the database.
+	FieldInternalRationale = "internal_rationale"
 	// FieldMessageID holds the string denoting the message_id field in the database.
 	FieldMessageID = "message_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -40,6 +42,7 @@ var Columns = []string{
 	FieldActorID,
 	FieldActorRole,
 	FieldNote,
+	FieldInternalRationale,
 	FieldMessageID,
 	FieldCreatedAt,
 }
@@ -65,6 +68,10 @@ var (
 	ActorRoleValidator func(string) error
 	// NoteValidator is a validator for the "note" field. It is called by the builders before save.
 	NoteValidator func(string) error
+	// DefaultInternalRationale holds the default value on creation for the "internal_rationale" field.
+	DefaultInternalRationale string
+	// InternalRationaleValidator is a validator for the "internal_rationale" field. It is called by the builders before save.
+	InternalRationaleValidator func(string) error
 	// DefaultMessageID holds the default value on creation for the "message_id" field.
 	DefaultMessageID string
 	// MessageIDValidator is a validator for the "message_id" field. It is called by the builders before save.
@@ -111,6 +118,11 @@ func ByActorRole(opts ...sql.OrderTermOption) OrderOption {
 // ByNote orders the results by the note field.
 func ByNote(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNote, opts...).ToFunc()
+}
+
+// ByInternalRationale orders the results by the internal_rationale field.
+func ByInternalRationale(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInternalRationale, opts...).ToFunc()
 }
 
 // ByMessageID orders the results by the message_id field.

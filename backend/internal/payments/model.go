@@ -173,11 +173,12 @@ type PolicyView struct {
 
 // Settings exposes operational configuration without merchant credentials.
 type Settings struct {
-	Version    int         `json:"version"`
-	Draft      Policy      `json:"draft"`
-	Published  *PolicyView `json:"published"`
-	Configured bool        `json:"configured"`
-	Enabled    bool        `json:"enabled"`
+	OutgoingEnabled bool        `json:"outgoing_enabled"`
+	Version         int         `json:"version"`
+	Draft           Policy      `json:"draft"`
+	Published       *PolicyView `json:"published"`
+	Configured      bool        `json:"configured"`
+	Enabled         bool        `json:"enabled"`
 }
 
 // PolicyInput carries a staff revision, explicit action and approved text.
@@ -232,6 +233,7 @@ func attemptView(row *ent.PaymentAttempt) (Attempt, error) {
 
 // Receipt records exact received crypto separately from its allocated order currency.
 type Receipt struct {
+	RefundableAmount  *string   `json:"refundable_amount,omitempty"`
 	ID                string    `json:"id"`
 	State             string    `json:"state"`
 	Currency          string    `json:"currency"`

@@ -46,6 +46,20 @@ func (_c *PaymentRecordCreate) SetNillableAttemptID(v *string) *PaymentRecordCre
 	return _c
 }
 
+// SetManualJobID sets the "manual_job_id" field.
+func (_c *PaymentRecordCreate) SetManualJobID(v string) *PaymentRecordCreate {
+	_c.mutation.SetManualJobID(v)
+	return _c
+}
+
+// SetNillableManualJobID sets the "manual_job_id" field if the given value is not nil.
+func (_c *PaymentRecordCreate) SetNillableManualJobID(v *string) *PaymentRecordCreate {
+	if v != nil {
+		_c.SetManualJobID(*v)
+	}
+	return _c
+}
+
 // SetVersion sets the "version" field.
 func (_c *PaymentRecordCreate) SetVersion(v int) *PaymentRecordCreate {
 	_c.mutation.SetVersion(v)
@@ -187,6 +201,10 @@ func (_c *PaymentRecordCreate) defaults() {
 		v := paymentrecord.DefaultAttemptID
 		_c.mutation.SetAttemptID(v)
 	}
+	if _, ok := _c.mutation.ManualJobID(); !ok {
+		v := paymentrecord.DefaultManualJobID
+		_c.mutation.SetManualJobID(v)
+	}
 	if _, ok := _c.mutation.Version(); !ok {
 		v := paymentrecord.DefaultVersion
 		_c.mutation.SetVersion(v)
@@ -233,6 +251,14 @@ func (_c *PaymentRecordCreate) check() error {
 	if v, ok := _c.mutation.AttemptID(); ok {
 		if err := paymentrecord.AttemptIDValidator(v); err != nil {
 			return &ValidationError{Name: "attempt_id", err: fmt.Errorf(`ent: validator failed for field "PaymentRecord.attempt_id": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.ManualJobID(); !ok {
+		return &ValidationError{Name: "manual_job_id", err: errors.New(`ent: missing required field "PaymentRecord.manual_job_id"`)}
+	}
+	if v, ok := _c.mutation.ManualJobID(); ok {
+		if err := paymentrecord.ManualJobIDValidator(v); err != nil {
+			return &ValidationError{Name: "manual_job_id", err: fmt.Errorf(`ent: validator failed for field "PaymentRecord.manual_job_id": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Version(); !ok {
@@ -322,6 +348,10 @@ func (_c *PaymentRecordCreate) createSpec() (*PaymentRecord, *sqlgraph.CreateSpe
 	if value, ok := _c.mutation.AttemptID(); ok {
 		_spec.SetField(paymentrecord.FieldAttemptID, field.TypeString, value)
 		_node.AttemptID = value
+	}
+	if value, ok := _c.mutation.ManualJobID(); ok {
+		_spec.SetField(paymentrecord.FieldManualJobID, field.TypeString, value)
+		_node.ManualJobID = value
 	}
 	if value, ok := _c.mutation.Version(); ok {
 		_spec.SetField(paymentrecord.FieldVersion, field.TypeInt, value)

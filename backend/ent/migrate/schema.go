@@ -616,6 +616,7 @@ var (
 		{Name: "actor_id", Type: field.TypeString, Size: 36},
 		{Name: "actor_role", Type: field.TypeString, Size: 32},
 		{Name: "note", Type: field.TypeString, Size: 2000},
+		{Name: "internal_rationale", Type: field.TypeString, Size: 2000, Default: ""},
 		{Name: "message_id", Type: field.TypeString, Size: 36, Default: ""},
 		{Name: "created_at", Type: field.TypeTime},
 	}
@@ -1392,6 +1393,7 @@ var (
 		{Name: "account", Type: field.TypeString, Size: 80},
 		{Name: "payment_id", Type: field.TypeString, Size: 32},
 		{Name: "attempt_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "manual_job_id", Type: field.TypeString, Size: 64, Default: ""},
 		{Name: "version", Type: field.TypeInt, Default: 0},
 		{Name: "lease_owner", Type: field.TypeString, Size: 36, Default: ""},
 		{Name: "lease_until", Type: field.TypeTime, Nullable: true},
@@ -1415,7 +1417,12 @@ var (
 			{
 				Name:    "payment_reconcile_due",
 				Unique:  false,
-				Columns: []*schema.Column{PaymentRecordsColumns[1], PaymentRecordsColumns[10], PaymentRecordsColumns[0]},
+				Columns: []*schema.Column{PaymentRecordsColumns[1], PaymentRecordsColumns[11], PaymentRecordsColumns[0]},
+			},
+			{
+				Name:    "payment_attempt_evidence",
+				Unique:  false,
+				Columns: []*schema.Column{PaymentRecordsColumns[1], PaymentRecordsColumns[3], PaymentRecordsColumns[11], PaymentRecordsColumns[0]},
 			},
 		},
 	}
@@ -1868,6 +1875,7 @@ var (
 		{Name: "version", Type: field.TypeInt},
 		{Name: "action", Type: field.TypeString, Size: 32},
 		{Name: "actor_id", Type: field.TypeString, Size: 36},
+		{Name: "snapshot", Type: field.TypeJSON, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 	}
 	// TransferEventsTable holds the schema information for the "transfer_events" table.
@@ -1911,6 +1919,7 @@ var (
 		{Name: "account", Type: field.TypeString, Size: 80},
 		{Name: "provider_id", Type: field.TypeString, Size: 32},
 		{Name: "attempt_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "manual_job_id", Type: field.TypeString, Size: 64, Default: ""},
 		{Name: "version", Type: field.TypeInt, Default: 0},
 		{Name: "lease_owner", Type: field.TypeString, Size: 36, Default: ""},
 		{Name: "lease_until", Type: field.TypeTime, Nullable: true},
@@ -1934,7 +1943,7 @@ var (
 			{
 				Name:    "transfer_record_due",
 				Unique:  false,
-				Columns: []*schema.Column{TransferRecordsColumns[1], TransferRecordsColumns[10], TransferRecordsColumns[0]},
+				Columns: []*schema.Column{TransferRecordsColumns[1], TransferRecordsColumns[11], TransferRecordsColumns[0]},
 			},
 		},
 	}

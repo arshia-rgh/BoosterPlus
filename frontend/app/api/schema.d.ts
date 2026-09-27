@@ -4679,6 +4679,91 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/refunds/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read authorized private transfer events and provider attempts */
+    get: operations["getCustomerRefundsEvidenceHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payouts/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read authorized private transfer events and provider attempts */
+    get: operations["getCustomerPayoutsEvidenceHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/refunds/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read authorized private transfer events and provider attempts */
+    get: operations["getAdminRefundsEvidenceHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/payouts/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read authorized private transfer events and provider attempts */
+    get: operations["getAdminPayoutsEvidenceHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/finance/reconciliation": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Inspect an account-bound provider reference and its latest manual read */
+    get: operations["inspectFinanceReconciliation"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -6163,6 +6248,8 @@ export interface components {
       allocated_minor: string;
       /** Format: date-time */
       created_at: string;
+      /** @description Staff-only exact remaining receipt reserve at read time. Absence means unavailable. Creation still rechecks eligibility and reserve transactionally. */
+      refundable_amount?: string;
     };
     PaymentHistory: {
       enabled: boolean;
@@ -6178,6 +6265,8 @@ export interface components {
       published: components["schemas"]["PublishedPaymentPolicy"] | null;
       configured: boolean;
       enabled: boolean;
+      /** @description Independent outgoing provider configuration and activation; does not follow checkout pause. */
+      outgoing_enabled: boolean;
     };
     PaymentRecord: {
       id: string;
@@ -6191,7 +6280,7 @@ export interface components {
     FinanceQueue: {
       enabled: boolean;
       next: string;
-      attempts: components["schemas"]["PaymentAttempt"][];
+      attempts: components["schemas"]["FinanceAttempt"][];
       records: components["schemas"]["PaymentRecord"][];
     };
     PaymentStartInput: {
@@ -6254,6 +6343,8 @@ export interface components {
       note: string;
       message_id: string;
       outcome: string;
+      /** @description Authorized staff only; omitted from customer case events. */
+      internal_rationale?: string;
     };
     ServiceCaseEvent: {
       version: number;
@@ -6264,6 +6355,8 @@ export interface components {
       /** Format: date-time */
       created_at: string;
       role: string;
+      /** @description Authorized staff only; omitted from customer case events. */
+      internal_rationale?: string;
     };
     ServiceCaseHistory: {
       cases: components["schemas"]["ServiceCase"][];
@@ -6301,6 +6394,7 @@ export interface components {
       created_at: string;
       /** Format: date-time */
       updated_at: string;
+      seller_agreement?: components["schemas"]["SellerPaymentAgreement"];
     };
     RefundHistory: {
       transfers: components["schemas"]["RefundTransfer"][];
@@ -6865,6 +6959,102 @@ export interface components {
       }[];
       /** @description After cursor; a filtered empty page may still have another page. */
       next: string;
+    };
+    IncomingPaymentEvidence: {
+      payment_id: string;
+      state: string;
+      issue: string;
+      expected_amount: string;
+      received_amount: string;
+      currency: string;
+      network: string;
+      /** Format: date-time */
+      checked_at: string | null;
+      /** Format: date-time */
+      observed_at: string | null;
+      reading: boolean;
+    };
+    FinanceAttempt: {
+      id: string;
+      order_id: string;
+      state: string;
+      issue: string;
+      currency: string;
+      amount_minor: string;
+      route: components["schemas"]["PaymentRoute"];
+      policy: components["schemas"]["PublishedPaymentPolicy"];
+      checkout_url: string;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      expires_at: string;
+      native_checkout: boolean;
+      /** @enum {string} */
+      instruction_status:
+        | "not_applicable"
+        | "preparing"
+        | "ready"
+        | "refreshing"
+        | "expired"
+        | "review_required"
+        | "closed";
+      deposit: components["schemas"]["PaymentDeposit"] | null;
+      evidence: components["schemas"]["IncomingPaymentEvidence"][];
+      more_evidence: boolean;
+    };
+    TransferSnapshot: {
+      amount: string;
+      currency: string;
+      network: string;
+      state: string;
+      recipient: components["schemas"]["RefundRecipient"];
+    };
+    TransferEntry: {
+      version: number;
+      action: string;
+      /** Format: date-time */
+      created_at: string;
+      snapshot: components["schemas"]["TransferSnapshot"] | null;
+    };
+    TransferAttemptEvidence: {
+      id: string;
+      state: string;
+      issue: string;
+      provider_id: string;
+      checked_at: string | null;
+      /** Format: date-time */
+      created_at: string;
+    };
+    TransferHistory: {
+      events: components["schemas"]["TransferEntry"][];
+      next: number;
+      attempts: components["schemas"]["TransferAttemptEvidence"][];
+      more_attempts: boolean;
+    };
+    ReconciliationJob: {
+      id: string;
+      state: string;
+      attempts: number;
+    };
+    ReconciliationReview: {
+      direction: string;
+      payment_id: string;
+      state: string;
+      issue: string;
+      order_id: string;
+      case_id: string;
+      transfer_id: string;
+      submission_id: string;
+      found: boolean;
+      reading: boolean;
+      checked_at: string | null;
+      observed_at: string | null;
+      job: components["schemas"]["ReconciliationJob"] | null;
+    };
+    SellerPaymentAgreement: {
+      id: string;
+      accepted_at: string | null;
+      terms: components["schemas"]["SellerTerms"];
     };
   };
   responses: never;
@@ -20727,6 +20917,170 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ResaleProblem"];
+        };
+      };
+    };
+  };
+  getCustomerRefundsEvidenceHistory: {
+    parameters: {
+      query?: {
+        after?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TransferHistory"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getCustomerPayoutsEvidenceHistory: {
+    parameters: {
+      query?: {
+        after?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TransferHistory"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getAdminRefundsEvidenceHistory: {
+    parameters: {
+      query?: {
+        after?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TransferHistory"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getAdminPayoutsEvidenceHistory: {
+    parameters: {
+      query?: {
+        after?: number;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TransferHistory"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  inspectFinanceReconciliation: {
+    parameters: {
+      query: {
+        direction: "incoming" | "outgoing";
+        payment_id: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Private payment result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReconciliationReview"];
+        };
+      };
+      /** @description Authentication, authorization or payment validation rejected */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProblem"];
         };
       };
     };

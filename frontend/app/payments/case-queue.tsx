@@ -1,8 +1,5 @@
-import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { z } from "../validation";
-import { Action, ErrorNotice, Text } from "../catalog/controls";
-import { post } from "../identity/api";
+import { Action, ErrorNotice } from "../catalog/controls";
 import { useResource } from "../orders/resource";
 import { caseQueueSchema, outgoingQueueSchema } from "./cases-model";
 export default function CaseQueue() {
@@ -11,11 +8,6 @@ export default function CaseQueue() {
   const setAfter = (after: string) => {
     setParams({ ...Object.fromEntries(params), casesAfter: after });
   };
-  const [payment, setPayment] = useState(""),
-    [reason, setReason] = useState(""),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState<unknown>(null),
-    [notice, setNotice] = useState("");
   const resource = useResource(
     `/admin/cases?after=${encodeURIComponent(after)}`,
     caseQueueSchema,
@@ -28,29 +20,10 @@ export default function CaseQueue() {
     `/admin/finance/outgoing?after=${encodeURIComponent(outgoingAfter)}`,
     outgoingQueueSchema,
   );
-  async function reconcile() {
-    setBusy(true);
-    setError(null);
-    setNotice("");
-    try {
-      await post(
-        "/admin/finance/outgoing/reconcile",
-        { payment_id: payment, reason },
-        z.object({ queued: z.boolean() }),
-      );
-      setNotice(
-        "Outgoing reconciliation queued. Review the refund record after the worker reads provider evidence.",
-      );
-    } catch (cause) {
-      setError(cause);
-    } finally {
-      setBusy(false);
-    }
-  }
   return (
     <section className="catalog-section">
       <h2>Open service cases</h2>
-      <ErrorNotice error={resource.error ?? error} />
+      <ErrorNotice error={resource.error} />
       <Action onClick={resource.reload}>Refresh case queue</Action>
       {resource.data?.cases.length === 0 && <p>No open cases.</p>}
       {resource.data?.cases.map((record) => (
@@ -87,8 +60,13 @@ export default function CaseQueue() {
       )}
       <h3>Outgoing exceptions</h3>
       <p>
-        Outgoing transfers: {outgoing.data?.enabled ? "enabled" : "paused"}.
-        Provider observations cannot create an approval.
+        Outgoing transfers:{" "}
+        {outgoing.data
+          ? outgoing.data.enabled
+            ? "enabled"
+            : "paused"
+          : "status unavailable"}
+        . Provider observations cannot create an approval.
       </p>
       <ErrorNotice error={outgoing.error} />
       <Action onClick={outgoing.reload}>Refresh outgoing exceptions</Action>
@@ -97,7 +75,11 @@ export default function CaseQueue() {
       )}
       {outgoing.data?.records.map((record) => (
         <article key={record.id}>
-          <strong>Provider transfer {record.payment_id}</strong>
+          <Link
+            to={`/admin/finance?${new URLSearchParams({ ...Object.fromEntries(params), view: "reconcile", direction: "outgoing", reference: record.payment_id }).toString()}`}
+          >
+            Inspect provider transfer {record.payment_id}
+          </Link>
           <p>
             {record.issue.replaceAll("_", " ")} · {record.state} ·{" "}
             {new Date(record.checked_at).toLocaleString()}
@@ -122,33 +104,6 @@ export default function CaseQueue() {
           More outgoing exceptions
         </Action>
       )}
-      <fieldset disabled={busy}>
-        <legend>Reconcile an outgoing transfer</legend>
-        <p>
-          Use the provider payout ID. This requests a read; it cannot approve or
-          send funds.
-        </p>
-        <Text
-          label="Provider outgoing payment ID"
-          value={payment}
-          change={setPayment}
-        />
-        <Text
-          label="Outgoing reconciliation reason"
-          multiline
-          value={reason}
-          change={setReason}
-        />
-        <Action
-          disabled={
-            !/^[1-9][0-9]{0,31}$/.test(payment) || reason.trim().length < 10
-          }
-          onClick={() => void reconcile()}
-        >
-          Reconcile outgoing payment
-        </Action>
-      </fieldset>
-      {notice && <p role="status">{notice}</p>}
     </section>
   );
 }

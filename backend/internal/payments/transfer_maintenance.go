@@ -2,6 +2,7 @@ package payments
 
 import (
 	"context"
+	"crypto/rand"
 	"strconv"
 	"time"
 
@@ -72,7 +73,16 @@ func (s *Store) RequestOutgoingRead(ctx context.Context, p *identity.Principal, 
 		if err = s.audit(ctx, tx, current, "outgoing_reconcile", record.ID); err != nil {
 			return err
 		}
-		return s.queueTransfer(ctx, tx, record)
+		_, err = tx.AuthAudit.Create().SetID(rand.Text()).SetActorID(current.User.ID).SetActorReference(current.User.ID).SetAction("payments.outgoing_reconciliation_reason").SetTargetID(record.ID).SetMetadata(map[string]string{"reason": input.Reason}).SetCreatedAt(s.instant()).Save(ctx)
+		if err != nil {
+			return err
+		}
+		jobID, err := enqueueManualRead(ctx, tx, record.ID, record.ManualJobID, "payments.outgoing_reconcile")
+		if err != nil {
+			return err
+		}
+		_, err = tx.TransferRecord.UpdateOneID(record.ID).SetManualJobID(jobID).Save(ctx)
+		return err
 	})
 }
 func transferReadKey(row *ent.TransferRecord, now time.Time) string {

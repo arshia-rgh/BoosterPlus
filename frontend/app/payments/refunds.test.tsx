@@ -111,6 +111,12 @@ it("clears the ephemeral merchant code before sending the bounded authorization"
   fireEvent.change(screen.getByLabelText("NOWPayments authenticator code"), {
     target: { value: "123456" },
   });
+  expect(button).toBeDisabled();
+  fireEvent.click(
+    screen.getByLabelText(
+      "I reviewed the recipient, exact amount, fees and due conditions",
+    ),
+  );
   fireEvent.click(button);
   expect(screen.getByLabelText("NOWPayments authenticator code")).toHaveValue(
     "",
@@ -129,4 +135,108 @@ it("clears the ephemeral merchant code before sending the bounded authorization"
   expect(
     screen.queryByText(/The provider confirmed this outgoing/),
   ).not.toBeInTheDocument();
+});
+it("locks an uncertain refund proposal and retries its unchanged request", async () => {
+  const reload = vi.fn();
+  vi.mocked(useResource).mockReturnValue({
+    data: {
+      transfers: [],
+      receipts: [
+        {
+          id: "source",
+          state: "confirmed",
+          amount: "12.34000001",
+          currency: "usdttrc20",
+          network: "trx",
+          refundable_amount: "12.34000001",
+        },
+      ],
+    },
+    error: null,
+    loading: false,
+    reload,
+  });
+  vi.mocked(post)
+    .mockRejectedValueOnce(new Error("Response lost"))
+    .mockResolvedValueOnce({});
+  render(<Refunds orderID="order" caseID="case" admin owner />);
+  fireEvent.change(screen.getByLabelText("Refund source receipt"), {
+    target: { value: "source" },
+  });
+  fireEvent.change(screen.getByLabelText("Exact refund crypto amount"), {
+    target: { value: "1.000000000000000001" },
+  });
+  fireEvent.change(screen.getByLabelText("Refund proposal terms"), {
+    target: {
+      value: "Return this exact amount under explicitly reviewed fees.",
+    },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Propose refund" }));
+  await screen.findByRole("alert");
+  expect(screen.getByLabelText("Exact refund crypto amount")).toBeDisabled();
+  expect(screen.getByLabelText("Refund proposal terms")).toBeDisabled();
+  const original = vi.mocked(post).mock.calls[0]?.[1];
+  fireEvent.click(
+    screen.getByRole("button", { name: "Retry exact refund proposal" }),
+  );
+  await waitFor(() => {
+    expect(post).toHaveBeenCalledTimes(2);
+  });
+  expect(vi.mocked(post).mock.calls[1]?.[1]).toEqual(original);
+  await waitFor(() =>
+    expect(screen.getByLabelText("Exact refund crypto amount")).toBeEnabled(),
+  );
+});
+it("recovers a failed source read locally and preserves the proposal draft on refresh", () => {
+  const reload = vi.fn();
+  const data = {
+    receipts: [
+      {
+        id: "source",
+        state: "confirmed",
+        amount: "12.34",
+        currency: "usdttrc20",
+        network: "trx",
+        refundable_amount: "12.34",
+      },
+    ],
+  };
+  let failed = true;
+  vi.mocked(useResource).mockImplementation((path) => ({
+    data: path.endsWith("/payments")
+      ? failed
+        ? null
+        : data
+      : { transfers: [] },
+    loading: false,
+    error:
+      path.endsWith("/payments") && failed
+        ? new Error("Source unavailable")
+        : null,
+    reload,
+  }));
+  const view = render(<Refunds orderID="order" caseID="case" admin owner />);
+  expect(screen.getByLabelText("Exact refund crypto amount")).toBeDisabled();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Refresh refund source evidence" }),
+  );
+  expect(reload).toHaveBeenCalledOnce();
+  failed = false;
+  view.rerender(<Refunds orderID="order" caseID="case" admin owner />);
+  fireEvent.change(screen.getByLabelText("Exact refund crypto amount"), {
+    target: { value: "1.000000000000000001" },
+  });
+  fireEvent.change(screen.getByLabelText("Refund proposal terms"), {
+    target: { value: "Reviewed exact amount and agreed fee conditions." },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Refresh refund source evidence" }),
+  );
+  expect(reload).toHaveBeenCalledTimes(2);
+  expect(screen.getByLabelText("Exact refund crypto amount")).toHaveValue(
+    "1.000000000000000001",
+  );
+  expect(screen.getByLabelText("Refund proposal terms")).toHaveValue(
+    "Reviewed exact amount and agreed fee conditions.",
+  );
 });

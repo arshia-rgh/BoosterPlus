@@ -1,6 +1,6 @@
 """Keep staged-change scope conservative, including deleted/renamed old paths."""
 import unittest
-from commit_gate import scope
+from commit_gate import commands, scope
 
 
 class GateScopeTest(unittest.TestCase):
@@ -17,6 +17,17 @@ class GateScopeTest(unittest.TestCase):
 
     def test_deleted_backend_path_still_requires_full(self):
         self.assertEqual(scope(["backend/removed.go", "docs/removed-code.md"]), "full")
+
+    def test_owner_authorized_di15_window_preserves_scoped_checks(self):
+        self.assertEqual(commands("full", True), [["make", "stage-check"]])
+        self.assertEqual(commands("frontend", True), [["make", "check-repository"], ["make", "-C", "frontend", "stage-check"]])
+        self.assertEqual(commands("repository", True), [["make", "check-repository"]])
+
+    def test_full_qualification_remains_available(self):
+        self.assertEqual(commands("full", False), [["make", "pre-commit"]])
+        self.assertEqual(commands("frontend", False)[1], ["make", "-C", "frontend", "pre-commit"])
+        with self.assertRaises(ValueError):
+            commands("unrecognized", True)
 
 
 if __name__ == "__main__":

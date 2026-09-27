@@ -6,6 +6,7 @@ import { useResource } from "../orders/resource";
 import { transferSchema } from "../payments/cases-model";
 import { TransferRecord } from "../payments/refunds";
 const queueSchema = z.object({
+  enabled: z.boolean(),
   items: z.array(
     z.object({
       transfer: transferSchema,
@@ -30,6 +31,16 @@ export default function SellerPayoutQueue() {
   return (
     <section className="catalog-section">
       <h2>Seller payout obligations</h2>
+      <p>
+        Outgoing transfers:{" "}
+        {resource.data
+          ? resource.data.enabled
+            ? "enabled"
+            : "paused"
+          : "status unavailable"}
+        . Eligibility and owner approval remain separate requirements.
+      </p>
+      {resource.loading && <p role="status">Checking payout obligations…</p>}
       <p>
         Each amount belongs to an accepted seller offer. Buy-first offers
         require verified ownership control; consignment requires buyer

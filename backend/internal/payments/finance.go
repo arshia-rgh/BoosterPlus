@@ -25,15 +25,15 @@ type Record struct {
 
 // Queue separates checkout attempts and unresolved provider records; totals are not revenue.
 type Queue struct {
-	Attempts []Attempt `json:"attempts"`
-	Records  []Record  `json:"records"`
-	Next     string    `json:"next"`
-	Enabled  bool      `json:"enabled"`
+	Attempts []FinanceAttempt `json:"attempts"`
+	Records  []Record         `json:"records"`
+	Next     string           `json:"next"`
+	Enabled  bool             `json:"enabled"`
 }
 
 // List offers bounded finance history and exception filters with live staff authority.
 func (s *Store) List(ctx context.Context, p *identity.Principal, after, filter string) (Queue, error) {
-	result := Queue{Attempts: []Attempt{}, Records: []Record{}, Enabled: s.provider != nil && s.enabled}
+	result := Queue{Attempts: []FinanceAttempt{}, Records: []Record{}, Enabled: s.provider != nil && s.enabled}
 	if err := identity.Require(p, "admin"); err != nil {
 		return result, err
 	}
@@ -77,7 +77,11 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, after, filter s
 			return result, e
 		}
 		view.CheckoutURL = ""
-		result.Attempts = append(result.Attempts, view)
+		evidence, more, e := s.incomingEvidence(ctx, row)
+		if e != nil {
+			return result, e
+		}
+		result.Attempts = append(result.Attempts, FinanceAttempt{Attempt: view, Evidence: evidence, MoreEvidence: more})
 	}
 	records, err := s.client.PaymentRecord.Query().Where(paymentrecord.IssueNEQ("")).Order(ent.Desc(paymentrecord.FieldCheckedAt), ent.Desc(paymentrecord.FieldID)).Limit(50).All(ctx)
 	if err != nil {

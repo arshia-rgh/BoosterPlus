@@ -1,14 +1,14 @@
 import SellerPayoutQueue from "../resale/payout-queue";
 import CaseQueue from "./case-queue";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { z } from "../validation";
-import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
+import { Action, ErrorNotice, Select } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
-import { post } from "../identity/api";
 import { useResource } from "../orders/resource";
-import { financeSchema, paymentMessage, settingsSchema } from "./model";
-import PaymentPolicyEditor from "./policy-editor";
+import { financeSchema, paymentMessage } from "./model";
+import IncomingPaymentEvidence from "./incoming-evidence";
+import Reconciliation from "./reconciliation";
+import PaymentPolicyWorkspace from "./policy-workspace";
 export default function Finance() {
   const [params, setParams] = useSearchParams();
   const requested = params.get("view");
@@ -29,40 +29,45 @@ export default function Finance() {
       after: "",
     });
   };
-  const [paymentID, setPaymentID] = useState(""),
-    [reason, setReason] = useState(""),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState<unknown>(null),
-    [notice, setNotice] = useState("");
+  const queryReference = params.get("reference") ?? "";
+  const boundedReference = /^[1-9][0-9]{0,31}$/.test(queryReference)
+    ? queryReference
+    : "";
+  const queryDirection =
+    params.get("direction") === "outgoing" ? "outgoing" : "incoming";
+  const requestedReference = `${queryDirection}:${boundedReference}`;
+  const [seenReference, setSeenReference] = useState(requestedReference);
+  const [paymentID, setPaymentID] = useState(boundedReference);
+  const [direction, setDirection] = useState(queryDirection);
   const queue = useResource(
-      `/admin/finance?after=${encodeURIComponent(after)}&filter=${filter}`,
-      financeSchema,
-    ),
-    settings = useResource("/admin/finance/policy", settingsSchema);
-  const lock = useRef(false);
-  async function reconcile() {
-    if (lock.current || !/^[1-9][0-9]{0,31}$/.test(paymentID) || !reason.trim())
-      return;
-    lock.current = true;
-    setBusy(true);
-    setError(null);
-    setNotice("");
-    try {
-      await post(
-        "/admin/finance/reconcile",
-        { payment_id: paymentID, reason },
-        z.object({ queued: z.boolean() }),
-      );
-      setNotice(
-        "Provider reconciliation queued. No manual payment state was applied.",
-      );
-      queue.reload();
-    } catch (cause) {
-      setError(cause);
-    } finally {
-      lock.current = false;
-      setBusy(false);
+    `/admin/finance?after=${encodeURIComponent(after)}&filter=${filter}`,
+    financeSchema,
+  );
+  const reconciliationPanel = useRef<HTMLElement>(null);
+  const [focusReconciliation, setFocusReconciliation] = useState(0);
+  const consumedFocus = useRef(0);
+  useEffect(() => {
+    if (view === "reconcile" && focusReconciliation > consumedFocus.current) {
+      reconciliationPanel.current?.focus();
+      consumedFocus.current = focusReconciliation;
     }
+  }, [focusReconciliation, view]);
+  if (seenReference !== requestedReference) {
+    setSeenReference(requestedReference);
+    setPaymentID(boundedReference);
+    setDirection(queryDirection);
+    setFocusReconciliation((value) => value + 1);
+  }
+  function selectEvidence(reference: string) {
+    setPaymentID(reference);
+    setDirection("incoming");
+    setParams({
+      ...Object.fromEntries(params),
+      view: "reconcile",
+      direction: "incoming",
+      reference,
+    });
+    setFocusReconciliation((value) => value + 1);
   }
   return (
     <>
@@ -136,7 +141,12 @@ export default function Finance() {
                   {a.currency} {minorDisplay(a.amount_minor)} · {a.route.label}
                 </p>
                 <p>{paymentMessage(a.state, a.issue)}</p>
-                <small>{a.id}</small>
+                <small>Attempt {a.id}</small>
+                <IncomingPaymentEvidence
+                  evidence={a.evidence}
+                  more={a.more_evidence}
+                  reconcile={selectEvidence}
+                />
               </article>
             ))}
           </div>
@@ -173,49 +183,23 @@ export default function Finance() {
           ))}
         </section>
       </div>
-      <section hidden={view !== "reconcile"} className="catalog-section">
-        <h2>Request provider reconciliation</h2>
-        <ErrorNotice error={error} />
-        <p>
-          Use the provider payment ID, which differs from the invoice ID. This
-          reads authoritative evidence and requires recent staff verification.
-        </p>
-        <fieldset disabled={busy}>
-          <legend>Audited reconciliation request</legend>
-          <Text
-            label="Provider payment ID"
-            value={paymentID}
-            change={setPaymentID}
-          />
-          <Text
-            label="Reason for reconciliation"
-            value={reason}
-            change={setReason}
-            multiline
-          />
-          <Action
-            disabled={!/^[1-9][0-9]{0,31}$/.test(paymentID) || !reason.trim()}
-            onClick={() => void reconcile()}
-          >
-            Reconcile payment
-          </Action>
-        </fieldset>
-        {notice && <p role="status">{notice}</p>}
+      <section
+        hidden={view !== "reconcile"}
+        className="catalog-section"
+        ref={reconciliationPanel}
+        tabIndex={-1}
+        aria-label="Provider reconciliation"
+      >
+        <Reconciliation
+          paymentID={paymentID}
+          change={setPaymentID}
+          direction={direction}
+          setDirection={setDirection}
+          request={focusReconciliation}
+          done={queue.reload}
+        />
       </section>
-      <div hidden={view !== "policy"}>
-        <ErrorNotice error={settings.error} />
-        {settings.loading && <p role="status">Loading payment policy…</p>}
-        {!!settings.error && (
-          <Action onClick={settings.reload}>Try payment policy again</Action>
-        )}
-        {settings.data && (
-          <PaymentPolicyEditor
-            key={settings.data.version}
-            settings={settings.data}
-            done={settings.reload}
-          />
-        )}
-      </div>
+      <PaymentPolicyWorkspace active={view === "policy"} />
     </>
   );
 }

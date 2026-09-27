@@ -324,6 +324,16 @@ func ActorIDContainsFold(v string) predicate.TransferEvent {
 	return predicate.TransferEvent(sql.FieldContainsFold(FieldActorID, v))
 }
 
+// SnapshotIsNil applies the IsNil predicate on the "snapshot" field.
+func SnapshotIsNil() predicate.TransferEvent {
+	return predicate.TransferEvent(sql.FieldIsNull(FieldSnapshot))
+}
+
+// SnapshotNotNil applies the NotNil predicate on the "snapshot" field.
+func SnapshotNotNil() predicate.TransferEvent {
+	return predicate.TransferEvent(sql.FieldNotNull(FieldSnapshot))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.TransferEvent {
 	return predicate.TransferEvent(sql.FieldEQ(FieldCreatedAt, v))

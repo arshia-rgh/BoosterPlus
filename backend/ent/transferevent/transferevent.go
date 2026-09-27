@@ -19,6 +19,8 @@ const (
 	FieldAction = "action"
 	// FieldActorID holds the string denoting the actor_id field in the database.
 	FieldActorID = "actor_id"
+	// FieldSnapshot holds the string denoting the snapshot field in the database.
+	FieldSnapshot = "snapshot"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// Table holds the table name of the transferevent in the database.
@@ -32,6 +34,7 @@ var Columns = []string{
 	FieldVersion,
 	FieldAction,
 	FieldActorID,
+	FieldSnapshot,
 	FieldCreatedAt,
 }
 

@@ -163,6 +163,12 @@ func (s *Store) History(ctx context.Context, p *identity.Principal, id string, a
 			view.AllocatedCurrency = allocation.Currency
 			view.AllocatedMinor = allocation.AmountMinor
 		}
+		if admin {
+			view.RefundableAmount, e = refundableAmount(ctx, s.client, row)
+			if e != nil {
+				return result, e
+			}
+		}
 		result.Receipts = append(result.Receipts, view)
 	}
 	return result, nil

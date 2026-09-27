@@ -17,6 +17,7 @@ func (TransferRecord) Fields() []ent.Field {
 		field.String("account").MaxLen(80).Immutable(),
 		field.String("provider_id").MaxLen(32).Immutable(),
 		field.String("attempt_id").MaxLen(36).Default(""),
+		field.String("manual_job_id").MaxLen(64).Default(""),
 		field.Int("version").Default(0),
 		field.String("lease_owner").MaxLen(36).Default(""),
 		field.Time("lease_until").Optional().Nillable(),

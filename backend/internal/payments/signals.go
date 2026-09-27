@@ -74,7 +74,12 @@ func (s *Store) RequestReconciliation(ctx context.Context, p *identity.Principal
 		if err != nil {
 			return err
 		}
-		return enqueue(ctx, tx, "payments.reconcile", "payment-manual:"+record.ID+":"+s.instant().Format("20060102150405.000000"), map[string]string{"record_id": record.ID})
+		jobID, err := enqueueManualRead(ctx, tx, record.ID, record.ManualJobID, "payments.reconcile")
+		if err != nil {
+			return err
+		}
+		_, err = tx.PaymentRecord.UpdateOneID(record.ID).SetManualJobID(jobID).Save(ctx)
+		return err
 	})
 }
 

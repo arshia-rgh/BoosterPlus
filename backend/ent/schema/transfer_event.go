@@ -18,6 +18,7 @@ func (TransferEvent) Fields() []ent.Field {
 		field.Int("version").Immutable(),
 		field.String("action").MaxLen(32).Immutable(),
 		field.String("actor_id").MaxLen(36).Immutable(),
+		field.JSON("snapshot", map[string]any{}).Optional().Immutable(),
 		field.Time("created_at").Immutable(),
 	}
 }

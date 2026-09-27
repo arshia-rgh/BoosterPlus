@@ -42,11 +42,11 @@ func caseEvidence(ctx context.Context, tx *ent.Tx, orderID, messageID string) er
 	}
 	return nil
 }
-func (s *Store) caseEvent(ctx context.Context, tx *ent.Tx, p *identity.Principal, row *ent.ServiceCase, action, note, messageID string) error {
+func (s *Store) caseEvent(ctx context.Context, tx *ent.Tx, p *identity.Principal, row *ent.ServiceCase, action, note, messageID, internalRationale string) error {
 	if err := caseEvidence(ctx, tx, row.OrderID, messageID); err != nil {
 		return err
 	}
-	_, err := tx.CaseEvent.Create().SetCaseID(row.ID).SetVersion(row.Version).SetAction(action).SetActorID(p.User.ID).SetActorRole(p.User.Role).SetNote(note).SetMessageID(messageID).SetCreatedAt(s.instant()).Save(ctx)
+	_, err := tx.CaseEvent.Create().SetCaseID(row.ID).SetVersion(row.Version).SetAction(action).SetActorID(p.User.ID).SetActorRole(p.User.Role).SetNote(note).SetInternalRationale(internalRationale).SetMessageID(messageID).SetCreatedAt(s.instant()).Save(ctx)
 	if err != nil {
 		return err
 	}
@@ -181,7 +181,7 @@ func (s *Store) OpenCase(ctx context.Context, p *identity.Principal, id string, 
 		if e != nil {
 			return e
 		}
-		if e = s.caseEvent(ctx, tx, current, record, "opened", input.Note, input.MessageID); e != nil {
+		if e = s.caseEvent(ctx, tx, current, record, "opened", input.Note, input.MessageID, ""); e != nil {
 			return e
 		}
 		state := row.State

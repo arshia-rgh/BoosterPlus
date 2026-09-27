@@ -11,6 +11,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/resale"
 )
 
 func refundAmount(value string) (*big.Rat, error) {
@@ -53,7 +54,15 @@ func (s *Store) transferEvent(ctx context.Context, tx *ent.Tx, p *identity.Princ
 	if p != nil {
 		actor = p.User.ID
 	}
-	_, err := tx.TransferEvent.Create().SetTransferID(row.ID).SetVersion(row.Version).SetAction(action).SetActorID(actor).SetCreatedAt(s.instant()).Save(ctx)
+	recipient, err := decode[nowpayments.Recipient](row.Recipient)
+	if err != nil {
+		return err
+	}
+	snapshot, err := document(TransferSnapshot{Amount: row.Amount, Currency: row.Currency, Network: row.Network, State: row.State, Recipient: recipient})
+	if err != nil {
+		return err
+	}
+	_, err = tx.TransferEvent.Create().SetTransferID(row.ID).SetVersion(row.Version).SetAction(action).SetActorID(actor).SetSnapshot(snapshot).SetCreatedAt(s.instant()).Save(ctx)
 	if err != nil {
 		return err
 	}
@@ -82,7 +91,19 @@ func transferView(ctx context.Context, client *ent.Client, row *ent.MoneyTransfe
 		}
 		issue = attempt.Issue
 	}
-	return TransferView{row.ID, row.CaseID, row.ReceiptID, row.OrderID, row.Kind, row.Currency, row.Network, row.Amount, row.Terms, row.State, issue, row.Version, recipient, row.RecipientAt, row.ApprovedAt, row.CreatedAt, row.UpdatedAt}, nil
+	var agreement *SellerAgreement
+	if row.SellerOfferID != nil {
+		offer, e := client.SellerOffer.Get(ctx, *row.SellerOfferID)
+		if e != nil {
+			return TransferView{}, e
+		}
+		terms, e := decode[resale.SellerTerms](offer.Data)
+		if e != nil {
+			return TransferView{}, e
+		}
+		agreement = &SellerAgreement{ID: offer.ID, AcceptedAt: offer.AcceptedAt, Terms: terms}
+	}
+	return TransferView{SellerAgreement: agreement, ID: row.ID, CaseID: row.CaseID, ReceiptID: row.ReceiptID, OrderID: row.OrderID, Kind: row.Kind, Currency: row.Currency, Network: row.Network, Amount: row.Amount, Terms: row.Terms, State: row.State, Issue: issue, Version: row.Version, Recipient: recipient, RecipientAt: row.RecipientAt, ApprovedAt: row.ApprovedAt, CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt}, nil
 }
 
 // ProposeRefund reserves an exact receipt-backed amount before any destination or approval.

@@ -1,4 +1,5 @@
 """Run browser tests against a freshly migrated TiDB schema and real local SMTP."""
+import argparse
 import json
 from pathlib import Path
 import subprocess
@@ -10,7 +11,7 @@ root = Path(__file__).resolve().parents[1]
 # Each device project represents an independent client population. Give it an
 # isolated database and unchanged production rate budgets instead of lifting
 # shared-IP authentication limits as browser coverage grows.
-def run_project(project):
+def run_project(project, specs=()):
     with tempfile.TemporaryDirectory(prefix="boosterplus-browser-") as temporary:
         directory = Path(temporary)
         environment = dict(service_environment(root), BROWSER_TEST_DIRECTORY=temporary)
@@ -29,9 +30,12 @@ def run_project(project):
                 environment.update(API_ORIGIN=settings["api_origin"], PROXY_SHARED_KEY=settings["proxy_key"], BROWSER_TEST_CONFIG=str(directory / "ready.json"))
                 # Global policy publication runs after ordinary journeys in the same isolated device database.
                 # Complementary filters execute every test; both results are required, with no retries or skipped failures.
-                ordinary = subprocess.run(["npx", "playwright", "test", "--grep-invert=@global-policy", "--project=" + project, "--output=test-results/" + project], cwd=root / "frontend", env=environment, check=False).returncode
-                policies = subprocess.run(["npx", "playwright", "test", "--grep=@global-policy", "--project=" + project, "--output=test-results/policies-" + project], cwd=root / "frontend", env=environment, check=False).returncode
-                result = 1 if ordinary or policies else 0
+                if specs:
+                    result = subprocess.run(["npx", "playwright", "test", *specs, "--project=" + project, "--output=test-results/focused-" + project], cwd=root / "frontend", env=environment, check=False).returncode
+                else:
+                    ordinary = subprocess.run(["npx", "playwright", "test", "--grep-invert=@global-policy", "--project=" + project, "--output=test-results/" + project], cwd=root / "frontend", env=environment, check=False).returncode
+                    policies = subprocess.run(["npx", "playwright", "test", "--grep=@global-policy", "--project=" + project, "--output=test-results/policies-" + project], cwd=root / "frontend", env=environment, check=False).returncode
+                    result = 1 if ordinary or policies else 0
             finally:
                 (directory / "stop").touch()
                 try:
@@ -47,5 +51,28 @@ def run_project(project):
             return result
 
 
-results = [run_project(project) for project in ("desktop", "mobile")]
-raise SystemExit(1 if any(results) else 0)
+def selected_specs(names):
+    """Accept exact existing spec filenames, never flags or arbitrary paths."""
+    base = root / "frontend/tests/e2e"
+    for name in names:
+        if Path(name).name != name or not name.endswith(".spec.ts") or not (base / name).is_file():
+            raise ValueError("Use an existing browser spec filename")
+    return ["tests/e2e/" + name for name in names]
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--spec", action="append", default=[], help="Exact changed spec filename; omission runs the complete suite")
+    parser.add_argument("--project", action="append", choices=("desktop", "mobile"), help="Focused device project; omission checks both")
+    args = parser.parse_args()
+    try:
+        specs = selected_specs(args.spec)
+    except ValueError as error:
+        parser.error(str(error))
+    print("Browser qualification: " + (", ".join(specs) if specs else "complete suite"), flush=True)
+    results = [run_project(project, specs) for project in (args.project or ("desktop", "mobile"))]
+    raise SystemExit(1 if any(results) else 0)
+
+
+if __name__ == "__main__":
+    main()

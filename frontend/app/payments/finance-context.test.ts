@@ -43,3 +43,16 @@ it("restores only validated related records and local listing sections", () => {
     `/admin/submissions/${id}?section=handover`,
   );
 });
+
+it("retains only bounded reconciliation direction and provider reference", () => {
+  expect(
+    financeReturn({
+      financeSearch: "view=reconcile&direction=outgoing&reference=123",
+    }),
+  ).toBe("/admin/finance?view=reconcile&direction=outgoing&reference=123");
+  expect(
+    financeReturn({
+      financeSearch: "view=reconcile&direction=bad&reference=%3Cscript%3E",
+    }),
+  ).toBe("/admin/finance?view=reconcile");
+});

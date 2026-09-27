@@ -72,7 +72,8 @@ func (s *Store) Register(mux *http.ServeMux) {
 			}
 			return write(w, result)
 		}},
-		"GET /api/v1/admin/finance": {"admin", s.finance},
+		"GET /api/v1/admin/finance":                {"admin", s.finance},
+		"GET /api/v1/admin/finance/reconciliation": {"admin", s.inspectReconciliation},
 		"GET /api/v1/admin/finance/policy": {"admin", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 			result, err := s.Settings(r.Context(), p)
 			if err != nil {

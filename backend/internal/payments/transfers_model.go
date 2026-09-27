@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/resale"
 )
 
 // OutgoingProvider is separate from checkout activation: pausing sales must not erase refund history.
@@ -46,23 +47,31 @@ type TransferChange struct {
 	Code    string `json:"code"`
 }
 
+// SellerAgreement preserves the accepted per-offer model, fees and due conditions.
+type SellerAgreement struct {
+	ID         string             `json:"id"`
+	AcceptedAt *time.Time         `json:"accepted_at"`
+	Terms      resale.SellerTerms `json:"terms"`
+}
+
 // TransferView is private to the beneficiary and authorized finance staff.
 type TransferView struct {
-	ID          string                `json:"id"`
-	CaseID      string                `json:"case_id"`
-	ReceiptID   string                `json:"receipt_id"`
-	OrderID     string                `json:"order_id"`
-	Kind        string                `json:"kind"`
-	Currency    string                `json:"currency"`
-	Network     string                `json:"network"`
-	Amount      string                `json:"amount"`
-	Terms       string                `json:"terms"`
-	State       string                `json:"state"`
-	Issue       string                `json:"issue"`
-	Version     int                   `json:"version"`
-	Recipient   nowpayments.Recipient `json:"recipient"`
-	RecipientAt *time.Time            `json:"recipient_at"`
-	ApprovedAt  *time.Time            `json:"approved_at"`
-	CreatedAt   time.Time             `json:"created_at"`
-	UpdatedAt   time.Time             `json:"updated_at"`
+	SellerAgreement *SellerAgreement      `json:"seller_agreement,omitempty"`
+	ID              string                `json:"id"`
+	CaseID          string                `json:"case_id"`
+	ReceiptID       string                `json:"receipt_id"`
+	OrderID         string                `json:"order_id"`
+	Kind            string                `json:"kind"`
+	Currency        string                `json:"currency"`
+	Network         string                `json:"network"`
+	Amount          string                `json:"amount"`
+	Terms           string                `json:"terms"`
+	State           string                `json:"state"`
+	Issue           string                `json:"issue"`
+	Version         int                   `json:"version"`
+	Recipient       nowpayments.Recipient `json:"recipient"`
+	RecipientAt     *time.Time            `json:"recipient_at"`
+	ApprovedAt      *time.Time            `json:"approved_at"`
+	CreatedAt       time.Time             `json:"created_at"`
+	UpdatedAt       time.Time             `json:"updated_at"`
 }

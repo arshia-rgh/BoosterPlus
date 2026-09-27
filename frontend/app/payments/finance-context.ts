@@ -14,6 +14,12 @@ export function financeReturn(state: unknown): string | null {
       : "payments",
   );
   if (source.get("filter") === "all") query.set("filter", "all");
+  const direction = source.get("direction");
+  if (direction === "incoming" || direction === "outgoing")
+    query.set("direction", direction);
+  const reference = source.get("reference");
+  if (reference && /^[1-9][0-9]{0,31}$/.test(reference))
+    query.set("reference", reference);
   for (const key of ["after", "casesAfter", "outgoingAfter", "payoutAfter"]) {
     const value = source.get(key);
     if (value && /^[a-zA-Z0-9_=-]{1,1024}$/.test(value)) query.set(key, value);

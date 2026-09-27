@@ -15,6 +15,14 @@ func (s *Store) ChangeCase(ctx context.Context, p *identity.Principal, id, actio
 	if !validID(id) || input.Version < 1 || input.Version >= maxVersion || !validText(input.Note, 10, 2000) {
 		return CaseView{}, ErrInvalid
 	}
+	if input.InternalRationale != "" {
+		if !admin {
+			return CaseView{}, identity.ErrForbidden
+		}
+		if !validText(input.InternalRationale, 10, 2000) {
+			return CaseView{}, ErrInvalid
+		}
+	}
 	capability := "account"
 	if admin {
 		capability = "admin"
@@ -91,7 +99,7 @@ func (s *Store) ChangeCase(ctx context.Context, p *identity.Principal, id, actio
 		if e != nil {
 			return e
 		}
-		if e = s.caseEvent(ctx, tx, current, row, action, input.Note, input.MessageID); e != nil {
+		if e = s.caseEvent(ctx, tx, current, row, action, input.Note, input.MessageID, input.InternalRationale); e != nil {
 			return e
 		}
 		if action != "accept" && action != "finalize" {

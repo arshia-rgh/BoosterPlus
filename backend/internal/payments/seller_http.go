@@ -18,6 +18,7 @@ func (s *Store) registerSellerPayouts(register func(string, string, bool, func(h
 			prefix += "/admin"
 			capability = "admin"
 		}
+		register("GET "+prefix+"/payouts/{id}/history", capability, false, s.transferHistoryHandler("seller_payout", admin))
 		register("GET "+prefix+"/submissions/{id}/payouts", capability, false, func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 			values, err := s.SellerPayouts(r.Context(), p, r.PathValue("id"), admin)
 			if err != nil {
@@ -92,5 +93,5 @@ func (s *Store) sellerPayoutQueue(w http.ResponseWriter, r *http.Request, p *ide
 	if err != nil {
 		return err
 	}
-	return write(w, map[string]any{"items": values, "next": next, "enabled": s.outgoingEnabled})
+	return write(w, map[string]any{"items": values, "next": next, "enabled": s.outgoing != nil && s.outgoingEnabled})
 }

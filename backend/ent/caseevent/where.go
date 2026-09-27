@@ -94,6 +94,11 @@ func Note(v string) predicate.CaseEvent {
 	return predicate.CaseEvent(sql.FieldEQ(FieldNote, v))
 }
 
+// InternalRationale applies equality check predicate on the "internal_rationale" field. It's identical to InternalRationaleEQ.
+func InternalRationale(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldEQ(FieldInternalRationale, v))
+}
+
 // MessageID applies equality check predicate on the "message_id" field. It's identical to MessageIDEQ.
 func MessageID(v string) predicate.CaseEvent {
 	return predicate.CaseEvent(sql.FieldEQ(FieldMessageID, v))
@@ -467,6 +472,71 @@ func NoteEqualFold(v string) predicate.CaseEvent {
 // NoteContainsFold applies the ContainsFold predicate on the "note" field.
 func NoteContainsFold(v string) predicate.CaseEvent {
 	return predicate.CaseEvent(sql.FieldContainsFold(FieldNote, v))
+}
+
+// InternalRationaleEQ applies the EQ predicate on the "internal_rationale" field.
+func InternalRationaleEQ(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldEQ(FieldInternalRationale, v))
+}
+
+// InternalRationaleNEQ applies the NEQ predicate on the "internal_rationale" field.
+func InternalRationaleNEQ(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldNEQ(FieldInternalRationale, v))
+}
+
+// InternalRationaleIn applies the In predicate on the "internal_rationale" field.
+func InternalRationaleIn(vs ...string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldIn(FieldInternalRationale, vs...))
+}
+
+// InternalRationaleNotIn applies the NotIn predicate on the "internal_rationale" field.
+func InternalRationaleNotIn(vs ...string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldNotIn(FieldInternalRationale, vs...))
+}
+
+// InternalRationaleGT applies the GT predicate on the "internal_rationale" field.
+func InternalRationaleGT(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldGT(FieldInternalRationale, v))
+}
+
+// InternalRationaleGTE applies the GTE predicate on the "internal_rationale" field.
+func InternalRationaleGTE(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldGTE(FieldInternalRationale, v))
+}
+
+// InternalRationaleLT applies the LT predicate on the "internal_rationale" field.
+func InternalRationaleLT(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldLT(FieldInternalRationale, v))
+}
+
+// InternalRationaleLTE applies the LTE predicate on the "internal_rationale" field.
+func InternalRationaleLTE(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldLTE(FieldInternalRationale, v))
+}
+
+// InternalRationaleContains applies the Contains predicate on the "internal_rationale" field.
+func InternalRationaleContains(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldContains(FieldInternalRationale, v))
+}
+
+// InternalRationaleHasPrefix applies the HasPrefix predicate on the "internal_rationale" field.
+func InternalRationaleHasPrefix(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldHasPrefix(FieldInternalRationale, v))
+}
+
+// InternalRationaleHasSuffix applies the HasSuffix predicate on the "internal_rationale" field.
+func InternalRationaleHasSuffix(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldHasSuffix(FieldInternalRationale, v))
+}
+
+// InternalRationaleEqualFold applies the EqualFold predicate on the "internal_rationale" field.
+func InternalRationaleEqualFold(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldEqualFold(FieldInternalRationale, v))
+}
+
+// InternalRationaleContainsFold applies the ContainsFold predicate on the "internal_rationale" field.
+func InternalRationaleContainsFold(v string) predicate.CaseEvent {
+	return predicate.CaseEvent(sql.FieldContainsFold(FieldInternalRationale, v))
 }
 
 // MessageIDEQ applies the EQ predicate on the "message_id" field.

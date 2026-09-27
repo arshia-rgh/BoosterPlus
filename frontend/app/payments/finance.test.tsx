@@ -8,8 +8,24 @@ vi.mock("../identity/api", async (original) => ({
   post: vi.fn(),
 }));
 vi.mock("../orders/resource", () => ({
-  useResource: () => ({
-    data: null,
+  useResource: (path: string) => ({
+    data: path.includes("/finance/reconciliation?")
+      ? {
+          direction: "incoming",
+          payment_id: "123",
+          found: false,
+          state: "",
+          issue: "",
+          order_id: "",
+          case_id: "",
+          transfer_id: "",
+          submission_id: "",
+          checked_at: null,
+          observed_at: null,
+          reading: false,
+          job: null,
+        }
+      : null,
     error: null,
     loading: false,
     reload: vi.fn(),
@@ -35,6 +51,9 @@ it("keeps reconciliation failures visible in the active view and locks repeated 
   fireEvent.change(screen.getByLabelText("Provider payment ID"), {
     target: { value: "123" },
   });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Inspect provider reference" }),
+  );
   fireEvent.change(screen.getByLabelText("Reason for reconciliation"), {
     target: { value: "Reviewed the provider exception." },
   });

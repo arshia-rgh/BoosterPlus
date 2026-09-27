@@ -24,6 +24,8 @@ type PaymentRecord struct {
 	PaymentID string `json:"payment_id,omitempty"`
 	// AttemptID holds the value of the "attempt_id" field.
 	AttemptID string `json:"attempt_id,omitempty"`
+	// ManualJobID holds the value of the "manual_job_id" field.
+	ManualJobID string `json:"manual_job_id,omitempty"`
 	// Version holds the value of the "version" field.
 	Version int `json:"version,omitempty"`
 	// LeaseOwner holds the value of the "lease_owner" field.
@@ -52,7 +54,7 @@ func (*PaymentRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case paymentrecord.FieldVersion:
 			values[i] = new(sql.NullInt64)
-		case paymentrecord.FieldID, paymentrecord.FieldAccount, paymentrecord.FieldPaymentID, paymentrecord.FieldAttemptID, paymentrecord.FieldLeaseOwner, paymentrecord.FieldState, paymentrecord.FieldIssue:
+		case paymentrecord.FieldID, paymentrecord.FieldAccount, paymentrecord.FieldPaymentID, paymentrecord.FieldAttemptID, paymentrecord.FieldManualJobID, paymentrecord.FieldLeaseOwner, paymentrecord.FieldState, paymentrecord.FieldIssue:
 			values[i] = new(sql.NullString)
 		case paymentrecord.FieldLeaseUntil, paymentrecord.FieldCheckedAt, paymentrecord.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -94,6 +96,12 @@ func (_m *PaymentRecord) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field attempt_id", values[i])
 			} else if value.Valid {
 				_m.AttemptID = value.String
+			}
+		case paymentrecord.FieldManualJobID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field manual_job_id", values[i])
+			} else if value.Valid {
+				_m.ManualJobID = value.String
 			}
 		case paymentrecord.FieldVersion:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -190,6 +198,9 @@ func (_m *PaymentRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("attempt_id=")
 	builder.WriteString(_m.AttemptID)
+	builder.WriteString(", ")
+	builder.WriteString("manual_job_id=")
+	builder.WriteString(_m.ManualJobID)
 	builder.WriteString(", ")
 	builder.WriteString("version=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Version))

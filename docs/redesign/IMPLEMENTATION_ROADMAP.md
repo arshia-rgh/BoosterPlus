@@ -259,6 +259,8 @@ DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 dis
 
 ### DI15 — final design match, regression qualification and owner review
 
+**Owner cadence update, 28 September:** earlier stages use focused stage checks and changed integration/browser scenarios. At this phase restore normal hook selection (`FOCUSED_UNTIL_DI15 = False` in `scripts/commit_gate.py`), run the unchanged complete root `make pre-commit`, and record its actual outcome. Earlier targeted results do not substitute for this final aggregate qualification.
+
 - Independently compare all Appendix A screens and Appendix B/C journeys against accepted atlas/addenda using running frontend plus isolated backend fixtures. Complete desktop/tablet/phone and narrow/short-height review, keyboard/screen-reader tasks and realistic loading/error/empty/access-loss cases. Record images, routes, states and reproducible scenarios; similarity screenshots alone do not prove working flows.
 - Spawn senior UI/UX review for changed scopes throughout implementation; at this phase review the entire integrated design. Fix and repeat until no actionable scoped findings remain, with explicit verdicts and limitations. Never claim that a review or linter proves there are no undiscovered defects.
 - Run the complete root `make pre-commit` with backend/frontend/production regression suites and CI checks. Include isolated provider evidence for all financial branches; never perform destructive tests against live accounts. Measure public-page and portal interaction performance, transfer/render cost of background motion, API/query scaling and slow-network/reconnect behavior against agreed budgets from DI00. Record results, not invented performance guarantees.

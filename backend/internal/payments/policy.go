@@ -53,7 +53,7 @@ func (s *Store) settings(ctx context.Context, client *ent.Client) (Settings, err
 	if draft.Currencies == nil {
 		draft.Currencies = []string{}
 	}
-	return Settings{row.Version, draft, policy, s.provider != nil, s.enabled && s.provider != nil}, nil
+	return Settings{OutgoingEnabled: s.outgoing != nil && s.outgoingEnabled, Version: row.Version, Draft: draft, Published: policy, Configured: s.provider != nil, Enabled: s.enabled && s.provider != nil}, nil
 }
 
 // SavePolicy preserves every published agreement. Publishing requires recent staff factors.

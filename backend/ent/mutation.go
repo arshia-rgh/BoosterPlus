@@ -15726,22 +15726,23 @@ func (m *BookingEventMutation) ResetEdge(name string) error {
 // CaseEventMutation represents an operation that mutates the CaseEvent nodes in the graph.
 type CaseEventMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *string
-	case_id       *string
-	version       *int
-	addversion    *int
-	action        *string
-	actor_id      *string
-	actor_role    *string
-	note          *string
-	message_id    *string
-	created_at    *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*CaseEvent, error)
-	predicates    []predicate.CaseEvent
+	op                 Op
+	typ                string
+	id                 *string
+	case_id            *string
+	version            *int
+	addversion         *int
+	action             *string
+	actor_id           *string
+	actor_role         *string
+	note               *string
+	internal_rationale *string
+	message_id         *string
+	created_at         *time.Time
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*CaseEvent, error)
+	predicates         []predicate.CaseEvent
 }
 
 var _ ent.Mutation = (*CaseEventMutation)(nil)
@@ -16084,6 +16085,42 @@ func (m *CaseEventMutation) ResetNote() {
 	m.note = nil
 }
 
+// SetInternalRationale sets the "internal_rationale" field.
+func (m *CaseEventMutation) SetInternalRationale(s string) {
+	m.internal_rationale = &s
+}
+
+// InternalRationale returns the value of the "internal_rationale" field in the mutation.
+func (m *CaseEventMutation) InternalRationale() (r string, exists bool) {
+	v := m.internal_rationale
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInternalRationale returns the old "internal_rationale" field's value of the CaseEvent entity.
+// If the CaseEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CaseEventMutation) OldInternalRationale(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInternalRationale is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInternalRationale requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInternalRationale: %w", err)
+	}
+	return oldValue.InternalRationale, nil
+}
+
+// ResetInternalRationale resets all changes to the "internal_rationale" field.
+func (m *CaseEventMutation) ResetInternalRationale() {
+	m.internal_rationale = nil
+}
+
 // SetMessageID sets the "message_id" field.
 func (m *CaseEventMutation) SetMessageID(s string) {
 	m.message_id = &s
@@ -16190,7 +16227,7 @@ func (m *CaseEventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CaseEventMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.case_id != nil {
 		fields = append(fields, caseevent.FieldCaseID)
 	}
@@ -16208,6 +16245,9 @@ func (m *CaseEventMutation) Fields() []string {
 	}
 	if m.note != nil {
 		fields = append(fields, caseevent.FieldNote)
+	}
+	if m.internal_rationale != nil {
+		fields = append(fields, caseevent.FieldInternalRationale)
 	}
 	if m.message_id != nil {
 		fields = append(fields, caseevent.FieldMessageID)
@@ -16235,6 +16275,8 @@ func (m *CaseEventMutation) Field(name string) (ent.Value, bool) {
 		return m.ActorRole()
 	case caseevent.FieldNote:
 		return m.Note()
+	case caseevent.FieldInternalRationale:
+		return m.InternalRationale()
 	case caseevent.FieldMessageID:
 		return m.MessageID()
 	case caseevent.FieldCreatedAt:
@@ -16260,6 +16302,8 @@ func (m *CaseEventMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldActorRole(ctx)
 	case caseevent.FieldNote:
 		return m.OldNote(ctx)
+	case caseevent.FieldInternalRationale:
+		return m.OldInternalRationale(ctx)
 	case caseevent.FieldMessageID:
 		return m.OldMessageID(ctx)
 	case caseevent.FieldCreatedAt:
@@ -16314,6 +16358,13 @@ func (m *CaseEventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNote(v)
+		return nil
+	case caseevent.FieldInternalRationale:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInternalRationale(v)
 		return nil
 	case caseevent.FieldMessageID:
 		v, ok := value.(string)
@@ -16410,6 +16461,9 @@ func (m *CaseEventMutation) ResetField(name string) error {
 		return nil
 	case caseevent.FieldNote:
 		m.ResetNote()
+		return nil
+	case caseevent.FieldInternalRationale:
+		m.ResetInternalRationale()
 		return nil
 	case caseevent.FieldMessageID:
 		m.ResetMessageID()
@@ -36408,6 +36462,7 @@ type PaymentRecordMutation struct {
 	account       *string
 	payment_id    *string
 	attempt_id    *string
+	manual_job_id *string
 	version       *int
 	addversion    *int
 	lease_owner   *string
@@ -36633,6 +36688,42 @@ func (m *PaymentRecordMutation) OldAttemptID(ctx context.Context) (v string, err
 // ResetAttemptID resets all changes to the "attempt_id" field.
 func (m *PaymentRecordMutation) ResetAttemptID() {
 	m.attempt_id = nil
+}
+
+// SetManualJobID sets the "manual_job_id" field.
+func (m *PaymentRecordMutation) SetManualJobID(s string) {
+	m.manual_job_id = &s
+}
+
+// ManualJobID returns the value of the "manual_job_id" field in the mutation.
+func (m *PaymentRecordMutation) ManualJobID() (r string, exists bool) {
+	v := m.manual_job_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldManualJobID returns the old "manual_job_id" field's value of the PaymentRecord entity.
+// If the PaymentRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PaymentRecordMutation) OldManualJobID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldManualJobID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldManualJobID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldManualJobID: %w", err)
+	}
+	return oldValue.ManualJobID, nil
+}
+
+// ResetManualJobID resets all changes to the "manual_job_id" field.
+func (m *PaymentRecordMutation) ResetManualJobID() {
+	m.manual_job_id = nil
 }
 
 // SetVersion sets the "version" field.
@@ -36990,7 +37081,7 @@ func (m *PaymentRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PaymentRecordMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.account != nil {
 		fields = append(fields, paymentrecord.FieldAccount)
 	}
@@ -36999,6 +37090,9 @@ func (m *PaymentRecordMutation) Fields() []string {
 	}
 	if m.attempt_id != nil {
 		fields = append(fields, paymentrecord.FieldAttemptID)
+	}
+	if m.manual_job_id != nil {
+		fields = append(fields, paymentrecord.FieldManualJobID)
 	}
 	if m.version != nil {
 		fields = append(fields, paymentrecord.FieldVersion)
@@ -37038,6 +37132,8 @@ func (m *PaymentRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.PaymentID()
 	case paymentrecord.FieldAttemptID:
 		return m.AttemptID()
+	case paymentrecord.FieldManualJobID:
+		return m.ManualJobID()
 	case paymentrecord.FieldVersion:
 		return m.Version()
 	case paymentrecord.FieldLeaseOwner:
@@ -37069,6 +37165,8 @@ func (m *PaymentRecordMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldPaymentID(ctx)
 	case paymentrecord.FieldAttemptID:
 		return m.OldAttemptID(ctx)
+	case paymentrecord.FieldManualJobID:
+		return m.OldManualJobID(ctx)
 	case paymentrecord.FieldVersion:
 		return m.OldVersion(ctx)
 	case paymentrecord.FieldLeaseOwner:
@@ -37114,6 +37212,13 @@ func (m *PaymentRecordMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAttemptID(v)
+		return nil
+	case paymentrecord.FieldManualJobID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetManualJobID(v)
 		return nil
 	case paymentrecord.FieldVersion:
 		v, ok := value.(int)
@@ -37252,6 +37357,9 @@ func (m *PaymentRecordMutation) ResetField(name string) error {
 		return nil
 	case paymentrecord.FieldAttemptID:
 		m.ResetAttemptID()
+		return nil
+	case paymentrecord.FieldManualJobID:
+		m.ResetManualJobID()
 		return nil
 	case paymentrecord.FieldVersion:
 		m.ResetVersion()
@@ -50011,6 +50119,7 @@ type TransferEventMutation struct {
 	addversion    *int
 	action        *string
 	actor_id      *string
+	snapshot      *map[string]interface{}
 	created_at    *time.Time
 	clearedFields map[string]struct{}
 	done          bool
@@ -50286,6 +50395,55 @@ func (m *TransferEventMutation) ResetActorID() {
 	m.actor_id = nil
 }
 
+// SetSnapshot sets the "snapshot" field.
+func (m *TransferEventMutation) SetSnapshot(value map[string]interface{}) {
+	m.snapshot = &value
+}
+
+// Snapshot returns the value of the "snapshot" field in the mutation.
+func (m *TransferEventMutation) Snapshot() (r map[string]interface{}, exists bool) {
+	v := m.snapshot
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapshot returns the old "snapshot" field's value of the TransferEvent entity.
+// If the TransferEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferEventMutation) OldSnapshot(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapshot is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapshot requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapshot: %w", err)
+	}
+	return oldValue.Snapshot, nil
+}
+
+// ClearSnapshot clears the value of the "snapshot" field.
+func (m *TransferEventMutation) ClearSnapshot() {
+	m.snapshot = nil
+	m.clearedFields[transferevent.FieldSnapshot] = struct{}{}
+}
+
+// SnapshotCleared returns if the "snapshot" field was cleared in this mutation.
+func (m *TransferEventMutation) SnapshotCleared() bool {
+	_, ok := m.clearedFields[transferevent.FieldSnapshot]
+	return ok
+}
+
+// ResetSnapshot resets all changes to the "snapshot" field.
+func (m *TransferEventMutation) ResetSnapshot() {
+	m.snapshot = nil
+	delete(m.clearedFields, transferevent.FieldSnapshot)
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *TransferEventMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -50356,7 +50514,7 @@ func (m *TransferEventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TransferEventMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.transfer_id != nil {
 		fields = append(fields, transferevent.FieldTransferID)
 	}
@@ -50368,6 +50526,9 @@ func (m *TransferEventMutation) Fields() []string {
 	}
 	if m.actor_id != nil {
 		fields = append(fields, transferevent.FieldActorID)
+	}
+	if m.snapshot != nil {
+		fields = append(fields, transferevent.FieldSnapshot)
 	}
 	if m.created_at != nil {
 		fields = append(fields, transferevent.FieldCreatedAt)
@@ -50388,6 +50549,8 @@ func (m *TransferEventMutation) Field(name string) (ent.Value, bool) {
 		return m.Action()
 	case transferevent.FieldActorID:
 		return m.ActorID()
+	case transferevent.FieldSnapshot:
+		return m.Snapshot()
 	case transferevent.FieldCreatedAt:
 		return m.CreatedAt()
 	}
@@ -50407,6 +50570,8 @@ func (m *TransferEventMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldAction(ctx)
 	case transferevent.FieldActorID:
 		return m.OldActorID(ctx)
+	case transferevent.FieldSnapshot:
+		return m.OldSnapshot(ctx)
 	case transferevent.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	}
@@ -50445,6 +50610,13 @@ func (m *TransferEventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetActorID(v)
+		return nil
+	case transferevent.FieldSnapshot:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapshot(v)
 		return nil
 	case transferevent.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -50497,7 +50669,11 @@ func (m *TransferEventMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *TransferEventMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(transferevent.FieldSnapshot) {
+		fields = append(fields, transferevent.FieldSnapshot)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -50510,6 +50686,11 @@ func (m *TransferEventMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *TransferEventMutation) ClearField(name string) error {
+	switch name {
+	case transferevent.FieldSnapshot:
+		m.ClearSnapshot()
+		return nil
+	}
 	return fmt.Errorf("unknown TransferEvent nullable field %s", name)
 }
 
@@ -50528,6 +50709,9 @@ func (m *TransferEventMutation) ResetField(name string) error {
 		return nil
 	case transferevent.FieldActorID:
 		m.ResetActorID()
+		return nil
+	case transferevent.FieldSnapshot:
+		m.ResetSnapshot()
 		return nil
 	case transferevent.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -51177,6 +51361,7 @@ type TransferRecordMutation struct {
 	account       *string
 	provider_id   *string
 	attempt_id    *string
+	manual_job_id *string
 	version       *int
 	addversion    *int
 	lease_owner   *string
@@ -51402,6 +51587,42 @@ func (m *TransferRecordMutation) OldAttemptID(ctx context.Context) (v string, er
 // ResetAttemptID resets all changes to the "attempt_id" field.
 func (m *TransferRecordMutation) ResetAttemptID() {
 	m.attempt_id = nil
+}
+
+// SetManualJobID sets the "manual_job_id" field.
+func (m *TransferRecordMutation) SetManualJobID(s string) {
+	m.manual_job_id = &s
+}
+
+// ManualJobID returns the value of the "manual_job_id" field in the mutation.
+func (m *TransferRecordMutation) ManualJobID() (r string, exists bool) {
+	v := m.manual_job_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldManualJobID returns the old "manual_job_id" field's value of the TransferRecord entity.
+// If the TransferRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransferRecordMutation) OldManualJobID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldManualJobID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldManualJobID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldManualJobID: %w", err)
+	}
+	return oldValue.ManualJobID, nil
+}
+
+// ResetManualJobID resets all changes to the "manual_job_id" field.
+func (m *TransferRecordMutation) ResetManualJobID() {
+	m.manual_job_id = nil
 }
 
 // SetVersion sets the "version" field.
@@ -51759,7 +51980,7 @@ func (m *TransferRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TransferRecordMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.account != nil {
 		fields = append(fields, transferrecord.FieldAccount)
 	}
@@ -51768,6 +51989,9 @@ func (m *TransferRecordMutation) Fields() []string {
 	}
 	if m.attempt_id != nil {
 		fields = append(fields, transferrecord.FieldAttemptID)
+	}
+	if m.manual_job_id != nil {
+		fields = append(fields, transferrecord.FieldManualJobID)
 	}
 	if m.version != nil {
 		fields = append(fields, transferrecord.FieldVersion)
@@ -51807,6 +52031,8 @@ func (m *TransferRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.ProviderID()
 	case transferrecord.FieldAttemptID:
 		return m.AttemptID()
+	case transferrecord.FieldManualJobID:
+		return m.ManualJobID()
 	case transferrecord.FieldVersion:
 		return m.Version()
 	case transferrecord.FieldLeaseOwner:
@@ -51838,6 +52064,8 @@ func (m *TransferRecordMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldProviderID(ctx)
 	case transferrecord.FieldAttemptID:
 		return m.OldAttemptID(ctx)
+	case transferrecord.FieldManualJobID:
+		return m.OldManualJobID(ctx)
 	case transferrecord.FieldVersion:
 		return m.OldVersion(ctx)
 	case transferrecord.FieldLeaseOwner:
@@ -51883,6 +52111,13 @@ func (m *TransferRecordMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAttemptID(v)
+		return nil
+	case transferrecord.FieldManualJobID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetManualJobID(v)
 		return nil
 	case transferrecord.FieldVersion:
 		v, ok := value.(int)
@@ -52021,6 +52256,9 @@ func (m *TransferRecordMutation) ResetField(name string) error {
 		return nil
 	case transferrecord.FieldAttemptID:
 		m.ResetAttemptID()
+		return nil
+	case transferrecord.FieldManualJobID:
+		m.ResetManualJobID()
 		return nil
 	case transferrecord.FieldVersion:
 		m.ResetVersion()

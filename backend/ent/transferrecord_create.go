@@ -46,6 +46,20 @@ func (_c *TransferRecordCreate) SetNillableAttemptID(v *string) *TransferRecordC
 	return _c
 }
 
+// SetManualJobID sets the "manual_job_id" field.
+func (_c *TransferRecordCreate) SetManualJobID(v string) *TransferRecordCreate {
+	_c.mutation.SetManualJobID(v)
+	return _c
+}
+
+// SetNillableManualJobID sets the "manual_job_id" field if the given value is not nil.
+func (_c *TransferRecordCreate) SetNillableManualJobID(v *string) *TransferRecordCreate {
+	if v != nil {
+		_c.SetManualJobID(*v)
+	}
+	return _c
+}
+
 // SetVersion sets the "version" field.
 func (_c *TransferRecordCreate) SetVersion(v int) *TransferRecordCreate {
 	_c.mutation.SetVersion(v)
@@ -187,6 +201,10 @@ func (_c *TransferRecordCreate) defaults() {
 		v := transferrecord.DefaultAttemptID
 		_c.mutation.SetAttemptID(v)
 	}
+	if _, ok := _c.mutation.ManualJobID(); !ok {
+		v := transferrecord.DefaultManualJobID
+		_c.mutation.SetManualJobID(v)
+	}
 	if _, ok := _c.mutation.Version(); !ok {
 		v := transferrecord.DefaultVersion
 		_c.mutation.SetVersion(v)
@@ -233,6 +251,14 @@ func (_c *TransferRecordCreate) check() error {
 	if v, ok := _c.mutation.AttemptID(); ok {
 		if err := transferrecord.AttemptIDValidator(v); err != nil {
 			return &ValidationError{Name: "attempt_id", err: fmt.Errorf(`ent: validator failed for field "TransferRecord.attempt_id": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.ManualJobID(); !ok {
+		return &ValidationError{Name: "manual_job_id", err: errors.New(`ent: missing required field "TransferRecord.manual_job_id"`)}
+	}
+	if v, ok := _c.mutation.ManualJobID(); ok {
+		if err := transferrecord.ManualJobIDValidator(v); err != nil {
+			return &ValidationError{Name: "manual_job_id", err: fmt.Errorf(`ent: validator failed for field "TransferRecord.manual_job_id": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Version(); !ok {
@@ -322,6 +348,10 @@ func (_c *TransferRecordCreate) createSpec() (*TransferRecord, *sqlgraph.CreateS
 	if value, ok := _c.mutation.AttemptID(); ok {
 		_spec.SetField(transferrecord.FieldAttemptID, field.TypeString, value)
 		_node.AttemptID = value
+	}
+	if value, ok := _c.mutation.ManualJobID(); ok {
+		_spec.SetField(transferrecord.FieldManualJobID, field.TypeString, value)
+		_node.ManualJobID = value
 	}
 	if value, ok := _c.mutation.Version(); ok {
 		_spec.SetField(transferrecord.FieldVersion, field.TypeInt, value)

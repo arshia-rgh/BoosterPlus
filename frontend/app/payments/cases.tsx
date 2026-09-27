@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
+import { denied } from "../support/chat-state";
 import { post } from "../identity/api";
 import type { Detail } from "../orders/model";
 import { useResource } from "../orders/resource";
@@ -32,6 +33,7 @@ function CaseConversation({
   }, []);
   const [after, setAfter] = useState(0),
     [note, setNote] = useState(""),
+    [rationale, setRationale] = useState(""),
     [outcome, setOutcome] = useState("retain"),
     [error, setError] = useState<unknown>(null),
     [busy, setBusy] = useState(false);
@@ -40,6 +42,12 @@ function CaseConversation({
     caseDetailSchema,
   );
   const record = resource.data?.case;
+  const accessDenied = denied(resource.error) || denied(error);
+  if (accessDenied && (note || rationale)) {
+    setNote("");
+    setRationale("");
+  }
+
   const lock = useRef(false);
   async function act(action: string) {
     if (
@@ -47,7 +55,8 @@ function CaseConversation({
       lock.current ||
       refreshing ||
       resource.loading ||
-      note.trim().length < 10
+      note.trim().length < 10 ||
+      (admin && action === "decide" && rationale.trim().length < 10)
     )
       return;
     lock.current = true;
@@ -61,10 +70,12 @@ function CaseConversation({
           note,
           message_id: "",
           outcome: action === "decide" ? outcome : "",
+          ...(admin ? { internal_rationale: rationale } : {}),
         },
         caseSchema,
       );
       setNote("");
+      setRationale("");
       setAfter(0);
       resource.reload();
       changed();
@@ -81,8 +92,14 @@ function CaseConversation({
       aria-label="Case review"
     >
       <ErrorNotice error={resource.error ?? error} />
-      {!!resource.error && (
-        <Action disabled={resource.loading} onClick={resource.reload}>
+      {(!!resource.error || denied(error)) && (
+        <Action
+          disabled={resource.loading}
+          onClick={() => {
+            setError(null);
+            resource.reload();
+          }}
+        >
           Try case again
         </Action>
       )}
@@ -162,6 +179,12 @@ function CaseConversation({
                   </time>
                 </strong>
                 <p className="payment-policy">{event.note}</p>
+                {admin && event.internal_rationale && (
+                  <aside>
+                    <strong>Staff-only rationale</strong>
+                    <p className="payment-policy">{event.internal_rationale}</p>
+                  </aside>
+                )}
               </li>
             ))}
           </ol>
@@ -184,14 +207,25 @@ function CaseConversation({
             </Action>
           )}
           {record.state !== "closed" && (
-            <fieldset disabled={busy || refreshing || resource.loading}>
+            <fieldset
+              disabled={busy || refreshing || resource.loading || accessDenied}
+            >
               <legend>Respond to this case</legend>
               <Text
-                label="Case message"
+                label={admin ? "Customer explanation" : "Case message"}
                 multiline
                 value={note}
                 change={setNote}
               />
+              {admin && (
+                <Text
+                  label="Internal rationale"
+                  multiline
+                  value={rationale}
+                  change={setRationale}
+                  help="Visible only to authorized staff. Keep the customer explanation separate; never enter credentials or authentication codes here."
+                />
+              )}
               <p>
                 Describe the issue and evidence to review. Photos can be
                 uploaded in the private order conversation.
@@ -216,7 +250,9 @@ function CaseConversation({
                     ]}
                   />
                   <Action
-                    disabled={note.trim().length < 10}
+                    disabled={
+                      note.trim().length < 10 || rationale.trim().length < 10
+                    }
                     onClick={() => void act("decide")}
                   >
                     Propose case decision

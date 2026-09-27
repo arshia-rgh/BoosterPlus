@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -25,6 +26,8 @@ type TransferEvent struct {
 	Action string `json:"action,omitempty"`
 	// ActorID holds the value of the "actor_id" field.
 	ActorID string `json:"actor_id,omitempty"`
+	// Snapshot holds the value of the "snapshot" field.
+	Snapshot map[string]interface{} `json:"snapshot,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt    time.Time `json:"created_at,omitempty"`
 	selectValues sql.SelectValues
@@ -35,6 +38,8 @@ func (*TransferEvent) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case transferevent.FieldSnapshot:
+			values[i] = new([]byte)
 		case transferevent.FieldVersion:
 			values[i] = new(sql.NullInt64)
 		case transferevent.FieldID, transferevent.FieldTransferID, transferevent.FieldAction, transferevent.FieldActorID:
@@ -85,6 +90,14 @@ func (_m *TransferEvent) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field actor_id", values[i])
 			} else if value.Valid {
 				_m.ActorID = value.String
+			}
+		case transferevent.FieldSnapshot:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field snapshot", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Snapshot); err != nil {
+					return fmt.Errorf("unmarshal field snapshot: %w", err)
+				}
 			}
 		case transferevent.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -139,6 +152,9 @@ func (_m *TransferEvent) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("actor_id=")
 	builder.WriteString(_m.ActorID)
+	builder.WriteString(", ")
+	builder.WriteString("snapshot=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Snapshot))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

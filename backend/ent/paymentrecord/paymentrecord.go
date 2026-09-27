@@ -17,6 +17,8 @@ const (
 	FieldPaymentID = "payment_id"
 	// FieldAttemptID holds the string denoting the attempt_id field in the database.
 	FieldAttemptID = "attempt_id"
+	// FieldManualJobID holds the string denoting the manual_job_id field in the database.
+	FieldManualJobID = "manual_job_id"
 	// FieldVersion holds the string denoting the version field in the database.
 	FieldVersion = "version"
 	// FieldLeaseOwner holds the string denoting the lease_owner field in the database.
@@ -43,6 +45,7 @@ var Columns = []string{
 	FieldAccount,
 	FieldPaymentID,
 	FieldAttemptID,
+	FieldManualJobID,
 	FieldVersion,
 	FieldLeaseOwner,
 	FieldLeaseUntil,
@@ -72,6 +75,10 @@ var (
 	DefaultAttemptID string
 	// AttemptIDValidator is a validator for the "attempt_id" field. It is called by the builders before save.
 	AttemptIDValidator func(string) error
+	// DefaultManualJobID holds the default value on creation for the "manual_job_id" field.
+	DefaultManualJobID string
+	// ManualJobIDValidator is a validator for the "manual_job_id" field. It is called by the builders before save.
+	ManualJobIDValidator func(string) error
 	// DefaultVersion holds the default value on creation for the "version" field.
 	DefaultVersion int
 	// DefaultLeaseOwner holds the default value on creation for the "lease_owner" field.
@@ -113,6 +120,11 @@ func ByPaymentID(opts ...sql.OrderTermOption) OrderOption {
 // ByAttemptID orders the results by the attempt_id field.
 func ByAttemptID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAttemptID, opts...).ToFunc()
+}
+
+// ByManualJobID orders the results by the manual_job_id field.
+func ByManualJobID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldManualJobID, opts...).ToFunc()
 }
 
 // ByVersion orders the results by the version field.

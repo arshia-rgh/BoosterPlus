@@ -44,6 +44,12 @@ func (_c *TransferEventCreate) SetActorID(v string) *TransferEventCreate {
 	return _c
 }
 
+// SetSnapshot sets the "snapshot" field.
+func (_c *TransferEventCreate) SetSnapshot(v map[string]interface{}) *TransferEventCreate {
+	_c.mutation.SetSnapshot(v)
+	return _c
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_c *TransferEventCreate) SetCreatedAt(v time.Time) *TransferEventCreate {
 	_c.mutation.SetCreatedAt(v)
@@ -192,6 +198,10 @@ func (_c *TransferEventCreate) createSpec() (*TransferEvent, *sqlgraph.CreateSpe
 	if value, ok := _c.mutation.ActorID(); ok {
 		_spec.SetField(transferevent.FieldActorID, field.TypeString, value)
 		_node.ActorID = value
+	}
+	if value, ok := _c.mutation.Snapshot(); ok {
+		_spec.SetField(transferevent.FieldSnapshot, field.TypeJSON, value)
+		_node.Snapshot = value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(transferevent.FieldCreatedAt, field.TypeTime, value)

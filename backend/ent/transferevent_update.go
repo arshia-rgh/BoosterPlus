@@ -68,6 +68,9 @@ func (_u *TransferEventUpdate) sqlSave(ctx context.Context) (_node int, err erro
 			}
 		}
 	}
+	if _u.mutation.SnapshotCleared() {
+		_spec.ClearField(transferevent.FieldSnapshot, field.TypeJSON)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{transferevent.Label}
@@ -158,6 +161,9 @@ func (_u *TransferEventUpdateOne) sqlSave(ctx context.Context) (_node *TransferE
 				ps[i](selector)
 			}
 		}
+	}
+	if _u.mutation.SnapshotCleared() {
+		_spec.ClearField(transferevent.FieldSnapshot, field.TypeJSON)
 	}
 	_node = &TransferEvent{config: _u.config}
 	_spec.Assign = _node.assignValues

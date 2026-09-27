@@ -4,6 +4,8 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 
 ## Repository and delivery
 
+- Latest owner update (28 September 2026): defer the complete repository gate until DI15. During the remaining design implementation stages, use `make stage-check` (or its frontend-only scope) plus focused integration/browser checks for changed behavior and the senior UI review. Do not rerun all backend/browser/container/production suites at each step. Root/project `pre-commit` and CI retain the complete gate. At DI15 restore normal tracked-hook selection, run the complete gate, and record actual results before final qualification. This supersedes the earlier per-stage full-gate requirement below; failed historical runs remain failures.
+
 - This is one Git monorepo with independent `backend/` and `frontend/` projects. Keep their dependency graphs, builds, Dockerfiles, and Makefiles separate.
 - Work directly on `main`. Do not create feature branches or worktrees unless the owner changes this instruction.
 - Commit and push each completed, verified implementation stage directly to `origin/main`. This action is already authorized; do not ask again. Never force-push or discard remote/user work.

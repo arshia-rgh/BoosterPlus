@@ -64,7 +64,7 @@ func TestRefundHTTPPrivateHistoryCSRFAndStrictRecipient(t *testing.T) {
 			t.Fatal("invalid recipient input accepted", got.Code)
 		}
 	}
-	for _, path := range []string{"/api/v1/admin/cases", "/api/v1/admin/finance/outgoing", "/api/v1/admin/orders/" + f.orderID + "/refunds"} {
+	for _, path := range []string{"/api/v1/admin/finance/reconciliation?direction=incoming&payment_id=801", "/api/v1/admin/refunds/" + v.ID + "/history", "/api/v1/admin/cases", "/api/v1/admin/finance/outgoing", "/api/v1/admin/orders/" + f.orderID + "/refunds"} {
 		if got := call(http.MethodGet, path, "", "", ""); got.Code != http.StatusUnauthorized {
 			t.Fatal("customer accessed staff financial data", got.Code)
 		}
@@ -84,6 +84,7 @@ func TestRefundHTTPPrivateHistoryCSRFAndStrictRecipient(t *testing.T) {
 		"ServiceCaseDetail":  "/api/v1/cases/" + f.caseID,
 		"ServiceCaseHistory": "/api/v1/orders/" + f.orderID + "/cases",
 		"RefundHistory":      "/api/v1/orders/" + f.orderID + "/refunds",
+		"TransferHistory":    "/api/v1/refunds/" + v.ID + "/history",
 	} {
 		got := call(http.MethodGet, path, "", "", "")
 		if got.Code != http.StatusOK || got.Header().Get("Cache-Control") != "no-store" {

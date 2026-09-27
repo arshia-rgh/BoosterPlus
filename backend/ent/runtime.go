@@ -829,8 +829,14 @@ func init() {
 	caseeventDescNote := caseeventFields[6].Descriptor()
 	// caseevent.NoteValidator is a validator for the "note" field. It is called by the builders before save.
 	caseevent.NoteValidator = caseeventDescNote.Validators[0].(func(string) error)
+	// caseeventDescInternalRationale is the schema descriptor for internal_rationale field.
+	caseeventDescInternalRationale := caseeventFields[7].Descriptor()
+	// caseevent.DefaultInternalRationale holds the default value on creation for the internal_rationale field.
+	caseevent.DefaultInternalRationale = caseeventDescInternalRationale.Default.(string)
+	// caseevent.InternalRationaleValidator is a validator for the "internal_rationale" field. It is called by the builders before save.
+	caseevent.InternalRationaleValidator = caseeventDescInternalRationale.Validators[0].(func(string) error)
 	// caseeventDescMessageID is the schema descriptor for message_id field.
-	caseeventDescMessageID := caseeventFields[7].Descriptor()
+	caseeventDescMessageID := caseeventFields[8].Descriptor()
 	// caseevent.DefaultMessageID holds the default value on creation for the message_id field.
 	caseevent.DefaultMessageID = caseeventDescMessageID.Default.(string)
 	// caseevent.MessageIDValidator is a validator for the "message_id" field. It is called by the builders before save.
@@ -1801,24 +1807,30 @@ func init() {
 	paymentrecord.DefaultAttemptID = paymentrecordDescAttemptID.Default.(string)
 	// paymentrecord.AttemptIDValidator is a validator for the "attempt_id" field. It is called by the builders before save.
 	paymentrecord.AttemptIDValidator = paymentrecordDescAttemptID.Validators[0].(func(string) error)
+	// paymentrecordDescManualJobID is the schema descriptor for manual_job_id field.
+	paymentrecordDescManualJobID := paymentrecordFields[4].Descriptor()
+	// paymentrecord.DefaultManualJobID holds the default value on creation for the manual_job_id field.
+	paymentrecord.DefaultManualJobID = paymentrecordDescManualJobID.Default.(string)
+	// paymentrecord.ManualJobIDValidator is a validator for the "manual_job_id" field. It is called by the builders before save.
+	paymentrecord.ManualJobIDValidator = paymentrecordDescManualJobID.Validators[0].(func(string) error)
 	// paymentrecordDescVersion is the schema descriptor for version field.
-	paymentrecordDescVersion := paymentrecordFields[4].Descriptor()
+	paymentrecordDescVersion := paymentrecordFields[5].Descriptor()
 	// paymentrecord.DefaultVersion holds the default value on creation for the version field.
 	paymentrecord.DefaultVersion = paymentrecordDescVersion.Default.(int)
 	// paymentrecordDescLeaseOwner is the schema descriptor for lease_owner field.
-	paymentrecordDescLeaseOwner := paymentrecordFields[5].Descriptor()
+	paymentrecordDescLeaseOwner := paymentrecordFields[6].Descriptor()
 	// paymentrecord.DefaultLeaseOwner holds the default value on creation for the lease_owner field.
 	paymentrecord.DefaultLeaseOwner = paymentrecordDescLeaseOwner.Default.(string)
 	// paymentrecord.LeaseOwnerValidator is a validator for the "lease_owner" field. It is called by the builders before save.
 	paymentrecord.LeaseOwnerValidator = paymentrecordDescLeaseOwner.Validators[0].(func(string) error)
 	// paymentrecordDescState is the schema descriptor for state field.
-	paymentrecordDescState := paymentrecordFields[7].Descriptor()
+	paymentrecordDescState := paymentrecordFields[8].Descriptor()
 	// paymentrecord.DefaultState holds the default value on creation for the state field.
 	paymentrecord.DefaultState = paymentrecordDescState.Default.(string)
 	// paymentrecord.StateValidator is a validator for the "state" field. It is called by the builders before save.
 	paymentrecord.StateValidator = paymentrecordDescState.Validators[0].(func(string) error)
 	// paymentrecordDescIssue is the schema descriptor for issue field.
-	paymentrecordDescIssue := paymentrecordFields[8].Descriptor()
+	paymentrecordDescIssue := paymentrecordFields[9].Descriptor()
 	// paymentrecord.DefaultIssue holds the default value on creation for the issue field.
 	paymentrecord.DefaultIssue = paymentrecordDescIssue.Default.(string)
 	// paymentrecord.IssueValidator is a validator for the "issue" field. It is called by the builders before save.
@@ -2389,24 +2401,30 @@ func init() {
 	transferrecord.DefaultAttemptID = transferrecordDescAttemptID.Default.(string)
 	// transferrecord.AttemptIDValidator is a validator for the "attempt_id" field. It is called by the builders before save.
 	transferrecord.AttemptIDValidator = transferrecordDescAttemptID.Validators[0].(func(string) error)
+	// transferrecordDescManualJobID is the schema descriptor for manual_job_id field.
+	transferrecordDescManualJobID := transferrecordFields[4].Descriptor()
+	// transferrecord.DefaultManualJobID holds the default value on creation for the manual_job_id field.
+	transferrecord.DefaultManualJobID = transferrecordDescManualJobID.Default.(string)
+	// transferrecord.ManualJobIDValidator is a validator for the "manual_job_id" field. It is called by the builders before save.
+	transferrecord.ManualJobIDValidator = transferrecordDescManualJobID.Validators[0].(func(string) error)
 	// transferrecordDescVersion is the schema descriptor for version field.
-	transferrecordDescVersion := transferrecordFields[4].Descriptor()
+	transferrecordDescVersion := transferrecordFields[5].Descriptor()
 	// transferrecord.DefaultVersion holds the default value on creation for the version field.
 	transferrecord.DefaultVersion = transferrecordDescVersion.Default.(int)
 	// transferrecordDescLeaseOwner is the schema descriptor for lease_owner field.
-	transferrecordDescLeaseOwner := transferrecordFields[5].Descriptor()
+	transferrecordDescLeaseOwner := transferrecordFields[6].Descriptor()
 	// transferrecord.DefaultLeaseOwner holds the default value on creation for the lease_owner field.
 	transferrecord.DefaultLeaseOwner = transferrecordDescLeaseOwner.Default.(string)
 	// transferrecord.LeaseOwnerValidator is a validator for the "lease_owner" field. It is called by the builders before save.
 	transferrecord.LeaseOwnerValidator = transferrecordDescLeaseOwner.Validators[0].(func(string) error)
 	// transferrecordDescState is the schema descriptor for state field.
-	transferrecordDescState := transferrecordFields[7].Descriptor()
+	transferrecordDescState := transferrecordFields[8].Descriptor()
 	// transferrecord.DefaultState holds the default value on creation for the state field.
 	transferrecord.DefaultState = transferrecordDescState.Default.(string)
 	// transferrecord.StateValidator is a validator for the "state" field. It is called by the builders before save.
 	transferrecord.StateValidator = transferrecordDescState.Validators[0].(func(string) error)
 	// transferrecordDescIssue is the schema descriptor for issue field.
-	transferrecordDescIssue := transferrecordFields[8].Descriptor()
+	transferrecordDescIssue := transferrecordFields[9].Descriptor()
 	// transferrecord.DefaultIssue holds the default value on creation for the issue field.
 	transferrecord.DefaultIssue = transferrecordDescIssue.Default.(string)
 	// transferrecord.IssueValidator is a validator for the "issue" field. It is called by the builders before save.

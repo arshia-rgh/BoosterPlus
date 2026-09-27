@@ -21,10 +21,11 @@ type CaseInput struct {
 
 // CaseChange requires a freshly observed revision for every action.
 type CaseChange struct {
-	Version   int    `json:"version"`
-	Note      string `json:"note"`
-	MessageID string `json:"message_id"`
-	Outcome   string `json:"outcome"`
+	InternalRationale string `json:"internal_rationale"`
+	Version           int    `json:"version"`
+	Note              string `json:"note"`
+	MessageID         string `json:"message_id"`
+	Outcome           string `json:"outcome"`
 }
 
 // CaseView excludes staff identifiers and internal conversations.
@@ -45,13 +46,14 @@ type CaseView struct {
 
 // CaseEntry is a private customer-visible review event.
 type CaseEntry struct {
-	Role      string    `json:"role"`
-	ID        string    `json:"id"`
-	Version   int       `json:"version"`
-	Action    string    `json:"action"`
-	Note      string    `json:"note"`
-	MessageID string    `json:"message_id"`
-	CreatedAt time.Time `json:"created_at"`
+	InternalRationale string    `json:"internal_rationale,omitempty"`
+	Role              string    `json:"role"`
+	ID                string    `json:"id"`
+	Version           int       `json:"version"`
+	Action            string    `json:"action"`
+	Note              string    `json:"note"`
+	MessageID         string    `json:"message_id"`
+	CreatedAt         time.Time `json:"created_at"`
 }
 
 // CaseHistory is bounded; event pagination uses the explicit next revision.
@@ -120,7 +122,11 @@ func (s *Store) Case(ctx context.Context, p *identity.Principal, id string, admi
 		result.Next = events[49].Version
 	}
 	for _, event := range events {
-		result.Events = append(result.Events, CaseEntry{event.ActorRole, event.ID, event.Version, event.Action, event.Note, event.MessageID, event.CreatedAt})
+		entry := CaseEntry{Role: event.ActorRole, ID: event.ID, Version: event.Version, Action: event.Action, Note: event.Note, MessageID: event.MessageID, CreatedAt: event.CreatedAt}
+		if admin {
+			entry.InternalRationale = event.InternalRationale
+		}
+		result.Events = append(result.Events, entry)
 	}
 	return result, nil
 }

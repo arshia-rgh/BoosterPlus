@@ -39,6 +39,7 @@ func (s *Store) registerCases(mux *http.ServeMux) {
 		if staff {
 			prefix, capability = prefix+"/admin", "admin"
 		}
+		register("GET "+prefix+"/refunds/{id}/history", capability, false, s.transferHistoryHandler("refund", staff))
 		register("GET "+prefix+"/orders/{id}/cases", capability, false, func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 			value, err := s.Cases(r.Context(), p, r.PathValue("id"), staff)
 			if err != nil {

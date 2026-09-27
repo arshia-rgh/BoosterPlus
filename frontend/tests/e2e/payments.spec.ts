@@ -60,8 +60,25 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
   await page.getByLabel("NOWPayments asset code").fill("usdttrc20");
   await page.getByLabel("Customer label").fill("Test USDT TRON");
   await page.getByLabel("Network identifier").fill("trx");
+  await page.getByRole("button", { name: "Save policy draft" }).click();
+  await expect(
+    page.getByRole("button", { name: "Preview saved payment policy" }),
+  ).toBeEnabled();
+  await page
+    .getByRole("button", { name: "Preview saved payment policy" })
+    .click();
+  await expect(
+    page.getByRole("region", { name: "Saved policy customer preview" }),
+  ).toBeFocused();
+  await page
+    .getByLabel(
+      "I reviewed these exact saved payment and remedy terms for customers",
+    )
+    .check();
   await page.getByRole("button", { name: "Publish payment policy" }).click();
-  await expect(page.getByText("Revision 2", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Saved revision 3 · Draft saved", { exact: true }),
+  ).toBeVisible();
   await page.screenshot({
     path: `.cache/finance-policy-${info.project.name}.png`,
     fullPage: true,
@@ -240,6 +257,39 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     await expect(
       page.getByRole("link", { name: `Order ${id.slice(0, 8)}` }),
     ).toBeVisible();
+    const paymentCard = page.locator("article").filter({
+      has: page.getByRole("link", { name: `Order ${id.slice(0, 8)}` }),
+    });
+    await paymentCard
+      .locator("summary")
+      .filter({ hasText: "Provider payment 1 ·" })
+      .click();
+    await expect(
+      paymentCard.getByText("12.34000001 USDTTRC20", { exact: true }),
+    ).toHaveCount(2);
+    await paymentCard
+      .getByRole("button", { name: "Use payment 1 for reconciliation" })
+      .click();
+    await expect(
+      page.getByRole("region", { name: "Provider reconciliation" }),
+    ).toBeFocused();
+    await expect(page.getByLabel("Provider payment ID")).toHaveValue("1");
+    await page
+      .getByRole("link", { name: `Review linked order ${id.slice(0, 8)}` })
+      .click();
+    await page.getByRole("link", { name: /Finance workspace/ }).click();
+    await expect(page).toHaveURL(
+      /view=reconcile.*direction=incoming.*reference=1/,
+    );
+    await expect(page.getByLabel("Provider payment ID")).toHaveValue("1");
+    await expect(
+      page.getByRole("region", { name: "Provider check inspection" }),
+    ).toBeVisible();
+    await page
+      .getByRole("navigation", { name: "Finance workspace" })
+      .getByRole("button", { name: "Payments", exact: true })
+      .click();
+    await expect(page.getByLabel("Payment filter")).toHaveValue("");
     await customer.getByRole("link", { name: "Help", exact: true }).click();
     await customer
       .getByText("Request a service review", { exact: true })
@@ -256,11 +306,16 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     ).toBeVisible();
     await page.goto(`/admin/orders/${id}?section=payment`);
     await page
-      .getByLabel("Case message")
+      .getByLabel("Customer explanation")
       .fill(
         "We reviewed the unused work and propose cancellation with this refund.",
       );
     await page.getByLabel("Case outcome").selectOption("cancel");
+    await page
+      .getByLabel("Internal rationale")
+      .fill(
+        "Private review of the receipt and unused work supports this remedy.",
+      );
     await page.getByRole("button", { name: "Propose case decision" }).click();
     await expect(
       page.getByRole("heading", { name: "cancellation · decided" }),
@@ -307,6 +362,11 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       .fill(
         "Owner approves this exact customer-confirmed destination and amount.",
       );
+    await page
+      .getByLabel(
+        "I reviewed the recipient, exact amount, fees and due conditions",
+      )
+      .check();
     await page.getByRole("button", { name: "Approve exact refund" }).click();
     await expect
       .poll(
@@ -326,6 +386,11 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       .fill("Authorize the independently verified outgoing transfer.");
     await page.getByLabel("NOWPayments authenticator code").fill("123456");
     await page
+      .getByLabel(
+        "I reviewed the recipient, exact amount, fees and due conditions",
+      )
+      .check();
+    await page
       .getByRole("button", { name: "Authorize provider transfer" })
       .click();
     await expect
@@ -341,12 +406,31 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
         { timeout: 20000 },
       )
       .toBe(1);
+    await page
+      .getByRole("button", { name: "Review transfer history", exact: true })
+      .click();
+    const transferHistory = page.getByRole("region", {
+      name: "Transfer evidence and history",
+    });
+    await expect(
+      transferHistory
+        .getByText(
+          "Destination at this revision: synthetic-browser-recipient · Memo: synthetic-memo",
+        )
+        .first(),
+    ).toBeVisible();
     await customer
       .getByRole("button", { name: "Refresh cases and order", exact: true })
       .click();
     await expect(
       customer.getByRole("heading", { name: "cancellation · decided" }),
     ).toBeVisible();
+    await expect(
+      customer.getByText(
+        "Private review of the receipt and unused work supports this remedy.",
+        { exact: true },
+      ),
+    ).toHaveCount(0);
     await customer
       .getByLabel("Case message")
       .fill("I accept the confirmed refund and the cancellation resolution.");

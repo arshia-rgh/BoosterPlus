@@ -29,6 +29,8 @@ type CaseEvent struct {
 	ActorRole string `json:"actor_role,omitempty"`
 	// Note holds the value of the "note" field.
 	Note string `json:"note,omitempty"`
+	// InternalRationale holds the value of the "internal_rationale" field.
+	InternalRationale string `json:"internal_rationale,omitempty"`
 	// MessageID holds the value of the "message_id" field.
 	MessageID string `json:"message_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -43,7 +45,7 @@ func (*CaseEvent) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case caseevent.FieldVersion:
 			values[i] = new(sql.NullInt64)
-		case caseevent.FieldID, caseevent.FieldCaseID, caseevent.FieldAction, caseevent.FieldActorID, caseevent.FieldActorRole, caseevent.FieldNote, caseevent.FieldMessageID:
+		case caseevent.FieldID, caseevent.FieldCaseID, caseevent.FieldAction, caseevent.FieldActorID, caseevent.FieldActorRole, caseevent.FieldNote, caseevent.FieldInternalRationale, caseevent.FieldMessageID:
 			values[i] = new(sql.NullString)
 		case caseevent.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -103,6 +105,12 @@ func (_m *CaseEvent) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field note", values[i])
 			} else if value.Valid {
 				_m.Note = value.String
+			}
+		case caseevent.FieldInternalRationale:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field internal_rationale", values[i])
+			} else if value.Valid {
+				_m.InternalRationale = value.String
 			}
 		case caseevent.FieldMessageID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -169,6 +177,9 @@ func (_m *CaseEvent) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("note=")
 	builder.WriteString(_m.Note)
+	builder.WriteString(", ")
+	builder.WriteString("internal_rationale=")
+	builder.WriteString(_m.InternalRationale)
 	builder.WriteString(", ")
 	builder.WriteString("message_id=")
 	builder.WriteString(_m.MessageID)

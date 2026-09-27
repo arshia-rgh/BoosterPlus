@@ -42,6 +42,20 @@ func (_u *TransferRecordUpdate) SetNillableAttemptID(v *string) *TransferRecordU
 	return _u
 }
 
+// SetManualJobID sets the "manual_job_id" field.
+func (_u *TransferRecordUpdate) SetManualJobID(v string) *TransferRecordUpdate {
+	_u.mutation.SetManualJobID(v)
+	return _u
+}
+
+// SetNillableManualJobID sets the "manual_job_id" field if the given value is not nil.
+func (_u *TransferRecordUpdate) SetNillableManualJobID(v *string) *TransferRecordUpdate {
+	if v != nil {
+		_u.SetManualJobID(*v)
+	}
+	return _u
+}
+
 // SetVersion sets the "version" field.
 func (_u *TransferRecordUpdate) SetVersion(v int) *TransferRecordUpdate {
 	_u.mutation.ResetVersion()
@@ -184,6 +198,11 @@ func (_u *TransferRecordUpdate) check() error {
 			return &ValidationError{Name: "attempt_id", err: fmt.Errorf(`ent: validator failed for field "TransferRecord.attempt_id": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.ManualJobID(); ok {
+		if err := transferrecord.ManualJobIDValidator(v); err != nil {
+			return &ValidationError{Name: "manual_job_id", err: fmt.Errorf(`ent: validator failed for field "TransferRecord.manual_job_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.LeaseOwner(); ok {
 		if err := transferrecord.LeaseOwnerValidator(v); err != nil {
 			return &ValidationError{Name: "lease_owner", err: fmt.Errorf(`ent: validator failed for field "TransferRecord.lease_owner": %w`, err)}
@@ -216,6 +235,9 @@ func (_u *TransferRecordUpdate) sqlSave(ctx context.Context) (_node int, err err
 	}
 	if value, ok := _u.mutation.AttemptID(); ok {
 		_spec.SetField(transferrecord.FieldAttemptID, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.ManualJobID(); ok {
+		_spec.SetField(transferrecord.FieldManualJobID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(transferrecord.FieldVersion, field.TypeInt, value)
@@ -274,6 +296,20 @@ func (_u *TransferRecordUpdateOne) SetAttemptID(v string) *TransferRecordUpdateO
 func (_u *TransferRecordUpdateOne) SetNillableAttemptID(v *string) *TransferRecordUpdateOne {
 	if v != nil {
 		_u.SetAttemptID(*v)
+	}
+	return _u
+}
+
+// SetManualJobID sets the "manual_job_id" field.
+func (_u *TransferRecordUpdateOne) SetManualJobID(v string) *TransferRecordUpdateOne {
+	_u.mutation.SetManualJobID(v)
+	return _u
+}
+
+// SetNillableManualJobID sets the "manual_job_id" field if the given value is not nil.
+func (_u *TransferRecordUpdateOne) SetNillableManualJobID(v *string) *TransferRecordUpdateOne {
+	if v != nil {
+		_u.SetManualJobID(*v)
 	}
 	return _u
 }
@@ -433,6 +469,11 @@ func (_u *TransferRecordUpdateOne) check() error {
 			return &ValidationError{Name: "attempt_id", err: fmt.Errorf(`ent: validator failed for field "TransferRecord.attempt_id": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.ManualJobID(); ok {
+		if err := transferrecord.ManualJobIDValidator(v); err != nil {
+			return &ValidationError{Name: "manual_job_id", err: fmt.Errorf(`ent: validator failed for field "TransferRecord.manual_job_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.LeaseOwner(); ok {
 		if err := transferrecord.LeaseOwnerValidator(v); err != nil {
 			return &ValidationError{Name: "lease_owner", err: fmt.Errorf(`ent: validator failed for field "TransferRecord.lease_owner": %w`, err)}
@@ -482,6 +523,9 @@ func (_u *TransferRecordUpdateOne) sqlSave(ctx context.Context) (_node *Transfer
 	}
 	if value, ok := _u.mutation.AttemptID(); ok {
 		_spec.SetField(transferrecord.FieldAttemptID, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.ManualJobID(); ok {
+		_spec.SetField(transferrecord.FieldManualJobID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(transferrecord.FieldVersion, field.TypeInt, value)

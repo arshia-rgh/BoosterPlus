@@ -79,6 +79,11 @@ func AttemptID(v string) predicate.PaymentRecord {
 	return predicate.PaymentRecord(sql.FieldEQ(FieldAttemptID, v))
 }
 
+// ManualJobID applies equality check predicate on the "manual_job_id" field. It's identical to ManualJobIDEQ.
+func ManualJobID(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldEQ(FieldManualJobID, v))
+}
+
 // Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
 func Version(v int) predicate.PaymentRecord {
 	return predicate.PaymentRecord(sql.FieldEQ(FieldVersion, v))
@@ -307,6 +312,71 @@ func AttemptIDEqualFold(v string) predicate.PaymentRecord {
 // AttemptIDContainsFold applies the ContainsFold predicate on the "attempt_id" field.
 func AttemptIDContainsFold(v string) predicate.PaymentRecord {
 	return predicate.PaymentRecord(sql.FieldContainsFold(FieldAttemptID, v))
+}
+
+// ManualJobIDEQ applies the EQ predicate on the "manual_job_id" field.
+func ManualJobIDEQ(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldEQ(FieldManualJobID, v))
+}
+
+// ManualJobIDNEQ applies the NEQ predicate on the "manual_job_id" field.
+func ManualJobIDNEQ(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldNEQ(FieldManualJobID, v))
+}
+
+// ManualJobIDIn applies the In predicate on the "manual_job_id" field.
+func ManualJobIDIn(vs ...string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldIn(FieldManualJobID, vs...))
+}
+
+// ManualJobIDNotIn applies the NotIn predicate on the "manual_job_id" field.
+func ManualJobIDNotIn(vs ...string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldNotIn(FieldManualJobID, vs...))
+}
+
+// ManualJobIDGT applies the GT predicate on the "manual_job_id" field.
+func ManualJobIDGT(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldGT(FieldManualJobID, v))
+}
+
+// ManualJobIDGTE applies the GTE predicate on the "manual_job_id" field.
+func ManualJobIDGTE(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldGTE(FieldManualJobID, v))
+}
+
+// ManualJobIDLT applies the LT predicate on the "manual_job_id" field.
+func ManualJobIDLT(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldLT(FieldManualJobID, v))
+}
+
+// ManualJobIDLTE applies the LTE predicate on the "manual_job_id" field.
+func ManualJobIDLTE(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldLTE(FieldManualJobID, v))
+}
+
+// ManualJobIDContains applies the Contains predicate on the "manual_job_id" field.
+func ManualJobIDContains(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldContains(FieldManualJobID, v))
+}
+
+// ManualJobIDHasPrefix applies the HasPrefix predicate on the "manual_job_id" field.
+func ManualJobIDHasPrefix(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldHasPrefix(FieldManualJobID, v))
+}
+
+// ManualJobIDHasSuffix applies the HasSuffix predicate on the "manual_job_id" field.
+func ManualJobIDHasSuffix(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldHasSuffix(FieldManualJobID, v))
+}
+
+// ManualJobIDEqualFold applies the EqualFold predicate on the "manual_job_id" field.
+func ManualJobIDEqualFold(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldEqualFold(FieldManualJobID, v))
+}
+
+// ManualJobIDContainsFold applies the ContainsFold predicate on the "manual_job_id" field.
+func ManualJobIDContainsFold(v string) predicate.PaymentRecord {
+	return predicate.PaymentRecord(sql.FieldContainsFold(FieldManualJobID, v))
 }
 
 // VersionEQ applies the EQ predicate on the "version" field.
