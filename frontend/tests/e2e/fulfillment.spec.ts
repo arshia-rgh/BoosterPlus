@@ -186,6 +186,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     expect(
       (await staff.request.get(`/api/v1/orders/${accountID}`)).status(),
     ).toBe(401);
+    await staff.getByRole("link", { name: "Game access", exact: true }).click();
     await staff
       .getByRole("button", { name: "Reveal game access", exact: true })
       .click();
@@ -200,7 +201,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       .click();
     await staff
       .getByRole("link", {
-        name: "Open coordination conversation",
+        name: "Messages & proof",
         exact: true,
       })
       .click();
@@ -256,11 +257,17 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       page.getByRole("button", { name: "Resume booster sharing", exact: true }),
     ).toBeVisible();
     await expect(
-      staff.getByText("Conversation access is unavailable."),
+      staff.getByRole("region", { name: "Assignment access removed" }),
     ).toBeVisible({ timeout: 10000 });
     await expect(
       staff.getByText("Synthetic completed rank proof", { exact: true }),
     ).toHaveCount(0);
+    await staff
+      .getByRole("button", { name: "Check assignment access" })
+      .click();
+    await expect(
+      staff.getByText(/Shared coordination is not available/),
+    ).toBeVisible();
     await page
       .getByRole("button", { name: "Resume booster sharing", exact: true })
       .click();
@@ -275,7 +282,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     );
     await page.goto(`/admin/orders/${accountID}`);
     await buyer.goto(`/orders/${accountID}?section=progress`);
-    await staff.goto(`/booster/orders/${accountID}`);
+    await staff.goto(`/booster/orders/${accountID}?section=progress`);
     await staff
       .getByLabel("Customer-visible update", { exact: true })
       .fill("Ready to begin");
@@ -291,7 +298,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       .getByRole("button", { name: "Save progress", exact: true })
       .click();
     await expect(
-      staff.getByText(/Status: in progress · Progress 80%/),
+      staff.getByText("80% reported complete", { exact: true }),
     ).toBeVisible();
     await buyer.getByRole("button", { name: "Orders & support" }).click();
     const current = buyer.getByRole(
@@ -326,7 +333,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       })
       .click();
     await expect(
-      staff.getByText("Completion submitted for administrator review."),
+      staff.getByText("Completion is awaiting administrator review."),
     ).toBeVisible();
     await expect(
       staff.getByRole("button", { name: "Approve completion", exact: true }),
@@ -372,17 +379,29 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     await staff
       .getByRole("button", { name: "Save calendar profile", exact: true })
       .click();
-    await expect(staff.getByLabel("Window start (local time)")).toBeVisible();
+    await expect(staff.getByLabel("Window start date")).toBeVisible();
     const start = new Date(Date.now() + 2 * 3600_000),
       end = new Date(start.getTime() + 2 * 3600_000);
     await staff
-      .getByLabel("Window start (local time)")
-      .fill(start.toISOString().slice(0, 16));
+      .getByLabel("Window start date")
+      .fill(start.toISOString().slice(0, 10));
     await staff
-      .getByLabel("Window end (local time)")
-      .fill(end.toISOString().slice(0, 16));
+      .getByLabel("Window start time")
+      .fill(start.toISOString().slice(11, 16));
     await staff
-      .getByRole("button", { name: "Publish availability", exact: true })
+      .getByLabel("Window end date")
+      .fill(end.toISOString().slice(0, 10));
+    await staff
+      .getByLabel("Window end time")
+      .fill(end.toISOString().slice(11, 16));
+    await staff
+      .getByRole("button", { name: "Review dates", exact: true })
+      .click();
+    await staff
+      .getByRole("button", {
+        name: "Publish reviewed availability",
+        exact: true,
+      })
       .click();
     await expect(
       staff.getByRole("button", { name: "Remove window", exact: true }),
@@ -415,7 +434,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       buyer.getByRole("heading", { name: "proposed", exact: true }),
     ).toBeVisible();
     await accessible(buyer);
-    await staff.goto(`/booster/orders/${togetherID}`);
+    await staff.goto(`/booster/orders/${togetherID}?section=sessions`);
     await staff
       .getByLabel("Session action reason", { exact: true })
       .fill("Availability confirmed with customer");
@@ -428,6 +447,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     await expect(
       staff.getByRole("button", { name: "Reveal game access", exact: true }),
     ).toHaveCount(0);
+    await staff.getByRole("link", { name: "Progress", exact: true }).click();
     await staff
       .getByLabel("Customer-visible update", { exact: true })
       .fill("Customer is ready to play together");

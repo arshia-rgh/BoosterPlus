@@ -111,7 +111,15 @@ for (const role of ["booster", "administrator", "owner"] as const) {
     );
     await expect(page).toHaveURL(new RegExp(`/${portal}$`));
     if (role === "booster") {
-      await expect(page.getByText(/assigned-order workspace/)).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "Your next session", level: 1 }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("region", { name: "Next confirmed session" }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("link", { name: "View assigned work", exact: true }),
+      ).toHaveAttribute("href", "/booster/orders");
     } else {
       await expect(
         page.getByRole("heading", { name: "Operations overview", exact: true }),

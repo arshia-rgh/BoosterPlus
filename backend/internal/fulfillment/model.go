@@ -109,6 +109,7 @@ type SharedField struct {
 
 // View intentionally omits customer identity, prices, coupons and payment metadata.
 type View struct {
+	NextSession        *AgendaItem     `json:"next_session,omitempty"`
 	CoordinationID     string          `json:"coordination_id"`
 	CoordinationShared bool            `json:"coordination_shared"`
 	OrderID            string          `json:"order_id"`

@@ -1,0 +1,35 @@
+.booster-work-card > a {
+  display: grid;
+  gap: 0.4rem;
+}
+.booster-work-card small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.booster-work-card progress {
+  width: 100%;
+  accent-color: var(--brand);
+}
+.booster-work-card .status {
+  margin-block: 0.5rem;
+}
+.identity-page .record-shell .record-sections a[aria-current]:not(.button) {
+  color: #092015;
+  background: #89efb0;
+}
+.booster-agenda li > div {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+.booster-agenda li > div > .status {
+  justify-self: start;
+}
+.identity-page .record-shell .record-status {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.identity-page .record-shell .record-status > * {
+  min-width: 0;
+  max-width: 100%;
+}

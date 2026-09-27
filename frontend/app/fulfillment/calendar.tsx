@@ -1,4 +1,5 @@
 import "../ui/secondary.css";
+import Agenda from "./agenda";
 import { useState } from "react";
 import { z } from "../validation";
 import { Action, Check, ErrorNotice, Select, Text } from "../catalog/controls";
@@ -8,12 +9,10 @@ import { staffSchema } from "./model";
 import {
   calendarSchema,
   profileSchema,
-  windowSchema,
   timeLabel,
   type CalendarProfile,
-  type LocalTime,
 } from "./calendar-model";
-import TimeInput from "./time-input";
+import AvailabilityEditor from "./availability-editor";
 function ProfileEditor({
   profile,
   base,
@@ -101,79 +100,6 @@ function ProfileEditor({
     </section>
   );
 }
-function AddWindow({
-  base,
-  zone,
-  reload,
-}: {
-  base: string;
-  zone: string;
-  reload: () => void;
-}) {
-  const [start, setStart] = useState<LocalTime>({
-      local: "",
-      zone,
-      occurrence: "",
-    }),
-    [end, setEnd] = useState<LocalTime>({ local: "", zone, occurrence: "" }),
-    [key, setKey] = useState(() => crypto.randomUUID()),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState<unknown>(null);
-  async function save() {
-    setBusy(true);
-    setError(null);
-    try {
-      await post(
-        base + "/windows",
-        { request_key: key, start, end },
-        windowSchema,
-      );
-      setKey(crypto.randomUUID());
-      reload();
-    } catch (cause) {
-      setError(cause);
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <section className="catalog-section">
-      <h3>Publish a dated availability window</h3>
-      <p>
-        Times are in {zone}. Publish 15-minute to 12-hour windows within the
-        next 90 days. Windows cannot overlap.
-      </p>
-      <ErrorNotice error={error} />
-      <fieldset disabled={busy}>
-        <legend>Availability times</legend>
-        <TimeInput
-          label="Window start"
-          value={start}
-          change={(value) => {
-            setStart(value);
-            setKey(crypto.randomUUID());
-          }}
-        />
-        <TimeInput
-          label="Window end"
-          value={end}
-          change={(value) => {
-            setEnd(value);
-            setKey(crypto.randomUUID());
-          }}
-        />
-      </fieldset>
-      <Action
-        disabled={busy || !start.local || !end.local}
-        onClick={() => {
-          void save();
-        }}
-      >
-        Publish availability
-      </Action>
-    </section>
-  );
-}
 function Calendar({ base }: { base: string }) {
   const [after, setAfter] = useState(""),
     [error, setError] = useState<unknown>(null),
@@ -197,7 +123,11 @@ function Calendar({ base }: { base: string }) {
   }
   return (
     <section>
-      <h2>Staff calendar</h2>
+      <h2>
+        {base === "/booster/calendar"
+          ? "Manage your availability"
+          : "Staff calendar"}
+      </h2>
       <Action disabled={resource.loading} onClick={resource.reload}>
         Refresh calendar
       </Action>
@@ -213,7 +143,7 @@ function Calendar({ base }: { base: string }) {
             reload={resource.reload}
           />
           {data.profile.enabled && (
-            <AddWindow
+            <AvailabilityEditor
               key={`window-${String(data.profile.version)}`}
               base={base}
               zone={data.profile.timezone}
@@ -274,7 +204,12 @@ function Calendar({ base }: { base: string }) {
   );
 }
 export function BoosterCalendar() {
-  return <Calendar base="/booster/calendar" />;
+  return (
+    <>
+      <Agenda />
+      <Calendar base="/booster/calendar" />
+    </>
+  );
 }
 export function AdminCalendar() {
   const staff = useResource("/admin/fulfillment/staff", staffSchema),

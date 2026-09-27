@@ -1,10 +1,14 @@
 import { render, screen } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
+import Home, { meta as homeMeta } from "./booster-home";
 import Queue, { meta as queueMeta } from "./booster-orders";
 import Order, { meta as orderMeta } from "./booster-order";
 import StaffCalendar, { meta as staffCalendarMeta } from "./booster-calendar";
 import AdminCalendar, { meta as adminCalendarMeta } from "./admin-calendar";
+vi.mock("../fulfillment/booster-home", () => ({
+  default: () => <p>Assigned work overview</p>,
+}));
 vi.mock("../fulfillment/calendar", () => ({
   BoosterCalendar: () => <p>Personal availability</p>,
   AdminCalendar: () => <p>Staff availability</p>,
@@ -49,5 +53,13 @@ it("protects calendar routes by staff capability", () => {
   );
   expect(screen.getByRole("region", { name: "admin" })).toHaveTextContent(
     "Staff availability",
+  );
+});
+
+it("protects the booster homepage with the booster identity boundary", () => {
+  expect(homeMeta()[0]?.title).toBe("Your next session — PLAYORA");
+  render(<Home />);
+  expect(screen.getByRole("region", { name: "booster" })).toHaveTextContent(
+    "Assigned work overview",
   );
 });

@@ -38,40 +38,45 @@ func handoffValidation(row *ent.Order, work *ent.Fulfillment) (catalog.Validatio
 	}
 	return catalog.ValidateAnswers(release.Configuration, row.Service, "fulfillment", answers, variant), nil
 }
-func (s *Store) canStart(ctx context.Context, tx *ent.Tx, row *ent.Order, work *ent.Fulfillment) error {
+func (s *Store) startPrerequisites(ctx context.Context, tx *ent.Tx, row *ent.Order, work *ent.Fulfillment) (string, error) {
 	blocked, err := tx.ServiceCase.Query().Where(servicecase.ActiveOrderIDEQ(row.ID)).Exist(ctx)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if blocked {
-		return ErrConflict
+		return "service_hold", ErrConflict
 	}
 	validated, err := handoffValidation(row, work)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if len(validated.Issues) > 0 {
-		return &catalog.Invalid{Issues: validated.Issues}
+		return "details", &catalog.Invalid{Issues: validated.Issues}
 	}
 	if work.Mode == "account" {
 		ok, e := tx.SecretBundle.Query().Where(secretbundle.PurposeEQ(secretbundle.PurposeGameAccess), secretbundle.ResourceIDEQ(row.ID), secretbundle.OwnerIDEQ(row.UserID), secretbundle.StateEQ(secretbundle.StateActive), secretbundle.ExpiresAtGT(s.now())).Exist(ctx)
 		if e != nil {
-			return e
+			return "", e
 		}
 		if !ok {
-			return ErrConflict
+			return "game_access", ErrConflict
 		}
 	}
 	if work.Mode == "together" {
 		ok, e := tx.Booking.Query().Where(booking.OrderIDEQ(row.ID), booking.AssignedIDEQ(work.AssignedID), booking.StateEQ(booking.StateConfirmed), booking.EndsAtGT(s.now())).Exist(ctx)
 		if e != nil {
-			return e
+			return "", e
 		}
 		if !ok {
-			return ErrConflict
+			return "confirmed_session", ErrConflict
 		}
 	}
-	return nil
+	return "ready", nil
+}
+
+func (s *Store) canStart(ctx context.Context, tx *ent.Tx, row *ent.Order, work *ent.Fulfillment) error {
+	_, err := s.startPrerequisites(ctx, tx, row, work)
+	return err
 }
 
 // Transition guards execution changes and reserves final completion for admins.

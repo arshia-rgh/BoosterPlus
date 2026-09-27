@@ -83,10 +83,12 @@ export function ExecutionActions({
   work,
   admin,
   reload,
+  startAllowed = true,
 }: {
   work: Work;
   admin: boolean;
   reload: () => void;
+  startAllowed?: boolean;
 }) {
   const [note, setNote] = useState(""),
     [progress, setProgress] = useState(Math.min(99, work.progress)),
@@ -143,8 +145,9 @@ export function ExecutionActions({
         help="Describe progress or the reason for this change. Do not enter credentials."
       />
       <div className="catalog-actions">
-        {work.state === "queued" && action("start", "Start work")}
-        {work.state === "on_hold" && action("resume", "Resume work")}
+        {work.state === "queued" && action("start", "Start work", startAllowed)}
+        {work.state === "on_hold" &&
+          action("resume", "Resume work", startAllowed)}
         {work.state !== "on_hold" && action("hold", "Put on hold")}
       </div>
       {work.state === "in_progress" && !work.completion_pending && (

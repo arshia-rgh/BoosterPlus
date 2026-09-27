@@ -8466,6 +8466,31 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "description": "Literal game name or full assigned order reference, filtered before pagination."
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "",
+                "active",
+                "queued",
+                "in_progress",
+                "on_hold",
+                "review",
+                "completed"
+              ]
+            }
           }
         ]
       }
@@ -9534,6 +9559,31 @@
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "description": "Literal game name or full assigned order reference, filtered before pagination."
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "",
+                "active",
+                "queued",
+                "in_progress",
+                "on_hold",
+                "review",
+                "completed"
+              ]
             }
           }
         ]
@@ -20405,6 +20455,375 @@
           }
         ]
       }
+    },
+    "/api/v1/booster/calendar/sessions": {
+      "get": {
+        "operationId": "getBoosterSessionAgenda",
+        "summary": "Upcoming sessions for current paid booster assignments",
+        "security": [
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoosterAgenda"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["", "proposed", "confirmed"]
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/booster/fulfillment/{id}/readiness": {
+      "get": {
+        "operationId": "getBoosterFulfillmentReadiness",
+        "summary": "Read advisory prerequisites under current assignment authority; execution rechecks them",
+        "security": [
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentReadiness"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/fulfillment/{id}/readiness": {
+      "get": {
+        "operationId": "getAdminFulfillmentReadiness",
+        "summary": "Read advisory prerequisites under current assignment authority; execution rechecks them",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentReadiness"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/booster/calendar/window-series": {
+      "post": {
+        "operationId": "publishBoosterAvailabilitySeries",
+        "summary": "Atomically publish up to twelve explicit dates; retries bind the entire reviewed series",
+        "security": [
+          {
+            "boosterSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilitySeriesResult"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilitySeriesInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{staff}/calendar/window-series": {
+      "post": {
+        "operationId": "publishAdminAvailabilitySeries",
+        "summary": "Atomically publish up to twelve explicit dates; retries bind the entire reviewed series",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful private order response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilitySeriesResult"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Reload changed state or correct validation issues.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FulfillmentProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "staff",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilitySeriesInput"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -23504,6 +23923,9 @@
           },
           "forecast_review": {
             "type": "boolean"
+          },
+          "next_session": {
+            "$ref": "#/components/schemas/BoosterAgendaItem"
           }
         }
       },
@@ -28125,6 +28547,139 @@
           "valid_until": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "BoosterAgendaItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "order_id",
+          "game",
+          "starts_at",
+          "ends_at",
+          "timezone",
+          "state"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "game": {
+            "type": "string"
+          },
+          "starts_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ends_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["proposed", "confirmed"]
+          }
+        }
+      },
+      "BoosterAgenda": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items", "next"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/BoosterAgendaItem"
+            }
+          },
+          "next": {
+            "type": "string"
+          }
+        }
+      },
+      "FulfillmentReadiness": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ready", "requirement", "checked_at"],
+        "properties": {
+          "ready": {
+            "type": "boolean"
+          },
+          "requirement": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "details",
+              "game_access",
+              "confirmed_session",
+              "service_hold",
+              "not_active"
+            ]
+          },
+          "checked_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AvailabilitySeriesWindow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["request_key", "start", "end"],
+        "properties": {
+          "request_key": {
+            "type": "string",
+            "enum": [""]
+          },
+          "start": {
+            "$ref": "#/components/schemas/CalendarLocalTime"
+          },
+          "end": {
+            "$ref": "#/components/schemas/CalendarLocalTime"
+          }
+        }
+      },
+      "AvailabilitySeriesInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["request_key", "windows"],
+        "properties": {
+          "request_key": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "windows": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/AvailabilitySeriesWindow"
+            }
+          }
+        }
+      },
+      "AvailabilitySeriesResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["windows"],
+        "properties": {
+          "windows": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityWindow"
+            }
           }
         }
       }

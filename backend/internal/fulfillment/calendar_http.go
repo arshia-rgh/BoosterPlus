@@ -9,6 +9,14 @@ import (
 )
 
 func (s *Store) registerCalendar(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/v1/booster/calendar/sessions", s.auth.ProtectRate("booster", "booster-agenda", 300, time.Hour, func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+		w.Header().Set("Content-Type", "application/json")
+		value, err := s.Agenda(r.Context(), p, r.URL.Query().Get("after"), r.URL.Query().Get("state"))
+		if err != nil {
+			return handleError(w, err)
+		}
+		return write(w, value)
+	}))
 	for _, admin := range []bool{false, true} {
 		base := "/api/v1/booster/calendar"
 		if admin {
@@ -50,6 +58,17 @@ func (s *Store) registerCalendar(mux *http.ServeMux) {
 				return err
 			}
 			value, err := s.AddAvailability(r.Context(), p, target(r, p), admin, input)
+			if err != nil {
+				return err
+			}
+			return write(w, value)
+		})
+		register("POST "+base+"/window-series", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+			var input AvailabilitySeries
+			if err := read(r, &input); err != nil {
+				return err
+			}
+			value, err := s.AddAvailabilitySeries(r.Context(), p, target(r, p), admin, input)
 			if err != nil {
 				return err
 			}

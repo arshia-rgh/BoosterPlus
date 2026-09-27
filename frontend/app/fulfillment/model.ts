@@ -17,6 +17,17 @@ export const forecastPreviewSchema = z.object({
 });
 export type Forecast = z.infer<typeof forecastSchema>;
 export const workSchema = z.object({
+  next_session: z
+    .object({
+      id: z.string(),
+      order_id: z.string(),
+      game: z.string(),
+      starts_at: z.string(),
+      ends_at: z.string(),
+      timezone: z.string(),
+      state: z.literal("confirmed"),
+    })
+    .optional(),
   coordination_id: z.string(),
   coordination_shared: z.boolean(),
   order_id: z.string(),

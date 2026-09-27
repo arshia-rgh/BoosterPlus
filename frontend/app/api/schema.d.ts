@@ -4560,6 +4560,91 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/booster/calendar/sessions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Upcoming sessions for current paid booster assignments */
+    get: operations["getBoosterSessionAgenda"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/booster/fulfillment/{id}/readiness": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read advisory prerequisites under current assignment authority; execution rechecks them */
+    get: operations["getBoosterFulfillmentReadiness"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/fulfillment/{id}/readiness": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read advisory prerequisites under current assignment authority; execution rechecks them */
+    get: operations["getAdminFulfillmentReadiness"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/booster/calendar/window-series": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Atomically publish up to twelve explicit dates; retries bind the entire reviewed series */
+    post: operations["publishBoosterAvailabilitySeries"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/staff/{staff}/calendar/window-series": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Atomically publish up to twelve explicit dates; retries bind the entire reviewed series */
+    post: operations["publishAdminAvailabilitySeries"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -5414,6 +5499,7 @@ export interface components {
       coordination_shared: boolean;
       forecast?: components["schemas"]["DeliveryForecast"];
       forecast_review: boolean;
+      next_session?: components["schemas"]["BoosterAgendaItem"];
     };
     FulfillmentListing: {
       items: components["schemas"]["FulfillmentView"][];
@@ -6678,6 +6764,51 @@ export interface components {
       checked_at: string;
       /** Format: date-time */
       valid_until: string;
+    };
+    BoosterAgendaItem: {
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      order_id: string;
+      game: string;
+      /** Format: date-time */
+      starts_at: string;
+      /** Format: date-time */
+      ends_at: string;
+      timezone: string;
+      /** @enum {string} */
+      state: "proposed" | "confirmed";
+    };
+    BoosterAgenda: {
+      items: components["schemas"]["BoosterAgendaItem"][];
+      next: string;
+    };
+    FulfillmentReadiness: {
+      ready: boolean;
+      /** @enum {string} */
+      requirement:
+        | "ready"
+        | "details"
+        | "game_access"
+        | "confirmed_session"
+        | "service_hold"
+        | "not_active";
+      /** Format: date-time */
+      checked_at: string;
+    };
+    AvailabilitySeriesWindow: {
+      /** @enum {string} */
+      request_key: "";
+      start: components["schemas"]["CalendarLocalTime"];
+      end: components["schemas"]["CalendarLocalTime"];
+    };
+    AvailabilitySeriesInput: {
+      /** Format: uuid */
+      request_key: string;
+      windows: components["schemas"]["AvailabilitySeriesWindow"][];
+    };
+    AvailabilitySeriesResult: {
+      windows: components["schemas"]["AvailabilityWindow"][];
     };
   };
   responses: never;
@@ -12264,6 +12395,16 @@ export interface operations {
     parameters: {
       query?: {
         after?: string;
+        /** @description Literal game name or full assigned order reference, filtered before pagination. */
+        search?: string;
+        state?:
+          | ""
+          | "active"
+          | "queued"
+          | "in_progress"
+          | "on_hold"
+          | "review"
+          | "completed";
       };
       header?: never;
       path?: never;
@@ -12969,6 +13110,16 @@ export interface operations {
     parameters: {
       query?: {
         after?: string;
+        /** @description Literal game name or full assigned order reference, filtered before pagination. */
+        search?: string;
+        state?:
+          | ""
+          | "active"
+          | "queued"
+          | "in_progress"
+          | "on_hold"
+          | "review"
+          | "completed";
       };
       header?: never;
       path?: never;
@@ -20150,6 +20301,264 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["OrderProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getBoosterSessionAgenda: {
+    parameters: {
+      query?: {
+        after?: string;
+        state?: "" | "proposed" | "confirmed";
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BoosterAgenda"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getBoosterFulfillmentReadiness: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentReadiness"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getAdminFulfillmentReadiness: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentReadiness"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  publishBoosterAvailabilitySeries: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AvailabilitySeriesInput"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilitySeriesResult"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  publishAdminAvailabilitySeries: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        staff: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AvailabilitySeriesInput"];
+      };
+    };
+    responses: {
+      /** @description Successful private order response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AvailabilitySeriesResult"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
+        };
+      };
+      /** @description Reload changed state or correct validation issues. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FulfillmentProblem"];
         };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */

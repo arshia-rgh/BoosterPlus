@@ -104,57 +104,64 @@ func (s *Store) AddAvailability(ctx context.Context, p *identity.Principal, id s
 	if err != nil {
 		return WindowView{}, err
 	}
-	var result WindowView
+	var resultCopy WindowView
 	err = s.auth.AuthorizedTransaction(ctx, p, staffCapability(admin), admin, func(tx *ent.Tx, current *identity.Principal) error {
 		if e := staffTarget(ctx, tx.Client(), current, id, admin); e != nil {
 			return e
 		}
-		existing, e := tx.AvailabilityWindow.Query().Where(availabilitywindow.UserIDEQ(id), availabilitywindow.RequestKeyEQ(input.RequestKey)).Only(ctx)
-		if e == nil {
-			if existing.RequestHash != digest {
-				return ErrConflict
-			}
-			result = windowView(existing)
-			return nil
-		}
-		if !ent.IsNotFound(e) {
-			return e
-		}
-		if !start.After(s.now()) || start.After(s.now().Add(90*24*time.Hour)) {
-			return ErrInvalid
-		}
-		profile, e := tx.StaffProfile.Get(ctx, id)
+		result, e := s.addAvailability(ctx, tx, current, id, input, start, end, digest)
 		if e != nil {
 			return e
 		}
-		if !profile.Enabled || profile.Timezone != input.Start.Zone {
-			return ErrConflict
-		}
-		overlap, e := tx.AvailabilityWindow.Query().Where(availabilitywindow.UserIDEQ(id), availabilitywindow.ActiveEQ(true), availabilitywindow.StartsAtLT(end), availabilitywindow.EndsAtGT(start)).Exist(ctx)
-		if e != nil {
-			return e
-		}
-		if overlap {
-			return ErrConflict
-		}
-		count, e := tx.AvailabilityWindow.Query().Where(availabilitywindow.UserIDEQ(id), availabilitywindow.ActiveEQ(true), availabilitywindow.EndsAtGT(s.now())).Count(ctx)
-		if e != nil {
-			return e
-		}
-		if count >= 200 {
-			return ErrConflict
-		}
-		row, e := tx.AvailabilityWindow.Create().SetUserID(id).SetRequestKey(input.RequestKey).SetRequestHash(digest).SetStartsAt(start).SetEndsAt(end).SetTimezone(input.Start.Zone).SetUpdatedAt(s.now()).Save(ctx)
-		if e != nil {
-			return e
-		}
-		if e = calendarAudit(ctx, tx, current, row.ID, "availability_created", s.now()); e != nil {
-			return e
-		}
-		result = windowView(row)
+		resultCopy = result
 		return nil
 	})
-	return result, err
+	return resultCopy, err
+}
+
+func (s *Store) addAvailability(ctx context.Context, tx *ent.Tx, current *identity.Principal, id string, input WindowInput, start, end time.Time, digest string) (WindowView, error) {
+	existing, e := tx.AvailabilityWindow.Query().Where(availabilitywindow.UserIDEQ(id), availabilitywindow.RequestKeyEQ(input.RequestKey)).Only(ctx)
+	if e == nil {
+		if existing.RequestHash != digest {
+			return WindowView{}, ErrConflict
+		}
+		return windowView(existing), nil
+	}
+	if !ent.IsNotFound(e) {
+		return WindowView{}, e
+	}
+	if !start.After(s.now()) || start.After(s.now().Add(90*24*time.Hour)) {
+		return WindowView{}, ErrInvalid
+	}
+	profile, e := tx.StaffProfile.Get(ctx, id)
+	if e != nil {
+		return WindowView{}, e
+	}
+	if !profile.Enabled || profile.Timezone != input.Start.Zone {
+		return WindowView{}, ErrConflict
+	}
+	overlap, e := tx.AvailabilityWindow.Query().Where(availabilitywindow.UserIDEQ(id), availabilitywindow.ActiveEQ(true), availabilitywindow.StartsAtLT(end), availabilitywindow.EndsAtGT(start)).Exist(ctx)
+	if e != nil {
+		return WindowView{}, e
+	}
+	if overlap {
+		return WindowView{}, ErrConflict
+	}
+	count, e := tx.AvailabilityWindow.Query().Where(availabilitywindow.UserIDEQ(id), availabilitywindow.ActiveEQ(true), availabilitywindow.EndsAtGT(s.now())).Count(ctx)
+	if e != nil {
+		return WindowView{}, e
+	}
+	if count >= 200 {
+		return WindowView{}, ErrConflict
+	}
+	row, e := tx.AvailabilityWindow.Create().SetUserID(id).SetRequestKey(input.RequestKey).SetRequestHash(digest).SetStartsAt(start).SetEndsAt(end).SetTimezone(input.Start.Zone).SetUpdatedAt(s.now()).Save(ctx)
+	if e != nil {
+		return WindowView{}, e
+	}
+	if e = calendarAudit(ctx, tx, current, row.ID, "availability_created", s.now()); e != nil {
+		return WindowView{}, e
+	}
+	return windowView(row), nil
 }
 
 // RemoveAvailability rejects removal while a confirmed future booking still needs it.

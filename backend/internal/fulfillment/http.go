@@ -120,8 +120,15 @@ func (s *Store) Register(mux *http.ServeMux) {
 				return nil
 			})
 		} else {
+			register("GET "+prefix+"/{id}/readiness", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+				value, err := s.Readiness(r.Context(), p, r.PathValue("id"), audience)
+				if err != nil {
+					return err
+				}
+				return write(w, value)
+			})
 			register("GET "+prefix, func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
-				value, err := s.List(r.Context(), p, audience, r.URL.Query().Get("after"))
+				value, err := s.ListFiltered(r.Context(), p, audience, ListFilters{After: r.URL.Query().Get("after"), Search: r.URL.Query().Get("search"), State: r.URL.Query().Get("state")})
 				if err != nil {
 					return err
 				}

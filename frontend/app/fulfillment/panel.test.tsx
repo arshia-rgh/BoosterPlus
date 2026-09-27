@@ -36,21 +36,28 @@ it("disables booster edits until the refreshed work revision is ready", async ()
     updated_at: "2026-09-10T00:00:00Z",
   };
   let refreshed: (value: Work) => void = () => {};
-  vi.mocked(get)
-    .mockResolvedValueOnce(work)
-    .mockImplementationOnce(
-      () =>
-        new Promise((resolve) => {
+  let workReads = 0;
+  vi.mocked(get).mockImplementation((path) => {
+    if (path.includes("/readiness"))
+      return Promise.resolve({
+        ready: true,
+        requirement: "ready",
+        checked_at: "2026-09-27T00:00:00Z",
+      });
+    workReads++;
+    return workReads === 1
+      ? Promise.resolve(work)
+      : new Promise((resolve) => {
           refreshed = resolve;
-        }),
-    );
+        });
+  });
   render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={["/booster/orders/work?section=progress"]}>
       <BoosterOrder />
     </MemoryRouter>,
   );
   const note = await screen.findByLabelText("Customer-visible update");
-  fireEvent.click(screen.getByRole("button", { name: "Refresh fulfillment" }));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh assignment" }));
   expect(note).toBeDisabled();
   expect(screen.getByRole("button", { name: "Start work" })).toBeDisabled();
   await act(async () => {
@@ -95,9 +102,21 @@ it("pauses hidden-tab work polling and cleans up visibility listeners", async ()
     shared: [],
     updated_at: "2026-09-13T00:00:00Z",
   };
-  vi.mocked(get).mockReset().mockResolvedValue(work);
+  vi.mocked(get)
+    .mockReset()
+    .mockImplementation((path) =>
+      Promise.resolve(
+        path.includes("/readiness")
+          ? {
+              ready: true,
+              requirement: "ready",
+              checked_at: "2026-09-27T00:00:00Z",
+            }
+          : work,
+      ),
+    );
   const view = render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={["/booster/orders/work?section=progress"]}>
       <BoosterOrder />
     </MemoryRouter>,
   );

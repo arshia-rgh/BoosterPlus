@@ -56,6 +56,6 @@ export default [
     route("booster/calendar", "routes/booster-calendar.tsx"),
     route("booster/orders", "routes/booster-orders.tsx"),
     route("booster/orders/:id", "routes/booster-order.tsx"),
-    route("booster", "routes/portal.tsx", { id: "booster" }),
+    route("booster", "routes/booster-home.tsx", { id: "booster" }),
   ]),
 ] satisfies RouteConfig;
