@@ -70,7 +70,7 @@ The final additional race/TiDB fault/regression suite passed in 32.482 seconds: 
 
 DI11B2 delivery: `15fcb08ede2d21a4f258a84124e16b81bcd38bdc` passed the tracked focused hook and was pushed to `origin/main`; the remote SHA matched. Root checks, backend static/security/generated/unit/build checks and frontend strict/unit/contract/audit/build/server checks passed. The full repository gate remains deferred to DI15. All five temporarily stopped development containers were restarted and their running state verified.
 
-## DI11B3 — shop privacy foundation (in verification)
+## DI11B3 — shop privacy foundation (delivered)
 
 The existing protected `orders` export includes the customer's accepted shop snapshot, ordinary recipient values and reservation history. Recipient and reservation enrichment uses two bounded batch queries with both order ownership and child ownership filters, rather than one query per order. Export still requires recent sign-in and an audit committed before disclosure. An erased marker suppresses even inconsistent legacy residual values. Ordinary order details remain free of recipient identifiers; no new recipient capture/read endpoint is activated.
 
@@ -81,3 +81,7 @@ Five focused race/TiDB cases passed in 21.129 seconds, covering own/foreign reci
 No UI renderer or new public route changed; the existing explicit Orders data export carries the expanded records. Public shop purchase, recipient capture/access UI, staff delivery and complete DI11 qualification remain pending. This increment does not claim the recipient lifecycle is ready for public capture by itself.
 
 Final pagination/recent-auth race/TiDB test: PASS, 8.583 seconds. The first page contains exactly 100 records, the next exactly one, no duplicate order appears and every row carries its own recipient data. A still-active session with aged primary verification is rejected. Evidence: `.cache/qualification/di11-shop-privacy.log` and `di11-shop-privacy-pagination-final.log`.
+
+DI11B3 delivery: `722fbf24433b9d3753d5c433cc41a9bdecb6dc28` passed the tracked focused hook and was pushed to `origin/main`; the remote SHA matched. Root policy/secret/workflow checks, backend formatting/generated queries/vet/broad lint/standalone gosec/live govulncheck/module verification/race units/migration validation/builds passed. Frontend strict/format/lint/contracts, 403 tests in 112 files, route coverage, zero audit findings, both builds and nine server cases passed. The held experiment directories were excluded. Govulncheck reports zero reachable vulnerabilities, with one advisory in a required module outside called paths. This is focused qualification, not the DI15 full gate.
+
+Resource handoff: the isolated no-mount TiDB container `playora-di10-finance-isolated-tidb` was stopped after verification and confirmed `exited`/not running. All five previously running blucaps/kind containers had already been restored and verified running. The normal development database was not stopped. For the next isolated database qualification, start this existing test container and wait for readiness before using localhost port 14001; do not silently substitute the development or production database.

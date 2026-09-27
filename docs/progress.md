@@ -1268,3 +1268,5 @@ DI11B2 delivered: `15fcb08` passed the focused hook, was pushed to main and matc
 Expanded protected order export with owned recipient/reservation records using bounded queries; ordinary order responses still omit recipient identifiers. Added an independent unresolved-shop-reservation erasure hold and owner-policy-controlled cleanup of ordinary recipient values. Financial agreements/history remain preserved. Five focused privacy/TiDB cases passed in 21.129 seconds; cursor/recent-auth qualification and tracked focused hook follow. No UI renderer, public shop route or real recipient capture activated.
 
 DI11B3 cursor/recent-auth test passed in 8.583 seconds: 100+1 records, correct per-order recipient association, no duplicates and stale primary verification rejected. Full aggregate qualification remains deferred to DI15.
+
+DI11B3 delivered as `722fbf2`; focused hook passed, push completed and remote SHA matched. DI11 remains in progress with public purchase, recipient capture/access UI, manual fulfillment and remaining authoring/discovery integration pending. DI12–DI15 remain queued; R10/R11 remain held.
