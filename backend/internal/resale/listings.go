@@ -308,45 +308,7 @@ func (s *Store) Published(ctx context.Context, id string) (PublicListing, error)
 	return publicListing(ctx, s.client, row)
 }
 
-// Browse filters only published product metadata, never seller intake answers.
+// Browse preserves the original public ID-cursor interface for existing callers.
 func (s *Store) Browse(ctx context.Context, after, slug, region, rank, search string) ([]PublicListing, string, error) {
-	result := []PublicListing{}
-	next := ""
-	if after != "" && !validID(after) || !text(slug, 0, 80) || !text(region, 0, 80) || !text(rank, 0, 80) || !text(search, 0, 120) {
-		return result, next, ErrInvalid
-	}
-	query := s.client.AccountListing.Query().Where(accountlisting.StateEQ("published")).Order(ent.Asc(accountlisting.FieldID)).Limit(25)
-	if after != "" {
-		query.Where(accountlisting.IDGT(after))
-	}
-	if slug != "" {
-		query.Where(accountlisting.SlugEQ(slug))
-	}
-	if region != "" {
-		query.Where(accountlisting.PublicRegionEQ(region))
-	}
-	if rank != "" {
-		query.Where(accountlisting.PublicRankEQ(rank))
-	}
-	if search != "" {
-		query.Where(accountlisting.PublicTitleContains(search))
-	}
-	rows, err := query.All(ctx)
-	if err != nil {
-		return result, next, err
-	}
-	if len(rows) > 24 {
-		next = rows[23].ID
-		rows = rows[:24]
-	}
-	for _, row := range rows {
-		v, e := publicListing(ctx, s.client, row)
-		if e != nil {
-			return result, next, e
-		}
-		if v.State == "published" {
-			result = append(result, v)
-		}
-	}
-	return result, next, nil
+	return s.BrowseFiltered(ctx, BrowseFilters{After: after, Slug: slug, Region: region, Rank: rank, Search: search})
 }

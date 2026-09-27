@@ -81,6 +81,26 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{AccountListingsColumns[8], AccountListingsColumns[4], AccountListingsColumns[16], AccountListingsColumns[0]},
 			},
+			{
+				Name:    "account_market_newest",
+				Unique:  false,
+				Columns: []*schema.Column{AccountListingsColumns[8], AccountListingsColumns[16], AccountListingsColumns[0]},
+			},
+			{
+				Name:    "account_game_newest",
+				Unique:  false,
+				Columns: []*schema.Column{AccountListingsColumns[8], AccountListingsColumns[6], AccountListingsColumns[16], AccountListingsColumns[0]},
+			},
+			{
+				Name:    "account_market_price",
+				Unique:  false,
+				Columns: []*schema.Column{AccountListingsColumns[8], AccountListingsColumns[14], AccountListingsColumns[15], AccountListingsColumns[0]},
+			},
+			{
+				Name:    "account_game_price",
+				Unique:  false,
+				Columns: []*schema.Column{AccountListingsColumns[8], AccountListingsColumns[6], AccountListingsColumns[14], AccountListingsColumns[15], AccountListingsColumns[0]},
+			},
 		},
 	}
 	// AccountListingReleasesColumns holds the columns for the "account_listing_releases" table.

@@ -16865,35 +16865,67 @@
             "name": "after",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 1024
             }
           },
           {
             "name": "slug",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 80
             }
           },
           {
             "name": "region",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 80
             }
           },
           {
             "name": "rank",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 80
             }
           },
           {
             "name": "search",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "description": "Exact catalog currency. Required for a maximum price or price sorting; no currency conversion is applied.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            }
+          },
+          {
+            "name": "max_minor",
+            "in": "query",
+            "description": "Inclusive maximum listing price in exact minor units of currency. Requires currency.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,11}$"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Stable public ordering with an opaque filter-bound cursor. Omission preserves legacy ID ordering.",
+            "schema": {
+              "type": "string",
+              "enum": ["newest", "price_asc", "price_desc"]
             }
           }
         ],
@@ -20990,6 +21022,45 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/OrderQuoteInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/games": {
+      "get": {
+        "operationId": "getResaleMarketGames",
+        "summary": "Released, available games with published account inventory",
+        "security": [],
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountMarketGames"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
               }
             }
           }
@@ -28891,6 +28962,31 @@
           },
           "order_version": {
             "type": "integer"
+          }
+        }
+      },
+      "AccountMarketGames": {
+        "type": "object",
+        "required": ["games", "next"],
+        "properties": {
+          "games": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["slug", "name"],
+              "properties": {
+                "slug": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "next": {
+            "type": "string",
+            "description": "After cursor; a filtered empty page may still have another page."
           }
         }
       }

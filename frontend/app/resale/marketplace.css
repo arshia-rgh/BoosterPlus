@@ -4,8 +4,8 @@
 }
 .market-filters fieldset {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  align-items: end;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
   gap: 1rem;
   border: 1px solid #395640;
   background: #13291e;
@@ -17,6 +17,15 @@
 }
 .market-filters .button {
   justify-self: start;
+}
+.market-filter-actions {
+  grid-column: 1 / -1;
+}
+.market-game-filter {
+  min-width: 0;
+}
+.market-game-filter p {
+  font-size: 0.85rem;
 }
 .market-result-count {
   color: #bed1c1;

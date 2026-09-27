@@ -108,11 +108,18 @@ func (s *Store) Register(mux *http.ServeMux) {
 	}
 	register("GET /api/v1/accounts", "", func(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
 		q := r.URL.Query()
-		rows, next, err := s.Browse(r.Context(), q.Get("after"), q.Get("slug"), q.Get("region"), q.Get("rank"), q.Get("search"))
+		rows, next, err := s.BrowseFiltered(r.Context(), BrowseFilters{After: q.Get("after"), Slug: q.Get("slug"), Region: q.Get("region"), Rank: q.Get("rank"), Search: q.Get("search"), Currency: q.Get("currency"), MaxMinor: q.Get("max_minor"), Sort: q.Get("sort")})
 		if err != nil {
 			return err
 		}
 		return write(w, map[string]any{"items": rows, "next": next})
+	})
+	register("GET /api/v1/accounts/games", "", func(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
+		games, next, err := s.MarketGames(r.Context(), r.URL.Query().Get("after"))
+		if err != nil {
+			return err
+		}
+		return write(w, map[string]any{"games": games, "next": next})
 	})
 	register("GET /api/v1/accounts/{id}", "", func(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
 		value, err := s.Published(r.Context(), r.PathValue("id"))

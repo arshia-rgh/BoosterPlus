@@ -1,4 +1,5 @@
-import MarketFilterPanel from "./filter-panel";
+import MarketFilters from "./market-filters";
+import { maximumDisplay } from "./market-price";
 import AccountAlerts from "../availability/accounts";
 import { FavoriteButton } from "../orders/favorites";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -11,7 +12,7 @@ import {
   useSearchParams,
   type Location,
 } from "react-router";
-import { Action, Check, ErrorNotice, Text } from "../catalog/controls";
+import { Action, Check, ErrorNotice } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { get, post, sessionSchema } from "../identity/api";
 import RequestJourney, {
@@ -92,17 +93,15 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
     .object({ filtersApplied: z.literal(true) })
     .safeParse(navigation.state).success;
   const resultSummary = useRef<HTMLParagraphElement>(null);
-  const [search, setSearch] = useState(
-      params.get("search")?.slice(0, 200) ?? "",
-    ),
-    [region, setRegion] = useState(params.get("region")?.slice(0, 80) ?? ""),
-    [rank, setRank] = useState(params.get("rank")?.slice(0, 80) ?? "");
-  const after = params.get("after")?.slice(0, 500) ?? "";
+  const after = params.get("after") ?? "";
   const query = new URLSearchParams({
-    search: params.get("search")?.slice(0, 200) ?? "",
-    region: params.get("region")?.slice(0, 80) ?? "",
-    rank: params.get("rank")?.slice(0, 80) ?? "",
-    slug: gameSlug ?? params.get("slug")?.slice(0, 64) ?? "",
+    search: params.get("search") ?? "",
+    region: params.get("region") ?? "",
+    rank: params.get("rank") ?? "",
+    slug: gameSlug ?? params.get("slug") ?? "",
+    currency: params.get("currency") ?? "",
+    max_minor: params.get("max_minor") ?? "",
+    sort: params.get("sort") ?? (after ? "" : "newest"),
     after,
   }).toString();
   const resource = useResource(`/accounts?${query}`, publicListingsSchema);
@@ -118,7 +117,7 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
     const next = new URLSearchParams(query);
     if (serviceContext.service) next.set("service", serviceContext.service);
     next.set("after", value);
-    setParams(next);
+    setParams(next, { state: { filtersApplied: true } });
   }
   return (
     <Container
@@ -147,86 +146,76 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
         <summary>Get notified about accounts</summary>
         <AccountAlerts {...(gameSlug ? { slug: gameSlug } : {})} />
       </details>
-      <MarketFilterPanel>
-        <form
-          className="market-filters"
-          onSubmit={(event) => {
-            event.preventDefault();
-            event.currentTarget.closest("dialog")?.close();
-            resultSummary.current?.focus();
-            setParams(
-              new URLSearchParams({
-                ...serviceContext,
-                search,
-                region,
-                rank,
-                slug: gameSlug ?? params.get("slug") ?? "",
-              }),
-              { state: { filtersApplied: true } },
-            );
-          }}
-        >
-          <fieldset>
-            <legend>Find an account</legend>
-            <Text label="Search accounts" value={search} change={setSearch} />
-            <Text label="Account region" value={region} change={setRegion} />
-            <Text label="Account rank" value={rank} change={setRank} />
-            <button className="button compact" type="submit">
-              Apply account filters
-            </button>
-            {(params.get("search") ||
-              params.get("region") ||
-              params.get("rank") ||
-              after) && (
-              <Action
-                onClick={() => {
-                  setParams(
-                    (gameSlug ?? params.get("slug"))
-                      ? {
-                          ...serviceContext,
-                          slug: gameSlug ?? params.get("slug") ?? "",
-                        }
-                      : {},
-                  );
-                }}
-              >
-                Clear account filters
-              </Action>
-            )}
-          </fieldset>
-        </form>
-      </MarketFilterPanel>
-      {(params.get("search") || params.get("rank") || params.get("region")) && (
+      <MarketFilters
+        params={params}
+        gameSlug={gameSlug}
+        apply={(values) => {
+          resultSummary.current?.focus();
+          setParams(new URLSearchParams({ ...serviceContext, ...values }), {
+            state: { filtersApplied: true },
+          });
+        }}
+        clear={() => {
+          setParams(serviceContext, { state: { filtersApplied: true } });
+        }}
+      />
+      {[
+        "search",
+        "rank",
+        "region",
+        "slug",
+        "currency",
+        "max_minor",
+        "sort",
+      ].some((key) => params.get(key)) && (
         <section
           className="market-applied-filters"
           aria-label="Applied account filters"
         >
           <ul>
-            {(["search", "rank", "region"] as const)
-              .filter((key) => params.get(key))
+            {(
+              [
+                "search",
+                "rank",
+                "region",
+                "slug",
+                "currency",
+                "max_minor",
+                "sort",
+              ] as const
+            )
+              .filter((key) => params.get(key) && !(gameSlug && key === "slug"))
               .map((key) => (
                 <li key={key}>
-                  {key === "search"
-                    ? "Search"
-                    : key === "rank"
-                      ? "Rank"
-                      : "Region"}
-                  : {params.get(key)?.slice(0, 200)}
+                  {new Map<string, string>([
+                    ["search", "Search"],
+                    ["rank", "Rank"],
+                    ["region", "Region"],
+                    ["slug", "Game"],
+                    ["currency", "Currency"],
+                    ["max_minor", "Maximum price"],
+                    ["sort", "Sort"],
+                  ]).get(key)}
+                  :{" "}
+                  {key === "max_minor"
+                    ? maximumDisplay(params.get(key) ?? "")
+                    : key === "sort"
+                      ? ({
+                          newest: "Newest first",
+                          price_asc: "Price: low to high",
+                          price_desc: "Price: high to low",
+                        }[params.get(key) ?? ""] ?? params.get(key))
+                      : params.get(key)?.slice(0, 120)}
                 </li>
               ))}
           </ul>
-          <Link
-            to={
-              gameSlug
-                ? base
-                : params.get("slug")
-                  ? "/accounts?slug=" +
-                    encodeURIComponent(params.get("slug") ?? "")
-                  : "/accounts"
-            }
+          <Action
+            onClick={() => {
+              setParams(serviceContext, { state: { filtersApplied: true } });
+            }}
           >
             Clear all filters
-          </Link>
+          </Action>
         </section>
       )}
       <ErrorNotice error={resource.error} />
@@ -287,9 +276,14 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
           </div>
           {!resource.data.items.length && (
             <p>
-              {["search", "region", "rank", "slug"].some((key) =>
-                params.get(key)?.trim(),
-              )
+              {[
+                "search",
+                "region",
+                "rank",
+                "slug",
+                "currency",
+                "max_minor",
+              ].some((key) => params.get(key)?.trim())
                 ? "No available accounts match these filters."
                 : after
                   ? "There are no more accounts in this view."
@@ -533,7 +527,8 @@ export function AccountProduct({
     navigation !== null &&
     "market" in navigation &&
     typeof navigation.market === "string" &&
-    navigation.market.length <= 2000
+    // Bounded filters may contain percent-encoded Unicode plus an opaque cursor.
+    navigation.market.length <= 8192
       ? navigation.market
       : "";
   const { id = "" } = useParams(),

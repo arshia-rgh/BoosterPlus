@@ -295,8 +295,18 @@ export async function resaleJourney(
       await filterTrigger.click();
     }
     await buyer.getByLabel("Search accounts", { exact: true }).fill(title);
+    await buyer.getByLabel("Game", { exact: true }).selectOption(slug);
+    await buyer.getByLabel("Listing currency", { exact: true }).fill("USD");
+    await buyer
+      .getByLabel("Maximum price (USD)", { exact: true })
+      .fill("12.34");
+    await buyer
+      .getByLabel("Sort accounts", { exact: true })
+      .selectOption("price_asc");
     await buyer.getByRole("button", { name: "Apply account filters" }).click();
     await expect(buyer).toHaveURL(/search=/);
+    await expect(buyer).toHaveURL(/max_minor=1234/);
+    await expect(buyer).toHaveURL(/sort=price_asc/);
     await expect(
       buyer.getByRole("link", { name: title, exact: true }),
     ).toBeVisible();
@@ -315,6 +325,13 @@ export async function resaleJourney(
     await expect(
       buyer.getByLabel("Search accounts", { exact: true }),
     ).toHaveValue(title);
+    await expect(buyer.getByLabel("Game", { exact: true })).toHaveValue(slug);
+    await expect(
+      buyer.getByLabel("Maximum price (USD)", { exact: true }),
+    ).toHaveValue("12.34");
+    await expect(
+      buyer.getByLabel("Sort accounts", { exact: true }),
+    ).toHaveValue("price_asc");
     if (info.project.name === "mobile")
       await buyer
         .getByRole("button", { name: "Close filters", exact: true })

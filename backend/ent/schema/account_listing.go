@@ -42,5 +42,9 @@ func (AccountListing) Indexes() []ent.Index {
 		index.Fields("submission_id").Unique().StorageKey("account_single_inventory"),
 		index.Fields("offer_id").Unique().StorageKey("account_offer_inventory"),
 		index.Fields("state", "game_id", "created_at", "id").StorageKey("account_public_browse"),
+		index.Fields("state", "created_at", "id").StorageKey("account_market_newest"),
+		index.Fields("state", "slug", "created_at", "id").StorageKey("account_game_newest"),
+		index.Fields("state", "public_currency", "public_amount_minor", "id").StorageKey("account_market_price"),
+		index.Fields("state", "slug", "public_currency", "public_amount_minor", "id").StorageKey("account_game_price"),
 	}
 }
