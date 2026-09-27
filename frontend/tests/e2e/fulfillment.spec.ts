@@ -60,7 +60,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       ).toBeVisible();
     }
     async function handoff(id: string) {
-      await buyer.goto(`/orders/${id}`);
+      await buyer.goto(`/orders/${id}?section=progress`);
       await buyer
         .getByLabel("Player identifier (required)")
         .fill("synthetic-player");
@@ -274,7 +274,7 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       "Published proof",
     );
     await page.goto(`/admin/orders/${accountID}`);
-    await buyer.goto(`/orders/${accountID}`);
+    await buyer.goto(`/orders/${accountID}?section=progress`);
     await staff.goto(`/booster/orders/${accountID}`);
     await staff
       .getByLabel("Customer-visible update", { exact: true })
@@ -293,6 +293,29 @@ test("paid work supports both modes, narrow booster access and reviewed completi
     await expect(
       staff.getByText(/Status: in progress · Progress 80%/),
     ).toBeVisible();
+    await buyer.getByRole("button", { name: "Orders & support" }).click();
+    const current = buyer.getByRole(
+      (buyer.viewportSize()?.width ?? 1440) <= 700 ? "dialog" : "region",
+      { name: "Your current orders", exact: true },
+    );
+    await current
+      .getByRole("button", { name: "Refresh orders", exact: true })
+      .click();
+    await expect(current).toContainText("80% reported complete");
+    await current
+      .getByRole("link", {
+        name: `View order ${accountID} · Fulfillment journey game`,
+      })
+      .click();
+    await expect(buyer).toHaveURL(new RegExp(`/orders/${accountID}$`));
+    await expect(current).toBeHidden();
+    await expect(
+      buyer.getByRole("heading", { name: `Order ${accountID}`, exact: true }),
+    ).toBeVisible();
+    await buyer
+      .getByRole("navigation", { name: "Order sections", exact: true })
+      .getByRole("link", { name: "Progress & sessions", exact: true })
+      .click();
     await staff
       .getByLabel("Customer-visible update", { exact: true })
       .fill("Requested work ready for review");

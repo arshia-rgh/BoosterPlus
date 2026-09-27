@@ -1,3 +1,4 @@
+import CustomerActivity from "./account/activity";
 import ErrorPage from "./ui/error-page";
 import {
   Links,
@@ -6,6 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteLoaderData,
+  useMatches,
 } from "react-router";
 import type { ReactNode } from "react";
 import type { LoaderFunctionArgs } from "react-router";
@@ -22,6 +24,9 @@ export function shouldRevalidate() {
 
 export function Layout({ children }: { children: ReactNode }) {
   const data = useRouteLoaderData<typeof loader>("root");
+  const workspace = useMatches().some(
+    (match) => match.id === "routes/workspace",
+  );
   return (
     <html lang="en">
       <head>
@@ -43,6 +48,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <SiteHeader />
         {children}
         <SiteFooter />
+        {!workspace && <CustomerActivity />}
         <ScrollRestoration nonce={data?.nonce} />
         <Scripts nonce={data?.nonce} />
       </body>

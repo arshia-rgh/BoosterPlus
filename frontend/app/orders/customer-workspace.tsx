@@ -1,7 +1,7 @@
+import type { Location } from "react-router";
 import RequestConfirmation from "./request-confirmation";
-import { useLocation } from "react-router";
-import { Link } from "react-router";
-import { useRef, useState, type ReactNode } from "react";
+import { Link, useLocation } from "react-router";
+import { useState } from "react";
 import { z } from "../validation";
 import type { Session } from "../identity/api";
 import { Action, ErrorNotice } from "../catalog/controls";
@@ -10,7 +10,8 @@ import { detailSchema, quotesSchema, stateLabel, type Detail } from "./model";
 import { useResource } from "./resource";
 import { Agreement, Decisions, History, RequestDetails } from "./parts";
 import { orderKind } from "./presentation";
-import { OrderSupport } from "../support/new";
+import { RecordShell } from "../ui/record-shell";
+import OrderMessages from "../support/order-messages";
 import OrderProgress from "../experience/order-progress";
 import FulfillmentPanel from "../fulfillment/panel";
 import Checkout from "../payments/checkout";
@@ -18,28 +19,6 @@ import Cases from "../payments/cases";
 import AccountDelivery from "../resale/delivery";
 import PurchaseReview from "../reviews/form";
 
-function Section({
-  title,
-  primary = false,
-  children,
-}: {
-  title: string;
-  primary?: boolean;
-  children: ReactNode;
-}) {
-  if (primary)
-    return (
-      <div data-order-section={title} className="order-primary-section">
-        {children}
-      </div>
-    );
-  return (
-    <details data-order-section={title} className="order-section">
-      <summary>{title}</summary>
-      {children}
-    </details>
-  );
-}
 function QuoteComparison({ detail }: { detail: Detail }) {
   const resource = useResource(
     `/orders/${detail.order.id}/quotes?before=0&revision=${String(detail.order.version)}`,
@@ -125,15 +104,16 @@ export default function CustomerWorkspace({
   session,
   refreshing,
   reload,
+  suspended = false,
 }: {
   detail: Detail;
   session: Session;
   refreshing: boolean;
   reload: () => void;
+  suspended?: boolean;
 }) {
-  // Validate this shared display at the boundary; estimates are never substituted for contracts.
   const detail = detailSchema.parse(input);
-  const location = useLocation();
+  const location: Location<unknown> = useLocation();
   const source = z
     .object({ orderListSearch: z.string().max(2048) })
     .safeParse(location.state);
@@ -142,14 +122,42 @@ export default function CustomerWorkspace({
     (source.success
       ? "?" + new URLSearchParams(source.data.orderListSearch).toString()
       : "");
-  const root = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState("");
   const state = detail.order.state,
     contract = detail.contract,
     paid = contract?.payment_state === "settled",
-    closed = ["completed", "cancelled", "rejected", "expired"].includes(state);
+    account = detail.order.kind === "account";
   const termsValid =
     !detail.quote || session.terms_version === detail.quote.data.terms_version;
+  const sections = [
+    { id: "overview", label: "Overview" },
+    { id: "messages", label: "Messages" },
+    {
+      id: account ? "delivery" : "progress",
+      label: account ? "Delivery" : "Progress & sessions",
+    },
+    { id: "payment", label: "Payment" },
+    { id: "help", label: "Help" },
+  ];
+  const destination = (section: string) => ({
+    pathname: location.pathname,
+    search:
+      "?" +
+      new URLSearchParams({
+        ...Object.fromEntries(new URLSearchParams(location.search)),
+        section,
+      }).toString(),
+  });
+  const localLink = (section: string, label: string) => (
+    <Link
+      className="button"
+      preventScrollReset
+      state={location.state}
+      to={destination(section)}
+    >
+      {label}
+    </Link>
+  );
   async function copyReference() {
     try {
       await navigator.clipboard.writeText(detail.order.id);
@@ -158,244 +166,253 @@ export default function CustomerWorkspace({
       setCopied("Copy unavailable. Select the reference above.");
     }
   }
-  function openSection(title: string) {
-    const section = [
-      ...(root.current?.querySelectorAll<HTMLElement>("[data-order-section]") ??
-        []),
-    ].find((item) => item.dataset.orderSection === title);
-    if (section) {
-      if (section instanceof HTMLDetailsElement) section.open = true;
-      section.scrollIntoView({ block: "start", behavior: "instant" });
-      const heading = section.querySelector<HTMLElement>("summary, h2");
-      if (heading) {
-        if (heading.tagName !== "SUMMARY") heading.tabIndex = -1;
-        heading.focus({ preventScroll: true });
-      }
-    }
-  }
   return (
-    <div ref={root} className="customer-order-workspace">
-      <div className="order-toolbar">
-        <Link to={back}>← Order list</Link>
-        <Action onClick={reload}>
-          {refreshing ? "Refreshing order…" : "Refresh order"}
-        </Action>
-      </div>
-      <header className="order-workspace-heading">
-        <div>
-          <p className="eyebrow">{orderKind(detail.order.kind)}</p>
-          <h2>
-            {detail.order.game_name} · {stateLabel(state)}
-          </h2>
-          <p>
-            Updated{" "}
-            <time dateTime={detail.order.updated_at}>
-              {new Date(detail.order.updated_at).toLocaleString()}
-            </time>
-          </p>
-        </div>
-        <div className="order-price-summary">
-          {contract ? (
-            <>
-              <span>Accepted total</span>
-              <strong>
-                {contract.data.currency}{" "}
-                {minorDisplay(contract.data.amount_minor)}
-              </strong>
-              <span>
-                {paid
-                  ? "Payment verified and allocated to your order."
-                  : contract.payment_state === "retired"
-                    ? "Contract retired"
-                    : "Payment not verified"}
-              </span>
-            </>
-          ) : (
-            <>
-              <span>
-                {detail.quote ? "Offered quote" : "Final price after review"}
-              </span>
-              {detail.quote && (
-                <strong>
-                  {detail.quote.data.currency}{" "}
-                  {minorDisplay(detail.quote.data.amount_minor)}
-                </strong>
-              )}
-            </>
-          )}
-        </div>
-      </header>
-      <details className="order-reference">
-        <summary>Order reference</summary>
-        <p>{detail.order.id}</p>
-        <Action
-          onClick={() => {
-            void copyReference();
-          }}
-        >
-          Copy order reference
-        </Action>
-        <span role="status">{copied}</span>
-      </details>
-      <RequestConfirmation detail={detail} />
-      <OrderProgress detail={detail} />
-      <div className="order-contact">
-        <OrderSupport id={detail.order.id} name={detail.order.game_name} />
-        <span>Private support, tied to this order.</span>
-      </div>
-      <nav className="order-section-nav" aria-label="Order information">
-        {detail.order.kind !== "account" && (
-          <button
-            onClick={() => {
-              openSection("Selections & reorder");
-            }}
-          >
-            Selections
-          </button>
-        )}
-        <button
-          onClick={() => {
-            openSection("Order activity");
-          }}
-        >
-          Activity
-        </button>
-        {contract && (
+    <div className="customer-order-workspace">
+      <RecordShell
+        id={detail.order.id}
+        title="Order"
+        headingLevel={2}
+        compactReference
+        workspace="My account"
+        status={
           <>
-            <button
-              onClick={() => {
-                openSection("Payment & receipts");
-              }}
-            >
-              Payments
-            </button>
-            <button
-              onClick={() => {
-                openSection("Help, cases & refunds");
-              }}
-            >
-              Get help
-            </button>
+            <h3 className="order-game-title">
+              {detail.order.game_name} · {stateLabel(state)}
+            </h3>
+            <span>{orderKind(detail.order.kind)}</span>
+            <details className="order-full-reference">
+              <summary>Full order reference</summary>
+              <code>{detail.order.id}</code>
+            </details>
+          </>
+        }
+        back={{ to: back, label: "Order list" }}
+        sections={sections}
+        keepMounted={["overview", "messages", "progress", "help"]}
+      >
+        {(section, visible) => (
+          <>
+            <fieldset className="order-current-data" disabled={refreshing}>
+              <legend className="sr-only">
+                Order workspace ·{" "}
+                {sections.find((item) => item.id === section)?.label}
+              </legend>
+              {section === "overview" && (
+                <>
+                  <div className="order-toolbar">
+                    <p>
+                      Updated{" "}
+                      <time dateTime={detail.order.updated_at}>
+                        {new Date(detail.order.updated_at).toLocaleString()}
+                      </time>
+                    </p>
+                    <Action disabled={refreshing} onClick={reload}>
+                      {refreshing ? "Refreshing order…" : "Refresh order"}
+                    </Action>
+                    <Action onClick={() => void copyReference()}>
+                      Copy order reference
+                    </Action>
+                    <span role="status">{copied}</span>
+                  </div>
+                  <RequestConfirmation detail={detail} />
+                  <OrderProgress detail={detail} />
+                  {detail.quote && !contract && (
+                    <section
+                      aria-label="Current quote"
+                      className="catalog-section order-quote"
+                    >
+                      <h2>
+                        Current quote · revision {detail.quote.data.revision}
+                      </h2>
+                      <Agreement data={detail.quote.data} />
+                      <QuoteComparison detail={detail} />
+                      {!termsValid && (
+                        <p role="alert">
+                          Terms changed. Request an updated quote before
+                          accepting.
+                        </p>
+                      )}
+                    </section>
+                  )}
+                  {!contract && !detail.quote && (
+                    <p className="order-estimate">
+                      {detail.estimate.outcome === "estimated"
+                        ? `Original estimate: ${detail.estimate.currency} ${minorDisplay(detail.estimate.amount_minor)}. `
+                        : ""}
+                      Administrator review is required before this request
+                      becomes payable.
+                    </p>
+                  )}
+                  {contract && (
+                    <section
+                      className="catalog-section"
+                      aria-label="Accepted price"
+                    >
+                      <h2>Accepted total</h2>
+                      <strong>
+                        {contract.data.currency}{" "}
+                        {minorDisplay(contract.data.amount_minor)}
+                      </strong>
+                      <p>
+                        {paid
+                          ? "Payment verified and allocated to your order."
+                          : contract.payment_state === "retired"
+                            ? "This contract was retired."
+                            : "Payment has not been verified. Work cannot start yet."}
+                      </p>
+                      <div className="order-primary-actions">
+                        {" "}
+                        {localLink(
+                          "payment",
+                          state === "awaiting_payment"
+                            ? "Continue to payment"
+                            : "View payment & receipts",
+                        )}
+                        {paid &&
+                          localLink(
+                            account ? "delivery" : "progress",
+                            account
+                              ? "Review account delivery"
+                              : "View progress & sessions",
+                          )}
+                      </div>{" "}
+                      <details data-order-section="Accepted agreement">
+                        <summary>Accepted agreement</summary>
+                        <section aria-label="Accepted agreement">
+                          <h2>Accepted agreement</h2>
+                          <Agreement data={contract.data} />
+                        </section>
+                      </details>
+                    </section>
+                  )}
+                  <Decisions
+                    key={`decisions-${String(detail.order.version)}`}
+                    detail={detail}
+                    admin={false}
+                    termsValid={termsValid}
+                    done={reload}
+                  />
+                  {!account && (
+                    <details
+                      className="order-section"
+                      data-order-section="Selections & reorder"
+                      open={state === "needs_information"}
+                    >
+                      <summary>Selections & reorder</summary>
+                      <RequestDetails
+                        key={`request-${String(detail.order.version)}`}
+                        detail={detail}
+                        admin={false}
+                        done={reload}
+                      />
+                    </details>
+                  )}
+                  <details
+                    className="order-section"
+                    data-order-section="Order activity"
+                    open={state === "needs_information" || state === "rejected"}
+                  >
+                    <summary>Order activity</summary>
+                    <History
+                      base={`/orders/${detail.order.id}`}
+                      revision={detail.order.version}
+                    />
+                  </details>
+                </>
+              )}
+              {section === "messages" && (
+                <OrderMessages
+                  detail={detail}
+                  visible={visible && !suspended}
+                />
+              )}
+              {section === "progress" && (
+                <>
+                  <h2>Progress & sessions</h2>
+                  <p>
+                    Staff-reported updates for this order. Progress is not live
+                    game telemetry.
+                  </p>
+                  {paid ? (
+                    <FulfillmentPanel
+                      detail={detail}
+                      admin={false}
+                      reload={reload}
+                      visible={visible && !suspended}
+                      localCoordination
+                    />
+                  ) : (
+                    <p>
+                      Progress and scheduling become available after your
+                      payment is verified.{" "}
+                      {localLink("payment", "View payment status")}
+                    </p>
+                  )}
+                  {state === "completed" && (
+                    <PurchaseReview orderID={detail.order.id} completed />
+                  )}
+                </>
+              )}
+              {section === "delivery" && !suspended && (
+                <>
+                  <h2>Account delivery</h2>
+                  <AccountDelivery
+                    id={detail.order.id}
+                    admin={false}
+                    owner={false}
+                    paid={
+                      paid &&
+                      ["queued", "in_progress", "completed"].includes(state)
+                    }
+                    changed={reload}
+                  />
+                  {state === "completed" && (
+                    <PurchaseReview orderID={detail.order.id} completed />
+                  )}
+                </>
+              )}
+              {section === "payment" &&
+                !suspended &&
+                (contract ? (
+                  <Checkout detail={detail} admin={false} changed={reload} />
+                ) : (
+                  <section className="catalog-section">
+                    <h2>No payment due</h2>
+                    <p>
+                      This request needs an accepted final quote before
+                      checkout. Submitting it does not charge you.
+                    </p>
+                    {localLink("overview", "Review your request")}
+                  </section>
+                ))}
+              {section === "help" && (
+                <>
+                  <h2>Help with this order</h2>
+                  <p>
+                    Contact PLAYORA support privately about this order. Use a
+                    formal case for a payment or service issue.
+                  </p>
+                  {localLink("messages", "Chat with support for this order")}
+                  {contract && (
+                    <Cases
+                      detail={detail}
+                      admin={false}
+                      owner={false}
+                      changed={reload}
+                    />
+                  )}
+                  {contract && state !== "completed" && (
+                    <PurchaseReview
+                      orderID={detail.order.id}
+                      completed={false}
+                    />
+                  )}
+                </>
+              )}
+            </fieldset>
           </>
         )}
-      </nav>
-
-      <fieldset className="order-current-data" disabled={refreshing}>
-        <legend className="sr-only">Order workspace</legend>
-        {detail.quote && !contract && (
-          <section aria-label="Current quote" className="order-quote">
-            <h2>Current quote · revision {detail.quote.data.revision}</h2>
-            <Agreement data={detail.quote.data} />
-            <QuoteComparison detail={detail} />
-            {!termsValid && (
-              <p role="alert">
-                Terms changed. Request an updated quote before accepting.
-              </p>
-            )}
-          </section>
-        )}
-        {!contract && !detail.quote && (
-          <p className="order-estimate">
-            {detail.estimate.outcome === "estimated"
-              ? `Original estimate: ${detail.estimate.currency} ${minorDisplay(detail.estimate.amount_minor)}. `
-              : ""}
-            Administrator review is required before this request becomes
-            payable.
-          </p>
-        )}
-        {(["submitted", "needs_information", "quoted"].includes(state) ||
-          (state === "awaiting_payment" &&
-            contract?.payment_state === "unissued")) && (
-          <Section
-            title="Order options"
-            primary={state === "quoted" || state === "needs_information"}
-          >
-            <Decisions
-              key={`decisions-${String(detail.order.version)}`}
-              detail={detail}
-              admin={false}
-              termsValid={termsValid}
-              done={reload}
-            />
-          </Section>
-        )}
-        {contract && (
-          <Section title="Accepted agreement">
-            <section aria-label="Accepted agreement">
-              <h2>Accepted agreement</h2>
-              <Agreement data={contract.data} />
-            </section>
-          </Section>
-        )}
-        {paid && detail.order.kind !== "account" && (
-          <FulfillmentPanel detail={detail} admin={false} reload={reload} />
-        )}
-        {detail.order.kind === "account" && (
-          <Section title="Account handoff" primary={paid}>
-            <AccountDelivery
-              id={detail.order.id}
-              admin={false}
-              owner={false}
-              paid={
-                paid && ["queued", "in_progress", "completed"].includes(state)
-              }
-              changed={reload}
-            />
-          </Section>
-        )}
-        {state === "completed" && (
-          <PurchaseReview orderID={detail.order.id} completed />
-        )}
-        {contract && (
-          <Section
-            title="Payment & receipts"
-            primary={state === "awaiting_payment"}
-          >
-            <Checkout detail={detail} admin={false} changed={reload} />
-          </Section>
-        )}
-        {detail.order.kind !== "account" && (
-          <Section
-            title="Selections & reorder"
-            primary={state === "needs_information"}
-          >
-            <RequestDetails
-              key={`request-${String(detail.order.version)}`}
-              detail={detail}
-              admin={false}
-              done={reload}
-            />
-          </Section>
-        )}
-        {contract && (
-          <Section title="Help, cases & refunds">
-            <p>
-              For a question, use the order conversation. For a formal service
-              or payment issue, review the case options below.
-            </p>
-            <Cases
-              detail={detail}
-              admin={false}
-              owner={false}
-              changed={reload}
-            />
-            {state !== "completed" && (
-              <PurchaseReview orderID={detail.order.id} completed={false} />
-            )}
-          </Section>
-        )}
-        <Section
-          title="Order activity"
-          primary={
-            (closed && state !== "completed") || state === "needs_information"
-          }
-        >
-          <History
-            base={`/orders/${detail.order.id}`}
-            revision={detail.order.version}
-          />
-        </Section>
-      </fieldset>
+      </RecordShell>
     </div>
   );
 }

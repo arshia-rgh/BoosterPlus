@@ -398,9 +398,7 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       path: `.cache/order-${info.project.name}.png`,
       fullPage: true,
     });
-    await buyer
-      .getByRole("button", { name: "Selections", exact: true })
-      .click();
+    await buyer.getByText("Selections & reorder", { exact: true }).click();
     await buyer
       .getByRole("button", {
         name: "Reorder with current catalog",
@@ -409,7 +407,6 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       .click();
     await expect(buyer.getByLabel("Ordinary instructions")).toHaveValue("");
     await expect(buyer.getByLabel("Play mode (required)")).toHaveValue("duo");
-    await buyer.getByText("Order options", { exact: true }).click();
     await buyer.getByText("Cancel this unpaid order", { exact: true }).click();
     await buyer
       .getByRole("button", { name: "Cancel unpaid order", exact: true })

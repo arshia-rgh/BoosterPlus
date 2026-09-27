@@ -8,11 +8,11 @@
 .chat-workspace.booster-chat {
   grid-template-columns: minmax(0, 1fr);
 }
-.identity-page:has(.chat-workspace) {
+.identity-page:has(.chat-workspace:not(.embedded-chat)) {
   padding: 1rem;
   max-width: none;
 }
-.identity-page:has(.chat-workspace) > .page-heading {
+.identity-page:has(.chat-workspace:not(.embedded-chat)) > .page-heading {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -502,7 +502,7 @@
   }
 }
 @media (max-width: 600px) {
-  .identity-page:has(.chat-workspace) {
+  .identity-page:has(.chat-workspace:not(.embedded-chat)) {
     padding: 0.4rem !important;
   }
   .chat-room {
@@ -579,10 +579,13 @@
   padding: 0.4rem;
   text-decoration: underline;
 }
-.identity-page:has(.chat-workspace) > .identity-session-action {
+.identity-page:has(.chat-workspace:not(.embedded-chat))
+  > .identity-session-action {
   margin: 0 0 0.7rem;
 }
-.identity-page:has(.chat-workspace) > .identity-session-action p:empty {
+.identity-page:has(.chat-workspace:not(.embedded-chat))
+  > .identity-session-action
+  p:empty {
   display: none;
 }
 .chat-workspace .message-meta,
@@ -624,4 +627,36 @@
 }
 .chat-workspace .chat-rail nav a:hover strong {
   text-decoration: underline;
+}
+
+.embedded-chat {
+  max-width: 100%;
+}
+.order-messages [hidden] {
+  display: none;
+}
+/* Embedded history is a readable local section, not a viewport remainder. */
+.embedded-chat .chat-room {
+  height: auto;
+  min-height: 0;
+  grid-template-rows: auto auto minmax(12rem, 1fr) auto auto;
+}
+.embedded-chat .chat-history {
+  height: clamp(12rem, 35dvh, 24rem);
+  min-height: 12rem;
+}
+.storefront-app:has(.customer-activity) .chat-composer {
+  scroll-margin-block: 1rem calc(var(--activity-clearance, 80px) + 1rem);
+}
+
+.storefront-app:has(.customer-activity) .chat-workspace .chat-composer {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+}
+.storefront-app:has(.customer-activity)
+  .chat-composer
+  :is(button, textarea, input, summary) {
+  scroll-margin-bottom: 6rem;
+}
+.customer-order-workspace .record-content :is(h2, h3) {
+  scroll-margin-bottom: 6rem;
 }

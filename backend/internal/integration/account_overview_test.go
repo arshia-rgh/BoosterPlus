@@ -17,7 +17,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -139,5 +141,52 @@ func TestAccountOverviewOwnedBoundedAndRevoked(t *testing.T) {
 	}
 	if _, err = f.store.AccountOverview(ctx, f.buyer); !errors.Is(err, identity.ErrForbidden) && !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal("stale suspended principal retained access", err)
+	}
+}
+
+func TestAccountOverviewProgressRequiresOwnedActiveSettledContract(t *testing.T) {
+	f := fulfillmentDB(t)
+	ctx := t.Context()
+	paid := f.paid(t, "duo")
+	assigned := f.assign(t, paid)
+	_, err := f.auth.client.Fulfillment.Update().Where(fulfillment.OrderIDEQ(assigned.OrderID)).SetProgress(42).SetCurrentNote("Synthetic private note omitted from overview").Save(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	overview, err := f.store.AccountOverview(ctx, f.buyer)
+	if err != nil || len(overview.Progress) != 1 || overview.Progress[0].OrderID != paid.Order.ID || overview.Progress[0].ReportedPercent != 42 {
+		t.Fatal("owned reported progress missing", err)
+	}
+	encoded, err := json.Marshal(overview.Progress)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var rows []map[string]any
+	if err = json.Unmarshal(encoded, &rows); err != nil {
+		t.Fatal(err)
+	}
+	if len(rows[0]) != 3 {
+		t.Fatal("progress projection must exclude notes, staff, player and credential data")
+	}
+	other, err := f.store.AccountOverview(ctx, f.other)
+	if err != nil || len(other.Progress) != 0 {
+		t.Fatal("foreign progress disclosed", err)
+	}
+	if _, err = f.auth.client.OrderContract.UpdateOneID(paid.Contract.ID).SetPaymentState(ordercontract.PaymentStateUnissued).Save(ctx); err != nil {
+		t.Fatal(err)
+	}
+	unpaid, err := f.store.AccountOverview(ctx, f.buyer)
+	if err != nil || len(unpaid.Progress) != 0 {
+		t.Fatal("unverified contract appeared as active progress", err)
+	}
+	if _, err = f.auth.client.OrderContract.UpdateOneID(paid.Contract.ID).SetPaymentState(ordercontract.PaymentStateSettled).Save(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = f.auth.client.Order.UpdateOneID(paid.Order.ID).SetState(order.StateCompleted).Save(ctx); err != nil {
+		t.Fatal(err)
+	}
+	completed, err := f.store.AccountOverview(ctx, f.buyer)
+	if err != nil || len(completed.Progress) != 0 {
+		t.Fatal("completed work remains in activity", err)
 	}
 }

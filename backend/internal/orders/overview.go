@@ -11,7 +11,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/booking"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/order"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/ordercontract"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -32,16 +34,25 @@ type UnreadThread struct {
 	Unread  int    `json:"unread"`
 }
 
+// ProgressSummary exposes only staff-reported completion, without player answers,
+// assignee identity, credential state or internal notes.
+type ProgressSummary struct {
+	OrderID         string    `json:"order_id"`
+	ReportedPercent int       `json:"reported_percent"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}
+
 // Overview is a bounded customer work summary, never a staff-wide dashboard.
 type Overview struct {
-	Attention     []Summary        `json:"attention"`
-	Active        []Summary        `json:"active"`
-	Upcoming      []SessionSummary `json:"upcoming"`
-	MoreAttention bool             `json:"more_attention"`
-	MoreActive    bool             `json:"more_active"`
-	MoreUpcoming  bool             `json:"more_upcoming"`
-	Messages      []UnreadThread   `json:"messages"`
-	MoreMessages  bool             `json:"more_messages"`
+	Progress      []ProgressSummary `json:"progress"`
+	Attention     []Summary         `json:"attention"`
+	Active        []Summary         `json:"active"`
+	Upcoming      []SessionSummary  `json:"upcoming"`
+	MoreAttention bool              `json:"more_attention"`
+	MoreActive    bool              `json:"more_active"`
+	MoreUpcoming  bool              `json:"more_upcoming"`
+	Messages      []UnreadThread    `json:"messages"`
+	MoreMessages  bool              `json:"more_messages"`
 }
 
 func (s *Store) unreadThreads(ctx context.Context, userID string) ([]UnreadThread, bool, error) {
@@ -89,7 +100,7 @@ func (s *Store) overviewOrders(ctx context.Context, userID string, states ...ord
 
 // AccountOverview prioritizes action across all owned orders, not just a history page.
 func (s *Store) AccountOverview(ctx context.Context, p *identity.Principal) (Overview, error) {
-	result := Overview{Attention: []Summary{}, Active: []Summary{}, Upcoming: []SessionSummary{}, Messages: []UnreadThread{}}
+	result := Overview{Progress: []ProgressSummary{}, Attention: []Summary{}, Active: []Summary{}, Upcoming: []SessionSummary{}, Messages: []UnreadThread{}}
 	p, err := s.auth.Recheck(ctx, p, "account")
 	if err != nil {
 		return result, err
@@ -99,6 +110,10 @@ func (s *Store) AccountOverview(ctx context.Context, p *identity.Principal) (Ove
 		return result, err
 	}
 	result.Active, result.MoreActive, err = s.overviewOrders(ctx, p.User.ID, order.StateSubmitted, order.StateQueued, order.StateInProgress, order.StateOnHold)
+	if err != nil {
+		return result, err
+	}
+	result.Progress, err = s.overviewProgress(ctx, p.User.ID, result.Active)
 	if err != nil {
 		return result, err
 	}
@@ -117,6 +132,37 @@ func (s *Store) AccountOverview(ctx context.Context, p *identity.Principal) (Ove
 	}
 	_, err = s.auth.Recheck(ctx, p, "account")
 	return result, err
+}
+
+func (s *Store) overviewProgress(ctx context.Context, userID string, items []Summary) ([]ProgressSummary, error) {
+	result := []ProgressSummary{}
+	ids := make([]string, 0, len(items))
+	for _, item := range items {
+		if item.Kind != "account" {
+			ids = append(ids, item.ID)
+		}
+	}
+	if len(ids) == 0 {
+		return result, nil
+	}
+	rows, err := s.client.Fulfillment.Query().Where(fulfillment.OrderIDIn(ids...), func(selector *sql.Selector) {
+		owned := sql.Table(order.Table)
+		contract := sql.Table(ordercontract.Table)
+		eligible := sql.Select(owned.C(order.FieldID)).From(owned).Join(contract).On(owned.C(order.FieldCurrentContract), contract.C(ordercontract.FieldID)).Where(sql.And(
+			sql.EQ(owned.C(order.FieldUserID), userID), sql.EQ(contract.C(ordercontract.FieldUserID), userID),
+			sql.ColumnsEQ(contract.C(ordercontract.FieldActiveOrderID), owned.C(order.FieldID)),
+			sql.EQ(contract.C(ordercontract.FieldPaymentState), string(ordercontract.PaymentStateSettled)),
+			sql.In(owned.C(order.FieldState), string(order.StateQueued), string(order.StateInProgress), string(order.StateOnHold)),
+		))
+		selector.Where(sql.In(selector.C(fulfillment.FieldOrderID), eligible))
+	}).Select(fulfillment.FieldOrderID, fulfillment.FieldProgress, fulfillment.FieldUpdatedAt).Limit(5).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, row := range rows {
+		result = append(result, ProgressSummary{row.OrderID, row.Progress, row.UpdatedAt})
+	}
+	return result, nil
 }
 
 func (s *Store) overview(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {

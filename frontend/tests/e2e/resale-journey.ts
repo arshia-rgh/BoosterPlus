@@ -375,6 +375,10 @@ export async function resaleJourney(
     const order = buyer.url().split("/").at(-1);
     if (!order) throw new Error("Missing account order");
     await buyer
+      .getByRole("navigation", { name: "Order sections" })
+      .getByRole("link", { name: "Payment", exact: true })
+      .click();
+    await buyer
       .getByLabel("Payment asset and network")
       .selectOption("usdttrc20");
     await buyer
@@ -412,12 +416,12 @@ export async function resaleJourney(
       ).status(),
     ).toBe(204);
     await expect(
-      buyer
-        .getByText("Payment verified and allocated to your order.", {
-          exact: true,
-        })
-        .first(),
+      buyer.getByRole("heading", { name: /^Payment verified/ }),
     ).toBeVisible({ timeout: 25000 });
+    await buyer
+      .getByRole("navigation", { name: "Order sections" })
+      .getByRole("link", { name: "Delivery", exact: true })
+      .click();
     await page.goto(`/admin/orders/${order}`);
     await page
       .getByLabel("Protected transfer details")

@@ -365,3 +365,71 @@
 .request-confirmation .eyebrow {
   margin-block-start: 0;
 }
+
+/* Local record sections retain drafts without creating competing page surfaces. */
+.customer-order-workspace [data-record-section][hidden] {
+  display: none;
+}
+.customer-order-workspace .record-heading h2 {
+  font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  margin-block: 0.65rem;
+}
+.customer-order-workspace .record-status {
+  align-items: center;
+}
+.customer-order-workspace .record-status > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.customer-order-workspace .order-toolbar p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+.customer-order-workspace .order-current-data > h2 {
+  margin-top: 0;
+}
+
+.customer-order-workspace .order-game-title {
+  margin: 0;
+  font-size: 1.1rem;
+  width: 100%;
+}
+
+.customer-order-workspace .record-sections a[aria-current]:not(.button) {
+  color: #092015;
+  background: #89efb0;
+}
+.order-primary-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-block: 1rem;
+}
+.order-primary-actions .button {
+  margin: 0;
+}
+
+.order-full-reference {
+  width: 100%;
+  font-size: 0.875rem;
+}
+.order-full-reference code {
+  overflow-wrap: anywhere;
+}
+
+.customer-order-workspace .order-full-reference {
+  border: 0;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0.1rem 0;
+  box-shadow: none;
+}
+.customer-order-workspace .order-full-reference summary {
+  padding: 0.3rem 0;
+  min-height: 44px;
+  font-weight: 400;
+}

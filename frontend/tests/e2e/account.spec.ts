@@ -21,6 +21,21 @@ test("account overview, settings and mobile menu preserve focus, privacy and pre
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
+    const activity = page.getByRole("button", { name: "Orders & support" });
+    await activity.click();
+    const current = page.getByRole(width <= 700 ? "dialog" : "region", {
+      name: "Your current orders",
+      exact: true,
+    });
+    await expect(current).toBeVisible();
+    await expect(current).toContainText("No active orders.");
+    await expect(
+      current.getByRole("link", { name: "Chat with support" }),
+    ).toBeVisible();
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    await page.keyboard.press("Escape");
+    await expect(current).toBeHidden();
+    await expect(activity).toBeFocused();
     const more = page.getByRole("button", { name: "More", exact: true });
     if (width <= 850) {
       await more.click();
@@ -84,5 +99,8 @@ test("account overview, settings and mobile menu preserve focus, privacy and pre
     page.getByRole("navigation", { name: "Account navigation", exact: true }),
   ).toHaveCount(0);
   await expect(page.getByText(name, { exact: true })).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Orders & support" }),
+  ).toHaveCount(0);
   expect((await page.request.get("/api/v1/me/overview")).status()).toBe(401);
 });

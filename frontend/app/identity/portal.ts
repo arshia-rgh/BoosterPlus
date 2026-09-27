@@ -70,6 +70,14 @@ export function portalReturn(
       /^(overview|messages|progress|delivery|payment|help)$/.test(section)
     )
       params.set("section", section);
+    const channel = url.searchParams.get("channel");
+    if (
+      portal === "customer" &&
+      /^\/orders\/[^/]+$/.test(path) &&
+      params.get("section") === "messages" &&
+      (channel === "support" || channel === "coordination")
+    )
+      params.set("channel", channel);
     const variant = url.searchParams.get("variant");
     if (
       /^\/games\/[^/]+\/packages\/[^/]+$/.test(path) &&

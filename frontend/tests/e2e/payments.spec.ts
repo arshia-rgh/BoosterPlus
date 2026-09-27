@@ -80,7 +80,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       customer.getByText("Your next step, in one place.", { exact: true }),
     ).toBeVisible();
     const id = fixture(info.project.name, "pay_order");
-    await customer.goto(`/orders/${id}`);
+    await customer.goto(`/orders/${id}?section=payment`);
     await customer
       .getByLabel("Payment asset and network")
       .selectOption("usdttrc20");
@@ -201,14 +201,22 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       expect(signal.status()).toBe(204);
     }
     await expect(
+      customer.getByText("12.34000001 USDTTRC20", { exact: true }),
+    ).toBeVisible({ timeout: 25000 });
+    await customer
+      .getByRole("navigation", { name: "Order sections" })
+      .getByRole("link", { name: "Overview", exact: true })
+      .click();
+    await expect(
       customer
         .getByText("Payment verified and allocated to your order.", {
           exact: true,
         })
         .first(),
-    ).toBeVisible({ timeout: 25000 });
+    ).toBeVisible();
     await customer
-      .getByRole("button", { name: "Payments", exact: true })
+      .getByRole("navigation", { name: "Order sections" })
+      .getByRole("link", { name: "Payment", exact: true })
       .click();
     await expect(
       customer.getByText("12.34000001 USDTTRC20", { exact: true }),
@@ -232,9 +240,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     await expect(
       page.getByRole("link", { name: `Order ${id.slice(0, 8)}` }),
     ).toBeVisible();
-    await customer
-      .getByRole("button", { name: "Get help", exact: true })
-      .click();
+    await customer.getByRole("link", { name: "Help", exact: true }).click();
     await customer
       .getByText("Request a service review", { exact: true })
       .click();

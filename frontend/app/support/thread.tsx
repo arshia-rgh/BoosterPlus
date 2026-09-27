@@ -112,10 +112,14 @@ function ThreadSession({
   id,
   admin,
   booster,
+  embedded,
+  visible,
 }: {
   id: string;
   admin: boolean;
   booster: boolean;
+  embedded: boolean;
+  visible: boolean;
 }) {
   const base =
     (admin ? "/admin" : "") + "/conversations/" + encodeURIComponent(id);
@@ -131,7 +135,7 @@ function ThreadSession({
     marked = useRef(0);
   const captureReading = useCallback(() => {
     const box = history.current;
-    if (!box) return;
+    if (!box || !visible) return;
     const node = [...box.querySelectorAll<HTMLElement>(".message-bubble")].find(
       (item) =>
         item.getBoundingClientRect().bottom >
@@ -146,8 +150,8 @@ function ThreadSession({
       offset:
         box.getBoundingClientRect().top - node.getBoundingClientRect().top,
     });
-  }, [id, user]);
-  const chat = useChat(base, savedPosition?.sequence, captureReading);
+  }, [id, user, visible]);
+  const chat = useChat(base, savedPosition?.sequence, captureReading, visible);
   const details = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
     const close = (event: globalThis.KeyboardEvent) => {
@@ -180,6 +184,8 @@ function ThreadSession({
   const latest = chat.messages.at(-1)?.sequence ?? 0;
   const markRead = useCallback(() => {
     if (
+      !visible ||
+      chat.loading ||
       !latest ||
       chat.error ||
       marked.current >= latest ||
@@ -195,18 +201,19 @@ function ThreadSession({
         marked.current = 0;
         fail(cause);
       });
-  }, [base, latest, chat.error, refresh, fail]);
+  }, [base, latest, chat.error, chat.loading, visible, refresh, fail]);
   const atBottom = useCallback(() => {
     const box = history.current;
-    if (!box || chat.error) return;
+    if (!box || !visible || chat.error || chat.loading) return;
     const remaining = box.scrollHeight - box.scrollTop - box.clientHeight;
     captureReading();
     if (remaining <= 3) {
       setNewCount(0);
       markRead();
     }
-  }, [captureReading, markRead, chat.error]);
+  }, [captureReading, markRead, chat.error, chat.loading, visible]);
   useLayoutEffect(() => {
+    if (!visible || chat.loading) return;
     const box = history.current;
     if (!chat.thread) {
       initial.current = false;
@@ -286,6 +293,8 @@ function ThreadSession({
     last.current = latest;
     atBottom();
   }, [
+    visible,
+    chat.loading,
     chat.messages,
     chat.thread,
     chat.error,
@@ -307,18 +316,25 @@ function ThreadSession({
   }, [atBottom]);
   useEffect(() => {
     const element = room.current;
-    if (!element) return;
+    if (!element || !visible) return;
     let frame = 0;
     const measure = () => {
+      if (embedded) return;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         const viewport = window.visualViewport;
         const bottom = viewport
           ? viewport.height + viewport.offsetTop
           : window.innerHeight;
+        const clearance =
+          Number.parseFloat(
+            getComputedStyle(document.body).getPropertyValue(
+              "--activity-clearance",
+            ),
+          ) || 12;
         element.style.setProperty(
           "--chat-height",
-          `${String(Math.max(window.innerWidth <= 600 ? Math.min(640, (viewport?.height ?? window.innerHeight) - 12) : 320, Math.min(900, bottom - element.getBoundingClientRect().top - 12)))}px`,
+          `${String(Math.max(window.innerWidth <= 600 ? Math.min(640, (viewport?.height ?? window.innerHeight) - clearance - 12) : 320, Math.min(900, bottom - element.getBoundingClientRect().top - clearance)))}px`,
         );
       });
     };
@@ -328,24 +344,27 @@ function ThreadSession({
         typeof window.matchMedia === "function" &&
         window.matchMedia("(max-width: 600px)").matches
       ) {
-        if (typeof element.scrollIntoView === "function")
-          element.scrollIntoView({ block: "start" });
+        const target = embedded ? event.target : element;
+        if (typeof target.scrollIntoView === "function")
+          target.scrollIntoView({ block: embedded ? "center" : "start" });
         measure();
       }
     };
     element.addEventListener("focusin", focus);
     measure();
     window.addEventListener("resize", measure);
+    window.addEventListener("playora:activity-layout", measure);
     window.visualViewport?.addEventListener("resize", measure);
     window.visualViewport?.addEventListener("scroll", measure);
     return () => {
       cancelAnimationFrame(frame);
       element.removeEventListener("focusin", focus);
       window.removeEventListener("resize", measure);
+      window.removeEventListener("playora:activity-layout", measure);
       window.visualViewport?.removeEventListener("resize", measure);
       window.visualViewport?.removeEventListener("scroll", measure);
     };
-  }, [chat.thread?.id]);
+  }, [chat.thread?.id, visible, embedded]);
   function newest() {
     if (history.current)
       history.current.scrollTop = history.current.scrollHeight;
@@ -385,13 +404,23 @@ function ThreadSession({
     ? "/booster/orders"
     : (admin ? "/admin" : "") + "/support" + inboxSearch;
   return (
-    <div className={"chat-workspace" + (booster ? " booster-chat" : "")}>
-      {!booster && (
+    <div
+      className={
+        "chat-workspace" +
+        (booster || embedded ? " booster-chat" : "") +
+        (embedded ? " embedded-chat" : "")
+      }
+    >
+      {!booster && !embedded && (
         <ConversationRail current={id} admin={admin} active={chat.thread} />
       )}
       {!chat.thread ? (
         <section className="chat-access">
-          <Link to={back}>← {booster ? "Assigned work" : "Conversations"}</Link>
+          {!embedded && (
+            <Link to={back}>
+              ← {booster ? "Assigned work" : "Conversations"}
+            </Link>
+          )}
           <ErrorNotice error={chat.error} />
           <p role="status">
             {chat.error
@@ -411,9 +440,11 @@ function ThreadSession({
       ) : (
         <div ref={room} className="chat-room">
           <header className="chat-room-header">
-            <Link className="chat-back" to={back}>
-              ← {booster ? "Assigned work" : "Inbox"}
-            </Link>
+            {!embedded && (
+              <Link className="chat-back" to={back}>
+                ← {booster ? "Assigned work" : "Inbox"}
+              </Link>
+            )}
             <div className="chat-title">
               <h2>{chat.thread.subject}</h2>
               <span>
@@ -609,7 +640,7 @@ function ThreadSession({
             proofAllowed={
               (admin || booster) && chat.thread.kind === "fulfillment"
             }
-            unavailable={!!chat.error}
+            unavailable={!visible || chat.loading || !!chat.error}
             fail={fail}
             done={() => {
               pinned.current = true;
@@ -624,17 +655,26 @@ function ThreadSession({
 export default function Thread({
   admin = false,
   booster = false,
+  conversationID,
+  embedded = false,
+  visible = true,
 }: {
   admin?: boolean;
   booster?: boolean;
+  conversationID?: string;
+  embedded?: boolean;
+  visible?: boolean;
 }) {
-  const { id = "" } = useParams();
+  const { id: routeID = "" } = useParams();
+  const id = conversationID ?? routeID;
   return (
     <ThreadSession
       key={(admin ? "admin:" : "customer:") + id}
       id={id}
       admin={admin}
       booster={booster}
+      embedded={embedded}
+      visible={visible}
     />
   );
 }

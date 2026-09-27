@@ -33,8 +33,13 @@ vi.mock("../resale/delivery", () => ({
 vi.mock("../reviews/form", () => ({
   default: () => <p>Eligible purchase feedback</p>,
 }));
-vi.mock("../support/new", () => ({
-  OrderSupport: () => <button>Open order conversation</button>,
+vi.mock("../support/order-messages", () => ({
+  default: () => (
+    <label>
+      Private order draft
+      <textarea defaultValue="" />
+    </label>
+  ),
 }));
 afterEach(() => {
   vi.clearAllMocks();
@@ -145,9 +150,7 @@ it("keeps unquoted requests minimal and restores only local list filters", async
   );
   expect(screen.queryByText("Accepted total")).not.toBeInTheDocument();
   expect(screen.queryByText("Formal service cases")).not.toBeInTheDocument();
-  expect(
-    screen.getByRole("button", { name: "Open order conversation" }),
-  ).toBeVisible();
+  expect(screen.getByRole("link", { name: "Messages" })).toBeVisible();
   await waitFor(() => {
     expect(get).toHaveBeenCalled();
   });
@@ -171,10 +174,13 @@ it("leads completed boosts with work and feedback while keeping cases and receip
       />
     </MemoryRouter>,
   );
+  fireEvent.click(screen.getByRole("link", { name: "Progress & sessions" }));
   expect(screen.getByText("Work progress and proof")).toBeVisible();
   expect(screen.getByText("Eligible purchase feedback")).toBeVisible();
-  expect(screen.getByText("Formal service cases")).not.toBeVisible();
-  expect(screen.getByText("Authoritative payment details")).not.toBeVisible();
+  expect(screen.queryByText("Formal service cases")).not.toBeInTheDocument();
+  expect(
+    screen.queryByText("Authoritative payment details"),
+  ).not.toBeInTheDocument();
   expect(
     screen.queryByRole("button", { name: "Cancel unpaid order" }),
   ).not.toBeInTheDocument();
@@ -197,6 +203,7 @@ it("shows completed account handoff and preserves account-purchase feedback", as
       />
     </MemoryRouter>,
   );
+  fireEvent.click(screen.getByRole("link", { name: "Delivery" }));
   expect(screen.getByText("Protected account handoff")).toBeVisible();
   expect(screen.getByText("Eligible purchase feedback")).toBeVisible();
   expect(screen.queryByText("Work progress and proof")).not.toBeInTheDocument();
@@ -364,4 +371,79 @@ it("explains saved custom requests without claiming payment or confusing package
   expect(
     screen.queryByRole("region", { name: "Request confirmation" }),
   ).not.toBeInTheDocument();
+});
+
+it("retains order identity, list context and a local message draft through section changes", async () => {
+  resources();
+  render(
+    <MemoryRouter
+      initialEntries={[
+        {
+          pathname: "/orders/owned-order",
+          state: { orderListSearch: "state=quoted&search=Game" },
+        },
+      ]}
+    >
+      <CustomerWorkspace
+        detail={detail()}
+        session={session}
+        refreshing={false}
+        reload={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  const heading = screen.getByRole("heading", { name: "Order owned-order" });
+  fireEvent.click(screen.getByRole("link", { name: "Messages" }));
+  fireEvent.change(screen.getByLabelText("Private order draft"), {
+    target: { value: "Keep this local draft" },
+  });
+  fireEvent.click(screen.getByRole("link", { name: "Overview" }));
+  expect(screen.getByLabelText("Private order draft")).not.toBeVisible();
+  fireEvent.click(screen.getByRole("link", { name: "Messages" }));
+  expect(screen.getByLabelText("Private order draft")).toHaveValue(
+    "Keep this local draft",
+  );
+  expect(screen.getByRole("heading", { name: "Order owned-order" })).toBe(
+    heading,
+  );
+  expect(screen.getByRole("link", { name: "← Order list" })).toHaveAttribute(
+    "href",
+    "/orders?state=quoted&search=Game",
+  );
+  expect(screen.getByRole("link", { name: "Payment" })).toHaveAttribute(
+    "href",
+    "/orders/owned-order?section=payment",
+  );
+  await waitFor(() => {
+    expect(get).toHaveBeenCalled();
+  });
+});
+it("keeps unpaid progress unavailable and reopens checkout from a fresh mount", async () => {
+  resources();
+  render(
+    <MemoryRouter initialEntries={["/orders/owned-order?section=progress"]}>
+      <CustomerWorkspace
+        detail={{
+          ...detail("awaiting_payment"),
+          contract: { id: "c", payment_state: "unissued", data: price },
+        }}
+        session={session}
+        refreshing={false}
+        reload={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  expect(
+    screen.getByText(/Progress and scheduling become available/),
+  ).toBeVisible();
+  expect(screen.queryByText("Work progress and proof")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("link", { name: "Payment" }));
+  expect(screen.getByText("Authoritative payment details")).toBeVisible();
+  fireEvent.click(screen.getByRole("link", { name: "Overview" }));
+  expect(
+    screen.queryByText("Authoritative payment details"),
+  ).not.toBeInTheDocument();
+  await waitFor(() => {
+    expect(get).toHaveBeenCalled();
+  });
 });

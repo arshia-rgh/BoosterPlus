@@ -143,3 +143,106 @@ it("appends earlier history, reconciles multi-page gaps and closes one stable ev
   view.unmount();
   expect(close).toHaveBeenCalledTimes(1);
 });
+
+it("suspends a hidden record conversation and recovers after an interrupted fetch without a stuck lock", async () => {
+  const close = vi.fn();
+  vi.stubGlobal(
+    "EventSource",
+    class extends EventTarget {
+      onopen = null;
+      onerror = null;
+      close = close;
+    },
+  );
+  let finish: ((value: unknown) => void) | undefined;
+  vi.mocked(get).mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  const view = renderHook(
+    ({ enabled }) =>
+      useChat("/conversations/thread", undefined, undefined, enabled),
+    { initialProps: { enabled: true } },
+  );
+  await waitFor(() => {
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+  view.rerender({ enabled: false });
+  expect(close).toHaveBeenCalledTimes(1);
+  await act(async () => {
+    finish?.({ id: "stale", sequence: 0, unread: 0, version: 1 });
+    await Promise.resolve();
+  });
+  expect(view.result.current.thread).toBeNull();
+  vi.mocked(get).mockImplementation((path) =>
+    Promise.resolve(
+      path.includes("/messages")
+        ? { messages: [], next: 0, latest: 0 }
+        : { id: "thread", sequence: 0, unread: 0, version: 1 },
+    ),
+  );
+  view.rerender({ enabled: true });
+  await waitFor(() => {
+    expect(view.result.current.thread?.id).toBe("thread");
+  });
+  expect(view.result.current.loading).toBe(false);
+});
+
+it("can load older messages after an older request settles while its record section is hidden", async () => {
+  let finish: ((value: unknown) => void) | undefined;
+  vi.mocked(get).mockImplementation((path) =>
+    path.includes("before=51")
+      ? new Promise((resolve) => {
+          finish = resolve;
+        })
+      : Promise.resolve(
+          path.includes("/messages")
+            ? { messages: [message(51)], next: 0, latest: 51 }
+            : { id: "thread", sequence: 51, unread: 0, version: 1 },
+        ),
+  );
+  const view = renderHook(
+    ({ enabled }) =>
+      useChat("/conversations/thread", undefined, undefined, enabled),
+    { initialProps: { enabled: true } },
+  );
+  await waitFor(() => {
+    expect(view.result.current.earlier).toBe(51);
+  });
+  let request: Promise<boolean> | undefined;
+  act(() => {
+    request = view.result.current.loadEarlier();
+  });
+  await waitFor(() => {
+    expect(view.result.current.olderBusy).toBe(true);
+  });
+  view.rerender({ enabled: false });
+  await act(async () => {
+    finish?.({ messages: [message(1)], next: 0, latest: 51 });
+    await request;
+  });
+  view.rerender({ enabled: true });
+  await waitFor(() => {
+    expect(view.result.current.olderBusy).toBe(false);
+  });
+  expect(view.result.current.messages.map((item) => item.sequence)).toEqual([
+    51,
+  ]);
+  vi.mocked(get).mockImplementation((path) =>
+    Promise.resolve(
+      path.includes("before=51")
+        ? { messages: [message(1)], next: 0, latest: 51 }
+        : path.includes("/messages")
+          ? { messages: [], next: 0, latest: 51 }
+          : { id: "thread", sequence: 51, unread: 0, version: 1 },
+    ),
+  );
+  await act(async () => {
+    await view.result.current.loadEarlier();
+  });
+  expect(view.result.current.messages.map((item) => item.sequence)).toEqual([
+    1, 51,
+  ]);
+});

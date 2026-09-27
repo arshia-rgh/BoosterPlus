@@ -1083,3 +1083,17 @@ The third unchanged full hook failed during integration after 778.890s with data
 
 
 DI05 delivered: increment C `6a122d7234ff4c15b967b95bf82aae0865c671d2` passed the unchanged complete tracked hook and was pushed to origin/main with remote SHA verified. Complete TiDB race integration passed in 483.808s; 30 migrations, 303 local component cases (293 tracked plus ten held experiments), 106 browser journeys, security/build/container checks and isolated TLS deployment regressions passed. All 19 DI05-owned views have scoped evidence; full journeys remain for DI14/DI15. See `docs/redesign/DI05_QUALIFICATION.md` for failed infrastructure attempts, corrections, all review rounds and qualification limits. DI06–DI15 continue as authorized. Final launch remains held.
+
+
+### 27 September 2026 — DI06 customer workspaces (in progress)
+
+Implemented persistent order-local sections, separate retained private/shared message drafts, recoverable refresh protection, customer scheduling guidance and the authenticated corner activity surface. Bounded TiDB progress projection requires owned active work and the current settled contract, with no private fulfillment fields. Focused race integration passed8.149s; initial320 local component cases and applied-build real-API journeys are under final requalification with added activity assertions. Shared CSS budget regression was fixed by loading authenticated activity separately, without changing thresholds. Required senior review and unchanged full hook remain pending. See `docs/redesign/DI06_QUALIFICATION.md`; DI07–DI15 continue afterward, final launch remains held.
+
+
+DI06 scoped qualification is PASS: senior designer verified all nine findings resolved, including applied-build scheduling variants and21 sampled axe scans. Final real-API browser rerun passed eight desktop/mobile journeys with activity focus/ownership/sign-out assertions;320 local component cases, types/lint/build budgets, golangci/standalone gosec and root checks pass. The frozen staged tree now enters the unchanged full tracked hook. This is not yet a delivered phase or launch authorization.
+
+
+DI06 first full hook stopped at desktop/mobile sign-in cooldown browser checks after backend integration passed504.895s and all preceding security/build checks passed. Root activity duplicated the protected page's session bootstrap and could consume its429 response. Fixed session ownership: protected customer workspace passes verified identity; public activity respects pending/cooldown checks.322 local component cases, types/lint/builds now pass; targeted real-API and designer requalification precede the full-hook rerun. No failed run is counted as delivery.
+
+
+DI06 recovery qualification passes all 16 focused real-API browser cases (eight desktop/eight mobile), including the original unchanged cooldown assertions. The mounting follow-up found DI06-UX10 (public activity navigation left focus on BODY); first client workspace entry now focuses the destination heading and waits for delayed headings. Three component regressions pass. The designer rechecked public activity to history/support/exact order at 1280x900, 320x800, 320x450 and returned final scoped PASS. Evidence: `/tmp/playora-di06-recovery-browser.log` and `/tmp/di06-review-final-focus.json`. The complete tracked hook is being repeated; no commit is yet claimed.

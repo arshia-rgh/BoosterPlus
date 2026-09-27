@@ -14,9 +14,13 @@ export async function qualifyOrderWorkspace(page: Page, project: string) {
     "Accepted total · USD 12.34",
   );
   await page.locator(".order-list").getByRole("link").click();
-  await expect(page).toHaveURL(/\/orders\/[a-f0-9-]+$/);
-  const id = page.url().split("/").at(-1);
+  await expect(page).toHaveURL(/\/orders\/[a-f0-9-]+\?section=payment$/);
+  const id = new URL(page.url()).pathname.split("/").at(-1);
   if (!id) throw new Error("Missing order reference");
+  await page
+    .getByRole("navigation", { name: "Order sections", exact: true })
+    .getByRole("link", { name: "Overview", exact: true })
+    .click();
   const agreement = page.locator(
     '[data-order-section="Accepted agreement"] > summary',
   );
@@ -32,30 +36,44 @@ export async function qualifyOrderWorkspace(page: Page, project: string) {
   await expect(
     page.getByRole("heading", { name: "Order timeline", exact: true }),
   ).toBeHidden();
-  await page.getByRole("button", { name: "Activity", exact: true }).click();
+  await page.getByText("Order activity", { exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Order timeline", exact: true }),
   ).toBeVisible();
-  await expect(page.getByText("Order activity", { exact: true })).toBeFocused();
-  await page.getByRole("button", { name: "Selections", exact: true }).click();
+  await page.getByText("Selections & reorder", { exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Requested selections", exact: true }),
   ).toBeVisible();
   await expect(page.getByText("Solo", { exact: true })).toBeVisible();
-  await page
-    .getByRole("button", { name: "Open order conversation", exact: true })
-    .click();
-  await expect(page).toHaveURL(/\/support\/[a-f0-9-]+$/);
+  const identity = page.locator(".record-heading");
+  await identity.evaluate((element) => {
+    element.setAttribute("data-retained", "original");
+  });
+  const tabs = page.getByRole("navigation", {
+    name: "Order sections",
+    exact: true,
+  });
+  await tabs.getByRole("link", { name: "Messages", exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(`/orders/${id}\\?section=messages$`));
   await page
     .getByLabel("Message", { exact: true })
-    .fill("Private unsent draft before returning to my order");
-  await page.getByText("Details", { exact: true }).click();
-  await page
-    .getByRole("link", { name: "View linked order", exact: true })
-    .click();
+    .fill("Private unsent draft kept inside my order");
+  await tabs.getByRole("link", { name: "Overview", exact: true }).click();
+  await expect(page.getByLabel("Message", { exact: true })).toBeHidden();
+  await tabs.getByRole("link", { name: "Messages", exact: true }).click();
+  await expect(page.getByLabel("Message", { exact: true })).toHaveValue(
+    "Private unsent draft kept inside my order",
+  );
+  await expect(identity).toHaveAttribute("data-retained", "original");
+  await tabs.getByRole("link", { name: "Payment", exact: true }).click();
   await expect(
-    page.locator('[data-order-section="Accepted agreement"] > summary'),
+    page.getByRole("heading", { name: "Payment and receipts", exact: true }),
   ).toBeVisible();
+  await page.goBack();
+  await expect(page.getByLabel("Message", { exact: true })).toHaveValue(
+    "Private unsent draft kept inside my order",
+  );
+  await tabs.getByRole("link", { name: "Overview", exact: true }).click();
   const viewport = page.viewportSize();
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -96,6 +114,7 @@ export async function qualifyOrderWorkspace(page: Page, project: string) {
     fullPage: true,
   });
   await page.locator(".order-list").getByRole("link").click();
+  await tabs.getByRole("link", { name: "Overview", exact: true }).click();
   await expect(
     page.locator('[data-order-section="Accepted agreement"] > summary'),
   ).toBeVisible();
@@ -110,14 +129,17 @@ export async function qualifyOrderWorkspace(page: Page, project: string) {
     .getByRole("button", { name: "Refresh order", exact: true })
     .click();
   await expect(
-    page.getByText("Order unavailable. Refresh to check access again.", {
-      exact: true,
-    }),
+    page.getByText(
+      "Order access is no longer available. Sign in to your customer account to continue.",
+      {
+        exact: true,
+      },
+    ),
   ).toBeVisible();
   await expect(page.locator(".customer-order-workspace")).toHaveCount(0);
   await page.unroute(`**/api/v1/orders/${id}`);
   await page
-    .getByRole("button", { name: "Refresh order", exact: true })
+    .getByRole("button", { name: "Check order access again", exact: true })
     .click();
   await expect(
     page.locator('[data-order-section="Accepted agreement"] > summary'),

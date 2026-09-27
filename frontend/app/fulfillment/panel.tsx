@@ -1,5 +1,5 @@
 import "../ui/secondary.css";
-import { workNextStep } from "./work-presentation";
+import { workNextStep, customerWorkNextStep } from "./work-presentation";
 import Bookings from "./bookings";
 import Coordination from "./coordination";
 import ForecastControls, { ForecastRange } from "./forecast";
@@ -14,7 +14,7 @@ import Handoff from "./handoff";
 import { active, listingSchema, workSchema, type Work } from "./model";
 import { CustomerSecret, StaffSecret } from "./secrets";
 import { useState } from "react";
-function Summary({ work }: { work: Work }) {
+function Summary({ work, staff = true }: { work: Work; staff?: boolean }) {
   return (
     <>
       <p>
@@ -30,7 +30,9 @@ function Summary({ work }: { work: Work }) {
         max={100}
         aria-label="Reported fulfillment progress"
       />
-      <p className="work-next-step">{workNextStep(work)}</p>
+      <p className="work-next-step">
+        {staff ? workNextStep(work) : customerWorkNextStep(work)}
+      </p>
       <p className="preserve-lines">{work.note}</p>
       {work.completion_pending && (
         <p>Completion submitted for administrator review.</p>
@@ -76,10 +78,14 @@ export default function FulfillmentPanel({
   detail,
   admin,
   reload,
+  visible = true,
+  localCoordination = false,
 }: {
   detail: Detail;
   admin: boolean;
   reload: () => void;
+  visible?: boolean;
+  localCoordination?: boolean;
 }) {
   const resource = useResource(
       `${admin ? "/admin" : ""}/fulfillment/${detail.order.id}`,
@@ -104,9 +110,10 @@ export default function FulfillmentPanel({
         {!missing && <ErrorNotice error={resource.error} />}
         {work ? (
           <>
-            <Summary work={work} />
+            <Summary work={work} staff={admin} />
             <Coordination
               work={work}
+              local={localCoordination}
               audience={admin ? "admin" : "account"}
               reload={refresh}
             />
@@ -157,7 +164,7 @@ export default function FulfillmentPanel({
                     reload={refresh}
                   />
                 )}{" "}
-                {work.mode === "account" && (
+                {visible && work.mode === "account" && (
                   <CustomerSecret
                     key={`secret-${String(work.access_version)}`}
                     work={work}

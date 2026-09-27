@@ -1,0 +1,167 @@
+.customer-activity {
+  position: fixed;
+  z-index: 45;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  font-size: 0.875rem;
+  color: var(--text);
+}
+.activity-trigger {
+  border: 1px solid #77a887;
+  background: #163a28;
+  color: #eef9ef;
+  border-radius: 99px;
+  min-height: 44px;
+  padding: 0.7rem 1rem;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 0 8px 30px #0006;
+}
+.activity-trigger:hover {
+  background: #244b35;
+}
+.activity-popover,
+.activity-sheet {
+  border: 1px solid #52775e;
+  border-radius: 1rem;
+  background: #0d2419f5;
+  backdrop-filter: blur(18px);
+  color: var(--text);
+  padding: 1.25rem;
+  box-shadow: 0 16px 60px #0008;
+}
+.activity-popover {
+  position: absolute;
+  bottom: calc(100% + 0.65rem);
+  right: 0;
+  width: min(24rem, calc(100vw - 2rem));
+  max-height: min(70dvh, 38rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.customer-activity header {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: start;
+}
+.customer-activity header h2 {
+  margin: 0.35rem 0 1rem;
+  font-size: 1.1rem;
+}
+.customer-activity .eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin: 0;
+}
+.customer-activity button {
+  min-height: 44px;
+  font: inherit;
+  cursor: pointer;
+}
+.customer-activity header button {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+.customer-activity ul {
+  padding: 0;
+  list-style: none;
+  margin: 0.75rem 0;
+  display: grid;
+  gap: 0.75rem;
+}
+.customer-activity li {
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 0.9rem;
+}
+.customer-activity li a {
+  display: grid;
+  gap: 0.3rem;
+  text-decoration: none;
+}
+.customer-activity li small {
+  display: block;
+  color: var(--muted);
+}
+.customer-activity li p {
+  margin: 0.6rem 0;
+  line-height: 1.5;
+}
+.customer-activity :is(a, p, h2, span, small) {
+  overflow-wrap: anywhere;
+}
+.customer-activity progress {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.activity-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.activity-actions .button {
+  margin: 0;
+  font-size: 0.875rem;
+}
+.activity-sheet {
+  width: 100%;
+  max-width: 100%;
+  max-height: 80dvh;
+  box-sizing: border-box;
+  margin: auto 0 0;
+  border-radius: 1.2rem 1.2rem 0 0;
+  padding: 1.25rem max(1rem, env(safe-area-inset-right))
+    calc(1rem + env(safe-area-inset-bottom));
+}
+.activity-sheet::backdrop {
+  background: #00140aba;
+  backdrop-filter: blur(5px);
+}
+.storefront-app:has(.customer-activity) .site-footer {
+  padding-bottom: 6rem;
+}
+@media (max-width: 700px) {
+  .customer-activity {
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    right: 0.75rem;
+  }
+  .activity-trigger {
+    font-size: 0.8rem;
+  }
+  .storefront-app:has(.customer-activity) .site-footer {
+    padding-bottom: 10rem;
+  }
+}
+@media (forced-colors: active) {
+  .activity-popover,
+  .activity-sheet,
+  .activity-trigger {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+  }
+}
+
+.storefront-app:has(.customer-activity) {
+  --activity-clearance: 80px;
+}
+@media (max-width: 700px) {
+  .storefront-app:has(.customer-activity) {
+    --activity-clearance: 80px;
+  }
+}
+
+html:has(.customer-activity) {
+  scroll-padding-bottom: 5rem;
+}
+@media (max-width: 700px) {
+  html:has(.customer-activity) {
+    scroll-padding-bottom: 5rem;
+  }
+}

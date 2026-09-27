@@ -7,7 +7,7 @@ export async function reviewJourney(
   slug: string,
   device: string,
 ) {
-  await buyer.goto(`/orders/${orderID}`);
+  await buyer.goto(`/orders/${orderID}?section=progress`);
   await expect(buyer.getByLabel("Purchase rating")).toHaveValue("");
   await buyer.getByLabel("Purchase rating").selectOption("1");
   await buyer
@@ -106,7 +106,7 @@ export async function reviewJourney(
     [],
   );
   await expect(buyer.getByText(/Private review note:/)).toHaveCount(0);
-  await buyer.goto(`/orders/${orderID}`);
+  await buyer.goto(`/orders/${orderID}?section=progress`);
   await buyer
     .getByRole("button", { name: "Edit and resubmit my review", exact: true })
     .click();

@@ -38,3 +38,19 @@ export function nextAction(order: Pick<OrderSummary, "state" | "kind">) {
       return "Review history or start a new order";
   }
 }
+
+export function orderDestination(
+  order: Pick<OrderSummary, "id" | "state" | "kind">,
+) {
+  const section =
+    order.state === "awaiting_payment"
+      ? "payment"
+      : ["queued", "in_progress", "completed"].includes(order.state)
+        ? order.kind === "account"
+          ? "delivery"
+          : "progress"
+        : order.state === "on_hold"
+          ? "help"
+          : "overview";
+  return `/orders/${order.id}?section=${section}`;
+}

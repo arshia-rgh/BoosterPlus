@@ -8,7 +8,12 @@ import { APIError, get } from "../identity/api";
 import { conversationSchema, messagesSchema, type Conversation } from "./model";
 import { denied, mergeMessages, type Message } from "./chat-state";
 
-export function useChat(base: string, start?: number, beforeHide?: () => void) {
+export function useChat(
+  base: string,
+  start?: number,
+  beforeHide?: () => void,
+  enabled = true,
+) {
   const portal = activePortal();
   const [thread, setThread] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -48,7 +53,7 @@ export function useChat(base: string, start?: number, beforeHide?: () => void) {
   );
   const refresh = useCallback(
     async (force = false) => {
-      if (!alive.current) return;
+      if (!alive.current || !enabled) return;
       if (work.current && !force) {
         again.current = true;
         return;
@@ -123,12 +128,17 @@ export function useChat(base: string, start?: number, beforeHide?: () => void) {
         }
       }
     },
-    [base, fail, start, portal],
+    [base, fail, start, portal, enabled],
   );
   useEffect(() => {
+    if (!enabled) return;
     alive.current = true;
+    work.current = false;
+    again.current = false;
     // Attach recovery listeners before the cancellable initial refresh.
     const initial = setTimeout(() => {
+      setOlderBusy(false);
+      setLoading(true);
       void refresh();
     }, 0);
     let source: EventSource | null = null;
@@ -196,10 +206,11 @@ export function useChat(base: string, start?: number, beforeHide?: () => void) {
       window.removeEventListener("online", retry);
       document.removeEventListener("visibilitychange", visible);
     };
-  }, [base, refresh, invalidate, portal, fail]);
+  }, [base, refresh, invalidate, portal, fail, enabled]);
   async function loadEarlier() {
-    if (!earlier || olderBusy) return false;
+    if (!enabled || !alive.current || !earlier || olderBusy) return false;
     const token = generation.current;
+    const current = () => alive.current && token === generation.current;
     setOlderBusy(true);
     try {
       const page = await get(
@@ -207,15 +218,15 @@ export function useChat(base: string, start?: number, beforeHide?: () => void) {
         messagesSchema,
         portal,
       );
-      if (!alive.current || token !== generation.current) return false;
+      if (!current()) return false;
       setMessages((current) => mergeMessages(page.messages, current));
       setEarlier(page.next);
       return true;
     } catch (cause) {
-      if (alive.current && token === generation.current) fail(cause);
+      if (current()) fail(cause);
       return false;
     } finally {
-      if (alive.current) setOlderBusy(false);
+      if (current()) setOlderBusy(false);
     }
   }
   return {

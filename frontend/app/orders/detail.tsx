@@ -4,13 +4,15 @@ import Checkout from "../payments/checkout";
 import OrderProgress from "../experience/order-progress";
 import PurchaseReview from "../reviews/form";
 import FulfillmentPanel from "../fulfillment/panel";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { z } from "../validation";
 import { Link, useLocation, useParams } from "react-router";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
-import { sessionSchema } from "../identity/api";
-import { detailSchema, stateLabel } from "./model";
+import { sessionEventMatches, activePortal } from "../identity/portal";
+import { denied } from "../support/chat-state";
+import { sessionSchema, type Session } from "../identity/api";
+import { detailSchema, stateLabel, type Detail } from "./model";
 import { useResource } from "./resource";
 import { OrderSupport } from "../support/new";
 import QuoteEditor from "./quote-editor";
@@ -31,25 +33,105 @@ function OrderSession({ admin = false }: { admin?: boolean }) {
     (source.success
       ? "?" + new URLSearchParams(source.data.orderListSearch).toString()
       : "");
+  const [interrupted, setInterrupted] = useState(false);
+  useEffect(() => {
+    const changed = (event: Event) => {
+      if (sessionEventMatches(event, activePortal())) setInterrupted(true);
+    };
+    window.addEventListener("boosterplus:session-changed", changed);
+    return () => {
+      window.removeEventListener("boosterplus:session-changed", changed);
+    };
+  }, []);
   const reloadOrder = resource.reload,
     reloadSession = session.reload;
   const reload = useCallback(() => {
+    setInterrupted(false);
     reloadOrder();
     reloadSession();
   }, [reloadOrder, reloadSession]);
+  const [saved, setSaved] = useState<{
+    detail: Detail;
+    session: Session;
+  } | null>(null);
   const detail =
-    resource.error || session.error || (!admin && !session.data)
+    resource.error ||
+    session.error ||
+    (!admin &&
+      (!session.data || (!saved && (resource.loading || session.loading))))
       ? null
       : resource.data;
-  if (!admin && detail && session.data)
+  const lost =
+    interrupted ||
+    denied(resource.error) ||
+    denied(session.error) ||
+    (session.data &&
+      (!session.data.user ||
+        session.data.mfa_required ||
+        session.data.portal !== "customer" ||
+        !session.data.capabilities.includes("account")));
+  if (!admin && lost && saved) setSaved(null);
+  else if (
+    !admin &&
+    !lost &&
+    detail &&
+    session.data &&
+    (saved?.detail !== detail || saved.session !== session.data)
+  )
+    setSaved({ detail, session: session.data });
+  if (!admin && lost)
     return (
-      <CustomerWorkspace
-        detail={detail}
-        session={session.data}
-        refreshing={resource.loading || session.loading}
-        reload={reload}
-      />
+      <section aria-label="Order access unavailable">
+        <p role="alert">
+          Order access is no longer available. Sign in to your customer account
+          to continue.
+        </p>
+        <Link to="/login">Customer sign-in</Link>
+        <Action disabled={resource.loading || session.loading} onClick={reload}>
+          Check order access again
+        </Action>
+        <Link to={back}>Return to order list</Link>
+      </section>
     );
+  const current =
+    !admin && !lost
+      ? detail && session.data
+        ? { detail, session: session.data }
+        : saved
+      : null;
+  if (current) {
+    const suspended =
+      !!resource.error || !!session.error || !detail || !session.data;
+    return (
+      <>
+        {suspended && (
+          <section aria-label="Order connection recovery">
+            <ErrorNotice error={resource.error ?? session.error} />
+            <p role="status">
+              Order details are hidden while access is checked. Your unsent
+              drafts stay in memory.
+            </p>
+            <Action
+              disabled={resource.loading || session.loading}
+              onClick={reload}
+            >
+              Retry order access
+            </Action>
+            <Link to={back}>Return to order list</Link>
+          </section>
+        )}
+        <div hidden={suspended}>
+          <CustomerWorkspace
+            detail={current.detail}
+            session={current.session}
+            refreshing={resource.loading || session.loading || suspended}
+            suspended={suspended}
+            reload={reload}
+          />
+        </div>
+      </>
+    );
+  }
   return (
     <section className={admin ? "order-detail" : undefined}>
       <Link to={back}>← Order list</Link>

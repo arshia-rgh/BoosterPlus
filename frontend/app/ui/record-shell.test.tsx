@@ -94,3 +94,68 @@ it("uses a safe local section for an unknown deep link", () => {
   );
   expect(screen.getByText("Your quote is being reviewed.")).toBeVisible();
 });
+
+function RetainedInput() {
+  const [value, setValue] = useState("");
+  return (
+    <label>
+      Local draft
+      <input
+        value={value}
+        onChange={(event) => {
+          setValue(event.target.value);
+        }}
+      />
+    </label>
+  );
+}
+it("retains visited ordinary drafts while unmounting payment instructions and keeping list history", () => {
+  render(
+    <MemoryRouter
+      initialEntries={[
+        {
+          pathname: "/orders/PL-1042",
+          state: { orderListSearch: "state=quoted" },
+        },
+      ]}
+    >
+      <RecordShell
+        id="PL-1042"
+        title="Order"
+        workspace="My account"
+        status="Quote ready"
+        back={{ to: "/orders", label: "Orders" }}
+        sections={[
+          { id: "overview", label: "Overview" },
+          { id: "messages", label: "Messages" },
+          { id: "payment", label: "Payment" },
+        ]}
+        keepMounted={["messages"]}
+      >
+        {(section) =>
+          section === "messages" ? (
+            <RetainedInput />
+          ) : section === "payment" ? (
+            <p>Fresh payment instructions</p>
+          ) : (
+            <p>Order overview</p>
+          )
+        }
+      </RecordShell>
+    </MemoryRouter>,
+  );
+  fireEvent.click(screen.getByRole("link", { name: "Messages" }));
+  fireEvent.change(screen.getByLabelText("Local draft"), {
+    target: { value: "Unsent ordinary draft" },
+  });
+  fireEvent.click(screen.getByRole("link", { name: "Payment" }));
+  expect(screen.getByLabelText("Local draft")).not.toBeVisible();
+  expect(screen.getByText("Fresh payment instructions")).toBeVisible();
+  fireEvent.click(screen.getByRole("link", { name: "Messages" }));
+  expect(screen.getByLabelText("Local draft")).toHaveValue(
+    "Unsent ordinary draft",
+  );
+  expect(
+    screen.queryByText("Fresh payment instructions"),
+  ).not.toBeInTheDocument();
+});

@@ -1,3 +1,4 @@
+import { Link, useLocation, type Location } from "react-router";
 import { useState } from "react";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { post } from "../identity/api";
@@ -22,6 +23,7 @@ function Proposal({
   previous: Booking | null;
   reload: () => void;
 }) {
+  const location: Location<unknown> = useLocation();
   const [week, setWeek] = useState("0"),
     [after, setAfter] = useState(""),
     [selected, setSelected] = useState(""),
@@ -51,6 +53,7 @@ function Proposal({
     setKey(crypto.randomUUID());
   }
   async function save() {
+    if (!selectedSlot || slots.loading || slots.error || busy) return;
     setBusy(true);
     setError(null);
     try {
@@ -59,7 +62,7 @@ function Proposal({
         {
           work_version: work.version,
           request_key: key,
-          availability_id: selectedSlot?.availability_id ?? "",
+          availability_id: selectedSlot.availability_id,
           start: { ...start, zone },
           end: { ...end, zone },
           previous_id: previous?.id ?? "",
@@ -171,40 +174,58 @@ function Proposal({
             period.
           </p>
         )}
-        <Text
-          label="Session time zone (IANA)"
-          value={zone}
-          change={(value) => {
-            setZone(value);
-            edit();
-          }}
-          help="Enter local start/end times for this zone. Repeated clock hours require an explicit occurrence."
-        />
-        <TimeInput
-          label="Session start"
-          value={start}
-          change={(value) => {
-            setStart(value);
-            edit();
-          }}
-        />
-        <TimeInput
-          label="Session end"
-          value={end}
-          change={(value) => {
-            setEnd(value);
-            edit();
-          }}
-        />
-        <Text
-          label="Session note"
-          value={note}
-          change={(value) => {
-            setNote(value);
-            edit();
-          }}
-          help="Ordinary coordination only; do not enter credentials."
-        />
+        <Action disabled={slots.loading} onClick={slots.reload}>
+          {slots.loading ? "Checking availability…" : "Refresh availability"}
+        </Action>
+        {!selectedSlot && (
+          <p>
+            Select an available window before entering session details.{" "}
+            <Link
+              state={location.state}
+              to={`/orders/${work.order_id}?section=messages`}
+            >
+              Ask about a session
+            </Link>
+          </p>
+        )}
+        {selectedSlot && (
+          <>
+            <Text
+              label="Session time zone (IANA)"
+              value={zone}
+              change={(value) => {
+                setZone(value);
+                edit();
+              }}
+              help="Enter local start/end times for this zone. Repeated clock hours require an explicit occurrence."
+            />
+            <TimeInput
+              label="Session start"
+              value={start}
+              change={(value) => {
+                setStart(value);
+                edit();
+              }}
+            />
+            <TimeInput
+              label="Session end"
+              value={end}
+              change={(value) => {
+                setEnd(value);
+                edit();
+              }}
+            />
+            <Text
+              label="Session note"
+              value={note}
+              change={(value) => {
+                setNote(value);
+                edit();
+              }}
+              help="Ordinary coordination only; do not enter credentials."
+            />
+          </>
+        )}
       </fieldset>
       <Action
         disabled={
@@ -276,7 +297,12 @@ export default function Bookings({
       <ErrorNotice error={error ?? resource.error} />
       <fieldset disabled={busy || resource.loading}>
         <legend>Session controls</legend>
-        <Text label="Session action reason" value={note} change={setNote} />
+        {active(work) &&
+          resource.data?.items.some((item) =>
+            ["proposed", "confirmed"].includes(item.state),
+          ) && (
+            <Text label="Session action reason" value={note} change={setNote} />
+          )}
         {!resource.error &&
           resource.data?.items.map((value) => (
             <article className="catalog-section" key={value.id}>

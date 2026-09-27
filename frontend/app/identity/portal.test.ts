@@ -163,3 +163,27 @@ it("preserves only bounded public configurator intent through customer sign-in",
     ),
   ).toBe("/games/mlbb/packages/rank?variant=solo");
 });
+
+it("keeps only bounded customer order conversation channels through sign-in", () => {
+  expect(
+    portalReturn(
+      "/orders/owned?section=messages&channel=coordination&secret=x",
+      "customer",
+    ),
+  ).toBe("/orders/owned?section=messages&channel=coordination");
+  expect(
+    portalReturn(
+      "/orders/owned?section=payment&channel=coordination",
+      "customer",
+    ),
+  ).toBe("/orders/owned?section=payment");
+  expect(
+    portalReturn("/orders/owned?section=messages&channel=internal", "customer"),
+  ).toBe("/orders/owned?section=messages");
+  expect(
+    portalReturn(
+      "/admin/orders/owned?section=messages&channel=coordination",
+      "admin",
+    ),
+  ).toBe("/admin/orders/owned?section=messages");
+});

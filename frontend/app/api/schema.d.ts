@@ -6523,6 +6523,12 @@ export interface components {
         subject: string;
         unread: number;
       }[];
+      progress: {
+        order_id: string;
+        reported_percent: number;
+        /** Format: date-time */
+        updated_at: string;
+      }[];
     };
     CatalogHeroLayout: {
       desktop_x: number;

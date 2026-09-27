@@ -1,5 +1,6 @@
+import type { Location } from "react-router";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { post } from "../identity/api";
 import { conversationSchema } from "../support/model";
@@ -8,11 +9,17 @@ export default function Coordination({
   work,
   audience,
   reload,
+  local = false,
 }: {
   work: Work;
   audience: "account" | "admin" | "booster";
   reload: () => void;
+  local?: boolean;
 }) {
+  const location: Location<unknown> = useLocation();
+  const query = new URLSearchParams(location.search);
+  query.set("section", "messages");
+  query.set("channel", "coordination");
   const [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
   async function open() {
@@ -48,7 +55,16 @@ export default function Coordination({
               : "Booster sharing is paused."}
           </p>
           <Link
-            to={`${audience === "account" ? "" : "/" + audience}/support/${work.coordination_id}`}
+            state={location.state}
+            preventScrollReset
+            to={
+              local
+                ? {
+                    pathname: location.pathname,
+                    search: "?" + query.toString(),
+                  }
+                : `${audience === "account" ? "" : "/" + audience}/support/${work.coordination_id}`
+            }
           >
             Open coordination conversation
           </Link>

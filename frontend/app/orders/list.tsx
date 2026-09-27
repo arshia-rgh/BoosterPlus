@@ -1,3 +1,4 @@
+import { orderDestination } from "./presentation";
 import { activePortal, sessionEventMatches } from "../identity/portal";
 import {
   useContext,
@@ -267,7 +268,8 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
                 {resource.data.orders.map((order) => (
                   <li key={order.id} data-order-id={order.id}>
                     <Link
-                      to={`${base}/${order.id}`}
+                      to={orderDestination(order)}
+                      aria-label={`View order ${order.id} · ${order.game_name} · ${stateLabel(order.state)}`}
                       state={{ orderListSearch: params.toString() }}
                       onClick={() => {
                         anchor.current = order.id;

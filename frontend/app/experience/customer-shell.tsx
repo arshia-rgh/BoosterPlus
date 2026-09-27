@@ -1,3 +1,4 @@
+import CustomerActivity from "../account/activity";
 import "../ui/workspace.css";
 import "../account/account.css";
 import { useLocation } from "react-router";
@@ -24,6 +25,7 @@ export default function CustomerShell({
       {signedIn ? navigation : null}
       {children}
       {!signedIn ? navigation : null}
+      {signedIn && !booster && <CustomerActivity session={session} />}
     </div>
   );
 }

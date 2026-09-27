@@ -27444,7 +27444,8 @@
           "more_active",
           "more_upcoming",
           "messages",
-          "more_messages"
+          "more_messages",
+          "progress"
         ],
         "properties": {
           "attention": {
@@ -27497,6 +27498,29 @@
                 "unread": {
                   "type": "integer",
                   "minimum": 1
+                }
+              }
+            }
+          },
+          "progress": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["order_id", "reported_percent", "updated_at"],
+              "properties": {
+                "order_id": {
+                  "type": "string"
+                },
+                "reported_percent": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
                 }
               }
             }

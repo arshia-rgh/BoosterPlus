@@ -1,36 +1,12 @@
+import { orderDestination, type OrderSummary } from "../orders/presentation";
 import { Link } from "react-router";
-import { z } from "../validation";
 import { useResource } from "../orders/resource";
-import { summarySchema } from "../orders/model";
+import { overviewSchema } from "./overview-model";
+export { overviewSchema } from "./overview-model";
 import { ErrorNotice } from "../catalog/controls";
 import { timeLabel } from "../fulfillment/calendar-model";
 import "./account.css";
 
-export const overviewSchema = z.object({
-  attention: z.array(summarySchema),
-  active: z.array(summarySchema),
-  upcoming: z.array(
-    z.object({
-      id: z.string(),
-      order_id: z.string(),
-      state: z.enum(["proposed", "confirmed"]),
-      starts_at: z.string(),
-      ends_at: z.string(),
-      timezone: z.string(),
-    }),
-  ),
-  messages: z.array(
-    z.object({
-      id: z.string(),
-      subject: z.string(),
-      unread: z.number().int().positive(),
-    }),
-  ),
-  more_messages: z.boolean(),
-  more_attention: z.boolean(),
-  more_active: z.boolean(),
-  more_upcoming: z.boolean(),
-});
 const nextStep: Record<string, string> = {
   needs_information: "Add the requested information",
   quoted: "Review your quote",
@@ -40,12 +16,15 @@ const nextStep: Record<string, string> = {
   in_progress: "Work is in progress",
   on_hold: "Review the latest update",
 };
-function Orders({ items }: { items: z.infer<typeof summarySchema>[] }) {
+function Orders({ items }: { items: OrderSummary[] }) {
   return (
     <ul className="account-work-list">
       {items.map((item) => (
         <li key={item.id}>
-          <Link to={`/orders/${item.id}`}>
+          <Link
+            to={orderDestination(item)}
+            aria-label={`View order ${item.id} · ${item.game_name} · ${nextStep[item.state] ?? "View order"}`}
+          >
             <span>
               <strong>{item.game_name}</strong>
               <small>
@@ -181,7 +160,7 @@ export default function AccountOverview() {
             <ul className="account-work-list">
               {work.data.upcoming.map((item) => (
                 <li key={item.id}>
-                  <Link to={`/orders/${item.order_id}`}>
+                  <Link to={`/orders/${item.order_id}?section=progress`}>
                     <span>
                       <strong>
                         {item.state === "confirmed"
