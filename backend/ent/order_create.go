@@ -84,6 +84,26 @@ func (_c *OrderCreate) SetKind(v order.Kind) *OrderCreate {
 	return _c
 }
 
+// SetShopProductID sets the "shop_product_id" field.
+func (_c *OrderCreate) SetShopProductID(v string) *OrderCreate {
+	_c.mutation.SetShopProductID(v)
+	return _c
+}
+
+// SetNillableShopProductID sets the "shop_product_id" field if the given value is not nil.
+func (_c *OrderCreate) SetNillableShopProductID(v *string) *OrderCreate {
+	if v != nil {
+		_c.SetShopProductID(*v)
+	}
+	return _c
+}
+
+// SetShopSnapshot sets the "shop_snapshot" field.
+func (_c *OrderCreate) SetShopSnapshot(v map[string]interface{}) *OrderCreate {
+	_c.mutation.SetShopSnapshot(v)
+	return _c
+}
+
 // SetListingID sets the "listing_id" field.
 func (_c *OrderCreate) SetListingID(v string) *OrderCreate {
 	_c.mutation.SetListingID(v)
@@ -301,6 +321,10 @@ func (_c *OrderCreate) defaults() {
 		v := order.DefaultVariantKey
 		_c.mutation.SetVariantKey(v)
 	}
+	if _, ok := _c.mutation.ShopProductID(); !ok {
+		v := order.DefaultShopProductID
+		_c.mutation.SetShopProductID(v)
+	}
 	if _, ok := _c.mutation.ListingID(); !ok {
 		v := order.DefaultListingID
 		_c.mutation.SetListingID(v)
@@ -403,6 +427,14 @@ func (_c *OrderCreate) check() error {
 	if v, ok := _c.mutation.Kind(); ok {
 		if err := order.KindValidator(v); err != nil {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Order.kind": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.ShopProductID(); !ok {
+		return &ValidationError{Name: "shop_product_id", err: errors.New(`ent: missing required field "Order.shop_product_id"`)}
+	}
+	if v, ok := _c.mutation.ShopProductID(); ok {
+		if err := order.ShopProductIDValidator(v); err != nil {
+			return &ValidationError{Name: "shop_product_id", err: fmt.Errorf(`ent: validator failed for field "Order.shop_product_id": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.ListingID(); !ok {
@@ -561,6 +593,14 @@ func (_c *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Kind(); ok {
 		_spec.SetField(order.FieldKind, field.TypeEnum, value)
 		_node.Kind = value
+	}
+	if value, ok := _c.mutation.ShopProductID(); ok {
+		_spec.SetField(order.FieldShopProductID, field.TypeString, value)
+		_node.ShopProductID = value
+	}
+	if value, ok := _c.mutation.ShopSnapshot(); ok {
+		_spec.SetField(order.FieldShopSnapshot, field.TypeJSON, value)
+		_node.ShopSnapshot = value
 	}
 	if value, ok := _c.mutation.ListingID(); ok {
 		_spec.SetField(order.FieldListingID, field.TypeString, value)

@@ -17,6 +17,26 @@ const (
 	FieldProductID = "product_id"
 	// FieldVariantKey holds the string denoting the variant_key field in the database.
 	FieldVariantKey = "variant_key"
+	// FieldReleaseID holds the string denoting the release_id field in the database.
+	FieldReleaseID = "release_id"
+	// FieldEnabled holds the string denoting the enabled field in the database.
+	FieldEnabled = "enabled"
+	// FieldLabel holds the string denoting the label field in the database.
+	FieldLabel = "label"
+	// FieldRegion holds the string denoting the region field in the database.
+	FieldRegion = "region"
+	// FieldPlatform holds the string denoting the platform field in the database.
+	FieldPlatform = "platform"
+	// FieldServer holds the string denoting the server field in the database.
+	FieldServer = "server"
+	// FieldCurrency holds the string denoting the currency field in the database.
+	FieldCurrency = "currency"
+	// FieldUnitAmountMinor holds the string denoting the unit_amount_minor field in the database.
+	FieldUnitAmountMinor = "unit_amount_minor"
+	// FieldMinQuantity holds the string denoting the min_quantity field in the database.
+	FieldMinQuantity = "min_quantity"
+	// FieldMaxQuantity holds the string denoting the max_quantity field in the database.
+	FieldMaxQuantity = "max_quantity"
 	// FieldVersion holds the string denoting the version field in the database.
 	FieldVersion = "version"
 	// FieldTotal holds the string denoting the total field in the database.
@@ -36,6 +56,16 @@ var Columns = []string{
 	FieldID,
 	FieldProductID,
 	FieldVariantKey,
+	FieldReleaseID,
+	FieldEnabled,
+	FieldLabel,
+	FieldRegion,
+	FieldPlatform,
+	FieldServer,
+	FieldCurrency,
+	FieldUnitAmountMinor,
+	FieldMinQuantity,
+	FieldMaxQuantity,
 	FieldVersion,
 	FieldTotal,
 	FieldReserved,
@@ -58,6 +88,44 @@ var (
 	ProductIDValidator func(string) error
 	// VariantKeyValidator is a validator for the "variant_key" field. It is called by the builders before save.
 	VariantKeyValidator func(string) error
+	// DefaultReleaseID holds the default value on creation for the "release_id" field.
+	DefaultReleaseID string
+	// ReleaseIDValidator is a validator for the "release_id" field. It is called by the builders before save.
+	ReleaseIDValidator func(string) error
+	// DefaultEnabled holds the default value on creation for the "enabled" field.
+	DefaultEnabled bool
+	// DefaultLabel holds the default value on creation for the "label" field.
+	DefaultLabel string
+	// LabelValidator is a validator for the "label" field. It is called by the builders before save.
+	LabelValidator func(string) error
+	// DefaultRegion holds the default value on creation for the "region" field.
+	DefaultRegion string
+	// RegionValidator is a validator for the "region" field. It is called by the builders before save.
+	RegionValidator func(string) error
+	// DefaultPlatform holds the default value on creation for the "platform" field.
+	DefaultPlatform string
+	// PlatformValidator is a validator for the "platform" field. It is called by the builders before save.
+	PlatformValidator func(string) error
+	// DefaultServer holds the default value on creation for the "server" field.
+	DefaultServer string
+	// ServerValidator is a validator for the "server" field. It is called by the builders before save.
+	ServerValidator func(string) error
+	// DefaultCurrency holds the default value on creation for the "currency" field.
+	DefaultCurrency string
+	// CurrencyValidator is a validator for the "currency" field. It is called by the builders before save.
+	CurrencyValidator func(string) error
+	// DefaultUnitAmountMinor holds the default value on creation for the "unit_amount_minor" field.
+	DefaultUnitAmountMinor int64
+	// UnitAmountMinorValidator is a validator for the "unit_amount_minor" field. It is called by the builders before save.
+	UnitAmountMinorValidator func(int64) error
+	// DefaultMinQuantity holds the default value on creation for the "min_quantity" field.
+	DefaultMinQuantity int
+	// MinQuantityValidator is a validator for the "min_quantity" field. It is called by the builders before save.
+	MinQuantityValidator func(int) error
+	// DefaultMaxQuantity holds the default value on creation for the "max_quantity" field.
+	DefaultMaxQuantity int
+	// MaxQuantityValidator is a validator for the "max_quantity" field. It is called by the builders before save.
+	MaxQuantityValidator func(int) error
 	// DefaultVersion holds the default value on creation for the "version" field.
 	DefaultVersion int
 	// VersionValidator is a validator for the "version" field. It is called by the builders before save.
@@ -98,6 +166,56 @@ func ByProductID(opts ...sql.OrderTermOption) OrderOption {
 // ByVariantKey orders the results by the variant_key field.
 func ByVariantKey(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldVariantKey, opts...).ToFunc()
+}
+
+// ByReleaseID orders the results by the release_id field.
+func ByReleaseID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReleaseID, opts...).ToFunc()
+}
+
+// ByEnabled orders the results by the enabled field.
+func ByEnabled(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEnabled, opts...).ToFunc()
+}
+
+// ByLabel orders the results by the label field.
+func ByLabel(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLabel, opts...).ToFunc()
+}
+
+// ByRegion orders the results by the region field.
+func ByRegion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRegion, opts...).ToFunc()
+}
+
+// ByPlatform orders the results by the platform field.
+func ByPlatform(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPlatform, opts...).ToFunc()
+}
+
+// ByServer orders the results by the server field.
+func ByServer(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldServer, opts...).ToFunc()
+}
+
+// ByCurrency orders the results by the currency field.
+func ByCurrency(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCurrency, opts...).ToFunc()
+}
+
+// ByUnitAmountMinor orders the results by the unit_amount_minor field.
+func ByUnitAmountMinor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUnitAmountMinor, opts...).ToFunc()
+}
+
+// ByMinQuantity orders the results by the min_quantity field.
+func ByMinQuantity(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMinQuantity, opts...).ToFunc()
+}
+
+// ByMaxQuantity orders the results by the max_quantity field.
+func ByMaxQuantity(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMaxQuantity, opts...).ToFunc()
 }
 
 // ByVersion orders the results by the version field.

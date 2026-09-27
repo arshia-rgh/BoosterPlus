@@ -3,6 +3,8 @@ package shop
 import (
 	"context"
 	"slices"
+	"strconv"
+	"time"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopstock"
@@ -81,18 +83,10 @@ func (s *Store) Change(ctx context.Context, p *identity.Principal, id string, ve
 				return releaseErr
 			}
 			update.SetCurrentRelease(release.ID)
-			// Publication cannot invent capacity; stock is entered separately and audited.
-			for _, variant := range value.Variants {
-				exists, stockErr := tx.ShopStock.Query().Where(shopstock.ProductIDEQ(id), shopstock.VariantKeyEQ(variant.Key)).Exist(ctx)
-				if stockErr != nil {
-					return stockErr
-				}
-				if !exists {
-					if _, stockErr = tx.ShopStock.Create().SetProductID(id).SetVariantKey(variant.Key).SetUpdatedAt(now).Save(ctx); stockErr != nil {
-						return stockErr
-					}
-				}
+			if e = publishStock(ctx, tx, id, release.ID, value, now); e != nil {
+				return e
 			}
+
 		}
 		row, e = update.Save(ctx)
 		if e != nil {
@@ -165,4 +159,39 @@ func (s *Store) SetStock(ctx context.Context, p *identity.Principal, id string, 
 		return e
 	})
 	return out, err
+}
+
+// publishStock updates the searchable current-variant projection without changing commitments.
+func publishStock(ctx context.Context, tx *ent.Tx, productID, releaseID string, value Definition, now time.Time) error {
+	if _, err := tx.ShopStock.Update().Where(shopstock.ProductIDEQ(productID)).SetEnabled(false).Save(ctx); err != nil {
+		return err
+	}
+	for _, variant := range value.Variants {
+		row, err := tx.ShopStock.Query().Where(shopstock.ProductIDEQ(productID), shopstock.VariantKeyEQ(variant.Key)).Only(ctx)
+		if ent.IsNotFound(err) {
+			row, err = tx.ShopStock.Create().SetProductID(productID).SetVariantKey(variant.Key).SetUpdatedAt(now).Save(ctx)
+		}
+		if err != nil {
+			return err
+		}
+		if !validVersion(row.Version) {
+			return ErrConflict
+		}
+		if incompatible(row, variant) {
+			return &Invalid{[]Issue{{Path: "variants", Message: "Published variant keys keep their region, platform and server. Use a new key for different compatibility."}}}
+		}
+		amount, err := strconv.ParseInt(variant.UnitAmountMinor, 10, 64)
+		if err != nil {
+			return ErrInvalid
+		}
+		_, err = tx.ShopStock.UpdateOne(row).AddVersion(1).SetReleaseID(releaseID).SetEnabled(variant.Enabled).SetLabel(variant.Label).SetRegion(variant.Region).SetPlatform(variant.Platform).SetServer(variant.Server).SetCurrency(variant.Currency).SetUnitAmountMinor(amount).SetMinQuantity(variant.MinQuantity).SetMaxQuantity(variant.MaxQuantity).SetUpdatedAt(now).Save(ctx)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func incompatible(row *ent.ShopStock, variant Variant) bool {
+	return row.ReleaseID != "" && (row.Region != variant.Region || row.Platform != variant.Platform || row.Server != variant.Server)
 }

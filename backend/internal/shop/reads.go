@@ -2,6 +2,7 @@ package shop
 
 import (
 	"context"
+	"fmt"
 	"slices"
 	"strings"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproduct"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopstock"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -125,10 +127,33 @@ type Preview struct {
 }
 
 // Preview reads only the saved revision; unsaved local input cannot publish implicitly.
-func (s *Store) Preview(ctx context.Context, p *identity.Principal, id string) (Preview, error) {
-	value, err := s.Draft(ctx, p, id)
-	if err != nil {
-		return Preview{}, err
+func (s *Store) Preview(ctx context.Context, p *identity.Principal, id string) (out Preview, err error) {
+	if !validID(id) {
+		return out, ErrInvalid
 	}
-	return Preview{value, Validate(value.Definition, true)}, nil
+	err = s.auth.StaffTransaction(ctx, p, false, func(tx *ent.Tx, _ *identity.Principal) error {
+		row, e := tx.ShopProduct.Get(ctx, id)
+		if e != nil {
+			return e
+		}
+		out.Draft, e = draft(ctx, tx, row)
+		if e != nil {
+			return e
+		}
+		out.Issues = Validate(out.Draft.Definition, true)
+		for i, variant := range out.Draft.Definition.Variants {
+			current, e := tx.ShopStock.Query().Where(shopstock.ProductIDEQ(id), shopstock.VariantKeyEQ(variant.Key)).Only(ctx)
+			if ent.IsNotFound(e) {
+				continue
+			}
+			if e != nil {
+				return e
+			}
+			if incompatible(current, variant) {
+				out.Issues = append(out.Issues, Issue{Path: fmt.Sprintf("variants.%d.key", i), Message: "Published variant keys keep their region, platform and server. Use a new key for different compatibility."})
+			}
+		}
+		return nil
+	})
+	return out, err
 }

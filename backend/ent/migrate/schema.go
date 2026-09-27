@@ -1091,7 +1091,9 @@ var (
 		{Name: "service", Type: field.TypeString, Size: 48},
 		{Name: "package_key", Type: field.TypeString, Size: 48, Default: ""},
 		{Name: "variant_key", Type: field.TypeString, Size: 48, Default: ""},
-		{Name: "kind", Type: field.TypeEnum, Enums: []string{"custom", "package", "account"}},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"custom", "package", "account", "shop"}},
+		{Name: "shop_product_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "shop_snapshot", Type: field.TypeJSON, Nullable: true},
 		{Name: "listing_id", Type: field.TypeString, Size: 36, Default: ""},
 		{Name: "account_snapshot", Type: field.TypeJSON, Nullable: true},
 		{Name: "request_key", Type: field.TypeString, Size: 36},
@@ -1118,27 +1120,27 @@ var (
 			{
 				Name:    "orders_discovery_game_state",
 				Unique:  false,
-				Columns: []*schema.Column{OrdersColumns[2], OrdersColumns[14], OrdersColumns[0]},
+				Columns: []*schema.Column{OrdersColumns[2], OrdersColumns[16], OrdersColumns[0]},
 			},
 			{
 				Name:    "orders_report_created",
 				Unique:  false,
-				Columns: []*schema.Column{OrdersColumns[23], OrdersColumns[0]},
+				Columns: []*schema.Column{OrdersColumns[25], OrdersColumns[0]},
 			},
 			{
 				Name:    "order_request",
 				Unique:  true,
-				Columns: []*schema.Column{OrdersColumns[1], OrdersColumns[11]},
+				Columns: []*schema.Column{OrdersColumns[1], OrdersColumns[13]},
 			},
 			{
 				Name:    "order_customer_history",
 				Unique:  false,
-				Columns: []*schema.Column{OrdersColumns[1], OrdersColumns[23], OrdersColumns[0]},
+				Columns: []*schema.Column{OrdersColumns[1], OrdersColumns[25], OrdersColumns[0]},
 			},
 			{
 				Name:    "order_admin_queue",
 				Unique:  false,
-				Columns: []*schema.Column{OrdersColumns[14], OrdersColumns[23], OrdersColumns[0]},
+				Columns: []*schema.Column{OrdersColumns[16], OrdersColumns[25], OrdersColumns[0]},
 			},
 		},
 	}
@@ -1825,11 +1827,87 @@ var (
 			},
 		},
 	}
+	// ShopRecipientsColumns holds the columns for the "shop_recipients" table.
+	ShopRecipientsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "recipient_values", Type: field.TypeJSON},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "erased_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ShopRecipientsTable holds the schema information for the "shop_recipients" table.
+	ShopRecipientsTable = &schema.Table{
+		Name:       "shop_recipients",
+		Columns:    ShopRecipientsColumns,
+		PrimaryKey: []*schema.Column{ShopRecipientsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "shop_order_recipient",
+				Unique:  true,
+				Columns: []*schema.Column{ShopRecipientsColumns[1]},
+			},
+			{
+				Name:    "shop_recipient_owner",
+				Unique:  false,
+				Columns: []*schema.Column{ShopRecipientsColumns[2], ShopRecipientsColumns[0]},
+			},
+		},
+	}
+	// ShopReservationsColumns holds the columns for the "shop_reservations" table.
+	ShopReservationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "product_id", Type: field.TypeString, Size: 36},
+		{Name: "release_id", Type: field.TypeString, Size: 36},
+		{Name: "variant_key", Type: field.TypeString, Size: 48},
+		{Name: "quantity", Type: field.TypeInt},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "reserved"},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ShopReservationsTable holds the schema information for the "shop_reservations" table.
+	ShopReservationsTable = &schema.Table{
+		Name:       "shop_reservations",
+		Columns:    ShopReservationsColumns,
+		PrimaryKey: []*schema.Column{ShopReservationsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "shop_order_reservation",
+				Unique:  true,
+				Columns: []*schema.Column{ShopReservationsColumns[1]},
+			},
+			{
+				Name:    "shop_reservation_expiry",
+				Unique:  false,
+				Columns: []*schema.Column{ShopReservationsColumns[7], ShopReservationsColumns[9], ShopReservationsColumns[0]},
+			},
+			{
+				Name:    "shop_customer_reservations",
+				Unique:  false,
+				Columns: []*schema.Column{ShopReservationsColumns[2], ShopReservationsColumns[7], ShopReservationsColumns[0]},
+			},
+		},
+	}
 	// ShopStocksColumns holds the columns for the "shop_stocks" table.
 	ShopStocksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
 		{Name: "product_id", Type: field.TypeString, Size: 36},
 		{Name: "variant_key", Type: field.TypeString, Size: 48},
+		{Name: "release_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "enabled", Type: field.TypeBool, Default: false},
+		{Name: "label", Type: field.TypeString, Size: 120, Default: ""},
+		{Name: "region", Type: field.TypeString, Size: 80, Default: ""},
+		{Name: "platform", Type: field.TypeString, Size: 80, Default: ""},
+		{Name: "server", Type: field.TypeString, Size: 80, Default: ""},
+		{Name: "currency", Type: field.TypeString, Size: 3, Default: ""},
+		{Name: "unit_amount_minor", Type: field.TypeInt64, Default: 0},
+		{Name: "min_quantity", Type: field.TypeInt, Default: 1},
+		{Name: "max_quantity", Type: field.TypeInt, Default: 1},
 		{Name: "version", Type: field.TypeInt, Default: 1},
 		{Name: "total", Type: field.TypeInt, Default: 0},
 		{Name: "reserved", Type: field.TypeInt, Default: 0},
@@ -2144,6 +2222,8 @@ var (
 		ShopProductsTable,
 		ShopProductEventsTable,
 		ShopProductReleasesTable,
+		ShopRecipientsTable,
+		ShopReservationsTable,
 		ShopStocksTable,
 		SiteReleasesTable,
 		SiteSettingsTable,

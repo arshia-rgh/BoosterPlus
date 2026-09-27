@@ -669,6 +669,30 @@ func (f ShopProductReleaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ShopProductReleaseMutation", m)
 }
 
+// The ShopRecipientFunc type is an adapter to allow the use of ordinary
+// function as ShopRecipient mutator.
+type ShopRecipientFunc func(context.Context, *ent.ShopRecipientMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ShopRecipientFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ShopRecipientMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ShopRecipientMutation", m)
+}
+
+// The ShopReservationFunc type is an adapter to allow the use of ordinary
+// function as ShopReservation mutator.
+type ShopReservationFunc func(context.Context, *ent.ShopReservationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ShopReservationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ShopReservationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ShopReservationMutation", m)
+}
+
 // The ShopStockFunc type is an adapter to allow the use of ordinary
 // function as ShopStock mutator.
 type ShopStockFunc func(context.Context, *ent.ShopStockMutation) (ent.Value, error)

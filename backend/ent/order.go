@@ -34,6 +34,10 @@ type Order struct {
 	VariantKey string `json:"variant_key,omitempty"`
 	// Kind holds the value of the "kind" field.
 	Kind order.Kind `json:"kind,omitempty"`
+	// ShopProductID holds the value of the "shop_product_id" field.
+	ShopProductID string `json:"shop_product_id,omitempty"`
+	// ShopSnapshot holds the value of the "shop_snapshot" field.
+	ShopSnapshot map[string]interface{} `json:"shop_snapshot,omitempty"`
 	// ListingID holds the value of the "listing_id" field.
 	ListingID string `json:"listing_id,omitempty"`
 	// AccountSnapshot holds the value of the "account_snapshot" field.
@@ -74,11 +78,11 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case order.FieldAccountSnapshot, order.FieldAnswers, order.FieldSnapshot, order.FieldEstimate:
+		case order.FieldShopSnapshot, order.FieldAccountSnapshot, order.FieldAnswers, order.FieldSnapshot, order.FieldEstimate:
 			values[i] = new([]byte)
 		case order.FieldVersion, order.FieldQuoteCount:
 			values[i] = new(sql.NullInt64)
-		case order.FieldID, order.FieldUserID, order.FieldGameID, order.FieldGameName, order.FieldSlug, order.FieldService, order.FieldPackageKey, order.FieldVariantKey, order.FieldKind, order.FieldListingID, order.FieldRequestKey, order.FieldRequestHash, order.FieldState, order.FieldCouponCode, order.FieldTermsVersion, order.FieldCurrentQuote, order.FieldCurrentContract:
+		case order.FieldID, order.FieldUserID, order.FieldGameID, order.FieldGameName, order.FieldSlug, order.FieldService, order.FieldPackageKey, order.FieldVariantKey, order.FieldKind, order.FieldShopProductID, order.FieldListingID, order.FieldRequestKey, order.FieldRequestHash, order.FieldState, order.FieldCouponCode, order.FieldTermsVersion, order.FieldCurrentQuote, order.FieldCurrentContract:
 			values[i] = new(sql.NullString)
 		case order.FieldCreatedAt, order.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -150,6 +154,20 @@ func (_m *Order) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field kind", values[i])
 			} else if value.Valid {
 				_m.Kind = order.Kind(value.String)
+			}
+		case order.FieldShopProductID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field shop_product_id", values[i])
+			} else if value.Valid {
+				_m.ShopProductID = value.String
+			}
+		case order.FieldShopSnapshot:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field shop_snapshot", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.ShopSnapshot); err != nil {
+					return fmt.Errorf("unmarshal field shop_snapshot: %w", err)
+				}
 			}
 		case order.FieldListingID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -314,6 +332,12 @@ func (_m *Order) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("kind=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Kind))
+	builder.WriteString(", ")
+	builder.WriteString("shop_product_id=")
+	builder.WriteString(_m.ShopProductID)
+	builder.WriteString(", ")
+	builder.WriteString("shop_snapshot=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ShopSnapshot))
 	builder.WriteString(", ")
 	builder.WriteString("listing_id=")
 	builder.WriteString(_m.ListingID)

@@ -74,6 +74,51 @@ func VariantKey(v string) predicate.ShopStock {
 	return predicate.ShopStock(sql.FieldEQ(FieldVariantKey, v))
 }
 
+// ReleaseID applies equality check predicate on the "release_id" field. It's identical to ReleaseIDEQ.
+func ReleaseID(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldReleaseID, v))
+}
+
+// Enabled applies equality check predicate on the "enabled" field. It's identical to EnabledEQ.
+func Enabled(v bool) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldEnabled, v))
+}
+
+// Region applies equality check predicate on the "region" field. It's identical to RegionEQ.
+func Region(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldRegion, v))
+}
+
+// Platform applies equality check predicate on the "platform" field. It's identical to PlatformEQ.
+func Platform(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldPlatform, v))
+}
+
+// Server applies equality check predicate on the "server" field. It's identical to ServerEQ.
+func Server(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldServer, v))
+}
+
+// Currency applies equality check predicate on the "currency" field. It's identical to CurrencyEQ.
+func Currency(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldCurrency, v))
+}
+
+// UnitAmountMinor applies equality check predicate on the "unit_amount_minor" field. It's identical to UnitAmountMinorEQ.
+func UnitAmountMinor(v int64) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldUnitAmountMinor, v))
+}
+
+// MinQuantity applies equality check predicate on the "min_quantity" field. It's identical to MinQuantityEQ.
+func MinQuantity(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldMinQuantity, v))
+}
+
+// MaxQuantity applies equality check predicate on the "max_quantity" field. It's identical to MaxQuantityEQ.
+func MaxQuantity(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldMaxQuantity, v))
+}
+
 // Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
 func Version(v int) predicate.ShopStock {
 	return predicate.ShopStock(sql.FieldEQ(FieldVersion, v))
@@ -227,6 +272,526 @@ func VariantKeyEqualFold(v string) predicate.ShopStock {
 // VariantKeyContainsFold applies the ContainsFold predicate on the "variant_key" field.
 func VariantKeyContainsFold(v string) predicate.ShopStock {
 	return predicate.ShopStock(sql.FieldContainsFold(FieldVariantKey, v))
+}
+
+// ReleaseIDEQ applies the EQ predicate on the "release_id" field.
+func ReleaseIDEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldReleaseID, v))
+}
+
+// ReleaseIDNEQ applies the NEQ predicate on the "release_id" field.
+func ReleaseIDNEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNEQ(FieldReleaseID, v))
+}
+
+// ReleaseIDIn applies the In predicate on the "release_id" field.
+func ReleaseIDIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldIn(FieldReleaseID, vs...))
+}
+
+// ReleaseIDNotIn applies the NotIn predicate on the "release_id" field.
+func ReleaseIDNotIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNotIn(FieldReleaseID, vs...))
+}
+
+// ReleaseIDGT applies the GT predicate on the "release_id" field.
+func ReleaseIDGT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGT(FieldReleaseID, v))
+}
+
+// ReleaseIDGTE applies the GTE predicate on the "release_id" field.
+func ReleaseIDGTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGTE(FieldReleaseID, v))
+}
+
+// ReleaseIDLT applies the LT predicate on the "release_id" field.
+func ReleaseIDLT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLT(FieldReleaseID, v))
+}
+
+// ReleaseIDLTE applies the LTE predicate on the "release_id" field.
+func ReleaseIDLTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLTE(FieldReleaseID, v))
+}
+
+// ReleaseIDContains applies the Contains predicate on the "release_id" field.
+func ReleaseIDContains(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContains(FieldReleaseID, v))
+}
+
+// ReleaseIDHasPrefix applies the HasPrefix predicate on the "release_id" field.
+func ReleaseIDHasPrefix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasPrefix(FieldReleaseID, v))
+}
+
+// ReleaseIDHasSuffix applies the HasSuffix predicate on the "release_id" field.
+func ReleaseIDHasSuffix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasSuffix(FieldReleaseID, v))
+}
+
+// ReleaseIDEqualFold applies the EqualFold predicate on the "release_id" field.
+func ReleaseIDEqualFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEqualFold(FieldReleaseID, v))
+}
+
+// ReleaseIDContainsFold applies the ContainsFold predicate on the "release_id" field.
+func ReleaseIDContainsFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContainsFold(FieldReleaseID, v))
+}
+
+// EnabledEQ applies the EQ predicate on the "enabled" field.
+func EnabledEQ(v bool) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldEnabled, v))
+}
+
+// EnabledNEQ applies the NEQ predicate on the "enabled" field.
+func EnabledNEQ(v bool) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNEQ(FieldEnabled, v))
+}
+
+// LabelEQ applies the EQ predicate on the "label" field.
+func LabelEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldLabel, v))
+}
+
+// LabelNEQ applies the NEQ predicate on the "label" field.
+func LabelNEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNEQ(FieldLabel, v))
+}
+
+// LabelIn applies the In predicate on the "label" field.
+func LabelIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldIn(FieldLabel, vs...))
+}
+
+// LabelNotIn applies the NotIn predicate on the "label" field.
+func LabelNotIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNotIn(FieldLabel, vs...))
+}
+
+// LabelGT applies the GT predicate on the "label" field.
+func LabelGT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGT(FieldLabel, v))
+}
+
+// LabelGTE applies the GTE predicate on the "label" field.
+func LabelGTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGTE(FieldLabel, v))
+}
+
+// LabelLT applies the LT predicate on the "label" field.
+func LabelLT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLT(FieldLabel, v))
+}
+
+// LabelLTE applies the LTE predicate on the "label" field.
+func LabelLTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLTE(FieldLabel, v))
+}
+
+// LabelContains applies the Contains predicate on the "label" field.
+func LabelContains(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContains(FieldLabel, v))
+}
+
+// LabelHasPrefix applies the HasPrefix predicate on the "label" field.
+func LabelHasPrefix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasPrefix(FieldLabel, v))
+}
+
+// LabelHasSuffix applies the HasSuffix predicate on the "label" field.
+func LabelHasSuffix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasSuffix(FieldLabel, v))
+}
+
+// LabelEqualFold applies the EqualFold predicate on the "label" field.
+func LabelEqualFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEqualFold(FieldLabel, v))
+}
+
+// LabelContainsFold applies the ContainsFold predicate on the "label" field.
+func LabelContainsFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContainsFold(FieldLabel, v))
+}
+
+// RegionEQ applies the EQ predicate on the "region" field.
+func RegionEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldRegion, v))
+}
+
+// RegionNEQ applies the NEQ predicate on the "region" field.
+func RegionNEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNEQ(FieldRegion, v))
+}
+
+// RegionIn applies the In predicate on the "region" field.
+func RegionIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldIn(FieldRegion, vs...))
+}
+
+// RegionNotIn applies the NotIn predicate on the "region" field.
+func RegionNotIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNotIn(FieldRegion, vs...))
+}
+
+// RegionGT applies the GT predicate on the "region" field.
+func RegionGT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGT(FieldRegion, v))
+}
+
+// RegionGTE applies the GTE predicate on the "region" field.
+func RegionGTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGTE(FieldRegion, v))
+}
+
+// RegionLT applies the LT predicate on the "region" field.
+func RegionLT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLT(FieldRegion, v))
+}
+
+// RegionLTE applies the LTE predicate on the "region" field.
+func RegionLTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLTE(FieldRegion, v))
+}
+
+// RegionContains applies the Contains predicate on the "region" field.
+func RegionContains(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContains(FieldRegion, v))
+}
+
+// RegionHasPrefix applies the HasPrefix predicate on the "region" field.
+func RegionHasPrefix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasPrefix(FieldRegion, v))
+}
+
+// RegionHasSuffix applies the HasSuffix predicate on the "region" field.
+func RegionHasSuffix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasSuffix(FieldRegion, v))
+}
+
+// RegionEqualFold applies the EqualFold predicate on the "region" field.
+func RegionEqualFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEqualFold(FieldRegion, v))
+}
+
+// RegionContainsFold applies the ContainsFold predicate on the "region" field.
+func RegionContainsFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContainsFold(FieldRegion, v))
+}
+
+// PlatformEQ applies the EQ predicate on the "platform" field.
+func PlatformEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldPlatform, v))
+}
+
+// PlatformNEQ applies the NEQ predicate on the "platform" field.
+func PlatformNEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNEQ(FieldPlatform, v))
+}
+
+// PlatformIn applies the In predicate on the "platform" field.
+func PlatformIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldIn(FieldPlatform, vs...))
+}
+
+// PlatformNotIn applies the NotIn predicate on the "platform" field.
+func PlatformNotIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNotIn(FieldPlatform, vs...))
+}
+
+// PlatformGT applies the GT predicate on the "platform" field.
+func PlatformGT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGT(FieldPlatform, v))
+}
+
+// PlatformGTE applies the GTE predicate on the "platform" field.
+func PlatformGTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGTE(FieldPlatform, v))
+}
+
+// PlatformLT applies the LT predicate on the "platform" field.
+func PlatformLT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLT(FieldPlatform, v))
+}
+
+// PlatformLTE applies the LTE predicate on the "platform" field.
+func PlatformLTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLTE(FieldPlatform, v))
+}
+
+// PlatformContains applies the Contains predicate on the "platform" field.
+func PlatformContains(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContains(FieldPlatform, v))
+}
+
+// PlatformHasPrefix applies the HasPrefix predicate on the "platform" field.
+func PlatformHasPrefix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasPrefix(FieldPlatform, v))
+}
+
+// PlatformHasSuffix applies the HasSuffix predicate on the "platform" field.
+func PlatformHasSuffix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasSuffix(FieldPlatform, v))
+}
+
+// PlatformEqualFold applies the EqualFold predicate on the "platform" field.
+func PlatformEqualFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEqualFold(FieldPlatform, v))
+}
+
+// PlatformContainsFold applies the ContainsFold predicate on the "platform" field.
+func PlatformContainsFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContainsFold(FieldPlatform, v))
+}
+
+// ServerEQ applies the EQ predicate on the "server" field.
+func ServerEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldServer, v))
+}
+
+// ServerNEQ applies the NEQ predicate on the "server" field.
+func ServerNEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNEQ(FieldServer, v))
+}
+
+// ServerIn applies the In predicate on the "server" field.
+func ServerIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldIn(FieldServer, vs...))
+}
+
+// ServerNotIn applies the NotIn predicate on the "server" field.
+func ServerNotIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNotIn(FieldServer, vs...))
+}
+
+// ServerGT applies the GT predicate on the "server" field.
+func ServerGT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGT(FieldServer, v))
+}
+
+// ServerGTE applies the GTE predicate on the "server" field.
+func ServerGTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGTE(FieldServer, v))
+}
+
+// ServerLT applies the LT predicate on the "server" field.
+func ServerLT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLT(FieldServer, v))
+}
+
+// ServerLTE applies the LTE predicate on the "server" field.
+func ServerLTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLTE(FieldServer, v))
+}
+
+// ServerContains applies the Contains predicate on the "server" field.
+func ServerContains(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContains(FieldServer, v))
+}
+
+// ServerHasPrefix applies the HasPrefix predicate on the "server" field.
+func ServerHasPrefix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasPrefix(FieldServer, v))
+}
+
+// ServerHasSuffix applies the HasSuffix predicate on the "server" field.
+func ServerHasSuffix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasSuffix(FieldServer, v))
+}
+
+// ServerEqualFold applies the EqualFold predicate on the "server" field.
+func ServerEqualFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEqualFold(FieldServer, v))
+}
+
+// ServerContainsFold applies the ContainsFold predicate on the "server" field.
+func ServerContainsFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContainsFold(FieldServer, v))
+}
+
+// CurrencyEQ applies the EQ predicate on the "currency" field.
+func CurrencyEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldCurrency, v))
+}
+
+// CurrencyNEQ applies the NEQ predicate on the "currency" field.
+func CurrencyNEQ(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNEQ(FieldCurrency, v))
+}
+
+// CurrencyIn applies the In predicate on the "currency" field.
+func CurrencyIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldIn(FieldCurrency, vs...))
+}
+
+// CurrencyNotIn applies the NotIn predicate on the "currency" field.
+func CurrencyNotIn(vs ...string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNotIn(FieldCurrency, vs...))
+}
+
+// CurrencyGT applies the GT predicate on the "currency" field.
+func CurrencyGT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGT(FieldCurrency, v))
+}
+
+// CurrencyGTE applies the GTE predicate on the "currency" field.
+func CurrencyGTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGTE(FieldCurrency, v))
+}
+
+// CurrencyLT applies the LT predicate on the "currency" field.
+func CurrencyLT(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLT(FieldCurrency, v))
+}
+
+// CurrencyLTE applies the LTE predicate on the "currency" field.
+func CurrencyLTE(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLTE(FieldCurrency, v))
+}
+
+// CurrencyContains applies the Contains predicate on the "currency" field.
+func CurrencyContains(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContains(FieldCurrency, v))
+}
+
+// CurrencyHasPrefix applies the HasPrefix predicate on the "currency" field.
+func CurrencyHasPrefix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasPrefix(FieldCurrency, v))
+}
+
+// CurrencyHasSuffix applies the HasSuffix predicate on the "currency" field.
+func CurrencyHasSuffix(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldHasSuffix(FieldCurrency, v))
+}
+
+// CurrencyEqualFold applies the EqualFold predicate on the "currency" field.
+func CurrencyEqualFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEqualFold(FieldCurrency, v))
+}
+
+// CurrencyContainsFold applies the ContainsFold predicate on the "currency" field.
+func CurrencyContainsFold(v string) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldContainsFold(FieldCurrency, v))
+}
+
+// UnitAmountMinorEQ applies the EQ predicate on the "unit_amount_minor" field.
+func UnitAmountMinorEQ(v int64) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldUnitAmountMinor, v))
+}
+
+// UnitAmountMinorNEQ applies the NEQ predicate on the "unit_amount_minor" field.
+func UnitAmountMinorNEQ(v int64) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNEQ(FieldUnitAmountMinor, v))
+}
+
+// UnitAmountMinorIn applies the In predicate on the "unit_amount_minor" field.
+func UnitAmountMinorIn(vs ...int64) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldIn(FieldUnitAmountMinor, vs...))
+}
+
+// UnitAmountMinorNotIn applies the NotIn predicate on the "unit_amount_minor" field.
+func UnitAmountMinorNotIn(vs ...int64) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNotIn(FieldUnitAmountMinor, vs...))
+}
+
+// UnitAmountMinorGT applies the GT predicate on the "unit_amount_minor" field.
+func UnitAmountMinorGT(v int64) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGT(FieldUnitAmountMinor, v))
+}
+
+// UnitAmountMinorGTE applies the GTE predicate on the "unit_amount_minor" field.
+func UnitAmountMinorGTE(v int64) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGTE(FieldUnitAmountMinor, v))
+}
+
+// UnitAmountMinorLT applies the LT predicate on the "unit_amount_minor" field.
+func UnitAmountMinorLT(v int64) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLT(FieldUnitAmountMinor, v))
+}
+
+// UnitAmountMinorLTE applies the LTE predicate on the "unit_amount_minor" field.
+func UnitAmountMinorLTE(v int64) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLTE(FieldUnitAmountMinor, v))
+}
+
+// MinQuantityEQ applies the EQ predicate on the "min_quantity" field.
+func MinQuantityEQ(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldMinQuantity, v))
+}
+
+// MinQuantityNEQ applies the NEQ predicate on the "min_quantity" field.
+func MinQuantityNEQ(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNEQ(FieldMinQuantity, v))
+}
+
+// MinQuantityIn applies the In predicate on the "min_quantity" field.
+func MinQuantityIn(vs ...int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldIn(FieldMinQuantity, vs...))
+}
+
+// MinQuantityNotIn applies the NotIn predicate on the "min_quantity" field.
+func MinQuantityNotIn(vs ...int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNotIn(FieldMinQuantity, vs...))
+}
+
+// MinQuantityGT applies the GT predicate on the "min_quantity" field.
+func MinQuantityGT(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGT(FieldMinQuantity, v))
+}
+
+// MinQuantityGTE applies the GTE predicate on the "min_quantity" field.
+func MinQuantityGTE(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGTE(FieldMinQuantity, v))
+}
+
+// MinQuantityLT applies the LT predicate on the "min_quantity" field.
+func MinQuantityLT(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLT(FieldMinQuantity, v))
+}
+
+// MinQuantityLTE applies the LTE predicate on the "min_quantity" field.
+func MinQuantityLTE(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLTE(FieldMinQuantity, v))
+}
+
+// MaxQuantityEQ applies the EQ predicate on the "max_quantity" field.
+func MaxQuantityEQ(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldEQ(FieldMaxQuantity, v))
+}
+
+// MaxQuantityNEQ applies the NEQ predicate on the "max_quantity" field.
+func MaxQuantityNEQ(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNEQ(FieldMaxQuantity, v))
+}
+
+// MaxQuantityIn applies the In predicate on the "max_quantity" field.
+func MaxQuantityIn(vs ...int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldIn(FieldMaxQuantity, vs...))
+}
+
+// MaxQuantityNotIn applies the NotIn predicate on the "max_quantity" field.
+func MaxQuantityNotIn(vs ...int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldNotIn(FieldMaxQuantity, vs...))
+}
+
+// MaxQuantityGT applies the GT predicate on the "max_quantity" field.
+func MaxQuantityGT(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGT(FieldMaxQuantity, v))
+}
+
+// MaxQuantityGTE applies the GTE predicate on the "max_quantity" field.
+func MaxQuantityGTE(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldGTE(FieldMaxQuantity, v))
+}
+
+// MaxQuantityLT applies the LT predicate on the "max_quantity" field.
+func MaxQuantityLT(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLT(FieldMaxQuantity, v))
+}
+
+// MaxQuantityLTE applies the LTE predicate on the "max_quantity" field.
+func MaxQuantityLTE(v int) predicate.ShopStock {
+	return predicate.ShopStock(sql.FieldLTE(FieldMaxQuantity, v))
 }
 
 // VersionEQ applies the EQ predicate on the "version" field.

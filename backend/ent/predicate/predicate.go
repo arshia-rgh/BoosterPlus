@@ -171,6 +171,12 @@ type ShopProductEvent func(*sql.Selector)
 // ShopProductRelease is the predicate function for shopproductrelease builders.
 type ShopProductRelease func(*sql.Selector)
 
+// ShopRecipient is the predicate function for shoprecipient builders.
+type ShopRecipient func(*sql.Selector)
+
+// ShopReservation is the predicate function for shopreservation builders.
+type ShopReservation func(*sql.Selector)
+
 // ShopStock is the predicate function for shopstock builders.
 type ShopStock func(*sql.Selector)
 

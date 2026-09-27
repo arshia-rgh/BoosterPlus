@@ -67,6 +67,8 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproduct"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shoprecipient"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopreservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopstock"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/siterelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sitesetting"
@@ -192,6 +194,8 @@ func checkColumn(t, c string) error {
 			shopproduct.Table:              shopproduct.ValidColumn,
 			shopproductevent.Table:         shopproductevent.ValidColumn,
 			shopproductrelease.Table:       shopproductrelease.ValidColumn,
+			shoprecipient.Table:            shoprecipient.ValidColumn,
+			shopreservation.Table:          shopreservation.ValidColumn,
 			shopstock.Table:                shopstock.ValidColumn,
 			siterelease.Table:              siterelease.ValidColumn,
 			sitesetting.Table:              sitesetting.ValidColumn,

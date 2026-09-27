@@ -78,7 +78,7 @@ func paid(ctx context.Context, c *ent.Client, id string) (*ent.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !ok || row.Kind == order.KindAccount {
+	if !ok || (row.Kind != order.KindCustom && row.Kind != order.KindPackage) {
 		return nil, ErrConflict
 	}
 	return row, nil

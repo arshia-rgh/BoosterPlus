@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 34
+const SchemaVersion = 35
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,6 +47,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"shop_recipients.recipient_values": "json", "shop_reservations.quantity": "bigint", "orders.shop_snapshot": "json", "shop_stocks.enabled": "tinyint",
 		"shop_products.draft": "json", "shop_product_releases.data": "json", "shop_stocks.reserved": "bigint", "shop_stocks.committed": "bigint", "shop_product_events.note": "varchar",
 		"payment_attempts.native_checkout": "tinyint", "payment_attempts.deposit_claimed": "tinyint", "payment_attempts.deposit_payment_id": "varchar", "payment_attempts.deposit_data": "json",
 		"site_settings.draft": "json", "site_releases.data": "json", "privacy_requests.manual_hold": "tinyint", "privacy_requests.active_user_id": "varchar", "users.deleted_at": "datetime",
@@ -100,6 +101,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 
 func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"shop_reservations.shop_order_reservation": "order_id", "shop_recipients.shop_order_recipient": "order_id",
 		"shop_products.shop_product_slug": "game_id,slug", "shop_product_releases.shop_product_release_version": "product_id,version", "shop_stocks.shop_variant_stock": "product_id,variant_key", "shop_product_events.shop_product_event_version": "product_id,version",
 		"site_releases.site_release_version": "kind,version", "site_releases.site_release_label": "kind,label", "privacy_requests.privacy_active_user": "active_user_id",
 		"seller_offers.seller_active_offer": "active_submission_id", "seller_offer_events.seller_offer_event_version": "offer_id,version", "account_listings.account_single_inventory": "submission_id", "account_listings.account_offer_inventory": "offer_id", "account_listing_releases.account_listing_release_version": "listing_id,version", "account_reservations.account_unique_reservation": "active_listing_id", "account_reservations.account_order_reservation": "order_id", "account_deliveries.account_order_delivery": "order_id", "money_transfers.seller_offer_payout": "seller_offer_id",

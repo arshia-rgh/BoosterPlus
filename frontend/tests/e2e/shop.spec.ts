@@ -233,4 +233,35 @@ test("administrator authors and reviews a shop product with explicit capacity", 
     .getByRole("link", { name: "Edit Synthetic delivery item", exact: true })
     .click();
   await expect.poll(() => page.url().split("?")[0]).toBe(productURL);
+  await page.getByRole("link", { name: "Variants", exact: true }).click();
+  await page.getByLabel("Supported region").fill("Different compatibility");
+  await page.getByRole("link", { name: "Publication", exact: true }).click();
+  await page
+    .getByLabel(
+      "I reviewed artwork rights, public details, compatibility, prices and terms",
+    )
+    .check();
+  await page.getByRole("button", { name: "Save product draft" }).click();
+  await expect(
+    page.getByText("Saved revision 6", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Preview saved revision" }).click();
+  const correction = page.getByRole("link", {
+    name: /Variants and prices · Variant 1 · Stable key: Published variant keys keep/,
+  });
+  await expect(correction).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Publish reviewed revision" }),
+  ).toBeDisabled();
+  await correction.click();
+  await expect(page.getByLabel("Stable variant key")).toBeFocused();
+  await expect(page.getByLabel("Stable variant key")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.screenshot({
+    path: `.cache/shop-compatibility-${info.project.name}.png`,
+    fullPage: true,
+  });
 });

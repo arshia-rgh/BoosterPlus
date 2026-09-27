@@ -61,6 +61,8 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproduct"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shoprecipient"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopreservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopstock"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/siterelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sitesetting"
@@ -1459,56 +1461,62 @@ func init() {
 	order.DefaultVariantKey = orderDescVariantKey.Default.(string)
 	// order.VariantKeyValidator is a validator for the "variant_key" field. It is called by the builders before save.
 	order.VariantKeyValidator = orderDescVariantKey.Validators[0].(func(string) error)
+	// orderDescShopProductID is the schema descriptor for shop_product_id field.
+	orderDescShopProductID := orderFields[9].Descriptor()
+	// order.DefaultShopProductID holds the default value on creation for the shop_product_id field.
+	order.DefaultShopProductID = orderDescShopProductID.Default.(string)
+	// order.ShopProductIDValidator is a validator for the "shop_product_id" field. It is called by the builders before save.
+	order.ShopProductIDValidator = orderDescShopProductID.Validators[0].(func(string) error)
 	// orderDescListingID is the schema descriptor for listing_id field.
-	orderDescListingID := orderFields[9].Descriptor()
+	orderDescListingID := orderFields[11].Descriptor()
 	// order.DefaultListingID holds the default value on creation for the listing_id field.
 	order.DefaultListingID = orderDescListingID.Default.(string)
 	// order.ListingIDValidator is a validator for the "listing_id" field. It is called by the builders before save.
 	order.ListingIDValidator = orderDescListingID.Validators[0].(func(string) error)
 	// orderDescRequestKey is the schema descriptor for request_key field.
-	orderDescRequestKey := orderFields[11].Descriptor()
+	orderDescRequestKey := orderFields[13].Descriptor()
 	// order.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
 	order.RequestKeyValidator = orderDescRequestKey.Validators[0].(func(string) error)
 	// orderDescRequestHash is the schema descriptor for request_hash field.
-	orderDescRequestHash := orderFields[12].Descriptor()
+	orderDescRequestHash := orderFields[14].Descriptor()
 	// order.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
 	order.RequestHashValidator = orderDescRequestHash.Validators[0].(func(string) error)
 	// orderDescVersion is the schema descriptor for version field.
-	orderDescVersion := orderFields[13].Descriptor()
+	orderDescVersion := orderFields[15].Descriptor()
 	// order.DefaultVersion holds the default value on creation for the version field.
 	order.DefaultVersion = orderDescVersion.Default.(int)
 	// orderDescCouponCode is the schema descriptor for coupon_code field.
-	orderDescCouponCode := orderFields[18].Descriptor()
+	orderDescCouponCode := orderFields[20].Descriptor()
 	// order.DefaultCouponCode holds the default value on creation for the coupon_code field.
 	order.DefaultCouponCode = orderDescCouponCode.Default.(string)
 	// order.CouponCodeValidator is a validator for the "coupon_code" field. It is called by the builders before save.
 	order.CouponCodeValidator = orderDescCouponCode.Validators[0].(func(string) error)
 	// orderDescTermsVersion is the schema descriptor for terms_version field.
-	orderDescTermsVersion := orderFields[19].Descriptor()
+	orderDescTermsVersion := orderFields[21].Descriptor()
 	// order.TermsVersionValidator is a validator for the "terms_version" field. It is called by the builders before save.
 	order.TermsVersionValidator = orderDescTermsVersion.Validators[0].(func(string) error)
 	// orderDescQuoteCount is the schema descriptor for quote_count field.
-	orderDescQuoteCount := orderFields[20].Descriptor()
+	orderDescQuoteCount := orderFields[22].Descriptor()
 	// order.DefaultQuoteCount holds the default value on creation for the quote_count field.
 	order.DefaultQuoteCount = orderDescQuoteCount.Default.(int)
 	// orderDescCurrentQuote is the schema descriptor for current_quote field.
-	orderDescCurrentQuote := orderFields[21].Descriptor()
+	orderDescCurrentQuote := orderFields[23].Descriptor()
 	// order.DefaultCurrentQuote holds the default value on creation for the current_quote field.
 	order.DefaultCurrentQuote = orderDescCurrentQuote.Default.(string)
 	// order.CurrentQuoteValidator is a validator for the "current_quote" field. It is called by the builders before save.
 	order.CurrentQuoteValidator = orderDescCurrentQuote.Validators[0].(func(string) error)
 	// orderDescCurrentContract is the schema descriptor for current_contract field.
-	orderDescCurrentContract := orderFields[22].Descriptor()
+	orderDescCurrentContract := orderFields[24].Descriptor()
 	// order.DefaultCurrentContract holds the default value on creation for the current_contract field.
 	order.DefaultCurrentContract = orderDescCurrentContract.Default.(string)
 	// order.CurrentContractValidator is a validator for the "current_contract" field. It is called by the builders before save.
 	order.CurrentContractValidator = orderDescCurrentContract.Validators[0].(func(string) error)
 	// orderDescCreatedAt is the schema descriptor for created_at field.
-	orderDescCreatedAt := orderFields[23].Descriptor()
+	orderDescCreatedAt := orderFields[25].Descriptor()
 	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
 	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() time.Time)
 	// orderDescUpdatedAt is the schema descriptor for updated_at field.
-	orderDescUpdatedAt := orderFields[24].Descriptor()
+	orderDescUpdatedAt := orderFields[26].Descriptor()
 	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() time.Time)
 	// orderDescID is the schema descriptor for id field.
@@ -2321,6 +2329,84 @@ func init() {
 	shopproductrelease.DefaultID = shopproductreleaseDescID.Default.(func() string)
 	// shopproductrelease.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	shopproductrelease.IDValidator = shopproductreleaseDescID.Validators[0].(func(string) error)
+	shoprecipientFields := schema.ShopRecipient{}.Fields()
+	_ = shoprecipientFields
+	// shoprecipientDescOrderID is the schema descriptor for order_id field.
+	shoprecipientDescOrderID := shoprecipientFields[1].Descriptor()
+	// shoprecipient.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	shoprecipient.OrderIDValidator = shoprecipientDescOrderID.Validators[0].(func(string) error)
+	// shoprecipientDescUserID is the schema descriptor for user_id field.
+	shoprecipientDescUserID := shoprecipientFields[2].Descriptor()
+	// shoprecipient.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	shoprecipient.UserIDValidator = shoprecipientDescUserID.Validators[0].(func(string) error)
+	// shoprecipientDescVersion is the schema descriptor for version field.
+	shoprecipientDescVersion := shoprecipientFields[4].Descriptor()
+	// shoprecipient.DefaultVersion holds the default value on creation for the version field.
+	shoprecipient.DefaultVersion = shoprecipientDescVersion.Default.(int)
+	// shoprecipient.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	shoprecipient.VersionValidator = shoprecipientDescVersion.Validators[0].(func(int) error)
+	// shoprecipientDescCreatedAt is the schema descriptor for created_at field.
+	shoprecipientDescCreatedAt := shoprecipientFields[6].Descriptor()
+	// shoprecipient.DefaultCreatedAt holds the default value on creation for the created_at field.
+	shoprecipient.DefaultCreatedAt = shoprecipientDescCreatedAt.Default.(func() time.Time)
+	// shoprecipientDescID is the schema descriptor for id field.
+	shoprecipientDescID := shoprecipientFields[0].Descriptor()
+	// shoprecipient.DefaultID holds the default value on creation for the id field.
+	shoprecipient.DefaultID = shoprecipientDescID.Default.(func() string)
+	// shoprecipient.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	shoprecipient.IDValidator = shoprecipientDescID.Validators[0].(func(string) error)
+	shopreservationFields := schema.ShopReservation{}.Fields()
+	_ = shopreservationFields
+	// shopreservationDescOrderID is the schema descriptor for order_id field.
+	shopreservationDescOrderID := shopreservationFields[1].Descriptor()
+	// shopreservation.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	shopreservation.OrderIDValidator = shopreservationDescOrderID.Validators[0].(func(string) error)
+	// shopreservationDescUserID is the schema descriptor for user_id field.
+	shopreservationDescUserID := shopreservationFields[2].Descriptor()
+	// shopreservation.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	shopreservation.UserIDValidator = shopreservationDescUserID.Validators[0].(func(string) error)
+	// shopreservationDescProductID is the schema descriptor for product_id field.
+	shopreservationDescProductID := shopreservationFields[3].Descriptor()
+	// shopreservation.ProductIDValidator is a validator for the "product_id" field. It is called by the builders before save.
+	shopreservation.ProductIDValidator = shopreservationDescProductID.Validators[0].(func(string) error)
+	// shopreservationDescReleaseID is the schema descriptor for release_id field.
+	shopreservationDescReleaseID := shopreservationFields[4].Descriptor()
+	// shopreservation.ReleaseIDValidator is a validator for the "release_id" field. It is called by the builders before save.
+	shopreservation.ReleaseIDValidator = shopreservationDescReleaseID.Validators[0].(func(string) error)
+	// shopreservationDescVariantKey is the schema descriptor for variant_key field.
+	shopreservationDescVariantKey := shopreservationFields[5].Descriptor()
+	// shopreservation.VariantKeyValidator is a validator for the "variant_key" field. It is called by the builders before save.
+	shopreservation.VariantKeyValidator = shopreservationDescVariantKey.Validators[0].(func(string) error)
+	// shopreservationDescQuantity is the schema descriptor for quantity field.
+	shopreservationDescQuantity := shopreservationFields[6].Descriptor()
+	// shopreservation.QuantityValidator is a validator for the "quantity" field. It is called by the builders before save.
+	shopreservation.QuantityValidator = shopreservationDescQuantity.Validators[0].(func(int) error)
+	// shopreservationDescState is the schema descriptor for state field.
+	shopreservationDescState := shopreservationFields[7].Descriptor()
+	// shopreservation.DefaultState holds the default value on creation for the state field.
+	shopreservation.DefaultState = shopreservationDescState.Default.(string)
+	// shopreservation.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	shopreservation.StateValidator = shopreservationDescState.Validators[0].(func(string) error)
+	// shopreservationDescVersion is the schema descriptor for version field.
+	shopreservationDescVersion := shopreservationFields[8].Descriptor()
+	// shopreservation.DefaultVersion holds the default value on creation for the version field.
+	shopreservation.DefaultVersion = shopreservationDescVersion.Default.(int)
+	// shopreservation.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	shopreservation.VersionValidator = shopreservationDescVersion.Validators[0].(func(int) error)
+	// shopreservationDescCreatedAt is the schema descriptor for created_at field.
+	shopreservationDescCreatedAt := shopreservationFields[10].Descriptor()
+	// shopreservation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	shopreservation.DefaultCreatedAt = shopreservationDescCreatedAt.Default.(func() time.Time)
+	// shopreservationDescUpdatedAt is the schema descriptor for updated_at field.
+	shopreservationDescUpdatedAt := shopreservationFields[11].Descriptor()
+	// shopreservation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	shopreservation.DefaultUpdatedAt = shopreservationDescUpdatedAt.Default.(func() time.Time)
+	// shopreservationDescID is the schema descriptor for id field.
+	shopreservationDescID := shopreservationFields[0].Descriptor()
+	// shopreservation.DefaultID holds the default value on creation for the id field.
+	shopreservation.DefaultID = shopreservationDescID.Default.(func() string)
+	// shopreservation.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	shopreservation.IDValidator = shopreservationDescID.Validators[0].(func(string) error)
 	shopstockFields := schema.ShopStock{}.Fields()
 	_ = shopstockFields
 	// shopstockDescProductID is the schema descriptor for product_id field.
@@ -2331,32 +2417,90 @@ func init() {
 	shopstockDescVariantKey := shopstockFields[2].Descriptor()
 	// shopstock.VariantKeyValidator is a validator for the "variant_key" field. It is called by the builders before save.
 	shopstock.VariantKeyValidator = shopstockDescVariantKey.Validators[0].(func(string) error)
+	// shopstockDescReleaseID is the schema descriptor for release_id field.
+	shopstockDescReleaseID := shopstockFields[3].Descriptor()
+	// shopstock.DefaultReleaseID holds the default value on creation for the release_id field.
+	shopstock.DefaultReleaseID = shopstockDescReleaseID.Default.(string)
+	// shopstock.ReleaseIDValidator is a validator for the "release_id" field. It is called by the builders before save.
+	shopstock.ReleaseIDValidator = shopstockDescReleaseID.Validators[0].(func(string) error)
+	// shopstockDescEnabled is the schema descriptor for enabled field.
+	shopstockDescEnabled := shopstockFields[4].Descriptor()
+	// shopstock.DefaultEnabled holds the default value on creation for the enabled field.
+	shopstock.DefaultEnabled = shopstockDescEnabled.Default.(bool)
+	// shopstockDescLabel is the schema descriptor for label field.
+	shopstockDescLabel := shopstockFields[5].Descriptor()
+	// shopstock.DefaultLabel holds the default value on creation for the label field.
+	shopstock.DefaultLabel = shopstockDescLabel.Default.(string)
+	// shopstock.LabelValidator is a validator for the "label" field. It is called by the builders before save.
+	shopstock.LabelValidator = shopstockDescLabel.Validators[0].(func(string) error)
+	// shopstockDescRegion is the schema descriptor for region field.
+	shopstockDescRegion := shopstockFields[6].Descriptor()
+	// shopstock.DefaultRegion holds the default value on creation for the region field.
+	shopstock.DefaultRegion = shopstockDescRegion.Default.(string)
+	// shopstock.RegionValidator is a validator for the "region" field. It is called by the builders before save.
+	shopstock.RegionValidator = shopstockDescRegion.Validators[0].(func(string) error)
+	// shopstockDescPlatform is the schema descriptor for platform field.
+	shopstockDescPlatform := shopstockFields[7].Descriptor()
+	// shopstock.DefaultPlatform holds the default value on creation for the platform field.
+	shopstock.DefaultPlatform = shopstockDescPlatform.Default.(string)
+	// shopstock.PlatformValidator is a validator for the "platform" field. It is called by the builders before save.
+	shopstock.PlatformValidator = shopstockDescPlatform.Validators[0].(func(string) error)
+	// shopstockDescServer is the schema descriptor for server field.
+	shopstockDescServer := shopstockFields[8].Descriptor()
+	// shopstock.DefaultServer holds the default value on creation for the server field.
+	shopstock.DefaultServer = shopstockDescServer.Default.(string)
+	// shopstock.ServerValidator is a validator for the "server" field. It is called by the builders before save.
+	shopstock.ServerValidator = shopstockDescServer.Validators[0].(func(string) error)
+	// shopstockDescCurrency is the schema descriptor for currency field.
+	shopstockDescCurrency := shopstockFields[9].Descriptor()
+	// shopstock.DefaultCurrency holds the default value on creation for the currency field.
+	shopstock.DefaultCurrency = shopstockDescCurrency.Default.(string)
+	// shopstock.CurrencyValidator is a validator for the "currency" field. It is called by the builders before save.
+	shopstock.CurrencyValidator = shopstockDescCurrency.Validators[0].(func(string) error)
+	// shopstockDescUnitAmountMinor is the schema descriptor for unit_amount_minor field.
+	shopstockDescUnitAmountMinor := shopstockFields[10].Descriptor()
+	// shopstock.DefaultUnitAmountMinor holds the default value on creation for the unit_amount_minor field.
+	shopstock.DefaultUnitAmountMinor = shopstockDescUnitAmountMinor.Default.(int64)
+	// shopstock.UnitAmountMinorValidator is a validator for the "unit_amount_minor" field. It is called by the builders before save.
+	shopstock.UnitAmountMinorValidator = shopstockDescUnitAmountMinor.Validators[0].(func(int64) error)
+	// shopstockDescMinQuantity is the schema descriptor for min_quantity field.
+	shopstockDescMinQuantity := shopstockFields[11].Descriptor()
+	// shopstock.DefaultMinQuantity holds the default value on creation for the min_quantity field.
+	shopstock.DefaultMinQuantity = shopstockDescMinQuantity.Default.(int)
+	// shopstock.MinQuantityValidator is a validator for the "min_quantity" field. It is called by the builders before save.
+	shopstock.MinQuantityValidator = shopstockDescMinQuantity.Validators[0].(func(int) error)
+	// shopstockDescMaxQuantity is the schema descriptor for max_quantity field.
+	shopstockDescMaxQuantity := shopstockFields[12].Descriptor()
+	// shopstock.DefaultMaxQuantity holds the default value on creation for the max_quantity field.
+	shopstock.DefaultMaxQuantity = shopstockDescMaxQuantity.Default.(int)
+	// shopstock.MaxQuantityValidator is a validator for the "max_quantity" field. It is called by the builders before save.
+	shopstock.MaxQuantityValidator = shopstockDescMaxQuantity.Validators[0].(func(int) error)
 	// shopstockDescVersion is the schema descriptor for version field.
-	shopstockDescVersion := shopstockFields[3].Descriptor()
+	shopstockDescVersion := shopstockFields[13].Descriptor()
 	// shopstock.DefaultVersion holds the default value on creation for the version field.
 	shopstock.DefaultVersion = shopstockDescVersion.Default.(int)
 	// shopstock.VersionValidator is a validator for the "version" field. It is called by the builders before save.
 	shopstock.VersionValidator = shopstockDescVersion.Validators[0].(func(int) error)
 	// shopstockDescTotal is the schema descriptor for total field.
-	shopstockDescTotal := shopstockFields[4].Descriptor()
+	shopstockDescTotal := shopstockFields[14].Descriptor()
 	// shopstock.DefaultTotal holds the default value on creation for the total field.
 	shopstock.DefaultTotal = shopstockDescTotal.Default.(int)
 	// shopstock.TotalValidator is a validator for the "total" field. It is called by the builders before save.
 	shopstock.TotalValidator = shopstockDescTotal.Validators[0].(func(int) error)
 	// shopstockDescReserved is the schema descriptor for reserved field.
-	shopstockDescReserved := shopstockFields[5].Descriptor()
+	shopstockDescReserved := shopstockFields[15].Descriptor()
 	// shopstock.DefaultReserved holds the default value on creation for the reserved field.
 	shopstock.DefaultReserved = shopstockDescReserved.Default.(int)
 	// shopstock.ReservedValidator is a validator for the "reserved" field. It is called by the builders before save.
 	shopstock.ReservedValidator = shopstockDescReserved.Validators[0].(func(int) error)
 	// shopstockDescCommitted is the schema descriptor for committed field.
-	shopstockDescCommitted := shopstockFields[6].Descriptor()
+	shopstockDescCommitted := shopstockFields[16].Descriptor()
 	// shopstock.DefaultCommitted holds the default value on creation for the committed field.
 	shopstock.DefaultCommitted = shopstockDescCommitted.Default.(int)
 	// shopstock.CommittedValidator is a validator for the "committed" field. It is called by the builders before save.
 	shopstock.CommittedValidator = shopstockDescCommitted.Validators[0].(func(int) error)
 	// shopstockDescUpdatedAt is the schema descriptor for updated_at field.
-	shopstockDescUpdatedAt := shopstockFields[7].Descriptor()
+	shopstockDescUpdatedAt := shopstockFields[17].Descriptor()
 	// shopstock.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	shopstock.DefaultUpdatedAt = shopstockDescUpdatedAt.Default.(func() time.Time)
 	// shopstockDescID is the schema descriptor for id field.

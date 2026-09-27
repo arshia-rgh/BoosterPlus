@@ -124,6 +124,10 @@ type Tx struct {
 	ShopProductEvent *ShopProductEventClient
 	// ShopProductRelease is the client for interacting with the ShopProductRelease builders.
 	ShopProductRelease *ShopProductReleaseClient
+	// ShopRecipient is the client for interacting with the ShopRecipient builders.
+	ShopRecipient *ShopRecipientClient
+	// ShopReservation is the client for interacting with the ShopReservation builders.
+	ShopReservation *ShopReservationClient
 	// ShopStock is the client for interacting with the ShopStock builders.
 	ShopStock *ShopStockClient
 	// SiteRelease is the client for interacting with the SiteRelease builders.
@@ -330,6 +334,8 @@ func (tx *Tx) init() {
 	tx.ShopProduct = NewShopProductClient(tx.config)
 	tx.ShopProductEvent = NewShopProductEventClient(tx.config)
 	tx.ShopProductRelease = NewShopProductReleaseClient(tx.config)
+	tx.ShopRecipient = NewShopRecipientClient(tx.config)
+	tx.ShopReservation = NewShopReservationClient(tx.config)
 	tx.ShopStock = NewShopStockClient(tx.config)
 	tx.SiteRelease = NewSiteReleaseClient(tx.config)
 	tx.SiteSetting = NewSiteSettingClient(tx.config)

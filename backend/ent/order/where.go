@@ -99,6 +99,11 @@ func VariantKey(v string) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldVariantKey, v))
 }
 
+// ShopProductID applies equality check predicate on the "shop_product_id" field. It's identical to ShopProductIDEQ.
+func ShopProductID(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldShopProductID, v))
+}
+
 // ListingID applies equality check predicate on the "listing_id" field. It's identical to ListingIDEQ.
 func ListingID(v string) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldListingID, v))
@@ -627,6 +632,81 @@ func KindIn(vs ...Kind) predicate.Order {
 // KindNotIn applies the NotIn predicate on the "kind" field.
 func KindNotIn(vs ...Kind) predicate.Order {
 	return predicate.Order(sql.FieldNotIn(FieldKind, vs...))
+}
+
+// ShopProductIDEQ applies the EQ predicate on the "shop_product_id" field.
+func ShopProductIDEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldShopProductID, v))
+}
+
+// ShopProductIDNEQ applies the NEQ predicate on the "shop_product_id" field.
+func ShopProductIDNEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldShopProductID, v))
+}
+
+// ShopProductIDIn applies the In predicate on the "shop_product_id" field.
+func ShopProductIDIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldShopProductID, vs...))
+}
+
+// ShopProductIDNotIn applies the NotIn predicate on the "shop_product_id" field.
+func ShopProductIDNotIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldShopProductID, vs...))
+}
+
+// ShopProductIDGT applies the GT predicate on the "shop_product_id" field.
+func ShopProductIDGT(v string) predicate.Order {
+	return predicate.Order(sql.FieldGT(FieldShopProductID, v))
+}
+
+// ShopProductIDGTE applies the GTE predicate on the "shop_product_id" field.
+func ShopProductIDGTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldGTE(FieldShopProductID, v))
+}
+
+// ShopProductIDLT applies the LT predicate on the "shop_product_id" field.
+func ShopProductIDLT(v string) predicate.Order {
+	return predicate.Order(sql.FieldLT(FieldShopProductID, v))
+}
+
+// ShopProductIDLTE applies the LTE predicate on the "shop_product_id" field.
+func ShopProductIDLTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldLTE(FieldShopProductID, v))
+}
+
+// ShopProductIDContains applies the Contains predicate on the "shop_product_id" field.
+func ShopProductIDContains(v string) predicate.Order {
+	return predicate.Order(sql.FieldContains(FieldShopProductID, v))
+}
+
+// ShopProductIDHasPrefix applies the HasPrefix predicate on the "shop_product_id" field.
+func ShopProductIDHasPrefix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasPrefix(FieldShopProductID, v))
+}
+
+// ShopProductIDHasSuffix applies the HasSuffix predicate on the "shop_product_id" field.
+func ShopProductIDHasSuffix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasSuffix(FieldShopProductID, v))
+}
+
+// ShopProductIDEqualFold applies the EqualFold predicate on the "shop_product_id" field.
+func ShopProductIDEqualFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldEqualFold(FieldShopProductID, v))
+}
+
+// ShopProductIDContainsFold applies the ContainsFold predicate on the "shop_product_id" field.
+func ShopProductIDContainsFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldContainsFold(FieldShopProductID, v))
+}
+
+// ShopSnapshotIsNil applies the IsNil predicate on the "shop_snapshot" field.
+func ShopSnapshotIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldShopSnapshot))
+}
+
+// ShopSnapshotNotNil applies the NotNil predicate on the "shop_snapshot" field.
+func ShopSnapshotNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldShopSnapshot))
 }
 
 // ListingIDEQ applies the EQ predicate on the "listing_id" field.

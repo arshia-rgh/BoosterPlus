@@ -32,6 +32,146 @@ func (_c *ShopStockCreate) SetVariantKey(v string) *ShopStockCreate {
 	return _c
 }
 
+// SetReleaseID sets the "release_id" field.
+func (_c *ShopStockCreate) SetReleaseID(v string) *ShopStockCreate {
+	_c.mutation.SetReleaseID(v)
+	return _c
+}
+
+// SetNillableReleaseID sets the "release_id" field if the given value is not nil.
+func (_c *ShopStockCreate) SetNillableReleaseID(v *string) *ShopStockCreate {
+	if v != nil {
+		_c.SetReleaseID(*v)
+	}
+	return _c
+}
+
+// SetEnabled sets the "enabled" field.
+func (_c *ShopStockCreate) SetEnabled(v bool) *ShopStockCreate {
+	_c.mutation.SetEnabled(v)
+	return _c
+}
+
+// SetNillableEnabled sets the "enabled" field if the given value is not nil.
+func (_c *ShopStockCreate) SetNillableEnabled(v *bool) *ShopStockCreate {
+	if v != nil {
+		_c.SetEnabled(*v)
+	}
+	return _c
+}
+
+// SetLabel sets the "label" field.
+func (_c *ShopStockCreate) SetLabel(v string) *ShopStockCreate {
+	_c.mutation.SetLabel(v)
+	return _c
+}
+
+// SetNillableLabel sets the "label" field if the given value is not nil.
+func (_c *ShopStockCreate) SetNillableLabel(v *string) *ShopStockCreate {
+	if v != nil {
+		_c.SetLabel(*v)
+	}
+	return _c
+}
+
+// SetRegion sets the "region" field.
+func (_c *ShopStockCreate) SetRegion(v string) *ShopStockCreate {
+	_c.mutation.SetRegion(v)
+	return _c
+}
+
+// SetNillableRegion sets the "region" field if the given value is not nil.
+func (_c *ShopStockCreate) SetNillableRegion(v *string) *ShopStockCreate {
+	if v != nil {
+		_c.SetRegion(*v)
+	}
+	return _c
+}
+
+// SetPlatform sets the "platform" field.
+func (_c *ShopStockCreate) SetPlatform(v string) *ShopStockCreate {
+	_c.mutation.SetPlatform(v)
+	return _c
+}
+
+// SetNillablePlatform sets the "platform" field if the given value is not nil.
+func (_c *ShopStockCreate) SetNillablePlatform(v *string) *ShopStockCreate {
+	if v != nil {
+		_c.SetPlatform(*v)
+	}
+	return _c
+}
+
+// SetServer sets the "server" field.
+func (_c *ShopStockCreate) SetServer(v string) *ShopStockCreate {
+	_c.mutation.SetServer(v)
+	return _c
+}
+
+// SetNillableServer sets the "server" field if the given value is not nil.
+func (_c *ShopStockCreate) SetNillableServer(v *string) *ShopStockCreate {
+	if v != nil {
+		_c.SetServer(*v)
+	}
+	return _c
+}
+
+// SetCurrency sets the "currency" field.
+func (_c *ShopStockCreate) SetCurrency(v string) *ShopStockCreate {
+	_c.mutation.SetCurrency(v)
+	return _c
+}
+
+// SetNillableCurrency sets the "currency" field if the given value is not nil.
+func (_c *ShopStockCreate) SetNillableCurrency(v *string) *ShopStockCreate {
+	if v != nil {
+		_c.SetCurrency(*v)
+	}
+	return _c
+}
+
+// SetUnitAmountMinor sets the "unit_amount_minor" field.
+func (_c *ShopStockCreate) SetUnitAmountMinor(v int64) *ShopStockCreate {
+	_c.mutation.SetUnitAmountMinor(v)
+	return _c
+}
+
+// SetNillableUnitAmountMinor sets the "unit_amount_minor" field if the given value is not nil.
+func (_c *ShopStockCreate) SetNillableUnitAmountMinor(v *int64) *ShopStockCreate {
+	if v != nil {
+		_c.SetUnitAmountMinor(*v)
+	}
+	return _c
+}
+
+// SetMinQuantity sets the "min_quantity" field.
+func (_c *ShopStockCreate) SetMinQuantity(v int) *ShopStockCreate {
+	_c.mutation.SetMinQuantity(v)
+	return _c
+}
+
+// SetNillableMinQuantity sets the "min_quantity" field if the given value is not nil.
+func (_c *ShopStockCreate) SetNillableMinQuantity(v *int) *ShopStockCreate {
+	if v != nil {
+		_c.SetMinQuantity(*v)
+	}
+	return _c
+}
+
+// SetMaxQuantity sets the "max_quantity" field.
+func (_c *ShopStockCreate) SetMaxQuantity(v int) *ShopStockCreate {
+	_c.mutation.SetMaxQuantity(v)
+	return _c
+}
+
+// SetNillableMaxQuantity sets the "max_quantity" field if the given value is not nil.
+func (_c *ShopStockCreate) SetNillableMaxQuantity(v *int) *ShopStockCreate {
+	if v != nil {
+		_c.SetMaxQuantity(*v)
+	}
+	return _c
+}
+
 // SetVersion sets the "version" field.
 func (_c *ShopStockCreate) SetVersion(v int) *ShopStockCreate {
 	_c.mutation.SetVersion(v)
@@ -151,6 +291,46 @@ func (_c *ShopStockCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *ShopStockCreate) defaults() {
+	if _, ok := _c.mutation.ReleaseID(); !ok {
+		v := shopstock.DefaultReleaseID
+		_c.mutation.SetReleaseID(v)
+	}
+	if _, ok := _c.mutation.Enabled(); !ok {
+		v := shopstock.DefaultEnabled
+		_c.mutation.SetEnabled(v)
+	}
+	if _, ok := _c.mutation.Label(); !ok {
+		v := shopstock.DefaultLabel
+		_c.mutation.SetLabel(v)
+	}
+	if _, ok := _c.mutation.Region(); !ok {
+		v := shopstock.DefaultRegion
+		_c.mutation.SetRegion(v)
+	}
+	if _, ok := _c.mutation.Platform(); !ok {
+		v := shopstock.DefaultPlatform
+		_c.mutation.SetPlatform(v)
+	}
+	if _, ok := _c.mutation.Server(); !ok {
+		v := shopstock.DefaultServer
+		_c.mutation.SetServer(v)
+	}
+	if _, ok := _c.mutation.Currency(); !ok {
+		v := shopstock.DefaultCurrency
+		_c.mutation.SetCurrency(v)
+	}
+	if _, ok := _c.mutation.UnitAmountMinor(); !ok {
+		v := shopstock.DefaultUnitAmountMinor
+		_c.mutation.SetUnitAmountMinor(v)
+	}
+	if _, ok := _c.mutation.MinQuantity(); !ok {
+		v := shopstock.DefaultMinQuantity
+		_c.mutation.SetMinQuantity(v)
+	}
+	if _, ok := _c.mutation.MaxQuantity(); !ok {
+		v := shopstock.DefaultMaxQuantity
+		_c.mutation.SetMaxQuantity(v)
+	}
 	if _, ok := _c.mutation.Version(); !ok {
 		v := shopstock.DefaultVersion
 		_c.mutation.SetVersion(v)
@@ -193,6 +373,81 @@ func (_c *ShopStockCreate) check() error {
 	if v, ok := _c.mutation.VariantKey(); ok {
 		if err := shopstock.VariantKeyValidator(v); err != nil {
 			return &ValidationError{Name: "variant_key", err: fmt.Errorf(`ent: validator failed for field "ShopStock.variant_key": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.ReleaseID(); !ok {
+		return &ValidationError{Name: "release_id", err: errors.New(`ent: missing required field "ShopStock.release_id"`)}
+	}
+	if v, ok := _c.mutation.ReleaseID(); ok {
+		if err := shopstock.ReleaseIDValidator(v); err != nil {
+			return &ValidationError{Name: "release_id", err: fmt.Errorf(`ent: validator failed for field "ShopStock.release_id": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Enabled(); !ok {
+		return &ValidationError{Name: "enabled", err: errors.New(`ent: missing required field "ShopStock.enabled"`)}
+	}
+	if _, ok := _c.mutation.Label(); !ok {
+		return &ValidationError{Name: "label", err: errors.New(`ent: missing required field "ShopStock.label"`)}
+	}
+	if v, ok := _c.mutation.Label(); ok {
+		if err := shopstock.LabelValidator(v); err != nil {
+			return &ValidationError{Name: "label", err: fmt.Errorf(`ent: validator failed for field "ShopStock.label": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Region(); !ok {
+		return &ValidationError{Name: "region", err: errors.New(`ent: missing required field "ShopStock.region"`)}
+	}
+	if v, ok := _c.mutation.Region(); ok {
+		if err := shopstock.RegionValidator(v); err != nil {
+			return &ValidationError{Name: "region", err: fmt.Errorf(`ent: validator failed for field "ShopStock.region": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Platform(); !ok {
+		return &ValidationError{Name: "platform", err: errors.New(`ent: missing required field "ShopStock.platform"`)}
+	}
+	if v, ok := _c.mutation.Platform(); ok {
+		if err := shopstock.PlatformValidator(v); err != nil {
+			return &ValidationError{Name: "platform", err: fmt.Errorf(`ent: validator failed for field "ShopStock.platform": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Server(); !ok {
+		return &ValidationError{Name: "server", err: errors.New(`ent: missing required field "ShopStock.server"`)}
+	}
+	if v, ok := _c.mutation.Server(); ok {
+		if err := shopstock.ServerValidator(v); err != nil {
+			return &ValidationError{Name: "server", err: fmt.Errorf(`ent: validator failed for field "ShopStock.server": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Currency(); !ok {
+		return &ValidationError{Name: "currency", err: errors.New(`ent: missing required field "ShopStock.currency"`)}
+	}
+	if v, ok := _c.mutation.Currency(); ok {
+		if err := shopstock.CurrencyValidator(v); err != nil {
+			return &ValidationError{Name: "currency", err: fmt.Errorf(`ent: validator failed for field "ShopStock.currency": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.UnitAmountMinor(); !ok {
+		return &ValidationError{Name: "unit_amount_minor", err: errors.New(`ent: missing required field "ShopStock.unit_amount_minor"`)}
+	}
+	if v, ok := _c.mutation.UnitAmountMinor(); ok {
+		if err := shopstock.UnitAmountMinorValidator(v); err != nil {
+			return &ValidationError{Name: "unit_amount_minor", err: fmt.Errorf(`ent: validator failed for field "ShopStock.unit_amount_minor": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.MinQuantity(); !ok {
+		return &ValidationError{Name: "min_quantity", err: errors.New(`ent: missing required field "ShopStock.min_quantity"`)}
+	}
+	if v, ok := _c.mutation.MinQuantity(); ok {
+		if err := shopstock.MinQuantityValidator(v); err != nil {
+			return &ValidationError{Name: "min_quantity", err: fmt.Errorf(`ent: validator failed for field "ShopStock.min_quantity": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.MaxQuantity(); !ok {
+		return &ValidationError{Name: "max_quantity", err: errors.New(`ent: missing required field "ShopStock.max_quantity"`)}
+	}
+	if v, ok := _c.mutation.MaxQuantity(); ok {
+		if err := shopstock.MaxQuantityValidator(v); err != nil {
+			return &ValidationError{Name: "max_quantity", err: fmt.Errorf(`ent: validator failed for field "ShopStock.max_quantity": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Version(); !ok {
@@ -277,6 +532,46 @@ func (_c *ShopStockCreate) createSpec() (*ShopStock, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.VariantKey(); ok {
 		_spec.SetField(shopstock.FieldVariantKey, field.TypeString, value)
 		_node.VariantKey = value
+	}
+	if value, ok := _c.mutation.ReleaseID(); ok {
+		_spec.SetField(shopstock.FieldReleaseID, field.TypeString, value)
+		_node.ReleaseID = value
+	}
+	if value, ok := _c.mutation.Enabled(); ok {
+		_spec.SetField(shopstock.FieldEnabled, field.TypeBool, value)
+		_node.Enabled = value
+	}
+	if value, ok := _c.mutation.Label(); ok {
+		_spec.SetField(shopstock.FieldLabel, field.TypeString, value)
+		_node.Label = value
+	}
+	if value, ok := _c.mutation.Region(); ok {
+		_spec.SetField(shopstock.FieldRegion, field.TypeString, value)
+		_node.Region = value
+	}
+	if value, ok := _c.mutation.Platform(); ok {
+		_spec.SetField(shopstock.FieldPlatform, field.TypeString, value)
+		_node.Platform = value
+	}
+	if value, ok := _c.mutation.Server(); ok {
+		_spec.SetField(shopstock.FieldServer, field.TypeString, value)
+		_node.Server = value
+	}
+	if value, ok := _c.mutation.Currency(); ok {
+		_spec.SetField(shopstock.FieldCurrency, field.TypeString, value)
+		_node.Currency = value
+	}
+	if value, ok := _c.mutation.UnitAmountMinor(); ok {
+		_spec.SetField(shopstock.FieldUnitAmountMinor, field.TypeInt64, value)
+		_node.UnitAmountMinor = value
+	}
+	if value, ok := _c.mutation.MinQuantity(); ok {
+		_spec.SetField(shopstock.FieldMinQuantity, field.TypeInt, value)
+		_node.MinQuantity = value
+	}
+	if value, ok := _c.mutation.MaxQuantity(); ok {
+		_spec.SetField(shopstock.FieldMaxQuantity, field.TypeInt, value)
+		_node.MaxQuantity = value
 	}
 	if value, ok := _c.mutation.Version(); ok {
 		_spec.SetField(shopstock.FieldVersion, field.TypeInt, value)

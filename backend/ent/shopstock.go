@@ -21,6 +21,26 @@ type ShopStock struct {
 	ProductID string `json:"product_id,omitempty"`
 	// VariantKey holds the value of the "variant_key" field.
 	VariantKey string `json:"variant_key,omitempty"`
+	// ReleaseID holds the value of the "release_id" field.
+	ReleaseID string `json:"release_id,omitempty"`
+	// Enabled holds the value of the "enabled" field.
+	Enabled bool `json:"enabled,omitempty"`
+	// Label holds the value of the "label" field.
+	Label string `json:"label,omitempty"`
+	// Region holds the value of the "region" field.
+	Region string `json:"region,omitempty"`
+	// Platform holds the value of the "platform" field.
+	Platform string `json:"platform,omitempty"`
+	// Server holds the value of the "server" field.
+	Server string `json:"server,omitempty"`
+	// Currency holds the value of the "currency" field.
+	Currency string `json:"currency,omitempty"`
+	// UnitAmountMinor holds the value of the "unit_amount_minor" field.
+	UnitAmountMinor int64 `json:"unit_amount_minor,omitempty"`
+	// MinQuantity holds the value of the "min_quantity" field.
+	MinQuantity int `json:"min_quantity,omitempty"`
+	// MaxQuantity holds the value of the "max_quantity" field.
+	MaxQuantity int `json:"max_quantity,omitempty"`
 	// Version holds the value of the "version" field.
 	Version int `json:"version,omitempty"`
 	// Total holds the value of the "total" field.
@@ -39,9 +59,11 @@ func (*ShopStock) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case shopstock.FieldVersion, shopstock.FieldTotal, shopstock.FieldReserved, shopstock.FieldCommitted:
+		case shopstock.FieldEnabled:
+			values[i] = new(sql.NullBool)
+		case shopstock.FieldUnitAmountMinor, shopstock.FieldMinQuantity, shopstock.FieldMaxQuantity, shopstock.FieldVersion, shopstock.FieldTotal, shopstock.FieldReserved, shopstock.FieldCommitted:
 			values[i] = new(sql.NullInt64)
-		case shopstock.FieldID, shopstock.FieldProductID, shopstock.FieldVariantKey:
+		case shopstock.FieldID, shopstock.FieldProductID, shopstock.FieldVariantKey, shopstock.FieldReleaseID, shopstock.FieldLabel, shopstock.FieldRegion, shopstock.FieldPlatform, shopstock.FieldServer, shopstock.FieldCurrency:
 			values[i] = new(sql.NullString)
 		case shopstock.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -77,6 +99,66 @@ func (_m *ShopStock) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field variant_key", values[i])
 			} else if value.Valid {
 				_m.VariantKey = value.String
+			}
+		case shopstock.FieldReleaseID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field release_id", values[i])
+			} else if value.Valid {
+				_m.ReleaseID = value.String
+			}
+		case shopstock.FieldEnabled:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field enabled", values[i])
+			} else if value.Valid {
+				_m.Enabled = value.Bool
+			}
+		case shopstock.FieldLabel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field label", values[i])
+			} else if value.Valid {
+				_m.Label = value.String
+			}
+		case shopstock.FieldRegion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field region", values[i])
+			} else if value.Valid {
+				_m.Region = value.String
+			}
+		case shopstock.FieldPlatform:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field platform", values[i])
+			} else if value.Valid {
+				_m.Platform = value.String
+			}
+		case shopstock.FieldServer:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field server", values[i])
+			} else if value.Valid {
+				_m.Server = value.String
+			}
+		case shopstock.FieldCurrency:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field currency", values[i])
+			} else if value.Valid {
+				_m.Currency = value.String
+			}
+		case shopstock.FieldUnitAmountMinor:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field unit_amount_minor", values[i])
+			} else if value.Valid {
+				_m.UnitAmountMinor = value.Int64
+			}
+		case shopstock.FieldMinQuantity:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field min_quantity", values[i])
+			} else if value.Valid {
+				_m.MinQuantity = int(value.Int64)
+			}
+		case shopstock.FieldMaxQuantity:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field max_quantity", values[i])
+			} else if value.Valid {
+				_m.MaxQuantity = int(value.Int64)
 			}
 		case shopstock.FieldVersion:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -149,6 +231,36 @@ func (_m *ShopStock) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("variant_key=")
 	builder.WriteString(_m.VariantKey)
+	builder.WriteString(", ")
+	builder.WriteString("release_id=")
+	builder.WriteString(_m.ReleaseID)
+	builder.WriteString(", ")
+	builder.WriteString("enabled=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Enabled))
+	builder.WriteString(", ")
+	builder.WriteString("label=")
+	builder.WriteString(_m.Label)
+	builder.WriteString(", ")
+	builder.WriteString("region=")
+	builder.WriteString(_m.Region)
+	builder.WriteString(", ")
+	builder.WriteString("platform=")
+	builder.WriteString(_m.Platform)
+	builder.WriteString(", ")
+	builder.WriteString("server=")
+	builder.WriteString(_m.Server)
+	builder.WriteString(", ")
+	builder.WriteString("currency=")
+	builder.WriteString(_m.Currency)
+	builder.WriteString(", ")
+	builder.WriteString("unit_amount_minor=")
+	builder.WriteString(fmt.Sprintf("%v", _m.UnitAmountMinor))
+	builder.WriteString(", ")
+	builder.WriteString("min_quantity=")
+	builder.WriteString(fmt.Sprintf("%v", _m.MinQuantity))
+	builder.WriteString(", ")
+	builder.WriteString("max_quantity=")
+	builder.WriteString(fmt.Sprintf("%v", _m.MaxQuantity))
 	builder.WriteString(", ")
 	builder.WriteString("version=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Version))

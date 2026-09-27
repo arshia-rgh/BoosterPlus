@@ -31,6 +31,9 @@ func eligible(ctx context.Context, c *ent.Client, row *ent.Order) (bool, error) 
 		if err != nil || !acknowledged {
 			return false, err
 		}
+	case order.KindShop:
+		// Shop completion and its accepted review policy are qualified in DI11C.
+		return false, nil
 	default:
 		return false, nil
 	}

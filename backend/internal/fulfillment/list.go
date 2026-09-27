@@ -61,7 +61,7 @@ func (s *Store) ListFiltered(ctx context.Context, p *identity.Principal, audienc
 				sql.EQ(contract.C(ordercontract.FieldPaymentState), string(ordercontract.PaymentStateSettled)),
 			))
 			rows.Where(sql.Exists(paidCurrent))
-			order.KindNEQ(order.KindAccount)(rows)
+			order.KindIn(order.KindCustom, order.KindPackage)(rows)
 			if search != "" {
 				order.Or(order.GameNameContainsFold(search), order.IDEQ(search))(rows)
 			}
