@@ -3,6 +3,7 @@
 package integration
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 	"sync"
@@ -39,7 +40,16 @@ func shopPaymentOrder(t *testing.T, f *paymentFixture) (orders.Detail, *ent.Shop
 	if err != nil {
 		t.Fatal(err)
 	}
-	purchase, err := f.base.auth.client.Order.Create().SetUserID(f.base.buyer.User.ID).SetGameID(f.base.game.ID).SetGameName("Synthetic shop game").SetSlug(f.base.game.Slug).SetService("shop").SetKind(order.KindShop).SetShopProductID(product.ID).SetVariantKey("fixture").SetRequestKey(uuid.NewString()).SetRequestHash(strings.Repeat("c", 64)).SetState(order.StateAwaitingPayment).SetAnswers(map[string]any{}).SetSnapshot(map[string]any{}).SetEstimate(map[string]any{}).SetTermsVersion(f.base.auth.cfg.TermsVersion).Save(ctx)
+	definition := shopDefinition()
+	raw, err := json.Marshal(shop.Purchase{ProductID: product.ID, ReleaseID: product.CurrentRelease, Product: definition, Variant: definition.Variants[0], Quantity: 1, AmountMinor: "1234"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var snapshot map[string]any
+	if err = json.Unmarshal(raw, &snapshot); err != nil {
+		t.Fatal(err)
+	}
+	purchase, err := f.base.auth.client.Order.Create().SetUserID(f.base.buyer.User.ID).SetGameID(f.base.game.ID).SetGameName("Synthetic shop game").SetSlug(f.base.game.Slug).SetService("shop").SetKind(order.KindShop).SetShopProductID(product.ID).SetShopSnapshot(snapshot).SetVariantKey("fixture").SetRequestKey(uuid.NewString()).SetRequestHash(strings.Repeat("c", 64)).SetState(order.StateAwaitingPayment).SetAnswers(map[string]any{}).SetSnapshot(map[string]any{}).SetEstimate(map[string]any{}).SetTermsVersion(f.base.auth.cfg.TermsVersion).Save(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -69,6 +69,13 @@ func (s *Store) applyCaseOutcome(ctx context.Context, tx *ent.Tx, p *identity.Pr
 		}
 		if row.Kind == order.KindShop {
 			// Shop delivery keeps its own staff review record; never mutate booster work.
+			held, holdErr := shopevents.HoldDeliveryAfterCase(ctx, tx, row, s.instant())
+			if holdErr != nil {
+				return holdErr
+			}
+			if held {
+				next = order.StateOnHold
+			}
 			break
 		}
 		update := tx.Fulfillment.Update().Where(fulfillment.OrderIDEQ(row.ID)).AddVersion(1).AddAccessVersion(1).SetCompletionPending(false).SetCurrentNote("Case resolved; review handoff before resuming.")
@@ -91,6 +98,15 @@ func (s *Store) applyCaseOutcome(ctx context.Context, tx *ent.Tx, p *identity.Pr
 		}
 	default:
 		return ErrInvalid
+	}
+	if row.Kind == order.KindShop && record.Outcome == "retain" && next == order.StateQueued {
+		held, holdErr := shopevents.HoldDeliveryAfterCase(ctx, tx, row, s.instant())
+		if holdErr != nil {
+			return holdErr
+		}
+		if held {
+			next = order.StateOnHold
+		}
 	}
 	if err = s.event(ctx, tx, row, next, "case_resolved", "The service case was resolved. Review its decision and refund history for the agreed outcome."); err != nil {
 		return err

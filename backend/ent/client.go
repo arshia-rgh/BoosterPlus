@@ -66,6 +66,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/selleroffer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sellerofferevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopdelivery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproduct"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductrelease"
@@ -194,6 +195,8 @@ type Client struct {
 	SellerOfferEvent *SellerOfferEventClient
 	// ServiceCase is the client for interacting with the ServiceCase builders.
 	ServiceCase *ServiceCaseClient
+	// ShopDelivery is the client for interacting with the ShopDelivery builders.
+	ShopDelivery *ShopDeliveryClient
 	// ShopProduct is the client for interacting with the ShopProduct builders.
 	ShopProduct *ShopProductClient
 	// ShopProductEvent is the client for interacting with the ShopProductEvent builders.
@@ -287,6 +290,7 @@ func (c *Client) init() {
 	c.SellerOffer = NewSellerOfferClient(c.config)
 	c.SellerOfferEvent = NewSellerOfferEventClient(c.config)
 	c.ServiceCase = NewServiceCaseClient(c.config)
+	c.ShopDelivery = NewShopDeliveryClient(c.config)
 	c.ShopProduct = NewShopProductClient(c.config)
 	c.ShopProductEvent = NewShopProductEventClient(c.config)
 	c.ShopProductRelease = NewShopProductReleaseClient(c.config)
@@ -446,6 +450,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		SellerOffer:              NewSellerOfferClient(cfg),
 		SellerOfferEvent:         NewSellerOfferEventClient(cfg),
 		ServiceCase:              NewServiceCaseClient(cfg),
+		ShopDelivery:             NewShopDeliveryClient(cfg),
 		ShopProduct:              NewShopProductClient(cfg),
 		ShopProductEvent:         NewShopProductEventClient(cfg),
 		ShopProductRelease:       NewShopProductReleaseClient(cfg),
@@ -532,6 +537,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		SellerOffer:              NewSellerOfferClient(cfg),
 		SellerOfferEvent:         NewSellerOfferEventClient(cfg),
 		ServiceCase:              NewServiceCaseClient(cfg),
+		ShopDelivery:             NewShopDeliveryClient(cfg),
 		ShopProduct:              NewShopProductClient(cfg),
 		ShopProductEvent:         NewShopProductEventClient(cfg),
 		ShopProductRelease:       NewShopProductReleaseClient(cfg),
@@ -588,10 +594,11 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
 		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
 		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
-		c.ServiceCase, c.ShopProduct, c.ShopProductEvent, c.ShopProductRelease,
-		c.ShopRecipient, c.ShopReservation, c.ShopStock, c.SiteRelease, c.SiteSetting,
-		c.StaffProfile, c.SubmissionEvent, c.TransferAttempt, c.TransferEvent,
-		c.TransferObservation, c.TransferRecord, c.User,
+		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
+		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
+		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
+		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
+		c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -613,10 +620,11 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
 		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
 		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
-		c.ServiceCase, c.ShopProduct, c.ShopProductEvent, c.ShopProductRelease,
-		c.ShopRecipient, c.ShopReservation, c.ShopStock, c.SiteRelease, c.SiteSetting,
-		c.StaffProfile, c.SubmissionEvent, c.TransferAttempt, c.TransferEvent,
-		c.TransferObservation, c.TransferRecord, c.User,
+		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
+		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
+		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
+		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
+		c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -729,6 +737,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.SellerOfferEvent.mutate(ctx, m)
 	case *ServiceCaseMutation:
 		return c.ServiceCase.mutate(ctx, m)
+	case *ShopDeliveryMutation:
+		return c.ShopDelivery.mutate(ctx, m)
 	case *ShopProductMutation:
 		return c.ShopProduct.mutate(ctx, m)
 	case *ShopProductEventMutation:
@@ -7680,6 +7690,139 @@ func (c *ServiceCaseClient) mutate(ctx context.Context, m *ServiceCaseMutation) 
 	}
 }
 
+// ShopDeliveryClient is a client for the ShopDelivery schema.
+type ShopDeliveryClient struct {
+	config
+}
+
+// NewShopDeliveryClient returns a client for the ShopDelivery from the given config.
+func NewShopDeliveryClient(c config) *ShopDeliveryClient {
+	return &ShopDeliveryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `shopdelivery.Hooks(f(g(h())))`.
+func (c *ShopDeliveryClient) Use(hooks ...Hook) {
+	c.hooks.ShopDelivery = append(c.hooks.ShopDelivery, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `shopdelivery.Intercept(f(g(h())))`.
+func (c *ShopDeliveryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ShopDelivery = append(c.inters.ShopDelivery, interceptors...)
+}
+
+// Create returns a builder for creating a ShopDelivery entity.
+func (c *ShopDeliveryClient) Create() *ShopDeliveryCreate {
+	mutation := newShopDeliveryMutation(c.config, OpCreate)
+	return &ShopDeliveryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ShopDelivery entities.
+func (c *ShopDeliveryClient) CreateBulk(builders ...*ShopDeliveryCreate) *ShopDeliveryCreateBulk {
+	return &ShopDeliveryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ShopDeliveryClient) MapCreateBulk(slice any, setFunc func(*ShopDeliveryCreate, int)) *ShopDeliveryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ShopDeliveryCreateBulk{err: fmt.Errorf("calling to ShopDeliveryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ShopDeliveryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ShopDeliveryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ShopDelivery.
+func (c *ShopDeliveryClient) Update() *ShopDeliveryUpdate {
+	mutation := newShopDeliveryMutation(c.config, OpUpdate)
+	return &ShopDeliveryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ShopDeliveryClient) UpdateOne(_m *ShopDelivery) *ShopDeliveryUpdateOne {
+	mutation := newShopDeliveryMutation(c.config, OpUpdateOne, withShopDelivery(_m))
+	return &ShopDeliveryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ShopDeliveryClient) UpdateOneID(id string) *ShopDeliveryUpdateOne {
+	mutation := newShopDeliveryMutation(c.config, OpUpdateOne, withShopDeliveryID(id))
+	return &ShopDeliveryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ShopDelivery.
+func (c *ShopDeliveryClient) Delete() *ShopDeliveryDelete {
+	mutation := newShopDeliveryMutation(c.config, OpDelete)
+	return &ShopDeliveryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ShopDeliveryClient) DeleteOne(_m *ShopDelivery) *ShopDeliveryDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ShopDeliveryClient) DeleteOneID(id string) *ShopDeliveryDeleteOne {
+	builder := c.Delete().Where(shopdelivery.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ShopDeliveryDeleteOne{builder}
+}
+
+// Query returns a query builder for ShopDelivery.
+func (c *ShopDeliveryClient) Query() *ShopDeliveryQuery {
+	return &ShopDeliveryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeShopDelivery},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ShopDelivery entity by its id.
+func (c *ShopDeliveryClient) Get(ctx context.Context, id string) (*ShopDelivery, error) {
+	return c.Query().Where(shopdelivery.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ShopDeliveryClient) GetX(ctx context.Context, id string) *ShopDelivery {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ShopDeliveryClient) Hooks() []Hook {
+	return c.hooks.ShopDelivery
+}
+
+// Interceptors returns the client interceptors.
+func (c *ShopDeliveryClient) Interceptors() []Interceptor {
+	return c.inters.ShopDelivery
+}
+
+func (c *ShopDeliveryClient) mutate(ctx context.Context, m *ShopDeliveryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ShopDeliveryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ShopDeliveryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ShopDeliveryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ShopDeliveryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ShopDelivery mutation op: %q", m.Op())
+	}
+}
+
 // ShopProductClient is a client for the ShopProduct schema.
 type ShopProductClient struct {
 	config
@@ -9688,7 +9831,7 @@ type (
 		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
 		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
 		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
-		SellerOfferEvent, ServiceCase, ShopProduct, ShopProductEvent,
+		SellerOfferEvent, ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent,
 		ShopProductRelease, ShopRecipient, ShopReservation, ShopStock, SiteRelease,
 		SiteSetting, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
 		TransferObservation, TransferRecord, User []ent.Hook
@@ -9704,7 +9847,7 @@ type (
 		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
 		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
 		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
-		SellerOfferEvent, ServiceCase, ShopProduct, ShopProductEvent,
+		SellerOfferEvent, ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent,
 		ShopProductRelease, ShopRecipient, ShopReservation, ShopStock, SiteRelease,
 		SiteSetting, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
 		TransferObservation, TransferRecord, User []ent.Interceptor

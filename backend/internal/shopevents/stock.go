@@ -137,11 +137,14 @@ func CancelPaid(ctx context.Context, tx *ent.Tx, purchase *ent.Order, now time.T
 		return err
 	}
 	if row.State == "cancelled" || row.State == "released" {
-		return nil
+		return cancelDelivery(ctx, tx, purchase, now)
 	}
 	if row.State != "paid" {
 		return ErrConflict
 	}
 	_, err = tx.ShopReservation.UpdateOne(row).SetState("cancelled").AddVersion(1).SetUpdatedAt(now).Save(ctx)
-	return err
+	if err != nil {
+		return err
+	}
+	return cancelDelivery(ctx, tx, purchase, now)
 }

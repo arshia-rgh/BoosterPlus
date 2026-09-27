@@ -1746,6 +1746,41 @@ var (
 			},
 		},
 	}
+	// ShopDeliveriesColumns holds the columns for the "shop_deliveries" table.
+	ShopDeliveriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "assigned_id", Type: field.TypeString, Size: 36},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "processing"},
+		{Name: "note", Type: field.TypeString, Size: 2000},
+		{Name: "proof_message_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ShopDeliveriesTable holds the schema information for the "shop_deliveries" table.
+	ShopDeliveriesTable = &schema.Table{
+		Name:       "shop_deliveries",
+		Columns:    ShopDeliveriesColumns,
+		PrimaryKey: []*schema.Column{ShopDeliveriesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "shop_order_delivery",
+				Unique:  true,
+				Columns: []*schema.Column{ShopDeliveriesColumns[1]},
+			},
+			{
+				Name:    "shop_delivery_queue",
+				Unique:  false,
+				Columns: []*schema.Column{ShopDeliveriesColumns[4], ShopDeliveriesColumns[8], ShopDeliveriesColumns[0]},
+			},
+			{
+				Name:    "shop_delivery_assignee",
+				Unique:  false,
+				Columns: []*schema.Column{ShopDeliveriesColumns[3], ShopDeliveriesColumns[4], ShopDeliveriesColumns[8], ShopDeliveriesColumns[0]},
+			},
+		},
+	}
 	// ShopProductsColumns holds the columns for the "shop_products" table.
 	ShopProductsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -2219,6 +2254,7 @@ var (
 		SellerOffersTable,
 		SellerOfferEventsTable,
 		ServiceCasesTable,
+		ShopDeliveriesTable,
 		ShopProductsTable,
 		ShopProductEventsTable,
 		ShopProductReleasesTable,

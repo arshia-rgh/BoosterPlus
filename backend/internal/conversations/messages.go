@@ -16,6 +16,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversationread"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/shop"
 )
 
 func messageView(row *ent.ConversationMessage, admin bool) Message {
@@ -96,13 +97,26 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 	}
 	digest := s.auth.RequestDigest("conversation-message", raw)
 	var result Message
-	err = s.auth.AuthorizedTransaction(ctx, p, capability(admin), false, func(tx *ent.Tx, current *identity.Principal) error {
+	err = s.auth.AuthorizedTransaction(ctx, p, capability(admin), admin && input.Purpose == "proof", func(tx *ent.Tx, current *identity.Principal) error {
 		row, e := owned(ctx, tx.Client(), current, id, admin)
 		if e != nil {
 			return e
 		}
-		if input.Purpose == "proof" && (row.Kind != conversation.KindFulfillment || input.Visibility != "public" || len(input.Attachments) == 0 || (!admin && current.User.ID == row.UserID)) {
-			return identity.ErrForbidden
+		if input.Purpose == "proof" {
+			if input.Visibility != "public" || len(input.Attachments) == 0 || (!admin && current.User.ID == row.UserID) {
+				return identity.ErrForbidden
+			}
+			if row.Kind != conversation.KindFulfillment {
+				if !admin {
+					return identity.ErrForbidden
+				}
+				if e = shop.AuthorizeProofPublication(ctx, tx, current, row); e != nil {
+					if errors.Is(e, shop.ErrConflict) || errors.Is(e, shop.ErrInvalid) {
+						return ErrConflict
+					}
+					return e
+				}
+			}
 		}
 		staffSender := admin || current.User.ID != row.UserID
 		existing, e := tx.ConversationMessage.Query().Where(conversationmessage.ConversationIDEQ(id), conversationmessage.SenderIDEQ(current.User.ID), conversationmessage.RequestKeyEQ(input.RequestKey)).Only(ctx)
@@ -164,9 +178,13 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 		}
 		action := "conversation_message"
 		if input.Purpose == "proof" {
-			action = "fulfillment_proof_published"
-			if e = s.recordProof(ctx, tx, current, row); e != nil {
-				return e
+			if row.Kind == conversation.KindFulfillment {
+				action = "fulfillment_proof_published"
+				if e = s.recordProof(ctx, tx, current, row); e != nil {
+					return e
+				}
+			} else {
+				action = "shop_delivery_proof_published"
 			}
 		}
 		if e = audit(ctx, tx, current, id, action, now); e != nil {
@@ -175,7 +193,10 @@ func (s *Store) Send(ctx context.Context, p *identity.Principal, id string, admi
 		result = messageView(message, admin)
 		return nil
 	})
-	return result, err
+	if err != nil {
+		return Message{}, err
+	}
+	return result, nil
 }
 
 // Read advances only the observed audience's cursor, never a hidden/future message.

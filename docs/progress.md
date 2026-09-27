@@ -1270,3 +1270,9 @@ Expanded protected order export with owned recipient/reservation records using b
 DI11B3 cursor/recent-auth test passed in 8.583 seconds: 100+1 records, correct per-order recipient association, no duplicates and stale primary verification rejected. Full aggregate qualification remains deferred to DI15.
 
 DI11B3 delivered as `722fbf2`; focused hook passed, push completed and remote SHA matched. DI11 remains in progress with public purchase, recipient capture/access UI, manual fulfillment and remaining authoring/discovery integration pending. DI12–DI15 remain queued; R10/R11 remain held.
+
+### DI11C1 manual shop delivery domain — in verification
+
+Added explicit SQL migration 36, versioned staff delivery transitions, recently verified/audited recipient disclosure and immutable order-conversation evidence. Paid contract/receipt/inventory checks gate every delivery action; active cases block completion and resolved continuation requires staff review/resume. Cancellation never silently replenishes stock. The unchanged UI and public shop capability remain closed until the remaining purchase and delivery interfaces/contracts are implemented. Focused security/integration verification is underway; see `docs/redesign/DI11_QUALIFICATION.md`. DI11 remains in progress; full gate remains DI15 and final launch stays held.
+
+DI11C1 focused delivery/payment/migration/scanned-chat regression passed in 129.332 seconds; final seven delivery scenarios with assignment/portal boundaries passed in 43.435 seconds under the race detector. The standalone backend focused gate passed, including gosec and live govulncheck (zero reachable vulnerabilities; one advisory outside called paths in a required module). Final tracked-hook/commit receipt follows. No public purchase activation, live provider call or UI completion is claimed.

@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 35
+const SchemaVersion = 36
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,6 +47,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"shop_deliveries.proof_message_id": "varchar",
 		"shop_recipients.recipient_values": "json", "shop_reservations.quantity": "bigint", "orders.shop_snapshot": "json", "shop_stocks.enabled": "tinyint",
 		"shop_products.draft": "json", "shop_product_releases.data": "json", "shop_stocks.reserved": "bigint", "shop_stocks.committed": "bigint", "shop_product_events.note": "varchar",
 		"payment_attempts.native_checkout": "tinyint", "payment_attempts.deposit_claimed": "tinyint", "payment_attempts.deposit_payment_id": "varchar", "payment_attempts.deposit_data": "json",
@@ -101,6 +102,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 
 func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"shop_deliveries.shop_order_delivery":      "order_id",
 		"shop_reservations.shop_order_reservation": "order_id", "shop_recipients.shop_order_recipient": "order_id",
 		"shop_products.shop_product_slug": "game_id,slug", "shop_product_releases.shop_product_release_version": "product_id,version", "shop_stocks.shop_variant_stock": "product_id,variant_key", "shop_product_events.shop_product_event_version": "product_id,version",
 		"site_releases.site_release_version": "kind,version", "site_releases.site_release_label": "kind,label", "privacy_requests.privacy_active_user": "active_user_id",

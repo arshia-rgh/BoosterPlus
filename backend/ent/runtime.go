@@ -58,6 +58,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/selleroffer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sellerofferevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopdelivery"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproduct"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductrelease"
@@ -2223,6 +2224,52 @@ func init() {
 	servicecase.DefaultID = servicecaseDescID.Default.(func() string)
 	// servicecase.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	servicecase.IDValidator = servicecaseDescID.Validators[0].(func(string) error)
+	shopdeliveryFields := schema.ShopDelivery{}.Fields()
+	_ = shopdeliveryFields
+	// shopdeliveryDescOrderID is the schema descriptor for order_id field.
+	shopdeliveryDescOrderID := shopdeliveryFields[1].Descriptor()
+	// shopdelivery.OrderIDValidator is a validator for the "order_id" field. It is called by the builders before save.
+	shopdelivery.OrderIDValidator = shopdeliveryDescOrderID.Validators[0].(func(string) error)
+	// shopdeliveryDescVersion is the schema descriptor for version field.
+	shopdeliveryDescVersion := shopdeliveryFields[2].Descriptor()
+	// shopdelivery.DefaultVersion holds the default value on creation for the version field.
+	shopdelivery.DefaultVersion = shopdeliveryDescVersion.Default.(int)
+	// shopdelivery.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	shopdelivery.VersionValidator = shopdeliveryDescVersion.Validators[0].(func(int) error)
+	// shopdeliveryDescAssignedID is the schema descriptor for assigned_id field.
+	shopdeliveryDescAssignedID := shopdeliveryFields[3].Descriptor()
+	// shopdelivery.AssignedIDValidator is a validator for the "assigned_id" field. It is called by the builders before save.
+	shopdelivery.AssignedIDValidator = shopdeliveryDescAssignedID.Validators[0].(func(string) error)
+	// shopdeliveryDescState is the schema descriptor for state field.
+	shopdeliveryDescState := shopdeliveryFields[4].Descriptor()
+	// shopdelivery.DefaultState holds the default value on creation for the state field.
+	shopdelivery.DefaultState = shopdeliveryDescState.Default.(string)
+	// shopdelivery.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	shopdelivery.StateValidator = shopdeliveryDescState.Validators[0].(func(string) error)
+	// shopdeliveryDescNote is the schema descriptor for note field.
+	shopdeliveryDescNote := shopdeliveryFields[5].Descriptor()
+	// shopdelivery.NoteValidator is a validator for the "note" field. It is called by the builders before save.
+	shopdelivery.NoteValidator = shopdeliveryDescNote.Validators[0].(func(string) error)
+	// shopdeliveryDescProofMessageID is the schema descriptor for proof_message_id field.
+	shopdeliveryDescProofMessageID := shopdeliveryFields[6].Descriptor()
+	// shopdelivery.DefaultProofMessageID holds the default value on creation for the proof_message_id field.
+	shopdelivery.DefaultProofMessageID = shopdeliveryDescProofMessageID.Default.(string)
+	// shopdelivery.ProofMessageIDValidator is a validator for the "proof_message_id" field. It is called by the builders before save.
+	shopdelivery.ProofMessageIDValidator = shopdeliveryDescProofMessageID.Validators[0].(func(string) error)
+	// shopdeliveryDescCreatedAt is the schema descriptor for created_at field.
+	shopdeliveryDescCreatedAt := shopdeliveryFields[7].Descriptor()
+	// shopdelivery.DefaultCreatedAt holds the default value on creation for the created_at field.
+	shopdelivery.DefaultCreatedAt = shopdeliveryDescCreatedAt.Default.(func() time.Time)
+	// shopdeliveryDescUpdatedAt is the schema descriptor for updated_at field.
+	shopdeliveryDescUpdatedAt := shopdeliveryFields[8].Descriptor()
+	// shopdelivery.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	shopdelivery.DefaultUpdatedAt = shopdeliveryDescUpdatedAt.Default.(func() time.Time)
+	// shopdeliveryDescID is the schema descriptor for id field.
+	shopdeliveryDescID := shopdeliveryFields[0].Descriptor()
+	// shopdelivery.DefaultID holds the default value on creation for the id field.
+	shopdelivery.DefaultID = shopdeliveryDescID.Default.(func() string)
+	// shopdelivery.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	shopdelivery.IDValidator = shopdeliveryDescID.Validators[0].(func(string) error)
 	shopproductFields := schema.ShopProduct{}.Fields()
 	_ = shopproductFields
 	// shopproductDescGameID is the schema descriptor for game_id field.
