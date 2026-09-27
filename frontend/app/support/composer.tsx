@@ -16,6 +16,7 @@ import { denied, uncertain } from "./chat-state";
 export default function Composer({
   base,
   admin,
+  audience = "Customer and PLAYORA support",
   proofAllowed,
   unavailable,
   done,
@@ -23,6 +24,7 @@ export default function Composer({
 }: {
   base: string;
   admin: boolean;
+  audience?: string;
   proofAllowed: boolean;
   unavailable: boolean;
   done: () => void;
@@ -40,6 +42,7 @@ export default function Composer({
   const [error, setError] = useState<unknown>(null),
     [notice, setNotice] = useState("");
   const [desktop, setDesktop] = useState(false);
+  const [enterToSend, setEnterToSend] = useState(false);
   const key = useRef(crypto.randomUUID()),
     lock = useRef(false),
     composing = useRef(false);
@@ -157,6 +160,7 @@ export default function Composer({
       event.altKey ||
       event.metaKey ||
       !desktop ||
+      !enterToSend ||
       composing.current ||
       event.nativeEvent.isComposing ||
       // eslint-disable-next-line @typescript-eslint/no-deprecated -- Retain legacy IME-confirm detection alongside isComposing.
@@ -185,7 +189,7 @@ export default function Composer({
             value={visibility}
             disabled={!editable}
             options={[
-              ["public", "Reply to customer"],
+              ["public", "Reply"],
               ["internal", "Internal note · staff only"],
             ]}
             change={(next) => {
@@ -203,7 +207,7 @@ export default function Composer({
             }}
           />
         ) : (
-          <strong>Reply to this conversation</strong>
+          <strong>To: {audience}</strong>
         )}
         {proofAllowed && visibility === "public" && (
           <Select
@@ -222,6 +226,9 @@ export default function Composer({
           />
         )}
       </div>
+      {admin && visibility === "public" && (
+        <p className="composer-recipients">To: {audience}</p>
+      )}
       {visibility === "internal" && (
         <p className="audience-warning">
           Private note · visible to administrators only.
@@ -311,8 +318,20 @@ export default function Composer({
           />
         </fieldset>
       </div>
+      {desktop && (
+        <label className="composer-enter-preference">
+          <input
+            type="checkbox"
+            checked={enterToSend}
+            onChange={(event) => {
+              setEnterToSend(event.target.checked);
+            }}
+          />
+          Press Enter to send
+        </label>
+      )}
       <p id={helpID} className="composer-help">
-        {desktop
+        {desktop && enterToSend
           ? "Enter to send · Shift+Enter for a new line. "
           : "Use the send button when ready. "}
         Drafts clear on exit. Use secure access for credentials.

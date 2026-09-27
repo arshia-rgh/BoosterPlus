@@ -118,10 +118,15 @@ it("lets a definite validation rejection be corrected but reports access revocat
   });
   expect(done).not.toHaveBeenCalled();
 });
-it("respects IME confirmation and Shift+Enter while allowing desktop Enter to send", async () => {
+it("requires an explicit Enter preference and respects IME confirmation and Shift+Enter", async () => {
   view(false);
   const input = screen.getByLabelText("Message", { exact: true });
   fireEvent.change(input, { target: { value: "日本語 draft" } });
+  fireEvent.keyDown(input, { key: "Enter" });
+  expect(post).not.toHaveBeenCalled();
+  fireEvent.click(
+    screen.getByRole("checkbox", { name: "Press Enter to send" }),
+  );
   fireEvent.compositionStart(input);
   fireEvent.keyDown(input, { key: "Enter" });
   fireEvent.compositionEnd(input);
@@ -155,4 +160,27 @@ it("uses explicit Send on touch keyboards and clears drafts on thread unmount", 
   });
   fireEvent.click(screen.getByRole("button", { name: "Send message" }));
   await screen.findByText("Message sent.");
+});
+
+it("names the shared recipients separately from private staff notes", () => {
+  render(
+    <Composer
+      base="/admin/conversations/shared"
+      admin
+      audience="Customer, assigned booster and PLAYORA staff"
+      proofAllowed
+      unavailable={false}
+      done={done}
+      fail={fail}
+    />,
+  );
+  expect(
+    screen.getByText("To: Customer, assigned booster and PLAYORA staff"),
+  ).toBeVisible();
+  fireEvent.change(screen.getByLabelText("Message audience"), {
+    target: { value: "internal" },
+  });
+  expect(
+    screen.getByText("Private note · visible to administrators only."),
+  ).toBeVisible();
 });

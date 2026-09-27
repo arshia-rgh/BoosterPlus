@@ -4771,8 +4771,10 @@
             "name": "after",
             "in": "query",
             "schema": {
-              "type": "string"
-            }
+              "type": "string",
+              "maxLength": 160
+            },
+            "description": "Opaque audience-specific updated-time/reference boundary from next. Legacy owned UUID cursors remain accepted."
           },
           {
             "name": "state",
@@ -4803,6 +4805,36 @@
               "$ref": "#/components/schemas/AuthPortal"
             },
             "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search subject or exact full conversation/order/submission reference; never message bodies.",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "description": "Filter by conversation audience type before pagination.",
+            "schema": {
+              "type": "string",
+              "enum": ["", "order", "presales", "submission", "fulfillment"]
+            }
+          },
+          {
+            "name": "unread",
+            "in": "query",
+            "required": false,
+            "description": "Unread for the authenticated user and current portal audience only.",
+            "schema": {
+              "type": "string",
+              "enum": ["", "true", "false"]
+            }
           }
         ]
       },
@@ -5427,8 +5459,10 @@
             "name": "after",
             "in": "query",
             "schema": {
-              "type": "string"
-            }
+              "type": "string",
+              "maxLength": 160
+            },
+            "description": "Opaque audience-specific updated-time/reference boundary from next. Legacy owned UUID cursors remain accepted."
           },
           {
             "name": "state",
@@ -5456,6 +5490,36 @@
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search subject or exact full conversation/order/submission reference; never message bodies.",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "description": "Filter by conversation audience type before pagination.",
+            "schema": {
+              "type": "string",
+              "enum": ["", "order", "presales", "submission", "fulfillment"]
+            }
+          },
+          {
+            "name": "unread",
+            "in": "query",
+            "required": false,
+            "description": "Unread for the authenticated user and current portal audience only.",
+            "schema": {
+              "type": "string",
+              "enum": ["", "true", "false"]
             }
           }
         ]

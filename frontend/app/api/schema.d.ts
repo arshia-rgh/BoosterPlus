@@ -9926,10 +9926,17 @@ export interface operations {
   customerConversations: {
     parameters: {
       query?: {
+        /** @description Opaque audience-specific updated-time/reference boundary from next. Legacy owned UUID cursors remain accepted. */
         after?: string;
         state?: string;
         assigned?: string;
         order_id?: string;
+        /** @description Search subject or exact full conversation/order/submission reference; never message bodies. */
+        search?: string;
+        /** @description Filter by conversation audience type before pagination. */
+        kind?: "" | "order" | "presales" | "submission" | "fulfillment";
+        /** @description Unread for the authenticated user and current portal audience only. */
+        unread?: "" | "true" | "false";
       };
       header?: {
         /** @description Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed. */
@@ -10315,11 +10322,18 @@ export interface operations {
   staffConversations: {
     parameters: {
       query?: {
+        /** @description Opaque audience-specific updated-time/reference boundary from next. Legacy owned UUID cursors remain accepted. */
         after?: string;
         state?: string;
         assigned?: string;
         order_id?: string;
         customer?: string;
+        /** @description Search subject or exact full conversation/order/submission reference; never message bodies. */
+        search?: string;
+        /** @description Filter by conversation audience type before pagination. */
+        kind?: "" | "order" | "presales" | "submission" | "fulfillment";
+        /** @description Unread for the authenticated user and current portal audience only. */
+        unread?: "" | "true" | "false";
       };
       header?: never;
       path?: never;

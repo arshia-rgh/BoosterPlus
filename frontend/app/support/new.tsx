@@ -1,4 +1,5 @@
-import { useState, type SubmitEvent } from "react";
+import { uncertain } from "./chat-state";
+import { useRef, useState, type SubmitEvent } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { z } from "../validation";
 import { post } from "../identity/api";
@@ -59,9 +60,14 @@ export default function NewSupport() {
     [subject, setSubject] = useState(""),
     [key, setKey] = useState(() => crypto.randomUUID()),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState<unknown>(null);
+    [unknown, setUnknown] = useState(false),
+    [error, setError] = useState<unknown>(null),
+    lock = useRef(false);
+  const valid = subject.trim().length > 0 && subject.length <= 160;
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (lock.current || !valid) return;
+    lock.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -73,13 +79,15 @@ export default function NewSupport() {
       await navigate("/support/" + result.id);
     } catch (cause) {
       setError(cause);
+      setUnknown(uncertain(cause));
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
   return (
     <form className="catalog-section" onSubmit={(event) => void submit(event)}>
-      <fieldset disabled={busy}>
+      <fieldset disabled={busy || unknown}>
         <legend>Start a private pre-sales conversation</legend>
         <p>
           Ask about services before placing an order. Keep passwords and
@@ -91,12 +99,24 @@ export default function NewSupport() {
           change={(value) => {
             setSubject(value);
             setKey(crypto.randomUUID());
+            setError(null);
           }}
+          help="Use a clear subject of 1–160 characters. For an existing order, open its Messages section instead."
         />
-        <button className="button" type="submit">
-          {busy ? "Opening…" : "Start conversation"}
-        </button>
       </fieldset>
+      {unknown && (
+        <p role="status">
+          Creation was not confirmed. Keep this request unchanged and retry to
+          open the same conversation.
+        </p>
+      )}
+      <button className="button" type="submit" disabled={busy || !valid}>
+        {busy
+          ? "Opening…"
+          : unknown
+            ? "Retry same conversation"
+            : "Start conversation"}
+      </button>
       <ErrorNotice error={error} />
     </form>
   );

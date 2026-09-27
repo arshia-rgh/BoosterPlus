@@ -1,3 +1,4 @@
+import { writeFile } from "node:fs/promises";
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { z } from "zod";
@@ -89,7 +90,47 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
     );
     await accessible(buyer);
     await page.goto("/admin/support");
+    await page
+      .getByLabel("Search conversations", { exact: true })
+      .fill(subject);
+    await page.getByLabel("Conversation type").selectOption("presales");
+    await page.getByLabel("Read status").selectOption("true");
+    await page
+      .getByRole("button", { name: "Search conversations", exact: true })
+      .click();
+    await expect(page.locator(".chat-inbox-list li")).toHaveCount(1);
+    await accessible(page);
+    await page.screenshot({
+      path: `.cache/di07-inbox-${info.project.name}.png`,
+      fullPage: true,
+    });
     await page.getByRole("link", { name: new RegExp(subject) }).click();
+    await expect(
+      page.getByRole("link", { name: "← Inbox", exact: true }),
+    ).toHaveAttribute("href", /search=Pre-sales/);
+    // Only synthetic browser fixtures are retained for the independent design review.
+    const fixtureData: Record<string, unknown> = {};
+    for (const [client, prefix] of [
+      [page, "/admin"],
+      [buyer, ""],
+    ] as const) {
+      const portal = prefix ? "admin" : "customer";
+      for (const path of [
+        `/auth/portals/${portal}/session`,
+        `${prefix}/conversations`,
+        `${prefix}/conversations/${id}`,
+        `${prefix}/conversations/${id}/messages`,
+        "/site/published",
+      ]) {
+        const response = await client.request.get("/api/v1" + path);
+        if (response.ok())
+          fixtureData["/api/v1" + path] = (await response.json()) as unknown;
+      }
+    }
+    await writeFile(
+      `.cache/di07-support-fixture-${info.project.name}.json`,
+      JSON.stringify(fixtureData),
+    );
     await page.getByLabel("Message audience").selectOption("internal");
     await page
       .getByLabel("Internal note", { exact: true })

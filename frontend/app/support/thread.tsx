@@ -30,12 +30,22 @@ function ConversationRail({
   active: Conversation | null;
 }) {
   const prefix = admin ? "/admin" : "";
+  const location = useLocation();
+  const origin = z
+    .object({ inboxSearch: z.string().max(2048) })
+    .safeParse(location.state);
+  const inbox =
+    prefix +
+    "/support" +
+    (origin.success
+      ? "?" + new URLSearchParams(origin.data.inboxSearch).toString()
+      : "");
   const resource = useResource(prefix + "/conversations", conversationsSchema);
   return (
     <aside className="chat-rail" aria-label="Conversation switcher">
       <div className="chat-rail-heading">
         <strong>Inbox</strong>
-        <Link to={prefix + "/support"}>All conversations</Link>
+        <Link to={inbox}>All conversations</Link>
       </div>
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Loading inbox…</p>}
@@ -46,6 +56,7 @@ function ConversationRail({
             <Link
               key={thread.id}
               to={`${prefix}/support/${thread.id}`}
+              state={origin.success ? origin.data : null}
               aria-current={current === thread.id ? "page" : undefined}
             >
               <strong>{thread.subject}</strong>
@@ -637,6 +648,13 @@ function ThreadSession({
           <Composer
             base={base}
             admin={admin}
+            audience={
+              chat.thread.kind === "fulfillment" && chat.thread.booster_shared
+                ? "Customer, assigned booster and PLAYORA staff"
+                : chat.thread.kind === "submission"
+                  ? "Seller and PLAYORA staff"
+                  : "Customer and PLAYORA support"
+            }
             proofAllowed={
               (admin || booster) && chat.thread.kind === "fulfillment"
             }

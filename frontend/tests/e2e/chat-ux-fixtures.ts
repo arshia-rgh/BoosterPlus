@@ -196,6 +196,10 @@ export async function qualifyChat(buyer: Page, staff: Page, project: string) {
   await buyer.getByRole("link", { name: "← Inbox", exact: true }).click();
   await buyer.getByLabel("Conversation status").selectOption("open");
   await buyer
+    .getByRole("button", { name: "Search conversations", exact: true })
+    .click();
+  await expect(buyer).toHaveURL(/state=open/);
+  await buyer
     .locator(".chat-inbox-list")
     .getByRole("link", { name: /A longer conversation/ })
     .click();
@@ -236,7 +240,7 @@ export async function qualifyChat(buyer: Page, staff: Page, project: string) {
     .toBe(true);
   await expect
     .poll(() => history.evaluate((element) => element.clientHeight))
-    .toBeGreaterThan(35);
+    .toBeGreaterThanOrEqual(190);
   if (viewport) await buyer.setViewportSize(viewport);
   await buyer.getByRole("link", { name: "← Inbox", exact: true }).click();
   await buyer
