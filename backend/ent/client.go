@@ -66,6 +66,10 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/selleroffer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sellerofferevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproduct"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductrelease"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopstock"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/siterelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/sitesetting"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/staffprofile"
@@ -188,6 +192,14 @@ type Client struct {
 	SellerOfferEvent *SellerOfferEventClient
 	// ServiceCase is the client for interacting with the ServiceCase builders.
 	ServiceCase *ServiceCaseClient
+	// ShopProduct is the client for interacting with the ShopProduct builders.
+	ShopProduct *ShopProductClient
+	// ShopProductEvent is the client for interacting with the ShopProductEvent builders.
+	ShopProductEvent *ShopProductEventClient
+	// ShopProductRelease is the client for interacting with the ShopProductRelease builders.
+	ShopProductRelease *ShopProductReleaseClient
+	// ShopStock is the client for interacting with the ShopStock builders.
+	ShopStock *ShopStockClient
 	// SiteRelease is the client for interacting with the SiteRelease builders.
 	SiteRelease *SiteReleaseClient
 	// SiteSetting is the client for interacting with the SiteSetting builders.
@@ -269,6 +281,10 @@ func (c *Client) init() {
 	c.SellerOffer = NewSellerOfferClient(c.config)
 	c.SellerOfferEvent = NewSellerOfferEventClient(c.config)
 	c.ServiceCase = NewServiceCaseClient(c.config)
+	c.ShopProduct = NewShopProductClient(c.config)
+	c.ShopProductEvent = NewShopProductEventClient(c.config)
+	c.ShopProductRelease = NewShopProductReleaseClient(c.config)
+	c.ShopStock = NewShopStockClient(c.config)
 	c.SiteRelease = NewSiteReleaseClient(c.config)
 	c.SiteSetting = NewSiteSettingClient(c.config)
 	c.StaffProfile = NewStaffProfileClient(c.config)
@@ -422,6 +438,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		SellerOffer:              NewSellerOfferClient(cfg),
 		SellerOfferEvent:         NewSellerOfferEventClient(cfg),
 		ServiceCase:              NewServiceCaseClient(cfg),
+		ShopProduct:              NewShopProductClient(cfg),
+		ShopProductEvent:         NewShopProductEventClient(cfg),
+		ShopProductRelease:       NewShopProductReleaseClient(cfg),
+		ShopStock:                NewShopStockClient(cfg),
 		SiteRelease:              NewSiteReleaseClient(cfg),
 		SiteSetting:              NewSiteSettingClient(cfg),
 		StaffProfile:             NewStaffProfileClient(cfg),
@@ -502,6 +522,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		SellerOffer:              NewSellerOfferClient(cfg),
 		SellerOfferEvent:         NewSellerOfferEventClient(cfg),
 		ServiceCase:              NewServiceCaseClient(cfg),
+		ShopProduct:              NewShopProductClient(cfg),
+		ShopProductEvent:         NewShopProductEventClient(cfg),
+		ShopProductRelease:       NewShopProductReleaseClient(cfg),
+		ShopStock:                NewShopStockClient(cfg),
 		SiteRelease:              NewSiteReleaseClient(cfg),
 		SiteSetting:              NewSiteSettingClient(cfg),
 		StaffProfile:             NewStaffProfileClient(cfg),
@@ -552,7 +576,8 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
 		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
 		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
-		c.ServiceCase, c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
+		c.ServiceCase, c.ShopProduct, c.ShopProductEvent, c.ShopProductRelease,
+		c.ShopStock, c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
 		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
 		c.User,
 	} {
@@ -576,7 +601,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
 		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
 		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
-		c.ServiceCase, c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
+		c.ServiceCase, c.ShopProduct, c.ShopProductEvent, c.ShopProductRelease,
+		c.ShopStock, c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
 		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
 		c.User,
 	} {
@@ -691,6 +717,14 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.SellerOfferEvent.mutate(ctx, m)
 	case *ServiceCaseMutation:
 		return c.ServiceCase.mutate(ctx, m)
+	case *ShopProductMutation:
+		return c.ShopProduct.mutate(ctx, m)
+	case *ShopProductEventMutation:
+		return c.ShopProductEvent.mutate(ctx, m)
+	case *ShopProductReleaseMutation:
+		return c.ShopProductRelease.mutate(ctx, m)
+	case *ShopStockMutation:
+		return c.ShopStock.mutate(ctx, m)
 	case *SiteReleaseMutation:
 		return c.SiteRelease.mutate(ctx, m)
 	case *SiteSettingMutation:
@@ -7630,6 +7664,538 @@ func (c *ServiceCaseClient) mutate(ctx context.Context, m *ServiceCaseMutation) 
 	}
 }
 
+// ShopProductClient is a client for the ShopProduct schema.
+type ShopProductClient struct {
+	config
+}
+
+// NewShopProductClient returns a client for the ShopProduct from the given config.
+func NewShopProductClient(c config) *ShopProductClient {
+	return &ShopProductClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `shopproduct.Hooks(f(g(h())))`.
+func (c *ShopProductClient) Use(hooks ...Hook) {
+	c.hooks.ShopProduct = append(c.hooks.ShopProduct, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `shopproduct.Intercept(f(g(h())))`.
+func (c *ShopProductClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ShopProduct = append(c.inters.ShopProduct, interceptors...)
+}
+
+// Create returns a builder for creating a ShopProduct entity.
+func (c *ShopProductClient) Create() *ShopProductCreate {
+	mutation := newShopProductMutation(c.config, OpCreate)
+	return &ShopProductCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ShopProduct entities.
+func (c *ShopProductClient) CreateBulk(builders ...*ShopProductCreate) *ShopProductCreateBulk {
+	return &ShopProductCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ShopProductClient) MapCreateBulk(slice any, setFunc func(*ShopProductCreate, int)) *ShopProductCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ShopProductCreateBulk{err: fmt.Errorf("calling to ShopProductClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ShopProductCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ShopProductCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ShopProduct.
+func (c *ShopProductClient) Update() *ShopProductUpdate {
+	mutation := newShopProductMutation(c.config, OpUpdate)
+	return &ShopProductUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ShopProductClient) UpdateOne(_m *ShopProduct) *ShopProductUpdateOne {
+	mutation := newShopProductMutation(c.config, OpUpdateOne, withShopProduct(_m))
+	return &ShopProductUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ShopProductClient) UpdateOneID(id string) *ShopProductUpdateOne {
+	mutation := newShopProductMutation(c.config, OpUpdateOne, withShopProductID(id))
+	return &ShopProductUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ShopProduct.
+func (c *ShopProductClient) Delete() *ShopProductDelete {
+	mutation := newShopProductMutation(c.config, OpDelete)
+	return &ShopProductDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ShopProductClient) DeleteOne(_m *ShopProduct) *ShopProductDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ShopProductClient) DeleteOneID(id string) *ShopProductDeleteOne {
+	builder := c.Delete().Where(shopproduct.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ShopProductDeleteOne{builder}
+}
+
+// Query returns a query builder for ShopProduct.
+func (c *ShopProductClient) Query() *ShopProductQuery {
+	return &ShopProductQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeShopProduct},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ShopProduct entity by its id.
+func (c *ShopProductClient) Get(ctx context.Context, id string) (*ShopProduct, error) {
+	return c.Query().Where(shopproduct.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ShopProductClient) GetX(ctx context.Context, id string) *ShopProduct {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ShopProductClient) Hooks() []Hook {
+	return c.hooks.ShopProduct
+}
+
+// Interceptors returns the client interceptors.
+func (c *ShopProductClient) Interceptors() []Interceptor {
+	return c.inters.ShopProduct
+}
+
+func (c *ShopProductClient) mutate(ctx context.Context, m *ShopProductMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ShopProductCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ShopProductUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ShopProductUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ShopProductDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ShopProduct mutation op: %q", m.Op())
+	}
+}
+
+// ShopProductEventClient is a client for the ShopProductEvent schema.
+type ShopProductEventClient struct {
+	config
+}
+
+// NewShopProductEventClient returns a client for the ShopProductEvent from the given config.
+func NewShopProductEventClient(c config) *ShopProductEventClient {
+	return &ShopProductEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `shopproductevent.Hooks(f(g(h())))`.
+func (c *ShopProductEventClient) Use(hooks ...Hook) {
+	c.hooks.ShopProductEvent = append(c.hooks.ShopProductEvent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `shopproductevent.Intercept(f(g(h())))`.
+func (c *ShopProductEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ShopProductEvent = append(c.inters.ShopProductEvent, interceptors...)
+}
+
+// Create returns a builder for creating a ShopProductEvent entity.
+func (c *ShopProductEventClient) Create() *ShopProductEventCreate {
+	mutation := newShopProductEventMutation(c.config, OpCreate)
+	return &ShopProductEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ShopProductEvent entities.
+func (c *ShopProductEventClient) CreateBulk(builders ...*ShopProductEventCreate) *ShopProductEventCreateBulk {
+	return &ShopProductEventCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ShopProductEventClient) MapCreateBulk(slice any, setFunc func(*ShopProductEventCreate, int)) *ShopProductEventCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ShopProductEventCreateBulk{err: fmt.Errorf("calling to ShopProductEventClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ShopProductEventCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ShopProductEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ShopProductEvent.
+func (c *ShopProductEventClient) Update() *ShopProductEventUpdate {
+	mutation := newShopProductEventMutation(c.config, OpUpdate)
+	return &ShopProductEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ShopProductEventClient) UpdateOne(_m *ShopProductEvent) *ShopProductEventUpdateOne {
+	mutation := newShopProductEventMutation(c.config, OpUpdateOne, withShopProductEvent(_m))
+	return &ShopProductEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ShopProductEventClient) UpdateOneID(id string) *ShopProductEventUpdateOne {
+	mutation := newShopProductEventMutation(c.config, OpUpdateOne, withShopProductEventID(id))
+	return &ShopProductEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ShopProductEvent.
+func (c *ShopProductEventClient) Delete() *ShopProductEventDelete {
+	mutation := newShopProductEventMutation(c.config, OpDelete)
+	return &ShopProductEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ShopProductEventClient) DeleteOne(_m *ShopProductEvent) *ShopProductEventDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ShopProductEventClient) DeleteOneID(id string) *ShopProductEventDeleteOne {
+	builder := c.Delete().Where(shopproductevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ShopProductEventDeleteOne{builder}
+}
+
+// Query returns a query builder for ShopProductEvent.
+func (c *ShopProductEventClient) Query() *ShopProductEventQuery {
+	return &ShopProductEventQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeShopProductEvent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ShopProductEvent entity by its id.
+func (c *ShopProductEventClient) Get(ctx context.Context, id string) (*ShopProductEvent, error) {
+	return c.Query().Where(shopproductevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ShopProductEventClient) GetX(ctx context.Context, id string) *ShopProductEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ShopProductEventClient) Hooks() []Hook {
+	return c.hooks.ShopProductEvent
+}
+
+// Interceptors returns the client interceptors.
+func (c *ShopProductEventClient) Interceptors() []Interceptor {
+	return c.inters.ShopProductEvent
+}
+
+func (c *ShopProductEventClient) mutate(ctx context.Context, m *ShopProductEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ShopProductEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ShopProductEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ShopProductEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ShopProductEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ShopProductEvent mutation op: %q", m.Op())
+	}
+}
+
+// ShopProductReleaseClient is a client for the ShopProductRelease schema.
+type ShopProductReleaseClient struct {
+	config
+}
+
+// NewShopProductReleaseClient returns a client for the ShopProductRelease from the given config.
+func NewShopProductReleaseClient(c config) *ShopProductReleaseClient {
+	return &ShopProductReleaseClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `shopproductrelease.Hooks(f(g(h())))`.
+func (c *ShopProductReleaseClient) Use(hooks ...Hook) {
+	c.hooks.ShopProductRelease = append(c.hooks.ShopProductRelease, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `shopproductrelease.Intercept(f(g(h())))`.
+func (c *ShopProductReleaseClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ShopProductRelease = append(c.inters.ShopProductRelease, interceptors...)
+}
+
+// Create returns a builder for creating a ShopProductRelease entity.
+func (c *ShopProductReleaseClient) Create() *ShopProductReleaseCreate {
+	mutation := newShopProductReleaseMutation(c.config, OpCreate)
+	return &ShopProductReleaseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ShopProductRelease entities.
+func (c *ShopProductReleaseClient) CreateBulk(builders ...*ShopProductReleaseCreate) *ShopProductReleaseCreateBulk {
+	return &ShopProductReleaseCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ShopProductReleaseClient) MapCreateBulk(slice any, setFunc func(*ShopProductReleaseCreate, int)) *ShopProductReleaseCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ShopProductReleaseCreateBulk{err: fmt.Errorf("calling to ShopProductReleaseClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ShopProductReleaseCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ShopProductReleaseCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ShopProductRelease.
+func (c *ShopProductReleaseClient) Update() *ShopProductReleaseUpdate {
+	mutation := newShopProductReleaseMutation(c.config, OpUpdate)
+	return &ShopProductReleaseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ShopProductReleaseClient) UpdateOne(_m *ShopProductRelease) *ShopProductReleaseUpdateOne {
+	mutation := newShopProductReleaseMutation(c.config, OpUpdateOne, withShopProductRelease(_m))
+	return &ShopProductReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ShopProductReleaseClient) UpdateOneID(id string) *ShopProductReleaseUpdateOne {
+	mutation := newShopProductReleaseMutation(c.config, OpUpdateOne, withShopProductReleaseID(id))
+	return &ShopProductReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ShopProductRelease.
+func (c *ShopProductReleaseClient) Delete() *ShopProductReleaseDelete {
+	mutation := newShopProductReleaseMutation(c.config, OpDelete)
+	return &ShopProductReleaseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ShopProductReleaseClient) DeleteOne(_m *ShopProductRelease) *ShopProductReleaseDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ShopProductReleaseClient) DeleteOneID(id string) *ShopProductReleaseDeleteOne {
+	builder := c.Delete().Where(shopproductrelease.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ShopProductReleaseDeleteOne{builder}
+}
+
+// Query returns a query builder for ShopProductRelease.
+func (c *ShopProductReleaseClient) Query() *ShopProductReleaseQuery {
+	return &ShopProductReleaseQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeShopProductRelease},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ShopProductRelease entity by its id.
+func (c *ShopProductReleaseClient) Get(ctx context.Context, id string) (*ShopProductRelease, error) {
+	return c.Query().Where(shopproductrelease.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ShopProductReleaseClient) GetX(ctx context.Context, id string) *ShopProductRelease {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ShopProductReleaseClient) Hooks() []Hook {
+	return c.hooks.ShopProductRelease
+}
+
+// Interceptors returns the client interceptors.
+func (c *ShopProductReleaseClient) Interceptors() []Interceptor {
+	return c.inters.ShopProductRelease
+}
+
+func (c *ShopProductReleaseClient) mutate(ctx context.Context, m *ShopProductReleaseMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ShopProductReleaseCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ShopProductReleaseUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ShopProductReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ShopProductReleaseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ShopProductRelease mutation op: %q", m.Op())
+	}
+}
+
+// ShopStockClient is a client for the ShopStock schema.
+type ShopStockClient struct {
+	config
+}
+
+// NewShopStockClient returns a client for the ShopStock from the given config.
+func NewShopStockClient(c config) *ShopStockClient {
+	return &ShopStockClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `shopstock.Hooks(f(g(h())))`.
+func (c *ShopStockClient) Use(hooks ...Hook) {
+	c.hooks.ShopStock = append(c.hooks.ShopStock, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `shopstock.Intercept(f(g(h())))`.
+func (c *ShopStockClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ShopStock = append(c.inters.ShopStock, interceptors...)
+}
+
+// Create returns a builder for creating a ShopStock entity.
+func (c *ShopStockClient) Create() *ShopStockCreate {
+	mutation := newShopStockMutation(c.config, OpCreate)
+	return &ShopStockCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ShopStock entities.
+func (c *ShopStockClient) CreateBulk(builders ...*ShopStockCreate) *ShopStockCreateBulk {
+	return &ShopStockCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ShopStockClient) MapCreateBulk(slice any, setFunc func(*ShopStockCreate, int)) *ShopStockCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ShopStockCreateBulk{err: fmt.Errorf("calling to ShopStockClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ShopStockCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ShopStockCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ShopStock.
+func (c *ShopStockClient) Update() *ShopStockUpdate {
+	mutation := newShopStockMutation(c.config, OpUpdate)
+	return &ShopStockUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ShopStockClient) UpdateOne(_m *ShopStock) *ShopStockUpdateOne {
+	mutation := newShopStockMutation(c.config, OpUpdateOne, withShopStock(_m))
+	return &ShopStockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ShopStockClient) UpdateOneID(id string) *ShopStockUpdateOne {
+	mutation := newShopStockMutation(c.config, OpUpdateOne, withShopStockID(id))
+	return &ShopStockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ShopStock.
+func (c *ShopStockClient) Delete() *ShopStockDelete {
+	mutation := newShopStockMutation(c.config, OpDelete)
+	return &ShopStockDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ShopStockClient) DeleteOne(_m *ShopStock) *ShopStockDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ShopStockClient) DeleteOneID(id string) *ShopStockDeleteOne {
+	builder := c.Delete().Where(shopstock.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ShopStockDeleteOne{builder}
+}
+
+// Query returns a query builder for ShopStock.
+func (c *ShopStockClient) Query() *ShopStockQuery {
+	return &ShopStockQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeShopStock},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ShopStock entity by its id.
+func (c *ShopStockClient) Get(ctx context.Context, id string) (*ShopStock, error) {
+	return c.Query().Where(shopstock.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ShopStockClient) GetX(ctx context.Context, id string) *ShopStock {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ShopStockClient) Hooks() []Hook {
+	return c.hooks.ShopStock
+}
+
+// Interceptors returns the client interceptors.
+func (c *ShopStockClient) Interceptors() []Interceptor {
+	return c.inters.ShopStock
+}
+
+func (c *ShopStockClient) mutate(ctx context.Context, m *ShopStockMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ShopStockCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ShopStockUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ShopStockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ShopStockDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ShopStock mutation op: %q", m.Op())
+	}
+}
+
 // SiteReleaseClient is a client for the SiteRelease schema.
 type SiteReleaseClient struct {
 	config
@@ -8840,7 +9406,8 @@ type (
 		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
 		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
 		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
-		SellerOfferEvent, ServiceCase, SiteRelease, SiteSetting, StaffProfile,
+		SellerOfferEvent, ServiceCase, ShopProduct, ShopProductEvent,
+		ShopProductRelease, ShopStock, SiteRelease, SiteSetting, StaffProfile,
 		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
 		TransferRecord, User []ent.Hook
 	}
@@ -8855,7 +9422,8 @@ type (
 		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
 		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
 		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
-		SellerOfferEvent, ServiceCase, SiteRelease, SiteSetting, StaffProfile,
+		SellerOfferEvent, ServiceCase, ShopProduct, ShopProductEvent,
+		ShopProductRelease, ShopStock, SiteRelease, SiteSetting, StaffProfile,
 		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
 		TransferRecord, User []ent.Interceptor
 	}

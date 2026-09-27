@@ -4764,6 +4764,194 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/shop/products": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Versioned manual-shop authoring with current administrator authority */
+    get: operations["getShopApiV1AdminShopProducts"];
+    put?: never;
+    /** Versioned manual-shop authoring with current administrator authority */
+    post: operations["postShopApiV1AdminShopProducts"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/products/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Versioned manual-shop authoring with current administrator authority */
+    get: operations["getShopApiV1AdminShopProductsId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/products/{id}/draft": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned manual-shop authoring with current administrator authority */
+    post: operations["postShopApiV1AdminShopProductsIdDraft"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/products/{id}/preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Versioned manual-shop authoring with current administrator authority */
+    get: operations["getShopApiV1AdminShopProductsIdPreview"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/products/{id}/releases": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Versioned manual-shop authoring with current administrator authority */
+    get: operations["getShopApiV1AdminShopProductsIdReleases"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/products/{id}/publish": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned manual-shop authoring with current administrator authority */
+    post: operations["postShopApiV1AdminShopProductsIdPublish"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/products/{id}/pause": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned manual-shop authoring with current administrator authority */
+    post: operations["postShopApiV1AdminShopProductsIdPause"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/products/{id}/resume": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned manual-shop authoring with current administrator authority */
+    post: operations["postShopApiV1AdminShopProductsIdResume"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/products/{id}/archive": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned manual-shop authoring with current administrator authority */
+    post: operations["postShopApiV1AdminShopProductsIdArchive"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/products/{id}/restore": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned manual-shop authoring with current administrator authority */
+    post: operations["postShopApiV1AdminShopProductsIdRestore"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/shop/products/{id}/stock": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned manual-shop authoring with current administrator authority */
+    post: operations["postShopApiV1AdminShopProductsIdStock"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -7055,6 +7243,136 @@ export interface components {
       id: string;
       accepted_at: string | null;
       terms: components["schemas"]["SellerTerms"];
+    };
+    ShopRecipientField: {
+      /** @enum {string} */
+      key: "player_id" | "server_id" | "character_name" | "delivery_note";
+      label: string;
+      help: string;
+      required: boolean;
+      max_length: number;
+    };
+    ShopVariant: {
+      key: string;
+      label: string;
+      region: string;
+      platform: string;
+      server: string;
+      currency: string;
+      unit_amount_minor: string;
+      min_quantity: number;
+      max_quantity: number;
+      enabled: boolean;
+    };
+    ShopPolicy: {
+      delivery_min_hours: number;
+      delivery_max_hours: number;
+      reservation_minutes: number;
+      delivery_terms: string;
+      cancellation_terms: string;
+      refund_terms: string;
+      fees: string;
+      evidence_required: boolean;
+      review_enabled: boolean;
+      review_terms: string;
+    };
+    ShopDefinition: {
+      title: string;
+      description: string;
+      category: string;
+      asset: string;
+      asset_alt: string;
+      asset_source: string;
+      reviewed: boolean;
+      variants: components["schemas"]["ShopVariant"][];
+      recipient: components["schemas"]["ShopRecipientField"][];
+      policy: components["schemas"]["ShopPolicy"];
+    };
+    ShopStock: {
+      variant_key: string;
+      version: number;
+      total: number;
+      reserved: number;
+      committed: number;
+      available: number;
+    };
+    ShopProductDraft: {
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      game_id: string;
+      slug: string;
+      game: string;
+      version: number;
+      /** @enum {string} */
+      state: "draft" | "published" | "paused" | "archived";
+      draft: components["schemas"]["ShopDefinition"];
+      current_release: string;
+      stocks: components["schemas"]["ShopStock"][];
+      /** Format: date-time */
+      updated_at: string;
+    };
+    ShopProductSummary: {
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      game_id: string;
+      game: string;
+      slug: string;
+      title: string;
+      version: number;
+      state: string;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    ShopProducts: {
+      items: components["schemas"]["ShopProductSummary"][];
+      next: string;
+    };
+    ShopCreate: {
+      /** Format: uuid */
+      game_id: string;
+      definition: components["schemas"]["ShopDefinition"];
+    };
+    ShopSave: {
+      version: number;
+      definition: components["schemas"]["ShopDefinition"];
+    };
+    ShopChange: {
+      version: number;
+    };
+    ShopStockChange: {
+      version: number;
+      stock_version: number;
+      variant_key: string;
+      total: number;
+      reason: string;
+    };
+    ShopRelease: {
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      product_id: string;
+      version: number;
+      definition: components["schemas"]["ShopDefinition"];
+      /** Format: date-time */
+      created_at: string;
+    };
+    ShopReleaseHistory: {
+      items: components["schemas"]["ShopRelease"][];
+      next: number;
+    };
+    ShopValidationIssue: {
+      path: string;
+      message: string;
+    };
+    ShopPreview: {
+      draft: components["schemas"]["ShopProductDraft"];
+      issues: components["schemas"]["ShopValidationIssue"][];
+    };
+    ShopProblem: {
+      code: string;
+      issues?: components["schemas"]["ShopValidationIssue"][];
     };
   };
   responses: never;
@@ -21081,6 +21399,429 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["PaymentProblem"];
+        };
+      };
+    };
+  };
+  getShopApiV1AdminShopProducts: {
+    parameters: {
+      query?: {
+        after?: string;
+        q?: string;
+        game?: string;
+        state?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProducts"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1AdminShopProducts: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopCreate"];
+      };
+    };
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProductDraft"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  getShopApiV1AdminShopProductsId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProductDraft"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1AdminShopProductsIdDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopSave"];
+      };
+    };
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProductDraft"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  getShopApiV1AdminShopProductsIdPreview: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopPreview"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  getShopApiV1AdminShopProductsIdReleases: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopReleaseHistory"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1AdminShopProductsIdPublish: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProductDraft"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1AdminShopProductsIdPause: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProductDraft"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1AdminShopProductsIdResume: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProductDraft"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1AdminShopProductsIdArchive: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProductDraft"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1AdminShopProductsIdRestore: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProductDraft"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1AdminShopProductsIdStock: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopStockChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded product projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProductDraft"];
+        };
+      };
+      /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
         };
       };
     };

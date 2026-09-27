@@ -162,6 +162,18 @@ type SellerOfferEvent func(*sql.Selector)
 // ServiceCase is the predicate function for servicecase builders.
 type ServiceCase func(*sql.Selector)
 
+// ShopProduct is the predicate function for shopproduct builders.
+type ShopProduct func(*sql.Selector)
+
+// ShopProductEvent is the predicate function for shopproductevent builders.
+type ShopProductEvent func(*sql.Selector)
+
+// ShopProductRelease is the predicate function for shopproductrelease builders.
+type ShopProductRelease func(*sql.Selector)
+
+// ShopStock is the predicate function for shopstock builders.
+type ShopStock func(*sql.Selector)
+
 // SiteRelease is the predicate function for siterelease builders.
 type SiteRelease func(*sql.Selector)
 

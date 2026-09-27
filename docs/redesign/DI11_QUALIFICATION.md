@@ -1,0 +1,33 @@
+# DI11 shop qualification
+
+28 September 2026. DI11 remains **in progress**. This receipt separates the first private authoring increment from the remaining purchase and manual-delivery work. No public Shop entry or checkout is activated by DI11A. R10/R11 remain held.
+
+## DI11A — private product authoring
+
+Scope: explicit SQL migration 34 and Ent query mappings; separate admin-authorized shop API; product listing/search/game/state filters; private draft creation; persistent editor sections; bounded variants, exact minor-unit prices, recipient-field declarations and explicit commercial terms; saved preview and reviewed immutable publication; pause/resume/archive/restore; versioned capacity with reserved/committed floors; paginated immutable publication history. Every mutation audits within the same authorization-fenced transaction. Restoration never automatically reactivates a public product, and publication never invents stock.
+
+Staff edits stay inside `/admin/shop/:id`, retain the product/game/revision identity and return to the same filtered list. Ordinary draft and stock edits survive local sections, and leaving requires an explicit discard choice. Stock writes also block departure while in flight. A newer revision cannot silently overwrite edits; denied access clears private content, while transport failures hide and lock the editor without destroying ordinary drafts. Named validation links select the relevant local section and focus the associated field. Publication and capacity changes require explicit review; sensitive operations retain recent first- and second-factor verification.
+
+No commercial products, prices, regional promises or delivery terms were seeded. Automated examples are isolated fixtures. Artwork must be an approved local catalog asset with alternative text and provenance. The declared recipient schema permits only ordinary delivery identifiers, never credential fields; actual private recipient capture belongs to DI11B.
+
+## Changed-behavior evidence
+
+- Race-enabled isolated TiDB suite: `TestShopCatalogPublicationStockAndAuthority`, `TestShopCatalogConcurrentEditsAndAuditRollback`, `TestShopCatalogContractPaginationAndLiteralSearch`, `TestShopCatalogHTTPPortalCSRFAndStrictInput`, plus `TestTiDBMigrationLifecycleAndEntQueries`: PASS, 19.699 seconds. Includes stale/concurrent writes, audit rollback, immutable release history, zero initial stock, commitment floors, admin/customer/audience/recent-factor/suspension boundaries, bounded pagination/literal search, response contracts, CSRF, content type, strict/trailing/oversize request rejection and no-store private responses.
+- Shop domain unit cases cover publication bounds and terms, prohibited recipient fields, exact quantity arithmetic/overflow, recipient validation; integration cases cover lifecycle transitions. Current pinned lint checks passed after a test-cookie construction was made explicit; standalone security and complete unit/build checks run in the focused commit hook.
+- Thirteen new route/component cases pass: admin route boundaries, local drafts and return context, transport/denied recovery, saved-preview publication, newer revisions, stock-review/floor checks, stock draft/in-flight leave protection, history denial, linked field validation, game/search filters and guarded new-product creation/cancellation.
+- Focused Chromium browser authoring journey: desktop PASS 11.9 seconds; mobile PASS 8.8 seconds. Real isolated API/SMTP sessions exercise create/edit/save/preview/publish/capacity/pause and list return. All seven editor sections passed axe and page-overflow checks at 1440, 768 and 393 CSS pixels. These are emulated viewports, not physical-device qualification.
+- Earlier failures remain recorded: audit creation omitted required metadata, then its explicit ID; both fixed and the changed suite rerun. Initial browser locators matched both global and record links, and the final navigation assertion read the URL before client navigation completed. Corrected selectors/waiting passed without lowering product assertions or adding retries.
+
+Reproduce focused integration with `TEST_DATABASE_DSN='root@tcp(127.0.0.1:14001)/mysql' python3 scripts/integration-tests.py -run '^(TestShopCatalog.*|TestTiDBMigrationLifecycleAndEntQueries)$'`. Reproduce browsers with the same isolated DSN and `python3 scripts/browser-tests.py --spec shop.spec.ts` after building the frontend. The localhost 14001 instance is a disposable qualification database; never point these tests at production.
+
+Local ignored evidence lives under `.cache/qualification/di11-*`; rendered review images under `frontend/.cache/shop-*`. The [senior review](reviews/2026-09-28-di11-shop-authoring.md) passed after four scoped rounds; the final commit receipt follows the focused hook. The tracked hook uses the owner-authorized focused stage checks, not the complete repository gate; aggregate qualification remains DI15.
+
+## Required remaining DI11 scope
+
+SH06/SH07 are **partially implemented**, not verified complete. Continue authoritative availability/eligibility and promotion controls, complete media/failure/public-preview parity, availability filters based on the current enabled release and game capability, and their design review. Do not substitute total historical stock for purchasable availability.
+
+DI11B must deliver game-local SH01–SH04 discovery/inspection/recipient/review/checkout; immutable product and terms snapshots; exact quantity/price/currency; atomic reservations and expiry; idempotent verified payment allocation; late-funds/capacity exceptions; paused/unavailable behavior and separate private recipient access. Shop remains absent from public capabilities until the whole usable flow exists.
+
+DI11C must deliver SH05/SH08/SH09 customer delivery and staff queue/record: paid prerequisites; claims/holds; authorized masked recipient access; scanned evidence; review/completion and correction; order-local chat/help/refund handoffs; notifications, review eligibility, activity/reports and privacy/retention coverage. Boosters must not gain shop fulfillment authority. No wallet, supplier API or automatic unqualified completion is introduced.
+
+Only after these increments and their relevant cross-feature scenarios pass may DI11 or its addendum views/journeys be marked complete. Final integrated cross-phase acceptance remains DI14/DI15 and then owner review.

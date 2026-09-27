@@ -118,6 +118,14 @@ type Tx struct {
 	SellerOfferEvent *SellerOfferEventClient
 	// ServiceCase is the client for interacting with the ServiceCase builders.
 	ServiceCase *ServiceCaseClient
+	// ShopProduct is the client for interacting with the ShopProduct builders.
+	ShopProduct *ShopProductClient
+	// ShopProductEvent is the client for interacting with the ShopProductEvent builders.
+	ShopProductEvent *ShopProductEventClient
+	// ShopProductRelease is the client for interacting with the ShopProductRelease builders.
+	ShopProductRelease *ShopProductReleaseClient
+	// ShopStock is the client for interacting with the ShopStock builders.
+	ShopStock *ShopStockClient
 	// SiteRelease is the client for interacting with the SiteRelease builders.
 	SiteRelease *SiteReleaseClient
 	// SiteSetting is the client for interacting with the SiteSetting builders.
@@ -319,6 +327,10 @@ func (tx *Tx) init() {
 	tx.SellerOffer = NewSellerOfferClient(tx.config)
 	tx.SellerOfferEvent = NewSellerOfferEventClient(tx.config)
 	tx.ServiceCase = NewServiceCaseClient(tx.config)
+	tx.ShopProduct = NewShopProductClient(tx.config)
+	tx.ShopProductEvent = NewShopProductEventClient(tx.config)
+	tx.ShopProductRelease = NewShopProductReleaseClient(tx.config)
+	tx.ShopStock = NewShopStockClient(tx.config)
 	tx.SiteRelease = NewSiteReleaseClient(tx.config)
 	tx.SiteSetting = NewSiteSettingClient(tx.config)
 	tx.StaffProfile = NewStaffProfileClient(tx.config)

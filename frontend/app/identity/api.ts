@@ -76,6 +76,14 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "shop_invalid",
+    "Review the product details and field guidance before continuing.",
+  ],
+  [
+    "shop_conflict",
+    "Product details or stock changed. Refresh and review the current revision before continuing.",
+  ],
+  [
     "payment_invalid",
     "Review the payment policy, asset and network, and confirm your acceptance.",
   ],

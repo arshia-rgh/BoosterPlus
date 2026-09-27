@@ -21322,6 +21322,716 @@
           }
         ]
       }
+    },
+    "/api/v1/admin/shop/products": {
+      "get": {
+        "operationId": "getShopApiV1AdminShopProducts",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "game",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProducts"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postShopApiV1AdminShopProducts",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProductDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/products/{id}": {
+      "get": {
+        "operationId": "getShopApiV1AdminShopProductsId",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36,
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProductDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/products/{id}/draft": {
+      "post": {
+        "operationId": "postShopApiV1AdminShopProductsIdDraft",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36,
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProductDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopSave"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/products/{id}/preview": {
+      "get": {
+        "operationId": "getShopApiV1AdminShopProductsIdPreview",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36,
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopPreview"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/products/{id}/releases": {
+      "get": {
+        "operationId": "getShopApiV1AdminShopProductsIdReleases",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36,
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopReleaseHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/products/{id}/publish": {
+      "post": {
+        "operationId": "postShopApiV1AdminShopProductsIdPublish",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36,
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProductDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/products/{id}/pause": {
+      "post": {
+        "operationId": "postShopApiV1AdminShopProductsIdPause",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36,
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProductDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/products/{id}/resume": {
+      "post": {
+        "operationId": "postShopApiV1AdminShopProductsIdResume",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36,
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProductDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/products/{id}/archive": {
+      "post": {
+        "operationId": "postShopApiV1AdminShopProductsIdArchive",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36,
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProductDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/products/{id}/restore": {
+      "post": {
+        "operationId": "postShopApiV1AdminShopProductsIdRestore",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36,
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProductDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shop/products/{id}/stock": {
+      "post": {
+        "operationId": "postShopApiV1AdminShopProductsIdStock",
+        "summary": "Versioned manual-shop authoring with current administrator authority",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 36,
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded product projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProductDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, concurrency or unavailable rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopStockChange"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -29655,6 +30365,576 @@
             "$ref": "#/components/schemas/SellerTerms"
           }
         }
+      },
+      "ShopRecipientField": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 48,
+            "enum": [
+              "player_id",
+              "server_id",
+              "character_name",
+              "delivery_note"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "help": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "max_length": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 160
+          }
+        },
+        "required": ["key", "label", "help", "required", "max_length"]
+      },
+      "ShopVariant": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 48,
+            "pattern": "^[a-z][a-z0-9_-]{0,47}$"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "region": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "platform": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "server": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3
+          },
+          "unit_amount_minor": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "min_quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "max_quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "region",
+          "platform",
+          "server",
+          "currency",
+          "unit_amount_minor",
+          "min_quantity",
+          "max_quantity",
+          "enabled"
+        ]
+      },
+      "ShopPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "delivery_min_hours": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8760
+          },
+          "delivery_max_hours": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8760
+          },
+          "reservation_minutes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1440
+          },
+          "delivery_terms": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "cancellation_terms": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "refund_terms": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "fees": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "evidence_required": {
+            "type": "boolean"
+          },
+          "review_enabled": {
+            "type": "boolean"
+          },
+          "review_terms": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "required": [
+          "delivery_min_hours",
+          "delivery_max_hours",
+          "reservation_minutes",
+          "delivery_terms",
+          "cancellation_terms",
+          "refund_terms",
+          "fees",
+          "evidence_required",
+          "review_enabled",
+          "review_terms"
+        ]
+      },
+      "ShopDefinition": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "asset": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "asset_alt": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "asset_source": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "reviewed": {
+            "type": "boolean"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShopVariant"
+            },
+            "maxItems": 30
+          },
+          "recipient": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShopRecipientField"
+            },
+            "maxItems": 4
+          },
+          "policy": {
+            "$ref": "#/components/schemas/ShopPolicy"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "category",
+          "asset",
+          "asset_alt",
+          "asset_source",
+          "reviewed",
+          "variants",
+          "recipient",
+          "policy"
+        ]
+      },
+      "ShopStock": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "variant_key": {
+            "type": "string",
+            "maxLength": 48
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "reserved": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "committed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "available": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          }
+        },
+        "required": [
+          "variant_key",
+          "version",
+          "total",
+          "reserved",
+          "committed",
+          "available"
+        ]
+      },
+      "ShopProductDraft": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 36,
+            "format": "uuid"
+          },
+          "game_id": {
+            "type": "string",
+            "maxLength": 36,
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "game": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 32,
+            "enum": ["draft", "published", "paused", "archived"]
+          },
+          "draft": {
+            "$ref": "#/components/schemas/ShopDefinition"
+          },
+          "current_release": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "stocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShopStock"
+            },
+            "maxItems": 60
+          },
+          "updated_at": {
+            "type": "string",
+            "maxLength": 40,
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "game_id",
+          "slug",
+          "game",
+          "version",
+          "state",
+          "draft",
+          "current_release",
+          "stocks",
+          "updated_at"
+        ]
+      },
+      "ShopProductSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 36,
+            "format": "uuid"
+          },
+          "game_id": {
+            "type": "string",
+            "maxLength": 36,
+            "format": "uuid"
+          },
+          "game": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "updated_at": {
+            "type": "string",
+            "maxLength": 40,
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "game_id",
+          "game",
+          "slug",
+          "title",
+          "version",
+          "state",
+          "updated_at"
+        ]
+      },
+      "ShopProducts": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShopProductSummary"
+            },
+            "maxItems": 50
+          },
+          "next": {
+            "type": "string",
+            "maxLength": 36
+          }
+        },
+        "required": ["items", "next"]
+      },
+      "ShopCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "game_id": {
+            "type": "string",
+            "maxLength": 36,
+            "format": "uuid"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/ShopDefinition"
+          }
+        },
+        "required": ["game_id", "definition"]
+      },
+      "ShopSave": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          },
+          "definition": {
+            "$ref": "#/components/schemas/ShopDefinition"
+          }
+        },
+        "required": ["version", "definition"]
+      },
+      "ShopChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          }
+        },
+        "required": ["version"]
+      },
+      "ShopStockChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          },
+          "stock_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          },
+          "variant_key": {
+            "type": "string",
+            "maxLength": 48
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10
+          }
+        },
+        "required": [
+          "version",
+          "stock_version",
+          "variant_key",
+          "total",
+          "reason"
+        ]
+      },
+      "ShopRelease": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 36,
+            "format": "uuid"
+          },
+          "product_id": {
+            "type": "string",
+            "maxLength": 36,
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483646
+          },
+          "definition": {
+            "$ref": "#/components/schemas/ShopDefinition"
+          },
+          "created_at": {
+            "type": "string",
+            "maxLength": 40,
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "product_id", "version", "definition", "created_at"]
+      },
+      "ShopReleaseHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShopRelease"
+            },
+            "maxItems": 50
+          },
+          "next": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483646
+          }
+        },
+        "required": ["items", "next"]
+      },
+      "ShopValidationIssue": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 400
+          }
+        },
+        "required": ["path", "message"]
+      },
+      "ShopPreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "draft": {
+            "$ref": "#/components/schemas/ShopProductDraft"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShopValidationIssue"
+            },
+            "maxItems": 200
+          }
+        },
+        "required": ["draft", "issues"]
+      },
+      "ShopProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShopValidationIssue"
+            },
+            "maxItems": 200
+          }
+        },
+        "required": ["code"]
       }
     },
     "securitySchemes": {

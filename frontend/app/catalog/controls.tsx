@@ -133,12 +133,14 @@ export function Check({
   );
 }
 export function Select({
+  name,
   label,
   value,
   change,
   options,
   disabled = false,
 }: {
+  name?: string | undefined;
   label: string;
   value: string;
   change: (value: string) => void;
@@ -146,15 +148,34 @@ export function Select({
   disabled?: boolean;
 }) {
   const id = useId();
+  const validation = useContext(FieldValidation);
+  const register = validation?.register;
+  const fieldRef = useCallback(
+    (input: HTMLSelectElement | null) => {
+      if (input && name && register) return register({ name, id, label });
+    },
+    [name, id, label, register],
+  );
+  const error = name
+    ? validation?.issues
+        .filter((issue) => issue.path === name)
+        .map((issue) => issue.message)
+        .join(" ")
+    : undefined;
   return (
     <div className="catalog-label">
       <label htmlFor={id}>{label}</label>
       <select
+        ref={fieldRef}
+        name={name}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? id + "-error" : undefined}
         id={id}
         disabled={disabled}
         value={value}
         onChange={(event) => {
           change(event.target.value);
+          if (name) validation?.correct(name);
         }}
       >
         {options.map(([key, name]) => (
@@ -163,6 +184,11 @@ export function Select({
           </option>
         ))}
       </select>
+      {error && (
+        <p className="field-error" id={id + "-error"}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }

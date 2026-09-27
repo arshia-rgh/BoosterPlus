@@ -1744,6 +1744,111 @@ var (
 			},
 		},
 	}
+	// ShopProductsColumns holds the columns for the "shop_products" table.
+	ShopProductsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "game_id", Type: field.TypeString, Size: 36},
+		{Name: "slug", Type: field.TypeString, Size: 80},
+		{Name: "game_name", Type: field.TypeString, Size: 120},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: "draft"},
+		{Name: "draft", Type: field.TypeJSON},
+		{Name: "current_release", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "title", Type: field.TypeString, Size: 120, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ShopProductsTable holds the schema information for the "shop_products" table.
+	ShopProductsTable = &schema.Table{
+		Name:       "shop_products",
+		Columns:    ShopProductsColumns,
+		PrimaryKey: []*schema.Column{ShopProductsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "shop_product_slug",
+				Unique:  true,
+				Columns: []*schema.Column{ShopProductsColumns[1], ShopProductsColumns[2]},
+			},
+			{
+				Name:    "shop_staff_queue",
+				Unique:  false,
+				Columns: []*schema.Column{ShopProductsColumns[5], ShopProductsColumns[10], ShopProductsColumns[0]},
+			},
+			{
+				Name:    "shop_game_catalog",
+				Unique:  false,
+				Columns: []*schema.Column{ShopProductsColumns[1], ShopProductsColumns[5], ShopProductsColumns[0]},
+			},
+		},
+	}
+	// ShopProductEventsColumns holds the columns for the "shop_product_events" table.
+	ShopProductEventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "product_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "action", Type: field.TypeString, Size: 32},
+		{Name: "actor_id", Type: field.TypeString, Size: 36},
+		{Name: "note", Type: field.TypeString, Size: 2000, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ShopProductEventsTable holds the schema information for the "shop_product_events" table.
+	ShopProductEventsTable = &schema.Table{
+		Name:       "shop_product_events",
+		Columns:    ShopProductEventsColumns,
+		PrimaryKey: []*schema.Column{ShopProductEventsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "shop_product_event_version",
+				Unique:  true,
+				Columns: []*schema.Column{ShopProductEventsColumns[1], ShopProductEventsColumns[2]},
+			},
+		},
+	}
+	// ShopProductReleasesColumns holds the columns for the "shop_product_releases" table.
+	ShopProductReleasesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "product_id", Type: field.TypeString, Size: 36},
+		{Name: "version", Type: field.TypeInt},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ShopProductReleasesTable holds the schema information for the "shop_product_releases" table.
+	ShopProductReleasesTable = &schema.Table{
+		Name:       "shop_product_releases",
+		Columns:    ShopProductReleasesColumns,
+		PrimaryKey: []*schema.Column{ShopProductReleasesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "shop_product_release_version",
+				Unique:  true,
+				Columns: []*schema.Column{ShopProductReleasesColumns[1], ShopProductReleasesColumns[2]},
+			},
+		},
+	}
+	// ShopStocksColumns holds the columns for the "shop_stocks" table.
+	ShopStocksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "product_id", Type: field.TypeString, Size: 36},
+		{Name: "variant_key", Type: field.TypeString, Size: 48},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "total", Type: field.TypeInt, Default: 0},
+		{Name: "reserved", Type: field.TypeInt, Default: 0},
+		{Name: "committed", Type: field.TypeInt, Default: 0},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ShopStocksTable holds the schema information for the "shop_stocks" table.
+	ShopStocksTable = &schema.Table{
+		Name:       "shop_stocks",
+		Columns:    ShopStocksColumns,
+		PrimaryKey: []*schema.Column{ShopStocksColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "shop_variant_stock",
+				Unique:  true,
+				Columns: []*schema.Column{ShopStocksColumns[1], ShopStocksColumns[2]},
+			},
+		},
+	}
 	// SiteReleasesColumns holds the columns for the "site_releases" table.
 	SiteReleasesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -2036,6 +2141,10 @@ var (
 		SellerOffersTable,
 		SellerOfferEventsTable,
 		ServiceCasesTable,
+		ShopProductsTable,
+		ShopProductEventsTable,
+		ShopProductReleasesTable,
+		ShopStocksTable,
 		SiteReleasesTable,
 		SiteSettingsTable,
 		StaffProfilesTable,

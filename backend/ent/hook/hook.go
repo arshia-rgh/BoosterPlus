@@ -633,6 +633,54 @@ func (f ServiceCaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ServiceCaseMutation", m)
 }
 
+// The ShopProductFunc type is an adapter to allow the use of ordinary
+// function as ShopProduct mutator.
+type ShopProductFunc func(context.Context, *ent.ShopProductMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ShopProductFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ShopProductMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ShopProductMutation", m)
+}
+
+// The ShopProductEventFunc type is an adapter to allow the use of ordinary
+// function as ShopProductEvent mutator.
+type ShopProductEventFunc func(context.Context, *ent.ShopProductEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ShopProductEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ShopProductEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ShopProductEventMutation", m)
+}
+
+// The ShopProductReleaseFunc type is an adapter to allow the use of ordinary
+// function as ShopProductRelease mutator.
+type ShopProductReleaseFunc func(context.Context, *ent.ShopProductReleaseMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ShopProductReleaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ShopProductReleaseMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ShopProductReleaseMutation", m)
+}
+
+// The ShopStockFunc type is an adapter to allow the use of ordinary
+// function as ShopStock mutator.
+type ShopStockFunc func(context.Context, *ent.ShopStockMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ShopStockFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ShopStockMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ShopStockMutation", m)
+}
+
 // The SiteReleaseFunc type is an adapter to allow the use of ordinary
 // function as SiteRelease mutator.
 type SiteReleaseFunc func(context.Context, *ent.SiteReleaseMutation) (ent.Value, error)
