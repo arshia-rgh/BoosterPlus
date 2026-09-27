@@ -205,6 +205,8 @@ DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 dis
 
 ### DI10 — resale and financial workspaces
 
+**In progress:** first workspace/purchase-recovery increment delivered as `0677ae3`; see [DI10 qualification and remaining scope](DI10_QUALIFICATION.md). This is not full-phase completion.
+
 - Within game Accounts, implement browse/filter/detail and purchase review/reservation. Show actual supported region/transfer terms, availability and limitations. Sell an account entry is inside Accounts; signed-in sales management stays in the customer/seller workspace.
 - Submission, clarification, private messages, offer review, secure handover and payout are one identifiable sale record with local sections. Consignment and buy-first use their accepted per-offer obligations; expose payout status/receipt without a wallet balance.
 - Staff submission review, intake rules, listing editor/publication, inventory release, reservation conflicts and buyer account delivery keep exact source/return context. Secure credentials remain in the vault, revealed only with permitted recent verification and auditable access; not in ordinary chat attachments or serialized page data.

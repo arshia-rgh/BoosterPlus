@@ -38,3 +38,9 @@ Complete design-matched marketplace price/sort filtering with server pagination 
 ## Full frontend qualification before delivery
 
 `make -C frontend pre-commit` passed on the final runtime source: formatting, strict types, ESLint, 374 local component cases (364 tracked plus ten held untracked experiments), 100% required route-boundary coverage, dependency audit, both production builds, server tests, 106 desktop/mobile browser journeys, container builds/scans and isolated SSR/non-root/read-only container smokes. Log: `/tmp/playora-di10a-frontend-gate.log`. Root checks also passed (`/tmp/playora-di10a-repository.log`). The tracked Git hook must still run at commit; no commit or remote delivery is inferred from this standalone qualification.
+
+## First-increment delivery receipt
+
+Implementation `0677ae35864257ffca976cbb4c1a0cb6e3d58837` passed the unchanged tracked scoped hook (repository plus complete frontend pre-commit) and was pushed directly to `origin/main`; the remote SHA matched. Evidence: `/tmp/playora-di10a-resource-gate.log`. The hook repeated the 374 local component cases, 100% required route-boundary coverage, 106 desktop/mobile journeys, dependency/contract/build checks and container security/smokes on the frozen staged source. Both independent scoped design reviews are PASS. Held prototype/cameo directories remain untracked and excluded.
+
+This delivers only the first DI10 increment. The full phase remains in progress, including marketplace filtering and financial evidence/workflow qualification. Independently prepared marketplace query/HTTP code has passed unit tests, Go lint, standalone gosec and targeted TiDB race tests in a temporary copy; it is not part of this delivered commit. DI11–DI15 remain authorized and R10/R11 stay held.
