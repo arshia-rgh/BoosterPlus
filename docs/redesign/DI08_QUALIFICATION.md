@@ -1,4 +1,4 @@
-# DI08 booster workspace qualification — in progress
+# DI08 booster workspace qualification — delivered
 
 27 September 2026. Base: DI07 receipt `c0d074dbf2079ca9363e6ea67b4cefcf677a1398`. DI08 is applied; delivery requires scoped designer approval and the unchanged complete gate. DI09–DI15 remain authorized. Final launch remains held.
 
@@ -44,3 +44,10 @@ DI08 second complete hook passed all backend checks (TiDB race integration 548.1
 
 
 The corrected booster sign-in journey now passes against real isolated APIs on desktop and mobile (2.0s each), including all unchanged MFA and cross-portal denial assertions plus the actual dashboard destination checks. Log: `/tmp/playora-di08-identity-browser.log`. The third complete tracked hook follows; no application/UI change was required for this assertion correction.
+
+
+## Delivery receipt
+
+Implementation `6aa13d67e9e6b123db62011c5c5ead1887d31f30` passed the third unchanged complete tracked hook and was pushed directly to `origin/main`, with the remote SHA verified. Complete gate evidence: `/tmp/playora-di08-resource-gate-3.log`. Live Go vulnerability checks, golangci-lint and standalone gosec, generated-code checks, race units and TiDB integration (564.925s), 30 SQL migrations, 342 local component cases (332 tracked plus ten held experiments), unchanged 100% route coverage, 106 desktop/mobile browser journeys, dependency/build/container checks and isolated TLS deployment regressions all passed. The earlier route-coverage and obsolete browser assertion failures and their corrections remain recorded above.
+
+The independent scoped senior designer verdict is PASS. All five DI08-owned views are verified; B05's legacy authorized conversation URL resolves into assignment-local Messages. Full design-matched journey acceptance remains DI14/DI15. No held experiments, secrets or runtime captures were committed. DI09–DI15 continue as authorized; R10/R11 and final launch remain held.

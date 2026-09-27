@@ -2271,7 +2271,7 @@
       "title": "Your next session.",
       "phase": "DI08",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/booster",
       "targetRoute": "/booster",
       "apiFamily": "booster",
@@ -2291,14 +2291,17 @@
         "keyboard and narrow layout",
         "F12"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI08_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di08-booster.md"
+      ]
     },
     {
       "id": "B02",
       "title": "Assigned orders.",
       "phase": "DI08",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/booster/orders",
       "targetRoute": "/booster/orders",
       "apiFamily": "booster",
@@ -2318,14 +2321,17 @@
         "keyboard and narrow layout",
         "F12"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI08_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di08-booster.md"
+      ]
     },
     {
       "id": "B03",
       "title": "PL-1038 \u00b7 Your assignment",
       "phase": "DI08",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/booster/orders/:id",
       "targetRoute": "/booster/orders/:id",
       "apiFamily": "booster",
@@ -2347,14 +2353,17 @@
         "keyboard and narrow layout",
         "F12"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI08_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di08-booster.md"
+      ]
     },
     {
       "id": "B04",
       "title": "Availability & sessions.",
       "phase": "DI08",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/booster/calendar",
       "targetRoute": "/booster/calendar",
       "apiFamily": "booster",
@@ -2376,14 +2385,17 @@
         "F12",
         "F13"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI08_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di08-booster.md"
+      ]
     },
     {
       "id": "B05",
       "title": "Assignment messages.",
       "phase": "DI08",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/booster/support/:id",
       "targetRoute": "/booster/support/:id",
       "apiFamily": "booster",
@@ -2404,7 +2416,10 @@
         "keyboard and narrow layout",
         "F12"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI08_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di08-booster.md"
+      ]
     },
     {
       "id": "A01",

@@ -1131,3 +1131,6 @@ DI08 second complete hook passed all backend checks (TiDB race integration 548.1
 
 
 The corrected booster sign-in journey now passes against real isolated APIs on desktop and mobile (2.0s each), including all unchanged MFA and cross-portal denial assertions plus the actual dashboard destination checks. Log: `/tmp/playora-di08-identity-browser.log`. The third complete tracked hook follows; no application/UI change was required for this assertion correction.
+
+
+DI08 delivered as `6aa13d67e9e6b123db62011c5c5ead1887d31f30`, pushed directly to main and verified against origin/main. The third unchanged complete hook passed: live security/dependency scans, standalone gosec/lint, TiDB race integration (564.925s), 30 migrations, 342 local component cases (332 tracked plus ten held), 100% required route coverage, 106 desktop/mobile browser journeys, builds and container/TLS deployment regressions. Final scoped senior designer review is PASS. The earlier route-coverage and obsolete browser assertion failures are retained; no check was bypassed. Five owned views now have scoped traceability. DI09 continues, DI10–DI15 remain authorized, and final launch stays held.
