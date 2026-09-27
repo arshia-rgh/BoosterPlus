@@ -1397,7 +1397,7 @@
       "title": "Good to see you, Player.",
       "phase": "DI06",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/account",
       "targetRoute": "/account",
       "apiFamily": "account",
@@ -1418,14 +1418,17 @@
         "F10",
         "F25"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI06_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di06-customer-workspaces.md"
+      ]
     },
     {
       "id": "C02",
       "title": "Your orders.",
       "phase": "DI06",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders",
       "targetRoute": "/orders",
       "apiFamily": "orders",
@@ -1446,7 +1449,10 @@
         "keyboard and narrow layout",
         "F01"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI06_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di06-customer-workspaces.md"
+      ]
     },
     {
       "id": "C03",
@@ -1491,7 +1497,7 @@
       "title": "Let’s get your order ready.",
       "phase": "DI06",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -1513,14 +1519,17 @@
         "F01",
         "F02"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI06_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di06-customer-workspaces.md"
+      ]
     },
     {
       "id": "C05",
       "title": "Your boost is in progress.",
       "phase": "DI06",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -1546,14 +1555,17 @@
         "F12",
         "F19"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI06_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di06-customer-workspaces.md"
+      ]
     },
     {
       "id": "C06",
       "title": "Plan your play session.",
       "phase": "DI06",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -1575,14 +1587,17 @@
         "F01",
         "F13"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI06_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di06-customer-workspaces.md"
+      ]
     },
     {
       "id": "C07",
       "title": "Payment & receipts.",
       "phase": "DI06",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -1604,14 +1619,17 @@
         "F04",
         "F05"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI06_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di06-customer-workspaces.md"
+      ]
     },
     {
       "id": "C08",
       "title": "Get help with your order.",
       "phase": "DI06",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -1633,14 +1651,17 @@
         "F04",
         "F05"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI06_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di06-customer-workspaces.md"
+      ]
     },
     {
       "id": "C09",
       "title": "Your case is under review.",
       "phase": "DI06",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -1664,7 +1685,10 @@
         "F04",
         "F05"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI06_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di06-customer-workspaces.md"
+      ]
     },
     {
       "id": "C10",

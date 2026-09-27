@@ -1,6 +1,6 @@
 # PLAYORA — accepted design implementation roadmap
 
-25 September 2026 · **Implementation authorized by the owner; DI00–DI05 delivered; DI06 in progress; DI07–DI15 planned. R10/R11 held.**
+25 September 2026 · **Implementation authorized by the owner; DI00–DI06 delivered; DI07 in progress; DI08–DI15 planned. R10/R11 held.**
 
 The owner accepted the current design as complete for now and requested this implementation plan before development resumes. This is the next application roadmap, replacing the execution order in the historical UI/UX and homepage-refinement roadmaps. R00–R09 and earlier UX deliveries remain existing code to preserve and improve. R10/R11 remain separately held in [final-launch.md](../../final-launch.md).
 
@@ -58,7 +58,7 @@ Audit entry points: [storefront routes](../../frontend/app/routes.ts), [admin ro
 
 ## 4. Phase sequence
 
-DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 discovery/content contracts, DI04 homepage/game hubs and DI05 boost configuration/checkout are **delivered**; DI06 is in progress and DI07–DI15 are planned. The owner authorized this implementation sequence on 25 September. Implement in this order unless a later owner decision changes it. Dependencies identify required contracts; a phase can prepare components earlier, but cannot claim complete user journeys until its dependencies are real. Do not expose incomplete feature entry points publicly. One phase may use several verified commits; each commit follows the applicable gate. A phase exit verifies its owned screens/contracts and relevant journey segments against working existing counterparts. It does not certify later redesigned screens as delivered. Complete design-matched cross-phase journey acceptance is scheduled in DI14, followed by independent requalification in DI15.
+DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 discovery/content contracts, DI04 homepage/game hubs and DI05 boost configuration/checkout are **delivered**; DI06 is delivered; DI07 is in progress and DI08–DI15 are planned. The owner authorized this implementation sequence on 25 September. Implement in this order unless a later owner decision changes it. Dependencies identify required contracts; a phase can prepare components earlier, but cannot claim complete user journeys until its dependencies are real. Do not expose incomplete feature entry points publicly. One phase may use several verified commits; each commit follows the applicable gate. A phase exit verifies its owned screens/contracts and relevant journey segments against working existing counterparts. It does not certify later redesigned screens as delivered. Complete design-matched cross-phase journey acceptance is scheduled in DI14, followed by independent requalification in DI15.
 
 | Phase | Deliverable | Requires |
 | --- | --- | --- |
@@ -147,7 +147,7 @@ DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 dis
 
 ### DI05 — boost request, package and checkout flows
 
-**In progress:** configuration/review and interrupted-creation increment A delivered; see [qualification](DI05_QUALIFICATION.md). Remaining checkout and traceability work keeps the phase open.
+**Delivered:** configuration/review, interrupted creation, quote decisions and direct checkout are verified through increment C `6a122d7234ff4c15b967b95bf82aae0865c671d2`. All 19 owned views are traced; see [qualification](DI05_QUALIFICATION.md). Full cross-phase journeys remain DI14/DI15 work.
 
 - Connect dynamic custom forms and package eligibility to real catalog versions. Support both playing on the customer's account and together; rank/hero/role/region and other fields come from the published configuration. Invalid combinations have local explanations. Manual estimate paths may submit without a numeric promise.
 - Review summaries show selected scope, estimate versus final quote, delivery prerequisites and terms. Preserve safe drafts through sign-in and return to exact game/service; private credentials do not belong in general draft storage.
@@ -158,6 +158,8 @@ DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 dis
 **Exit/tests:** the request/quote/checkout segments of F01/F02/F04 and each game-config template with real local APIs plus isolated provider fixtures; stale version, sold out, invalid code/field, concurrent acceptance, repeated checkout, declined/expired quote and provider timeout. Historical orders keep purchased prices/terms. Payment copy never claims zero fees, instant finality or guaranteed outcomes.
 
 ### DI06 — customer records, settings shell and activity panel
+
+**Delivered:** persistent customer records, private activity and reported-progress projection, scoped designer review and unchanged complete gate. Implementation `09a0c11b87abaf2754018a62b3609f0a7ce40bdb`; [qualification](DI06_QUALIFICATION.md).
 
 - Implement account overview, order list/search/filter and persistent order detail. Overview, Messages, Progress, Payment and Help are local sections in the same order shell; sections preserve identity/status, browser history and in-progress non-sensitive drafts. Lists use actions such as “View order PL-…” and retain filters/position on return.
 - Show quote attention, prerequisite handoff, scheduling, verified payment, progress/evidence, case and delivery appropriate to order kind/state. Do not send account purchases into boost progress or show fulfillment as available while unpaid.
@@ -478,4 +480,4 @@ These are planned additions, **not screens already present in the accepted 115-v
 | Publication/schedule/unpublish | Confirmation, permission/audit, failed job/retry, corrected revision, slug redirect and cache/search invalidation | DI12 |
 | Editorial end-to-end journeys | Draft → review/preview → publish or schedule → reader discovery; correction; unpublish without draft leakage | DI12 |
 
-**Completion tracking:** DI00–DI05 are delivered; DI06 is in progress; DI07–DI15 are planned. See [DI00 review evidence](reviews/2026-09-25-di00-contracts-addendum.md). Runtime screen rows remain planned until their implementation phases; final owner review includes the bounded shop/news additions. Do not update them to delivered on the basis of this document, the accepted static design, or historical UX/R-phase test results.
+**Completion tracking:** DI00–DI06 are delivered; DI07 is in progress; DI08–DI15 are planned. See [DI00 review evidence](reviews/2026-09-25-di00-contracts-addendum.md). Runtime screen rows remain planned until their implementation phases; final owner review includes the bounded shop/news additions. Do not update them to delivered on the basis of this document, the accepted static design, or historical UX/R-phase test results.
