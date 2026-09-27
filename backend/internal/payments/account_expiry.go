@@ -46,25 +46,9 @@ func (s *Store) expireAccountReservation(ctx context.Context, tx *ent.Tx, reserv
 	if err != nil {
 		return err
 	}
-	if contract.PaymentState != ordercontract.PaymentStateUnissued && contract.PaymentState != ordercontract.PaymentStateRetired {
-		return nil
-	}
-	received, err := tx.PaymentReceipt.Query().Where(paymentreceipt.OrderIDEQ(purchase.ID)).Exist(ctx)
-	if err != nil || received {
+	safe, err := s.inventoryReservationUnfunded(ctx, tx, purchase, contract)
+	if err != nil || !safe {
 		return err
-	}
-	attempts, err := tx.PaymentAttempt.Query().Where(paymentattempt.OrderIDEQ(purchase.ID)).Limit(101).All(ctx)
-	if err != nil {
-		return err
-	}
-	if len(attempts) > 100 {
-		return nil
-	}
-	for _, attempt := range attempts {
-		safe, e := s.accountAttemptUnfunded(ctx, tx, attempt)
-		if e != nil || !safe {
-			return e
-		}
 	}
 	if _, err = tx.OrderContract.UpdateOneID(contract.ID).SetPaymentState(ordercontract.PaymentStateRetired).ClearActiveOrderID().SetCapacityHeld(false).Save(ctx); err != nil {
 		return err
@@ -80,7 +64,7 @@ func (s *Store) expireAccountReservation(ctx context.Context, tx *ent.Tx, reserv
 	return s.audit(ctx, tx, nil, "account_reservation_released", reservation.ID)
 }
 
-func (s *Store) accountAttemptUnfunded(ctx context.Context, tx *ent.Tx, attempt *ent.PaymentAttempt) (bool, error) {
+func (s *Store) inventoryAttemptUnfunded(ctx context.Context, tx *ent.Tx, attempt *ent.PaymentAttempt) (bool, error) {
 	if attempt.ActiveContractID != nil || attempt.FundsDetectedAt != nil {
 		return false, nil
 	}
@@ -115,6 +99,34 @@ func (s *Store) accountAttemptUnfunded(ctx context.Context, tx *ent.Tx, attempt 
 		}
 		paid, e := observed.ActuallyPaid.Rational()
 		if e != nil || paid.Sign() != 0 {
+			return false, e
+		}
+	}
+	return true, nil
+}
+
+// inventoryReservationUnfunded uses persisted verified evidence, never a local timer alone.
+func (s *Store) inventoryReservationUnfunded(ctx context.Context, tx *ent.Tx, purchase *ent.Order, contract *ent.OrderContract) (bool, error) {
+	if contract.OrderID != purchase.ID || contract.UserID != purchase.UserID {
+		return false, ErrConflict
+	}
+	if contract.PaymentState != ordercontract.PaymentStateUnissued && contract.PaymentState != ordercontract.PaymentStateRetired {
+		return false, nil
+	}
+	received, err := tx.PaymentReceipt.Query().Where(paymentreceipt.OrderIDEQ(purchase.ID)).Exist(ctx)
+	if err != nil || received {
+		return false, err
+	}
+	attempts, err := tx.PaymentAttempt.Query().Where(paymentattempt.OrderIDEQ(purchase.ID)).Limit(101).All(ctx)
+	if err != nil {
+		return false, err
+	}
+	if len(attempts) > 100 {
+		return false, nil
+	}
+	for _, attempt := range attempts {
+		safe, e := s.inventoryAttemptUnfunded(ctx, tx, attempt)
+		if e != nil || !safe {
 			return false, e
 		}
 	}

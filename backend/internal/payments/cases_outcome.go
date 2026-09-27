@@ -14,6 +14,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/resaleevents"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/shopevents"
 )
 
 func (s *Store) applyCaseOutcome(ctx context.Context, tx *ent.Tx, p *identity.Principal, record *ent.ServiceCase) error {
@@ -26,6 +27,9 @@ func (s *Store) applyCaseOutcome(ctx context.Context, tx *ent.Tx, p *identity.Pr
 	case "cancel":
 		next = order.StateCancelled
 		if err = resaleevents.CancelPaid(ctx, tx, row, s.instant()); err != nil {
+			return err
+		}
+		if err = shopevents.CancelPaid(ctx, tx, row, s.instant()); err != nil {
 			return err
 		}
 		if _, err = tx.OrderContract.UpdateOneID(row.CurrentContract).SetCapacityHeld(false).Save(ctx); err != nil {
@@ -61,6 +65,10 @@ func (s *Store) applyCaseOutcome(ctx context.Context, tx *ent.Tx, p *identity.Pr
 			if _, e = tx.AccountDelivery.Update().Where(accountdelivery.OrderIDEQ(row.ID)).AddVersion(1).SetState("pending").SetSecretVersion(0).SetInstructions("").ClearDeliveredAt().ClearAcknowledgedAt().ClearDisputeUntil().SetUpdatedAt(s.instant()).Save(ctx); e != nil {
 				return e
 			}
+			break
+		}
+		if row.Kind == order.KindShop {
+			// Shop delivery keeps its own staff review record; never mutate booster work.
 			break
 		}
 		update := tx.Fulfillment.Update().Where(fulfillment.OrderIDEQ(row.ID)).AddVersion(1).AddAccessVersion(1).SetCompletionPending(false).SetCurrentNote("Case resolved; review handoff before resuming.")

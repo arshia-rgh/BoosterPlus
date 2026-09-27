@@ -21,6 +21,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/resaleevents"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/shopevents"
 )
 
 // Store shares Ent and identity's transactional authority. The optional clock is
@@ -430,6 +431,9 @@ func retireUnissued(ctx context.Context, tx *ent.Tx, row *ent.Order, now time.Ti
 		return err
 	}
 	if err = resaleevents.ReleaseUnpaid(ctx, tx, row, now); err != nil {
+		return err
+	}
+	if err = shopevents.ReleaseUnpaid(ctx, tx, row, now); err != nil {
 		return err
 	}
 	return availabilityevents.Changed(ctx, tx, row.GameID)

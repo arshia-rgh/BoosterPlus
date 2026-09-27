@@ -80,7 +80,10 @@ func (s *Store) Maintain(ctx context.Context) error {
 			}
 		}
 	}
-	return s.expireAccountReservations(ctx)
+	if err = s.expireAccountReservations(ctx); err != nil {
+		return err
+	}
+	return s.expireShopReservations(ctx)
 }
 
 // RunMaintenance repairs missed signals while the durable queue owns provider reads.

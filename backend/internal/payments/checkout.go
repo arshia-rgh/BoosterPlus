@@ -2,6 +2,7 @@ package payments
 
 import (
 	"context"
+	"errors"
 	"slices"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/resaleevents"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/shopevents"
 )
 
 func owned(ctx context.Context, client *ent.Client, p *identity.Principal, id string, admin bool) (*ent.Order, error) {
@@ -106,6 +108,12 @@ func (s *Store) Start(ctx context.Context, p *identity.Principal, id string, inp
 			return err
 		}
 		if err = resaleevents.Checkout(ctx, tx, row, attempt.ExpiresAt, now); err != nil {
+			return err
+		}
+		if err = shopevents.Checkout(ctx, tx, row, attempt.ExpiresAt, now); err != nil {
+			if errors.Is(err, shopevents.ErrConflict) {
+				return ErrConflict
+			}
 			return err
 		}
 		if _, err = tx.OrderContract.UpdateOneID(contract.ID).SetPaymentState(ordercontract.PaymentStateInvoicePending).Save(ctx); err != nil {

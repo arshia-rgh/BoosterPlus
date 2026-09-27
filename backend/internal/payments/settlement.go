@@ -2,6 +2,7 @@ package payments
 
 import (
 	"context"
+	"errors"
 	"math/big"
 	"strings"
 
@@ -15,6 +16,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/resaleevents"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/shopevents"
 )
 
 func matching(attempt *ent.PaymentAttempt, p nowpayments.Payment) string {
@@ -118,6 +120,12 @@ func (s *Store) allocate(ctx context.Context, tx *ent.Tx, attempt *ent.PaymentAt
 		return "timing_review", nil
 	}
 	if err = resaleevents.Allocate(ctx, tx, row, s.instant()); err != nil {
+		return "", err
+	}
+	if err = shopevents.Allocate(ctx, tx, row, s.instant()); err != nil {
+		if errors.Is(err, shopevents.ErrConflict) {
+			return "inventory_review", nil
+		}
 		return "", err
 	}
 	if _, err = tx.PaymentAllocation.Create().SetReceiptID(receipt.ID).SetContractID(contract.ID).SetOrderID(row.ID).SetCurrency(attempt.Currency).SetAmountMinor(attempt.AmountMinor).SetCryptoAmount(string(p.PayAmount)).SetCreatedAt(s.instant()).Save(ctx); err != nil {

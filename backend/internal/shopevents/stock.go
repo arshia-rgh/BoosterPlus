@@ -18,6 +18,9 @@ var ErrConflict = errors.New("shop inventory commitment changed")
 
 func reservation(ctx context.Context, tx *ent.Tx, purchase *ent.Order) (*ent.ShopReservation, error) {
 	row, err := tx.ShopReservation.Query().Where(shopreservation.OrderIDEQ(purchase.ID)).Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, ErrConflict
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -28,6 +31,9 @@ func reservation(ctx context.Context, tx *ent.Tx, purchase *ent.Order) (*ent.Sho
 }
 func stock(ctx context.Context, tx *ent.Tx, row *ent.ShopReservation) (*ent.ShopStock, error) {
 	value, err := tx.ShopStock.Query().Where(shopstock.ProductIDEQ(row.ProductID), shopstock.VariantKeyEQ(row.VariantKey)).Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, ErrConflict
+	}
 	if err != nil {
 		return nil, err
 	}
