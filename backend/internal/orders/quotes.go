@@ -306,6 +306,9 @@ func (s *Store) Revise(ctx context.Context, p *identity.Principal, id string, in
 		if readErr != nil {
 			return readErr
 		}
+		if readErr = bindAttachments(ctx, tx, current, row, release, validated.Answers, row.ID, now); readErr != nil {
+			return readErr
+		}
 		if readErr = supersede(ctx, tx, row); readErr != nil {
 			return readErr
 		}

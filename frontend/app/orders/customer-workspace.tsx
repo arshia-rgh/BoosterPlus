@@ -1,3 +1,4 @@
+import RequestConfirmation from "./request-confirmation";
 import { useLocation } from "react-router";
 import { Link } from "react-router";
 import { useRef, useState, type ReactNode } from "react";
@@ -236,6 +237,7 @@ export default function CustomerWorkspace({
         </Action>
         <span role="status">{copied}</span>
       </details>
+      <RequestConfirmation detail={detail} />
       <OrderProgress detail={detail} />
       <div className="order-contact">
         <OrderSupport id={detail.order.id} name={detail.order.game_name} />

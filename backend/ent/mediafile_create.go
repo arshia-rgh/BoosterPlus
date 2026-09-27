@@ -32,6 +32,34 @@ func (_c *MediaFileCreate) SetConversationID(v string) *MediaFileCreate {
 	return _c
 }
 
+// SetIntakeKey sets the "intake_key" field.
+func (_c *MediaFileCreate) SetIntakeKey(v string) *MediaFileCreate {
+	_c.mutation.SetIntakeKey(v)
+	return _c
+}
+
+// SetNillableIntakeKey sets the "intake_key" field if the given value is not nil.
+func (_c *MediaFileCreate) SetNillableIntakeKey(v *string) *MediaFileCreate {
+	if v != nil {
+		_c.SetIntakeKey(*v)
+	}
+	return _c
+}
+
+// SetIntakeOrderID sets the "intake_order_id" field.
+func (_c *MediaFileCreate) SetIntakeOrderID(v string) *MediaFileCreate {
+	_c.mutation.SetIntakeOrderID(v)
+	return _c
+}
+
+// SetNillableIntakeOrderID sets the "intake_order_id" field if the given value is not nil.
+func (_c *MediaFileCreate) SetNillableIntakeOrderID(v *string) *MediaFileCreate {
+	if v != nil {
+		_c.SetIntakeOrderID(*v)
+	}
+	return _c
+}
+
 // SetVisibility sets the "visibility" field.
 func (_c *MediaFileCreate) SetVisibility(v mediafile.Visibility) *MediaFileCreate {
 	_c.mutation.SetVisibility(v)
@@ -235,6 +263,10 @@ func (_c *MediaFileCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *MediaFileCreate) defaults() {
+	if _, ok := _c.mutation.IntakeKey(); !ok {
+		v := mediafile.DefaultIntakeKey
+		_c.mutation.SetIntakeKey(v)
+	}
 	if _, ok := _c.mutation.State(); !ok {
 		v := mediafile.DefaultState
 		_c.mutation.SetState(v)
@@ -281,6 +313,19 @@ func (_c *MediaFileCreate) check() error {
 	if v, ok := _c.mutation.ConversationID(); ok {
 		if err := mediafile.ConversationIDValidator(v); err != nil {
 			return &ValidationError{Name: "conversation_id", err: fmt.Errorf(`ent: validator failed for field "MediaFile.conversation_id": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.IntakeKey(); !ok {
+		return &ValidationError{Name: "intake_key", err: errors.New(`ent: missing required field "MediaFile.intake_key"`)}
+	}
+	if v, ok := _c.mutation.IntakeKey(); ok {
+		if err := mediafile.IntakeKeyValidator(v); err != nil {
+			return &ValidationError{Name: "intake_key", err: fmt.Errorf(`ent: validator failed for field "MediaFile.intake_key": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.IntakeOrderID(); ok {
+		if err := mediafile.IntakeOrderIDValidator(v); err != nil {
+			return &ValidationError{Name: "intake_order_id", err: fmt.Errorf(`ent: validator failed for field "MediaFile.intake_order_id": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Visibility(); !ok {
@@ -414,6 +459,14 @@ func (_c *MediaFileCreate) createSpec() (*MediaFile, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ConversationID(); ok {
 		_spec.SetField(mediafile.FieldConversationID, field.TypeString, value)
 		_node.ConversationID = value
+	}
+	if value, ok := _c.mutation.IntakeKey(); ok {
+		_spec.SetField(mediafile.FieldIntakeKey, field.TypeString, value)
+		_node.IntakeKey = value
+	}
+	if value, ok := _c.mutation.IntakeOrderID(); ok {
+		_spec.SetField(mediafile.FieldIntakeOrderID, field.TypeString, value)
+		_node.IntakeOrderID = &value
 	}
 	if value, ok := _c.mutation.Visibility(); ok {
 		_spec.SetField(mediafile.FieldVisibility, field.TypeEnum, value)

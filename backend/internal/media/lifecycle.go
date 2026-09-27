@@ -33,10 +33,10 @@ func (s *Store) Retry(ctx context.Context, p *identity.Principal, id string, adm
 		if err != nil {
 			return err
 		}
-		if err = member(ctx, tx.Client(), current, row.ConversationID, admin); err != nil {
+		if err = fileMember(ctx, tx.Client(), current, row, admin); err != nil {
 			return err
 		}
-		if row.State != mediafile.StateQueued || row.MessageID != nil || !row.ExpiresAt.After(s.now()) {
+		if row.State != mediafile.StateQueued || row.MessageID != nil || row.IntakeOrderID != nil || !row.ExpiresAt.After(s.now()) {
 			return ErrConflict
 		}
 		result, err := tx.ExecContext(ctx, "UPDATE jobs SET state='pending',attempts=0,owner=NULL,lease_until=NULL,last_error=NULL,available_at=UTC_TIMESTAMP(6) WHERE kind='media.scan' AND idempotency_key=? AND state='failed'", "media:"+id)
@@ -62,10 +62,10 @@ func (s *Store) Remove(ctx context.Context, p *identity.Principal, id string, ad
 		if err != nil {
 			return err
 		}
-		if err = member(ctx, tx.Client(), current, row.ConversationID, admin); err != nil {
+		if err = fileMember(ctx, tx.Client(), current, row, admin); err != nil {
 			return err
 		}
-		if row.MessageID != nil {
+		if row.MessageID != nil || row.IntakeOrderID != nil {
 			return ErrConflict
 		}
 		if row.State == mediafile.StateDeleted {

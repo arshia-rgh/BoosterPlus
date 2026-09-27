@@ -358,3 +358,10 @@
   border: 0;
   padding: 0 0 1rem;
 }
+
+.request-confirmation {
+  overflow-wrap: anywhere;
+}
+.request-confirmation .eyebrow {
+  margin-block-start: 0;
+}

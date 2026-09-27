@@ -921,6 +921,8 @@ var (
 		{Name: "id", Type: field.TypeString, Size: 36},
 		{Name: "user_id", Type: field.TypeString, Size: 36},
 		{Name: "conversation_id", Type: field.TypeString, Size: 36},
+		{Name: "intake_key", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "intake_order_id", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "visibility", Type: field.TypeEnum, Enums: []string{"public", "internal"}},
 		{Name: "request_key", Type: field.TypeString, Size: 36},
 		{Name: "request_hash", Type: field.TypeString, Size: 64},
@@ -946,22 +948,32 @@ var (
 			{
 				Name:    "media_request",
 				Unique:  true,
-				Columns: []*schema.Column{MediaFilesColumns[1], MediaFilesColumns[4]},
+				Columns: []*schema.Column{MediaFilesColumns[1], MediaFilesColumns[6]},
 			},
 			{
 				Name:    "media_owner",
 				Unique:  false,
-				Columns: []*schema.Column{MediaFilesColumns[1], MediaFilesColumns[9]},
+				Columns: []*schema.Column{MediaFilesColumns[1], MediaFilesColumns[11]},
 			},
 			{
 				Name:    "media_expiry",
 				Unique:  false,
-				Columns: []*schema.Column{MediaFilesColumns[10], MediaFilesColumns[14]},
+				Columns: []*schema.Column{MediaFilesColumns[12], MediaFilesColumns[16]},
 			},
 			{
 				Name:    "media_message",
 				Unique:  false,
-				Columns: []*schema.Column{MediaFilesColumns[10]},
+				Columns: []*schema.Column{MediaFilesColumns[12]},
+			},
+			{
+				Name:    "media_intake_scope",
+				Unique:  false,
+				Columns: []*schema.Column{MediaFilesColumns[1], MediaFilesColumns[3]},
+			},
+			{
+				Name:    "media_intake_order",
+				Unique:  false,
+				Columns: []*schema.Column{MediaFilesColumns[4]},
 			},
 		},
 	}

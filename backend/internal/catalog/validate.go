@@ -252,9 +252,9 @@ func validateForm(service ServiceDefinition, refs map[string]Reference, path str
 		if (field.Type == "short_text" || field.Type == "long_text") && (field.MaxLength == 0 || (field.Type == "short_text" && field.MaxLength > 500)) {
 			add(fp, "Set a positive text length limit (short text: at most 500).")
 		}
-		// Upload ownership cannot be proved before the private file service ships.
+		// Optional order screenshots are bound by the order transaction, never defaults.
 		if field.Type == "attachment" && (field.Required || field.RequiredWhen != nil || len(field.Default) > 0) {
-			add(fp, "Attachments must remain optional until the authorized upload service is available.")
+			add(fp, "Attachments remain optional and cannot contain preselected private files.")
 		}
 		validateCondition(field.VisibleWhen, fields, refs, fp+".visible_when", stage(field.Stage), add)
 		validateCondition(field.RequiredWhen, fields, refs, fp+".required_when", stage(field.Stage), add)

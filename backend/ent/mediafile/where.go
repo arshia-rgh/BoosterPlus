@@ -74,6 +74,16 @@ func ConversationID(v string) predicate.MediaFile {
 	return predicate.MediaFile(sql.FieldEQ(FieldConversationID, v))
 }
 
+// IntakeKey applies equality check predicate on the "intake_key" field. It's identical to IntakeKeyEQ.
+func IntakeKey(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldEQ(FieldIntakeKey, v))
+}
+
+// IntakeOrderID applies equality check predicate on the "intake_order_id" field. It's identical to IntakeOrderIDEQ.
+func IntakeOrderID(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldEQ(FieldIntakeOrderID, v))
+}
+
 // RequestKey applies equality check predicate on the "request_key" field. It's identical to RequestKeyEQ.
 func RequestKey(v string) predicate.MediaFile {
 	return predicate.MediaFile(sql.FieldEQ(FieldRequestKey, v))
@@ -267,6 +277,146 @@ func ConversationIDEqualFold(v string) predicate.MediaFile {
 // ConversationIDContainsFold applies the ContainsFold predicate on the "conversation_id" field.
 func ConversationIDContainsFold(v string) predicate.MediaFile {
 	return predicate.MediaFile(sql.FieldContainsFold(FieldConversationID, v))
+}
+
+// IntakeKeyEQ applies the EQ predicate on the "intake_key" field.
+func IntakeKeyEQ(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldEQ(FieldIntakeKey, v))
+}
+
+// IntakeKeyNEQ applies the NEQ predicate on the "intake_key" field.
+func IntakeKeyNEQ(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldNEQ(FieldIntakeKey, v))
+}
+
+// IntakeKeyIn applies the In predicate on the "intake_key" field.
+func IntakeKeyIn(vs ...string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldIn(FieldIntakeKey, vs...))
+}
+
+// IntakeKeyNotIn applies the NotIn predicate on the "intake_key" field.
+func IntakeKeyNotIn(vs ...string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldNotIn(FieldIntakeKey, vs...))
+}
+
+// IntakeKeyGT applies the GT predicate on the "intake_key" field.
+func IntakeKeyGT(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldGT(FieldIntakeKey, v))
+}
+
+// IntakeKeyGTE applies the GTE predicate on the "intake_key" field.
+func IntakeKeyGTE(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldGTE(FieldIntakeKey, v))
+}
+
+// IntakeKeyLT applies the LT predicate on the "intake_key" field.
+func IntakeKeyLT(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldLT(FieldIntakeKey, v))
+}
+
+// IntakeKeyLTE applies the LTE predicate on the "intake_key" field.
+func IntakeKeyLTE(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldLTE(FieldIntakeKey, v))
+}
+
+// IntakeKeyContains applies the Contains predicate on the "intake_key" field.
+func IntakeKeyContains(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldContains(FieldIntakeKey, v))
+}
+
+// IntakeKeyHasPrefix applies the HasPrefix predicate on the "intake_key" field.
+func IntakeKeyHasPrefix(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldHasPrefix(FieldIntakeKey, v))
+}
+
+// IntakeKeyHasSuffix applies the HasSuffix predicate on the "intake_key" field.
+func IntakeKeyHasSuffix(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldHasSuffix(FieldIntakeKey, v))
+}
+
+// IntakeKeyEqualFold applies the EqualFold predicate on the "intake_key" field.
+func IntakeKeyEqualFold(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldEqualFold(FieldIntakeKey, v))
+}
+
+// IntakeKeyContainsFold applies the ContainsFold predicate on the "intake_key" field.
+func IntakeKeyContainsFold(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldContainsFold(FieldIntakeKey, v))
+}
+
+// IntakeOrderIDEQ applies the EQ predicate on the "intake_order_id" field.
+func IntakeOrderIDEQ(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldEQ(FieldIntakeOrderID, v))
+}
+
+// IntakeOrderIDNEQ applies the NEQ predicate on the "intake_order_id" field.
+func IntakeOrderIDNEQ(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldNEQ(FieldIntakeOrderID, v))
+}
+
+// IntakeOrderIDIn applies the In predicate on the "intake_order_id" field.
+func IntakeOrderIDIn(vs ...string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldIn(FieldIntakeOrderID, vs...))
+}
+
+// IntakeOrderIDNotIn applies the NotIn predicate on the "intake_order_id" field.
+func IntakeOrderIDNotIn(vs ...string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldNotIn(FieldIntakeOrderID, vs...))
+}
+
+// IntakeOrderIDGT applies the GT predicate on the "intake_order_id" field.
+func IntakeOrderIDGT(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldGT(FieldIntakeOrderID, v))
+}
+
+// IntakeOrderIDGTE applies the GTE predicate on the "intake_order_id" field.
+func IntakeOrderIDGTE(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldGTE(FieldIntakeOrderID, v))
+}
+
+// IntakeOrderIDLT applies the LT predicate on the "intake_order_id" field.
+func IntakeOrderIDLT(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldLT(FieldIntakeOrderID, v))
+}
+
+// IntakeOrderIDLTE applies the LTE predicate on the "intake_order_id" field.
+func IntakeOrderIDLTE(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldLTE(FieldIntakeOrderID, v))
+}
+
+// IntakeOrderIDContains applies the Contains predicate on the "intake_order_id" field.
+func IntakeOrderIDContains(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldContains(FieldIntakeOrderID, v))
+}
+
+// IntakeOrderIDHasPrefix applies the HasPrefix predicate on the "intake_order_id" field.
+func IntakeOrderIDHasPrefix(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldHasPrefix(FieldIntakeOrderID, v))
+}
+
+// IntakeOrderIDHasSuffix applies the HasSuffix predicate on the "intake_order_id" field.
+func IntakeOrderIDHasSuffix(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldHasSuffix(FieldIntakeOrderID, v))
+}
+
+// IntakeOrderIDIsNil applies the IsNil predicate on the "intake_order_id" field.
+func IntakeOrderIDIsNil() predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldIsNull(FieldIntakeOrderID))
+}
+
+// IntakeOrderIDNotNil applies the NotNil predicate on the "intake_order_id" field.
+func IntakeOrderIDNotNil() predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldNotNull(FieldIntakeOrderID))
+}
+
+// IntakeOrderIDEqualFold applies the EqualFold predicate on the "intake_order_id" field.
+func IntakeOrderIDEqualFold(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldEqualFold(FieldIntakeOrderID, v))
+}
+
+// IntakeOrderIDContainsFold applies the ContainsFold predicate on the "intake_order_id" field.
+func IntakeOrderIDContainsFold(v string) predicate.MediaFile {
+	return predicate.MediaFile(sql.FieldContainsFold(FieldIntakeOrderID, v))
 }
 
 // VisibilityEQ applies the EQ predicate on the "visibility" field.

@@ -1,4 +1,6 @@
 import {
+  createContext,
+  useContext,
   useCallback,
   useState,
   useRef,
@@ -21,6 +23,8 @@ import { useMotionPreference } from "../ui/motion";
 import { defaultHeroLayout, type Release } from "./model";
 import "./game-shell.css";
 import "./artwork-framing.css";
+
+const RetryFocus = createContext<() => void>(() => {});
 
 export function GameShell({
   release,
@@ -45,6 +49,18 @@ export function GameShell({
   const { pathname } = useLocation();
   const requested = query.get("path");
   const localContent = useRef<HTMLDivElement>(null);
+  const revalidator = useRevalidator();
+  const retryFocus = useRef(false);
+  useEffect(() => {
+    if (!retryFocus.current || revalidator.state !== "idle") return;
+    retryFocus.current = false;
+    const heading = localContent.current?.querySelector<HTMLElement>("h2");
+    if (heading) {
+      heading.tabIndex = -1;
+      heading.focus({ preventScroll: true });
+    }
+  }, [revalidator.state]);
+
   const focusPath =
     pathname +
     ":" +
@@ -130,7 +146,13 @@ export function GameShell({
         selected={selectedService(pathname, query)}
       />
       <div ref={localContent} className="game-local-content">
-        {children}
+        <RetryFocus
+          value={() => {
+            retryFocus.current = true;
+          }}
+        >
+          {children}
+        </RetryFocus>
       </div>
       {release.configuration.faqs.length > 0 && (
         <section className="game-faq" aria-labelledby="game-faq-title">
@@ -153,6 +175,7 @@ export function GameContentError() {
   const error = useRouteError();
   const { slug } = useParams();
   const retry = useRevalidator();
+  const requestFocus = useContext(RetryFocus);
   const missing = isRouteErrorResponse(error) && error.status === 404;
   return (
     <section
@@ -172,18 +195,9 @@ export function GameContentError() {
           className="button"
           type="button"
           disabled={retry.state === "loading"}
-          onClick={(event) => {
-            const section = event.currentTarget.closest(".game-local-content");
-            void retry.revalidate().then(() => {
-              requestAnimationFrame(() => {
-                if (!section?.isConnected) return;
-                const heading = section.querySelector<HTMLElement>("h2");
-                if (heading) {
-                  heading.tabIndex = -1;
-                  heading.focus({ preventScroll: true });
-                }
-              });
-            });
+          onClick={() => {
+            requestFocus();
+            void retry.revalidate();
           }}
         >
           {retry.state === "loading"

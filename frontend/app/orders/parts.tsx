@@ -1,3 +1,4 @@
+import { DownloadImage } from "../media/attachment";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { Action, Check, ErrorNotice, Issues, Text } from "../catalog/controls";
@@ -432,11 +433,16 @@ export function RequestDetails({
                   key}
               </dt>
               <dd>
-                {selectionLabel(
-                  service?.fields.find((field) => field.key === key),
-                  value,
-                  detail.offer.configuration,
-                )}
+                {service?.fields.find((field) => field.key === key)?.type ===
+                  "attachment" && Array.isArray(value)
+                  ? value.map((id) => (
+                      <DownloadImage key={id} id={id} admin={admin} />
+                    ))
+                  : selectionLabel(
+                      service?.fields.find((field) => field.key === key),
+                      value,
+                      detail.offer.configuration,
+                    )}
               </dd>
             </div>
           ))}
@@ -476,6 +482,7 @@ export function RequestDetails({
               releaseID={detail.offer.id}
               slug={detail.offer.slug}
               stage="order"
+              intakeScope={detail.order.id}
               initialAnswers={detail.answers}
               initialCoupon={detail.coupon_code}
               validationPath={`/orders/${detail.order.id}/validate`}

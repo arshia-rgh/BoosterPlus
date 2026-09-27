@@ -1,5 +1,9 @@
+import { sessionEventMatches } from "../identity/portal";
+import IntakeImage from "../media/intake-image";
+import { RequestReference } from "../orders/request-recovery";
 import SelectionSummary from "../experience/selection-summary";
 import {
+  useContext,
   useEffect,
   useId,
   useRef,
@@ -42,6 +46,7 @@ export function Input({
   change,
   required,
   error,
+  intake,
 }: {
   field: Field;
   config: Configuration;
@@ -49,6 +54,9 @@ export function Input({
   change: (value: Answers[string] | undefined) => void;
   required: boolean;
   error: string | undefined;
+  intake?:
+    | { scope: string; pending: (busy: boolean) => void; onSignIn: () => void }
+    | undefined;
 }) {
   const id = useId(),
     helpId = id + "-help",
@@ -144,11 +152,29 @@ export function Input({
   else if (field.type === "attachment")
     control = (
       <>
-        <label htmlFor={id}>{label}</label>
-        <input {...common} type="file" disabled />
-        <p className="quiet">
-          Private uploads are being prepared. No file is collected here.
-        </p>
+        {intake && field.stage === "order" ? (
+          <IntakeImage
+            scope={intake.scope}
+            label={field.label}
+            value={Array.isArray(value) ? value[0] : undefined}
+            change={(next) => {
+              change(next ? [next] : undefined);
+            }}
+            pending={intake.pending}
+            onSignIn={intake.onSignIn}
+            describedBy={common["aria-describedby"]}
+            invalid={!!error}
+          />
+        ) : (
+          <>
+            <p>{label}</p>
+            <p className="quiet">
+              {field.stage === "order"
+                ? "Private screenshot upload is available in the customer request form."
+                : "Share optional evidence in the order’s messages after submission."}
+            </p>
+          </>
+        )}
       </>
     );
   else if (field.type === "long_text")
@@ -226,6 +252,7 @@ function ConfigurationForm({
   initialCoupon = "",
   onCommit,
   journey,
+  intakeScope,
 }: {
   config: Configuration;
   service: Service;
@@ -240,8 +267,15 @@ function ConfigurationForm({
   initialAnswers?: Answers;
   initialCoupon?: string;
   onCommit?: (answers: Answers, coupon: string) => Promise<void>;
+  intakeScope?: string;
   journey?: { review: () => void; invalidate: () => void; edit: () => void };
 }) {
+  const reference = useContext(RequestReference);
+  const [uploadScope] = useState(
+    () => intakeScope || reference || crypto.randomUUID(),
+  );
+  const [uploads, setUploads] = useState<Record<string, boolean>>({});
+  const [uploadEpoch, setUploadEpoch] = useState(0);
   const [raw, setRaw] = useState<Answers>(initialAnswers),
     [issues, setIssues] = useState<Issue[]>([]),
     [busy, setBusy] = useState(false),
@@ -250,6 +284,28 @@ function ConfigurationForm({
     [estimate, setEstimate] = useState<Estimate | null>(null),
     [coupon, setCoupon] = useState(initialCoupon);
   const [changed, setChanged] = useState(false);
+  useEffect(() => {
+    const changed = (event: Event) => {
+      if (!sessionEventMatches(event, "customer")) return;
+      setRaw((old) =>
+        Object.fromEntries(
+          Object.entries(old).filter(([key]) =>
+            service.fields.some(
+              (field) => field.key === key && field.stage === "estimate",
+            ),
+          ),
+        ),
+      );
+      setUploads({});
+      setUploadEpoch((v) => v + 1);
+      setValid(false);
+    };
+    window.addEventListener("boosterplus:session-changed", changed);
+    return () => {
+      window.removeEventListener("boosterplus:session-changed", changed);
+    };
+  }, [service.fields]);
+
   const [lastStage, setLastStage] = useState(stage);
   if (lastStage !== stage) {
     setLastStage(stage);
@@ -277,6 +333,12 @@ function ConfigurationForm({
   const couponID = useId();
   const values = visibleAnswers(service, raw, stage);
   const unavailable = paused || variant?.capacity === 0;
+  const uploadPending = service.fields.some(
+    (field) =>
+      stageIndex(field.stage) <= stageIndex(stage) &&
+      matches(field.visible_when, values, service.fields) &&
+      uploads[field.key],
+  );
   function retainOrderDetails(next: Answers): Answers {
     if (!journey || stage !== "estimate") return next;
     const details = Object.fromEntries(
@@ -290,7 +352,7 @@ function ConfigurationForm({
   }
   async function submit(event?: SubmitEvent<HTMLFormElement>, advance = false) {
     event?.preventDefault();
-    if (busy || unavailable) return;
+    if (busy || unavailable || uploadPending) return;
     const sequence = ++requestSequence.current;
     setBusy(true);
     setError(null);
@@ -445,8 +507,34 @@ function ConfigurationForm({
                 <div className="configuration-fields">
                   {group.fields.map((field) => (
                     <Input
-                      key={field.key}
+                      key={`${field.key}:${String(uploadEpoch)}`}
                       field={field}
+                      intake={
+                        !previewPath &&
+                        field.type === "attachment" &&
+                        (!onCommit || intakeScope)
+                          ? {
+                              scope: uploadScope,
+                              onSignIn: () => {
+                                saveConfigurationDraft(
+                                  releaseID,
+                                  service,
+                                  config,
+                                  pack,
+                                  variant?.key ?? "",
+                                  values,
+                                );
+                              },
+                              pending: (pending) => {
+                                setUploads((previous) =>
+                                  previous[field.key] === pending
+                                    ? previous
+                                    : { ...previous, [field.key]: pending },
+                                );
+                              },
+                            }
+                          : undefined
+                      }
                       config={config}
                       value={values[field.key]}
                       required={
@@ -518,6 +606,7 @@ function ConfigurationForm({
               <button
                 type="button"
                 className="button compact"
+                disabled={uploadPending}
                 onClick={journey.edit}
               >
                 Edit choices
@@ -530,6 +619,7 @@ function ConfigurationForm({
                 journey && stage === "estimate" ? "button secondary" : "button"
               }
               type="submit"
+              disabled={uploadPending}
             >
               {busy ? "Checking…" : "Check selections"}
             </button>
@@ -575,7 +665,12 @@ function ConfigurationForm({
       </div>
       <Issues issues={issues} />
       <ErrorNotice error={error} />
-      {valid && (
+      {uploadPending && (
+        <p role="status">
+          Finish checking or remove the selected image before continuing.
+        </p>
+      )}
+      {valid && !uploadPending && (
         <p role="status">
           Selections are valid. No order has been created.{" "}
           {variant
@@ -620,6 +715,7 @@ function ConfigurationForm({
         </section>
       )}
       {valid &&
+        !uploadPending &&
         stage === "order" &&
         !previewPath &&
         !unavailable &&
@@ -642,6 +738,7 @@ function ConfigurationForm({
           </Action>
         ) : (
           <SubmitOrder
+            intakeKey={uploadScope}
             onSignIn={() => {
               saveConfigurationDraft(
                 releaseID,

@@ -464,7 +464,7 @@ func exportBooking(ctx context.Context, tx *ent.Tx, userID, after string) ([]map
 	return out, nil
 }
 func exportMediaFile(ctx context.Context, tx *ent.Tx, userID, after string) ([]map[string]any, error) {
-	fields := []string{"id", "conversation_id", "state", "content_type", "size", "created_at", "updated_at", "purged_at"}
+	fields := []string{"id", "conversation_id", "intake_order_id", "state", "content_type", "size", "created_at", "updated_at", "purged_at"}
 	q := tx.MediaFile.Query().Order(ent.Asc(mediafile.FieldID)).Limit(101)
 	q.Where(mediafile.UserIDEQ(userID))
 	if after != "" {

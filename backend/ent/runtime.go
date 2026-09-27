@@ -1249,48 +1249,58 @@ func init() {
 	mediafileDescConversationID := mediafileFields[2].Descriptor()
 	// mediafile.ConversationIDValidator is a validator for the "conversation_id" field. It is called by the builders before save.
 	mediafile.ConversationIDValidator = mediafileDescConversationID.Validators[0].(func(string) error)
+	// mediafileDescIntakeKey is the schema descriptor for intake_key field.
+	mediafileDescIntakeKey := mediafileFields[3].Descriptor()
+	// mediafile.DefaultIntakeKey holds the default value on creation for the intake_key field.
+	mediafile.DefaultIntakeKey = mediafileDescIntakeKey.Default.(string)
+	// mediafile.IntakeKeyValidator is a validator for the "intake_key" field. It is called by the builders before save.
+	mediafile.IntakeKeyValidator = mediafileDescIntakeKey.Validators[0].(func(string) error)
+	// mediafileDescIntakeOrderID is the schema descriptor for intake_order_id field.
+	mediafileDescIntakeOrderID := mediafileFields[4].Descriptor()
+	// mediafile.IntakeOrderIDValidator is a validator for the "intake_order_id" field. It is called by the builders before save.
+	mediafile.IntakeOrderIDValidator = mediafileDescIntakeOrderID.Validators[0].(func(string) error)
 	// mediafileDescRequestKey is the schema descriptor for request_key field.
-	mediafileDescRequestKey := mediafileFields[4].Descriptor()
+	mediafileDescRequestKey := mediafileFields[6].Descriptor()
 	// mediafile.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
 	mediafile.RequestKeyValidator = mediafileDescRequestKey.Validators[0].(func(string) error)
 	// mediafileDescRequestHash is the schema descriptor for request_hash field.
-	mediafileDescRequestHash := mediafileFields[5].Descriptor()
+	mediafileDescRequestHash := mediafileFields[7].Descriptor()
 	// mediafile.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
 	mediafile.RequestHashValidator = mediafileDescRequestHash.Validators[0].(func(string) error)
 	// mediafileDescChecksum is the schema descriptor for checksum field.
-	mediafileDescChecksum := mediafileFields[6].Descriptor()
+	mediafileDescChecksum := mediafileFields[8].Descriptor()
 	// mediafile.ChecksumValidator is a validator for the "checksum" field. It is called by the builders before save.
 	mediafile.ChecksumValidator = mediafileDescChecksum.Validators[0].(func(string) error)
 	// mediafileDescContentType is the schema descriptor for content_type field.
-	mediafileDescContentType := mediafileFields[8].Descriptor()
+	mediafileDescContentType := mediafileFields[10].Descriptor()
 	// mediafile.ContentTypeValidator is a validator for the "content_type" field. It is called by the builders before save.
 	mediafile.ContentTypeValidator = mediafileDescContentType.Validators[0].(func(string) error)
 	// mediafileDescMessageID is the schema descriptor for message_id field.
-	mediafileDescMessageID := mediafileFields[10].Descriptor()
+	mediafileDescMessageID := mediafileFields[12].Descriptor()
 	// mediafile.MessageIDValidator is a validator for the "message_id" field. It is called by the builders before save.
 	mediafile.MessageIDValidator = mediafileDescMessageID.Validators[0].(func(string) error)
 	// mediafileDescCleanContentType is the schema descriptor for clean_content_type field.
-	mediafileDescCleanContentType := mediafileFields[11].Descriptor()
+	mediafileDescCleanContentType := mediafileFields[13].Descriptor()
 	// mediafile.DefaultCleanContentType holds the default value on creation for the clean_content_type field.
 	mediafile.DefaultCleanContentType = mediafileDescCleanContentType.Default.(string)
 	// mediafile.CleanContentTypeValidator is a validator for the "clean_content_type" field. It is called by the builders before save.
 	mediafile.CleanContentTypeValidator = mediafileDescCleanContentType.Validators[0].(func(string) error)
 	// mediafileDescCleanChecksum is the schema descriptor for clean_checksum field.
-	mediafileDescCleanChecksum := mediafileFields[12].Descriptor()
+	mediafileDescCleanChecksum := mediafileFields[14].Descriptor()
 	// mediafile.DefaultCleanChecksum holds the default value on creation for the clean_checksum field.
 	mediafile.DefaultCleanChecksum = mediafileDescCleanChecksum.Default.(string)
 	// mediafile.CleanChecksumValidator is a validator for the "clean_checksum" field. It is called by the builders before save.
 	mediafile.CleanChecksumValidator = mediafileDescCleanChecksum.Validators[0].(func(string) error)
 	// mediafileDescCleanSize is the schema descriptor for clean_size field.
-	mediafileDescCleanSize := mediafileFields[13].Descriptor()
+	mediafileDescCleanSize := mediafileFields[15].Descriptor()
 	// mediafile.DefaultCleanSize holds the default value on creation for the clean_size field.
 	mediafile.DefaultCleanSize = mediafileDescCleanSize.Default.(int64)
 	// mediafileDescCreatedAt is the schema descriptor for created_at field.
-	mediafileDescCreatedAt := mediafileFields[15].Descriptor()
+	mediafileDescCreatedAt := mediafileFields[17].Descriptor()
 	// mediafile.DefaultCreatedAt holds the default value on creation for the created_at field.
 	mediafile.DefaultCreatedAt = mediafileDescCreatedAt.Default.(func() time.Time)
 	// mediafileDescUpdatedAt is the schema descriptor for updated_at field.
-	mediafileDescUpdatedAt := mediafileFields[16].Descriptor()
+	mediafileDescUpdatedAt := mediafileFields[18].Descriptor()
 	// mediafile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	mediafile.DefaultUpdatedAt = mediafileDescUpdatedAt.Default.(func() time.Time)
 	// mediafileDescID is the schema descriptor for id field.

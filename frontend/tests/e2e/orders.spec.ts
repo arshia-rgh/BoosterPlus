@@ -97,6 +97,12 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       rules: [],
     },
   ];
+  config.services[0]?.fields.push({
+    ...emptyField("screenshot"),
+    label: "Rank screenshot",
+    type: "attachment",
+    stage: "order",
+  });
   config.packages = [
     {
       key: "starter",
@@ -196,6 +202,26 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     await expect(
       buyer.getByRole("complementary", { name: "Selection summary" }),
     ).not.toContainText("Keep this ordinary note");
+    await buyer
+      .getByLabel("Choose rank screenshot")
+      .setInputFiles("tests/fixtures/proof.png");
+    await expect(
+      buyer.getByRole("button", { name: "Check selections", exact: true }),
+    ).toBeDisabled();
+    await buyer
+      .getByRole("button", { name: "Upload image", exact: true })
+      .click();
+    await expect(
+      buyer.getByText("Image checked and ready to send."),
+    ).toBeVisible();
+    await expect(
+      buyer.getByRole("button", { name: "Check selections", exact: true }),
+    ).toBeEnabled();
+    await accessible(buyer);
+    await buyer.screenshot({
+      path: `.cache/di05-intake-${info.project.name}.png`,
+      fullPage: true,
+    });
     await buyer.evaluate(() => {
       window.scrollTo(0, 0);
     });
@@ -220,6 +246,9 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       "**/api/v1/orders",
       async (route) => {
         if (route.request().method() !== "POST") return route.continue();
+        expect(route.request().postDataJSON()).toMatchObject({
+          answers: { screenshot: [expect.any(String)] },
+        });
         const response = await route.fetch();
         expect(response.ok()).toBe(true);
         await expect(

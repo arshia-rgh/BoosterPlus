@@ -28,6 +28,26 @@ func (_u *MediaFileUpdate) Where(ps ...predicate.MediaFile) *MediaFileUpdate {
 	return _u
 }
 
+// SetIntakeOrderID sets the "intake_order_id" field.
+func (_u *MediaFileUpdate) SetIntakeOrderID(v string) *MediaFileUpdate {
+	_u.mutation.SetIntakeOrderID(v)
+	return _u
+}
+
+// SetNillableIntakeOrderID sets the "intake_order_id" field if the given value is not nil.
+func (_u *MediaFileUpdate) SetNillableIntakeOrderID(v *string) *MediaFileUpdate {
+	if v != nil {
+		_u.SetIntakeOrderID(*v)
+	}
+	return _u
+}
+
+// ClearIntakeOrderID clears the value of the "intake_order_id" field.
+func (_u *MediaFileUpdate) ClearIntakeOrderID() *MediaFileUpdate {
+	_u.mutation.ClearIntakeOrderID()
+	return _u
+}
+
 // SetState sets the "state" field.
 func (_u *MediaFileUpdate) SetState(v mediafile.State) *MediaFileUpdate {
 	_u.mutation.SetState(v)
@@ -179,6 +199,11 @@ func (_u *MediaFileUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *MediaFileUpdate) check() error {
+	if v, ok := _u.mutation.IntakeOrderID(); ok {
+		if err := mediafile.IntakeOrderIDValidator(v); err != nil {
+			return &ValidationError{Name: "intake_order_id", err: fmt.Errorf(`ent: validator failed for field "MediaFile.intake_order_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.State(); ok {
 		if err := mediafile.StateValidator(v); err != nil {
 			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "MediaFile.state": %w`, err)}
@@ -213,6 +238,12 @@ func (_u *MediaFileUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.IntakeOrderID(); ok {
+		_spec.SetField(mediafile.FieldIntakeOrderID, field.TypeString, value)
+	}
+	if _u.mutation.IntakeOrderIDCleared() {
+		_spec.ClearField(mediafile.FieldIntakeOrderID, field.TypeString)
 	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(mediafile.FieldState, field.TypeEnum, value)
@@ -262,6 +293,26 @@ type MediaFileUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *MediaFileMutation
+}
+
+// SetIntakeOrderID sets the "intake_order_id" field.
+func (_u *MediaFileUpdateOne) SetIntakeOrderID(v string) *MediaFileUpdateOne {
+	_u.mutation.SetIntakeOrderID(v)
+	return _u
+}
+
+// SetNillableIntakeOrderID sets the "intake_order_id" field if the given value is not nil.
+func (_u *MediaFileUpdateOne) SetNillableIntakeOrderID(v *string) *MediaFileUpdateOne {
+	if v != nil {
+		_u.SetIntakeOrderID(*v)
+	}
+	return _u
+}
+
+// ClearIntakeOrderID clears the value of the "intake_order_id" field.
+func (_u *MediaFileUpdateOne) ClearIntakeOrderID() *MediaFileUpdateOne {
+	_u.mutation.ClearIntakeOrderID()
+	return _u
 }
 
 // SetState sets the "state" field.
@@ -428,6 +479,11 @@ func (_u *MediaFileUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *MediaFileUpdateOne) check() error {
+	if v, ok := _u.mutation.IntakeOrderID(); ok {
+		if err := mediafile.IntakeOrderIDValidator(v); err != nil {
+			return &ValidationError{Name: "intake_order_id", err: fmt.Errorf(`ent: validator failed for field "MediaFile.intake_order_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.State(); ok {
 		if err := mediafile.StateValidator(v); err != nil {
 			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "MediaFile.state": %w`, err)}
@@ -479,6 +535,12 @@ func (_u *MediaFileUpdateOne) sqlSave(ctx context.Context) (_node *MediaFile, er
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.IntakeOrderID(); ok {
+		_spec.SetField(mediafile.FieldIntakeOrderID, field.TypeString, value)
+	}
+	if _u.mutation.IntakeOrderIDCleared() {
+		_spec.ClearField(mediafile.FieldIntakeOrderID, field.TypeString)
 	}
 	if value, ok := _u.mutation.State(); ok {
 		_spec.SetField(mediafile.FieldState, field.TypeEnum, value)

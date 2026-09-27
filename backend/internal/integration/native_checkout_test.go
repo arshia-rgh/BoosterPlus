@@ -239,7 +239,7 @@ func TestNativeCheckoutExplicitMigrationReadiness(t *testing.T) {
 	if native != "0" || claimed != "1" {
 		t.Fatal("unsafe migration defaults")
 	}
-	if err := r.Down(ctx, 1); err != nil {
+	if err := r.Down(ctx, len(r.Files())-28); err != nil {
 		t.Fatal(err)
 	}
 	if err := database.Ready(ctx, db); err == nil {

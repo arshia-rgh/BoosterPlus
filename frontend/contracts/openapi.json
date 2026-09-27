@@ -23136,7 +23136,6 @@
         "additionalProperties": false,
         "required": [
           "request_key",
-          "conversation_id",
           "visibility",
           "checksum",
           "size",
@@ -23149,7 +23148,7 @@
           },
           "conversation_id": {
             "type": "string",
-            "format": "uuid"
+            "pattern": "^(?:|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$"
           },
           "visibility": {
             "type": "string",
@@ -23167,8 +23166,43 @@
           "content_type": {
             "type": "string",
             "enum": ["image/png", "image/jpeg", "image/webp"]
+          },
+          "intake_key": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "description": "Customer-only opaque order request UUID (or owned order ID when revising). Never a public object address."
           }
-        }
+        },
+        "oneOf": [
+          {
+            "required": ["conversation_id"],
+            "properties": {
+              "conversation_id": {
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "not": {
+              "required": ["intake_key"]
+            }
+          },
+          {
+            "required": ["intake_key"],
+            "properties": {
+              "conversation_id": {
+                "const": ""
+              },
+              "visibility": {
+                "const": "public"
+              },
+              "intake_key": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                "description": "Customer-only opaque order request UUID (or owned order ID when revising). Never a public object address."
+              }
+            }
+          }
+        ]
       },
       "MediaFile": {
         "type": "object",

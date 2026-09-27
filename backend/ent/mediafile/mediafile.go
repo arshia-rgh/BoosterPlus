@@ -18,6 +18,10 @@ const (
 	FieldUserID = "user_id"
 	// FieldConversationID holds the string denoting the conversation_id field in the database.
 	FieldConversationID = "conversation_id"
+	// FieldIntakeKey holds the string denoting the intake_key field in the database.
+	FieldIntakeKey = "intake_key"
+	// FieldIntakeOrderID holds the string denoting the intake_order_id field in the database.
+	FieldIntakeOrderID = "intake_order_id"
 	// FieldVisibility holds the string denoting the visibility field in the database.
 	FieldVisibility = "visibility"
 	// FieldRequestKey holds the string denoting the request_key field in the database.
@@ -57,6 +61,8 @@ var Columns = []string{
 	FieldID,
 	FieldUserID,
 	FieldConversationID,
+	FieldIntakeKey,
+	FieldIntakeOrderID,
 	FieldVisibility,
 	FieldRequestKey,
 	FieldRequestHash,
@@ -89,6 +95,12 @@ var (
 	UserIDValidator func(string) error
 	// ConversationIDValidator is a validator for the "conversation_id" field. It is called by the builders before save.
 	ConversationIDValidator func(string) error
+	// DefaultIntakeKey holds the default value on creation for the "intake_key" field.
+	DefaultIntakeKey string
+	// IntakeKeyValidator is a validator for the "intake_key" field. It is called by the builders before save.
+	IntakeKeyValidator func(string) error
+	// IntakeOrderIDValidator is a validator for the "intake_order_id" field. It is called by the builders before save.
+	IntakeOrderIDValidator func(string) error
 	// RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
 	RequestKeyValidator func(string) error
 	// RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
@@ -188,6 +200,16 @@ func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 // ByConversationID orders the results by the conversation_id field.
 func ByConversationID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldConversationID, opts...).ToFunc()
+}
+
+// ByIntakeKey orders the results by the intake_key field.
+func ByIntakeKey(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIntakeKey, opts...).ToFunc()
+}
+
+// ByIntakeOrderID orders the results by the intake_order_id field.
+func ByIntakeOrderID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIntakeOrderID, opts...).ToFunc()
 }
 
 // ByVisibility orders the results by the visibility field.

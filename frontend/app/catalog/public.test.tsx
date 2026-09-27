@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
+import { createMemoryRouter, RouterProvider } from "react-router";
 import { beforeAll, afterAll, expect, it, vi } from "vitest";
 import { GameShell } from "./game-shell";
 import { GamePage, offeringPath } from "./public";
@@ -21,14 +21,21 @@ vi.mock("react-router", async (importOriginal) => ({
   ...(await importOriginal<typeof import("react-router")>()),
   useLoaderData: () => release,
 }));
-it("blocks paused service entry and preserves game identity after failed artwork", () => {
-  render(
-    <MemoryRouter initialEntries={["/games/game?path=packages"]}>
-      <GameShell release={release}>
-        <GamePage />
-      </GameShell>
-    </MemoryRouter>,
+it("blocks paused service entry and preserves game identity after failed artwork", async () => {
+  const router = createMemoryRouter(
+    [
+      {
+        path: "/games/:slug",
+        element: (
+          <GameShell release={release}>
+            <GamePage />
+          </GameShell>
+        ),
+      },
+    ],
+    { initialEntries: ["/games/game?path=packages"] },
   );
+  render(<RouterProvider router={router} />);
   expect(screen.getByText("Ordering is paused for this game.")).toBeVisible();
   expect(
     screen.getByRole("heading", { name: "Boosting is currently unavailable" }),
@@ -40,7 +47,7 @@ it("blocks paused service entry and preserves game identity after failed artwork
     screen.getByRole("link", { name: "← Back to choose a service" }),
   );
   expect(
-    screen.getByRole("heading", { name: "Choose a service" }),
+    await screen.findByRole("heading", { name: "Choose a service" }),
   ).toBeVisible();
   expect(screen.getByRole("link", { name: "← All games" })).toHaveAttribute(
     "href",

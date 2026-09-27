@@ -75,7 +75,7 @@ func (s *Store) reject(ctx context.Context, id string) error {
 // an hour, covering bounded writes that started before revocation/cleanup.
 func (s *Store) Cleanup(ctx context.Context) error {
 	now := s.now()
-	_, err := s.client.MediaFile.Update().Where(mediafile.MessageIDIsNil(), mediafile.ExpiresAtLTE(now), mediafile.StateNEQ(mediafile.StateDeleted)).SetState(mediafile.StateDeleted).SetUpdatedAt(now).Save(ctx)
+	_, err := s.client.MediaFile.Update().Where(mediafile.MessageIDIsNil(), mediafile.IntakeOrderIDIsNil(), mediafile.ExpiresAtLTE(now), mediafile.StateNEQ(mediafile.StateDeleted)).SetState(mediafile.StateDeleted).SetUpdatedAt(now).Save(ctx)
 	if err != nil {
 		return err
 	}

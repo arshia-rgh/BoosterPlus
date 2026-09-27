@@ -325,6 +325,9 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, input CreateI
 		if readErr != nil {
 			return readErr
 		}
+		if readErr = bindAttachments(ctx, tx, current, row, release, validated.Answers, input.RequestKey, now); readErr != nil {
+			return readErr
+		}
 		if variant != nil {
 			discount, total, priceErr := catalog.ContractDiscount(ctx, tx, current.User.ID, input.CouponCode, catalog.CouponOffer{Slug: row.Slug, Service: row.Service, Package: row.PackageKey, Currency: variant.Currency, SubtotalMinor: variant.AmountMinor}, now)
 			if priceErr != nil {

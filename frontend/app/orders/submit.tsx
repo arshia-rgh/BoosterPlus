@@ -24,6 +24,7 @@ export default function SubmitOrder({
   estimate,
   setBusy,
   onSignIn,
+  intakeKey,
 }: {
   slug: string;
   service: string;
@@ -35,6 +36,7 @@ export default function SubmitOrder({
   estimate: Estimate | null;
   setBusy: (busy: boolean) => void;
   onSignIn?: () => void;
+  intakeKey?: string;
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -89,7 +91,7 @@ export default function SubmitOrder({
       return;
     lock.current = true;
     submitting(true);
-    const reference = requestReference(params) || requestKey;
+    const reference = requestReference(params) || intakeKey || requestKey;
     const next = new URLSearchParams(params);
     next.set("request", reference);
     setParams(next, { replace: true, preventScrollReset: true });

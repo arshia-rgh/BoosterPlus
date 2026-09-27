@@ -18,6 +18,7 @@ var ErrConflict = errors.New("media state changed")
 type Intent struct {
 	RequestKey     string `json:"request_key"`
 	ConversationID string `json:"conversation_id"`
+	IntakeKey      string `json:"intake_key,omitempty"`
 	Visibility     string `json:"visibility"`
 	Checksum       string `json:"checksum"`
 	Size           int64  `json:"size"`

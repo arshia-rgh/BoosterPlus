@@ -18,6 +18,8 @@ func (MediaFile) Fields() []ent.Field {
 		field.String("id").MaxLen(36).DefaultFunc(uuid.NewString).Immutable(),
 		field.String("user_id").MaxLen(36).Immutable(),
 		field.String("conversation_id").MaxLen(36).Immutable(),
+		field.String("intake_key").MaxLen(36).Default("").Immutable(),
+		field.String("intake_order_id").MaxLen(36).Optional().Nillable(),
 		field.Enum("visibility").Values("public", "internal").Immutable(),
 		field.String("request_key").MaxLen(36).Immutable(),
 		field.String("request_hash").MaxLen(64).Immutable(),
@@ -43,5 +45,7 @@ func (MediaFile) Indexes() []ent.Index {
 		index.Fields("user_id", "state").StorageKey("media_owner"),
 		index.Fields("message_id", "expires_at").StorageKey("media_expiry"),
 		index.Fields("message_id").StorageKey("media_message"),
+		index.Fields("user_id", "intake_key").StorageKey("media_intake_scope"),
+		index.Fields("intake_order_id").StorageKey("media_intake_order"),
 	}
 }

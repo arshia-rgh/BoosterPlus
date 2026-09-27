@@ -63,6 +63,9 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, admin bool, i
 	if err != nil || key.String() != input.RequestKey || hashErr != nil || len(hash) != 32 || hex.EncodeToString(hash) != input.Checksum || input.Size < 1 || input.Size > MaxBytes || (input.ContentType != "image/png" && input.ContentType != "image/jpeg" && input.ContentType != "image/webp") || (input.Visibility != "public" && input.Visibility != "internal") {
 		return View{}, ErrInvalid
 	}
+	if err = validIntakeScope(p, admin, input); err != nil {
+		return View{}, err
+	}
 	if !admin && input.Visibility == "internal" {
 		return View{}, identity.ErrForbidden
 	}
@@ -73,7 +76,11 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, admin bool, i
 	digest := s.auth.RequestDigest("media-intent", raw)
 	var result View
 	err = s.auth.AuthorizedTransaction(ctx, p, capFor(admin), false, func(tx *ent.Tx, current *identity.Principal) error {
-		if e := member(ctx, tx.Client(), current, input.ConversationID, admin); e != nil {
+		if input.IntakeKey == "" {
+			if e := member(ctx, tx.Client(), current, input.ConversationID, admin); e != nil {
+				return e
+			}
+		} else if e := validIntakeScope(current, admin, input); e != nil {
 			return e
 		}
 		old, e := tx.MediaFile.Query().Where(mediafile.UserIDEQ(current.User.ID), mediafile.RequestKeyEQ(input.RequestKey)).Only(ctx)
@@ -87,7 +94,7 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, admin bool, i
 		if !ent.IsNotFound(e) {
 			return e
 		}
-		rows, e := tx.MediaFile.Query().Where(mediafile.UserIDEQ(current.User.ID), mediafile.StateNEQ(mediafile.StateDeleted)).Select(mediafile.FieldSize, mediafile.FieldMessageID).All(ctx)
+		rows, e := tx.MediaFile.Query().Where(mediafile.UserIDEQ(current.User.ID), mediafile.StateNEQ(mediafile.StateDeleted)).Select(mediafile.FieldSize, mediafile.FieldMessageID, mediafile.FieldIntakeOrderID).All(ctx)
 		if e != nil {
 			return e
 		}
@@ -95,14 +102,18 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, admin bool, i
 		pending := 0
 		for _, r := range rows {
 			total += r.Size
-			if r.MessageID == nil {
+			if r.MessageID == nil && r.IntakeOrderID == nil {
 				pending++
 			}
 		}
 		if total+input.Size > 100<<20 || pending >= 20 || len(rows) >= 1000 {
 			return identity.ErrLimited
 		}
-		scope, e := tx.MediaFile.Query().Where(mediafile.ConversationIDEQ(input.ConversationID), mediafile.VisibilityEQ(mediafile.Visibility(input.Visibility)), mediafile.StateNEQ(mediafile.StateDeleted)).Select(mediafile.FieldSize).All(ctx)
+		scopeQuery := tx.MediaFile.Query().Where(mediafile.ConversationIDEQ(input.ConversationID), mediafile.VisibilityEQ(mediafile.Visibility(input.Visibility)), mediafile.StateNEQ(mediafile.StateDeleted))
+		if input.IntakeKey != "" {
+			scopeQuery.Where(mediafile.UserIDEQ(current.User.ID), mediafile.IntakeKeyEQ(input.IntakeKey))
+		}
+		scope, e := scopeQuery.Select(mediafile.FieldSize).All(ctx)
 		if e != nil {
 			return e
 		}
@@ -115,7 +126,7 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, admin bool, i
 		}
 
 		now := s.now().UTC()
-		row, e := tx.MediaFile.Create().SetUserID(current.User.ID).SetConversationID(input.ConversationID).SetVisibility(mediafile.Visibility(input.Visibility)).SetRequestKey(input.RequestKey).SetRequestHash(digest).SetChecksum(input.Checksum).SetSize(input.Size).SetContentType(input.ContentType).SetExpiresAt(now.Add(24 * time.Hour)).SetCreatedAt(now).SetUpdatedAt(now).Save(ctx)
+		row, e := tx.MediaFile.Create().SetUserID(current.User.ID).SetConversationID(input.ConversationID).SetIntakeKey(input.IntakeKey).SetVisibility(mediafile.Visibility(input.Visibility)).SetRequestKey(input.RequestKey).SetRequestHash(digest).SetChecksum(input.Checksum).SetSize(input.Size).SetContentType(input.ContentType).SetExpiresAt(now.Add(24 * time.Hour)).SetCreatedAt(now).SetUpdatedAt(now).Save(ctx)
 		if e != nil {
 			return e
 		}
@@ -139,7 +150,7 @@ func (s *Store) Upload(ctx context.Context, p *identity.Principal, id string, ad
 	if err != nil {
 		return err
 	}
-	if err = member(ctx, s.client, current, row.ConversationID, admin); err != nil {
+	if err = fileMember(ctx, s.client, current, row, admin); err != nil {
 		return err
 	}
 	if row.State != mediafile.StatePending && row.State != mediafile.StateUploaded || !row.ExpiresAt.After(s.now()) {
@@ -157,7 +168,7 @@ func (s *Store) Upload(ctx context.Context, p *identity.Principal, id string, ad
 		if e != nil {
 			return e
 		}
-		if e = member(ctx, tx.Client(), live, r.ConversationID, admin); e != nil {
+		if e = fileMember(ctx, tx.Client(), live, r, admin); e != nil {
 			return e
 		}
 		if !r.ExpiresAt.After(s.now()) || r.State != mediafile.StatePending && r.State != mediafile.StateUploaded {
@@ -176,7 +187,7 @@ func (s *Store) Finalize(ctx context.Context, p *identity.Principal, id string, 
 		if e != nil {
 			return e
 		}
-		if e = member(ctx, tx.Client(), current, row.ConversationID, admin); e != nil {
+		if e = fileMember(ctx, tx.Client(), current, row, admin); e != nil {
 			return e
 		}
 		if !row.ExpiresAt.After(s.now()) {
@@ -218,10 +229,10 @@ func (s *Store) allowed(ctx context.Context, p *identity.Principal, id string, a
 	if err != nil {
 		return nil, err
 	}
-	if row.MessageID == nil && row.UserID != current.User.ID {
+	if row.MessageID == nil && row.IntakeOrderID == nil && row.UserID != current.User.ID {
 		return nil, &ent.NotFoundError{}
 	}
-	if err = member(ctx, s.client, current, row.ConversationID, admin); err != nil {
+	if err = fileMember(ctx, s.client, current, row, admin); err != nil {
 		return nil, err
 	}
 	return row, nil
@@ -315,7 +326,7 @@ func Bind(ctx context.Context, tx *ent.Tx, p *identity.Principal, conversationID
 		if err != nil {
 			return err
 		}
-		if row.ConversationID != conversationID || string(row.Visibility) != visibility || row.State != mediafile.StateReady || row.MessageID != nil || !row.ExpiresAt.After(time.Now()) {
+		if row.IntakeKey != "" || row.IntakeOrderID != nil || row.ConversationID != conversationID || string(row.Visibility) != visibility || row.State != mediafile.StateReady || row.MessageID != nil || !row.ExpiresAt.After(time.Now()) {
 			return ErrConflict
 		}
 		if _, err = tx.MediaFile.UpdateOneID(id).SetMessageID(messageID).Save(ctx); err != nil {

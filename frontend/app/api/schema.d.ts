@@ -5325,15 +5325,29 @@ export interface components {
     MediaIntent: {
       /** Format: uuid */
       request_key: string;
-      /** Format: uuid */
-      conversation_id: string;
+      conversation_id?: string;
       /** @enum {string} */
       visibility: "public" | "internal";
       checksum: string;
       size: number;
       /** @enum {string} */
       content_type: "image/png" | "image/jpeg" | "image/webp";
-    };
+      /** @description Customer-only opaque order request UUID (or owned order ID when revising). Never a public object address. */
+      intake_key?: string;
+    } & (
+      | {
+          /** Format: uuid */
+          conversation_id: string;
+        }
+      | {
+          /** @constant */
+          conversation_id?: "";
+          /** @constant */
+          visibility?: "public";
+          /** @description Customer-only opaque order request UUID (or owned order ID when revising). Never a public object address. */
+          intake_key: string;
+        }
+    );
     MediaFile: {
       id: string;
       /** @enum {string} */

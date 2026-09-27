@@ -1,5 +1,5 @@
 import { activePortal, portalHeaders } from "../identity/portal";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { z } from "../validation";
 import { APIError, command, get, post, sessionSchema } from "../identity/api";
 import { Action, ErrorNotice } from "../catalog/controls";
@@ -27,13 +27,22 @@ export function UploadImage({
   visibility,
   change,
   compact = false,
+  intakeKey = "",
+  label = "Image attachment",
+  describedBy,
+  invalid,
 }: {
   conversation: string;
   admin: boolean;
   visibility: string;
   change: (id: string, pending: boolean) => void;
   compact?: boolean;
+  intakeKey?: string;
+  label?: string;
+  describedBy?: string | undefined;
+  invalid?: boolean | undefined;
 }) {
+  const guidance = useId();
   const base = (admin ? "/admin" : "") + "/media";
   const mounted = useRef(true);
   useEffect(() => {
@@ -92,6 +101,7 @@ export function UploadImage({
   async function upload() {
     if (!file) return;
     const portal = activePortal();
+    const active = () => mounted.current && activePortal() === portal;
     setBusy(true);
     setError(null);
     change("", true);
@@ -116,6 +126,7 @@ export function UploadImage({
           {
             request_key: key,
             conversation_id: conversation,
+            ...(intakeKey ? { intake_key: intakeKey } : {}),
             visibility,
             checksum,
             size: file.size,
@@ -124,10 +135,11 @@ export function UploadImage({
           mediaSchema,
           portal,
         ));
+      if (!active()) return;
       setItem(created);
       if (created.state === "pending" || created.state === "uploaded") {
         const session = await get("/auth/session", sessionSchema, portal);
-        if (!mounted.current || activePortal() !== portal) return;
+        if (!active()) return;
         const response = await fetch(
           "/api/v1" + base + "/" + created.id + "/bytes",
           {
@@ -152,15 +164,16 @@ export function UploadImage({
             "Image upload failed. Retry the same image or sign in again if your session ended.",
           );
       }
+      if (!active()) return;
       const next = await post(
         base + "/" + created.id + "/finalize",
         {},
         mediaSchema,
         portal,
       );
+      if (!active()) return;
       setItem(next);
-      if (mounted.current)
-        change(next.state === "ready" ? next.id : "", next.state !== "ready");
+      change(next.state === "ready" ? next.id : "", next.state !== "ready");
     } catch (cause) {
       setError(cause);
       if (mounted.current) change("", true);
@@ -200,19 +213,23 @@ export function UploadImage({
   }
   return (
     <section
-      aria-label="Image attachment"
+      aria-label={label === "Image attachment" ? label : `${label} upload`}
       className={compact ? "chat-attachment" : undefined}
     >
-      {!compact && <h3>Attach an image</h3>}
-      <p>
+      {!compact && label === "Image attachment" && <h3>Attach an image</h3>}
+      <p id={guidance}>
         JPEG, PNG, or WebP, up to 4 MiB and 4 million pixels. Remove personal
         information before uploading. Do not upload game credentials.
       </p>
       {
         <label>
-          Choose image
+          {label === "Image attachment"
+            ? "Choose image"
+            : `Choose ${label.toLowerCase()}`}
           <input
             ref={inputRef}
+            aria-describedby={[guidance, describedBy].filter(Boolean).join(" ")}
+            aria-invalid={invalid || undefined}
             type="file"
             accept="image/png,image/jpeg,image/webp"
             disabled={busy || file !== null}
@@ -230,7 +247,11 @@ export function UploadImage({
       {preview?.file === file && (
         <figure className="attachment-preview">
           <img src={preview.url} alt="Selected attachment preview" />
-          <figcaption>Local preview · not sent</figcaption>
+          <figcaption>
+            {item && item.state !== "pending"
+              ? "Local preview · uploaded privately"
+              : "Local preview · upload not yet confirmed"}
+          </figcaption>
         </figure>
       )}
       {busy && <progress aria-label="Image upload progress" />}
@@ -247,7 +268,7 @@ export function UploadImage({
             : item.state === "queued"
               ? "Checking image safety…"
               : item.state === "rejected"
-                ? "This image could not be accepted. Choose a different JPEG, PNG, or WebP."
+                ? "This image could not be accepted. Remove this attachment, then choose a different JPEG, PNG, or WebP."
                 : item.state === "scan_failed"
                   ? "Safety checks are unavailable. Retry when the service recovers."
                   : "Upload not yet ready."}

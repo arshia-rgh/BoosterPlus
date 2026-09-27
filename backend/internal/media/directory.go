@@ -59,7 +59,7 @@ func (s *Store) Directory(ctx context.Context, p *identity.Principal, after, use
 		if state != "" {
 			q.Where(mediafile.StateEQ(mediafile.State(state)))
 		}
-		rows, e := q.Select(mediafile.FieldID, mediafile.FieldUserID, mediafile.FieldConversationID, mediafile.FieldState, mediafile.FieldMessageID, mediafile.FieldSize, mediafile.FieldContentType, mediafile.FieldCreatedAt, mediafile.FieldExpiresAt, mediafile.FieldPurgedAt).All(ctx)
+		rows, e := q.Select(mediafile.FieldID, mediafile.FieldUserID, mediafile.FieldConversationID, mediafile.FieldState, mediafile.FieldMessageID, mediafile.FieldIntakeOrderID, mediafile.FieldSize, mediafile.FieldContentType, mediafile.FieldCreatedAt, mediafile.FieldExpiresAt, mediafile.FieldPurgedAt).All(ctx)
 		if e != nil {
 			return e
 		}
@@ -68,7 +68,7 @@ func (s *Store) Directory(ctx context.Context, p *identity.Principal, after, use
 			rows = rows[:50]
 		}
 		for _, row := range rows {
-			out.Files = append(out.Files, StaffFile{row.ID, row.UserID, row.ConversationID, string(row.State), row.MessageID != nil, row.Size, row.ContentType, row.CreatedAt, row.ExpiresAt, row.PurgedAt})
+			out.Files = append(out.Files, StaffFile{row.ID, row.UserID, row.ConversationID, string(row.State), row.MessageID != nil || row.IntakeOrderID != nil, row.Size, row.ContentType, row.CreatedAt, row.ExpiresAt, row.PurgedAt})
 		}
 		return nil
 	})

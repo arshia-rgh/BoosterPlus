@@ -383,9 +383,10 @@ export function FieldEditor({
       )}
       {field.type === "attachment" ? (
         <p>
-          Optional upload descriptor. Uploads remain unavailable until private
-          file ownership checks ship. Never collect storage keys or credentials
-          here.
+          Optional order screenshots use private upload and safety checks.
+          Choose the order collection stage for screenshots. Later evidence
+          belongs in order messages. Never collect credentials or prefill file
+          references.
         </p>
       ) : (
         <DefaultEditor field={field} change={change} />

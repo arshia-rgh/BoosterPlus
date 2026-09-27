@@ -307,3 +307,61 @@ it("compares the previous and offered scope, amount and timing without accepting
   expect(post).not.toHaveBeenCalled();
   expect(screen.getByRole("button", { name: "Accept quote" })).toBeDisabled();
 });
+it("explains saved custom requests without claiming payment or confusing package purchases", () => {
+  resources();
+  const view = render(
+    <MemoryRouter>
+      <CustomerWorkspace
+        detail={detail()}
+        session={session}
+        refreshing={false}
+        reload={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  expect(
+    screen.getByRole("region", { name: "Request confirmation" }),
+  ).toHaveTextContent("Your request is with our team.");
+  expect(
+    screen.getByRole("region", { name: "Request confirmation" }),
+  ).toHaveTextContent("No payment is due for this request.");
+  view.rerender(
+    <MemoryRouter>
+      <CustomerWorkspace
+        detail={detail("needs_information")}
+        session={session}
+        refreshing={false}
+        reload={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  expect(
+    screen.getByRole("region", { name: "Request confirmation" }),
+  ).toHaveTextContent("Our team needs more information.");
+  view.rerender(
+    <MemoryRouter>
+      <CustomerWorkspace
+        detail={detail("rejected")}
+        session={session}
+        refreshing={false}
+        reload={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  expect(
+    screen.getByRole("region", { name: "Request confirmation" }),
+  ).toHaveTextContent("Read the reason in Order activity.");
+  view.rerender(
+    <MemoryRouter>
+      <CustomerWorkspace
+        detail={detail("awaiting_payment", "package")}
+        session={session}
+        refreshing={false}
+        reload={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  expect(
+    screen.queryByRole("region", { name: "Request confirmation" }),
+  ).not.toBeInTheDocument();
+});

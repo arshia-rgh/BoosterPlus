@@ -5,6 +5,8 @@ import (
 	"math/big"
 	"slices"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 func validateValue(field Field, raw json.RawMessage, refs map[string]Reference) string {
@@ -12,7 +14,18 @@ func validateValue(field Field, raw json.RawMessage, refs map[string]Reference) 
 		return "Choose a value of the correct type."
 	}
 	if field.Type == "attachment" {
-		return "Private uploads are not available yet. Do not submit a storage key or credentials."
+		var ids []string
+		if field.Stage != "order" {
+			return "Use the dedicated evidence upload for this stage."
+		}
+		if err := json.Unmarshal(raw, &ids); err != nil || len(ids) != 1 {
+			return "Attach one checked image or remove the optional image."
+		}
+		id, err := uuid.Parse(ids[0])
+		if err != nil || id.String() != ids[0] || id.Version() != 4 {
+			return "Choose an image through the private upload control."
+		}
+		return ""
 	}
 	if field.Type == "boolean" {
 		var value bool
@@ -66,7 +79,8 @@ func validateValue(field Field, raw json.RawMessage, refs map[string]Reference) 
 }
 
 // ValidateAnswers removes hidden answers, applies visible defaults and rejects
-// unknown keys, later-stage data and unsupported uploads. No price is computed.
+// unknown keys and later-stage data. File ownership is enforced transactionally
+// by order creation/revision; public validation is never an access grant.
 func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submitted Answers, variant *Variant) Validation {
 	result := Validation{Answers: Answers{}, Issues: []Issue{}}
 	add := func(path, message string) { result.Issues = append(result.Issues, Issue{path, message}) }

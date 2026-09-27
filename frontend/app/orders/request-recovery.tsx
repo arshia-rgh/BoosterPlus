@@ -12,6 +12,7 @@ import { z } from "../validation";
 import { clearConfigurationDraft } from "../catalog/configuration-draft";
 import { sessionEventMatches } from "../identity/portal";
 
+export const RequestReference = createContext("");
 export const recoverySchema = z.object({ order_id: z.string() });
 export const RequestSubmission = createContext<(pending: boolean) => void>(
   () => {},
@@ -172,7 +173,7 @@ export default function RequestJourney({ children }: { children: ReactNode }) {
         </section>
       )}
       <div ref={formArea} hidden={checkingRecovery} key={newRequest}>
-        {children}
+        <RequestReference value={reference}>{children}</RequestReference>
       </div>
     </RequestSubmission>
   );

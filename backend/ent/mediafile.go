@@ -21,6 +21,10 @@ type MediaFile struct {
 	UserID string `json:"user_id,omitempty"`
 	// ConversationID holds the value of the "conversation_id" field.
 	ConversationID string `json:"conversation_id,omitempty"`
+	// IntakeKey holds the value of the "intake_key" field.
+	IntakeKey string `json:"intake_key,omitempty"`
+	// IntakeOrderID holds the value of the "intake_order_id" field.
+	IntakeOrderID *string `json:"intake_order_id,omitempty"`
 	// Visibility holds the value of the "visibility" field.
 	Visibility mediafile.Visibility `json:"visibility,omitempty"`
 	// RequestKey holds the value of the "request_key" field.
@@ -61,7 +65,7 @@ func (*MediaFile) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case mediafile.FieldSize, mediafile.FieldCleanSize:
 			values[i] = new(sql.NullInt64)
-		case mediafile.FieldID, mediafile.FieldUserID, mediafile.FieldConversationID, mediafile.FieldVisibility, mediafile.FieldRequestKey, mediafile.FieldRequestHash, mediafile.FieldChecksum, mediafile.FieldContentType, mediafile.FieldState, mediafile.FieldMessageID, mediafile.FieldCleanContentType, mediafile.FieldCleanChecksum:
+		case mediafile.FieldID, mediafile.FieldUserID, mediafile.FieldConversationID, mediafile.FieldIntakeKey, mediafile.FieldIntakeOrderID, mediafile.FieldVisibility, mediafile.FieldRequestKey, mediafile.FieldRequestHash, mediafile.FieldChecksum, mediafile.FieldContentType, mediafile.FieldState, mediafile.FieldMessageID, mediafile.FieldCleanContentType, mediafile.FieldCleanChecksum:
 			values[i] = new(sql.NullString)
 		case mediafile.FieldExpiresAt, mediafile.FieldCreatedAt, mediafile.FieldUpdatedAt, mediafile.FieldPurgedAt:
 			values[i] = new(sql.NullTime)
@@ -97,6 +101,19 @@ func (_m *MediaFile) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field conversation_id", values[i])
 			} else if value.Valid {
 				_m.ConversationID = value.String
+			}
+		case mediafile.FieldIntakeKey:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field intake_key", values[i])
+			} else if value.Valid {
+				_m.IntakeKey = value.String
+			}
+		case mediafile.FieldIntakeOrderID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field intake_order_id", values[i])
+			} else if value.Valid {
+				_m.IntakeOrderID = new(string)
+				*_m.IntakeOrderID = value.String
 			}
 		case mediafile.FieldVisibility:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -231,6 +248,14 @@ func (_m *MediaFile) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("conversation_id=")
 	builder.WriteString(_m.ConversationID)
+	builder.WriteString(", ")
+	builder.WriteString("intake_key=")
+	builder.WriteString(_m.IntakeKey)
+	builder.WriteString(", ")
+	if v := _m.IntakeOrderID; v != nil {
+		builder.WriteString("intake_order_id=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("visibility=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Visibility))

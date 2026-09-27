@@ -66,7 +66,14 @@ it("renders stages/visibility and submits no hidden stale answers", async () => 
     />,
   );
   expect(screen.queryByLabelText("Player ID")).not.toBeInTheDocument();
-  expect(screen.getByLabelText("Proof")).toBeDisabled();
+  expect(
+    screen.getByText(
+      "Share optional evidence in the order’s messages after submission.",
+    ),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Upload image" }),
+  ).not.toBeInTheDocument();
   fireEvent.change(screen.getByLabelText("One hero"), {
     target: { value: "true" },
   });

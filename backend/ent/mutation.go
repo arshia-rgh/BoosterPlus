@@ -24783,6 +24783,8 @@ type MediaFileMutation struct {
 	id                 *string
 	user_id            *string
 	conversation_id    *string
+	intake_key         *string
+	intake_order_id    *string
 	visibility         *mediafile.Visibility
 	request_key        *string
 	request_hash       *string
@@ -24980,6 +24982,91 @@ func (m *MediaFileMutation) OldConversationID(ctx context.Context) (v string, er
 // ResetConversationID resets all changes to the "conversation_id" field.
 func (m *MediaFileMutation) ResetConversationID() {
 	m.conversation_id = nil
+}
+
+// SetIntakeKey sets the "intake_key" field.
+func (m *MediaFileMutation) SetIntakeKey(s string) {
+	m.intake_key = &s
+}
+
+// IntakeKey returns the value of the "intake_key" field in the mutation.
+func (m *MediaFileMutation) IntakeKey() (r string, exists bool) {
+	v := m.intake_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIntakeKey returns the old "intake_key" field's value of the MediaFile entity.
+// If the MediaFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaFileMutation) OldIntakeKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIntakeKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIntakeKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIntakeKey: %w", err)
+	}
+	return oldValue.IntakeKey, nil
+}
+
+// ResetIntakeKey resets all changes to the "intake_key" field.
+func (m *MediaFileMutation) ResetIntakeKey() {
+	m.intake_key = nil
+}
+
+// SetIntakeOrderID sets the "intake_order_id" field.
+func (m *MediaFileMutation) SetIntakeOrderID(s string) {
+	m.intake_order_id = &s
+}
+
+// IntakeOrderID returns the value of the "intake_order_id" field in the mutation.
+func (m *MediaFileMutation) IntakeOrderID() (r string, exists bool) {
+	v := m.intake_order_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIntakeOrderID returns the old "intake_order_id" field's value of the MediaFile entity.
+// If the MediaFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaFileMutation) OldIntakeOrderID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIntakeOrderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIntakeOrderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIntakeOrderID: %w", err)
+	}
+	return oldValue.IntakeOrderID, nil
+}
+
+// ClearIntakeOrderID clears the value of the "intake_order_id" field.
+func (m *MediaFileMutation) ClearIntakeOrderID() {
+	m.intake_order_id = nil
+	m.clearedFields[mediafile.FieldIntakeOrderID] = struct{}{}
+}
+
+// IntakeOrderIDCleared returns if the "intake_order_id" field was cleared in this mutation.
+func (m *MediaFileMutation) IntakeOrderIDCleared() bool {
+	_, ok := m.clearedFields[mediafile.FieldIntakeOrderID]
+	return ok
+}
+
+// ResetIntakeOrderID resets all changes to the "intake_order_id" field.
+func (m *MediaFileMutation) ResetIntakeOrderID() {
+	m.intake_order_id = nil
+	delete(m.clearedFields, mediafile.FieldIntakeOrderID)
 }
 
 // SetVisibility sets the "visibility" field.
@@ -25622,12 +25709,18 @@ func (m *MediaFileMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MediaFileMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 19)
 	if m.user_id != nil {
 		fields = append(fields, mediafile.FieldUserID)
 	}
 	if m.conversation_id != nil {
 		fields = append(fields, mediafile.FieldConversationID)
+	}
+	if m.intake_key != nil {
+		fields = append(fields, mediafile.FieldIntakeKey)
+	}
+	if m.intake_order_id != nil {
+		fields = append(fields, mediafile.FieldIntakeOrderID)
 	}
 	if m.visibility != nil {
 		fields = append(fields, mediafile.FieldVisibility)
@@ -25686,6 +25779,10 @@ func (m *MediaFileMutation) Field(name string) (ent.Value, bool) {
 		return m.UserID()
 	case mediafile.FieldConversationID:
 		return m.ConversationID()
+	case mediafile.FieldIntakeKey:
+		return m.IntakeKey()
+	case mediafile.FieldIntakeOrderID:
+		return m.IntakeOrderID()
 	case mediafile.FieldVisibility:
 		return m.Visibility()
 	case mediafile.FieldRequestKey:
@@ -25729,6 +25826,10 @@ func (m *MediaFileMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldUserID(ctx)
 	case mediafile.FieldConversationID:
 		return m.OldConversationID(ctx)
+	case mediafile.FieldIntakeKey:
+		return m.OldIntakeKey(ctx)
+	case mediafile.FieldIntakeOrderID:
+		return m.OldIntakeOrderID(ctx)
 	case mediafile.FieldVisibility:
 		return m.OldVisibility(ctx)
 	case mediafile.FieldRequestKey:
@@ -25781,6 +25882,20 @@ func (m *MediaFileMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetConversationID(v)
+		return nil
+	case mediafile.FieldIntakeKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIntakeKey(v)
+		return nil
+	case mediafile.FieldIntakeOrderID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIntakeOrderID(v)
 		return nil
 	case mediafile.FieldVisibility:
 		v, ok := value.(mediafile.Visibility)
@@ -25944,6 +26059,9 @@ func (m *MediaFileMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *MediaFileMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(mediafile.FieldIntakeOrderID) {
+		fields = append(fields, mediafile.FieldIntakeOrderID)
+	}
 	if m.FieldCleared(mediafile.FieldMessageID) {
 		fields = append(fields, mediafile.FieldMessageID)
 	}
@@ -25964,6 +26082,9 @@ func (m *MediaFileMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *MediaFileMutation) ClearField(name string) error {
 	switch name {
+	case mediafile.FieldIntakeOrderID:
+		m.ClearIntakeOrderID()
+		return nil
 	case mediafile.FieldMessageID:
 		m.ClearMessageID()
 		return nil
@@ -25983,6 +26104,12 @@ func (m *MediaFileMutation) ResetField(name string) error {
 		return nil
 	case mediafile.FieldConversationID:
 		m.ResetConversationID()
+		return nil
+	case mediafile.FieldIntakeKey:
+		m.ResetIntakeKey()
+		return nil
+	case mediafile.FieldIntakeOrderID:
+		m.ResetIntakeOrderID()
 		return nil
 	case mediafile.FieldVisibility:
 		m.ResetVisibility()

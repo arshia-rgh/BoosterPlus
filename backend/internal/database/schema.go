@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 29
+const SchemaVersion = 30
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -59,7 +59,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 		"staff_profiles.timezone": "varchar", "availability_windows.starts_at": "datetime", "bookings.starts_at": "datetime", "bookings.state": "varchar", "booking_events.note": "text",
 		"fulfillments.order_id": "varchar", "fulfillments.assigned_id": "varchar", "fulfillments.answers": "json", "fulfillments.version": "bigint", "fulfillments.access_version": "bigint",
 		"secret_bundles.encrypted_payload": "blob", "secret_bundles.wrapped_key": "blob", "secret_bundles.key_version": "varchar", "secret_bundles.expires_at": "datetime",
-		"media_files.id": "varchar", "media_files.checksum": "char", "media_files.clean_checksum": "char", "media_files.clean_content_type": "varchar", "media_files.state": "varchar", "media_files.message_id": "varchar", "conversation_messages.attachments": "json",
+		"media_files.intake_key": "varchar", "media_files.intake_order_id": "varchar", "media_files.id": "varchar", "media_files.checksum": "char", "media_files.clean_checksum": "char", "media_files.clean_content_type": "varchar", "media_files.state": "varchar", "media_files.message_id": "varchar", "conversation_messages.attachments": "json",
 		"conversations.id": "varchar", "conversations.user_id": "varchar", "conversations.public_sequence": "bigint", "conversation_messages.visibility": "varchar", "conversation_messages.body": "text", "conversation_reads.sequence": "bigint", "notifications.email_state": "varchar",
 		"orders.id": "varchar", "orders.user_id": "varchar", "orders.version": "bigint", "orders.request_hash": "char", "orders.answers": "json", "orders.snapshot": "json", "orders.state": "varchar", "order_quotes.data": "json", "order_contracts.data": "json", "order_contracts.payment_state": "varchar", "order_contracts.active_order_id": "varchar", "order_contracts.capacity_held": "tinyint", "order_events.version": "bigint", "favorites.user_id": "varchar", "favorites.target": "varchar",
 		"coupons.id": "varchar", "coupons.code": "varchar", "coupons.version": "bigint", "coupons.definition": "json", "coupon_revisions.definition": "json", "coupon_revisions.version": "bigint", "coupon_claims.coupon_id": "varchar", "coupon_claims.contract_id": "varchar", "coupon_claims.user_id": "varchar", "coupon_claims.state": "varchar",
