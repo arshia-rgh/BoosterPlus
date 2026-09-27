@@ -902,7 +902,7 @@
     },
     {
       "id": "P11",
-      "title": "We’re confirming your payment.",
+      "title": "We\u2019re confirming your payment.",
       "phase": "DI05",
       "mode": "adapt",
       "status": "verified",
@@ -965,7 +965,7 @@
     },
     {
       "id": "P13",
-      "title": "Mythic account · Mobile Legends",
+      "title": "Mythic account \u00b7 Mobile Legends",
       "phase": "DI10",
       "mode": "adapt",
       "status": "planned",
@@ -1289,7 +1289,7 @@
     },
     {
       "id": "I06",
-      "title": "Confirm it’s you.",
+      "title": "Confirm it\u2019s you.",
       "phase": "DI13",
       "mode": "adapt",
       "status": "planned",
@@ -1494,7 +1494,7 @@
     },
     {
       "id": "C04",
-      "title": "Let’s get your order ready.",
+      "title": "Let\u2019s get your order ready.",
       "phase": "DI06",
       "mode": "adapt",
       "status": "verified",
@@ -1723,7 +1723,7 @@
       "title": "Messages.",
       "phase": "DI07",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/support",
       "targetRoute": "/support",
       "apiFamily": "chat",
@@ -1744,14 +1744,17 @@
         "keyboard and narrow layout",
         "F11"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI07_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di07-support.md"
+      ]
     },
     {
       "id": "C12",
-      "title": "Order PL-1042 · Messages",
+      "title": "Order PL-1042 \u00b7 Messages",
       "phase": "DI07",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/support/:id",
       "targetRoute": "/support/:id",
       "apiFamily": "chat",
@@ -1775,14 +1778,17 @@
         "keyboard and narrow layout",
         "F11"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI07_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di07-support.md"
+      ]
     },
     {
       "id": "C13",
       "title": "How can we help?",
       "phase": "DI07",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/support",
       "targetRoute": "/support",
       "apiFamily": "chat",
@@ -1802,7 +1808,10 @@
         "keyboard and narrow layout",
         "F11"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI07_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di07-support.md"
+      ]
     },
     {
       "id": "C14",
@@ -2313,7 +2322,7 @@
     },
     {
       "id": "B03",
-      "title": "PL-1038 · Your assignment",
+      "title": "PL-1038 \u00b7 Your assignment",
       "phase": "DI08",
       "mode": "adapt",
       "status": "planned",
@@ -2516,7 +2525,7 @@
       "title": "Support inbox.",
       "phase": "DI07",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/support",
       "targetRoute": "/admin/support",
       "apiFamily": "chat",
@@ -2536,14 +2545,17 @@
         "keyboard and narrow layout",
         "F16"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI07_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di07-support.md"
+      ]
     },
     {
       "id": "A06",
-      "title": "PL-1042 · Customer conversation",
+      "title": "PL-1042 \u00b7 Customer conversation",
       "phase": "DI07",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/support/:id",
       "targetRoute": "/admin/support/:id",
       "apiFamily": "chat",
@@ -2564,7 +2576,10 @@
         "keyboard and narrow layout",
         "F16"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI07_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di07-support.md"
+      ]
     },
     {
       "id": "A07",
@@ -2680,7 +2695,7 @@
     },
     {
       "id": "A11",
-      "title": "Mobile Legends · Game settings",
+      "title": "Mobile Legends \u00b7 Game settings",
       "phase": "DI09",
       "mode": "adapt",
       "status": "planned",
@@ -3441,7 +3456,7 @@
     },
     {
       "id": "X01",
-      "title": "This page isn’t available.",
+      "title": "This page isn\u2019t available.",
       "phase": "DI01",
       "mode": "adapt",
       "status": "verified",
@@ -3503,10 +3518,10 @@
     },
     {
       "id": "S07",
-      "title": "SA-204 · Private seller messages",
+      "title": "SA-204 \u00b7 Private seller messages",
       "phase": "DI07",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/support/:id",
       "targetRoute": "/support/:id",
       "apiFamily": "chat",
@@ -3526,14 +3541,17 @@
         "keyboard and narrow layout",
         "F06"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI07_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di07-support.md"
+      ]
     },
     {
       "id": "A37",
-      "title": "SA-204 · Seller conversation",
+      "title": "SA-204 \u00b7 Seller conversation",
       "phase": "DI07",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/support/:id",
       "targetRoute": "/admin/support/:id",
       "apiFamily": "chat",
@@ -3553,7 +3571,10 @@
         "keyboard and narrow layout",
         "F06"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI07_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di07-support.md"
+      ]
     },
     {
       "id": "G07",
@@ -3902,7 +3923,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -3929,7 +3950,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -3956,7 +3977,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -3983,7 +4004,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4010,7 +4031,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4037,7 +4058,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4064,7 +4085,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4091,7 +4112,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4118,7 +4139,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4145,7 +4166,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4172,7 +4193,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4199,7 +4220,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4226,7 +4247,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4253,7 +4274,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4280,7 +4301,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []

@@ -1,6 +1,6 @@
 # PLAYORA — accepted design implementation roadmap
 
-25 September 2026 · **Implementation authorized by the owner; DI00–DI06 delivered; DI07 in progress; DI08–DI15 planned. R10/R11 held.**
+25 September 2026 · **Implementation authorized by the owner; DI00–DI07 delivered; DI08 in progress; DI09–DI15 planned. R10/R11 held.**
 
 The owner accepted the current design as complete for now and requested this implementation plan before development resumes. This is the next application roadmap, replacing the execution order in the historical UI/UX and homepage-refinement roadmaps. R00–R09 and earlier UX deliveries remain existing code to preserve and improve. R10/R11 remain separately held in [final-launch.md](../../final-launch.md).
 
@@ -58,7 +58,7 @@ Audit entry points: [storefront routes](../../frontend/app/routes.ts), [admin ro
 
 ## 4. Phase sequence
 
-DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 discovery/content contracts, DI04 homepage/game hubs and DI05 boost configuration/checkout are **delivered**; DI06 is delivered; DI07 is in progress and DI08–DI15 are planned. The owner authorized this implementation sequence on 25 September. Implement in this order unless a later owner decision changes it. Dependencies identify required contracts; a phase can prepare components earlier, but cannot claim complete user journeys until its dependencies are real. Do not expose incomplete feature entry points publicly. One phase may use several verified commits; each commit follows the applicable gate. A phase exit verifies its owned screens/contracts and relevant journey segments against working existing counterparts. It does not certify later redesigned screens as delivered. Complete design-matched cross-phase journey acceptance is scheduled in DI14, followed by independent requalification in DI15.
+DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 discovery/content contracts, DI04 homepage/game hubs and DI05 boost configuration/checkout are **delivered**; DI06 and DI07 are delivered; DI08 is in progress and DI09–DI15 are planned. The owner authorized this implementation sequence on 25 September. Implement in this order unless a later owner decision changes it. Dependencies identify required contracts; a phase can prepare components earlier, but cannot claim complete user journeys until its dependencies are real. Do not expose incomplete feature entry points publicly. One phase may use several verified commits; each commit follows the applicable gate. A phase exit verifies its owned screens/contracts and relevant journey segments against working existing counterparts. It does not certify later redesigned screens as delivered. Complete design-matched cross-phase journey acceptance is scheduled in DI14, followed by independent requalification in DI15.
 
 | Phase | Deliverable | Requires |
 | --- | --- | --- |
@@ -170,6 +170,8 @@ DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 dis
 **Exit/tests:** record sections never navigate to unrelated global pages, wrong IDs/access loss fail safely, payment and fulfillment states agree, activity links open the exact authorized order, sign-out/account-switch clears data. Keyboard, mobile scrolling/keyboard, refresh/back and retained filters/drafts work with asynchronous loads.
 
 ### DI07 — complete support and chat experience
+
+**Delivered:** private conversation discovery, retained inbox context, resilient support initiation and narrow chat corrections. Implementation `682a74b994ab52e8b0ea24a298f3f0e48113af54`; scoped senior review and complete unchanged gate passed. See [qualification](DI07_QUALIFICATION.md).
 
 - One consistent conversation system across customer/seller, booster and admin, styled within each workspace. Global inboxes are clearly labeled; record-local Messages retain their record shell. Search, unread state, pagination and related-record links have correct audience and origin.
 - Distinguish customer support, private seller discussions, explicitly shared assigned-booster coordination and admin internal notes. Reuse the existing separate coordination conversation; never expose historical private support by changing a label or assignment. Compose mode visibly identifies recipients; keep public/internal drafts separate.
