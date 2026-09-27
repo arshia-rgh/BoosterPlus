@@ -1,6 +1,6 @@
 # PLAYORA — accepted design implementation roadmap
 
-25 September 2026 · **Implementation authorized by the owner; DI00–DI08 delivered; DI09 in progress; DI10–DI15 planned. R10/R11 held.**
+25 September 2026 · **Implementation authorized by the owner; DI00–DI09 delivered; DI10 in progress; DI11–DI15 planned. R10/R11 held.**
 
 The owner accepted the current design as complete for now and requested this implementation plan before development resumes. This is the next application roadmap, replacing the execution order in the historical UI/UX and homepage-refinement roadmaps. R00–R09 and earlier UX deliveries remain existing code to preserve and improve. R10/R11 remain separately held in [final-launch.md](../../final-launch.md).
 
@@ -58,7 +58,7 @@ Audit entry points: [storefront routes](../../frontend/app/routes.ts), [admin ro
 
 ## 4. Phase sequence
 
-DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 discovery/content contracts, DI04 homepage/game hubs and DI05 boost configuration/checkout are **delivered**; DI06–DI08 are delivered; DI09 is in progress and DI10–DI15 are planned. The owner authorized this implementation sequence on 25 September. Implement in this order unless a later owner decision changes it. Dependencies identify required contracts; a phase can prepare components earlier, but cannot claim complete user journeys until its dependencies are real. Do not expose incomplete feature entry points publicly. One phase may use several verified commits; each commit follows the applicable gate. A phase exit verifies its owned screens/contracts and relevant journey segments against working existing counterparts. It does not certify later redesigned screens as delivered. Complete design-matched cross-phase journey acceptance is scheduled in DI14, followed by independent requalification in DI15.
+DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 discovery/content contracts, DI04 homepage/game hubs and DI05 boost configuration/checkout are **delivered**; DI06–DI09 are delivered; DI10 is in progress and DI11–DI15 are planned. The owner authorized this implementation sequence on 25 September. Implement in this order unless a later owner decision changes it. Dependencies identify required contracts; a phase can prepare components earlier, but cannot claim complete user journeys until its dependencies are real. Do not expose incomplete feature entry points publicly. One phase may use several verified commits; each commit follows the applicable gate. A phase exit verifies its owned screens/contracts and relevant journey segments against working existing counterparts. It does not certify later redesigned screens as delivered. Complete design-matched cross-phase journey acceptance is scheduled in DI14, followed by independent requalification in DI15.
 
 | Phase | Deliverable | Requires |
 | --- | --- | --- |
@@ -193,6 +193,8 @@ DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 dis
 **Exit/tests:** assignment ownership/role boundaries, recent-auth secret access, overlap/race booking checks, stale transition/version, failed upload, revoked assignment mid-session and admin return-for-correction. Verify both fulfillment modes and the DI08 segments of F12/F13 with working customer/admin counterparts; their redesigned admin segments arrive in DI09 and full design-matched journey acceptance is in DI14.
 
 ### DI09 — admin workspaces, editors and access governance
+
+**Delivered:** [DI09 qualification](DI09_QUALIFICATION.md) records the implementation, independent review, complete gate and acceptance limits.
 
 - Persistent admin identity, operations overview, triage queue, order detail/local sections, quote editing/preview/issue, scheduling, assignment, holds and completion review. Named actions explain which record and consequence; previews stay labeled within admin and return to the originating draft.
 - Finish real catalog/game/form/rule/package/intake editors from DI03 contracts: field dependencies, safe validation, estimate explanation, version preview, publication/pause/archive/history and correction. Preserve draft on recoverable failure; never issue a quote or publish just by previewing.
@@ -484,4 +486,4 @@ These are planned additions, **not screens already present in the accepted 115-v
 | Publication/schedule/unpublish | Confirmation, permission/audit, failed job/retry, corrected revision, slug redirect and cache/search invalidation | DI12 |
 | Editorial end-to-end journeys | Draft → review/preview → publish or schedule → reader discovery; correction; unpublish without draft leakage | DI12 |
 
-**Completion tracking:** DI00–DI08 are delivered; DI09 is in progress; DI10–DI15 are planned. See [DI00 review evidence](reviews/2026-09-25-di00-contracts-addendum.md). Runtime screen rows remain planned until their implementation phases; final owner review includes the bounded shop/news additions. Do not update them to delivered on the basis of this document, the accepted static design, or historical UX/R-phase test results.
+**Completion tracking:** DI00–DI09 are delivered; DI10 is in progress; DI11–DI15 are planned. See [DI00 review evidence](reviews/2026-09-25-di00-contracts-addendum.md). Runtime screen rows remain planned until their implementation phases; final owner review includes the bounded shop/news additions. Do not update them to delivered on the basis of this document, the accepted static design, or historical UX/R-phase test results.

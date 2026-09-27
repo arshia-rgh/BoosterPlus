@@ -2426,7 +2426,7 @@
       "title": "Operations overview.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin",
       "targetRoute": "/admin",
       "apiFamily": "operations",
@@ -2447,14 +2447,17 @@
         "F09",
         "F15"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A02",
       "title": "Order queue.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/orders",
       "targetRoute": "/admin/orders",
       "apiFamily": "orders",
@@ -2474,14 +2477,17 @@
         "keyboard and narrow layout",
         "F15"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A03",
       "title": "Review order PL-1042.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/orders/:id",
       "targetRoute": "/admin/orders/:id",
       "apiFamily": "orders",
@@ -2505,14 +2511,17 @@
         "F15",
         "F16"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A04",
       "title": "Issue a final quote.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/orders/:id",
       "targetRoute": "/admin/orders/:id",
       "apiFamily": "orders",
@@ -2533,7 +2542,10 @@
         "keyboard and narrow layout",
         "F15"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A05",
@@ -2601,7 +2613,7 @@
       "title": "Staff calendars.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/calendar",
       "targetRoute": "/admin/calendar",
       "apiFamily": "orders",
@@ -2622,14 +2634,17 @@
         "keyboard and narrow layout",
         "F13"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A08",
       "title": "Customers & staff.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/customers",
       "targetRoute": "/admin/customers",
       "apiFamily": "governance",
@@ -2651,14 +2666,17 @@
         "keyboard and narrow layout",
         "F22"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A09",
       "title": "Audit & recovery review.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin",
       "targetRoute": "/admin",
       "apiFamily": "governance",
@@ -2678,14 +2696,17 @@
         "keyboard and narrow layout",
         "F22"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A10",
       "title": "Game catalog.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/catalog",
       "targetRoute": "/admin/catalog",
       "apiFamily": "catalog",
@@ -2706,14 +2727,17 @@
         "keyboard and narrow layout",
         "F14"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A11",
       "title": "Mobile Legends \u00b7 Game settings",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/catalog",
       "targetRoute": "/admin/catalog",
       "apiFamily": "catalog",
@@ -2734,14 +2758,17 @@
         "keyboard and narrow layout",
         "F14"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A12",
       "title": "Build the order form.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/catalog",
       "targetRoute": "/admin/catalog",
       "apiFamily": "catalog",
@@ -2762,14 +2789,17 @@
         "keyboard and narrow layout",
         "F14"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A13",
       "title": "Price estimation rules.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/catalog",
       "targetRoute": "/admin/catalog",
       "apiFamily": "catalog",
@@ -2790,14 +2820,17 @@
         "keyboard and narrow layout",
         "F14"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A14",
       "title": "Preview & publish a release.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/catalog",
       "targetRoute": "/admin/catalog",
       "apiFamily": "catalog",
@@ -2819,14 +2852,17 @@
         "keyboard and narrow layout",
         "F14"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A24",
       "title": "Fixed packages editor.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/catalog",
       "targetRoute": "/admin/catalog",
       "apiFamily": "catalog",
@@ -2847,14 +2883,17 @@
         "keyboard and narrow layout",
         "F14"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A25",
       "title": "Seller intake & transfer rules.",
       "phase": "DI09",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/catalog",
       "targetRoute": "/admin/catalog",
       "apiFamily": "catalog",
@@ -2874,7 +2913,10 @@
         "keyboard and narrow layout",
         "F14"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI09_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di09-admin.md"
+      ]
     },
     {
       "id": "A15",
