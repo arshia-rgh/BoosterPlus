@@ -902,7 +902,7 @@
     },
     {
       "id": "P11",
-      "title": "We\u2019re confirming your payment.",
+      "title": "We’re confirming your payment.",
       "phase": "DI05",
       "mode": "adapt",
       "status": "verified",
@@ -941,7 +941,7 @@
       "title": "Find your next account.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/accounts",
       "targetRoute": "/games/:slug/accounts",
       "apiFamily": "resale",
@@ -961,14 +961,19 @@
         "keyboard and narrow layout",
         "F03"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-marketplace.md",
+        "docs/redesign/reviews/2026-09-27-di10-purchase-delivery.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "P13",
-      "title": "Mythic account \u00b7 Mobile Legends",
+      "title": "Mythic account · Mobile Legends",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/accounts/:id",
       "targetRoute": "/games/:slug/accounts/:id",
       "apiFamily": "resale",
@@ -992,14 +997,19 @@
         "F06",
         "F18"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-marketplace.md",
+        "docs/redesign/reviews/2026-09-27-di10-purchase-delivery.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "P14",
       "title": "Review your account purchase.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/accounts/:id",
       "targetRoute": "/games/:slug/accounts/:id",
       "apiFamily": "resale",
@@ -1020,7 +1030,12 @@
         "keyboard and narrow layout",
         "F03"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-marketplace.md",
+        "docs/redesign/reviews/2026-09-27-di10-purchase-delivery.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "P15",
@@ -1289,7 +1304,7 @@
     },
     {
       "id": "I06",
-      "title": "Confirm it\u2019s you.",
+      "title": "Confirm it’s you.",
       "phase": "DI13",
       "mode": "adapt",
       "status": "planned",
@@ -1494,7 +1509,7 @@
     },
     {
       "id": "C04",
-      "title": "Let\u2019s get your order ready.",
+      "title": "Let’s get your order ready.",
       "phase": "DI06",
       "mode": "adapt",
       "status": "verified",
@@ -1751,7 +1766,7 @@
     },
     {
       "id": "C12",
-      "title": "Order PL-1042 \u00b7 Messages",
+      "title": "Order PL-1042 · Messages",
       "phase": "DI07",
       "mode": "adapt",
       "status": "verified",
@@ -2095,7 +2110,7 @@
       "title": "Your account sales.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/sell",
       "targetRoute": "/sell",
       "apiFamily": "resale",
@@ -2115,14 +2130,18 @@
         "keyboard and narrow layout",
         "F06"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-workspaces.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "S02",
       "title": "Tell us about your account.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/sell/new",
       "targetRoute": "/sell/new",
       "apiFamily": "resale",
@@ -2144,14 +2163,18 @@
         "F06",
         "F07"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-workspaces.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "S03",
       "title": "Submission SA-204.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/sell/:id",
       "targetRoute": "/sell/:id",
       "apiFamily": "resale",
@@ -2174,14 +2197,18 @@
         "F06",
         "F07"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-workspaces.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "S04",
       "title": "Review your sale offer.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/sell/:id",
       "targetRoute": "/sell/:id",
       "apiFamily": "resale",
@@ -2204,14 +2231,18 @@
         "F06",
         "F07"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-workspaces.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "S05",
       "title": "Secure account handover.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/sell/:id",
       "targetRoute": "/sell/:id",
       "apiFamily": "resale",
@@ -2233,14 +2264,18 @@
         "F06",
         "F07"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-workspaces.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "S06",
       "title": "Your direct payout.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/sell/:id",
       "targetRoute": "/sell/:id",
       "apiFamily": "resale",
@@ -2264,7 +2299,11 @@
         "F06",
         "F07"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-finance-completion.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "B01",
@@ -2328,7 +2367,7 @@
     },
     {
       "id": "B03",
-      "title": "PL-1038 \u00b7 Your assignment",
+      "title": "PL-1038 · Your assignment",
       "phase": "DI08",
       "mode": "adapt",
       "status": "verified",
@@ -2579,7 +2618,7 @@
     },
     {
       "id": "A06",
-      "title": "PL-1042 \u00b7 Customer conversation",
+      "title": "PL-1042 · Customer conversation",
       "phase": "DI07",
       "mode": "adapt",
       "status": "verified",
@@ -2734,7 +2773,7 @@
     },
     {
       "id": "A11",
-      "title": "Mobile Legends \u00b7 Game settings",
+      "title": "Mobile Legends · Game settings",
       "phase": "DI09",
       "mode": "adapt",
       "status": "verified",
@@ -2923,7 +2962,7 @@
       "title": "Payments & exceptions.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/finance",
       "targetRoute": "/admin/finance",
       "apiFamily": "finance",
@@ -2943,14 +2982,18 @@
         "keyboard and narrow layout",
         "F17"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-finance-policy.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "A16",
       "title": "Service case & refund review.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/finance",
       "targetRoute": "/admin/finance",
       "apiFamily": "finance",
@@ -2973,14 +3016,18 @@
         "F05",
         "F17"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-finance-completion.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "A17",
       "title": "Seller payout review.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/finance",
       "targetRoute": "/admin/finance",
       "apiFamily": "finance",
@@ -3004,14 +3051,18 @@
         "F07",
         "F17"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-finance-completion.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "A18",
       "title": "Payment policy.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/finance",
       "targetRoute": "/admin/finance",
       "apiFamily": "finance",
@@ -3032,14 +3083,18 @@
         "keyboard and narrow layout",
         "F23"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-finance-policy.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "A19",
       "title": "Reconcile provider evidence.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/finance",
       "targetRoute": "/admin/finance",
       "apiFamily": "finance",
@@ -3061,14 +3116,18 @@
         "F05",
         "F17"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-finance-completion.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "A20",
       "title": "Account submissions.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/submissions",
       "targetRoute": "/admin/submissions",
       "apiFamily": "resale",
@@ -3088,14 +3147,18 @@
         "keyboard and narrow layout",
         "F06"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-workspaces.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "A21",
       "title": "Review submission SA-204.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/submissions/:id",
       "targetRoute": "/admin/submissions/:id",
       "apiFamily": "resale",
@@ -3117,14 +3180,18 @@
         "F06",
         "F07"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-workspaces.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "A22",
       "title": "Account inventory.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/accounts",
       "targetRoute": "/admin/accounts",
       "apiFamily": "resale",
@@ -3144,14 +3211,18 @@
         "keyboard and narrow layout",
         "F06"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-workspaces.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "A23",
       "title": "Edit account listing AC-208.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/accounts/:id",
       "targetRoute": "/admin/accounts/:id",
       "apiFamily": "resale",
@@ -3173,14 +3244,18 @@
         "F06",
         "F07"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-workspaces.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "A26",
       "title": "Buyer account delivery.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/orders/:id",
       "targetRoute": "/admin/orders/:id",
       "apiFamily": "orders",
@@ -3201,14 +3276,18 @@
         "keyboard and narrow layout",
         "F03"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-purchase-delivery.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "C23",
       "title": "Your purchased account.",
       "phase": "DI10",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/orders/:id",
       "targetRoute": "/orders/:id",
       "apiFamily": "orders",
@@ -3231,7 +3310,11 @@
         "F03",
         "F06"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI10_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-27-di10-purchase-delivery.md"
+      ],
+      "verifiedCommit": "de4ff1f9e2ae1e0de23caa3188397b6ba40265ad"
     },
     {
       "id": "A27",
@@ -3513,7 +3596,7 @@
     },
     {
       "id": "X01",
-      "title": "This page isn\u2019t available.",
+      "title": "This page isn’t available.",
       "phase": "DI01",
       "mode": "adapt",
       "status": "verified",
@@ -3575,7 +3658,7 @@
     },
     {
       "id": "S07",
-      "title": "SA-204 \u00b7 Private seller messages",
+      "title": "SA-204 · Private seller messages",
       "phase": "DI07",
       "mode": "adapt",
       "status": "verified",
@@ -3605,7 +3688,7 @@
     },
     {
       "id": "A37",
-      "title": "SA-204 \u00b7 Seller conversation",
+      "title": "SA-204 · Seller conversation",
       "phase": "DI07",
       "mode": "adapt",
       "status": "verified",
@@ -3980,7 +4063,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4007,7 +4090,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4034,7 +4117,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4061,7 +4144,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4088,7 +4171,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4115,7 +4198,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4142,7 +4225,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4169,7 +4252,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4196,7 +4279,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN01\u2013SN04",
+        "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4223,7 +4306,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4250,7 +4333,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4277,7 +4360,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4304,7 +4387,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4331,7 +4414,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []
@@ -4358,7 +4441,7 @@
         "failed"
       ],
       "scenarios": [
-        "SHOP_NEWS_ADDENDUM.md SN05\u2013SN06",
+        "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
       "evidence": []

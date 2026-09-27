@@ -1,6 +1,6 @@
 # PLAYORA — accepted design implementation roadmap
 
-25 September 2026 · **Implementation authorized by the owner; DI00–DI09 delivered; DI10 in progress; DI11–DI15 planned. R10/R11 held.**
+25 September 2026 · **Implementation authorized by the owner; DI00–DI10 delivered; DI11 in progress; DI12–DI15 planned. R10/R11 held.**
 
 The owner accepted the current design as complete for now and requested this implementation plan before development resumes. This is the next application roadmap, replacing the execution order in the historical UI/UX and homepage-refinement roadmaps. R00–R09 and earlier UX deliveries remain existing code to preserve and improve. R10/R11 remain separately held in [final-launch.md](../../final-launch.md).
 
@@ -58,7 +58,7 @@ Audit entry points: [storefront routes](../../frontend/app/routes.ts), [admin ro
 
 ## 4. Phase sequence
 
-DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 discovery/content contracts, DI04 homepage/game hubs and DI05 boost configuration/checkout are **delivered**; DI06–DI09 are delivered; DI10 is in progress and DI11–DI15 are planned. The owner authorized this implementation sequence on 25 September. Implement in this order unless a later owner decision changes it. Dependencies identify required contracts; a phase can prepare components earlier, but cannot claim complete user journeys until its dependencies are real. Do not expose incomplete feature entry points publicly. One phase may use several verified commits; each commit follows the applicable gate. A phase exit verifies its owned screens/contracts and relevant journey segments against working existing counterparts. It does not certify later redesigned screens as delivered. Complete design-matched cross-phase journey acceptance is scheduled in DI14, followed by independent requalification in DI15.
+DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 discovery/content contracts, DI04 homepage/game hubs and DI05 boost configuration/checkout are **delivered**; DI06–DI10 are delivered; DI11 is in progress and DI12–DI15 are planned. The owner authorized this implementation sequence on 25 September. Implement in this order unless a later owner decision changes it. Dependencies identify required contracts; a phase can prepare components earlier, but cannot claim complete user journeys until its dependencies are real. Do not expose incomplete feature entry points publicly. One phase may use several verified commits; each commit follows the applicable gate. A phase exit verifies its owned screens/contracts and relevant journey segments against working existing counterparts. It does not certify later redesigned screens as delivered. Complete design-matched cross-phase journey acceptance is scheduled in DI14, followed by independent requalification in DI15.
 
 | Phase | Deliverable | Requires |
 | --- | --- | --- |
@@ -205,7 +205,7 @@ DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 dis
 
 ### DI10 — resale and financial workspaces
 
-**In progress:** workspace/purchase-recovery increment delivered as `0677ae3`, marketplace price/sort/game filtering delivered as `edcceee`; see [DI10 qualification and remaining scope](DI10_QUALIFICATION.md). This is not full-phase completion.
+**Delivered:** workspace/purchase recovery (`0677ae3`), marketplace filtering (`edcceee`) and finance completion (`de4ff1f`). All twenty owned views have scoped qualification under the 28 September owner cadence; see [DI10 evidence and limits](DI10_QUALIFICATION.md). Complete aggregate qualification remains DI15.
 
 - Within game Accounts, implement browse/filter/detail and purchase review/reservation. Show actual supported region/transfer terms, availability and limitations. Sell an account entry is inside Accounts; signed-in sales management stays in the customer/seller workspace.
 - Submission, clarification, private messages, offer review, secure handover and payout are one identifiable sale record with local sections. Consignment and buy-first use their accepted per-offer obligations; expose payout status/receipt without a wallet balance.
@@ -490,4 +490,4 @@ These are planned additions, **not screens already present in the accepted 115-v
 | Publication/schedule/unpublish | Confirmation, permission/audit, failed job/retry, corrected revision, slug redirect and cache/search invalidation | DI12 |
 | Editorial end-to-end journeys | Draft → review/preview → publish or schedule → reader discovery; correction; unpublish without draft leakage | DI12 |
 
-**Completion tracking:** DI00–DI09 are delivered; DI10 is in progress; DI11–DI15 are planned. See [DI00 review evidence](reviews/2026-09-25-di00-contracts-addendum.md). Runtime screen rows remain planned until their implementation phases; final owner review includes the bounded shop/news additions. Do not update them to delivered on the basis of this document, the accepted static design, or historical UX/R-phase test results.
+**Completion tracking:** DI00–DI10 are delivered; DI11 is in progress; DI12–DI15 are planned. See [DI00 review evidence](reviews/2026-09-25-di00-contracts-addendum.md). Runtime screen rows remain planned until their implementation phases; final owner review includes the bounded shop/news additions. Do not update them to delivered on the basis of this document, the accepted static design, or historical UX/R-phase test results.

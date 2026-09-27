@@ -1,6 +1,6 @@
-# DI10 resale and financial workspaces — in progress
+# DI10 resale and financial workspaces — delivered with scoped qualification
 
-27 September 2026. Base: DI09 receipt `50ea8f3b4ef75b7a9a24de0bf86bab2f536ca92c`. DI10 is being delivered in verified increments; this record does not mark the whole phase complete. DI11–DI15 remain authorized; R10/R11 and final launch remain held.
+28 September 2026. DI10 implementation is delivered through `de4ff1f9e2ae1e0de23caa3188397b6ba40265ad` with the owner-authorized focused stage gate. All twenty owned views have scoped evidence below. Earlier incremental records remain historical. Aggregate design-match/repository qualification remains DI14–DI15; R10/R11, live transfer qualification and final launch remain held.
 
 ## First increment: persistent workspaces and purchase recovery
 
@@ -31,7 +31,7 @@ Local rendered evidence: `/tmp/playora-di10-review/round-{1,2,3}/`, `/tmp/playor
 
 The senior designer passed the seller/inventory/finance scope after three rounds and six corrections; see [workspace review](reviews/2026-09-27-di10-workspaces.md). The independent final purchase/delivery/intake review is **PASS — no remaining actionable findings in this scope** from `/root/di10_final_design_review`; see [final review](reviews/2026-09-27-di10-purchase-delivery.md). The initial reviewer verified spacing/focus and identified delivery write-denial and uncertain-intake game-switching follow-ups, then was interrupted before final verification. The final reviewer independently verified those fixes, source/tests and all final rendered evidence. Tracked-hook execution and delivery receipt will be appended after they actually complete. No missing review or blocked check is treated as a pass.
 
-## Remaining DI10 work
+## Remaining DI10 work at the first increment (historical)
 
 Complete design-matched marketplace price/sort filtering with server pagination and currency-safe comparisons; verify all remaining finance/case/payout screens and F03/F05/F06/F07/F17 segments against accepted designs and existing backend state machines. Qualify exclusive/expired reservations, immutable commercial snapshots, both seller arrangements, delivery/secret authorization, case holds and duplicate/partial/failed outgoing operations with isolated fixtures. Update all twenty owned view rows only after phase exit evidence is complete. Controlled real transfer qualification belongs to held R11, not this increment.
 
@@ -112,3 +112,20 @@ Reproduction: `make stage-check`; `TEST_DATABASE_DSN='root@tcp(127.0.0.1:14001)/
 Current local logs are under ignored `.cache/qualification/`; earlier `/tmp` artifacts did not survive the interruption and are historical references only. Final DI15 qualification, other browser engines, physical devices, live financial qualification and owner acceptance remain separate requirements. R10/R11 stay held.
 
 Corrected desktop payment/resale journey: **PASS (1.1m)**. Together with the corrected mobile pass, this exercises policy review/publication, exact incoming evidence, reconciliation → linked order → named finance return with the inspected reference, private case rationale filtering, refund consent/approval/provider fixture confirmation and immutable destination history, plus seller offer/listing/reservation/paid ownership delivery. Both journeys include scoped axe assertions. Logs: `.cache/qualification/di10-payments-browser.log` (first desktop failure and corrected mobile pass) and `di10-payments-desktop-corrected.log` (corrected desktop pass). The tracked focused hook still must pass before the commit is created.
+
+
+## DI10 completion receipt — 28 September 2026
+
+Finance implementation `de4ff1f9e2ae1e0de23caa3188397b6ba40265ad` passed the tracked focused hook and was pushed directly to `origin/main`; the remote SHA matched. It completes the remaining incoming evidence/policy/case/refund/payout/reconciliation scope after DI10A/B. Twenty DI10 rows are now traced to this delivered tree. The hook repeated root policy/secret/contract/workflow checks, backend stage security/unit/generated/build checks, 390 frontend cases with required coverage, dependency audit, both builds and nine server cases. Changed TiDB and desktop/mobile payment/resale journeys passed separately as recorded above. Held cameo/prototype directories were excluded.
+
+| Views | Delivered scope and scoped evidence |
+| --- | --- |
+| P12–P14 | Game-local Accounts discovery, currency-safe price/filter/order, inspection and idempotent reservation recovery; marketplace and purchase/delivery reviews; resale integration and browser purchase journey |
+| S01–S05 | Identifiable sale record, intake/ownership evidence, scoped messages, both accepted commercial models and secure handover; workspace/purchase reviews; seller/submission/resale tests and browser journey |
+| S06 / A17 | Accepted seller obligations and direct payout states, independent outgoing activation, explicit recipient/amount/fees review and immutable history; finance plus customer/seller follow-up review; payout/finance tests |
+| A15 / A18 | Exact, stale, missing and mismatched incoming evidence; saved-policy preview/review/publication with drafts and recoverable errors; finance-policy review; evidence/contract/components and browser assertions |
+| A16 / A19 | Customer explanation/private rationale separation; exact refund reserve and uncertain retry; merchant-bound inspection/manual-job deduplication and source returns; finance review; changed race/HTTP/component/browser cases |
+| A20–A23 | Staff submission/listing/inventory editors, safe preview/publish, source returns and ordinary draft retention; workspace/final reviews and publication/media/resale tests |
+| A26 / C23 | Paid owned buyer delivery, separate vault secret, recent-factor reveal, acknowledgment/dispute/recovery; purchase/delivery review, authorization integration and buyer browser journey |
+
+Existing exclusive/expired reservation, immutable contract, both seller arrangements, case holds and outgoing failure/partial/idempotency regressions have earlier verified DI10A/B evidence; changed finance behavior was requalified in the current nine-case race suite and payment/resale journeys. Their complete aggregate rerun is explicitly deferred to DI15. F03/F05/F06/F07/F17 are covered here for their phase-local segments with working counterpart screens; complete cross-phase design acceptance remains DI14/DI15. Fixture results do not qualify real money movement, physical devices, external identity/email or production operations. DI11 begins next; no shop delivery is claimed by this receipt.
