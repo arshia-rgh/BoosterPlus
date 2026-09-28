@@ -34,7 +34,11 @@ export default function DiscoveryEditor({
   config,
   slug,
   change,
+  offersOnly = false,
+  hideOffers = false,
 }: {
+  offersOnly?: boolean;
+  hideOffers?: boolean;
   config: Configuration;
   slug: string;
   change: (value: Discovery) => void;
@@ -43,6 +47,17 @@ export default function DiscoveryEditor({
   const update = (patch: Partial<Discovery>) => {
     change({ ...value, ...patch });
   };
+  const offers = (
+    <PromotionEditor
+      config={config}
+      slug={slug}
+      value={value.promotions ?? []}
+      change={(promotions) => {
+        update({ promotions });
+      }}
+    />
+  );
+  if (offersOnly) return offers;
   return (
     <section aria-label="Service availability and public statistics">
       <h3>Services on this game page</h3>
@@ -130,14 +145,7 @@ export default function DiscoveryEditor({
           update({ metrics });
         }}
       />
-      <PromotionEditor
-        config={config}
-        slug={slug}
-        value={value.promotions ?? []}
-        change={(promotions) => {
-          update({ promotions });
-        }}
-      />
+      {!hideOffers && offers}
     </section>
   );
 }

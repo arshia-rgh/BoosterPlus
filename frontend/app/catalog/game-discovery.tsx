@@ -77,11 +77,14 @@ export function GameDiscovery({
             {offers.map((offer) => {
               const query = new URLSearchParams();
               if (offer.variant) query.set("variant", offer.variant);
+              if (offer.quantity) query.set("quantity", String(offer.quantity));
               if (offer.coupon_code) query.set("coupon", offer.coupon_code);
               const target =
                 offer.target === "package"
                   ? `/games/${release.slug}/packages/${encodeURIComponent(offer.package ?? "")}?${query.toString()}`
-                  : `/games/${release.slug}/accounts/${encodeURIComponent(offer.listing_id ?? "")}`;
+                  : offer.target === "shop"
+                    ? `/games/${release.slug}/shop/${encodeURIComponent(offer.product_id ?? "")}?${query.toString()}`
+                    : `/games/${release.slug}/accounts/${encodeURIComponent(offer.listing_id ?? "")}`;
               return (
                 <article className="featured-offer" key={offer.key}>
                   <span className="status">
@@ -97,6 +100,12 @@ export function GameDiscovery({
                     )}{" "}
                     {offer.currency} {minorDisplay(offer.amount_minor)}
                   </p>
+                  {offer.target === "shop" && (
+                    <p>
+                      For {offer.quantity} item{offer.quantity === 1 ? "" : "s"}{" "}
+                      · Staff delivery
+                    </p>
+                  )}
                   <p className="quiet">
                     Ends {publicTime(offer.ends_at)}
                     {offer.remaining != null
@@ -118,7 +127,12 @@ export function GameDiscovery({
                     className="button compact"
                     to={target}
                   >
-                    Review {offer.target === "package" ? "package" : "account"}
+                    Review{" "}
+                    {offer.target === "shop"
+                      ? "shop item"
+                      : offer.target === "package"
+                        ? "package"
+                        : "account"}
                   </Link>
                 </article>
               );

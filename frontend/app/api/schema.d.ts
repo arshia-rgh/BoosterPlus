@@ -7129,7 +7129,7 @@ export interface components {
       description: string;
       enabled: boolean;
       /** @enum {string} */
-      target: "package" | "account";
+      target: "package" | "account" | "shop";
       package: string;
       variant: string;
       listing_id: string;
@@ -7142,6 +7142,7 @@ export interface components {
       ends_at: string;
       priority: number;
       show_quantity: boolean;
+      product_id?: string;
     };
     CatalogDiscoveryPolicy: {
       capabilities: components["schemas"]["CatalogCapabilityPolicy"][];
@@ -7153,9 +7154,9 @@ export interface components {
       title: string;
       description: string;
       /** @enum {string} */
-      service: "boost" | "accounts";
+      service: "boost" | "accounts" | "shop";
       /** @enum {string} */
-      target: "package" | "account";
+      target: "package" | "account" | "shop";
       package?: string;
       variant?: string;
       listing_id?: string;
@@ -7174,6 +7175,8 @@ export interface components {
       remaining?: number;
       /** @constant */
       indicative: true;
+      product_id?: string;
+      quantity?: number;
     };
     CatalogDiscoveryView: {
       game_id: string;
@@ -21614,6 +21617,7 @@ export interface operations {
         q?: string;
         game?: string;
         state?: string;
+        availability?: "available" | "unavailable";
       };
       header?: never;
       path?: never;

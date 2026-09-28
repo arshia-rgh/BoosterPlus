@@ -1,10 +1,11 @@
+import type { Location } from "react-router";
 import { PricingEditor } from "./pricing-editor";
 import "./admin-workspace.css";
 import { useResource } from "../orders/resource";
 import DiscoveryEditor from "./discovery-editor";
 import HeroLayoutEditor from "./hero-layout-editor";
 import { useEffect, useRef, useState } from "react";
-import { Link, useBlocker, useSearchParams } from "react-router";
+import { Link, useBlocker, useLocation, useSearchParams } from "react-router";
 import { z } from "../validation";
 import { get, post } from "../identity/api";
 import {
@@ -152,8 +153,10 @@ function Editor({
     [deleteConfirmed, setDeleteConfirmed] = useState(false),
     [reload, setReload] = useState(0);
   const [params, setParams] = useSearchParams();
+  const location: Location<unknown> = useLocation();
   const tabs = [
     ["catalog-basics", "Game & ranks"],
+    ["catalog-offers", "Featured offers"],
     ["catalog-intake", "Seller intake"],
     ["catalog-services", "Boosting forms"],
     ["catalog-pricing", "Price estimation"],
@@ -167,11 +170,18 @@ function Editor({
   const choose = (section: string) => {
     const next = new URLSearchParams(params);
     next.set("section", section);
-    setParams(next, { preventScrollReset: true });
+    setParams(next, { preventScrollReset: true, state: location.state });
   };
   useEffect(() => {
-    document.getElementById(section)?.focus({ preventScroll: true });
-  }, [section]);
+    const target = document.getElementById(section);
+    target?.focus({ preventScroll: true });
+    if (
+      section === "catalog-offers" &&
+      target &&
+      typeof target.scrollIntoView === "function"
+    )
+      target.scrollIntoView({ block: "nearest" });
+  }, [section, draft?.id]);
   const generation = useRef(0);
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
@@ -349,6 +359,7 @@ function Editor({
             {tabs.map(([target, label]) => (
               <Link
                 key={target}
+                state={location.state}
                 to={`?${new URLSearchParams({ ...Object.fromEntries(params), section: target }).toString()}`}
                 preventScrollReset
                 aria-current={section === target ? "page" : undefined}
@@ -371,6 +382,7 @@ function Editor({
               Preview saved changes
             </Action>
           </div>
+          {status && <p role="status">{status}</p>}
           <fieldset disabled={busy} className="catalog-editor-fields">
             <legend>Catalog configuration</legend>
             <section
@@ -414,6 +426,7 @@ function Editor({
                 }}
               />
               <DiscoveryEditor
+                hideOffers
                 config={draft.configuration}
                 slug={draft.slug}
                 change={(discovery) => {
@@ -430,6 +443,22 @@ function Editor({
                 value={draft.configuration.references}
                 change={(references) => {
                   update({ references });
+                }}
+              />
+            </section>
+            <section
+              id="catalog-offers"
+              hidden={section !== "catalog-offers"}
+              tabIndex={-1}
+              className="catalog-edit-section"
+              aria-label="Featured offers editor"
+            >
+              <DiscoveryEditor
+                offersOnly
+                config={draft.configuration}
+                slug={draft.slug}
+                change={(discovery) => {
+                  update({ discovery });
                 }}
               />
             </section>
@@ -638,7 +667,6 @@ function Editor({
                   View release history
                 </Action>
               </div>
-              {status && <p role="status">{status}</p>}
               <div className="catalog-actions">
                 <Action
                   disabled={dirty || draft.archived}
@@ -689,13 +717,14 @@ function Editor({
 }
 export default function CatalogAdmin() {
   const [params, setParams] = useSearchParams();
+  const location: Location<unknown> = useLocation();
   const selected = params.get("game") ?? "";
   const setSelected = (game: string) => {
     const next = new URLSearchParams(params);
     if (game) next.set("game", game);
     else next.delete("game");
     next.delete("section");
-    setParams(next);
+    setParams(next, { state: location.state });
   };
   const [name, setName] = useState(""),
     [slug, setSlug] = useState(""),
@@ -741,16 +770,31 @@ export default function CatalogAdmin() {
   }
   if (selected)
     return (
-      <Editor
-        key={selected}
-        id={selected}
-        onBack={() => {
-          setSelected("");
-        }}
-        onSaved={() => {
-          resource.reload();
-        }}
-      />
+      <>
+        {z.uuid().safeParse(params.get("returnProduct")).success && (
+          <Link
+            className="context-back"
+            state={
+              z
+                .object({ shopSearch: z.string().max(2048) })
+                .safeParse(location.state).data ?? null
+            }
+            to={`/admin/shop/${encodeURIComponent(params.get("returnProduct") ?? "")}?section=promotion`}
+          >
+            ← Back to shop product
+          </Link>
+        )}
+        <Editor
+          key={selected}
+          id={selected}
+          onBack={() => {
+            setSelected("");
+          }}
+          onSaved={() => {
+            resource.reload();
+          }}
+        />
+      </>
     );
   return (
     <section className="catalog-admin">

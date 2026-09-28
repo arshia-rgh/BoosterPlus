@@ -15,7 +15,7 @@ export function ShopProducts() {
   const [params, setParams] = useSearchParams(),
     [search, setSearch] = useState(params.get("q") ?? "");
   const query = new URLSearchParams();
-  for (const key of ["q", "state", "game", "after"]) {
+  for (const key of ["q", "state", "game", "availability", "after"]) {
     const value = params.get(key);
     if (value) query.set(key, value);
   }
@@ -72,6 +72,23 @@ export function ShopProducts() {
             update("state", value);
           }}
         />
+        <Select
+          label="Purchase availability"
+          value={params.get("availability") ?? ""}
+          options={[
+            ["", "Any availability"],
+            ["available", "Available for new orders"],
+            ["unavailable", "Unavailable for new orders"],
+          ]}
+          change={(value) => {
+            update("availability", value);
+          }}
+        />
+        <p className="quiet">
+          Availability checks the published product and variant, remaining stock
+          for its minimum quantity, and the game’s current Shop service. Paused,
+          unpublished or exhausted products are unavailable for new orders.
+        </p>
         {params.get("game") && (
           <Action
             onClick={() => {
@@ -91,7 +108,7 @@ export function ShopProducts() {
         {resource.data?.items.length === 0 && (
           <p>
             {query.toString()
-              ? "No products match these filters. Change your search or choose another game or state."
+              ? "No products match these filters. Change your search or choose another game, state or purchase availability."
               : "No products yet. Create your first private draft above."}
           </p>
         )}

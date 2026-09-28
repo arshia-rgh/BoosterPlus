@@ -190,3 +190,20 @@
 .shop-delivery-queue td p {
   margin: 0.35rem 0;
 }
+
+.shop-artwork {
+  width: 100%;
+  max-width: 40rem;
+  aspect-ratio: 8 / 5;
+  object-fit: contain;
+  border-radius: 1rem;
+  background: #10271e;
+}
+.shop-artwork-unavailable {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
+  color: #bccfbd;
+  border: 1px solid #35503e;
+}

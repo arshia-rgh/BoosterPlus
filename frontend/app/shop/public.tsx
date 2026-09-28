@@ -1,3 +1,4 @@
+import ShopArtwork from "./artwork";
 import { useEffect, useState, useRef } from "react";
 import {
   Link,
@@ -109,12 +110,10 @@ function ShopBrowse({ slug }: { slug: string }) {
               <div className="shop-grid">
                 {resource.data.items.map((p) => (
                   <article key={p.id} className="shop-card">
-                    <img
-                      src={p.definition.asset}
+                    <ShopArtwork
+                      source={p.definition.asset}
                       alt={p.definition.asset_alt}
-                      loading="lazy"
-                      width="640"
-                      height="400"
+                      lazy
                     />
                     <div>
                       <p className="eyebrow">{p.definition.category}</p>
@@ -426,11 +425,9 @@ function ProductFlow({
   return (
     <div className="shop-purchase">
       <div className="shop-product-intro">
-        <img
-          src={product.definition.asset}
+        <ShopArtwork
+          source={product.definition.asset}
           alt={product.definition.asset_alt}
-          width="640"
-          height="400"
         />
         <div>
           <p className="eyebrow">{product.definition.category}</p>

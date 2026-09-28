@@ -49,7 +49,7 @@ func publicProduct(ctx context.Context, c *ent.Client, row *ent.ShopProduct, g *
 		return PublicProduct{}, ErrConflict
 	}
 	out := PublicProduct{ID: row.ID, GameID: g.ID, GameSlug: g.Slug, ReleaseID: release.ID, Version: release.Version, Definition: definition, Available: map[string]int{}}
-	stocks, err := c.ShopStock.Query().Where(shopstock.ProductIDEQ(row.ID), shopstock.EnabledEQ(true)).All(ctx)
+	stocks, err := c.ShopStock.Query().Where(shopstock.ProductIDEQ(row.ID), shopstock.ReleaseIDEQ(release.ID), shopstock.EnabledEQ(true)).All(ctx)
 	if err != nil {
 		return PublicProduct{}, err
 	}

@@ -1,14 +1,11 @@
+import ShopArtwork from "./artwork";
 import { price } from "../catalog/model";
 import type { Definition } from "./model";
 export function ProductPreview({ value }: { value: Definition }) {
   return (
     <article className="shop-preview" aria-label="Private customer preview">
       <p className="eyebrow">Staff preview · not a live offer</p>
-      {/^\/catalog-assets\/[a-z0-9][a-z0-9_-]{0,79}\.(png|jpg|webp|avif|svg)$/.test(
-        value.asset,
-      ) && (
-        <img src={value.asset} alt={value.asset_alt} width="400" height="240" />
-      )}
+      <ShopArtwork source={value.asset} alt={value.asset_alt} />
       <h3>{value.title || "Untitled product"}</h3>
       <p>{value.description}</p>
       <p>{value.category}</p>

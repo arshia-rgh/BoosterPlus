@@ -217,7 +217,7 @@ DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 dis
 
 ### DI11 — shop with manual staff fulfillment
 
-Status: in progress. DI11A private authoring is delivered as `cbee093` with a scoped senior-design PASS. Reservation/stock foundations (`ee6a5ae`), payment/expiry integration (`15fcb08`) and protected privacy export/erasure (`722fbf2`) passed focused checks. Public purchase, recipient capture/access UI and staff delivery remain pending. Follow [DI11_QUALIFICATION.md](DI11_QUALIFICATION.md) for increment boundaries and evidence. SH06/SH07 are not yet verified complete.
+Status: shop authoring, reservation/payment/privacy, purchase and manual delivery are delivered through `e3700b9`. Final release-backed promotions, availability and media qualification are passing focused checks; see [DI11 qualification](DI11_QUALIFICATION.md). Final tracked stage hook and delivery receipt follow. DI12 remains next; aggregate qualification remains DI15.
 
 **New domain integrated into the existing order/payment system, not a cosmetic catalog page.** Implement only products and delivery methods approved under DI00; no provider/supplier API or automatic fulfillment at launch.
 

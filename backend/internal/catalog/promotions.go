@@ -2,11 +2,14 @@ package catalog
 
 import (
 	"fmt"
+	"regexp"
 	"slices"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+var shopVariantKey = regexp.MustCompile(`^[a-z][a-z0-9_-]{0,47}$`)
 
 // Promotion selects an existing released offering, never a second price source.
 // Catalog publication is its review/publication history. Inactive definitions
@@ -20,6 +23,7 @@ type Promotion struct {
 	Package       string    `json:"package"`
 	Variant       string    `json:"variant"`
 	ListingID     string    `json:"listing_id"`
+	ProductID     string    `json:"product_id,omitempty"`
 	ReleaseID     string    `json:"release_id"`
 	CouponCode    string    `json:"coupon_code"`
 	CouponVersion int       `json:"coupon_version"`
@@ -40,6 +44,8 @@ type PromotionView struct {
 	Package       string    `json:"package,omitempty"`
 	Variant       string    `json:"variant,omitempty"`
 	ListingID     string    `json:"listing_id,omitempty"`
+	ProductID     string    `json:"product_id,omitempty"`
+	Quantity      int       `json:"quantity,omitempty"`
 	ReleaseID     string    `json:"release_id"`
 	Currency      string    `json:"currency"`
 	AmountMinor   string    `json:"amount_minor"`
@@ -77,8 +83,8 @@ func validatePromotions(c Configuration, publish bool, add func(string, string))
 		if p.Priority < 0 || p.Priority > 100 {
 			add(path+".priority", "Priority must be from 0 through 100.")
 		}
-		if !slices.Contains([]string{"package", "account"}, p.Target) {
-			add(path+".target", "Choose a published package or account listing. Other targets become available with their services.")
+		if !slices.Contains([]string{"package", "account", "shop"}, p.Target) {
+			add(path+".target", "Choose a published package, account listing or shop product.")
 		}
 		if p.CouponCode == "" && p.CouponVersion != 0 || p.CouponCode != "" && (!couponCodePattern.MatchString(p.CouponCode) || p.CouponVersion < 1) {
 			add(path+".coupon_code", "Bind a reviewed coupon code to its current version, or leave both empty.")
@@ -88,7 +94,7 @@ func validatePromotions(c Configuration, publish bool, add func(string, string))
 		}
 		switch p.Target {
 		case "package":
-			if !keyPattern.MatchString(p.Package) || !keyPattern.MatchString(p.Variant) || p.ListingID != "" || p.ReleaseID != "" {
+			if !keyPattern.MatchString(p.Package) || !keyPattern.MatchString(p.Variant) || p.ListingID != "" || p.ProductID != "" || p.ReleaseID != "" {
 				add(path, "Choose one package and variant from this catalog release.")
 			}
 			if publish && p.Enabled {
@@ -111,11 +117,21 @@ func validatePromotions(c Configuration, publish bool, add func(string, string))
 					add(path, "Enable the boosting service before publishing this promotion.")
 				}
 			}
+		case "shop":
+			if p.Package != "" || p.ListingID != "" || !validPublicID(p.ProductID) || !validPublicID(p.ReleaseID) || !shopVariantKey.MatchString(p.Variant) {
+				add(path, "Bind one shop product, reviewed release and variant.")
+			}
+			if p.CouponCode != "" {
+				add(path+".coupon_code", "Shop checkout uses its published product price; coupon promotions are not supported for this target.")
+			}
+			if publish && p.Enabled && !Available(c, false, "shop") {
+				add(path, "Enable Shop before publishing this promotion.")
+			}
 		case "account":
 			if p.CouponCode != "" {
 				add(path+".coupon_code", "Account checkout uses its published listing price; coupon promotions are not supported for this target.")
 			}
-			if p.Package != "" || p.Variant != "" || !validPublicID(p.ListingID) || !validPublicID(p.ReleaseID) {
+			if p.ProductID != "" || p.Package != "" || p.Variant != "" || !validPublicID(p.ListingID) || !validPublicID(p.ReleaseID) {
 				add(path, "Bind one account listing and its reviewed public release.")
 			}
 			if publish && p.Enabled && !Available(c, false, "accounts") {

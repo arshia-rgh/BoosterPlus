@@ -41,6 +41,7 @@ const sections = [
   { id: "recipient", label: "Delivery information" },
   { id: "terms", label: "Terms" },
   { id: "stock", label: "Stock" },
+  { id: "promotion", label: "Featured offers" },
   { id: "publication", label: "Publication" },
   { id: "history", label: "History" },
 ];
@@ -478,6 +479,38 @@ function Editor({
                     </section>
                   )}
                 </>
+              )}
+              {section === "promotion" && (
+                <section className="catalog-section">
+                  <h3>Feature this product in its game</h3>
+                  <p>
+                    Game featured offers bind a published product revision and
+                    variant, an explicit start/end, priority and optional
+                    remaining-stock badge. Prices come from the product; the
+                    offer does not change checkout pricing or reserve stock.
+                  </p>
+                  <p>
+                    Publish this product and enable the game’s Shop service
+                    first. Save or discard any product edits before moving to
+                    the game catalog. Publish the reviewed game catalog
+                    separately to activate its offers.
+                  </p>
+                  <Link
+                    className="button"
+                    state={
+                      state &&
+                      typeof state === "object" &&
+                      "shopSearch" in state &&
+                      typeof state.shopSearch === "string" &&
+                      state.shopSearch.length <= 2048
+                        ? { shopSearch: state.shopSearch }
+                        : null
+                    }
+                    to={`/admin/catalog?${new URLSearchParams({ game: row.game_id, section: "catalog-offers", returnProduct: row.id }).toString()}`}
+                  >
+                    Manage featured offers for {row.game}
+                  </Link>
+                </section>
               )}
               {section === "stock" && (
                 <>

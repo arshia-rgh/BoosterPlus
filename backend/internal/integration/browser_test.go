@@ -69,13 +69,13 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	fixtures := map[string]string{}
 	for _, project := range []string{"desktop", "mobile"} {
-		for _, role := range []string{"shopbuyer", "shopworker", "shopadmin", "contentowner", "resaleseller", "resalebuyer", "payadmin", "paybuyer", "customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond", "seller", "selleradmin", "sellerother"} {
+		for _, role := range []string{"shopmarketing", "shopbuyer", "shopworker", "shopadmin", "contentowner", "resaleseller", "resalebuyer", "payadmin", "paybuyer", "customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond", "seller", "selleradmin", "sellerother"} {
 			email := strings.ToLower(role + "-" + project + "-" + rand.Text() + "@example.test")
 			account, createErr := f.client.User.Create().SetEmail(email).SetEmailVerifiedAt(time.Now()).SetTermsVersion("test-v1").SetTermsAcceptedAt(time.Now()).SetRole(func() string {
 				if role == "workbooster" || role == "worksecond" {
 					return "booster"
 				}
-				if role == "shopadmin" || role == "selleradmin" || role == "workadmin" || role == "catalog" || role == "orderadmin" || role == "supportadmin" {
+				if role == "shopmarketing" || role == "shopadmin" || role == "selleradmin" || role == "workadmin" || role == "catalog" || role == "orderadmin" || role == "supportadmin" {
 					return "administrator"
 				}
 				if role == "shopworker" || role == "payadmin" || role == "contentowner" {

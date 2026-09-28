@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
+
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproduct"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/shopproductrelease"
@@ -15,7 +17,7 @@ import (
 )
 
 // Filters bound staff search before stable keyset pagination.
-type Filters struct{ After, Search, GameID, State string }
+type Filters struct{ After, Search, GameID, State, Availability string }
 
 // Summary identifies an editor without private actor metadata.
 type Summary struct {
@@ -38,7 +40,7 @@ type Products struct {
 // List exposes draft titles only to currently authorized administrators.
 func (s *Store) List(ctx context.Context, p *identity.Principal, filter Filters) (out Products, err error) {
 	out.Items = []Summary{}
-	if filter.After != "" && !validID(filter.After) || filter.GameID != "" && !validID(filter.GameID) || !text(filter.Search, 0, 120) || !slices.Contains([]string{"", "draft", "published", "paused", "archived"}, filter.State) {
+	if filter.After != "" && !validID(filter.After) || filter.GameID != "" && !validID(filter.GameID) || !text(filter.Search, 0, 120) || !slices.Contains([]string{"", "draft", "published", "paused", "archived"}, filter.State) || !slices.Contains([]string{"", "available", "unavailable"}, filter.Availability) {
 		return out, ErrInvalid
 	}
 	err = s.auth.StaffTransaction(ctx, p, false, func(tx *ent.Tx, _ *identity.Principal) error {
@@ -54,6 +56,16 @@ func (s *Store) List(ctx context.Context, p *identity.Principal, filter Filters)
 		}
 		if search := strings.TrimSpace(filter.Search); search != "" {
 			q.Where(shopproduct.Or(shopproduct.TitleContainsFold(search), shopproduct.IDEQ(search)))
+		}
+		if filter.Availability != "" {
+			q.Where(func(selector *sql.Selector) {
+				available := purchasableProduct(selector)
+				if filter.Availability == "available" {
+					selector.Where(available)
+				} else {
+					selector.Where(sql.Not(available))
+				}
+			})
 		}
 		rows, e := q.All(ctx)
 		if e != nil {

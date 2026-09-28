@@ -21378,6 +21378,14 @@
               "type": "string",
               "maxLength": 120
             }
+          },
+          {
+            "name": "availability",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["available", "unavailable"]
+            }
           }
         ],
         "responses": {
@@ -29938,7 +29946,7 @@
           },
           "target": {
             "type": "string",
-            "enum": ["package", "account"]
+            "enum": ["package", "account", "shop"]
           },
           "package": {
             "type": "string",
@@ -29980,6 +29988,10 @@
           },
           "show_quantity": {
             "type": "boolean"
+          },
+          "product_id": {
+            "type": "string",
+            "maxLength": 36
           }
         },
         "required": [
@@ -30043,11 +30055,11 @@
           },
           "service": {
             "type": "string",
-            "enum": ["boost", "accounts"]
+            "enum": ["boost", "accounts", "shop"]
           },
           "target": {
             "type": "string",
-            "enum": ["package", "account"]
+            "enum": ["package", "account", "shop"]
           },
           "package": {
             "type": "string",
@@ -30102,11 +30114,20 @@
           "remaining": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 1000000
+            "maximum": 1000000000
           },
           "indicative": {
             "type": "boolean",
             "const": true
+          },
+          "product_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
           }
         },
         "required": [

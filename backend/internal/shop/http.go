@@ -60,7 +60,7 @@ func write(w http.ResponseWriter, status int, value any) error {
 }
 func (s *Store) listHTTP(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 	q := r.URL.Query()
-	out, err := s.List(r.Context(), p, Filters{After: q.Get("after"), Search: q.Get("q"), GameID: q.Get("game"), State: q.Get("state")})
+	out, err := s.List(r.Context(), p, Filters{After: q.Get("after"), Search: q.Get("q"), GameID: q.Get("game"), State: q.Get("state"), Availability: q.Get("availability")})
 	if err != nil {
 		return err
 	}

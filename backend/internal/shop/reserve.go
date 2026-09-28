@@ -103,7 +103,7 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, slug, id str
 		if pending >= 3 {
 			return identity.ErrLimited
 		}
-		stock, e := tx.ShopStock.Query().Where(shopstock.ProductIDEQ(id), shopstock.VariantKeyEQ(variant.Key), shopstock.EnabledEQ(true)).Only(ctx)
+		stock, e := tx.ShopStock.Query().Where(shopstock.ProductIDEQ(id), shopstock.ReleaseIDEQ(product.ReleaseID), shopstock.VariantKeyEQ(variant.Key), shopstock.EnabledEQ(true)).Only(ctx)
 		if e != nil {
 			return e
 		}

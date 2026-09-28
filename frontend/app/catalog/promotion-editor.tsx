@@ -1,3 +1,4 @@
+import ShopPromotionTarget from "./shop-promotion-target";
 import { useState } from "react";
 import {
   Action,
@@ -122,10 +123,10 @@ export default function PromotionEditor({
     <section aria-label="Featured offers">
       <h3>Featured offers</h3>
       <p>
-        Pin reviewed packages or accounts. Prices come from the selected
-        offering; this editor cannot invent a sale price. Dates use UTC and the
-        end is exclusive. Offers disappear when they expire, run out or no
-        longer match their reviewed revision.
+        Pin reviewed packages, accounts or shop products. Prices come from the
+        selected offering; this editor cannot invent a sale price. Dates use UTC
+        and the end is exclusive. Offers disappear when they expire, run out or
+        no longer match their reviewed revision.
       </p>
       {value.length === 0 && <p>No featured offers configured.</p>}
       {value.map((p, i) => (
@@ -155,10 +156,17 @@ export default function PromotionEditor({
             options={[
               ["package", "Boost package"],
               ["account", "Account listing"],
+              ["shop", "Shop product"],
             ]}
             change={(target) => {
               patch(p.key, {
-                target: target === "account" ? "account" : "package",
+                target:
+                  target === "shop"
+                    ? "shop"
+                    : target === "account"
+                      ? "account"
+                      : "package",
+                product_id: "",
                 package: "",
                 variant: "",
                 listing_id: "",
@@ -230,6 +238,14 @@ export default function PromotionEditor({
                 )}
               </details>
             </>
+          ) : p.target === "shop" ? (
+            <ShopPromotionTarget
+              slug={slug}
+              value={p}
+              change={(fields) => {
+                patch(p.key, fields);
+              }}
+            />
           ) : (
             <AccountTarget
               slug={slug}

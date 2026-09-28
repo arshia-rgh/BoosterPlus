@@ -81,6 +81,8 @@ func promotionTarget(ctx context.Context, client *ent.Client, release Release, p
 				return view, true, nil
 			}
 		}
+	case "shop":
+		return shopPromotionTarget(ctx, client, release, p, view)
 	case "account":
 		if p.CouponCode != "" {
 			return view, false, nil
