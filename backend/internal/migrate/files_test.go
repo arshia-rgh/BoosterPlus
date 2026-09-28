@@ -15,7 +15,7 @@ func TestPackagedMigrations(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(files) != 37 || len(files[0].Checksum) != 64 {
+	if len(files) != 38 || len(files[0].Checksum) != 64 {
 		t.Fatalf("unexpected manifest: %+v", files)
 	}
 	if len(files) != database.SchemaVersion {

@@ -127,6 +127,16 @@ export default function Reports() {
         recognition basis; no exchange conversion or revenue total is inferred.
         Audit reports are restricted to the owner.
       </p>
+      <p>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="/admin/account/security?returnTo=%2Fadmin%2Freports"
+        >
+          Verify staff identity for report export (opens a new tab)
+        </a>
+        . Return and preview the current report before downloading.
+      </p>
       <form className="report-form" onSubmit={submit}>
         <fieldset disabled={busy}>
           <legend>Report filters</legend>

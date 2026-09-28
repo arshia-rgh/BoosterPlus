@@ -23410,6 +23410,77 @@
           }
         }
       }
+    },
+    "/api/v1/admin/jobs/{id}/attempts": {
+      "get": {
+        "operationId": "listAdminJobAttempts",
+        "summary": "Read recorded task attempt timing and safe outcomes",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Narrow authenticated operational result; job payloads and secrets are excluded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalJobAttempts"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Refresh observed state or correct the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Refresh observed state or correct the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationalProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 40
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -30459,6 +30530,10 @@
           "purged_at": {
             "type": ["string", "null"],
             "format": "date-time"
+          },
+          "order_id": {
+            "type": "string",
+            "description": "Source order for an intake attachment; empty for conversation uploads."
           }
         },
         "required": [
@@ -30471,7 +30546,8 @@
           "content_type",
           "created_at",
           "expires_at",
-          "purged_at"
+          "purged_at",
+          "order_id"
         ]
       },
       "StaffMediaPage": {
@@ -33294,6 +33370,60 @@
                 }
               }
             }
+          }
+        }
+      },
+      "OperationalJobAttempt": {
+        "type": "object",
+        "required": [
+          "generation",
+          "number",
+          "outcome",
+          "started_at",
+          "finished_at"
+        ],
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "number": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "running",
+              "complete",
+              "handler_failed",
+              "lease_expired",
+              "unavailable"
+            ]
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finished_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          }
+        }
+      },
+      "OperationalJobAttempts": {
+        "type": "object",
+        "required": ["items", "next"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/OperationalJobAttempt"
+            }
+          },
+          "next": {
+            "type": "string"
           }
         }
       }

@@ -25,8 +25,8 @@ def main():
     api = json.loads((ROOT / "backend/api/openapi.json").read_text())["paths"]
     families = matrix["apiFamilies"]
     for name, family in families.items():
-        assert family["status"] in {"existing-adapt", "proposed"}, name
-        if family["status"] == "existing-adapt":
+        assert family["status"] in {"existing-adapt", "proposed", "implemented"}, name
+        if family["status"] in {"existing-adapt", "implemented"}:
             assert set(family["paths"]) <= set(api), f"Unknown existing API: {name}"
     for row in rows:
         assert row["apiFamily"] in families, row["id"]

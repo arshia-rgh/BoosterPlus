@@ -15,6 +15,13 @@ class BrowserSelectionTest(unittest.TestCase):
     def test_exact_existing_changed_spec(self):
         self.assertEqual(module.selected_specs(["payments.spec.ts"]), ["tests/e2e/payments.spec.ts"])
 
+    def test_focused_policy_publication_runs_after_ordinary_journeys(self):
+        policy = "tests/e2e/admin-policy.spec.ts"
+        orders = "tests/e2e/orders.spec.ts"
+        self.assertEqual(module.focused_batches([policy, orders]), [[orders], [policy]])
+        self.assertEqual(module.focused_batches([policy]), [[policy]])
+        self.assertEqual(module.focused_batches([orders]), [[orders]])
+
     def test_invalid_selections_fail_closed(self):
         for value in ["../payments.spec.ts", "--pass-with-no-tests", "missing.spec.ts", "payments.spec", "/tmp/payments.spec.ts"]:
             with self.subTest(value=value), self.assertRaises(ValueError):

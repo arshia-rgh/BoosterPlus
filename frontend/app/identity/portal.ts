@@ -153,6 +153,13 @@ export function portalReturn(
           params.set("section", section);
       }
     }
+    if (portal === "admin" && path === "/admin/content") {
+      const kind = url.searchParams.get("kind");
+      if (kind && /^(home|notifications|legal|retention)$/.test(kind))
+        params.set("kind", kind);
+      if (section && /^(editor|preview|history)$/.test(section))
+        params.set("section", section);
+    }
     if (portal === "admin" && path === "/admin/finance") {
       const view = url.searchParams.get("view");
       if (view && /^(payments|cases|payouts|policy|reconcile)$/.test(view))

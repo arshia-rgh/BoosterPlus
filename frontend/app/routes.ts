@@ -12,6 +12,8 @@ export default [
     route("accounts/:id", "routes/account-product.tsx"),
     route("availability/unsubscribe", "routes/availability-unsubscribe.tsx"),
     route("terms", "routes/terms.tsx"),
+    route("policies/:kind", "routes/policy.tsx"),
+    route("how-it-works", "routes/how-it-works.tsx"),
     route("games", "routes/games.tsx"),
     layout("routes/game-shell.tsx", [
       route("games/:slug", "routes/game.tsx"),

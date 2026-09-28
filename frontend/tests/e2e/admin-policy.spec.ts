@@ -1,10 +1,32 @@
+import { secondaryCapture } from "./secondary-capture";
 import { randomUUID } from "node:crypto";
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { z } from "zod";
 import { fixture, signIn, enroll } from "./identity-fixtures";
-async function publish(page: Page, label: string) {
-  await page.getByLabel("Publish this reviewed revision now").check();
+async function publish(page: Page, label: string, device: string) {
+  await secondaryCapture(
+    page,
+    `content-${new URL(page.url()).searchParams.get("kind") ?? "home"}-write`,
+    device,
+  );
+  await page
+    .getByRole("button", { name: "Save private draft", exact: true })
+    .click();
+  await expect(
+    page.getByText("Request completed.", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Preview & publish", exact: true })
+    .click();
+  await page
+    .getByLabel("I reviewed this saved content preview", { exact: true })
+    .check();
+  await secondaryCapture(
+    page,
+    `content-${new URL(page.url()).searchParams.get("kind") ?? "home"}-preview`,
+    device,
+  );
   await page.getByLabel("Unique published version").fill(label);
   await page
     .getByLabel("I reviewed the complete content and approve publication.")
@@ -19,8 +41,17 @@ async function publish(page: Page, label: string) {
     .click();
   expect((await response).status()).toBe(200);
   await expect(
+    page.getByText("Reviewed content published.", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "History", exact: true }).click();
+  await expect(
     page.getByRole("heading", { name: "Published history", exact: true }),
   ).toBeVisible();
+  await secondaryCapture(
+    page,
+    `content-${new URL(page.url()).searchParams.get("kind") ?? "home"}-history`,
+    device,
+  );
 }
 async function accessible(page: Page) {
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
@@ -105,7 +136,7 @@ test("@global-policy owner publishes content and retention, customer exports dat
     scale: "css",
   });
   if (viewport) await page.setViewportSize(viewport);
-  await publish(page, "home-" + randomUUID());
+  await publish(page, "home-" + randomUUID(), info.project.name);
   await page.goto("/");
   await expect(
     page.getByText("Synthetic test support · UTC", { exact: true }),
@@ -142,7 +173,7 @@ test("@global-policy owner publishes content and retention, customer exports dat
   await page
     .getByLabel("Enable customer deletion requests under this published policy")
     .check();
-  await publish(page, "retention-" + randomUUID());
+  await publish(page, "retention-" + randomUUID(), info.project.name);
   await accessible(page);
   await page.screenshot({
     path: info.outputPath("retention-policy.png"),
@@ -215,7 +246,7 @@ test("@global-policy owner publishes content and retention, customer exports dat
       )
       .check();
     await card
-      .getByRole("button", { name: "Review privacy request", exact: true })
+      .getByRole("button", { name: "Recheck holds and retention", exact: true })
       .click();
     await expect(
       card.getByText("Status: reviewed", { exact: true }),
@@ -223,13 +254,19 @@ test("@global-policy owner publishes content and retention, customer exports dat
     await card
       .getByRole("combobox", { name: "Action", exact: true })
       .selectOption("erase");
+    await expect(
+      card.getByLabel(
+        "I reviewed this action, current policy and retained records.",
+      ),
+    ).not.toBeChecked();
+    await secondaryCapture(page, "privacy-erase", info.project.name);
     await card
       .getByLabel(
         "I reviewed this action, current policy and retained records.",
       )
       .check();
     await card
-      .getByRole("button", { name: "Review privacy request", exact: true })
+      .getByRole("button", { name: "Erase eligible data", exact: true })
       .click();
     await expect(
       card.getByText("Status: erased pending files", { exact: true }),
@@ -237,8 +274,19 @@ test("@global-policy owner publishes content and retention, customer exports dat
     await card
       .getByRole("combobox", { name: "Action", exact: true })
       .selectOption("finalize");
+    await expect(
+      card.getByLabel(
+        "I reviewed this action, current policy and retained records.",
+      ),
+    ).not.toBeChecked();
+    await secondaryCapture(page, "privacy-finalize", info.project.name);
     await card
-      .getByRole("button", { name: "Review privacy request", exact: true })
+      .getByLabel(
+        "I reviewed this action, current policy and retained records.",
+      )
+      .check();
+    await card
+      .getByRole("button", { name: "Confirm file purge", exact: true })
       .click();
     await expect(
       card.getByText("Status: completed", { exact: true }),
@@ -274,7 +322,7 @@ test("@global-policy owner publishes content and retention, customer exports dat
   await page
     .getByLabel("Email footer", { exact: true })
     .fill("Synthetic browser support contact hours");
-  await publish(page, "notifications-" + randomUUID());
+  await publish(page, "notifications-" + randomUUID(), info.project.name);
   await accessible(page);
   await page.goto("/admin/content");
   await page
@@ -300,7 +348,12 @@ test("@global-policy owner publishes content and retention, customer exports dat
     .getByLabel("Policy section text")
     .fill("Synthetic approved privacy details for an isolated test only.");
   const version = "legal-" + randomUUID();
-  await publish(page, version);
+  await publish(page, version, info.project.name);
+  await page.goto("/how-it-works");
+  await expect(
+    page.getByRole("heading", { name: "How PLAYORA works.", exact: true }),
+  ).toBeVisible();
+  await secondaryCapture(page, "how-it-works", info.project.name);
   await page.goto("/terms?version=" + version);
   await expect(
     page.getByRole("heading", {
@@ -315,5 +368,54 @@ test("@global-policy owner publishes content and retention, customer exports dat
   await expect(
     page.getByText("Version: " + version, { exact: true }),
   ).toBeVisible();
+  await secondaryCapture(page, "policy-version", info.project.name);
+  await page
+    .getByRole("link", { name: "Reviewed privacy details", exact: true })
+    .click();
+  await expect(page).toHaveURL(
+    new RegExp(`/policies/privacy\\?version=${version}`),
+  );
+  await expect(
+    page.getByRole("heading", {
+      name: "Reviewed privacy details",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await secondaryCapture(page, "policy-section", info.project.name);
+  await page.emulateMedia({ media: "print" });
+  await expect(
+    page.getByRole("region", { name: "Page motion" }),
+  ).not.toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Policy contents" }),
+  ).not.toBeVisible();
+  await page.screenshot({
+    path: `.cache/di13-policy-print-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await page.emulateMedia({ media: "screen" });
+
+  await page
+    .getByRole("link", {
+      name: "Read the current published version",
+      exact: true,
+    })
+    .click();
+  await expect(page).toHaveURL(/\/policies\/privacy$/);
+  await page.goto("/policies/refunds?version=" + version);
+  await expect(
+    page.getByRole("heading", {
+      name: "This policy is unavailable.",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await secondaryCapture(page, "policy-unavailable", info.project.name);
+  await page
+    .getByRole("button", { name: "Retry this policy", exact: true })
+    .click();
+  await expect(page).toHaveURL(
+    new RegExp(`/policies/refunds\\?version=${version}`),
+  );
+
   await accessible(page);
 });

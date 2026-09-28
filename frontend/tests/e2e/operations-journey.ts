@@ -1,3 +1,4 @@
+import { secondaryCapture } from "./secondary-capture";
 import { reportsJourney } from "./reports-journey";
 import { expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -81,5 +82,11 @@ export async function operationsJourney(
     path: `test-results/job-recovery-${device}.png`,
     fullPage: true,
   });
+  await card.getByText("Recorded attempt history", { exact: true }).click();
+  await expect(
+    card.getByRole("heading", { name: "Run 2 · Attempt 1", exact: true }),
+  ).toBeVisible();
+  await expect(card.getByText("Completed", { exact: true })).toBeVisible();
+  await secondaryCapture(page, "job-attempts", device);
   await reportsJourney(page, device);
 }

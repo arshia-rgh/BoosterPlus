@@ -1,3 +1,4 @@
+import { mediaReturn } from "../admin/directory-filters";
 import {
   useCallback,
   useContext,
@@ -413,9 +414,10 @@ function ThreadSession({
   const inboxSearch = inboxState.success
     ? "?" + new URLSearchParams(inboxState.data.inboxSearch).toString()
     : "";
+  const mediaBack = admin ? mediaReturn(location.state) : null;
   const back = booster
     ? "/booster/orders"
-    : (admin ? "/admin" : "") + "/support" + inboxSearch;
+    : (mediaBack ?? (admin ? "/admin" : "") + "/support" + inboxSearch);
   return (
     <div
       className={
@@ -431,7 +433,12 @@ function ThreadSession({
         <section className="chat-access">
           {!embedded && (
             <Link to={back}>
-              ← {booster ? "Assigned work" : "Conversations"}
+              ←{" "}
+              {booster
+                ? "Assigned work"
+                : mediaBack
+                  ? "Media directory"
+                  : "Conversations"}
             </Link>
           )}
           <ErrorNotice error={chat.error} />
@@ -455,7 +462,12 @@ function ThreadSession({
           <header className="chat-room-header">
             {!embedded && (
               <Link className="chat-back" to={back}>
-                ← {booster ? "Assigned work" : "Inbox"}
+                ←{" "}
+                {booster
+                  ? "Assigned work"
+                  : mediaBack
+                    ? "Media directory"
+                    : "Inbox"}
               </Link>
             )}
             <div className="chat-title">

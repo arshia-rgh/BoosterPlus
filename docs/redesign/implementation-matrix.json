@@ -1050,7 +1050,7 @@
       "title": "What customers say.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/games/:slug/reviews",
       "targetRoute": "/games/:slug/reviews",
       "apiFamily": "public",
@@ -1070,14 +1070,17 @@
         "keyboard and narrow layout",
         "F19"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "P16",
       "title": "How PLAYORA works.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/terms",
       "targetRoute": "/how-it-works",
       "apiFamily": "public",
@@ -1096,14 +1099,17 @@
         "keyboard and narrow layout",
         "F01"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "P17",
       "title": "Service terms & privacy.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/terms",
       "targetRoute": "/policies/:kind",
       "apiFamily": "public",
@@ -1123,7 +1129,10 @@
         "keyboard and narrow layout",
         "F23"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "I01",
@@ -1315,7 +1324,7 @@
       "title": "Confirm it’s you.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/account/security",
       "targetRoute": "/account/security",
       "apiFamily": "identity",
@@ -1341,7 +1350,10 @@
         "F09",
         "F31"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "I09",
@@ -1718,7 +1730,7 @@
       "title": "Saved for later.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/favorites",
       "targetRoute": "/favorites",
       "apiFamily": "account",
@@ -1739,7 +1751,10 @@
         "keyboard and narrow layout",
         "F18"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "C11",
@@ -1841,7 +1856,7 @@
       "title": "Notifications.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/notifications",
       "targetRoute": "/notifications",
       "apiFamily": "account",
@@ -1861,14 +1876,17 @@
         "keyboard and narrow layout",
         "F20"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "C15",
       "title": "Your reviews.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/reviews",
       "targetRoute": "/reviews",
       "apiFamily": "reviews",
@@ -1889,14 +1907,17 @@
         "keyboard and narrow layout",
         "F19"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "C16",
       "title": "Review your experience.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/reviews/:id",
       "targetRoute": "/reviews/:id",
       "apiFamily": "reviews",
@@ -1917,14 +1938,17 @@
         "F01",
         "F19"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "C17",
       "title": "Security & sign-in.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/account/security",
       "targetRoute": "/account/security",
       "apiFamily": "identity",
@@ -1946,14 +1970,17 @@
         "F09",
         "F10"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "I07",
       "title": "Update your sign-in email.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/account/security",
       "targetRoute": "/account/security",
       "apiFamily": "identity",
@@ -1973,14 +2000,17 @@
         "keyboard and narrow layout",
         "F10"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "C18",
       "title": "Your data & privacy.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/privacy",
       "targetRoute": "/privacy",
       "apiFamily": "account",
@@ -2002,14 +2032,17 @@
         "keyboard and narrow layout",
         "F21"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "C19",
       "title": "Preferences.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/account/preferences",
       "targetRoute": "/account/preferences",
       "apiFamily": "account",
@@ -2029,14 +2062,17 @@
         "keyboard and narrow layout",
         "F20"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "C20",
       "title": "Availability alerts.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/availability",
       "targetRoute": "/availability",
       "apiFamily": "account",
@@ -2057,14 +2093,17 @@
         "F18",
         "F20"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "C21",
       "title": "Availability email preference.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/availability/unsubscribe",
       "targetRoute": "/availability/unsubscribe",
       "apiFamily": "account",
@@ -2084,14 +2123,17 @@
         "keyboard and narrow layout",
         "F18"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "C22",
       "title": "Profile settings.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/account/settings",
       "targetRoute": "/account/settings",
       "apiFamily": "account",
@@ -2111,7 +2153,10 @@
         "keyboard and narrow layout",
         "F10"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "S01",
@@ -3329,7 +3374,7 @@
       "title": "Coupons.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/coupons",
       "targetRoute": "/admin/coupons",
       "apiFamily": "catalog",
@@ -3350,14 +3395,17 @@
         "keyboard and narrow layout",
         "F23"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "A28",
       "title": "Review moderation.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/reviews",
       "targetRoute": "/admin/reviews",
       "apiFamily": "reviews",
@@ -3377,14 +3425,17 @@
         "keyboard and narrow layout",
         "F19"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "A29",
       "title": "Review REV-12.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/reviews/:id",
       "targetRoute": "/admin/reviews/:id",
       "apiFamily": "reviews",
@@ -3404,14 +3455,17 @@
         "keyboard and narrow layout",
         "F19"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "A30",
       "title": "Reports.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/reports",
       "targetRoute": "/admin/reports",
       "apiFamily": "operations",
@@ -3432,14 +3486,17 @@
         "keyboard and narrow layout",
         "F24"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "A31",
       "title": "Background task recovery.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/jobs",
       "targetRoute": "/admin/jobs",
       "apiFamily": "operations",
@@ -3461,14 +3518,17 @@
         "F17",
         "F24"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "A32",
       "title": "Media directory.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/media",
       "targetRoute": "/admin/media",
       "apiFamily": "operations",
@@ -3489,14 +3549,17 @@
         "keyboard and narrow layout",
         "F24"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "A33",
       "title": "Availability alert management.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/alerts",
       "targetRoute": "/admin/alerts",
       "apiFamily": "operations",
@@ -3516,14 +3579,17 @@
         "keyboard and narrow layout",
         "F24"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "A34",
       "title": "Content & policies.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/content",
       "targetRoute": "/admin/content",
       "apiFamily": "operations",
@@ -3544,14 +3610,17 @@
         "keyboard and narrow layout",
         "F23"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "A35",
       "title": "Privacy request review.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/privacy",
       "targetRoute": "/admin/privacy",
       "apiFamily": "operations",
@@ -3573,14 +3642,17 @@
         "keyboard and narrow layout",
         "F21"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "A36",
       "title": "Retention policy.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/admin/privacy",
       "targetRoute": "/admin/privacy",
       "apiFamily": "operations",
@@ -3600,7 +3672,10 @@
         "keyboard and narrow layout",
         "F21"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "X01",
@@ -3642,7 +3717,7 @@
       "title": "Open your private handoff.",
       "phase": "DI13",
       "mode": "adapt",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": "/account/security",
       "targetRoute": "/account/security",
       "apiFamily": "private-handoff",
@@ -3662,7 +3737,10 @@
         "keyboard and narrow layout",
         "F03"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI13_QUALIFICATION.md",
+        "docs/redesign/reviews/2026-09-28-di13-secondary.md"
+      ]
     },
     {
       "id": "S07",

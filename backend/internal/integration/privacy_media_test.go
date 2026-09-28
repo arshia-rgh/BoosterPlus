@@ -133,6 +133,10 @@ func TestStaffMediaDirectoryRetryAndRemovalAuthority(t *testing.T) {
 	if e = files.Retry(ctx, f.admin, file.ID, true); e != nil {
 		t.Fatal("staff retry", e)
 	}
+	var generation int
+	if e = f.auth.db.QueryRowContext(ctx, "SELECT retry_generation FROM jobs WHERE kind='media.scan' AND idempotency_key=?", "media:"+file.ID).Scan(&generation); e != nil || generation != 1 {
+		t.Fatal("scan retry did not preserve attempt generations", e)
+	}
 	if e = files.Retry(ctx, f.admin, file.ID, true); !errors.Is(e, media.ErrConflict) {
 		t.Fatal("repeated retry", e)
 	}

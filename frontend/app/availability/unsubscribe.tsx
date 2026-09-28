@@ -20,6 +20,7 @@ export default function Unsubscribe() {
 function UnsubscribeLink({ fragment }: { fragment: string }) {
   const input = useMemo(() => parseLink(fragment), [fragment]);
   const [state, setState] = useState("loading"),
+    [inspection, setInspection] = useState(0),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
   useEffect(() => {
@@ -38,7 +39,7 @@ function UnsubscribeLink({ fragment }: { fragment: string }) {
     return () => {
       active = false;
     };
-  }, [input]);
+  }, [input, inspection]);
   async function confirm() {
     if (!input) return;
     setBusy(true);
@@ -84,7 +85,20 @@ function UnsubscribeLink({ fragment }: { fragment: string }) {
         <p>This link is no longer current or has already been used.</p>
       )}
       <ErrorNotice error={error} />
-      <Link to="/availability">Sign in to manage all package alerts</Link>
+      <div className="catalog-actions">
+        {input && state === "error" && (
+          <Action
+            onClick={() => {
+              setError(null);
+              setState("loading");
+              setInspection((v) => v + 1);
+            }}
+          >
+            Retry link check
+          </Action>
+        )}
+        <Link to="/availability">Sign in to manage all package alerts</Link>
+      </div>
     </main>
   );
 }

@@ -14,6 +14,7 @@ import (
 
 // StaffFile describes lifecycle state without storage paths, signed URLs or file contents.
 type StaffFile struct {
+	OrderID        string     `json:"order_id"`
 	ID             string     `json:"id"`
 	UserID         string     `json:"user_id"`
 	ConversationID string     `json:"conversation_id"`
@@ -68,7 +69,11 @@ func (s *Store) Directory(ctx context.Context, p *identity.Principal, after, use
 			rows = rows[:50]
 		}
 		for _, row := range rows {
-			out.Files = append(out.Files, StaffFile{row.ID, row.UserID, row.ConversationID, string(row.State), row.MessageID != nil || row.IntakeOrderID != nil, row.Size, row.ContentType, row.CreatedAt, row.ExpiresAt, row.PurgedAt})
+			orderID := ""
+			if row.IntakeOrderID != nil {
+				orderID = *row.IntakeOrderID
+			}
+			out.Files = append(out.Files, StaffFile{orderID, row.ID, row.UserID, row.ConversationID, string(row.State), row.MessageID != nil || row.IntakeOrderID != nil, row.Size, row.ContentType, row.CreatedAt, row.ExpiresAt, row.PurgedAt})
 		}
 		return nil
 	})

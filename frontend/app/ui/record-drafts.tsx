@@ -14,7 +14,15 @@ const Drafts = createContext<
   | null
 >(null);
 /** One leave guard owns all kept-mounted local sections of a record. */
-export function RecordDraftBoundary({ children }: { children: ReactNode }) {
+export function RecordDraftBoundary({
+  children,
+  record = "order",
+  description = "Order sections keep unsent messages and delivery updates. Leaving this order discards them.",
+}: {
+  children: ReactNode;
+  record?: string;
+  description?: string;
+}) {
   const [drafts, setDrafts] = useState<
     Record<string, { dirty: boolean; busy: boolean }>
   >({});
@@ -60,18 +68,15 @@ export function RecordDraftBoundary({ children }: { children: ReactNode }) {
           tabIndex={-1}
           className="catalog-section"
         >
-          <h2>Keep your order drafts?</h2>
-          <p>
-            Order sections keep unsent messages and delivery updates. Leaving
-            this order discards them.
-          </p>
+          <h2>Keep your {record} drafts?</h2>
+          <p>{description}</p>
           <div className="catalog-actions">
             <Action
               onClick={() => {
                 blocker.reset();
               }}
             >
-              Stay on order
+              Stay on {record}
             </Action>
             <Action
               disabled={busy}

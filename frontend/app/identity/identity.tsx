@@ -1,3 +1,4 @@
+import { DisplayPreferences } from "./display-preferences";
 import {
   portalFromPath,
   portalLogin,
@@ -705,35 +706,40 @@ function Account({
         </Form>
       )}
       {section === "preferences" && (
-        <Form
-          title="Email preferences"
-          label="Save preferences"
-          success="Email preferences saved."
-          submit={async (data) => {
-            await command("/me/profile", {
-              display_name: user.display_name,
-              staff_alias: user.staff_alias,
-              notify_updates: data.get("notify_updates") === "on",
-            });
-            await refresh();
-          }}
-        >
-          <label className="check">
-            <input
-              type="checkbox"
-              name="notify_updates"
-              defaultChecked={user.notify_updates}
-            />
-            Email me order updates
-          </label>
-          <p>Security emails are always sent.</p>
-          {portal === "customer" && (
-            <p>
-              <Link to="/availability">Manage package availability alerts</Link>{" "}
-              separately.
-            </p>
-          )}
-        </Form>
+        <>
+          <DisplayPreferences />
+          <Form
+            title="Email preferences"
+            label="Save preferences"
+            success="Email preferences saved."
+            submit={async (data) => {
+              await command("/me/profile", {
+                display_name: user.display_name,
+                staff_alias: user.staff_alias,
+                notify_updates: data.get("notify_updates") === "on",
+              });
+              await refresh();
+            }}
+          >
+            <label className="check">
+              <input
+                type="checkbox"
+                name="notify_updates"
+                defaultChecked={user.notify_updates}
+              />
+              Email me order updates
+            </label>
+            <p>Security emails are always sent.</p>
+            {portal === "customer" && (
+              <p>
+                <Link to="/availability">
+                  Manage package availability alerts
+                </Link>{" "}
+                separately.
+              </p>
+            )}
+          </Form>
+        </>
       )}
       {section === "security" && (
         <>

@@ -1,3 +1,4 @@
+import { secondaryCapture } from "./secondary-capture";
 import { randomUUID } from "node:crypto";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -67,6 +68,7 @@ test("account overview, settings and mobile menu preserve focus, privacy and pre
     .getByLabel("Display name", { exact: true })
     .inputValue();
   await accountDestination(page, "Preferences");
+  await secondaryCapture(page, "preferences", info.project.name);
   await page.getByLabel("Email me order updates", { exact: true }).uncheck();
   await page.getByRole("button", { name: "Save preferences" }).click();
   await expect(page.getByText("Email preferences saved.")).toBeVisible();

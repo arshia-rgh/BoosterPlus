@@ -341,6 +341,10 @@ func TestConversationPaginationAndDeliveryAdministration(t *testing.T) {
 	if err = notices.Retry(ctx, f.admin, deliveries[0].ID); err != nil {
 		t.Fatal(err)
 	}
+	var generation int
+	if err = f.auth.db.QueryRowContext(ctx, "SELECT retry_generation FROM jobs WHERE id=?", deliveries[0].ID).Scan(&generation); err != nil || generation != 1 {
+		t.Fatal("notification retry did not preserve attempt generations", err)
+	}
 	deliveries, err = notices.Deliveries(ctx, f.admin)
 	if err != nil || len(deliveries) != 1 || deliveries[0].State != "pending" || deliveries[0].Attempts != 0 {
 		t.Fatal("retry not scheduled", err)

@@ -1,3 +1,5 @@
+import { AttemptHistory } from "./attempts";
+import "../ui/secondary.css";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
@@ -40,8 +42,8 @@ function Retry({ job, reload }: { job: Job; reload: () => void }) {
         Investigate the failure first. Another attempt may resend an email after
         an ambiguous delivery result; the handler checks current eligibility and
         expired references. Sign in again or refresh both factors in{" "}
-        <a href="/account/security?returnTo=%2Fadmin%2Fjobs">
-          account security
+        <a href="/admin/account/security?returnTo=%2Fadmin%2Fjobs">
+          admin account security
         </a>{" "}
         if requested.
       </p>
@@ -111,6 +113,10 @@ export default function BackgroundJobs() {
           ["", "All task kinds"],
           ...[
             "news.publish",
+            "payments.refund",
+            "payments.payout",
+            "payments.seller_obligation",
+            "payments.outgoing_reconcile",
             "payments.invoice",
             "payments.reconcile",
             "system.ping",
@@ -172,6 +178,10 @@ export default function BackgroundJobs() {
                   )}
                 </dl>
               </details>
+              <AttemptHistory
+                key={`${job.id}:${String(job.retry_generation)}`}
+                id={job.id}
+              />
               <Retry
                 key={job.retry_generation}
                 job={job}

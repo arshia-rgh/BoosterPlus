@@ -38,6 +38,7 @@ export function Layout({ children }: { children: ReactNode }) {
           href="/brand/playora-symbol.svg"
         />
         <Meta />
+        {workspace && <meta name="robots" content="noindex,nofollow" />}
         <Links />
       </head>
       <body className="storefront-app">

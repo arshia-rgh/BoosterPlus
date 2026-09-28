@@ -57,7 +57,9 @@ export default function Notifications() {
                       ? "Account submission updated"
                       : notice.kind === "order_customer"
                         ? "Order updated"
-                        : "New support reply"}{" "}
+                        : notice.kind === "booking_customer"
+                          ? "Session booking updated"
+                          : "New support reply"}{" "}
                   · {notice.read ? "Read" : "Unread"}
                 </Link>
                 <time dateTime={notice.created_at}>

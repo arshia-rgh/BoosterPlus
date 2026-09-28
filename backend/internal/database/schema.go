@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 37
+const SchemaVersion = 38
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,6 +47,8 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"job_attempts.retry_generation": "bigint", "job_attempts.finished_at": "datetime", "job_attempts.outcome": "varchar", "job_attempts.attempt": "int", "job_attempts.started_at": "datetime",
+		"articles.current_revision": "varchar", "article_revisions.data": "json",
 		"shop_deliveries.proof_message_id": "varchar",
 		"shop_recipients.recipient_values": "json", "shop_reservations.quantity": "bigint", "orders.shop_snapshot": "json", "shop_stocks.enabled": "tinyint",
 		"shop_products.draft": "json", "shop_product_releases.data": "json", "shop_stocks.reserved": "bigint", "shop_stocks.committed": "bigint", "shop_product_events.note": "varchar",
@@ -73,7 +75,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 		"games.id": "varchar", "games.slug": "varchar", "games.name": "varchar", "games.configuration": "json", "games.version": "bigint", "games.published": "tinyint", "games.created_at": "datetime",
 		"jobs.id": "varchar", "jobs.kind": "varchar", "jobs.idempotency_key": "varchar", "jobs.payload": "json", "jobs.request_hash": "char", "jobs.state": "varchar", "jobs.attempts": "int", "jobs.max_attempts": "int", "jobs.available_at": "datetime", "jobs.lease_until": "datetime", "jobs.owner": "varchar", "jobs.last_error": "varchar", "jobs.created_at": "datetime",
 	}
-	rows, err := db.QueryContext(ctx, "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name IN ('site_settings','site_releases','privacy_requests','seller_offers','seller_offer_events','account_listings','account_listing_releases','account_reservations','account_deliveries','service_cases','case_events','money_transfers','transfer_attempts','transfer_observations','transfer_records','transfer_events','payment_settings','payment_policies','payment_attempts','payment_signals','payment_records','payment_observations','payment_receipts','payment_allocations','availability_targets','availability_subscriptions','availability_deliveries','reviews','review_revisions','account_submissions','submission_events','staff_profiles','availability_windows','bookings','booking_events','fulfillments','secret_bundles','media_files','conversations','conversation_messages','conversation_reads','notifications','orders','order_quotes','order_contracts','order_events','favorites','coupons','coupon_revisions','coupon_claims','catalog_releases','users','games','jobs','auth_sessions','auth_challenges','auth_messages','auth_identities','auth_flows','auth_rates','auth_audits','auth_recoveries','auth_controls')")
+	rows, err := db.QueryContext(ctx, "SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema=DATABASE()")
 	if err != nil {
 		return err
 	}
@@ -102,6 +104,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 
 func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"job_attempts.PRIMARY":                     "job_id,retry_generation,attempt",
 		"shop_deliveries.shop_order_delivery":      "order_id",
 		"shop_reservations.shop_order_reservation": "order_id", "shop_recipients.shop_order_recipient": "order_id",
 		"shop_products.shop_product_slug": "game_id,slug", "shop_product_releases.shop_product_release_version": "product_id,version", "shop_stocks.shop_variant_stock": "product_id,variant_key", "shop_product_events.shop_product_event_version": "product_id,version",

@@ -44,7 +44,7 @@ func (s *Store) Deliveries(ctx context.Context, p *identity.Principal) (result [
 // Retry requires recent staff factors and cannot restart running/completed work.
 func (s *Store) Retry(ctx context.Context, p *identity.Principal, id string) error {
 	return s.auth.StaffTransaction(ctx, p, true, func(tx *ent.Tx, current *identity.Principal) error {
-		result, err := tx.ExecContext(ctx, "UPDATE jobs SET state='pending',attempts=0,owner=NULL,lease_until=NULL,last_error=NULL,available_at=UTC_TIMESTAMP(6) WHERE id=? AND kind='activity.email' AND state='failed'", id)
+		result, err := tx.ExecContext(ctx, "UPDATE jobs SET state='pending',attempts=0,retry_generation=retry_generation+1,owner=NULL,lease_until=NULL,last_error=NULL,available_at=UTC_TIMESTAMP(6) WHERE id=? AND kind='activity.email' AND state='failed' AND retry_generation<2147483646", id)
 		if err != nil {
 			return err
 		}

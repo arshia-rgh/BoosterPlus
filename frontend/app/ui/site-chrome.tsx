@@ -77,7 +77,12 @@ export function SiteFooter() {
         ) : (
           <Link to="/terms">Terms & policies</Link>
         )}
-        {!staff && !booster && <Link to="/privacy">Your data & privacy</Link>}
+        {!staff && !booster && (
+          <>
+            <Link to="/how-it-works">How PLAYORA works</Link>
+            <Link to="/privacy">Your data & privacy</Link>
+          </>
+        )}
       </nav>
       <div className="footer-accessibility">
         <span className="footer-label">Make yourself comfortable</span>

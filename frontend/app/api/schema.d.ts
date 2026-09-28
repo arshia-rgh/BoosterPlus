@@ -5327,6 +5327,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/jobs/{id}/attempts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read recorded task attempt timing and safe outcomes */
+    get: operations["listAdminJobAttempts"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -7270,6 +7287,8 @@ export interface components {
       expires_at: string;
       /** Format: date-time */
       purged_at: string | null;
+      /** @description Source order for an intake attachment; empty for conversation uploads. */
+      order_id: string;
     };
     StaffMediaPage: {
       files: components["schemas"]["StaffMediaFile"][];
@@ -7984,6 +8003,25 @@ export interface components {
         /** Format: date-time */
         updated_at: string;
       }[];
+    };
+    OperationalJobAttempt: {
+      generation: number;
+      number: number;
+      /** @enum {string} */
+      outcome:
+        | "running"
+        | "complete"
+        | "handler_failed"
+        | "lease_expired"
+        | "unavailable";
+      /** Format: date-time */
+      started_at: string;
+      /** Format: date-time */
+      finished_at: string | null;
+    };
+    OperationalJobAttempts: {
+      items: components["schemas"]["OperationalJobAttempt"][];
+      next: string;
     };
   };
   responses: never;
@@ -23241,6 +23279,57 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  listAdminJobAttempts: {
+    parameters: {
+      query?: {
+        after?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Narrow authenticated operational result; job payloads and secrets are excluded */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OperationalJobAttempts"];
+        };
+      };
+      /** @description Refresh observed state or correct the request */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OperationalProblem"];
+        };
+      };
+      /** @description Refresh observed state or correct the request */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OperationalProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
         };
       };
     };

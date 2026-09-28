@@ -1,3 +1,4 @@
+import { mediaReturn } from "../admin/directory-filters";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Link, useLocation, useParams, type Location } from "react-router";
 import { z } from "../validation";
@@ -70,9 +71,13 @@ function Workspace({
           compactReference
           back={{
             to: back,
-            label: back.startsWith("/admin/finance?")
-              ? "Finance workspace"
-              : "Order queue",
+            label: back.startsWith("/admin/media")
+              ? "Back to media directory"
+              : back.startsWith("/admin/shop")
+                ? "Shop fulfillment queue"
+                : back.startsWith("/admin/finance?")
+                  ? "Finance workspace"
+                  : "Order queue",
           }}
           sections={sections}
           keepMounted={[
@@ -271,7 +276,8 @@ function AdminOrderSession() {
   const back = shopSource.success
     ? "/admin/shop/orders?" +
       new URLSearchParams(shopSource.data.shopQueueSearch).toString()
-    : (financeReturn(location.state) ??
+    : (mediaReturn(location.state) ??
+      financeReturn(location.state) ??
       "/admin/orders" +
         (source.success
           ? "?" + new URLSearchParams(source.data.orderListSearch).toString()
@@ -333,7 +339,11 @@ function AdminOrderSession() {
         <Action disabled={resource.loading} onClick={reload}>
           Check admin order access
         </Action>
-        <Link to={back}>Return to order queue</Link>
+        <Link to={back}>
+          {back.startsWith("/admin/media")
+            ? "Back to media directory"
+            : "Return to source list"}
+        </Link>
       </section>
     );
   const detail = resource.data ?? saved;

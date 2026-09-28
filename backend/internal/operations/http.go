@@ -65,6 +65,13 @@ func (s *Store) Register(mux *http.ServeMux) {
 		}
 		return write(w, v)
 	})
+	register("GET /api/v1/admin/jobs/{id}/attempts", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+		v, e := s.Attempts(r.Context(), p, r.PathValue("id"), r.URL.Query().Get("after"))
+		if e != nil {
+			return e
+		}
+		return write(w, v)
+	})
 	register("POST /api/v1/admin/jobs/{id}/retry", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 		var input RetryInput
 		if e := read(r, &input); e != nil {

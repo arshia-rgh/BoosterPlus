@@ -1,6 +1,9 @@
 import { loadTerms } from "../site/loaders.server";
-export function loader({ request }: { request: Request }) {
-  return loadTerms(new URL(request.url).searchParams.get("version") ?? "");
+import PolicyDocument from "../site/policy-document";
+export async function loader({ request }: { request: Request }) {
+  const requestedVersion =
+    new URL(request.url).searchParams.get("version") ?? "";
+  return { ...(await loadTerms(requestedVersion)), requestedVersion };
 }
 export default function Terms({
   loaderData,
@@ -8,21 +11,11 @@ export default function Terms({
   loaderData: Awaited<ReturnType<typeof loader>>;
 }) {
   return (
-    <main id="main" className="page">
-      <title>Account terms | PLAYORA</title>
-      <h1>
-        {loaderData.preview
-          ? "Development preview account terms"
-          : "Account terms and privacy"}
-      </h1>
-      <p>Version: {loaderData.version}</p>
-      <div className="legal-text">{loaderData.text}</div>
-      {loaderData.sections.map((section) => (
-        <section key={section.kind} aria-labelledby={`policy-${section.kind}`}>
-          <h2 id={`policy-${section.kind}`}>{section.title}</h2>
-          <div className="legal-text">{section.text}</div>
-        </section>
-      ))}
-    </main>
+    <PolicyDocument
+      data={loaderData}
+      requestedVersion={loaderData.requestedVersion}
+    />
   );
 }
+
+export { PolicyError as ErrorBoundary } from "../site/policy-error";

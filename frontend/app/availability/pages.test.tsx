@@ -133,3 +133,30 @@ it("inspects without unsubscribing and requires a deliberate confirmation", asyn
   );
   expect(screen.getByRole("status")).toHaveTextContent("emails are stopped");
 });
+it("retries a failed unsubscribe inspection without exposing or replacing the fragment capability", async () => {
+  const id = "00000000-0000-4000-8000-000000000001",
+    token = "a".repeat(64);
+  window.history.replaceState(
+    null,
+    "",
+    `/availability/unsubscribe#${id}/2/${token}`,
+  );
+  vi.mocked(post)
+    .mockRejectedValueOnce(new APIError("Connection interrupted"))
+    .mockResolvedValueOnce({ current: true });
+  render(
+    <MemoryRouter>
+      <Unsubscribe />
+    </MemoryRouter>,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Retry link check" }),
+  );
+  await screen.findByRole("button", { name: "Stop these availability emails" });
+  expect(post).toHaveBeenLastCalledWith(
+    "/availability-link/inspect",
+    { id, version: 2, token },
+    expect.anything(),
+  );
+  expect(window.location.search).toBe("");
+});

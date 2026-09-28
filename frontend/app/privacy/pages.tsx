@@ -88,10 +88,20 @@ function Export() {
       }}
     >
       <p>
-        Download each category in pages of up to 100 records. Recent
-        email/Google verification is required, plus a recent authenticator code
-        if enrolled. Exports contain your personal information; store them
-        privately. Internal staff notes and authentication secrets are excluded.
+        Download each category in pages of up to 100 records. Shop delivery
+        identifiers are included with your orders. Recent email/Google
+        verification is required, plus a recent authenticator code if enrolled.
+        Exports contain your personal information; store them privately.
+        Internal staff notes and authentication secrets are excluded.
+      </p>
+      <p>
+        <Link
+          target="_blank"
+          rel="noopener noreferrer"
+          to="/account/security?returnTo=%2Fprivacy"
+        >
+          Verify your identity for this export (opens a new tab)
+        </Link>
       </p>
       <label>
         Data category
@@ -138,7 +148,9 @@ export default function Privacy({ admin = false }: { admin?: boolean }) {
       </p>
       {admin ? (
         <p>
-          <Link to="/admin/content">Manage owner retention policy</Link>
+          <Link to="/admin/content?kind=retention&section=editor">
+            Manage owner retention policy
+          </Link>
         </p>
       ) : (
         <Export />
@@ -200,72 +212,25 @@ export default function Privacy({ admin = false }: { admin?: boolean }) {
               are rechecked before erasure.
             </p>
           )}
-          {!["completed", "cancelled"].includes(request.state) && (
-            <Form
-              title={
-                admin ? "Review privacy request" : "Cancel deletion request"
-              }
-              submit={async (data) => {
-                await post(
-                  base + "/" + request.id,
-                  {
-                    version: request.version,
-                    action: admin ? value(data, "action") : "cancel",
-                    reason: value(data, "reason"),
-                    policy_id: policy.data?.release_id ?? "",
-                  },
-                  requestSchema,
-                );
-                resource.reload();
-              }}
-            >
-              {admin ? (
-                <>
-                  <label>
-                    Action
-                    <select name="action">
-                      <option value="review">
-                        Recheck holds and retention
-                      </option>
-                      <option value="hold">Place owner hold</option>
-                      {request.manual_hold && (
-                        <option value="release_hold">
-                          Release owner hold with reason
-                        </option>
-                      )}
-                      {enabled && request.state === "reviewed" && (
-                        <option value="erase">
-                          Erase eligible profile and private data
-                        </option>
-                      )}
-                      {request.state === "erased_pending_files" && (
-                        <option value="finalize">
-                          Confirm private files have been purged
-                        </option>
-                      )}
-                    </select>
-                  </label>
-                  <label>
-                    Owner hold reason
-                    <textarea name="reason" maxLength={2000} />
-                  </label>
-                  <label className="check">
-                    <input type="checkbox" required />I reviewed this action,
-                    current policy and retained records.
-                  </label>
-                </>
-              ) : (
-                <label className="check">
-                  <input
-                    type="checkbox"
-                    required
-                    disabled={request.state === "erased_pending_files"}
-                  />
-                  Cancel my pending request before erasure begins
-                </label>
-              )}
-            </Form>
+          {request.state === "erased_pending_files" && (
+            <p>
+              Live-data erasure has started. Private file cleanup is pending;
+              retained evidence and backups follow the published policy. This
+              request can no longer be cancelled.
+            </p>
           )}
+          {!["completed", "cancelled"].includes(request.state) &&
+            (admin || request.state !== "erased_pending_files") && (
+              <RequestAction
+                key={`${request.id}:${String(request.version)}:${policy.data?.release_id ?? ""}`}
+                request={request}
+                admin={admin}
+                base={base}
+                policyID={policy.data?.release_id ?? ""}
+                enabled={enabled}
+                reload={resource.reload}
+              />
+            )}
         </article>
       ))}
       {resource.data?.next && (
@@ -287,5 +252,110 @@ export default function Privacy({ admin = false }: { admin?: boolean }) {
         </Action>
       )}
     </section>
+  );
+}
+
+function RequestAction({
+  request,
+  admin,
+  base,
+  policyID,
+  enabled,
+  reload,
+}: {
+  request: z.infer<typeof requestSchema>;
+  admin: boolean;
+  base: string;
+  policyID: string;
+  enabled: boolean;
+  reload: () => void;
+}) {
+  const [action, setAction] = useState("review");
+  const actionLabel =
+    new Map([
+      ["review", "Recheck holds and retention"],
+      ["hold", "Place owner hold"],
+      ["release_hold", "Release owner hold"],
+      ["erase", "Erase eligible data"],
+      ["finalize", "Confirm file purge"],
+    ]).get(action) ?? "Review privacy request";
+  return (
+    <Form
+      title={admin ? "Review privacy request" : "Cancel deletion request"}
+      label={admin ? actionLabel : "Cancel deletion request"}
+      submit={async (data) => {
+        await post(
+          base + "/" + request.id,
+          {
+            version: request.version,
+            action: admin ? action : "cancel",
+            reason: value(data, "reason"),
+            policy_id: policyID,
+          },
+          requestSchema,
+        );
+        reload();
+      }}
+    >
+      {admin ? (
+        <>
+          <label>
+            Action
+            <select
+              name="action"
+              value={action}
+              onChange={(event) => {
+                setAction(event.target.value);
+              }}
+            >
+              <option value="review">Recheck holds and retention</option>
+              <option value="hold">Place owner hold</option>
+              {request.manual_hold && (
+                <option value="release_hold">
+                  Release owner hold with reason
+                </option>
+              )}
+              {enabled && request.state === "reviewed" && (
+                <option value="erase">
+                  Erase eligible profile and private data
+                </option>
+              )}
+              {request.state === "erased_pending_files" && (
+                <option value="finalize">
+                  Confirm private files have been purged
+                </option>
+              )}
+            </select>
+          </label>
+          <p>
+            <strong>Selected action: {actionLabel}</strong>
+          </p>
+          <label>
+            Owner hold reason
+            <textarea name="reason" maxLength={2000} />
+          </label>
+          <p role="status">
+            {action === "erase"
+              ? "Erasure revokes sign-in and removes eligible live private data. Financial, dispute and audit evidence remains; files may still need purging and backups follow the published policy."
+              : action === "finalize"
+                ? "Confirm only after private object purges are verified. Retained evidence and backups remain governed by the published policy."
+                : "Recheck current holds and policy before proceeding."}
+          </p>
+          <label className="check">
+            <input key={action} type="checkbox" required />I reviewed this
+            action, current policy and retained records.
+          </label>
+        </>
+      ) : (
+        <label className="check">
+          <input
+            type="checkbox"
+            required
+            disabled={request.state === "erased_pending_files"}
+          />
+          Cancel my pending request before erasure begins
+        </label>
+      )}
+    </Form>
   );
 }

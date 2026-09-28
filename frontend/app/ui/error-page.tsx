@@ -85,6 +85,7 @@ export default function ErrorPage({
   return (
     <main id="main" className="page system-error-page">
       <title>{`${title} | PLAYORA`}</title>
+      <meta name="robots" content="noindex,nofollow" />
       <p className="eyebrow">
         {admin ? "Admin workspace" : booster ? "Booster workspace" : "PLAYORA"}
       </p>

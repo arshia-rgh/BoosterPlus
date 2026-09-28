@@ -1,572 +1,443 @@
-import { HomeDiscoveryFields, PolicyFields } from "./discovery-fields";
-import { useState, useId, useContext } from "react";
-import { AuthorizedIdentity } from "../identity/frame";
-import { Link } from "react-router";
+import "../ui/secondary.css";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Link, useBlocker, useSearchParams } from "react-router";
 import { z } from "../validation";
-import { Action, ErrorNotice, Text } from "../catalog/controls";
-import { Form, value } from "../identity/identity";
-import { post } from "../identity/api";
-import { parseContent } from "./validation";
+import { Action, ErrorNotice } from "../catalog/controls";
+import { AuthorizedIdentity } from "../identity/frame";
+import { Form } from "../identity/identity";
+import { APIError, post } from "../identity/api";
 import { useResource } from "../orders/resource";
-import {
-  homeDiscoverySchema,
-  legalSchema,
-  contentSchema,
-  defaultHome,
-  homeSchema,
-  retentionSchema,
-  type Content,
-} from "./model";
-const fieldLimits = new Map<string, number>([
-  ["headline", 80],
-  ["accent", 80],
-  ["description", 400],
-  ["notice", 300],
-  ["start_rank", 60],
-  ["end_rank", 60],
-  ["scene_description", 400],
-  ["contact_email", 254],
-  ["support_hours", 300],
-  ["text", 50000],
-  ["policy_text", 10000],
-  ["backup_policy", 4000],
-  ["label", 64],
-  ["activity_subject", 100],
-  ["availability_subject", 100],
-  ["activity_intro", 500],
-  ["availability_intro", 500],
-  ["footer", 1000],
-]);
+import { denied } from "../support/chat-state";
+import { RecordShell } from "../ui/record-shell";
+import { contentSchema, type Content } from "./model";
+import { ContentFields, contentData } from "./content-fields";
+import { ContentPreview } from "./content-preview";
 const historySchema = z.object({
   releases: z.array(contentSchema),
   next: z.string(),
 });
-function Field({
-  name,
-  label,
-  initial = "",
-  multiline = false,
-  required = true,
-}: {
-  name: string;
-  label: string;
-  initial?: string;
-  multiline?: boolean;
-  required?: boolean;
-}) {
-  const id = useId();
-  return (
-    <div className="catalog-label">
-      <label htmlFor={id}>{label}</label>
-      {multiline ? (
-        <textarea
-          id={id}
-          name={name}
-          defaultValue={initial}
-          required={required}
-          maxLength={fieldLimits.get(name) ?? 400}
-        />
-      ) : (
-        <input
-          id={id}
-          name={name}
-          defaultValue={initial}
-          required={required}
-          maxLength={fieldLimits.get(name) ?? 400}
-        />
-      )}
-    </div>
-  );
-}
-function HomeFields({ data }: { data: Content["data"] }) {
-  const parsed = homeSchema.safeParse(data),
-    initial = parsed.success ? parsed.data : defaultHome;
-  const [faqs, setFAQs] = useState(initial.faqs),
-    [featured, setFeatured] = useState(initial.featured);
-  return (
-    <>
-      <Field
-        name="headline"
-        label="Headline"
-        initial={initial.headline}
-        multiline
-      />
-      <Field name="accent" label="Headline accent" initial={initial.accent} />
-      <Field
-        name="description"
-        label="Introduction"
-        initial={initial.description}
-        multiline
-      />
-      <Field
-        name="notice"
-        label="Availability notice"
-        initial={initial.notice}
-        required={false}
-      />
-      <Field
-        name="start_rank"
-        label="Starting rank label"
-        initial={initial.start_rank}
-      />
-      <Field
-        name="end_rank"
-        label="Destination rank label"
-        initial={initial.end_rank}
-      />
-      <Field
-        name="scene_description"
-        label="Rank journey description"
-        initial={initial.scene_description}
-        multiline
-      />
-      <label>
-        Hero artwork
-        <select name="artwork" defaultValue={initial.artwork}>
-          <option value="ascension">Original ascent artwork</option>
-          <option value="none">Text and gradient</option>
-        </select>
-      </label>
-      {(
-        [
-          ["show_scene", "Show animated rank journey", initial.show_scene],
-          ["show_pathways", "Show boost pathways", initial.show_pathways],
-          ["show_steps", "Show order steps", initial.show_steps],
-        ] as const
-      ).map(([name, label, checked]) => (
-        <label className="check" key={name}>
-          <input type="checkbox" name={name} defaultChecked={checked} />
-          {label}
-        </label>
-      ))}
-      <Field
-        name="contact_email"
-        label="Business contact email"
-        initial={initial.contact_email}
-        required={false}
-      />
-      <Field
-        name="support_hours"
-        label="Support hours and timezone"
-        initial={initial.support_hours}
-        required={false}
-      />
-      <HomeDiscoveryFields data={data} />
-      <h3>Frequently asked questions</h3>
-      {faqs.map((faq, i) => (
-        <fieldset key={i}>
-          <legend>Question {i + 1}</legend>
-          <Text
-            label="Question"
-            value={faq.question}
-            change={(v) => {
-              setFAQs(
-                faqs.map((f, j) => (j === i ? { ...f, question: v } : f)),
-              );
-            }}
-          />
-          <Text
-            label="Answer"
-            multiline
-            value={faq.answer}
-            change={(v) => {
-              setFAQs(faqs.map((f, j) => (j === i ? { ...f, answer: v } : f)));
-            }}
-          />
-          <Action
-            onClick={() => {
-              setFAQs(faqs.filter((_, j) => i !== j));
-            }}
-          >
-            Remove question {i + 1}
-          </Action>
-        </fieldset>
-      ))}
-      <Action
-        disabled={faqs.length >= 20}
-        onClick={() => {
-          setFAQs([...faqs, { question: "", answer: "" }]);
-        }}
-      >
-        Add question
-      </Action>
-      <input type="hidden" name="faqs" value={JSON.stringify(faqs)} />
-      <h3>Featured offerings</h3>
-      <p>
-        Use a published /games or /accounts destination. Payment and
-        availability stay governed by the offering.
-      </p>
-      {featured.map((item, i) => (
-        <fieldset key={i}>
-          <legend>Featured offering {i + 1}</legend>
-          <Text
-            label="Offering label"
-            value={item.label}
-            change={(v) => {
-              setFeatured(
-                featured.map((f, j) => (j === i ? { ...f, label: v } : f)),
-              );
-            }}
-          />
-          <Text
-            label="Internal offering path"
-            value={item.href}
-            change={(v) => {
-              setFeatured(
-                featured.map((f, j) => (j === i ? { ...f, href: v } : f)),
-              );
-            }}
-          />
-          <Action
-            onClick={() => {
-              setFeatured(featured.filter((_, j) => i !== j));
-            }}
-          >
-            Remove offering {i + 1}
-          </Action>
-        </fieldset>
-      ))}
-      <Action
-        disabled={featured.length >= 8}
-        onClick={() => {
-          setFeatured([...featured, { label: "", href: "/games" }]);
-        }}
-      >
-        Add featured offering
-      </Action>
-      <input type="hidden" name="featured" value={JSON.stringify(featured)} />
-    </>
-  );
-}
-function RetentionFields({ data }: { data: Content["data"] }) {
-  const parsed = retentionSchema.safeParse(data),
-    initial = parsed.success ? parsed.data : null;
-  return (
-    <>
-      <p>
-        Enter every period explicitly. These are minimum days after the latest
-        relevant record before profile erasure. Active business records always
-        hold deletion. Financial agreements, transfer evidence, dispute evidence
-        and audit history are preserved. Backup erasure follows the policy
-        entered below.
-      </p>
-      {(
-        [
-          ["financial_days", "Financial records"],
-          ["dispute_days", "Closed disputes"],
-          ["audit_days", "Security audit history"],
-          ["support_days", "Resolved ordinary support"],
-          ["grace_days", "Grace period after request"],
-        ] as const
-      ).map(([name, label]) => (
-        <label key={name}>
-          {label} (days)
-          <input
-            type="number"
-            name={name}
-            min="0"
-            max="36500"
-            step="1"
-            required
-            defaultValue={
-              new Map([
-                ["financial_days", initial?.financial_days],
-                ["dispute_days", initial?.dispute_days],
-                ["audit_days", initial?.audit_days],
-                ["support_days", initial?.support_days],
-                ["grace_days", initial?.grace_days],
-              ]).get(name) ?? ""
-            }
-          />
-        </label>
-      ))}
-      <Field
-        name="policy_text"
-        label="Customer-facing retention and retained-evidence policy"
-        initial={initial?.policy_text ?? ""}
-        multiline
-      />
-      <Field
-        name="backup_policy"
-        label="Backup retention and deletion policy"
-        initial={initial?.backup_policy ?? ""}
-        multiline
-      />
-      <label className="check">
-        <input
-          type="checkbox"
-          name="preserve_evidence"
-          required
-          defaultChecked={initial?.preserve_evidence ?? false}
-        />
-        I approve preserving financial, dispute and audit evidence as described
-        above.
-      </label>
-      <label className="check">
-        <input
-          type="checkbox"
-          name="enabled"
-          defaultChecked={initial?.enabled ?? false}
-        />
-        Enable customer deletion requests under this published policy
-      </label>
-    </>
-  );
-}
-function contentData(kind: string, data: FormData): Record<string, unknown> {
-  if (kind === "legal")
-    return parseContent(legalSchema, {
-      text: value(data, "text"),
-      sections: JSON.parse(value(data, "sections")) as unknown,
-    });
-  if (kind === "notifications")
-    return Object.fromEntries(
-      [
-        "activity_subject",
-        "activity_intro",
-        "availability_subject",
-        "availability_intro",
-        "footer",
-      ].map((key) => [key, value(data, key)]),
-    );
-  if (kind === "retention")
-    return parseContent(retentionSchema, {
-      enabled: data.has("enabled"),
-      preserve_evidence: data.has("preserve_evidence"),
-      policy_text: value(data, "policy_text"),
-      backup_policy: value(data, "backup_policy"),
-      ...Object.fromEntries(
-        [
-          "financial_days",
-          "dispute_days",
-          "audit_days",
-          "support_days",
-          "grace_days",
-        ].map((key) => [
-          key,
-          value(data, key) === "" ? null : Number(value(data, key)),
-        ]),
-      ),
-    });
-  return parseContent(homeSchema, {
-    ...parseContent(
-      homeDiscoverySchema,
-      JSON.parse(value(data, "discovery_content")) as unknown,
-    ),
-    ...Object.fromEntries(
-      [
-        "headline",
-        "accent",
-        "description",
-        "notice",
-        "start_rank",
-        "end_rank",
-        "scene_description",
-        "artwork",
-        "contact_email",
-        "support_hours",
-      ].map((key) => [key, value(data, key)]),
-    ),
-    ...Object.fromEntries(
-      ["show_scene", "show_steps", "show_pathways"].map((key) => [
-        key,
-        data.has(key),
-      ]),
-    ),
-    faqs: JSON.parse(value(data, "faqs")) as unknown,
-    featured: JSON.parse(value(data, "featured")) as unknown,
-  });
-}
+const kinds = ["home", "notifications", "legal", "retention"] as const;
+const labels = new Map<string, string>([
+  ["home", "Homepage"],
+  ["notifications", "Activity and availability email copy"],
+  ["legal", "Account terms and privacy (owner)"],
+  ["retention", "Deletion retention policy (owner)"],
+]);
 export default function ContentEditor() {
   const owner = useContext(AuthorizedIdentity)?.session.user?.role === "owner";
-  const [kind, setKind] = useState("home"),
-    [publish, setPublish] = useState(false),
-    [after, setAfter] = useState("");
-  const resource = useResource("/admin/site/" + kind, contentSchema),
-    history = useResource(
-      "/admin/site/" + kind + "/history?after=" + encodeURIComponent(after),
-      historySchema,
-    );
-  const draftValues = new Map(Object.entries(resource.data?.data ?? {}));
+  const [params, setParams] = useSearchParams();
+  const selected = params.get("kind") ?? "home";
+  const kind = kinds.find((k) => k === selected) ?? "home";
   return (
     <section>
       <h2>Content and policies</h2>
       <p>
-        Draft changes stay private. Publishing creates an immutable revision.
-        Legal and retention policies require the owner; publication requires
-        recent email/Google and authenticator verification.
+        Draft changes stay private. Legal and retention policies require the
+        owner. Publishing requires recent email/Google and authenticator
+        verification.
       </p>
       <label className="catalog-label">
         Editor
         <select
           value={kind}
-          onChange={(event) => {
-            setKind(event.target.value);
-            setPublish(false);
-            setAfter("");
+          onChange={(e) => {
+            setParams({ kind: e.target.value, section: "editor" });
           }}
         >
-          <option value="home">Homepage</option>
-          <option value="notifications">
-            Activity and availability email copy
-          </option>
-          {owner && (
-            <>
-              <option value="legal">Account terms and privacy (owner)</option>
-              <option value="retention">
-                Deletion retention policy (owner)
+          {kinds
+            .filter((k) => owner || !["legal", "retention"].includes(k))
+            .map((k) => (
+              <option key={k} value={k}>
+                {labels.get(k)}
               </option>
-            </>
-          )}
+            ))}
         </select>
       </label>
-      <ErrorNotice error={resource.error} />
-      <Action onClick={resource.reload}>Reload draft</Action>
-      {resource.data && (
-        <Form
-          key={`${kind}:${String(resource.data.version)}`}
-          title={publish ? "Publish reviewed content" : "Save private draft"}
-          submit={async (data) => {
-            await post(
-              "/admin/site/" + kind,
-              {
-                version: resource.data?.version,
-                label: value(data, "label"),
-                data: contentData(kind, data),
-                publish,
-              },
-              contentSchema,
-            );
-            resource.reload();
-            setAfter("");
-            history.reload();
-          }}
-        >
-          {kind === "home" ? (
-            <HomeFields data={resource.data.data} />
-          ) : kind === "notifications" ? (
-            <>
-              <p>
-                Plain text only. Sign-in links, unsubscribe links, consent
-                checks and availability warnings remain mandatory.
-                Authentication emails are separate.
-              </p>
-              {(
-                [
-                  [
-                    "activity_subject",
-                    "Activity email subject",
-                    "New activity on PLAYORA",
-                  ],
-                  [
-                    "activity_intro",
-                    "Activity email introduction",
-                    "There is an update in your PLAYORA account.",
-                  ],
-                  [
-                    "availability_subject",
-                    "Availability email subject",
-                    "An offer you follow has availability",
-                  ],
-                  [
-                    "availability_intro",
-                    "Availability email introduction",
-                    "An offer matching your subscription is available.",
-                  ],
-                  ["footer", "Email footer", ""],
-                ] as const
-              ).map(([name, label, fallback]) => (
-                <Field
-                  key={name}
-                  name={name}
-                  label={label}
-                  multiline={!name.endsWith("subject")}
-                  required={name !== "footer"}
-                  initial={
-                    typeof draftValues.get(name) === "string"
-                      ? String(draftValues.get(name))
-                      : fallback
-                  }
-                />
-              ))}
-            </>
-          ) : kind === "retention" ? (
-            <RetentionFields data={resource.data.data} />
-          ) : (
-            <>
-              <p>
-                Publishing new terms requires the new version at the next
-                sign-in and at new order acceptance. Existing agreements retain
-                their accepted revision.
-              </p>
-              <Field
-                name="text"
-                label="Approved account terms and privacy text"
-                initial={
-                  typeof resource.data.data.text === "string"
-                    ? resource.data.data.text
-                    : ""
-                }
-                multiline
-              />
-              <PolicyFields data={resource.data.data} />
-            </>
-          )}
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={publish}
-              onChange={(event) => {
-                setPublish(event.target.checked);
-              }}
-            />
-            Publish this reviewed revision now
-          </label>
-          {publish && (
-            <>
-              <Field name="label" label="Unique published version" />
-              <label className="check">
-                <input type="checkbox" required />I reviewed the complete
-                content and approve publication.
-              </label>
-            </>
-          )}
-        </Form>
+      {!owner && ["legal", "retention"].includes(kind) ? (
+        <p role="alert">Only the owner can review this policy.</p>
+      ) : (
+        <ContentSession key={kind} kind={kind} />
       )}
-      <h3>Published history</h3>
-      <ErrorNotice error={history.error} />
-      {history.data?.releases.map((release) => (
-        <details key={release.release_id}>
-          <summary>
-            {release.label} · {new Date(release.updated_at).toLocaleString()}
-          </summary>
-          <pre className="legal-text">
-            {JSON.stringify(release.data, null, 2)}
-          </pre>
-        </details>
-      ))}
-      <div className="catalog-actions">
-        <Action
-          disabled={!after}
-          onClick={() => {
-            setAfter("");
-          }}
-        >
-          First history page
-        </Action>
-        <Action
-          disabled={!history.data?.next || history.loading}
-          onClick={() => {
-            setAfter(history.data?.next ?? "");
-          }}
-        >
-          Next history page
-        </Action>
-      </div>
-      <p>
-        <Link to="/">View storefront</Link> ·{" "}
-        <a href="/terms">Current account terms</a>
-      </p>
     </section>
+  );
+}
+function ContentSession({ kind }: { kind: string }) {
+  const resource = useResource(`/admin/site/${kind}`, contentSchema);
+  const [saved, setSaved] = useState<Content | null>(null);
+  if (denied(resource.error) && saved) setSaved(null);
+  else if (resource.data && saved !== resource.data) setSaved(resource.data);
+  if (denied(resource.error))
+    return (
+      <>
+        <ErrorNotice error={resource.error} />
+        <Link to="/admin/login">Admin sign-in</Link>
+      </>
+    );
+  return (
+    <>
+      <ErrorNotice error={resource.error} />
+      {!saved ? (
+        <>
+          <p role="status">
+            {resource.loading ? "Loading content…" : "Content is unavailable."}
+          </p>
+          <Action disabled={resource.loading} onClick={resource.reload}>
+            Retry content
+          </Action>
+        </>
+      ) : (
+        <ContentWorkspace
+          key={kind}
+          latest={saved}
+          loading={resource.loading}
+          offline={!!resource.error}
+          reload={resource.reload}
+        />
+      )}
+    </>
+  );
+}
+function ContentWorkspace({
+  latest,
+  loading,
+  offline,
+  reload,
+}: {
+  latest: Content;
+  loading: boolean;
+  offline: boolean;
+  reload: () => void;
+}) {
+  const [saved, setSaved] = useState(latest),
+    [dirty, setDirty] = useState(false),
+    [busy, setBusy] = useState(false),
+    [formVersion, setFormVersion] = useState(0),
+    [previewed, setPreviewed] = useState(0),
+    [confirm, setConfirm] = useState(false),
+    [label, setLabel] = useState(""),
+    [message, setMessage] = useState(""),
+    [error, setError] = useState<unknown>(null),
+    [after, setAfter] = useState("");
+  const history = useResource(
+    `/admin/site/${saved.kind}/history?after=${encodeURIComponent(after)}`,
+    historySchema,
+  );
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      (dirty || busy) &&
+      (currentLocation.pathname !== nextLocation.pathname ||
+        new URLSearchParams(currentLocation.search).get("kind") !==
+          new URLSearchParams(nextLocation.search).get("kind")),
+  );
+  const prompt = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (blocker.state === "blocked") prompt.current?.focus();
+  }, [blocker.state]);
+  useEffect(() => {
+    if (!dirty && !busy) return;
+    const stop = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", stop);
+    return () => {
+      window.removeEventListener("beforeunload", stop);
+    };
+  }, [dirty, busy]);
+  const stale = latest.version !== saved.version;
+  async function publish() {
+    if (
+      dirty ||
+      stale ||
+      offline ||
+      loading ||
+      busy ||
+      !confirm ||
+      previewed !== saved.version ||
+      !label.trim()
+    )
+      return;
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await post(
+        `/admin/site/${saved.kind}`,
+        { version: saved.version, label, data: saved.data, publish: true },
+        contentSchema,
+      );
+      setSaved(result);
+      setPreviewed(0);
+      setConfirm(false);
+      setLabel("");
+      setMessage("Reviewed content published.");
+      reload();
+      history.reload();
+    } catch (cause) {
+      setError(cause);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <>
+      {blocker.state === "blocked" && (
+        <section
+          role="alert"
+          ref={prompt}
+          tabIndex={-1}
+          className="catalog-section"
+        >
+          <h3>Keep your content draft?</h3>
+          <p>Changing editors or leaving discards unsaved content.</p>
+          <div className="catalog-actions">
+            <Action
+              onClick={() => {
+                blocker.reset();
+              }}
+            >
+              Keep editing content
+            </Action>
+            <Action
+              disabled={busy}
+              onClick={() => {
+                blocker.proceed();
+              }}
+            >
+              Discard content draft and leave
+            </Action>
+          </div>
+        </section>
+      )}
+      <div hidden={offline} className="secondary-workspace">
+        <RecordShell
+          id={saved.kind}
+          title="Content"
+          workspace="Admin workspace"
+          headingLevel={2}
+          status={
+            <p>
+              {labels.get(saved.kind)} · Saved revision {saved.version}
+              {dirty ? " · Unsaved changes" : ""}
+            </p>
+          }
+          back={{ to: "/admin", label: "Back to operations" }}
+          sections={[
+            { id: "editor", label: "Write" },
+            { id: "preview", label: "Preview & publish" },
+            { id: "history", label: "History" },
+          ]}
+          keepMounted={["editor"]}
+        >
+          {(active) => (
+            <>
+              {active === "editor" && (
+                <>
+                  <div className="catalog-actions">
+                    <Action disabled={busy || loading} onClick={reload}>
+                      Check current draft
+                    </Action>
+                    {stale && (
+                      <p role="alert">
+                        A newer saved revision is available. Your local changes
+                        are still here. Review before discarding them.
+                      </p>
+                    )}
+                    {(stale || dirty) && (
+                      <Action
+                        disabled={busy || loading}
+                        onClick={() => {
+                          setSaved(latest);
+                          setDirty(false);
+                          setFormVersion((v) => v + 1);
+                          setPreviewed(0);
+                          setConfirm(false);
+                          setMessage(
+                            "Latest saved draft loaded; local changes discarded.",
+                          );
+                        }}
+                      >
+                        Discard local changes and load latest draft
+                      </Action>
+                    )}
+                  </div>
+                  <div
+                    onClickCapture={(event) => {
+                      if (
+                        event.target instanceof Element &&
+                        event.target.closest('button[type="button"]')
+                      ) {
+                        setDirty(true);
+                        setPreviewed(0);
+                        setConfirm(false);
+                      }
+                    }}
+                    onChangeCapture={() => {
+                      setDirty(true);
+                      setPreviewed(0);
+                      setConfirm(false);
+                      setMessage("");
+                    }}
+                  >
+                    <Form
+                      key={formVersion}
+                      title="Save private draft"
+                      submit={async (data) => {
+                        if (busy || loading || offline || stale)
+                          throw new APIError(
+                            "Check the current draft before saving; your changes remain here.",
+                          );
+                        setBusy(true);
+                        try {
+                          const result = await post(
+                            `/admin/site/${saved.kind}`,
+                            {
+                              version: saved.version,
+                              label: "",
+                              data: contentData(saved.kind, data),
+                              publish: false,
+                            },
+                            contentSchema,
+                          );
+                          setSaved(result);
+                          setDirty(false);
+                          setPreviewed(0);
+                          setConfirm(false);
+                          reload();
+                          history.reload();
+                        } finally {
+                          setBusy(false);
+                        }
+                      }}
+                    >
+                      <fieldset disabled={busy || loading || stale}>
+                        <ContentFields kind={saved.kind} content={saved} />
+                      </fieldset>
+                    </Form>
+                  </div>
+                </>
+              )}
+              {active === "preview" && (
+                <>
+                  <h3>Review saved revision</h3>
+                  {dirty && (
+                    <p>
+                      Unsaved changes are not in this preview. Return to Write
+                      and save them first.
+                    </p>
+                  )}
+                  <ContentPreview content={saved} />
+                  <fieldset disabled={dirty || stale || busy || loading}>
+                    <legend>Publish this exact saved revision</legend>
+                    <label className="check">
+                      <input
+                        type="checkbox"
+                        checked={previewed === saved.version}
+                        onChange={(e) => {
+                          setPreviewed(e.target.checked ? saved.version : 0);
+                          setConfirm(false);
+                        }}
+                      />
+                      I reviewed this saved content preview
+                    </label>
+                    <label className="catalog-label">
+                      Unique published version
+                      <input
+                        value={label}
+                        onChange={(e) => {
+                          setLabel(e.target.value);
+                          setConfirm(false);
+                        }}
+                        maxLength={64}
+                      />
+                    </label>
+                    <label className="check">
+                      <input
+                        type="checkbox"
+                        checked={confirm}
+                        onChange={(e) => {
+                          setConfirm(e.target.checked);
+                        }}
+                      />
+                      I reviewed the complete content and approve publication.
+                    </label>
+                    <Action
+                      disabled={
+                        !confirm || previewed !== saved.version || !label.trim()
+                      }
+                      onClick={() => {
+                        void publish();
+                      }}
+                    >
+                      Publish reviewed content
+                    </Action>
+                  </fieldset>
+                  <p>
+                    <Link
+                      to={`/admin/account/security?returnTo=${encodeURIComponent(`/admin/content?kind=${saved.kind}&section=preview`)}`}
+                    >
+                      Verify staff identity before publication
+                    </Link>
+                  </p>
+                </>
+              )}
+              {active === "history" && (
+                <>
+                  <h3>Published history</h3>
+                  <ErrorNotice error={history.error} />
+                  <Action disabled={history.loading} onClick={history.reload}>
+                    Refresh published history
+                  </Action>
+                  {history.loading && (
+                    <p role="status">Loading published versions…</p>
+                  )}
+                  {history.data?.releases.length === 0 && (
+                    <p>No published versions.</p>
+                  )}
+                  {history.data?.releases.map((release) => (
+                    <details key={release.release_id}>
+                      <summary>
+                        {release.label} ·{" "}
+                        {new Date(release.updated_at).toLocaleString()}
+                      </summary>
+                      <ContentPreview content={release} />
+                    </details>
+                  ))}
+                  <div className="catalog-actions">
+                    <Action
+                      disabled={!after}
+                      onClick={() => {
+                        setAfter("");
+                      }}
+                    >
+                      First history page
+                    </Action>
+                    <Action
+                      disabled={!history.data?.next || history.loading}
+                      onClick={() => {
+                        setAfter(history.data?.next ?? "");
+                      }}
+                    >
+                      Next history page
+                    </Action>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </RecordShell>
+      </div>
+      {offline && (
+        <p role="alert">
+          Content could not be refreshed. Your ordinary draft is preserved and
+          hidden until access can be checked.
+        </p>
+      )}
+      {offline && (
+        <Action disabled={loading} onClick={reload}>
+          Check content access
+        </Action>
+      )}
+      <ErrorNotice error={error} />
+      {message && <p role="status">{message}</p>}
+    </>
   );
 }

@@ -31,7 +31,10 @@ def run_project(project, specs=()):
                 # Global policy publication runs after ordinary journeys in the same isolated device database.
                 # Complementary filters execute every test; both results are required, with no retries or skipped failures.
                 if specs:
-                    result = subprocess.run(["npx", "playwright", "test", *specs, "--project=" + project, "--output=test-results/focused-" + project], cwd=root / "frontend", env=environment, check=False).returncode
+                    results = []
+                    for batch in focused_batches(specs):
+                        results.append(subprocess.run(["npx", "playwright", "test", *batch, "--project=" + project, "--output=test-results/focused-" + project], cwd=root / "frontend", env=environment, check=False).returncode)
+                    result = 1 if any(results) else 0
                 else:
                     ordinary = subprocess.run(["npx", "playwright", "test", "--grep-invert=@global-policy", "--project=" + project, "--output=test-results/" + project], cwd=root / "frontend", env=environment, check=False).returncode
                     policies = subprocess.run(["npx", "playwright", "test", "--grep=@global-policy", "--project=" + project, "--output=test-results/policies-" + project], cwd=root / "frontend", env=environment, check=False).returncode
@@ -49,6 +52,14 @@ def run_project(project, specs=()):
                     print(output.read())
                     result = 1
             return result
+
+
+
+def focused_batches(specs):
+    """Global terms publication must follow ordinary journeys even in focused runs."""
+    policies = [name for name in specs if name == "tests/e2e/admin-policy.spec.ts"]
+    ordinary = [name for name in specs if name not in policies]
+    return [batch for batch in (ordinary, policies) if batch]
 
 
 def selected_specs(names):

@@ -1,6 +1,15 @@
+import { denied } from "../support/chat-state";
+import { RecordShell } from "../ui/record-shell";
+import { RecordDraftBoundary, useRecordDraft } from "../ui/record-drafts";
 import "../ui/secondary.css";
 import { useState } from "react";
-import { Link, useParams } from "react-router";
+import {
+  Link,
+  useParams,
+  useSearchParams,
+  useLocation,
+  type Location,
+} from "react-router";
 import { Action, Check, ErrorNotice, Select, Text } from "../catalog/controls";
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";
@@ -14,8 +23,15 @@ import {
   type Review,
 } from "./model";
 export function ReviewList({ admin = false }: { admin?: boolean }) {
-  const [after, setAfter] = useState(""),
-    [state, setState] = useState(admin ? "pending" : ""),
+  const [params, setParams] = useSearchParams();
+  const state = params.get("state") ?? (admin ? "pending" : ""),
+    after = params.get("after") ?? "",
+    setAfter = (v: string) => {
+      const q = new URLSearchParams(params);
+      if (v) q.set("after", v);
+      else q.delete("after");
+      setParams(q);
+    },
     base = admin ? "/admin/reviews" : "/reviews",
     resource = useResource(
       `${base}?after=${encodeURIComponent(after)}&state=${encodeURIComponent(state)}`,
@@ -33,8 +49,7 @@ export function ReviewList({ admin = false }: { admin?: boolean }) {
         label="Review status"
         value={state}
         change={(value) => {
-          setState(value);
-          setAfter("");
+          setParams({ state: value });
         }}
         options={[
           ["", "All statuses"],
@@ -53,7 +68,10 @@ export function ReviewList({ admin = false }: { admin?: boolean }) {
           <ul className="secondary-list review-list">
             {resource.data.items.map((row) => (
               <li key={row.id}>
-                <Link to={`${base}/${row.id}`}>
+                <Link
+                  to={`${base}/${row.id}`}
+                  state={{ reviewSearch: params.toString() }}
+                >
                   {row.game} · {row.rating}/5 · {stateLabel(row.state)}
                 </Link>
                 <time dateTime={row.updated_at}>
@@ -159,7 +177,15 @@ function History({ id, admin }: { id: string; admin: boolean }) {
     </section>
   );
 }
-function Moderation({ value, reload }: { value: Review; reload: () => void }) {
+function Moderation({
+  value,
+  reload,
+  saved,
+}: {
+  value: Review;
+  reload: () => void;
+  saved: (value: Review) => void;
+}) {
   const [note, setNote] = useState(""),
     [reason, setReason] = useState(""),
     [response, setResponse] = useState(value.response),
@@ -167,11 +193,15 @@ function Moderation({ value, reload }: { value: Review; reload: () => void }) {
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
     state = value.review.state;
+  useRecordDraft(
+    !!note || !!reason || checked || response !== value.response,
+    busy,
+  );
   async function change(action: string) {
     setBusy(true);
     setError(null);
     try {
-      await post(
+      const result = await post(
         `/admin/reviews/${value.review.id}/${action}`,
         {
           version: value.review.version,
@@ -182,6 +212,7 @@ function Moderation({ value, reload }: { value: Review; reload: () => void }) {
         },
         reviewSchema,
       );
+      saved(result);
       reload();
     } catch (cause) {
       setError(cause);
@@ -279,80 +310,175 @@ function Moderation({ value, reload }: { value: Review; reload: () => void }) {
   );
 }
 export function ReviewDetail({ admin = false }: { admin?: boolean }) {
-  const { id = "" } = useParams(),
-    resource = useResource(
-      `${admin ? "/admin" : ""}/reviews/${encodeURIComponent(id)}`,
-      reviewSchema,
-    ),
-    value = resource.data;
+  const { id = "" } = useParams();
   return (
-    <section>
-      <Link to={admin ? "/admin/reviews" : "/reviews"}>← Review list</Link>
-      <Action onClick={resource.reload}>Refresh review</Action>
+    <RecordDraftBoundary
+      record="review"
+      description="Review sections keep your moderation explanation and response. Leaving discards unsaved changes."
+    >
+      <ReviewWorkspace key={id} id={id} admin={admin} />
+    </RecordDraftBoundary>
+  );
+}
+function ReviewWorkspace({ id, admin }: { id: string; admin: boolean }) {
+  const resource = useResource(
+    `${admin ? "/admin" : ""}/reviews/${encodeURIComponent(id)}`,
+    reviewSchema,
+  );
+  const [saved, setSaved] = useState<Review | null>(null);
+  if (denied(resource.error) && saved) setSaved(null);
+  else if (!saved && resource.data) setSaved(resource.data);
+  const value = saved,
+    stale = !!(
+      value &&
+      resource.data &&
+      value.review.version !== resource.data.review.version
+    );
+  const location: Location<unknown> = useLocation();
+  const raw =
+    location.state &&
+    typeof location.state === "object" &&
+    "reviewSearch" in location.state &&
+    typeof location.state.reviewSearch === "string"
+      ? location.state.reviewSearch
+      : "";
+  const input = new URLSearchParams(raw),
+    query = new URLSearchParams();
+  const status = input.get("state"),
+    after = input.get("after");
+  if (
+    status !== null &&
+    (status === "" || stateSchema.safeParse(status).success)
+  )
+    query.set("state", status);
+  if (after && /^[a-zA-Z0-9_-]{1,180}$/.test(after)) query.set("after", after);
+  const base = admin ? "/admin/reviews" : "/reviews";
+  return (
+    <section className="secondary-workspace">
+      <Action disabled={resource.loading} onClick={resource.reload}>
+        Refresh review
+      </Action>
       <ErrorNotice error={resource.error} />
       {resource.loading && <p role="status">Refreshing review…</p>}
+      {!value && !resource.loading && (
+        <Link to={base + (query.size ? `?${query.toString()}` : "")}>
+          Back to review list
+        </Link>
+      )}
       {value && (
-        <fieldset disabled={resource.loading}>
-          <legend>Private review history</legend>
-          <h2>
-            {value.review.game} · {value.review.rating}/5
-          </h2>
-          <p>{stateLabel(value.review.state)}</p>
-          <p className="preserve-lines">{value.body}</p>
-          <dl>
-            {value.policy.policy.fields.map((field) => {
-              const answer = value.answers[field.key];
-              return answer === undefined ? null : (
-                <div key={field.key}>
-                  <dt>{field.label}</dt>
-                  <dd>
-                    {Array.isArray(answer) ? answer.join(", ") : String(answer)}
-                  </dd>
-                </div>
-              );
-            })}
-          </dl>
-          <Link
-            to={`${admin ? "/admin" : ""}/orders/${value.review.order_id}#purchase-review`}
-          >
-            {admin
-              ? "Review original purchase"
-              : "Edit or withdraw from your purchase"}
-          </Link>
-          <p>
-            <Link to={`/games/${value.review.slug}/reviews`}>
-              Published game reviews
-            </Link>
-          </p>
-          <section
-            className="catalog-section"
-            aria-label="Accepted review publication policy"
-          >
-            <h3>Accepted publication policy</h3>
-            <p className="preserve-lines">{value.policy.policy.content}</p>
-          </section>
-          {value.response && (
-            <section aria-label="PLAYORA response">
-              <h3>PLAYORA response</h3>
-              <p className="preserve-lines">{value.response}</p>
+        <div hidden={!!resource.error}>
+          {stale && (
+            <section role="alert" className="catalog-section">
+              <p>
+                This review has a newer revision. Your unsaved moderation text
+                is preserved. Loading the current review discards those changes.
+              </p>
+              <Action
+                disabled={resource.loading}
+                onClick={() => {
+                  if (resource.data) setSaved(resource.data);
+                }}
+              >
+                Discard moderation draft and load current review
+              </Action>
             </section>
           )}
-          {admin && (
-            <>
-              {value.internal_reason && (
-                <p className="preserve-lines">
-                  Internal moderation note: {value.internal_reason}
-                </p>
-              )}
-              <Moderation
-                key={value.review.version}
-                value={value}
-                reload={resource.reload}
-              />
-            </>
-          )}
-          <History key={value.review.version} id={id} admin={admin} />
-        </fieldset>
+          <RecordShell
+            id={id}
+            title="Review"
+            workspace={admin ? "Admin workspace" : "My account"}
+            headingLevel={2}
+            status={
+              <p>
+                {value.review.game} · {value.review.rating}/5 ·{" "}
+                {stateLabel(value.review.state)}
+              </p>
+            }
+            back={{
+              to: base + (query.size ? `?${query.toString()}` : ""),
+              label: "Back to review list",
+            }}
+            sections={[
+              {
+                id: "overview",
+                label: admin ? "Overview & moderation" : "Overview",
+              },
+              { id: "policy", label: "Accepted policy" },
+              { id: "history", label: "History" },
+            ]}
+            keepMounted={["overview"]}
+          >
+            {(section) => (
+              <fieldset disabled={resource.loading || stale}>
+                {section === "overview" && (
+                  <>
+                    <legend>Purchase review</legend>
+                    <p className="preserve-lines">{value.body}</p>
+                    <dl>
+                      {value.policy.policy.fields.map((field) => {
+                        const answer = value.answers[field.key];
+                        return answer === undefined ? null : (
+                          <div key={field.key}>
+                            <dt>{field.label}</dt>
+                            <dd>
+                              {Array.isArray(answer)
+                                ? answer.join(", ")
+                                : String(answer)}
+                            </dd>
+                          </div>
+                        );
+                      })}
+                    </dl>
+                    <Link
+                      to={`${admin ? "/admin" : ""}/orders/${value.review.order_id}?section=${admin ? "fulfillment" : "progress"}#purchase-review`}
+                    >
+                      {admin
+                        ? "Review original purchase"
+                        : "Edit or withdraw from your purchase"}
+                    </Link>
+                    <p>
+                      <Link to={`/games/${value.review.slug}/reviews`}>
+                        Published game reviews
+                      </Link>
+                    </p>
+                    {value.response && (
+                      <section aria-label="PLAYORA response">
+                        <h3>PLAYORA response</h3>
+                        <p className="preserve-lines">{value.response}</p>
+                      </section>
+                    )}
+                    {admin && (
+                      <>
+                        {value.internal_reason && (
+                          <p className="preserve-lines">
+                            Internal moderation note: {value.internal_reason}
+                          </p>
+                        )}
+                        <Moderation
+                          key={value.review.version}
+                          value={value}
+                          reload={resource.reload}
+                          saved={setSaved}
+                        />
+                      </>
+                    )}
+                  </>
+                )}
+                {section === "policy" && (
+                  <section aria-label="Accepted review publication policy">
+                    <h3>Accepted publication policy</h3>
+                    <p className="preserve-lines">
+                      {value.policy.policy.content}
+                    </p>
+                  </section>
+                )}
+                {section === "history" && (
+                  <History key={value.review.version} id={id} admin={admin} />
+                )}
+              </fieldset>
+            )}
+          </RecordShell>
+        </div>
       )}
     </section>
   );

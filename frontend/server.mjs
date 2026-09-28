@@ -72,6 +72,14 @@ app.use((req, res, next) => {
     "Cache-Control": "no-store",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
   });
+  // Discovery pages may be indexed. Every workspace, identity/API endpoint and
+  // unknown path is excluded; this is crawl guidance, never authorization.
+  const publicPath =
+    /^\/(?:$|games(?:\/|$)|accounts(?:\/|$)|terms$|policies\/|how-it-works$|sitemap\.xml$|robots\.txt$)/.test(
+      req.path,
+    );
+  if (!publicPath || req.path.startsWith("/availability/unsubscribe"))
+    res.set("X-Robots-Tag", "noindex, nofollow");
   if (req.secure)
     res.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
   next();
@@ -148,6 +156,10 @@ app.use("/api", (req, res) => {
               req.path.startsWith("/v1/admin/conversations") ||
               req.path.startsWith("/v1/orders") ||
               req.path.startsWith("/v1/admin/orders") ||
+              req.path.startsWith("/v1/admin/site/") ||
+              req.path.startsWith("/v1/admin/news") ||
+              req.path.startsWith("/v1/admin/shop") ||
+              req.path.startsWith("/v1/shop/") ||
               req.path.startsWith("/v1/admin/catalog/") ||
               req.path.startsWith("/v1/catalog/")
             ? 262144

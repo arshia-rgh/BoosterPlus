@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { DirectoryFilters, useDirectoryFilters } from "./directory-filters";
 import { Link } from "react-router";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
@@ -10,6 +10,7 @@ const fileSchema = z.object({
   id: z.string(),
   user_id: z.string(),
   conversation_id: z.string(),
+  order_id: z.string(),
   state: z.string(),
   bound: z.boolean(),
   size: z.number(),
@@ -32,59 +33,9 @@ const alertsSchema = z.object({
   ),
   next: z.string(),
 });
-function Filters({
-  customer,
-  setCustomer,
-  state,
-  setState,
-  states,
-}: {
-  customer: string;
-  setCustomer: (v: string) => void;
-  state: string;
-  setState: (v: string) => void;
-  states: string[];
-}) {
-  return (
-    <div className="catalog-grid">
-      <label className="catalog-label">
-        Customer ID
-        <input
-          value={customer}
-          onChange={(event) => {
-            setCustomer(event.target.value);
-          }}
-          maxLength={36}
-        />
-      </label>
-      <label className="catalog-label">
-        Status
-        <select
-          value={state}
-          onChange={(event) => {
-            setState(event.target.value);
-          }}
-        >
-          <option value="">All statuses</option>
-          {states.map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-      </label>
-    </div>
-  );
-}
 export function MediaDirectory() {
-  const [customer, setCustomer] = useState(""),
-    [state, setState] = useState(""),
-    [after, setAfter] = useState("");
-  const resource = useResource(
-    "/admin/media?" +
-      new URLSearchParams({ customer, state, after }).toString(),
-    mediaSchema,
-  );
+  const { query, after, setAfter, apply } = useDirectoryFilters();
+  const resource = useResource("/admin/media?" + query, mediaSchema);
   return (
     <section>
       <h2>Private media lifecycle</h2>
@@ -94,17 +45,11 @@ export function MediaDirectory() {
         Bound evidence follows the reviewed privacy and retention workflow.
         Actions require recent staff verification.
       </p>
-      <Filters
-        customer={customer}
-        setCustomer={(v) => {
-          setCustomer(v);
-          setAfter("");
-        }}
-        state={state}
-        setState={(v) => {
-          setState(v);
-          setAfter("");
-        }}
+      <DirectoryFilters
+        key={query}
+        query={query}
+        apply={apply}
+        customerLabel="Uploader account ID"
         states={[
           "pending",
           "uploaded",
@@ -116,6 +61,7 @@ export function MediaDirectory() {
       />
       <Action onClick={resource.reload}>Refresh media</Action>
       <ErrorNotice error={resource.error} />
+      {resource.loading && <p role="status">Loading matching records…</p>}
       {resource.data?.files.map((file) => (
         <article className="identity-card" key={file.id}>
           <h3>File {file.id}</h3>
@@ -123,7 +69,7 @@ export function MediaDirectory() {
             {file.content_type} · {file.size} bytes · {file.state} ·{" "}
             {file.bound ? "Bound evidence" : "Unattached upload"}
           </p>
-          <p>Customer {file.user_id}</p>
+          <p>Uploader account {file.user_id}</p>
           <p>
             {file.state === "deleted"
               ? file.purged_at
@@ -133,9 +79,23 @@ export function MediaDirectory() {
                 ? "Quarantine cleanup confirmed"
                 : "Quarantine cleanup pending"}
           </p>
-          <Link to={"/admin/support/" + file.conversation_id}>
-            Open authorized conversation
-          </Link>
+          {file.order_id ? (
+            <Link
+              to={`/admin/orders/${file.order_id}?section=request`}
+              state={{ mediaSearch: query }}
+            >
+              View source order
+            </Link>
+          ) : file.conversation_id ? (
+            <Link
+              to={"/admin/support/" + file.conversation_id}
+              state={{ mediaSearch: query }}
+            >
+              Open authorized conversation
+            </Link>
+          ) : (
+            <p>This upload is not attached to a source record.</p>
+          )}
           {!file.bound && file.state !== "deleted" && (
             <Form
               title="Remove unattached upload"
@@ -189,14 +149,8 @@ export function MediaDirectory() {
   );
 }
 export function AlertDirectory() {
-  const [customer, setCustomer] = useState(""),
-    [state, setState] = useState(""),
-    [after, setAfter] = useState("");
-  const resource = useResource(
-    "/admin/availability?" +
-      new URLSearchParams({ customer, state, after }).toString(),
-    alertsSchema,
-  );
+  const { query, after, setAfter, apply } = useDirectoryFilters();
+  const resource = useResource("/admin/availability?" + query, alertsSchema);
   return (
     <section>
       <h2>Availability consent and delivery</h2>
@@ -205,21 +159,15 @@ export function AlertDirectory() {
         state. Staff can suppress delivery; only the customer can provide new
         consent.
       </p>
-      <Filters
-        customer={customer}
-        setCustomer={(v) => {
-          setCustomer(v);
-          setAfter("");
-        }}
-        state={state}
-        setState={(v) => {
-          setState(v);
-          setAfter("");
-        }}
+      <DirectoryFilters
+        key={query}
+        query={query}
+        apply={apply}
         states={["active", "suppressed", "unsubscribed"]}
       />
       <Action onClick={resource.reload}>Refresh alerts</Action>
       <ErrorNotice error={resource.error} />
+      {resource.loading && <p role="status">Loading matching records…</p>}
       {resource.data?.subscriptions.map((item) => (
         <article className="identity-card" key={item.subscription.id}>
           <h3>{item.subscription.label}</h3>

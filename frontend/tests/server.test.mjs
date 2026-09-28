@@ -142,6 +142,32 @@ test(
     );
     assert.equal(callback.status, 200);
     assert.equal((await callback.json()).signature, "synthetic-signature");
+    for (const path of [
+      "/api/v1/admin/news/article/save",
+      "/api/v1/admin/shop/product/save",
+      "/api/v1/admin/site/legal",
+    ]) {
+      const result = await fetch(url + path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ padding: "x".repeat(20000) }),
+      });
+      assert.equal(
+        result.status,
+        200,
+        `Supported editor payload rejected: ${path}`,
+      );
+      assert.equal(result.headers.get("x-robots-tag"), "noindex, nofollow");
+    }
+    for (const path of [
+      "/login",
+      "/account",
+      "/booster/login",
+      "/missing-private-route",
+    ]) {
+      const result = await fetch(url + path);
+      assert.equal(result.headers.get("x-robots-tag"), "noindex, nofollow");
+    }
   },
 );
 test(

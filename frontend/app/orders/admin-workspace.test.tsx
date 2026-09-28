@@ -82,7 +82,10 @@ const detail = detailSchema.parse({
   },
 });
 
-function mount(query = "quote") {
+function mount(
+  query = "quote",
+  state: unknown = { orderListSearch: "state=submitted&search=game" },
+) {
   const router = createMemoryRouter(
     [{ path: "/admin/orders/:id", element: <AdminOrderWorkspace /> }],
     {
@@ -90,7 +93,7 @@ function mount(query = "quote") {
         {
           pathname: "/admin/orders/order",
           search: `?section=${query}`,
-          state: { orderListSearch: "state=submitted&search=game" },
+          state,
         },
       ],
     },
@@ -216,4 +219,17 @@ it("unmounts protected access when hidden while keeping the ordinary assignment 
     "Private assignment draft",
   );
   expect(screen.getByText("Synthetic protected access")).toBeVisible();
+});
+
+it("retains intake media directory filters through local order sections", async () => {
+  vi.mocked(get).mockResolvedValue(detail);
+  mount("request", { mediaSearch: "state=ready&after=cursor&unknown=discard" });
+  const back = await screen.findByRole("link", {
+    name: /Back to media directory/,
+  });
+  expect(back).toHaveAttribute("href", "/admin/media?state=ready&after=cursor");
+  fireEvent.click(screen.getByRole("link", { name: "Messages & proof" }));
+  expect(
+    screen.getByRole("link", { name: /Back to media directory/ }),
+  ).toHaveAttribute("href", "/admin/media?state=ready&after=cursor");
 });

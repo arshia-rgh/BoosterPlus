@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import "../ui/secondary.css";
+import { useEffect, useRef, useState } from "react";
 import { useBlocker } from "react-router";
 import { z } from "../validation";
 import { get, post } from "../identity/api";
@@ -103,6 +104,9 @@ function CSV({
 
 export default function Coupons() {
   const [items, setItems] = useState<Coupon[]>([]),
+    [loading, setLoading] = useState(true),
+    [loadVersion, setLoadVersion] = useState(0),
+    [newer, setNewer] = useState<Coupon | null>(null),
     [next, setNext] = useState(""),
     [selected, setSelected] = useState<Coupon | null>(null),
     [dirty, setDirty] = useState(false),
@@ -111,6 +115,10 @@ export default function Coupons() {
     [notice, setNotice] = useState(""),
     [history, setHistory] = useState<Coupon[]>([]);
   const blocker = useBlocker(dirty || busy);
+  const prompt = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (blocker.state === "blocked") prompt.current?.focus();
+  }, [blocker.state]);
   useEffect(() => {
     let active = true;
     void get("/admin/catalog/coupons", couponsSchema)
@@ -122,11 +130,14 @@ export default function Coupons() {
       })
       .catch((cause: unknown) => {
         if (active) setError(cause);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
       });
     return () => {
       active = false;
     };
-  }, []);
+  }, [loadVersion]);
   useEffect(() => {
     if (!dirty && !busy) return;
     const prevent = (event: BeforeUnloadEvent) => {
@@ -147,8 +158,38 @@ export default function Coupons() {
       setNotice("");
     }
   };
+  async function checkCurrent() {
+    if (!selected?.id || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await get(
+        `/admin/catalog/coupons/${selected.id}/history`,
+        historySchema,
+      );
+      const current = result.coupons.reduce<Coupon | null>(
+        (best, item) => (!best || item.version > best.version ? item : best),
+        null,
+      );
+      setNewer(current);
+      setNotice(
+        current && current.version > selected.version
+          ? "A newer coupon revision is available. Your local draft is preserved until you explicitly load it."
+          : "Your draft is based on the latest saved revision.",
+      );
+    } catch (cause) {
+      setError(cause);
+    } finally {
+      setBusy(false);
+    }
+  }
   async function save() {
-    if (!selected || busy) return;
+    if (
+      !selected ||
+      busy ||
+      (newer && newer.id === selected.id && newer.version > selected.version)
+    )
+      return;
     setBusy(true);
     setError(null);
     try {
@@ -212,7 +253,7 @@ export default function Coupons() {
   }
   const c = selected?.definition;
   return (
-    <section>
+    <section className="secondary-workspace coupon-workspace">
       <h2>Coupon policies</h2>
       <p>
         One code per order. Checks are provisional until a payable order
@@ -220,8 +261,61 @@ export default function Coupons() {
       </p>
       <ErrorNotice error={error} />
       {notice && <p role="status">{notice}</p>}
+      <Action
+        disabled={loading || busy}
+        onClick={() => {
+          setError(null);
+          setLoading(true);
+          setLoadVersion((v) => v + 1);
+        }}
+      >
+        Refresh coupon list
+      </Action>
+      {loading && <p role="status">Loading coupons…</p>}
+      {selected?.id && (
+        <Action
+          disabled={busy}
+          onClick={() => {
+            void checkCurrent();
+          }}
+        >
+          Check current coupon revision
+        </Action>
+      )}
+      {newer &&
+        selected &&
+        newer.id === selected.id &&
+        newer.version > selected.version && (
+          <section
+            className="catalog-section"
+            aria-label="Newer coupon revision"
+          >
+            <p>
+              Saved revision {newer.version}: {newer.definition.name} ·{" "}
+              {newer.definition.enabled ? "Enabled" : "Disabled"}. Loading it
+              discards local coupon changes.
+            </p>
+            <Action
+              disabled={busy}
+              onClick={() => {
+                setSelected(newer);
+                setNewer(null);
+                setDirty(false);
+                setHistory([]);
+                setNotice("Current saved coupon loaded.");
+              }}
+            >
+              Discard local changes and load current coupon
+            </Action>
+          </section>
+        )}
       {blocker.state === "blocked" && (
-        <div role="alert">
+        <div
+          role="alert"
+          ref={prompt}
+          tabIndex={-1}
+          className="catalog-section"
+        >
           <p>Leave this page and discard unsaved coupon changes?</p>
           <Action
             disabled={busy}
@@ -253,7 +347,9 @@ export default function Coupons() {
         >
           New coupon
         </Action>
-        {items.length === 0 && <p>No coupons have been configured.</p>}
+        {!loading && !error && items.length === 0 && (
+          <p>No coupons have been configured.</p>
+        )}
         <ul>
           {items.map((item) => (
             <li key={item.id}>
@@ -275,7 +371,7 @@ export default function Coupons() {
         {next && <Action onClick={() => void more()}>More coupons</Action>}
       </fieldset>
       {selected && c && (
-        <section>
+        <section key={`${selected.id}:${String(selected.version)}`}>
           <h3>{selected.id ? `Edit ${c.code}` : "Create coupon"}</h3>
           <fieldset disabled={busy}>
             <legend>Coupon definition</legend>
@@ -443,7 +539,17 @@ export default function Coupons() {
               Resale discounts must not reduce accepted seller proceeds. Resale
               checkout becomes available with account commerce.
             </p>
-            <Action disabled={!dirty} onClick={() => void save()}>
+            <Action
+              disabled={
+                !dirty ||
+                !!(
+                  newer &&
+                  newer.id === selected.id &&
+                  newer.version > selected.version
+                )
+              }
+              onClick={() => void save()}
+            >
               Save coupon
             </Action>
             <Action

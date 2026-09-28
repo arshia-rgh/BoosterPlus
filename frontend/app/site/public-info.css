@@ -1,0 +1,87 @@
+.public-info {
+  max-width: 76rem;
+  padding-block: clamp(2rem, 5vw, 5rem);
+}
+.public-info h1 {
+  max-width: 20ch;
+}
+.public-info p,
+.public-info .legal-text {
+  max-width: 68ch;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.public-info > section {
+  margin-block: 2rem;
+}
+.public-info .policy-contents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding-block: 1.25rem;
+  border-block: 1px solid var(--border);
+  margin-block: 1.5rem;
+}
+.policy-contents [aria-current="page"] {
+  color: var(--accent);
+  font-weight: 700;
+}
+.public-info .info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+  gap: 1rem;
+}
+.info-grid > section {
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: #14261ed9;
+  border: 1px solid #385342;
+  border-radius: 1rem;
+}
+.info-grid h2 {
+  margin-top: 0;
+}
+@media print {
+  .site-header,
+  .site-footer,
+  .site-ambient,
+  .public-info .catalog-actions,
+  .policy-contents {
+    display: none !important;
+  }
+  .public-info,
+  .public-info * {
+    color: #000 !important;
+    background: #fff !important;
+  }
+  .public-info {
+    max-width: none;
+    padding: 0;
+  }
+}
+
+@media print {
+  body:has(.public-info) .experience-preferences,
+  body:has(.public-info) .experience-glow,
+  body:has(.public-info) .activity-panel,
+  body:has(.public-info) .activity-launcher,
+  body:has(.public-info) .activity-sheet,
+  body:has(.public-info) .customer-activity {
+    display: none !important;
+  }
+  body:has(.public-info) .experience {
+    background: #fff;
+    min-height: 0;
+  }
+}
+.public-info .policy-version a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+@media print {
+  html:has(.public-info),
+  body:has(.public-info) {
+    background: #fff !important;
+    color: #000 !important;
+  }
+}

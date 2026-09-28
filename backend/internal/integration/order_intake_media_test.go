@@ -122,6 +122,13 @@ func TestOrderIntakeMediaPrivateDraftAndAtomicSubmission(t *testing.T) {
 	if err != nil || row.IntakeOrderID == nil || *row.IntakeOrderID != detail.Order.ID {
 		t.Fatal("order did not bind ready file", err)
 	}
+	directory, directoryErr := store.Directory(ctx, f.admin, "", f.buyer.User.ID, "ready")
+	if directoryErr != nil || len(directory.Files) != 1 || directory.Files[0].OrderID != detail.Order.ID || !directory.Files[0].Bound {
+		t.Fatal("staff intake source projection", directoryErr)
+	}
+	if _, directoryErr = store.Directory(ctx, f.buyer, "", "", ""); directoryErr == nil {
+		t.Fatal("customer accessed staff media directory")
+	}
 	if _, err = store.Grant(ctx, f.admin, file.ID, true); err != nil {
 		t.Fatal("staff cannot inspect submitted screenshot", err)
 	}

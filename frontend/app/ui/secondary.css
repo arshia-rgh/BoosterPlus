@@ -135,3 +135,32 @@
     justify-self: start;
   }
 }
+
+/* Record-local secondary editors use the same quiet panel geometry as orders. */
+.secondary-workspace fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.secondary-workspace legend {
+  padding: 0;
+  margin-block: 0.8rem;
+  color: var(--muted);
+  font-weight: 650;
+}
+.secondary-workspace .record-status p {
+  margin-block: 0.5rem;
+}
+.secondary-workspace .catalog-actions {
+  margin-block: 1rem;
+}
+.secondary-workspace .record-section {
+  min-width: 0;
+}
+
+/* Coupon actions also occur beside conditional load/conflict notices. */
+.coupon-workspace .button {
+  margin-block: 0.35rem;
+  margin-inline-end: 0.65rem;
+}

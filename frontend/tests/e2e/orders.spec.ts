@@ -1,3 +1,4 @@
+import { secondaryCapture } from "./secondary-capture";
 import { authURL } from "./identity-fixtures";
 import { qualifyOrderWorkspace } from "./order-workspace-journey";
 import { availabilityJourney } from "./availability-journey";
@@ -299,6 +300,24 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       fullPage: true,
     });
     await accessible(buyer);
+    const buyerSession = sessionSchema.parse(
+      await (await buyer.request.get(authURL(buyer, "session"))).json(),
+    );
+    await page.goto(
+      `/admin/media?customer=${buyerSession.user?.id ?? ""}&state=ready`,
+    );
+    await page
+      .getByRole("link", { name: "View source order", exact: true })
+      .click();
+    await expect(page).toHaveURL(
+      new RegExp(`/admin/orders/${orderID}\\?section=request`),
+    );
+    await secondaryCapture(page, "intake-source-order", info.project.name);
+    await page
+      .getByRole("link", { name: "Messages & proof", exact: true })
+      .click();
+    await page.getByRole("link", { name: /Back to media directory/ }).click();
+    await expect(page).toHaveURL(/\/admin\/media\?.*state=ready/);
     await page.goto("/admin/orders");
     await page.getByLabel("Search game or full order ID").fill(orderID);
     await page

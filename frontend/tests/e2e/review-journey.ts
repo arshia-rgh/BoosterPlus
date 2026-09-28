@@ -1,3 +1,4 @@
+import { secondaryCapture } from "./secondary-capture";
 import { expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 export async function reviewJourney(
@@ -38,6 +39,16 @@ export async function reviewJourney(
   await admin
     .getByLabel("Internal moderation explanation")
     .fill("Private review note: constructive criticism complies with policy.");
+  await secondaryCapture(admin, "review-draft", device);
+  await admin.getByRole("link", { name: "History", exact: true }).click();
+  await secondaryCapture(admin, "review-history", device);
+  await admin
+    .getByRole("link", { name: "Accepted policy", exact: true })
+    .click();
+  await secondaryCapture(admin, "review-policy", device);
+  await admin
+    .getByRole("link", { name: "Overview & moderation", exact: true })
+    .click();
   await admin
     .getByLabel(
       "I checked this content against its accepted publication policy",
@@ -132,6 +143,21 @@ export async function reviewJourney(
       "The customer withdrew this review. Staff cannot republish it.",
     ),
   ).toBeVisible();
+  await admin.goto("/admin/media?state=ready");
+  const conversation = admin
+    .getByRole("link", { name: "Open authorized conversation", exact: true })
+    .first();
+  await expect(conversation).toBeVisible();
+  await secondaryCapture(admin, "media-directory", device);
+  await conversation.click();
+  await expect(
+    admin.getByRole("link", { name: "← Media directory", exact: true }),
+  ).toBeVisible();
+  await secondaryCapture(admin, "media-conversation", device);
+  await admin
+    .getByRole("link", { name: "← Media directory", exact: true })
+    .click();
+  await expect(admin).toHaveURL(/\/admin\/media\?state=ready$/);
   await buyer.goto(`/games/${slug}/reviews`);
   await expect(
     buyer.getByText("Updated honest feedback after the response.", {

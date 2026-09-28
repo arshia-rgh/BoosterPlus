@@ -1,3 +1,4 @@
+import { secondaryCapture } from "./secondary-capture";
 import { readFile } from "node:fs/promises";
 import { expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -37,6 +38,7 @@ export async function reportsJourney(page: Page, device: string) {
   await expect(
     page.getByRole("heading", { name: "Preview: 1 record", exact: true }),
   ).toBeVisible();
+  await secondaryCapture(page, "report-preview", device);
   const region = page.getByRole("region", { name: "Operational report table" });
   await region.focus();
   await expect(region).toBeFocused();

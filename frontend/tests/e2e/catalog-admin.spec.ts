@@ -1,3 +1,4 @@
+import { secondaryCapture } from "./secondary-capture";
 import { randomUUID } from "node:crypto";
 import { expect, test, type Locator } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -75,6 +76,7 @@ test("staff builds, previews, publishes and archives another game through the ge
     .click();
   await expect(page.getByText("Revision 1", { exact: true })).toBeVisible();
   await expect(page.getByText("Revision 2", { exact: true })).toBeVisible();
+  await secondaryCapture(page, "coupon-history", info.project.name);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   expect(
     await page.evaluate(
@@ -226,12 +228,12 @@ test("staff builds, previews, publishes and archives another game through the ge
     .check();
   await condition(variant, "Variant eligibility", "mode", "solo");
   await section("Game & ranks");
-  // DI03: publication controls are real draft data, not anonymous fixture badges.
+  // DI11 implements shop; availability is now publishable independently of boost.
   await expect(
     page
       .getByLabel("Shop availability")
       .getByRole("option", { name: "Available", exact: true }),
-  ).toHaveCount(0);
+  ).toHaveCount(1);
   await page.getByLabel("Boosting availability").selectOption("active");
   await page.getByLabel("Accounts availability").selectOption("paused");
   await page
@@ -248,6 +250,7 @@ test("staff builds, previews, publishes and archives another game through the ge
     .getByLabel("Allow source-based public statistics after publication")
     .check();
   await expect(page.getByLabel("Minimum eligible records")).toHaveValue("25");
+  await section("Featured offers");
   await page
     .getByRole("button", { name: "Add featured offer", exact: true })
     .click();
@@ -480,6 +483,7 @@ test("staff builds, previews, publishes and archives another game through the ge
       path: info.outputPath(`di03-metrics-viewport-${String(width)}.png`),
       scale: "css",
     });
+    await section("Featured offers");
     await promotion.getByLabel("Starts at (UTC)").scrollIntoViewIfNeeded();
     await page.screenshot({
       path: info.outputPath(`di03-offer-viewport-${String(width)}.png`),

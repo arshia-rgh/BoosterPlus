@@ -102,31 +102,21 @@ func enqueue(ctx context.Context, tx executor, kind, key string, payload json.Ra
 
 // Claim returns a leased job, or nil when no due job can be claimed.
 func (s *Store) Claim(ctx context.Context) (*Job, error) {
-	if _, err := s.db.ExecContext(ctx, `UPDATE jobs SET state='failed', owner=NULL, lease_until=NULL, last_error='lease_exhausted' WHERE state='running' AND lease_until<UTC_TIMESTAMP(6) AND attempts>=max_attempts`); err != nil {
-		return nil, fmt.Errorf("retire exhausted leases: %w", err)
+	if err := s.retireExhausted(ctx); err != nil {
+		return nil, err
 	}
 	ids, err := s.candidates(ctx)
 	if err != nil {
 		return nil, err
 	}
 	for _, id := range ids {
-		owner := rand.Text()
-		result, claimErr := s.db.ExecContext(ctx, `UPDATE jobs SET state='running',owner=?,lease_until=DATE_ADD(UTC_TIMESTAMP(6), INTERVAL 30 SECOND),attempts=attempts+1 WHERE id=? AND attempts<max_attempts AND ((state='pending' AND available_at<=UTC_TIMESTAMP(6)) OR (state='running' AND lease_until<UTC_TIMESTAMP(6)))`, owner, id)
+		job, claimErr := s.claimAttempt(ctx, id)
 		if claimErr != nil {
-			return nil, fmt.Errorf("claim job: %w", claimErr)
+			return nil, claimErr
 		}
-		count, countErr := result.RowsAffected()
-		if countErr != nil {
-			return nil, countErr
+		if job != nil {
+			return job, nil
 		}
-		if count != 1 {
-			continue
-		}
-		job := &Job{ID: id, Owner: owner}
-		if scanErr := s.db.QueryRowContext(ctx, "SELECT kind,payload,attempts FROM jobs WHERE id=? AND owner=? AND state='running'", id, owner).Scan(&job.Kind, &job.Payload, &job.Attempts); scanErr != nil {
-			return nil, fmt.Errorf("read leased job: %w", scanErr)
-		}
-		return job, nil
 	}
 	return nil, nil // No due work is a normal queue result, not a failed lease.
 }
@@ -156,15 +146,13 @@ func (s *Store) Renew(ctx context.Context, job *Job) error {
 
 // Complete acknowledges only the worker still holding a valid lease.
 func (s *Store) Complete(ctx context.Context, job *Job) error {
-	result, err := s.db.ExecContext(ctx, "UPDATE jobs SET state='complete',owner=NULL,lease_until=NULL,last_error=NULL WHERE id=? AND owner=? AND state='running' AND lease_until>UTC_TIMESTAMP(6)", job.ID, job.Owner)
-	return checkLease(result, err)
+	return s.finishAttempt(ctx, job, "complete", "UPDATE jobs SET state='complete',owner=NULL,lease_until=NULL,last_error=NULL WHERE id=? AND owner=? AND state='running' AND lease_until>UTC_TIMESTAMP(6)", job.ID, job.Owner)
 }
 
 // Fail records a safe error code and bounded exponential retry; never error text.
 func (s *Store) Fail(ctx context.Context, job *Job) error {
 	delay := 1 << max(0, min(job.Attempts, 10))
-	result, err := s.db.ExecContext(ctx, `UPDATE jobs SET state=IF(attempts>=max_attempts,'failed','pending'),owner=NULL,lease_until=NULL,last_error='handler_failed',available_at=DATE_ADD(UTC_TIMESTAMP(6), INTERVAL ? SECOND) WHERE id=? AND owner=? AND state='running' AND lease_until>UTC_TIMESTAMP(6)`, delay, job.ID, job.Owner)
-	return checkLease(result, err)
+	return s.finishAttempt(ctx, job, "handler_failed", `UPDATE jobs SET state=IF(attempts>=max_attempts,'failed','pending'),owner=NULL,lease_until=NULL,last_error='handler_failed',available_at=DATE_ADD(UTC_TIMESTAMP(6), INTERVAL ? SECOND) WHERE id=? AND owner=? AND state='running' AND lease_until>UTC_TIMESTAMP(6)`, delay, job.ID, job.Owner)
 }
 
 func checkLease(result sql.Result, err error) error {
