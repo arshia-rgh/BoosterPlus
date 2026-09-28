@@ -22533,6 +22533,883 @@
           }
         }
       }
+    },
+    "/api/v1/admin/news": {
+      "get": {
+        "operationId": "getArticleApiV1AdminNews",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "game",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "author",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Articles"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postArticleApiV1AdminNews",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/news/{id}": {
+      "get": {
+        "operationId": "getArticleApiV1AdminNewsId",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/news/{id}/draft": {
+      "post": {
+        "operationId": "postArticleApiV1AdminNewsIdDraft",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleSave"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/news/{id}/preview": {
+      "get": {
+        "operationId": "getArticleApiV1AdminNewsIdPreview",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticlePreview"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/news/{id}/history": {
+      "get": {
+        "operationId": "getArticleApiV1AdminNewsIdHistory",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleHistory"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/news/{id}/publish": {
+      "post": {
+        "operationId": "postArticleApiV1AdminNewsIdPublish",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/news/{id}/schedule": {
+      "post": {
+        "operationId": "postArticleApiV1AdminNewsIdSchedule",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/news/{id}/unschedule": {
+      "post": {
+        "operationId": "postArticleApiV1AdminNewsIdUnschedule",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/news/{id}/unpublish": {
+      "post": {
+        "operationId": "postArticleApiV1AdminNewsIdUnpublish",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/news/{id}/archive": {
+      "post": {
+        "operationId": "postArticleApiV1AdminNewsIdArchive",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/news/{id}/restore": {
+      "post": {
+        "operationId": "postArticleApiV1AdminNewsIdRestore",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleDraft"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/games/{slug}/news": {
+      "get": {
+        "operationId": "getArticleApiV1GamesSlugNews",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticlePublicPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/games/{slug}/news/{article}": {
+      "get": {
+        "operationId": "getArticleApiV1GamesSlugNewsArticle",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "article",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticlePublic"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/games/{slug}/news-sitemap": {
+      "get": {
+        "operationId": "getArticleSitemap",
+        "summary": "Versioned staff-managed editorial content",
+        "security": [],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounded editorial projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleSitemap"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, validation, unavailable or revision conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -29946,7 +30823,7 @@
           },
           "target": {
             "type": "string",
-            "enum": ["package", "account", "shop"]
+            "enum": ["package", "account", "shop", "news"]
           },
           "package": {
             "type": "string",
@@ -29992,6 +30869,14 @@
           "product_id": {
             "type": "string",
             "maxLength": 36
+          },
+          "article_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "article_slug": {
+            "type": "string",
+            "maxLength": 100
           }
         },
         "required": [
@@ -30038,111 +30923,241 @@
         "required": ["capabilities"]
       },
       "CatalogPromotionView": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "key": {
-            "type": "string",
-            "maxLength": 48
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string",
+                "maxLength": 48
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 100
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 400
+              },
+              "service": {
+                "type": "string",
+                "enum": ["boost", "accounts", "shop"]
+              },
+              "target": {
+                "type": "string",
+                "enum": ["package", "account", "shop"]
+              },
+              "package": {
+                "type": "string",
+                "maxLength": 48
+              },
+              "variant": {
+                "type": "string",
+                "maxLength": 48
+              },
+              "listing_id": {
+                "type": "string",
+                "maxLength": 36
+              },
+              "release_id": {
+                "type": "string",
+                "maxLength": 36
+              },
+              "currency": {
+                "type": "string",
+                "enum": ["USD", "EUR", "GBP"]
+              },
+              "amount_minor": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,11}$"
+              },
+              "original_minor": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,11}$"
+              },
+              "coupon_code": {
+                "type": "string",
+                "maxLength": 40
+              },
+              "coupon_version": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483645
+              },
+              "starts_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "ends_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "priority": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "remaining": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000000
+              },
+              "indicative": {
+                "type": "boolean",
+                "const": true
+              },
+              "product_id": {
+                "type": "string",
+                "maxLength": 36
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "article_id": {
+                "type": "string",
+                "maxLength": 36
+              },
+              "article_slug": {
+                "type": "string",
+                "maxLength": 100
+              }
+            },
+            "required": [
+              "key",
+              "title",
+              "description",
+              "service",
+              "target",
+              "release_id",
+              "currency",
+              "amount_minor",
+              "starts_at",
+              "ends_at",
+              "priority",
+              "indicative"
+            ]
           },
-          "title": {
-            "type": "string",
-            "maxLength": 100
-          },
-          "description": {
-            "type": "string",
-            "maxLength": 400
-          },
-          "service": {
-            "type": "string",
-            "enum": ["boost", "accounts", "shop"]
-          },
-          "target": {
-            "type": "string",
-            "enum": ["package", "account", "shop"]
-          },
-          "package": {
-            "type": "string",
-            "maxLength": 48
-          },
-          "variant": {
-            "type": "string",
-            "maxLength": 48
-          },
-          "listing_id": {
-            "type": "string",
-            "maxLength": 36
-          },
-          "release_id": {
-            "type": "string",
-            "maxLength": 36
-          },
-          "currency": {
-            "type": "string",
-            "enum": ["USD", "EUR", "GBP"]
-          },
-          "amount_minor": {
-            "type": "string",
-            "pattern": "^[1-9][0-9]{0,11}$"
-          },
-          "original_minor": {
-            "type": "string",
-            "pattern": "^[1-9][0-9]{0,11}$"
-          },
-          "coupon_code": {
-            "type": "string",
-            "maxLength": 40
-          },
-          "coupon_version": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 2147483645
-          },
-          "starts_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "ends_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "priority": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 100
-          },
-          "remaining": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 1000000000
-          },
-          "indicative": {
-            "type": "boolean",
-            "const": true
-          },
-          "product_id": {
-            "type": "string",
-            "maxLength": 36
-          },
-          "quantity": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string",
+                "maxLength": 48
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 100
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 400
+              },
+              "service": {
+                "const": "news",
+                "type": "string"
+              },
+              "target": {
+                "const": "news",
+                "type": "string"
+              },
+              "package": {
+                "type": "string",
+                "maxLength": 48
+              },
+              "variant": {
+                "type": "string",
+                "maxLength": 48
+              },
+              "listing_id": {
+                "type": "string",
+                "maxLength": 36
+              },
+              "release_id": {
+                "type": "string",
+                "maxLength": 36
+              },
+              "currency": {
+                "type": "string",
+                "const": ""
+              },
+              "amount_minor": {
+                "type": "string",
+                "const": ""
+              },
+              "original_minor": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,11}$"
+              },
+              "coupon_code": {
+                "type": "string",
+                "maxLength": 40
+              },
+              "coupon_version": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483645
+              },
+              "starts_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "ends_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "priority": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "remaining": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000000
+              },
+              "indicative": {
+                "type": "boolean",
+                "const": false
+              },
+              "product_id": {
+                "type": "string",
+                "maxLength": 36
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "article_id": {
+                "type": "string",
+                "maxLength": 36
+              },
+              "article_slug": {
+                "type": "string",
+                "maxLength": 100
+              }
+            },
+            "required": [
+              "key",
+              "title",
+              "description",
+              "service",
+              "target",
+              "release_id",
+              "currency",
+              "amount_minor",
+              "starts_at",
+              "ends_at",
+              "priority",
+              "indicative",
+              "article_id",
+              "article_slug"
+            ]
           }
-        },
-        "required": [
-          "key",
-          "title",
-          "description",
-          "service",
-          "target",
-          "release_id",
-          "currency",
-          "amount_minor",
-          "starts_at",
-          "ends_at",
-          "priority",
-          "indicative"
         ]
       },
       "CatalogDiscoveryView": {
@@ -31728,6 +32743,559 @@
         "properties": {},
         "required": [],
         "additionalProperties": false
+      },
+      "ArticleBlock": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "paragraph",
+              "heading",
+              "quote",
+              "code",
+              "link",
+              "image",
+              "list",
+              "table"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "alt": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "items": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "maxItems": 50
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "headers": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 160
+                },
+                "maxItems": 10
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rows": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "maxItems": 10
+                },
+                "maxItems": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "text",
+          "level",
+          "url",
+          "alt",
+          "source",
+          "items",
+          "headers",
+          "rows"
+        ]
+      },
+      "ArticleDefinition": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 600
+          },
+          "author": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "source_url": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "game_version": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "asset": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "asset_alt": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "asset_source": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["update", "patch", "guide"]
+          },
+          "reviewed": {
+            "type": "boolean"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleBlock"
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "title",
+          "slug",
+          "summary",
+          "author",
+          "source",
+          "source_url",
+          "game_version",
+          "asset",
+          "asset_alt",
+          "asset_source",
+          "kind",
+          "reviewed",
+          "blocks"
+        ]
+      },
+      "ArticleDraft": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "game_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "revision_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "current_revision": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "scheduled_revision": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "scheduled",
+              "published",
+              "unpublished",
+              "archived"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483644
+          },
+          "scheduled_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "published_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/ArticleDefinition"
+          },
+          "game_name": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "schedule_state": {
+            "type": "string",
+            "maxLength": 32
+          }
+        },
+        "required": [
+          "id",
+          "game_id",
+          "revision_id",
+          "current_revision",
+          "scheduled_revision",
+          "state",
+          "version",
+          "scheduled_at",
+          "published_at",
+          "updated_at",
+          "definition",
+          "game_name",
+          "schedule_state"
+        ]
+      },
+      "ArticleSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "game_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "kind": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "author": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483644
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "scheduled_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "game_name": {
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "required": [
+          "id",
+          "game_id",
+          "title",
+          "kind",
+          "author",
+          "state",
+          "version",
+          "updated_at",
+          "scheduled_at",
+          "game_name"
+        ]
+      },
+      "Articles": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleSummary"
+            },
+            "maxItems": 50
+          },
+          "next": {
+            "type": "string",
+            "maxLength": 36
+          }
+        },
+        "required": ["items", "next"]
+      },
+      "ArticlePublic": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "game_slug": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "revision_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "definition": {
+            "$ref": "#/components/schemas/ArticleDefinition"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "redirect": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "game_slug",
+          "revision_id",
+          "definition",
+          "published_at",
+          "updated_at",
+          "redirect"
+        ]
+      },
+      "ArticlePublicPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticlePublic"
+            },
+            "maxItems": 24
+          },
+          "next": {
+            "type": "string",
+            "maxLength": 36
+          }
+        },
+        "required": ["items", "next"]
+      },
+      "ArticleIssue": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": ["path", "message"]
+      },
+      "ArticlePreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "$ref": "#/components/schemas/ArticleDefinition"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleIssue"
+            },
+            "maxItems": 200
+          }
+        },
+        "required": ["definition", "issues"]
+      },
+      "ArticleHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "version": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483644
+                },
+                "action": {
+                  "type": "string",
+                  "maxLength": 32
+                },
+                "revision_id": {
+                  "type": "string",
+                  "maxLength": 36
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": ["version", "action", "revision_id", "at"]
+            },
+            "maxItems": 50
+          },
+          "next": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": ["items", "next"]
+      },
+      "ArticleCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "game_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "definition": {
+            "$ref": "#/components/schemas/ArticleDefinition"
+          }
+        },
+        "required": ["game_id", "definition"]
+      },
+      "ArticleSave": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483644
+          },
+          "definition": {
+            "$ref": "#/components/schemas/ArticleDefinition"
+          }
+        },
+        "required": ["version", "definition"]
+      },
+      "ArticleChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483644
+          },
+          "revision_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "at": {
+            "type": "string",
+            "maxLength": 40
+          }
+        },
+        "required": ["version"]
+      },
+      "ArticleProblem": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleIssue"
+            },
+            "maxItems": 200
+          }
+        },
+        "required": ["code"]
+      },
+      "ArticleSitemap": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 50000,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["slug", "updated_at"],
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "securitySchemes": {

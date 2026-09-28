@@ -377,14 +377,22 @@
       ]
     },
     "news": {
-      "status": "proposed",
+      "status": "implemented",
       "paths": [
-        "/api/v1/news/games/{slug}/articles",
-        "/api/v1/news/games/{slug}/articles/{slug}",
-        "/api/v1/admin/news/articles",
-        "/api/v1/admin/news/articles/{id}",
-        "/api/v1/admin/news/articles/{id}/revisions",
-        "/api/v1/admin/news/articles/{id}/publication"
+        "/api/v1/admin/news",
+        "/api/v1/admin/news/{id}",
+        "/api/v1/admin/news/{id}/draft",
+        "/api/v1/admin/news/{id}/preview",
+        "/api/v1/admin/news/{id}/history",
+        "/api/v1/admin/news/{id}/publish",
+        "/api/v1/admin/news/{id}/schedule",
+        "/api/v1/admin/news/{id}/unschedule",
+        "/api/v1/admin/news/{id}/unpublish",
+        "/api/v1/admin/news/{id}/archive",
+        "/api/v1/admin/news/{id}/restore",
+        "/api/v1/games/{slug}/news",
+        "/api/v1/games/{slug}/news/{article}",
+        "/api/v1/games/{slug}/news-sitemap"
       ]
     },
     "private-handoff": {
@@ -4289,7 +4297,7 @@
       "title": "News index",
       "phase": "DI12",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/games/:slug/news",
       "apiFamily": "news",
@@ -4309,14 +4317,19 @@
         "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI12_QUALIFICATION.md",
+        "frontend/tests/e2e/news.spec.ts",
+        "backend/internal/integration/news_test.go",
+        "docs/redesign/reviews/2026-09-28-di12-editorial.md"
+      ]
     },
     {
       "id": "NW02",
       "title": "Article",
       "phase": "DI12",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/games/:slug/news/:article",
       "apiFamily": "news",
@@ -4336,14 +4349,19 @@
         "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI12_QUALIFICATION.md",
+        "frontend/tests/e2e/news.spec.ts",
+        "backend/internal/integration/news_test.go",
+        "docs/redesign/reviews/2026-09-28-di12-editorial.md"
+      ]
     },
     {
       "id": "NW03",
       "title": "Staff articles",
       "phase": "DI12",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/admin/news",
       "apiFamily": "news",
@@ -4363,14 +4381,19 @@
         "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI12_QUALIFICATION.md",
+        "frontend/tests/e2e/news.spec.ts",
+        "backend/internal/integration/news_test.go",
+        "docs/redesign/reviews/2026-09-28-di12-editorial.md"
+      ]
     },
     {
       "id": "NW04",
       "title": "Article editor",
       "phase": "DI12",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/admin/news/:id",
       "apiFamily": "news",
@@ -4390,14 +4413,19 @@
         "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI12_QUALIFICATION.md",
+        "frontend/tests/e2e/news.spec.ts",
+        "backend/internal/integration/news_test.go",
+        "docs/redesign/reviews/2026-09-28-di12-editorial.md"
+      ]
     },
     {
       "id": "NW05",
       "title": "Private preview",
       "phase": "DI12",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/admin/news/:id?section=preview",
       "apiFamily": "news",
@@ -4417,14 +4445,19 @@
         "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI12_QUALIFICATION.md",
+        "frontend/tests/e2e/news.spec.ts",
+        "backend/internal/integration/news_test.go",
+        "docs/redesign/reviews/2026-09-28-di12-editorial.md"
+      ]
     },
     {
       "id": "NW06",
       "title": "Publication",
       "phase": "DI12",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/admin/news/:id?section=publication",
       "apiFamily": "news",
@@ -4444,7 +4477,12 @@
         "SHOP_NEWS_ADDENDUM.md SN05–SN06",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI12_QUALIFICATION.md",
+        "frontend/tests/e2e/news.spec.ts",
+        "backend/internal/integration/news_test.go",
+        "docs/redesign/reviews/2026-09-28-di12-editorial.md"
+      ]
     }
   ]
 }

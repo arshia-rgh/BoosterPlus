@@ -19,6 +19,10 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlistingrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountreservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountsubmission"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/article"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/articlerevision"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleslug"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
@@ -101,6 +105,14 @@ type Client struct {
 	AccountReservation *AccountReservationClient
 	// AccountSubmission is the client for interacting with the AccountSubmission builders.
 	AccountSubmission *AccountSubmissionClient
+	// Article is the client for interacting with the Article builders.
+	Article *ArticleClient
+	// ArticleEvent is the client for interacting with the ArticleEvent builders.
+	ArticleEvent *ArticleEventClient
+	// ArticleRevision is the client for interacting with the ArticleRevision builders.
+	ArticleRevision *ArticleRevisionClient
+	// ArticleSlug is the client for interacting with the ArticleSlug builders.
+	ArticleSlug *ArticleSlugClient
 	// AuthAudit is the client for interacting with the AuthAudit builders.
 	AuthAudit *AuthAuditClient
 	// AuthChallenge is the client for interacting with the AuthChallenge builders.
@@ -243,6 +255,10 @@ func (c *Client) init() {
 	c.AccountListingRelease = NewAccountListingReleaseClient(c.config)
 	c.AccountReservation = NewAccountReservationClient(c.config)
 	c.AccountSubmission = NewAccountSubmissionClient(c.config)
+	c.Article = NewArticleClient(c.config)
+	c.ArticleEvent = NewArticleEventClient(c.config)
+	c.ArticleRevision = NewArticleRevisionClient(c.config)
+	c.ArticleSlug = NewArticleSlugClient(c.config)
 	c.AuthAudit = NewAuthAuditClient(c.config)
 	c.AuthChallenge = NewAuthChallengeClient(c.config)
 	c.AuthFlow = NewAuthFlowClient(c.config)
@@ -403,6 +419,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AccountListingRelease:    NewAccountListingReleaseClient(cfg),
 		AccountReservation:       NewAccountReservationClient(cfg),
 		AccountSubmission:        NewAccountSubmissionClient(cfg),
+		Article:                  NewArticleClient(cfg),
+		ArticleEvent:             NewArticleEventClient(cfg),
+		ArticleRevision:          NewArticleRevisionClient(cfg),
+		ArticleSlug:              NewArticleSlugClient(cfg),
 		AuthAudit:                NewAuthAuditClient(cfg),
 		AuthChallenge:            NewAuthChallengeClient(cfg),
 		AuthFlow:                 NewAuthFlowClient(cfg),
@@ -490,6 +510,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AccountListingRelease:    NewAccountListingReleaseClient(cfg),
 		AccountReservation:       NewAccountReservationClient(cfg),
 		AccountSubmission:        NewAccountSubmissionClient(cfg),
+		Article:                  NewArticleClient(cfg),
+		ArticleEvent:             NewArticleEventClient(cfg),
+		ArticleRevision:          NewArticleRevisionClient(cfg),
+		ArticleSlug:              NewArticleSlugClient(cfg),
 		AuthAudit:                NewAuthAuditClient(cfg),
 		AuthChallenge:            NewAuthChallengeClient(cfg),
 		AuthFlow:                 NewAuthFlowClient(cfg),
@@ -583,17 +607,18 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountDelivery, c.AccountListing, c.AccountListingRelease,
-		c.AccountReservation, c.AccountSubmission, c.AuthAudit, c.AuthChallenge,
-		c.AuthFlow, c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery,
-		c.AuthSession, c.AvailabilityDelivery, c.AvailabilitySubscription,
-		c.AvailabilityTarget, c.AvailabilityWindow, c.Booking, c.BookingEvent,
-		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
-		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
-		c.Fulfillment, c.Game, c.MediaFile, c.MoneyTransfer, c.Notification, c.Order,
-		c.OrderContract, c.OrderEvent, c.OrderQuote, c.PaymentAllocation,
-		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
-		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
-		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
+		c.AccountReservation, c.AccountSubmission, c.Article, c.ArticleEvent,
+		c.ArticleRevision, c.ArticleSlug, c.AuthAudit, c.AuthChallenge, c.AuthFlow,
+		c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession,
+		c.AvailabilityDelivery, c.AvailabilitySubscription, c.AvailabilityTarget,
+		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CaseEvent, c.CatalogRelease,
+		c.Conversation, c.ConversationMessage, c.ConversationRead, c.Coupon,
+		c.CouponClaim, c.CouponRevision, c.Favorite, c.Fulfillment, c.Game,
+		c.MediaFile, c.MoneyTransfer, c.Notification, c.Order, c.OrderContract,
+		c.OrderEvent, c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt,
+		c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord,
+		c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest, c.Review,
+		c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
 		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
 		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
 		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
@@ -609,17 +634,18 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountDelivery, c.AccountListing, c.AccountListingRelease,
-		c.AccountReservation, c.AccountSubmission, c.AuthAudit, c.AuthChallenge,
-		c.AuthFlow, c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery,
-		c.AuthSession, c.AvailabilityDelivery, c.AvailabilitySubscription,
-		c.AvailabilityTarget, c.AvailabilityWindow, c.Booking, c.BookingEvent,
-		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
-		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
-		c.Fulfillment, c.Game, c.MediaFile, c.MoneyTransfer, c.Notification, c.Order,
-		c.OrderContract, c.OrderEvent, c.OrderQuote, c.PaymentAllocation,
-		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
-		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
-		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
+		c.AccountReservation, c.AccountSubmission, c.Article, c.ArticleEvent,
+		c.ArticleRevision, c.ArticleSlug, c.AuthAudit, c.AuthChallenge, c.AuthFlow,
+		c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession,
+		c.AvailabilityDelivery, c.AvailabilitySubscription, c.AvailabilityTarget,
+		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CaseEvent, c.CatalogRelease,
+		c.Conversation, c.ConversationMessage, c.ConversationRead, c.Coupon,
+		c.CouponClaim, c.CouponRevision, c.Favorite, c.Fulfillment, c.Game,
+		c.MediaFile, c.MoneyTransfer, c.Notification, c.Order, c.OrderContract,
+		c.OrderEvent, c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt,
+		c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord,
+		c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest, c.Review,
+		c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
 		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
 		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
 		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
@@ -643,6 +669,14 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AccountReservation.mutate(ctx, m)
 	case *AccountSubmissionMutation:
 		return c.AccountSubmission.mutate(ctx, m)
+	case *ArticleMutation:
+		return c.Article.mutate(ctx, m)
+	case *ArticleEventMutation:
+		return c.ArticleEvent.mutate(ctx, m)
+	case *ArticleRevisionMutation:
+		return c.ArticleRevision.mutate(ctx, m)
+	case *ArticleSlugMutation:
+		return c.ArticleSlug.mutate(ctx, m)
 	case *AuthAuditMutation:
 		return c.AuthAudit.mutate(ctx, m)
 	case *AuthChallengeMutation:
@@ -1436,6 +1470,538 @@ func (c *AccountSubmissionClient) mutate(ctx context.Context, m *AccountSubmissi
 		return (&AccountSubmissionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AccountSubmission mutation op: %q", m.Op())
+	}
+}
+
+// ArticleClient is a client for the Article schema.
+type ArticleClient struct {
+	config
+}
+
+// NewArticleClient returns a client for the Article from the given config.
+func NewArticleClient(c config) *ArticleClient {
+	return &ArticleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `article.Hooks(f(g(h())))`.
+func (c *ArticleClient) Use(hooks ...Hook) {
+	c.hooks.Article = append(c.hooks.Article, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `article.Intercept(f(g(h())))`.
+func (c *ArticleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Article = append(c.inters.Article, interceptors...)
+}
+
+// Create returns a builder for creating a Article entity.
+func (c *ArticleClient) Create() *ArticleCreate {
+	mutation := newArticleMutation(c.config, OpCreate)
+	return &ArticleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Article entities.
+func (c *ArticleClient) CreateBulk(builders ...*ArticleCreate) *ArticleCreateBulk {
+	return &ArticleCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ArticleClient) MapCreateBulk(slice any, setFunc func(*ArticleCreate, int)) *ArticleCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ArticleCreateBulk{err: fmt.Errorf("calling to ArticleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ArticleCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ArticleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Article.
+func (c *ArticleClient) Update() *ArticleUpdate {
+	mutation := newArticleMutation(c.config, OpUpdate)
+	return &ArticleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ArticleClient) UpdateOne(_m *Article) *ArticleUpdateOne {
+	mutation := newArticleMutation(c.config, OpUpdateOne, withArticle(_m))
+	return &ArticleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ArticleClient) UpdateOneID(id string) *ArticleUpdateOne {
+	mutation := newArticleMutation(c.config, OpUpdateOne, withArticleID(id))
+	return &ArticleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Article.
+func (c *ArticleClient) Delete() *ArticleDelete {
+	mutation := newArticleMutation(c.config, OpDelete)
+	return &ArticleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ArticleClient) DeleteOne(_m *Article) *ArticleDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ArticleClient) DeleteOneID(id string) *ArticleDeleteOne {
+	builder := c.Delete().Where(article.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ArticleDeleteOne{builder}
+}
+
+// Query returns a query builder for Article.
+func (c *ArticleClient) Query() *ArticleQuery {
+	return &ArticleQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeArticle},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Article entity by its id.
+func (c *ArticleClient) Get(ctx context.Context, id string) (*Article, error) {
+	return c.Query().Where(article.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ArticleClient) GetX(ctx context.Context, id string) *Article {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ArticleClient) Hooks() []Hook {
+	return c.hooks.Article
+}
+
+// Interceptors returns the client interceptors.
+func (c *ArticleClient) Interceptors() []Interceptor {
+	return c.inters.Article
+}
+
+func (c *ArticleClient) mutate(ctx context.Context, m *ArticleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ArticleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ArticleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ArticleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ArticleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Article mutation op: %q", m.Op())
+	}
+}
+
+// ArticleEventClient is a client for the ArticleEvent schema.
+type ArticleEventClient struct {
+	config
+}
+
+// NewArticleEventClient returns a client for the ArticleEvent from the given config.
+func NewArticleEventClient(c config) *ArticleEventClient {
+	return &ArticleEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `articleevent.Hooks(f(g(h())))`.
+func (c *ArticleEventClient) Use(hooks ...Hook) {
+	c.hooks.ArticleEvent = append(c.hooks.ArticleEvent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `articleevent.Intercept(f(g(h())))`.
+func (c *ArticleEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ArticleEvent = append(c.inters.ArticleEvent, interceptors...)
+}
+
+// Create returns a builder for creating a ArticleEvent entity.
+func (c *ArticleEventClient) Create() *ArticleEventCreate {
+	mutation := newArticleEventMutation(c.config, OpCreate)
+	return &ArticleEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ArticleEvent entities.
+func (c *ArticleEventClient) CreateBulk(builders ...*ArticleEventCreate) *ArticleEventCreateBulk {
+	return &ArticleEventCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ArticleEventClient) MapCreateBulk(slice any, setFunc func(*ArticleEventCreate, int)) *ArticleEventCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ArticleEventCreateBulk{err: fmt.Errorf("calling to ArticleEventClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ArticleEventCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ArticleEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ArticleEvent.
+func (c *ArticleEventClient) Update() *ArticleEventUpdate {
+	mutation := newArticleEventMutation(c.config, OpUpdate)
+	return &ArticleEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ArticleEventClient) UpdateOne(_m *ArticleEvent) *ArticleEventUpdateOne {
+	mutation := newArticleEventMutation(c.config, OpUpdateOne, withArticleEvent(_m))
+	return &ArticleEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ArticleEventClient) UpdateOneID(id string) *ArticleEventUpdateOne {
+	mutation := newArticleEventMutation(c.config, OpUpdateOne, withArticleEventID(id))
+	return &ArticleEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ArticleEvent.
+func (c *ArticleEventClient) Delete() *ArticleEventDelete {
+	mutation := newArticleEventMutation(c.config, OpDelete)
+	return &ArticleEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ArticleEventClient) DeleteOne(_m *ArticleEvent) *ArticleEventDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ArticleEventClient) DeleteOneID(id string) *ArticleEventDeleteOne {
+	builder := c.Delete().Where(articleevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ArticleEventDeleteOne{builder}
+}
+
+// Query returns a query builder for ArticleEvent.
+func (c *ArticleEventClient) Query() *ArticleEventQuery {
+	return &ArticleEventQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeArticleEvent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ArticleEvent entity by its id.
+func (c *ArticleEventClient) Get(ctx context.Context, id string) (*ArticleEvent, error) {
+	return c.Query().Where(articleevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ArticleEventClient) GetX(ctx context.Context, id string) *ArticleEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ArticleEventClient) Hooks() []Hook {
+	return c.hooks.ArticleEvent
+}
+
+// Interceptors returns the client interceptors.
+func (c *ArticleEventClient) Interceptors() []Interceptor {
+	return c.inters.ArticleEvent
+}
+
+func (c *ArticleEventClient) mutate(ctx context.Context, m *ArticleEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ArticleEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ArticleEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ArticleEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ArticleEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ArticleEvent mutation op: %q", m.Op())
+	}
+}
+
+// ArticleRevisionClient is a client for the ArticleRevision schema.
+type ArticleRevisionClient struct {
+	config
+}
+
+// NewArticleRevisionClient returns a client for the ArticleRevision from the given config.
+func NewArticleRevisionClient(c config) *ArticleRevisionClient {
+	return &ArticleRevisionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `articlerevision.Hooks(f(g(h())))`.
+func (c *ArticleRevisionClient) Use(hooks ...Hook) {
+	c.hooks.ArticleRevision = append(c.hooks.ArticleRevision, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `articlerevision.Intercept(f(g(h())))`.
+func (c *ArticleRevisionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ArticleRevision = append(c.inters.ArticleRevision, interceptors...)
+}
+
+// Create returns a builder for creating a ArticleRevision entity.
+func (c *ArticleRevisionClient) Create() *ArticleRevisionCreate {
+	mutation := newArticleRevisionMutation(c.config, OpCreate)
+	return &ArticleRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ArticleRevision entities.
+func (c *ArticleRevisionClient) CreateBulk(builders ...*ArticleRevisionCreate) *ArticleRevisionCreateBulk {
+	return &ArticleRevisionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ArticleRevisionClient) MapCreateBulk(slice any, setFunc func(*ArticleRevisionCreate, int)) *ArticleRevisionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ArticleRevisionCreateBulk{err: fmt.Errorf("calling to ArticleRevisionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ArticleRevisionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ArticleRevisionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ArticleRevision.
+func (c *ArticleRevisionClient) Update() *ArticleRevisionUpdate {
+	mutation := newArticleRevisionMutation(c.config, OpUpdate)
+	return &ArticleRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ArticleRevisionClient) UpdateOne(_m *ArticleRevision) *ArticleRevisionUpdateOne {
+	mutation := newArticleRevisionMutation(c.config, OpUpdateOne, withArticleRevision(_m))
+	return &ArticleRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ArticleRevisionClient) UpdateOneID(id string) *ArticleRevisionUpdateOne {
+	mutation := newArticleRevisionMutation(c.config, OpUpdateOne, withArticleRevisionID(id))
+	return &ArticleRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ArticleRevision.
+func (c *ArticleRevisionClient) Delete() *ArticleRevisionDelete {
+	mutation := newArticleRevisionMutation(c.config, OpDelete)
+	return &ArticleRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ArticleRevisionClient) DeleteOne(_m *ArticleRevision) *ArticleRevisionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ArticleRevisionClient) DeleteOneID(id string) *ArticleRevisionDeleteOne {
+	builder := c.Delete().Where(articlerevision.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ArticleRevisionDeleteOne{builder}
+}
+
+// Query returns a query builder for ArticleRevision.
+func (c *ArticleRevisionClient) Query() *ArticleRevisionQuery {
+	return &ArticleRevisionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeArticleRevision},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ArticleRevision entity by its id.
+func (c *ArticleRevisionClient) Get(ctx context.Context, id string) (*ArticleRevision, error) {
+	return c.Query().Where(articlerevision.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ArticleRevisionClient) GetX(ctx context.Context, id string) *ArticleRevision {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ArticleRevisionClient) Hooks() []Hook {
+	return c.hooks.ArticleRevision
+}
+
+// Interceptors returns the client interceptors.
+func (c *ArticleRevisionClient) Interceptors() []Interceptor {
+	return c.inters.ArticleRevision
+}
+
+func (c *ArticleRevisionClient) mutate(ctx context.Context, m *ArticleRevisionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ArticleRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ArticleRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ArticleRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ArticleRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ArticleRevision mutation op: %q", m.Op())
+	}
+}
+
+// ArticleSlugClient is a client for the ArticleSlug schema.
+type ArticleSlugClient struct {
+	config
+}
+
+// NewArticleSlugClient returns a client for the ArticleSlug from the given config.
+func NewArticleSlugClient(c config) *ArticleSlugClient {
+	return &ArticleSlugClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `articleslug.Hooks(f(g(h())))`.
+func (c *ArticleSlugClient) Use(hooks ...Hook) {
+	c.hooks.ArticleSlug = append(c.hooks.ArticleSlug, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `articleslug.Intercept(f(g(h())))`.
+func (c *ArticleSlugClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ArticleSlug = append(c.inters.ArticleSlug, interceptors...)
+}
+
+// Create returns a builder for creating a ArticleSlug entity.
+func (c *ArticleSlugClient) Create() *ArticleSlugCreate {
+	mutation := newArticleSlugMutation(c.config, OpCreate)
+	return &ArticleSlugCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ArticleSlug entities.
+func (c *ArticleSlugClient) CreateBulk(builders ...*ArticleSlugCreate) *ArticleSlugCreateBulk {
+	return &ArticleSlugCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ArticleSlugClient) MapCreateBulk(slice any, setFunc func(*ArticleSlugCreate, int)) *ArticleSlugCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ArticleSlugCreateBulk{err: fmt.Errorf("calling to ArticleSlugClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ArticleSlugCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ArticleSlugCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ArticleSlug.
+func (c *ArticleSlugClient) Update() *ArticleSlugUpdate {
+	mutation := newArticleSlugMutation(c.config, OpUpdate)
+	return &ArticleSlugUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ArticleSlugClient) UpdateOne(_m *ArticleSlug) *ArticleSlugUpdateOne {
+	mutation := newArticleSlugMutation(c.config, OpUpdateOne, withArticleSlug(_m))
+	return &ArticleSlugUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ArticleSlugClient) UpdateOneID(id string) *ArticleSlugUpdateOne {
+	mutation := newArticleSlugMutation(c.config, OpUpdateOne, withArticleSlugID(id))
+	return &ArticleSlugUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ArticleSlug.
+func (c *ArticleSlugClient) Delete() *ArticleSlugDelete {
+	mutation := newArticleSlugMutation(c.config, OpDelete)
+	return &ArticleSlugDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ArticleSlugClient) DeleteOne(_m *ArticleSlug) *ArticleSlugDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ArticleSlugClient) DeleteOneID(id string) *ArticleSlugDeleteOne {
+	builder := c.Delete().Where(articleslug.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ArticleSlugDeleteOne{builder}
+}
+
+// Query returns a query builder for ArticleSlug.
+func (c *ArticleSlugClient) Query() *ArticleSlugQuery {
+	return &ArticleSlugQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeArticleSlug},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ArticleSlug entity by its id.
+func (c *ArticleSlugClient) Get(ctx context.Context, id string) (*ArticleSlug, error) {
+	return c.Query().Where(articleslug.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ArticleSlugClient) GetX(ctx context.Context, id string) *ArticleSlug {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ArticleSlugClient) Hooks() []Hook {
+	return c.hooks.ArticleSlug
+}
+
+// Interceptors returns the client interceptors.
+func (c *ArticleSlugClient) Interceptors() []Interceptor {
+	return c.inters.ArticleSlug
+}
+
+func (c *ArticleSlugClient) mutate(ctx context.Context, m *ArticleSlugMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ArticleSlugCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ArticleSlugUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ArticleSlugUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ArticleSlugDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ArticleSlug mutation op: %q", m.Op())
 	}
 }
 
@@ -9822,34 +10388,36 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 type (
 	hooks struct {
 		AccountDelivery, AccountListing, AccountListingRelease, AccountReservation,
-		AccountSubmission, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity,
-		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
-		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
-		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationMessage,
-		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
-		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
-		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
-		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
-		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
-		SellerOfferEvent, ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent,
-		ShopProductRelease, ShopRecipient, ShopReservation, ShopStock, SiteRelease,
-		SiteSetting, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
+		AccountSubmission, Article, ArticleEvent, ArticleRevision, ArticleSlug,
+		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
+		AuthRecovery, AuthSession, AvailabilityDelivery, AvailabilitySubscription,
+		AvailabilityTarget, AvailabilityWindow, Booking, BookingEvent, CaseEvent,
+		CatalogRelease, Conversation, ConversationMessage, ConversationRead, Coupon,
+		CouponClaim, CouponRevision, Favorite, Fulfillment, Game, MediaFile,
+		MoneyTransfer, Notification, Order, OrderContract, OrderEvent, OrderQuote,
+		PaymentAllocation, PaymentAttempt, PaymentObservation, PaymentPolicy,
+		PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal, PrivacyRequest,
+		Review, ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent,
+		ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent, ShopProductRelease,
+		ShopRecipient, ShopReservation, ShopStock, SiteRelease, SiteSetting,
+		StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
 		TransferObservation, TransferRecord, User []ent.Hook
 	}
 	inters struct {
 		AccountDelivery, AccountListing, AccountListingRelease, AccountReservation,
-		AccountSubmission, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity,
-		AuthMessage, AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
-		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
-		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationMessage,
-		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
-		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
-		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
-		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
-		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
-		SellerOfferEvent, ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent,
-		ShopProductRelease, ShopRecipient, ShopReservation, ShopStock, SiteRelease,
-		SiteSetting, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
+		AccountSubmission, Article, ArticleEvent, ArticleRevision, ArticleSlug,
+		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
+		AuthRecovery, AuthSession, AvailabilityDelivery, AvailabilitySubscription,
+		AvailabilityTarget, AvailabilityWindow, Booking, BookingEvent, CaseEvent,
+		CatalogRelease, Conversation, ConversationMessage, ConversationRead, Coupon,
+		CouponClaim, CouponRevision, Favorite, Fulfillment, Game, MediaFile,
+		MoneyTransfer, Notification, Order, OrderContract, OrderEvent, OrderQuote,
+		PaymentAllocation, PaymentAttempt, PaymentObservation, PaymentPolicy,
+		PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal, PrivacyRequest,
+		Review, ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent,
+		ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent, ShopProductRelease,
+		ShopRecipient, ShopReservation, ShopStock, SiteRelease, SiteSetting,
+		StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
 		TransferObservation, TransferRecord, User []ent.Interceptor
 	}
 )

@@ -23,6 +23,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/news"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/operations"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
@@ -69,13 +70,13 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	fixtures := map[string]string{}
 	for _, project := range []string{"desktop", "mobile"} {
-		for _, role := range []string{"shopmarketing", "shopbuyer", "shopworker", "shopadmin", "contentowner", "resaleseller", "resalebuyer", "payadmin", "paybuyer", "customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond", "seller", "selleradmin", "sellerother"} {
+		for _, role := range []string{"newseditor", "shopmarketing", "shopbuyer", "shopworker", "shopadmin", "contentowner", "resaleseller", "resalebuyer", "payadmin", "paybuyer", "customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond", "seller", "selleradmin", "sellerother"} {
 			email := strings.ToLower(role + "-" + project + "-" + rand.Text() + "@example.test")
 			account, createErr := f.client.User.Create().SetEmail(email).SetEmailVerifiedAt(time.Now()).SetTermsVersion("test-v1").SetTermsAcceptedAt(time.Now()).SetRole(func() string {
 				if role == "workbooster" || role == "worksecond" {
 					return "booster"
 				}
-				if role == "shopmarketing" || role == "shopadmin" || role == "selleradmin" || role == "workadmin" || role == "catalog" || role == "orderadmin" || role == "supportadmin" {
+				if role == "newseditor" || role == "shopmarketing" || role == "shopadmin" || role == "selleradmin" || role == "workadmin" || role == "catalog" || role == "orderadmin" || role == "supportadmin" {
 					return "administrator"
 				}
 				if role == "shopworker" || role == "payadmin" || role == "contentowner" {
@@ -99,6 +100,7 @@ func TestBrowserEnvironment(t *testing.T) {
 	seedBrowserOperations(t, f, fixtures)
 	seedBrowserPayments(t, f, fixtures)
 	seedBrowserShop(t, f, fixtures)
+	seedBrowserNews(t, f, fixtures)
 	ring, ringErr := vault.NewKeyring("v1", map[string][]byte{"v1": vaultKey(t)})
 	if ringErr != nil {
 		t.Fatal(ringErr)
@@ -117,7 +119,7 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	files := media.New(f.client, service, mediaObjects(t, f.client), media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
 	finance := payments.New(f.client, service, &browserPaymentProvider{newPaymentProvider(t)}, "fixture:browser-fixture", true, nil).ConfigureOutgoing(&browserOutgoingProvider{outgoingFixture: &outgoingFixture{}}, true)
-	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, resale.New(f.client, service, ring, nil).Register, shop.New(f.client, service, nil).Register, finance.Register, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, execution.Register, submissions.New(f.client, service, nil).Register, reviews.New(f.client, service, nil).Register, operations.New(f.client, service, nil).Register, alerts.Register, reports.New(service, nil).Register, privacy.New(f.client, service, nil).Register, sitecontent.New(f.client, service, nil).Register))
+	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, news.New(f.client, service, nil).Register, resale.New(f.client, service, ring, nil).Register, shop.New(f.client, service, nil).Register, finance.Register, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, execution.Register, submissions.New(f.client, service, nil).Register, reviews.New(f.client, service, nil).Register, operations.New(f.client, service, nil).Register, alerts.Register, reports.New(service, nil).Register, privacy.New(f.client, service, nil).Register, sitecontent.New(f.client, service, nil).Register))
 	defer server.Close()
 	work, cancel := context.WithCancel(t.Context())
 	defer cancel()

@@ -69,6 +69,54 @@ func (f AccountSubmissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountSubmissionMutation", m)
 }
 
+// The ArticleFunc type is an adapter to allow the use of ordinary
+// function as Article mutator.
+type ArticleFunc func(context.Context, *ent.ArticleMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ArticleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ArticleMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArticleMutation", m)
+}
+
+// The ArticleEventFunc type is an adapter to allow the use of ordinary
+// function as ArticleEvent mutator.
+type ArticleEventFunc func(context.Context, *ent.ArticleEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ArticleEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ArticleEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArticleEventMutation", m)
+}
+
+// The ArticleRevisionFunc type is an adapter to allow the use of ordinary
+// function as ArticleRevision mutator.
+type ArticleRevisionFunc func(context.Context, *ent.ArticleRevisionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ArticleRevisionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ArticleRevisionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArticleRevisionMutation", m)
+}
+
+// The ArticleSlugFunc type is an adapter to allow the use of ordinary
+// function as ArticleSlug mutator.
+type ArticleSlugFunc func(context.Context, *ent.ArticleSlugMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ArticleSlugFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ArticleSlugMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArticleSlugMutation", m)
+}
+
 // The AuthAuditFunc type is an adapter to allow the use of ordinary
 // function as AuthAudit mutator.
 type AuthAuditFunc func(context.Context, *ent.AuthAuditMutation) (ent.Value, error)

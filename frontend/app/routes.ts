@@ -6,6 +6,7 @@ import {
 } from "@react-router/dev/routes";
 export default [
   index("routes/home.tsx"),
+  route("games/:slug/news/sitemap.xml", "routes/news-sitemap.ts"),
   layout("routes/browse.tsx", [
     route("accounts", "routes/accounts.tsx"),
     route("accounts/:id", "routes/account-product.tsx"),
@@ -17,6 +18,8 @@ export default [
       route("games/:slug/services/:service", "routes/service.tsx"),
       route("games/:slug/packages/:pack", "routes/package.tsx"),
       route("games/:slug/reviews", "routes/game-reviews.tsx"),
+      route("games/:slug/news", "routes/game-news.tsx"),
+      route("games/:slug/news/:article", "routes/game-article.tsx"),
       route("games/:slug/shop", "routes/game-shop.tsx"),
       route("games/:slug/shop/:id", "routes/game-shop-product.tsx"),
       route("games/:slug/accounts", "routes/game-accounts.tsx"),

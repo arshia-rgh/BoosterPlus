@@ -82,24 +82,31 @@ export function GameDiscovery({
               const target =
                 offer.target === "package"
                   ? `/games/${release.slug}/packages/${encodeURIComponent(offer.package ?? "")}?${query.toString()}`
-                  : offer.target === "shop"
-                    ? `/games/${release.slug}/shop/${encodeURIComponent(offer.product_id ?? "")}?${query.toString()}`
-                    : `/games/${release.slug}/accounts/${encodeURIComponent(offer.listing_id ?? "")}`;
+                  : offer.target === "news"
+                    ? `/games/${release.slug}/news/${encodeURIComponent(offer.article_slug ?? "")}`
+                    : offer.target === "shop"
+                      ? `/games/${release.slug}/shop/${encodeURIComponent(offer.product_id ?? "")}?${query.toString()}`
+                      : `/games/${release.slug}/accounts/${encodeURIComponent(offer.listing_id ?? "")}`;
               return (
                 <article className="featured-offer" key={offer.key}>
                   <span className="status">
-                    {serviceNames[offer.service]} · Limited offer
+                    {serviceNames[offer.service]} ·{" "}
+                    {offer.target === "news"
+                      ? "Featured reading"
+                      : "Limited offer"}
                   </span>
                   <h3>{offer.title}</h3>
                   <p>{offer.description}</p>
-                  <p className="featured-price">
-                    {offer.original_minor && (
-                      <del>
-                        {offer.currency} {minorDisplay(offer.original_minor)}
-                      </del>
-                    )}{" "}
-                    {offer.currency} {minorDisplay(offer.amount_minor)}
-                  </p>
+                  {offer.target !== "news" && (
+                    <p className="featured-price">
+                      {offer.original_minor && (
+                        <del>
+                          {offer.currency} {minorDisplay(offer.original_minor)}
+                        </del>
+                      )}{" "}
+                      {offer.currency} {minorDisplay(offer.amount_minor)}
+                    </p>
+                  )}
                   {offer.target === "shop" && (
                     <p>
                       For {offer.quantity} item{offer.quantity === 1 ? "" : "s"}{" "}
@@ -107,7 +114,8 @@ export function GameDiscovery({
                     </p>
                   )}
                   <p className="quiet">
-                    Ends {publicTime(offer.ends_at)}
+                    {offer.target === "news" ? "Featured until" : "Ends"}{" "}
+                    {publicTime(offer.ends_at)}
                     {offer.remaining != null
                       ? ` · ${String(offer.remaining)} available at last check`
                       : ""}
@@ -118,21 +126,25 @@ export function GameDiscovery({
                       is checked before ordering.
                     </p>
                   )}
-                  <p className="quiet">
-                    Availability and final price are checked when you continue.
-                    This does not reserve an offer.
-                  </p>
+                  {offer.target !== "news" && (
+                    <p className="quiet">
+                      Availability and final price are checked when you
+                      continue. This does not reserve an offer.
+                    </p>
+                  )}
                   <Link
                     preventScrollReset
                     className="button compact"
                     to={target}
                   >
-                    Review{" "}
-                    {offer.target === "shop"
-                      ? "shop item"
-                      : offer.target === "package"
-                        ? "package"
-                        : "account"}
+                    {offer.target === "news" ? "Read" : "Review"}{" "}
+                    {offer.target === "news"
+                      ? "article"
+                      : offer.target === "shop"
+                        ? "shop item"
+                        : offer.target === "package"
+                          ? "package"
+                          : "account"}
                   </Link>
                 </article>
               );

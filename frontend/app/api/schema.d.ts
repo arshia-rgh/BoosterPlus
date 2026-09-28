@@ -5088,6 +5088,245 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/news": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Versioned staff-managed editorial content */
+    get: operations["getArticleApiV1AdminNews"];
+    put?: never;
+    /** Versioned staff-managed editorial content */
+    post: operations["postArticleApiV1AdminNews"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/news/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Versioned staff-managed editorial content */
+    get: operations["getArticleApiV1AdminNewsId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/news/{id}/draft": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned staff-managed editorial content */
+    post: operations["postArticleApiV1AdminNewsIdDraft"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/news/{id}/preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Versioned staff-managed editorial content */
+    get: operations["getArticleApiV1AdminNewsIdPreview"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/news/{id}/history": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Versioned staff-managed editorial content */
+    get: operations["getArticleApiV1AdminNewsIdHistory"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/news/{id}/publish": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned staff-managed editorial content */
+    post: operations["postArticleApiV1AdminNewsIdPublish"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/news/{id}/schedule": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned staff-managed editorial content */
+    post: operations["postArticleApiV1AdminNewsIdSchedule"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/news/{id}/unschedule": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned staff-managed editorial content */
+    post: operations["postArticleApiV1AdminNewsIdUnschedule"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/news/{id}/unpublish": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned staff-managed editorial content */
+    post: operations["postArticleApiV1AdminNewsIdUnpublish"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/news/{id}/archive": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned staff-managed editorial content */
+    post: operations["postArticleApiV1AdminNewsIdArchive"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/news/{id}/restore": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Versioned staff-managed editorial content */
+    post: operations["postArticleApiV1AdminNewsIdRestore"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/games/{slug}/news": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Versioned staff-managed editorial content */
+    get: operations["getArticleApiV1GamesSlugNews"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/games/{slug}/news/{article}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Versioned staff-managed editorial content */
+    get: operations["getArticleApiV1GamesSlugNewsArticle"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/games/{slug}/news-sitemap": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Versioned staff-managed editorial content */
+    get: operations["getArticleSitemap"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -7129,7 +7368,7 @@ export interface components {
       description: string;
       enabled: boolean;
       /** @enum {string} */
-      target: "package" | "account" | "shop";
+      target: "package" | "account" | "shop" | "news";
       package: string;
       variant: string;
       listing_id: string;
@@ -7143,41 +7382,78 @@ export interface components {
       priority: number;
       show_quantity: boolean;
       product_id?: string;
+      article_id?: string;
+      article_slug?: string;
     };
     CatalogDiscoveryPolicy: {
       capabilities: components["schemas"]["CatalogCapabilityPolicy"][];
       metrics?: components["schemas"]["PublicMetricPolicy"];
       promotions?: components["schemas"]["CatalogPromotion"][];
     };
-    CatalogPromotionView: {
-      key: string;
-      title: string;
-      description: string;
-      /** @enum {string} */
-      service: "boost" | "accounts" | "shop";
-      /** @enum {string} */
-      target: "package" | "account" | "shop";
-      package?: string;
-      variant?: string;
-      listing_id?: string;
-      release_id: string;
-      /** @enum {string} */
-      currency: "USD" | "EUR" | "GBP";
-      amount_minor: string;
-      original_minor?: string;
-      coupon_code?: string;
-      coupon_version?: number;
-      /** Format: date-time */
-      starts_at: string;
-      /** Format: date-time */
-      ends_at: string;
-      priority: number;
-      remaining?: number;
-      /** @constant */
-      indicative: true;
-      product_id?: string;
-      quantity?: number;
-    };
+    CatalogPromotionView:
+      | {
+          key: string;
+          title: string;
+          description: string;
+          /** @enum {string} */
+          service: "boost" | "accounts" | "shop";
+          /** @enum {string} */
+          target: "package" | "account" | "shop";
+          package?: string;
+          variant?: string;
+          listing_id?: string;
+          release_id: string;
+          /** @enum {string} */
+          currency: "USD" | "EUR" | "GBP";
+          amount_minor: string;
+          original_minor?: string;
+          coupon_code?: string;
+          coupon_version?: number;
+          /** Format: date-time */
+          starts_at: string;
+          /** Format: date-time */
+          ends_at: string;
+          priority: number;
+          remaining?: number;
+          /** @constant */
+          indicative: true;
+          product_id?: string;
+          quantity?: number;
+          article_id?: string;
+          article_slug?: string;
+        }
+      | {
+          key: string;
+          title: string;
+          description: string;
+          /** @constant */
+          service: "news";
+          /** @constant */
+          target: "news";
+          package?: string;
+          variant?: string;
+          listing_id?: string;
+          release_id: string;
+          /** @constant */
+          currency: "";
+          /** @constant */
+          amount_minor: "";
+          original_minor?: string;
+          coupon_code?: string;
+          coupon_version?: number;
+          /** Format: date-time */
+          starts_at: string;
+          /** Format: date-time */
+          ends_at: string;
+          priority: number;
+          remaining?: number;
+          /** @constant */
+          indicative: false;
+          product_id?: string;
+          quantity?: number;
+          article_id: string;
+          article_slug: string;
+        };
     CatalogDiscoveryView: {
       game_id: string;
       release_id: string;
@@ -7579,6 +7855,136 @@ export interface components {
       proof_message_id?: string;
     };
     ShopRecipientAccess: Record<string, never>;
+    ArticleBlock: {
+      /** @enum {string} */
+      kind:
+        | "paragraph"
+        | "heading"
+        | "quote"
+        | "code"
+        | "link"
+        | "image"
+        | "list"
+        | "table";
+      text: string;
+      level: number;
+      url: string;
+      alt: string;
+      source: string;
+      items: string[] | null;
+      headers: string[] | null;
+      rows: string[][] | null;
+    };
+    ArticleDefinition: {
+      title: string;
+      slug: string;
+      summary: string;
+      author: string;
+      source: string;
+      source_url: string;
+      game_version: string;
+      asset: string;
+      asset_alt: string;
+      asset_source: string;
+      /** @enum {string} */
+      kind: "update" | "patch" | "guide";
+      reviewed: boolean;
+      blocks: components["schemas"]["ArticleBlock"][];
+    };
+    ArticleDraft: {
+      id: string;
+      game_id: string;
+      revision_id: string;
+      current_revision: string;
+      scheduled_revision: string;
+      /** @enum {string} */
+      state: "draft" | "scheduled" | "published" | "unpublished" | "archived";
+      version: number;
+      /** Format: date-time */
+      scheduled_at: string | null;
+      /** Format: date-time */
+      published_at: string | null;
+      /** Format: date-time */
+      updated_at: string;
+      definition: components["schemas"]["ArticleDefinition"];
+      game_name: string;
+      schedule_state: string;
+    };
+    ArticleSummary: {
+      id: string;
+      game_id: string;
+      title: string;
+      kind: string;
+      author: string;
+      state: string;
+      version: number;
+      /** Format: date-time */
+      updated_at: string;
+      /** Format: date-time */
+      scheduled_at: string | null;
+      game_name: string;
+    };
+    Articles: {
+      items: components["schemas"]["ArticleSummary"][];
+      next: string;
+    };
+    ArticlePublic: {
+      id: string;
+      game_slug: string;
+      revision_id: string;
+      definition: components["schemas"]["ArticleDefinition"];
+      /** Format: date-time */
+      published_at: string;
+      /** Format: date-time */
+      updated_at: string;
+      redirect: boolean;
+    };
+    ArticlePublicPage: {
+      items: components["schemas"]["ArticlePublic"][];
+      next: string;
+    };
+    ArticleIssue: {
+      path: string;
+      message: string;
+    };
+    ArticlePreview: {
+      definition: components["schemas"]["ArticleDefinition"];
+      issues: components["schemas"]["ArticleIssue"][];
+    };
+    ArticleHistory: {
+      items: {
+        version: number;
+        action: string;
+        revision_id: string;
+        /** Format: date-time */
+        at: string;
+      }[];
+      next: number;
+    };
+    ArticleCreate: {
+      game_id: string;
+      definition: components["schemas"]["ArticleDefinition"];
+    };
+    ArticleSave: {
+      version: number;
+      definition: components["schemas"]["ArticleDefinition"];
+    };
+    ArticleChange: {
+      version: number;
+      revision_id?: string;
+      at?: string;
+    };
+    ArticleProblem: {
+      code: string;
+      issues?: components["schemas"]["ArticleIssue"][];
+    };
+    ArticleSitemap: {
+      items: {
+        slug: string;
+        /** Format: date-time */
+        updated_at: string;
+      }[];
+    };
   };
   responses: never;
   parameters: never;
@@ -22310,6 +22716,531 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  getArticleApiV1AdminNews: {
+    parameters: {
+      query?: {
+        after?: string;
+        q?: string;
+        game?: string;
+        state?: string;
+        kind?: string;
+        author?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Articles"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  postArticleApiV1AdminNews: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ArticleCreate"];
+      };
+    };
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleDraft"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  getArticleApiV1AdminNewsId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleDraft"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  postArticleApiV1AdminNewsIdDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ArticleSave"];
+      };
+    };
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleDraft"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  getArticleApiV1AdminNewsIdPreview: {
+    parameters: {
+      query?: {
+        revision?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticlePreview"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  getArticleApiV1AdminNewsIdHistory: {
+    parameters: {
+      query?: {
+        before?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleHistory"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  postArticleApiV1AdminNewsIdPublish: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ArticleChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleDraft"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  postArticleApiV1AdminNewsIdSchedule: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ArticleChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleDraft"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  postArticleApiV1AdminNewsIdUnschedule: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ArticleChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleDraft"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  postArticleApiV1AdminNewsIdUnpublish: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ArticleChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleDraft"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  postArticleApiV1AdminNewsIdArchive: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ArticleChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleDraft"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  postArticleApiV1AdminNewsIdRestore: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ArticleChange"];
+      };
+    };
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleDraft"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  getArticleApiV1GamesSlugNews: {
+    parameters: {
+      query?: {
+        after?: string;
+        q?: string;
+        kind?: string;
+      };
+      header?: never;
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticlePublicPage"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  getArticleApiV1GamesSlugNewsArticle: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        slug: string;
+        article: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticlePublic"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
+        };
+      };
+    };
+  };
+  getArticleSitemap: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Bounded editorial projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleSitemap"];
+        };
+      };
+      /** @description Authorization, validation, unavailable or revision conflict */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArticleProblem"];
         };
       };
     };

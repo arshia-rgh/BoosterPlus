@@ -76,6 +76,14 @@ export const recoveriesSchema = z.object({
 });
 const messages = new Map([
   [
+    "article_invalid",
+    "Review the article fields and publication requirements.",
+  ],
+  [
+    "article_conflict",
+    "This article changed. Refresh and review its saved revision before continuing.",
+  ],
+  [
     "shop_invalid",
     "Review the product details and field guidance before continuing.",
   ],

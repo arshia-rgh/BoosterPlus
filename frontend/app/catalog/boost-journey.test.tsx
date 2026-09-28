@@ -108,9 +108,11 @@ it("requires validation before review and preserves private in-memory details th
   validated();
   fireEvent.click(button());
   await screen.findByLabelText("Instructions");
-  expect(
-    screen.getByRole("heading", { name: "2. Review & request" }),
-  ).toHaveFocus();
+  await waitFor(() => {
+    expect(
+      screen.getByRole("heading", { name: "2. Review & request" }),
+    ).toHaveFocus();
+  });
   expect(router.state.location.search).toBe("?step=review");
   expect(screen.queryByLabelText("Play mode (required)")).toBeNull();
   expect(

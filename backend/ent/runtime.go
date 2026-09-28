@@ -10,6 +10,10 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlistingrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountreservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountsubmission"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/article"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/articlerevision"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleslug"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
@@ -336,6 +340,212 @@ func init() {
 	accountsubmission.DefaultID = accountsubmissionDescID.Default.(func() string)
 	// accountsubmission.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	accountsubmission.IDValidator = accountsubmissionDescID.Validators[0].(func(string) error)
+	articleFields := schema.Article{}.Fields()
+	_ = articleFields
+	// articleDescGameID is the schema descriptor for game_id field.
+	articleDescGameID := articleFields[1].Descriptor()
+	// article.DefaultGameID holds the default value on creation for the game_id field.
+	article.DefaultGameID = articleDescGameID.Default.(string)
+	// article.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
+	article.GameIDValidator = articleDescGameID.Validators[0].(func(string) error)
+	// articleDescVersion is the schema descriptor for version field.
+	articleDescVersion := articleFields[2].Descriptor()
+	// article.DefaultVersion holds the default value on creation for the version field.
+	article.DefaultVersion = articleDescVersion.Default.(int)
+	// article.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	article.VersionValidator = articleDescVersion.Validators[0].(func(int) error)
+	// articleDescState is the schema descriptor for state field.
+	articleDescState := articleFields[3].Descriptor()
+	// article.DefaultState holds the default value on creation for the state field.
+	article.DefaultState = articleDescState.Default.(string)
+	// article.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	article.StateValidator = articleDescState.Validators[0].(func(string) error)
+	// articleDescDraftRevision is the schema descriptor for draft_revision field.
+	articleDescDraftRevision := articleFields[4].Descriptor()
+	// article.DefaultDraftRevision holds the default value on creation for the draft_revision field.
+	article.DefaultDraftRevision = articleDescDraftRevision.Default.(string)
+	// article.DraftRevisionValidator is a validator for the "draft_revision" field. It is called by the builders before save.
+	article.DraftRevisionValidator = articleDescDraftRevision.Validators[0].(func(string) error)
+	// articleDescCurrentRevision is the schema descriptor for current_revision field.
+	articleDescCurrentRevision := articleFields[5].Descriptor()
+	// article.DefaultCurrentRevision holds the default value on creation for the current_revision field.
+	article.DefaultCurrentRevision = articleDescCurrentRevision.Default.(string)
+	// article.CurrentRevisionValidator is a validator for the "current_revision" field. It is called by the builders before save.
+	article.CurrentRevisionValidator = articleDescCurrentRevision.Validators[0].(func(string) error)
+	// articleDescScheduledRevision is the schema descriptor for scheduled_revision field.
+	articleDescScheduledRevision := articleFields[6].Descriptor()
+	// article.DefaultScheduledRevision holds the default value on creation for the scheduled_revision field.
+	article.DefaultScheduledRevision = articleDescScheduledRevision.Default.(string)
+	// article.ScheduledRevisionValidator is a validator for the "scheduled_revision" field. It is called by the builders before save.
+	article.ScheduledRevisionValidator = articleDescScheduledRevision.Validators[0].(func(string) error)
+	// articleDescScheduleToken is the schema descriptor for schedule_token field.
+	articleDescScheduleToken := articleFields[7].Descriptor()
+	// article.DefaultScheduleToken holds the default value on creation for the schedule_token field.
+	article.DefaultScheduleToken = articleDescScheduleToken.Default.(string)
+	// article.ScheduleTokenValidator is a validator for the "schedule_token" field. It is called by the builders before save.
+	article.ScheduleTokenValidator = articleDescScheduleToken.Validators[0].(func(string) error)
+	// articleDescScheduledBy is the schema descriptor for scheduled_by field.
+	articleDescScheduledBy := articleFields[8].Descriptor()
+	// article.DefaultScheduledBy holds the default value on creation for the scheduled_by field.
+	article.DefaultScheduledBy = articleDescScheduledBy.Default.(string)
+	// article.ScheduledByValidator is a validator for the "scheduled_by" field. It is called by the builders before save.
+	article.ScheduledByValidator = articleDescScheduledBy.Validators[0].(func(string) error)
+	// articleDescScheduledAuthVersion is the schema descriptor for scheduled_auth_version field.
+	articleDescScheduledAuthVersion := articleFields[9].Descriptor()
+	// article.DefaultScheduledAuthVersion holds the default value on creation for the scheduled_auth_version field.
+	article.DefaultScheduledAuthVersion = articleDescScheduledAuthVersion.Default.(int64)
+	// articleDescTitle is the schema descriptor for title field.
+	articleDescTitle := articleFields[13].Descriptor()
+	// article.DefaultTitle holds the default value on creation for the title field.
+	article.DefaultTitle = articleDescTitle.Default.(string)
+	// article.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	article.TitleValidator = articleDescTitle.Validators[0].(func(string) error)
+	// articleDescKind is the schema descriptor for kind field.
+	articleDescKind := articleFields[14].Descriptor()
+	// article.DefaultKind holds the default value on creation for the kind field.
+	article.DefaultKind = articleDescKind.Default.(string)
+	// article.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	article.KindValidator = articleDescKind.Validators[0].(func(string) error)
+	// articleDescAuthor is the schema descriptor for author field.
+	articleDescAuthor := articleFields[15].Descriptor()
+	// article.DefaultAuthor holds the default value on creation for the author field.
+	article.DefaultAuthor = articleDescAuthor.Default.(string)
+	// article.AuthorValidator is a validator for the "author" field. It is called by the builders before save.
+	article.AuthorValidator = articleDescAuthor.Validators[0].(func(string) error)
+	// articleDescCreatedAt is the schema descriptor for created_at field.
+	articleDescCreatedAt := articleFields[16].Descriptor()
+	// article.DefaultCreatedAt holds the default value on creation for the created_at field.
+	article.DefaultCreatedAt = articleDescCreatedAt.Default.(func() time.Time)
+	// articleDescUpdatedAt is the schema descriptor for updated_at field.
+	articleDescUpdatedAt := articleFields[17].Descriptor()
+	// article.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	article.DefaultUpdatedAt = articleDescUpdatedAt.Default.(func() time.Time)
+	// articleDescID is the schema descriptor for id field.
+	articleDescID := articleFields[0].Descriptor()
+	// article.DefaultID holds the default value on creation for the id field.
+	article.DefaultID = articleDescID.Default.(func() string)
+	// article.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	article.IDValidator = articleDescID.Validators[0].(func(string) error)
+	articleeventFields := schema.ArticleEvent{}.Fields()
+	_ = articleeventFields
+	// articleeventDescArticleID is the schema descriptor for article_id field.
+	articleeventDescArticleID := articleeventFields[1].Descriptor()
+	// articleevent.DefaultArticleID holds the default value on creation for the article_id field.
+	articleevent.DefaultArticleID = articleeventDescArticleID.Default.(string)
+	// articleevent.ArticleIDValidator is a validator for the "article_id" field. It is called by the builders before save.
+	articleevent.ArticleIDValidator = articleeventDescArticleID.Validators[0].(func(string) error)
+	// articleeventDescVersion is the schema descriptor for version field.
+	articleeventDescVersion := articleeventFields[2].Descriptor()
+	// articleevent.DefaultVersion holds the default value on creation for the version field.
+	articleevent.DefaultVersion = articleeventDescVersion.Default.(int)
+	// articleevent.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	articleevent.VersionValidator = articleeventDescVersion.Validators[0].(func(int) error)
+	// articleeventDescAction is the schema descriptor for action field.
+	articleeventDescAction := articleeventFields[3].Descriptor()
+	// articleevent.DefaultAction holds the default value on creation for the action field.
+	articleevent.DefaultAction = articleeventDescAction.Default.(string)
+	// articleevent.ActionValidator is a validator for the "action" field. It is called by the builders before save.
+	articleevent.ActionValidator = articleeventDescAction.Validators[0].(func(string) error)
+	// articleeventDescActorID is the schema descriptor for actor_id field.
+	articleeventDescActorID := articleeventFields[4].Descriptor()
+	// articleevent.DefaultActorID holds the default value on creation for the actor_id field.
+	articleevent.DefaultActorID = articleeventDescActorID.Default.(string)
+	// articleevent.ActorIDValidator is a validator for the "actor_id" field. It is called by the builders before save.
+	articleevent.ActorIDValidator = articleeventDescActorID.Validators[0].(func(string) error)
+	// articleeventDescRevisionID is the schema descriptor for revision_id field.
+	articleeventDescRevisionID := articleeventFields[5].Descriptor()
+	// articleevent.DefaultRevisionID holds the default value on creation for the revision_id field.
+	articleevent.DefaultRevisionID = articleeventDescRevisionID.Default.(string)
+	// articleevent.RevisionIDValidator is a validator for the "revision_id" field. It is called by the builders before save.
+	articleevent.RevisionIDValidator = articleeventDescRevisionID.Validators[0].(func(string) error)
+	// articleeventDescCreatedAt is the schema descriptor for created_at field.
+	articleeventDescCreatedAt := articleeventFields[6].Descriptor()
+	// articleevent.DefaultCreatedAt holds the default value on creation for the created_at field.
+	articleevent.DefaultCreatedAt = articleeventDescCreatedAt.Default.(func() time.Time)
+	// articleeventDescID is the schema descriptor for id field.
+	articleeventDescID := articleeventFields[0].Descriptor()
+	// articleevent.DefaultID holds the default value on creation for the id field.
+	articleevent.DefaultID = articleeventDescID.Default.(func() string)
+	// articleevent.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	articleevent.IDValidator = articleeventDescID.Validators[0].(func(string) error)
+	articlerevisionFields := schema.ArticleRevision{}.Fields()
+	_ = articlerevisionFields
+	// articlerevisionDescArticleID is the schema descriptor for article_id field.
+	articlerevisionDescArticleID := articlerevisionFields[1].Descriptor()
+	// articlerevision.DefaultArticleID holds the default value on creation for the article_id field.
+	articlerevision.DefaultArticleID = articlerevisionDescArticleID.Default.(string)
+	// articlerevision.ArticleIDValidator is a validator for the "article_id" field. It is called by the builders before save.
+	articlerevision.ArticleIDValidator = articlerevisionDescArticleID.Validators[0].(func(string) error)
+	// articlerevisionDescVersion is the schema descriptor for version field.
+	articlerevisionDescVersion := articlerevisionFields[2].Descriptor()
+	// articlerevision.DefaultVersion holds the default value on creation for the version field.
+	articlerevision.DefaultVersion = articlerevisionDescVersion.Default.(int)
+	// articlerevision.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	articlerevision.VersionValidator = articlerevisionDescVersion.Validators[0].(func(int) error)
+	// articlerevisionDescTitle is the schema descriptor for title field.
+	articlerevisionDescTitle := articlerevisionFields[4].Descriptor()
+	// articlerevision.DefaultTitle holds the default value on creation for the title field.
+	articlerevision.DefaultTitle = articlerevisionDescTitle.Default.(string)
+	// articlerevision.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	articlerevision.TitleValidator = articlerevisionDescTitle.Validators[0].(func(string) error)
+	// articlerevisionDescSlug is the schema descriptor for slug field.
+	articlerevisionDescSlug := articlerevisionFields[5].Descriptor()
+	// articlerevision.DefaultSlug holds the default value on creation for the slug field.
+	articlerevision.DefaultSlug = articlerevisionDescSlug.Default.(string)
+	// articlerevision.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	articlerevision.SlugValidator = articlerevisionDescSlug.Validators[0].(func(string) error)
+	// articlerevisionDescKind is the schema descriptor for kind field.
+	articlerevisionDescKind := articlerevisionFields[6].Descriptor()
+	// articlerevision.DefaultKind holds the default value on creation for the kind field.
+	articlerevision.DefaultKind = articlerevisionDescKind.Default.(string)
+	// articlerevision.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	articlerevision.KindValidator = articlerevisionDescKind.Validators[0].(func(string) error)
+	// articlerevisionDescAuthor is the schema descriptor for author field.
+	articlerevisionDescAuthor := articlerevisionFields[7].Descriptor()
+	// articlerevision.DefaultAuthor holds the default value on creation for the author field.
+	articlerevision.DefaultAuthor = articlerevisionDescAuthor.Default.(string)
+	// articlerevision.AuthorValidator is a validator for the "author" field. It is called by the builders before save.
+	articlerevision.AuthorValidator = articlerevisionDescAuthor.Validators[0].(func(string) error)
+	// articlerevisionDescCreatedAt is the schema descriptor for created_at field.
+	articlerevisionDescCreatedAt := articlerevisionFields[8].Descriptor()
+	// articlerevision.DefaultCreatedAt holds the default value on creation for the created_at field.
+	articlerevision.DefaultCreatedAt = articlerevisionDescCreatedAt.Default.(func() time.Time)
+	// articlerevisionDescID is the schema descriptor for id field.
+	articlerevisionDescID := articlerevisionFields[0].Descriptor()
+	// articlerevision.DefaultID holds the default value on creation for the id field.
+	articlerevision.DefaultID = articlerevisionDescID.Default.(func() string)
+	// articlerevision.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	articlerevision.IDValidator = articlerevisionDescID.Validators[0].(func(string) error)
+	articleslugFields := schema.ArticleSlug{}.Fields()
+	_ = articleslugFields
+	// articleslugDescGameID is the schema descriptor for game_id field.
+	articleslugDescGameID := articleslugFields[1].Descriptor()
+	// articleslug.DefaultGameID holds the default value on creation for the game_id field.
+	articleslug.DefaultGameID = articleslugDescGameID.Default.(string)
+	// articleslug.GameIDValidator is a validator for the "game_id" field. It is called by the builders before save.
+	articleslug.GameIDValidator = articleslugDescGameID.Validators[0].(func(string) error)
+	// articleslugDescSlug is the schema descriptor for slug field.
+	articleslugDescSlug := articleslugFields[2].Descriptor()
+	// articleslug.DefaultSlug holds the default value on creation for the slug field.
+	articleslug.DefaultSlug = articleslugDescSlug.Default.(string)
+	// articleslug.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	articleslug.SlugValidator = articleslugDescSlug.Validators[0].(func(string) error)
+	// articleslugDescArticleID is the schema descriptor for article_id field.
+	articleslugDescArticleID := articleslugFields[3].Descriptor()
+	// articleslug.DefaultArticleID holds the default value on creation for the article_id field.
+	articleslug.DefaultArticleID = articleslugDescArticleID.Default.(string)
+	// articleslug.ArticleIDValidator is a validator for the "article_id" field. It is called by the builders before save.
+	articleslug.ArticleIDValidator = articleslugDescArticleID.Validators[0].(func(string) error)
+	// articleslugDescCreatedAt is the schema descriptor for created_at field.
+	articleslugDescCreatedAt := articleslugFields[4].Descriptor()
+	// articleslug.DefaultCreatedAt holds the default value on creation for the created_at field.
+	articleslug.DefaultCreatedAt = articleslugDescCreatedAt.Default.(func() time.Time)
+	// articleslugDescID is the schema descriptor for id field.
+	articleslugDescID := articleslugFields[0].Descriptor()
+	// articleslug.DefaultID holds the default value on creation for the id field.
+	articleslug.DefaultID = articleslugDescID.Default.(func() string)
+	// articleslug.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	articleslug.IDValidator = articleslugDescID.Validators[0].(func(string) error)
 	authauditFields := schema.AuthAudit{}.Fields()
 	_ = authauditFields
 	// authauditDescActorID is the schema descriptor for actor_id field.

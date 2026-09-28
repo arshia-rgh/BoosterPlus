@@ -21,6 +21,18 @@ type AccountReservation func(*sql.Selector)
 // AccountSubmission is the predicate function for accountsubmission builders.
 type AccountSubmission func(*sql.Selector)
 
+// Article is the predicate function for article builders.
+type Article func(*sql.Selector)
+
+// ArticleEvent is the predicate function for articleevent builders.
+type ArticleEvent func(*sql.Selector)
+
+// ArticleRevision is the predicate function for articlerevision builders.
+type ArticleRevision func(*sql.Selector)
+
+// ArticleSlug is the predicate function for articleslug builders.
+type ArticleSlug func(*sql.Selector)
+
 // AuthAudit is the predicate function for authaudit builders.
 type AuthAudit func(*sql.Selector)
 

@@ -27,7 +27,7 @@ const customerRoutes = new RegExp(
   `^/(?:account(?:/(?:settings|security|preferences))?|accounts(?:/${id})?|orders(?:/${id})?|games(?:/${id}(?:/(?:services|packages)/${id}|/reviews|/(?:boost|accounts|shop|news)(?:/${id})?)?)?|support(?:/${id})?|sell(?:/${id})?|privacy|favorites|availability|notifications|reviews(?:/${id})?)$`,
 );
 const adminRoutes = new RegExp(
-  `^/admin(?:/(?:account(?:/(?:settings|security|preferences))?|customers(?:/${id})?|media|alerts|content|privacy|accounts(?:/${id})?|finance|reports|jobs|reviews(?:/${id})?|catalog(?:/${id})?|coupons|submissions(?:/${id})?|orders(?:/${id})?|support(?:/${id})?|calendar))?$`,
+  `^/admin(?:/(?:account(?:/(?:settings|security|preferences))?|customers(?:/${id})?|media|alerts|content|privacy|accounts(?:/${id})?|finance|reports|jobs|reviews(?:/${id})?|catalog(?:/${id})?|shop(?:/${id})?|news(?:/${id})?|coupons|submissions(?:/${id})?|orders(?:/${id})?|support(?:/${id})?|calendar))?$`,
 );
 const boosterRoutes = new RegExp(
   `^/booster(?:/(?:account(?:/(?:settings|security|preferences))?|orders(?:/${id})?|support/${id}|calendar))?$`,
@@ -146,7 +146,7 @@ export function portalReturn(
         params.set("game", game);
         if (
           section &&
-          /^catalog-(basics|intake|services|pricing|packages|faq|publish)$/.test(
+          /^catalog-(basics|intake|services|pricing|packages|faq|discovery|offers|publish)$/.test(
             section,
           )
         )
@@ -158,6 +158,22 @@ export function portalReturn(
       if (view && /^(payments|cases|payouts|policy|reconcile)$/.test(view))
         params.set("view", view);
     }
+    if (
+      portal === "admin" &&
+      /^\/admin\/shop\/[^/]+$/.test(path) &&
+      section &&
+      /^(basics|variants|recipient|terms|stock|promotion|publication|history)$/.test(
+        section,
+      )
+    )
+      params.set("section", section);
+    if (
+      portal === "admin" &&
+      /^\/admin\/news\/[^/]+$/.test(path) &&
+      section &&
+      /^(editor|preview|publication|history)$/.test(section)
+    )
+      params.set("section", section);
     if (
       portal === "admin" &&
       /^\/admin\/accounts\/[^/]+$/.test(path) &&

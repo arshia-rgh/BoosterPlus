@@ -23,13 +23,13 @@ function Editor() {
     </>
   );
 }
-it("keeps unimplemented services closed and records reviewed policies without fabricating counts", () => {
+it("supports explicit editorial activation and records reviewed policies without fabricating counts", () => {
   render(<Editor />);
   expect(
     within(screen.getByLabelText("News availability")).queryByRole("option", {
       name: "Available",
     }),
-  ).not.toBeInTheDocument();
+  ).toBeInTheDocument();
   expect(
     within(screen.getByLabelText("Shop availability")).getByRole("option", {
       name: "Available",

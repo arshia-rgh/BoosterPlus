@@ -158,7 +158,11 @@ export function GamePage() {
           <AccountMarket gameSlug={release.slug} />
         ) : selected === "shop" ? (
           <GameShop />
-        ) : selected === "boost" ? (
+        ) : selected === "news" ? (
+          <Link className="button" to={`/games/${release.slug}/news`}>
+            Read news & guides
+          </Link>
+        ) : (
           <>
             <h2>Boosting for {release.configuration.name}</h2>
             <p>
@@ -168,7 +172,7 @@ export function GamePage() {
             <PathPicker />
             <Offerings release={release} path={offeringPath(params)} />
           </>
-        ) : null}
+        )}
       </section>
     );
   const offered = capabilities.filter((item) => item.state !== "off");
@@ -194,9 +198,11 @@ export function GamePage() {
                 {item.description ||
                   (item.service === "boost"
                     ? "Explore fixed packages and custom goals with clear scope and private updates."
-                    : item.service === "shop"
-                      ? "Browse in-game items with clear terms and staff delivery."
-                      : "Browse reviewed accounts or submit your own for review.")}
+                    : item.service === "news"
+                      ? "Read staff-written updates, patch notes and guides."
+                      : item.service === "shop"
+                        ? "Browse in-game items with clear terms and staff delivery."
+                        : "Browse reviewed accounts or submit your own for review.")}
               </p>
               {item.state === "paused" ? (
                 <p className="status">
@@ -215,7 +221,9 @@ export function GamePage() {
               className="game-service-card"
               key={item.service}
               to={
-                item.service === "accounts" || item.service === "shop"
+                item.service === "accounts" ||
+                item.service === "shop" ||
+                item.service === "news"
                   ? `/games/${release.slug}/${item.service}`
                   : `/games/${release.slug}?service=${item.service}`
               }

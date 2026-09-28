@@ -51,6 +51,8 @@ export function kindLabel(kind: string) {
       return "Crypto invoice creation";
     case "payments.reconcile":
       return "Payment evidence reconciliation";
+    case "news.publish":
+      return "Publish a reviewed scheduled article";
     case "system.ping":
       return "Worker connectivity check";
     case "identity.email":

@@ -20,6 +20,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/media"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/news"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/notifications"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
@@ -110,6 +111,7 @@ func work(ctx context.Context, logger *slog.Logger) (result error) {
 	financeDone := make(chan struct{})
 	go func() { defer close(financeDone); finance.RunMaintenance(maintenance, logger) }()
 	defer func() { stopMaintenance(); <-financeDone }()
+	handlers["news.publish"] = news.New(client, auth, nil).PublishHandler()
 	handlers["payments.refund"] = finance.RefundHandler()
 	handlers["payments.payout"] = finance.RefundHandler()
 	handlers["payments.seller_obligation"] = finance.SellerObligationHandler()

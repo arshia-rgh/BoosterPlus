@@ -17,6 +17,10 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountlistingrelease"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountreservation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountsubmission"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/article"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleevent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/articlerevision"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleslug"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
@@ -145,6 +149,10 @@ func checkColumn(t, c string) error {
 			accountlistingrelease.Table:    accountlistingrelease.ValidColumn,
 			accountreservation.Table:       accountreservation.ValidColumn,
 			accountsubmission.Table:        accountsubmission.ValidColumn,
+			article.Table:                  article.ValidColumn,
+			articleevent.Table:             articleevent.ValidColumn,
+			articlerevision.Table:          articlerevision.ValidColumn,
+			articleslug.Table:              articleslug.ValidColumn,
 			authaudit.Table:                authaudit.ValidColumn,
 			authchallenge.Table:            authchallenge.ValidColumn,
 			authflow.Table:                 authflow.ValidColumn,

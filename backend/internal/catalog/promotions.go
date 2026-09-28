@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
+var articleSlugPattern = regexp.MustCompile(`^[a-z][a-z0-9-]{0,99}$`)
 var shopVariantKey = regexp.MustCompile(`^[a-z][a-z0-9_-]{0,47}$`)
 
 // Promotion selects an existing released offering, never a second price source.
@@ -23,6 +24,8 @@ type Promotion struct {
 	Package       string    `json:"package"`
 	Variant       string    `json:"variant"`
 	ListingID     string    `json:"listing_id"`
+	ArticleID     string    `json:"article_id,omitempty"`
+	ArticleSlug   string    `json:"article_slug,omitempty"`
 	ProductID     string    `json:"product_id,omitempty"`
 	ReleaseID     string    `json:"release_id"`
 	CouponCode    string    `json:"coupon_code"`
@@ -44,6 +47,8 @@ type PromotionView struct {
 	Package       string    `json:"package,omitempty"`
 	Variant       string    `json:"variant,omitempty"`
 	ListingID     string    `json:"listing_id,omitempty"`
+	ArticleID     string    `json:"article_id,omitempty"`
+	ArticleSlug   string    `json:"article_slug,omitempty"`
 	ProductID     string    `json:"product_id,omitempty"`
 	Quantity      int       `json:"quantity,omitempty"`
 	ReleaseID     string    `json:"release_id"`
@@ -83,14 +88,17 @@ func validatePromotions(c Configuration, publish bool, add func(string, string))
 		if p.Priority < 0 || p.Priority > 100 {
 			add(path+".priority", "Priority must be from 0 through 100.")
 		}
-		if !slices.Contains([]string{"package", "account", "shop"}, p.Target) {
-			add(path+".target", "Choose a published package, account listing or shop product.")
+		if !slices.Contains([]string{"package", "account", "shop", "news"}, p.Target) {
+			add(path+".target", "Choose a published package, account listing, shop product or article.")
 		}
 		if p.CouponCode == "" && p.CouponVersion != 0 || p.CouponCode != "" && (!couponCodePattern.MatchString(p.CouponCode) || p.CouponVersion < 1) {
 			add(path+".coupon_code", "Bind a reviewed coupon code to its current version, or leave both empty.")
 		}
 		if p.StartsAt.Year() < 2020 || p.EndsAt.Year() > 9999 || !p.EndsAt.After(p.StartsAt) {
 			add(path+".ends_at", "Set a start and end with explicit timezone offsets. The end is exclusive.")
+		}
+		if p.Target != "news" && (p.ArticleID != "" || p.ArticleSlug != "") {
+			add(path, "Article references are only allowed for editorial promotions.")
 		}
 		switch p.Target {
 		case "package":
@@ -116,6 +124,13 @@ func validatePromotions(c Configuration, publish bool, add func(string, string))
 				if !Available(c, false, "boost") {
 					add(path, "Enable the boosting service before publishing this promotion.")
 				}
+			}
+		case "news":
+			if !validPublicID(p.ArticleID) || !validPublicID(p.ReleaseID) || !articleSlugPattern.MatchString(p.ArticleSlug) || p.Package != "" || p.Variant != "" || p.ProductID != "" || p.ListingID != "" || p.CouponCode != "" || p.ShowQuantity {
+				add(path, "Bind one reviewed article revision and slug; editorial promotions have no purchase price, coupons or stock.")
+			}
+			if publish && p.Enabled && !Available(c, false, "news") {
+				add(path, "Enable News before featuring an article.")
 			}
 		case "shop":
 			if p.Package != "" || p.ListingID != "" || !validPublicID(p.ProductID) || !validPublicID(p.ReleaseID) || !shopVariantKey.MatchString(p.Variant) {

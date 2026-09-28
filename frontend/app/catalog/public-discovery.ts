@@ -39,11 +39,13 @@ export const promotionViewSchema = z.object({
   key: z.string(),
   title: z.string(),
   description: z.string(),
-  service: z.enum(["boost", "accounts", "shop"]),
-  target: z.enum(["package", "account", "shop"]),
+  service: z.enum(["boost", "accounts", "shop", "news"]),
+  target: z.enum(["package", "account", "shop", "news"]),
   package: z.string().optional(),
   variant: z.string().optional(),
   listing_id: z.string().optional(),
+  article_id: z.string().optional(),
+  article_slug: z.string().optional(),
   product_id: z.string().optional(),
   quantity: z.number().int().min(1).max(100).optional(),
   release_id: z.string(),
@@ -83,8 +85,6 @@ export function capabilitiesFor(release: Release) {
       description: "",
       reason: "",
     };
-    // A configured future service cannot become an entry point before its routes exist.
-    if (service === "news") return { ...policy, state: "off" as const };
     return release.paused && policy.state !== "off"
       ? {
           ...policy,
@@ -107,6 +107,7 @@ export function selectedService(
     return "boost";
   if (/\/games\/[^/]+\/accounts(?:\/|$)/.test(pathname)) return "accounts";
   if (/\/games\/[^/]+\/shop(?:\/|$)/.test(pathname)) return "shop";
+  if (/\/games\/[^/]+\/news(?:\/|$)/.test(pathname)) return "news";
   const value = params.get("service");
   if (
     value === "boost" ||

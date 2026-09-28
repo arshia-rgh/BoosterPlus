@@ -1,6 +1,6 @@
 # DI11 shop qualification
 
-28 September 2026. DI11 remains **in progress**. This receipt separates the first private authoring increment from the remaining purchase and manual-delivery work. No public Shop entry or checkout is activated by DI11A. R10/R11 remain held.
+28 September 2026. **DI11 delivered with phase-local qualification.** The chronological increments below retain their original boundaries; DI11C3 completes the shop stage. Aggregate qualification remains DI15 and R10/R11 remain held. No commercial product activation is implied.
 
 ## DI11A — private product authoring
 
@@ -122,7 +122,7 @@ Post-hook lint correction: the hydration-safe persistent header subscription and
 
 DI11C2 delivered as `e3700b915daff0532552acdb1720004678195c2d`, pushed directly to main and verified against origin/main. The retry of the tracked focused hook passed root checks, backend formatting/generated/vet/lint/standalone gosec/govulncheck/module verification/race units/36 migrations/builds and frontend 415 tests in 116 files, nine server cases, contracts, zero audit findings and both builds. The first lint failure remains recorded; no hook was bypassed. Zero reachable Go vulnerabilities, with one required-module advisory outside called paths.
 
-## DI11C3 — release-backed offers, availability and media (in verification)
+## DI11C3 — release-backed offers, availability and media (delivered)
 
 Staff can select an exact published product/release/variant for a time-bounded game offer. The public projection uses its released unit price times minimum quantity, actual available stock, current publication and active service. It disappears on expiry, exhaustion, pause or changed release. Private price edits cannot alter a published offer; shop coupons are explicitly rejected rather than applying an unsupported second price. Staff purchase-availability filtering applies before pagination, using current released variants, minimum stock and published game/service eligibility. Obsolete stock projections cannot accept reservations.
 
@@ -131,3 +131,7 @@ Product management retains query context through the game Offers editor and back
 Focused promotion/availability and purchase race/TiDB regression passed in 27.574s (`di11-promotion-final-integration.log`). Thirty-five frontend tests in eight files, full lint and both builds passed (`di11-promotion-components2.log`, `di11-promotion-lint5.log`, `di11-promotion-build5.log`). Initial browser fixture slug collision, hidden save confirmation and missing explicit publication-review test steps were corrected; failures remain in earlier logs. Final shop refund/report scenario and tracked focused hook follow before delivery. No real payment or production catalog activation is involved.
 
 SN03 shop-specific partial-refund and report qualification passed under race/TiDB in 5.960s (`di11-shop-refund.log`). Verified paid purchase → cancellation case → exact recipient/owner approval → idempotent provider-fixture creation → independent processing/confirmed evidence → customer acceptance. Payment replay cannot revive the cancelled reservation, refund does not restock committed inventory, and operational reporting identifies shop without recipient disclosure. Existing finance fault/retry/authority tests remain part of DI15 requalification.
+
+DI11C3 delivered as `eb01ae3f28323ed5f2d8efe57727884f7395ec34`, pushed directly to main and verified against the remote SHA. The initial tracked hook found one unused integration-test assignment; fixed and retried without bypass. The retry passed the required focused root/backend/frontend checks. The aggregate gate remains DI15. An orphaned empty Git lock from the failed process was removed only after process and open-file checks confirmed no owner.
+
+DI11 phase-local completion: SH01–SH09 and SN01–SN04 are implemented and covered by the linked increments, provider fixtures, race/TiDB security/state scenarios and four-width browser/design reviews. Complete cross-phase requalification remains DI14/DI15. Real transactions, approved production products/terms, physical-device/assistive-technology review and owner acceptance are not inferred from these fixtures.

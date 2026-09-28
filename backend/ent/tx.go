@@ -24,6 +24,14 @@ type Tx struct {
 	AccountReservation *AccountReservationClient
 	// AccountSubmission is the client for interacting with the AccountSubmission builders.
 	AccountSubmission *AccountSubmissionClient
+	// Article is the client for interacting with the Article builders.
+	Article *ArticleClient
+	// ArticleEvent is the client for interacting with the ArticleEvent builders.
+	ArticleEvent *ArticleEventClient
+	// ArticleRevision is the client for interacting with the ArticleRevision builders.
+	ArticleRevision *ArticleRevisionClient
+	// ArticleSlug is the client for interacting with the ArticleSlug builders.
+	ArticleSlug *ArticleSlugClient
 	// AuthAudit is the client for interacting with the AuthAudit builders.
 	AuthAudit *AuthAuditClient
 	// AuthChallenge is the client for interacting with the AuthChallenge builders.
@@ -286,6 +294,10 @@ func (tx *Tx) init() {
 	tx.AccountListingRelease = NewAccountListingReleaseClient(tx.config)
 	tx.AccountReservation = NewAccountReservationClient(tx.config)
 	tx.AccountSubmission = NewAccountSubmissionClient(tx.config)
+	tx.Article = NewArticleClient(tx.config)
+	tx.ArticleEvent = NewArticleEventClient(tx.config)
+	tx.ArticleRevision = NewArticleRevisionClient(tx.config)
+	tx.ArticleSlug = NewArticleSlugClient(tx.config)
 	tx.AuthAudit = NewAuthAuditClient(tx.config)
 	tx.AuthChallenge = NewAuthChallengeClient(tx.config)
 	tx.AuthFlow = NewAuthFlowClient(tx.config)

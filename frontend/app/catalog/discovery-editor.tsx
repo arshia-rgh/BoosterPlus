@@ -76,8 +76,6 @@ export default function DiscoveryEditor({
             description: "",
             reason: "",
           };
-          const supported =
-            service === "boost" || service === "accounts" || service === "shop";
           const patch = (fields: Partial<typeof policy>) => {
             update({
               capabilities: services.map(([key]) =>
@@ -97,11 +95,6 @@ export default function DiscoveryEditor({
           return (
             <fieldset className="catalog-item" key={service}>
               <legend>{label}</legend>
-              {!supported && (
-                <p className="quiet">
-                  This service is being prepared and cannot be activated yet.
-                </p>
-              )}
               <Select
                 label={`${label} availability`}
                 value={policy.state}
@@ -110,9 +103,7 @@ export default function DiscoveryEditor({
                 }}
                 options={[
                   ["off", "Not offered"],
-                  ...(supported
-                    ? [["active", "Available"] as [string, string]]
-                    : []),
+                  ["active", "Available"],
                   ["paused", "Temporarily unavailable"],
                 ]}
               />

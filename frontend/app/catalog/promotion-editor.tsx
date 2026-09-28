@@ -1,3 +1,4 @@
+import ArticlePromotionTarget from "./article-promotion-target";
 import ShopPromotionTarget from "./shop-promotion-target";
 import { useState } from "react";
 import {
@@ -123,10 +124,11 @@ export default function PromotionEditor({
     <section aria-label="Featured offers">
       <h3>Featured offers</h3>
       <p>
-        Pin reviewed packages, accounts or shop products. Prices come from the
-        selected offering; this editor cannot invent a sale price. Dates use UTC
-        and the end is exclusive. Offers disappear when they expire, run out or
-        no longer match their reviewed revision.
+        Pin reviewed packages, accounts, shop products or editorial updates.
+        Articles have no purchase price. Prices come from the selected offering;
+        this editor cannot invent a sale price. Dates use UTC and the end is
+        exclusive. Offers disappear when they expire, run out or no longer match
+        their reviewed revision.
       </p>
       {value.length === 0 && <p>No featured offers configured.</p>}
       {value.map((p, i) => (
@@ -157,16 +159,21 @@ export default function PromotionEditor({
               ["package", "Boost package"],
               ["account", "Account listing"],
               ["shop", "Shop product"],
+              ["news", "News article"],
             ]}
             change={(target) => {
               patch(p.key, {
                 target:
-                  target === "shop"
-                    ? "shop"
-                    : target === "account"
-                      ? "account"
-                      : "package",
+                  target === "news"
+                    ? "news"
+                    : target === "shop"
+                      ? "shop"
+                      : target === "account"
+                        ? "account"
+                        : "package",
                 product_id: "",
+                article_id: "",
+                article_slug: "",
                 package: "",
                 variant: "",
                 listing_id: "",
@@ -238,6 +245,14 @@ export default function PromotionEditor({
                 )}
               </details>
             </>
+          ) : p.target === "news" ? (
+            <ArticlePromotionTarget
+              slug={slug}
+              value={p}
+              change={(fields) => {
+                patch(p.key, fields);
+              }}
+            />
           ) : p.target === "shop" ? (
             <ShopPromotionTarget
               slug={slug}
@@ -280,13 +295,15 @@ export default function PromotionEditor({
               }}
             />
           </div>
-          <Check
-            label="Show remaining quantity from real inventory"
-            value={p.show_quantity}
-            change={(show_quantity) => {
-              patch(p.key, { show_quantity });
-            }}
-          />
+          {p.target !== "news" && (
+            <Check
+              label="Show remaining quantity from real inventory"
+              value={p.show_quantity}
+              change={(show_quantity) => {
+                patch(p.key, { show_quantity });
+              }}
+            />
+          )}
           <Check
             label="Include this offer when the catalog is published"
             value={p.enabled}

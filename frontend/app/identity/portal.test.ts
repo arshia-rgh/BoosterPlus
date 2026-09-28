@@ -14,6 +14,23 @@ afterEach(() => {
   vi.unstubAllGlobals();
   window.history.replaceState({}, "", "/");
 });
+it("returns staff to exact editorial and shop sections without crossing portal boundaries", () => {
+  for (const path of [
+    "/admin/news/article?section=publication",
+    "/admin/news/article?section=editor",
+    "/admin/shop/product?section=stock",
+  ]) {
+    expect(portalReturn(path + "&token=private#secret", "admin")).toBe(path);
+    expect(portalReturn(path, "customer")).toBeNull();
+    expect(portalReturn(path, "booster")).toBeNull();
+  }
+  expect(portalReturn("/admin/news/article?section=stock", "admin")).toBe(
+    "/admin/news/article",
+  );
+  expect(portalReturn("/admin/shop/product?section=write", "admin")).toBe(
+    "/admin/shop/product",
+  );
+});
 it("keeps a bounded game selection for seller intake without private query data", () => {
   expect(
     portalReturn("/sell/new?slug=mobile-legends&title=private", "customer"),

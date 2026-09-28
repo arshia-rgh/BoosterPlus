@@ -110,6 +110,7 @@ export default function BackgroundJobs() {
         options={[
           ["", "All task kinds"],
           ...[
+            "news.publish",
             "payments.invoice",
             "payments.reconcile",
             "system.ping",

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 /** One bounded, failure-safe media presentation for released items and private previews. */
 export default function ShopArtwork({
   source,
@@ -10,6 +10,12 @@ export default function ShopArtwork({
   lazy?: boolean;
 }) {
   const [failed, setFailed] = useState<string | null>(null);
+  const ready = useCallback(
+    (image: HTMLImageElement | null) => {
+      if (image?.complete && image.naturalWidth === 0) setFailed(source);
+    },
+    [source],
+  );
   if (
     !/^\/catalog-assets\/[a-z0-9][a-z0-9_-]{0,79}\.(png|jpg|webp|avif|svg)$/.test(
       source,
@@ -29,6 +35,7 @@ export default function ShopArtwork({
     );
   return (
     <img
+      ref={ready}
       className="shop-artwork"
       src={source}
       alt={alt}

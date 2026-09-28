@@ -22,6 +22,8 @@ export default [
   route("admin/jobs", "../app/routes/jobs-admin.tsx"),
   route("admin/reviews", "../app/routes/reviews-admin.tsx"),
   route("admin/reviews/:id", "../app/routes/review-admin.tsx"),
+  route("admin/news", "../app/routes/news-admin.tsx"),
+  route("admin/news/:id", "../app/routes/news-editor-admin.tsx"),
   route("admin/shop", "../app/routes/shop-admin.tsx"),
   route("admin/shop/orders", "../app/routes/shop-orders-admin.tsx"),
   route("admin/shop/:id", "../app/routes/shop-product-admin.tsx"),

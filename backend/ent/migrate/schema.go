@@ -205,6 +205,114 @@ var (
 			},
 		},
 	}
+	// ArticlesColumns holds the columns for the "articles" table.
+	ArticlesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "game_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "state", Type: field.TypeString, Size: 32, Default: ""},
+		{Name: "draft_revision", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "current_revision", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "scheduled_revision", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "schedule_token", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "scheduled_by", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "scheduled_auth_version", Type: field.TypeInt64, Default: 0},
+		{Name: "scheduled_at", Type: field.TypeTime, Nullable: true},
+		{Name: "published_at", Type: field.TypeTime, Nullable: true},
+		{Name: "public_updated_at", Type: field.TypeTime, Nullable: true},
+		{Name: "title", Type: field.TypeString, Size: 160, Default: ""},
+		{Name: "kind", Type: field.TypeString, Size: 16, Default: ""},
+		{Name: "author", Type: field.TypeString, Size: 120, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ArticlesTable holds the schema information for the "articles" table.
+	ArticlesTable = &schema.Table{
+		Name:       "articles",
+		Columns:    ArticlesColumns,
+		PrimaryKey: []*schema.Column{ArticlesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "article_game_list",
+				Unique:  false,
+				Columns: []*schema.Column{ArticlesColumns[1], ArticlesColumns[3], ArticlesColumns[0]},
+			},
+			{
+				Name:    "article_staff_list",
+				Unique:  false,
+				Columns: []*schema.Column{ArticlesColumns[3], ArticlesColumns[0]},
+			},
+		},
+	}
+	// ArticleEventsColumns holds the columns for the "article_events" table.
+	ArticleEventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "article_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "action", Type: field.TypeString, Size: 32, Default: ""},
+		{Name: "actor_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "revision_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ArticleEventsTable holds the schema information for the "article_events" table.
+	ArticleEventsTable = &schema.Table{
+		Name:       "article_events",
+		Columns:    ArticleEventsColumns,
+		PrimaryKey: []*schema.Column{ArticleEventsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "article_event_version",
+				Unique:  true,
+				Columns: []*schema.Column{ArticleEventsColumns[1], ArticleEventsColumns[2]},
+			},
+		},
+	}
+	// ArticleRevisionsColumns holds the columns for the "article_revisions" table.
+	ArticleRevisionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "article_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "data", Type: field.TypeJSON},
+		{Name: "title", Type: field.TypeString, Size: 160, Default: ""},
+		{Name: "slug", Type: field.TypeString, Size: 100, Default: ""},
+		{Name: "kind", Type: field.TypeString, Size: 16, Default: ""},
+		{Name: "author", Type: field.TypeString, Size: 120, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ArticleRevisionsTable holds the schema information for the "article_revisions" table.
+	ArticleRevisionsTable = &schema.Table{
+		Name:       "article_revisions",
+		Columns:    ArticleRevisionsColumns,
+		PrimaryKey: []*schema.Column{ArticleRevisionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "article_revision_version",
+				Unique:  true,
+				Columns: []*schema.Column{ArticleRevisionsColumns[1], ArticleRevisionsColumns[2]},
+			},
+		},
+	}
+	// ArticleSlugsColumns holds the columns for the "article_slugs" table.
+	ArticleSlugsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "game_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "slug", Type: field.TypeString, Size: 100, Default: ""},
+		{Name: "article_id", Type: field.TypeString, Size: 36, Default: ""},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ArticleSlugsTable holds the schema information for the "article_slugs" table.
+	ArticleSlugsTable = &schema.Table{
+		Name:       "article_slugs",
+		Columns:    ArticleSlugsColumns,
+		PrimaryKey: []*schema.Column{ArticleSlugsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "article_game_slug",
+				Unique:  true,
+				Columns: []*schema.Column{ArticleSlugsColumns[1], ArticleSlugsColumns[2]},
+			},
+		},
+	}
 	// AuthAuditsColumns holds the columns for the "auth_audits" table.
 	AuthAuditsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 64},
@@ -2207,6 +2315,10 @@ var (
 		AccountListingReleasesTable,
 		AccountReservationsTable,
 		AccountSubmissionsTable,
+		ArticlesTable,
+		ArticleEventsTable,
+		ArticleRevisionsTable,
+		ArticleSlugsTable,
 		AuthAuditsTable,
 		AuthChallengesTable,
 		AuthFlowsTable,

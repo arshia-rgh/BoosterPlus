@@ -68,8 +68,8 @@ func Available(c Configuration, paused bool, service string) bool {
 }
 
 func implementedCapability(service string) bool {
-	// News stays closed until DI12 supplies its complete server and UI paths.
-	return service == "boost" || service == "accounts" || service == "shop"
+	// Activation remains explicit in the published game release.
+	return service == "boost" || service == "accounts" || service == "shop" || service == "news"
 }
 
 func validateDiscovery(c Configuration, publish bool, add func(string, string)) {

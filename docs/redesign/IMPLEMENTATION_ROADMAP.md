@@ -1,6 +1,6 @@
 # PLAYORA — accepted design implementation roadmap
 
-25 September 2026 · **Implementation authorized by the owner; DI00–DI10 delivered; DI11 in progress; DI12–DI15 planned. R10/R11 held.**
+25 September 2026 · **Implementation authorized by the owner; DI00–DI12 delivered with phase-local qualification; DI13–DI15 pending. R10/R11 held.**
 
 The owner accepted the current design as complete for now and requested this implementation plan before development resumes. This is the next application roadmap, replacing the execution order in the historical UI/UX and homepage-refinement roadmaps. R00–R09 and earlier UX deliveries remain existing code to preserve and improve. R10/R11 remain separately held in [final-launch.md](../../final-launch.md).
 
@@ -217,7 +217,7 @@ DI00 contracts/addenda, DI01 shared foundations, DI02 portal isolation, DI03 dis
 
 ### DI11 — shop with manual staff fulfillment
 
-Status: shop authoring, reservation/payment/privacy, purchase and manual delivery are delivered through `e3700b9`. Final release-backed promotions, availability and media qualification are passing focused checks; see [DI11 qualification](DI11_QUALIFICATION.md). Final tracked stage hook and delivery receipt follow. DI12 remains next; aggregate qualification remains DI15.
+**Delivered:** shop catalog, purchase, manual fulfillment, finance/privacy integration and release-backed offers through `eb01ae3`. [DI11 qualification](DI11_QUALIFICATION.md) records SH01–SH09/SN01–SN04 evidence and limitations. Full cross-feature and aggregate qualification remain DI14/DI15.
 
 **New domain integrated into the existing order/payment system, not a cosmetic catalog page.** Implement only products and delivery methods approved under DI00; no provider/supplier API or automatic fulfillment at launch.
 
@@ -492,4 +492,4 @@ These are planned additions, **not screens already present in the accepted 115-v
 | Publication/schedule/unpublish | Confirmation, permission/audit, failed job/retry, corrected revision, slug redirect and cache/search invalidation | DI12 |
 | Editorial end-to-end journeys | Draft → review/preview → publish or schedule → reader discovery; correction; unpublish without draft leakage | DI12 |
 
-**Completion tracking:** DI00–DI10 are delivered; DI11 is in progress; DI12–DI15 are planned. See [DI00 review evidence](reviews/2026-09-25-di00-contracts-addendum.md). Runtime screen rows remain planned until their implementation phases; final owner review includes the bounded shop/news additions. Do not update them to delivered on the basis of this document, the accepted static design, or historical UX/R-phase test results.
+**Completion tracking:** DI00–DI11 are delivered; DI12 is in progress; DI13–DI15 remain planned. See [DI00 review evidence](reviews/2026-09-25-di00-contracts-addendum.md). Runtime screen rows remain planned until their implementation phases; final owner review includes the bounded shop/news additions. Do not update them to delivered on the basis of this document, the accepted static design, or historical UX/R-phase test results.
