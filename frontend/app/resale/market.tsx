@@ -84,9 +84,6 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
   const Container = gameSlug ? "section" : "main";
   const Heading = gameSlug ? "h2" : "h1";
   const CardHeading = gameSlug ? "h3" : "h2";
-  const base = gameSlug
-    ? `/games/${encodeURIComponent(gameSlug)}/accounts`
-    : "/accounts";
   const [params, setParams] = useSearchParams();
   const navigation = useLocation();
   const focusResults = z
@@ -252,8 +249,8 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
                 <CardHeading>
                   <Link
                     preventScrollReset
-                    to={`${base}/${row.id}`}
-                    state={{ market: query }}
+                    to={`/games/${encodeURIComponent(row.slug)}/accounts/${row.id}`}
+                    state={{ market: query, globalMarket: !gameSlug }}
                   >
                     {row.product.title}
                   </Link>
@@ -266,8 +263,8 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
                 <Link
                   className="button compact"
                   preventScrollReset
-                  to={`${base}/${row.id}`}
-                  state={{ market: query }}
+                  to={`/games/${encodeURIComponent(row.slug)}/accounts/${row.id}`}
+                  state={{ market: query, globalMarket: !gameSlug }}
                 >
                   Review account
                 </Link>
@@ -531,6 +528,13 @@ export function AccountProduct({
     navigation.market.length <= 8192
       ? navigation.market
       : "";
+  const returnBase =
+    typeof navigation === "object" &&
+    navigation !== null &&
+    "globalMarket" in navigation &&
+    navigation.globalMarket === true
+      ? "/accounts"
+      : base;
   const { id = "" } = useParams(),
     resource = useResource(
       `/accounts/${encodeURIComponent(id)}`,
@@ -546,7 +550,10 @@ export function AccountProduct({
       }
     >
       <Link
-        to={base + (market ? "?" + new URLSearchParams(market).toString() : "")}
+        to={
+          returnBase +
+          (market ? "?" + new URLSearchParams(market).toString() : "")
+        }
       >
         ← Account marketplace
       </Link>

@@ -1,3 +1,4 @@
+import { integratedCapture } from "./integrated-capture";
 import { z } from "zod";
 import { test, expect, type Page } from "@playwright/test";
 import { reviewJourney } from "./review-journey";
@@ -249,6 +250,11 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       buyer.getByRole("link", { name: "Download image", exact: true }),
     ).toBeVisible();
     await accessible(buyer);
+    await integratedCapture(
+      buyer,
+      `customer-messages-${info.project.name}`,
+      buyer.getByLabel("Message", { exact: true }),
+    );
     await buyer.screenshot({
       path: `test-results/coordination-${info.project.name}.png`,
       fullPage: true,
@@ -410,6 +416,11 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       staff.getByRole("button", { name: "Remove window", exact: true }),
     ).toBeVisible();
     await accessible(staff);
+    await integratedCapture(
+      staff,
+      `booster-calendar-${info.project.name}`,
+      staff.getByRole("button", { name: "Remove window", exact: true }),
+    );
     await page.goto("/admin/calendar");
     await page
       .getByLabel("Staff calendar to manage")
@@ -459,6 +470,11 @@ test("paid work supports both modes, narrow booster access and reviewed completi
       .click();
     await expect(staff.getByLabel("Progress percent (0–99)")).toBeVisible();
     await accessible(staff);
+    await integratedCapture(
+      staff,
+      `booster-assignment-${info.project.name}`,
+      staff.getByLabel("Progress percent (0–99)"),
+    );
     await staff.screenshot({
       path: `test-results/scheduling-${info.project.name}.png`,
       fullPage: true,

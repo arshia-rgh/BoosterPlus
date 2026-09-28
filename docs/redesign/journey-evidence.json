@@ -1,0 +1,770 @@
+[
+  {
+    "id": "F01",
+    "title": "Custom boost: browse to completion",
+    "browserEvidence": [
+      "orders.spec.ts",
+      "fulfillment.spec.ts"
+    ],
+    "domainEvidence": [
+      "orders_test.go",
+      "fulfillment_test.go",
+      "quote_preview_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Invalid fields, manual estimate, clarification and changed quote; paid scope plus admin-reviewed completion gates reviews.",
+    "acceptedBranches": [
+      "Game service links use nested design fragments so the hero, statistics and background remain mounted during configuration/review. My account/order destinations intentionally leave the game shell.",
+      "P01 service introductions scroll to the bottom game selection. G01 starts with large service cards; selecting Boost opens only Boost while preserving the game hero. Back to choose service returns to the cards.",
+      "Invalid ranks stay in P04 with field errors.",
+      "Manual estimate can submit without a numeric promise.",
+      "Clarification returns to C03/C12.",
+      "Quote change or expiry requires fresh review.",
+      "Staff approval is required for quote and completion.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Verified payment, fulfilled scope, evidence and eligible review; not success from a browser redirect.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F02",
+    "title": "Fixed package purchase",
+    "browserEvidence": [
+      "orders.spec.ts",
+      "payments.spec.ts"
+    ],
+    "domainEvidence": [
+      "orders_test.go",
+      "payments_test.go",
+      "coupon_finance_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Published fixed contract, duplicate submit and price/coupon revision; provider evidence, never return URL, unlocks fulfillment.",
+    "acceptedBranches": [
+      "Ineligible package offers compatible/custom alternatives.",
+      "Sold-out/paused package blocks new purchase.",
+      "Version or price changes return to explicit review.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Package snapshot accepted and verified payment; no per-order quote approval.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F03",
+    "title": "Account purchase & secure receipt",
+    "browserEvidence": [
+      "payments.spec.ts",
+      "resale-journey.ts"
+    ],
+    "domainEvidence": [
+      "resale_test.go",
+      "resale_media_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Filtered public listing, reserve conflict, verified payment, protected handover and acknowledgment; expired/restricted access never exposes secret.",
+    "acceptedBranches": [
+      "Reservation conflict means no invoice.",
+      "Expired reservation requires availability recheck.",
+      "Late paid reservation enters a case, never steals sold inventory.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Verified payment, audited transfer and required acknowledgement.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F04",
+    "title": "Invoice recovery & exceptions",
+    "browserEvidence": [
+      "payments.spec.ts"
+    ],
+    "domainEvidence": [
+      "native_checkout_test.go",
+      "payment_pause_test.go",
+      "payments_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Paused/failed/expired/partial/overpaid/replayed provider evidence; reconciliation continues and only approved evidence pays.",
+    "acceptedBranches": [
+      "Paused checkout stays unpaid.",
+      "Uncertain invoice creation reconciles before retry.",
+      "Under/over/late/wrong-network/duplicate funds remain separate states.",
+      "Expired invoice with detected funds cannot release inventory blindly.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Authoritative evidence resolves payment or explicit refund review.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F05",
+    "title": "Cancellation, dispute & refund",
+    "browserEvidence": [
+      "payments.spec.ts"
+    ],
+    "domainEvidence": [
+      "refunds_test.go",
+      "finance_review_test.go",
+      "finance_evidence_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Cancellation/dispute/appeal, stale approvals, failed/ambiguous/refunded transfers; case outcome and recorded provider settlement remain separate.",
+    "acceptedBranches": [
+      "Unpaid cancellation retires eligible invoice.",
+      "Paid cancellation is a request, not an immediate refund.",
+      "Recipient changes require review; outgoing disabled blocks transfer.",
+      "Denied remedy exposes approved appeal terms.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Recorded decision and verified outgoing evidence where applicable.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F06",
+    "title": "Seller consignment",
+    "browserEvidence": [
+      "payments.spec.ts",
+      "resale-journey.ts"
+    ],
+    "domainEvidence": [
+      "resale_test.go",
+      "resale_payout_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Seller consignment review, accepted exact terms, secure handover, paid buyer receipt and payout holds/refunds; no wallet.",
+    "acceptedBranches": [
+      "More proof returns to S03.",
+      "Changed offer requires new acceptance.",
+      "Payout waits for agreed delivery/dispute conditions.",
+      "Related refunds/disputes can hold payout.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Direct payout confirmed under the accepted consignment terms.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F07",
+    "title": "Buy-first acquisition",
+    "browserEvidence": [
+      "payments.spec.ts",
+      "resale-journey.ts"
+    ],
+    "domainEvidence": [
+      "resale_test.go",
+      "resale_payout_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Shared seller editor/offer/handover surfaces; buy-first prerequisite and actual seller-payment-before-publication branch are exercised in TiDB, not a second full browser acquisition.",
+    "acceptedBranches": [
+      "Choose Buy first explicitly in A21 and display it in S04.",
+      "Payment becomes due after verified seller-to-PLAYORA transfer, before resale.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "One verified payout obligation; unsold inventory does not change agreed seller terms.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F08",
+    "title": "Passwordless return to draft",
+    "browserEvidence": [
+      "identity.spec.ts",
+      "catalog-refinement.spec.ts"
+    ],
+    "domainEvidence": [
+      "identity_portals_test.go",
+      "identity_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Email/Google return and draft recovery; bounded same-portal return, expired/reused challenges and no automatic replay of sensitive action.",
+    "acceptedBranches": [
+      "Google cancellation returns to I01.",
+      "Expired/used code needs a new challenge.",
+      "Catalog/terms changes require revalidation after login."
+    ],
+    "acceptedDoneGuard": "Same intended custom/package/listing flow restored without secrets in local storage.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F09",
+    "title": "Separate admin sign-in, enrollment & recovery",
+    "browserEvidence": [
+      "identity.spec.ts"
+    ],
+    "domainEvidence": [
+      "identity_portals_test.go",
+      "identity_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Admin-only entry, first factor, enrollment/challenge/recovery and denial; customer session never grants staff authority.",
+    "acceptedBranches": [
+      "Every step is explicitly admin-scoped: I02/admin, I03/admin, I04/admin, I05/admin. No customer or booster session reuse.",
+      "Google returns to the admin authenticator check; email first verifies I02/admin. No public staff signup.",
+      "Missing enrollment opens I04/admin after first factor; invalid/expired/recovery states remain in this portal. Recovery code substitutes only the second factor.",
+      "Wrong role or suspension denies entry without creating access. Both-factor success revalidates the permitted admin destination.",
+      "Cancelled or expired verification returns to I09; customer and booster portals remain separate. Sensitive actions return to the exact originating editor and are not auto-confirmed."
+    ],
+    "acceptedDoneGuard": "Separate authorized admin session only after both factors; safe same-portal return.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F10",
+    "title": "Profile, identity linking & session revocation",
+    "browserEvidence": [
+      "identity.spec.ts",
+      "account.spec.ts"
+    ],
+    "domainEvidence": [
+      "identity_test.go",
+      "identity_portals_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Profile/session UI; Google/email identity linking, unlink-last-identity and revocation are additionally covered by HTTP/SQL identity cases.",
+    "acceptedBranches": [
+      "Google linking verifies both existing and new identities.",
+      "Email conflicts do not reveal account ownership.",
+      "Revoke-all confirmation explains current session will end.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Verified identity changes and accurate session state.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F11",
+    "title": "Pre-sales and order support",
+    "browserEvidence": [
+      "support.spec.ts",
+      "orders.spec.ts"
+    ],
+    "domainEvidence": [
+      "conversations_test.go",
+      "media_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Pre-sales/order thread, scanned attachment, pending/error/retry, read/draft context; unauthorized participants cannot access history.",
+    "acceptedBranches": [
+      "Draft survives reconnect and failed send.",
+      "New messages do not move a reader looking at history.",
+      "Rejected files keep the text draft.",
+      "Access revocation clears private thread content.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "One accessible conversation with known audience and reliable send status.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F12",
+    "title": "Booster fulfillment & admin completion",
+    "browserEvidence": [
+      "fulfillment.spec.ts"
+    ],
+    "domainEvidence": [
+      "fulfillment_test.go",
+      "coordination_test.go",
+      "vault_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Assigned booster only, paid prerequisites, solo/co-play, disclosure, progress/evidence, correction and staff completion.",
+    "acceptedBranches": [
+      "Unpaid/missing prerequisites block start.",
+      "Assignment revocation removes access immediately.",
+      "Proof scanning blocks completion submission.",
+      "Booster submits completion; admin approves final completion.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Scoped fulfillment and customer-visible evidence with no pricing/refund authority.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F13",
+    "title": "Scheduling & rescheduling",
+    "browserEvidence": [
+      "fulfillment.spec.ts"
+    ],
+    "domainEvidence": [
+      "scheduling_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Timezone/availability, requested/confirmed/rescheduled sessions; overlap races, no-show and reminders in domain cases.",
+    "acceptedBranches": [
+      "Conflicts reject stale slot; chosen timezone remains.",
+      "DST ambiguity presents explicit offsets.",
+      "Reschedule keeps previous booking until replacement accepted according to backend.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "One valid confirmed booking and visible change history.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F14",
+    "title": "Catalog, forms, rules & packages",
+    "browserEvidence": [
+      "catalog-admin.spec.ts",
+      "game-configuration.spec.ts"
+    ],
+    "domainEvidence": [
+      "catalog_test.go",
+      "pricing_test.go",
+      "coupons_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Typed field/rule validation, preview, publish/history/restore and conflict; six configured game templates require no game-specific order code.",
+    "acceptedBranches": [
+      "Invalid references/condition cycles block publication.",
+      "Unsaved navigation prompts retain drafts.",
+      "Stale preview/version conflict requires fresh review.",
+      "Archive/pause affect new purchases, not historical snapshots.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "A validated versioned release with customer previews.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F15",
+    "title": "Staff triage, quotes and holds",
+    "browserEvidence": [
+      "orders.spec.ts",
+      "fulfillment.spec.ts"
+    ],
+    "domainEvidence": [
+      "quote_preview_test.go",
+      "order_list_context_test.go",
+      "admin_queue_context_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Triage/filter return, versioned quote review/issue, assignment/hold and completion; unpaid work remains blocked.",
+    "acceptedBranches": [
+      "Clarify/reject needs a customer-visible reason.",
+      "Accepted contract cannot be silently repriced.",
+      "Concurrent status update requires reload/compare.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Correct next action and audited state transition.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F16",
+    "title": "Staff message vs internal note",
+    "browserEvidence": [
+      "support.spec.ts",
+      "fulfillment.spec.ts"
+    ],
+    "domainEvidence": [
+      "conversations_test.go",
+      "coordination_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Internal/public drafts and immutable retries; internal notes and restricted history never appear in customer/booster projections.",
+    "acceptedBranches": [
+      "Audience stays visible through attachment and keyboard states.",
+      "Switching mode with an unsent draft asks where to keep it.",
+      "Buyer and seller conversations remain separate.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Message reaches only its selected authorized audience.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F17",
+    "title": "Payment and seller-payout operations",
+    "browserEvidence": [
+      "payments.spec.ts",
+      "resale-journey.ts"
+    ],
+    "domainEvidence": [
+      "finance_evidence_test.go",
+      "finance_review_test.go",
+      "refunds_test.go",
+      "resale_payout_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Payment exceptions, exact refund/payout amounts, explicit approval/recent factors and reconciliation; no fixture qualifies real fund movement.",
+    "acceptedBranches": [
+      "No manual paid toggle.",
+      "Uncertain transfer reconciles before retry.",
+      "Separate outgoing activation and verified recipient required.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Provider-backed result without duplicate transfer or mixed currencies.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F18",
+    "title": "Favorites, reorder & availability",
+    "browserEvidence": [
+      "orders.spec.ts",
+      "availability-journey.ts"
+    ],
+    "domainEvidence": [
+      "availability_test.go",
+      "availability_series_test.go",
+      "orders_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Favorites/unavailable items, explicit reorder and consent; unsubscribed/suppressed recipients stay excluded and publication retry does not duplicate delivery.",
+    "acceptedBranches": [
+      "Reorder validates current options and prices.",
+      "Sold/archived saved item remains understandable.",
+      "Unsubscribe token affects only its intended alert.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Fresh eligible order or explicit alert consent; no reservation from a favorite.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F19",
+    "title": "Reviews & moderation",
+    "browserEvidence": [
+      "fulfillment.spec.ts",
+      "review-journey.ts"
+    ],
+    "domainEvidence": [
+      "reviews_test.go",
+      "reviews_notifications_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Eligible verified completion, publication consent, moderation/edit/history and recovery; ineligible/refunded states do not fabricate verified review.",
+    "acceptedBranches": [
+      "Eligibility, duplicate and moderation states explicit.",
+      "Customer text is not rewritten to improve sentiment.",
+      "Refund labels remain where required.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Published eligible review or reasoned moderation outcome.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F20",
+    "title": "Notifications & preferences",
+    "browserEvidence": [
+      "identity.spec.ts",
+      "account.spec.ts",
+      "support.spec.ts"
+    ],
+    "domainEvidence": [
+      "conversations_test.go",
+      "submissions_notifications_test.go",
+      "reviews_notifications_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Read/unread, delivery choices and local motion; private payloads stay scoped, retries deduplicate and marketing consent is not inferred.",
+    "acceptedBranches": [
+      "Read notification does not complete its action.",
+      "Unavailable deep link returns safely.",
+      "Sound is opt-in; reduced motion is honored.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Preferences saved and destination/context preserved.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F21",
+    "title": "Privacy export and deletion",
+    "browserEvidence": [
+      "admin-policy.spec.ts"
+    ],
+    "domainEvidence": [
+      "privacy_content_test.go",
+      "privacy_media_test.go",
+      "shop_privacy_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Owner policy disabled by default, active-order/dispute hold, export/revocation, erasure and later purge; retained evidence/backups distinguished.",
+    "acceptedBranches": [
+      "Owner policy must be published/enabled.",
+      "Active order/dispute holds block erasure.",
+      "Cancellation ends when irreversible erasure begins.",
+      "Live erasure, pending files, retained evidence/backups are distinct.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Truthful deletion/export status under explicit policy.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F22",
+    "title": "Role, suspension and recovery governance",
+    "browserEvidence": [
+      "identity.spec.ts"
+    ],
+    "domainEvidence": [
+      "identity_test.go",
+      "audit_directory_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Role/suspension/recovery controls and audit; current authority, recent factors, last-owner concurrency and stale session rejection.",
+    "acceptedBranches": [
+      "Last owner cannot be removed.",
+      "Role/suspension change revokes affected sessions as required.",
+      "No public role selection or automatic email-based role grant.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Audited access change and exact affected-session outcome.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F23",
+    "title": "Policy/coupon publication",
+    "browserEvidence": [
+      "catalog-admin.spec.ts",
+      "admin-policy.spec.ts"
+    ],
+    "domainEvidence": [
+      "privacy_content_test.go",
+      "coupons_test.go",
+      "coupon_finance_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Saved policy/coupon revision preview, publish, stale edits and exact accepted contract; no invented owner terms.",
+    "acceptedBranches": [
+      "Historical agreements stay immutable.",
+      "Incomplete commercial terms block related purchases.",
+      "Coupons cannot produce invalid totals or unsupported scope.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Published explicit version; preview and customer terms agree.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F24",
+    "title": "Reports, media, alerts and job recovery",
+    "browserEvidence": [
+      "identity.spec.ts",
+      "operations-journey.ts",
+      "reports-journey.ts",
+      "orders.spec.ts"
+    ],
+    "domainEvidence": [
+      "reports_test.go",
+      "media_test.go",
+      "availability_test.go",
+      "job_attempts_test.go",
+      "operations_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Bounded filters/export and source returns; authorization, retry generation/history, privacy and late/stale command guards.",
+    "acceptedBranches": [
+      "Stale report preview needs regeneration.",
+      "Rejected/quarantined files never render public previews.",
+      "Retry queues a job, not a payment success.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Scoped evidence/export and truthful recovery status.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F25",
+    "title": "Global recovery",
+    "browserEvidence": [
+      "recovery-foundation.spec.ts",
+      "foundation-components.spec.ts"
+    ],
+    "domainEvidence": [
+      "identity_portals_test.go"
+    ],
+    "exceptionsAndDoneGuards": "404/403/429/503/offline/retry, focus and correct workspace return; errors never grant access or invent success.",
+    "acceptedBranches": [
+      "404 and access denial do not disclose private object existence.",
+      "Offline recovery retains only safe drafts.",
+      "Rate limits use server-provided retry information.",
+      "Panel revision: enter the named record; change local sections without leaving its role/identity; return to the filtered parent list. Admin previews return to the exact originating editor. See PANEL_UX_REVISION.md."
+    ],
+    "acceptedDoneGuard": "Safe navigation without leaking private content or losing permitted drafts.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F26",
+    "title": "World of Warcraft configurable-service template",
+    "browserEvidence": [
+      "game-configuration.spec.ts",
+      "game-shell.spec.ts"
+    ],
+    "domainEvidence": [
+      "catalog_test.go",
+      "discovery_test.go"
+    ],
+    "exceptionsAndDoneGuards": "WoW template validates published selection, persistent identity and recovery; fixture config does not activate real offers/prices.",
+    "acceptedBranches": [
+      "This is a future-game design template, not launch availability.",
+      "Use the game-specific fields shown in this template; no hard-coded season or live price.",
+      "After successful submission, use F01 order/quote/payment/fulfillment screens with this game context retained.",
+      "Invalid or unpublished configuration blocks new ordering, without affecting history."
+    ],
+    "acceptedDoneGuard": "Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F27",
+    "title": "League of Legends configurable-service template",
+    "browserEvidence": [
+      "game-configuration.spec.ts",
+      "game-shell.spec.ts"
+    ],
+    "domainEvidence": [
+      "catalog_test.go",
+      "discovery_test.go"
+    ],
+    "exceptionsAndDoneGuards": "LoL template uses the same configured service contract and persistent game shell; no invented guarantee.",
+    "acceptedBranches": [
+      "This is a future-game design template, not launch availability.",
+      "Use the game-specific fields shown in this template; no hard-coded season or live price.",
+      "After successful submission, use F01 order/quote/payment/fulfillment screens with this game context retained.",
+      "Invalid or unpublished configuration blocks new ordering, without affecting history."
+    ],
+    "acceptedDoneGuard": "Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F28",
+    "title": "VALORANT configurable-service template",
+    "browserEvidence": [
+      "game-configuration.spec.ts",
+      "game-shell.spec.ts"
+    ],
+    "domainEvidence": [
+      "catalog_test.go",
+      "discovery_test.go"
+    ],
+    "exceptionsAndDoneGuards": "VALORANT template invalid/valid selection and review return use published schema.",
+    "acceptedBranches": [
+      "This is a future-game design template, not launch availability.",
+      "Use the game-specific fields shown in this template; no hard-coded season or live price.",
+      "After successful submission, use F01 order/quote/payment/fulfillment screens with this game context retained.",
+      "Invalid or unpublished configuration blocks new ordering, without affecting history."
+    ],
+    "acceptedDoneGuard": "Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F29",
+    "title": "Dota 2 configurable-service template",
+    "browserEvidence": [
+      "game-configuration.spec.ts",
+      "game-shell.spec.ts"
+    ],
+    "domainEvidence": [
+      "catalog_test.go",
+      "discovery_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Dota2 template follows published field validation and persistent game shell.",
+    "acceptedBranches": [
+      "This is a future-game design template, not launch availability.",
+      "Use the game-specific fields shown in this template; no hard-coded season or live price.",
+      "After successful submission, use F01 order/quote/payment/fulfillment screens with this game context retained.",
+      "Invalid or unpublished configuration blocks new ordering, without affecting history."
+    ],
+    "acceptedDoneGuard": "Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F30",
+    "title": "Wild Rift configurable-service template",
+    "browserEvidence": [
+      "game-configuration.spec.ts",
+      "game-shell.spec.ts"
+    ],
+    "domainEvidence": [
+      "catalog_test.go",
+      "discovery_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Wild Rift fixture is paused: input/submission disabled while public identity stays available; domain tests cover enabled generic service.",
+    "acceptedBranches": [
+      "This is a future-game design template, not launch availability.",
+      "Use the game-specific fields shown in this template; no hard-coded season or live price.",
+      "After successful submission, use F01 order/quote/payment/fulfillment screens with this game context retained.",
+      "Invalid or unpublished configuration blocks new ordering, without affecting history."
+    ],
+    "acceptedDoneGuard": "Reviewed game-specific configuration, followed by the shared custom-quote journey when the catalog is published.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "F31",
+    "title": "Separate booster sign-in, enrollment & recovery",
+    "browserEvidence": [
+      "identity.spec.ts",
+      "fulfillment.spec.ts"
+    ],
+    "domainEvidence": [
+      "identity_portals_test.go",
+      "booster_readiness_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Separate booster entry/enrollment/second-factor recovery, assignment readiness and no customer/admin session reuse.",
+    "acceptedBranches": [
+      "Every step is explicitly booster-scoped: I02/booster, I03/booster, I04/booster, I05/booster. No customer or admin session reuse.",
+      "Google returns to the booster authenticator check; email first verifies I02/booster. No public staff signup.",
+      "Missing enrollment opens I04/booster after first factor; invalid/expired/recovery states remain in this portal. Recovery code substitutes only the second factor.",
+      "Wrong role or suspension denies entry without creating access. Both-factor success revalidates the permitted booster destination.",
+      "Cancelled or expired verification returns to I10; customer and admin portals remain separate. Sensitive actions return to the exact originating editor and are not auto-confirmed."
+    ],
+    "acceptedDoneGuard": "Separate authorized booster session only after both factors; assigned-workspace return.",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "SN01",
+    "title": "SN01",
+    "browserEvidence": [
+      "shop-purchase.spec.ts"
+    ],
+    "domainEvidence": [
+      "shop_purchase_test.go",
+      "shop_payments_test.go",
+      "shop_delivery_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Published item/variant/recipient acceptance → immutable reservation → verified payment → manual evidence → reviewed delivery.",
+    "acceptedBranches": [],
+    "acceptedDoneGuard": "SHOP_NEWS_ADDENDUM.md",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "SN02",
+    "title": "SN02",
+    "browserEvidence": [
+      "shop-purchase.spec.ts",
+      "shop-promotion.spec.ts"
+    ],
+    "domainEvidence": [
+      "shop_stock_test.go",
+      "shop_payments_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Sold-out/expired reservation and late-paid unavailable stock: recovery/exception, never false fulfillment or double inventory consumption.",
+    "acceptedBranches": [],
+    "acceptedDoneGuard": "SHOP_NEWS_ADDENDUM.md",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "SN03",
+    "title": "SN03",
+    "browserEvidence": [
+      "shop-purchase.spec.ts",
+      "payments.spec.ts"
+    ],
+    "domainEvidence": [
+      "shop_refund_test.go",
+      "shop_delivery_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Unable-to-fulfill/hold/correction plus case/refund; financial evidence and operator approval, no silent restock.",
+    "acceptedBranches": [],
+    "acceptedDoneGuard": "SHOP_NEWS_ADDENDUM.md",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "SN04",
+    "title": "SN04",
+    "browserEvidence": [
+      "shop.spec.ts",
+      "shop-purchase.spec.ts",
+      "shop-promotion.spec.ts"
+    ],
+    "domainEvidence": [
+      "shop_purchase_test.go",
+      "shop_stock_test.go",
+      "shop_promotion_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Duplicate/ambiguous submit, draft edits, pause product and offer expiry; paid work and exact historical terms preserved.",
+    "acceptedBranches": [],
+    "acceptedDoneGuard": "SHOP_NEWS_ADDENDUM.md",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "SN05",
+    "title": "SN05",
+    "browserEvidence": [
+      "news.spec.ts"
+    ],
+    "domainEvidence": [
+      "news_test.go",
+      "news_http_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Author → saved preview → publish/schedule → discover/read; version/media/link validation, current author authority and durable cancellation fence.",
+    "acceptedBranches": [],
+    "acceptedDoneGuard": "SHOP_NEWS_ADDENDUM.md",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  },
+  {
+    "id": "SN06",
+    "title": "SN06",
+    "browserEvidence": [
+      "news.spec.ts"
+    ],
+    "domainEvidence": [
+      "news_test.go",
+      "news_http_test.go"
+    ],
+    "exceptionsAndDoneGuards": "Corrected publication/slug redirect, revised offer, unpublish/archive/restore and reader recovery; draft never leaks through search/sitemap.",
+    "acceptedBranches": [],
+    "acceptedDoneGuard": "SHOP_NEWS_ADDENDUM.md",
+    "qualification": "phase-local evidence delivered; aggregate execution pending DI15"
+  }
+]

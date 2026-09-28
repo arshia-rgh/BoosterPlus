@@ -50,12 +50,21 @@ export function RecordShell({
     const navigation = sectionNavigation.current;
     const selectedLink =
       navigation?.querySelector<HTMLElement>("[aria-current]");
-    if (navigation && selectedLink) {
+    if (!navigation || !selectedLink) return;
+    const center = () => {
       const frame = navigation.getBoundingClientRect();
       const link = selectedLink.getBoundingClientRect();
       navigation.scrollLeft +=
         link.left - frame.left - (frame.width - link.width) / 2;
-    }
+    };
+    center();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(center);
+    observer.observe(navigation);
+    observer.observe(selectedLink);
+    return () => {
+      observer.disconnect();
+    };
   }, [active, stickyStatus]);
   const previous = useRef(active);
   useEffect(() => {

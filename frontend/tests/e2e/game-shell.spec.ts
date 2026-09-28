@@ -1,3 +1,4 @@
+import { measuredInteraction } from "./integrated-capture";
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { fixture } from "./identity-fixtures";
@@ -18,8 +19,17 @@ test("game identity persists through service, package, review and missing-option
     .click();
   await expect(page).toHaveURL(`/games/${slug}?service=boost`);
   const custom = page.locator(`a[href="/games/${slug}/services/boost"]`);
-  await custom.click();
-  await expect(page).toHaveURL(`/games/${slug}/services/boost`);
+  await measuredInteraction(
+    page,
+    `game-service-${info.project.name}`,
+    async () => {
+      await custom.click();
+      await expect(page).toHaveURL(`/games/${slug}/services/boost`);
+      await expect(
+        page.locator(".game-local-content h2").first(),
+      ).toBeFocused();
+    },
+  );
   await expect(heading).toHaveAttribute("data-persistence-check", "original");
   await expect(page.locator(".game-local-content h2").first()).toBeFocused();
   await expect(page.getByRole("main")).toHaveCount(1);

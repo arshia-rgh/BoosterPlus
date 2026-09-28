@@ -707,3 +707,17 @@
     min-height: 12rem;
   }
 }
+
+/* Composer actions wrap into complete labels when users enlarge text. */
+@media (max-width: 600px) {
+  .chat-workspace .composer-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .chat-workspace .composer-toolbar > button {
+    flex: 1 0 100%;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+}

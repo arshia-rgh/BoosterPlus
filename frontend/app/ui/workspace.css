@@ -132,3 +132,66 @@
     font-size: 0.875rem;
   }
 }
+
+/* Keep narrow, enlarged-text workspaces usable without compounded rem gutters. */
+@media (max-width: 600px) {
+  :is(.storefront-app .workspace-experience, .admin-app .admin-body) .page {
+    padding-inline: 12px;
+  }
+  :is(.storefront-app .workspace-experience, .admin-app .admin-body)
+    :is(
+      .catalog-section,
+      .catalog-preview,
+      .catalog-item,
+      .identity-card,
+      .panel
+    ) {
+    padding-inline: 12px;
+  }
+  :is(.storefront-app .workspace-experience, .admin-app .admin-body) fieldset {
+    padding-inline: 8px;
+  }
+  :is(.storefront-app .workspace-experience, .admin-app .admin-body)
+    .catalog-check {
+    display: block;
+    overflow-wrap: break-word;
+  }
+  :is(.storefront-app .workspace-experience, .admin-app .admin-body)
+    .catalog-check
+    input {
+    margin-inline-end: 8px;
+    vertical-align: middle;
+  }
+  :is(.storefront-app .workspace-experience, .admin-app .admin-body) .button {
+    padding-inline: 12px;
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+}
+@media (max-height: 600px) {
+  .record-shell.record-shell .record-sticky-context,
+  .admin-app .conversation-layout > section {
+    position: static;
+  }
+  .admin-order-workspace
+    .record-content
+    :is(h3, input, textarea, select, button) {
+    scroll-margin-top: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .record-shell.record-shell .record-sticky-context .record-sections a {
+    max-width: 100%;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 600px) {
+  :is(.storefront-app .workspace-experience, .admin-app .admin-body)
+    .catalog-section
+    .catalog-section {
+    padding-inline: 0;
+    border-inline: 0;
+  }
+}

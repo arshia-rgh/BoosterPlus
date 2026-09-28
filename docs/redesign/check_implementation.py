@@ -53,6 +53,20 @@ def main():
             if screen["route"] == row["route"]
         }, row["route"]
         assert row["strategy"] and row["contract"], row["route"]
+    journeys = read("journey-evidence.json")
+    accepted = {row["id"]: row for row in read("design/flows.json")}
+    assert {row["id"] for row in journeys} == set(accepted) | {f"SN{i:02}" for i in range(1, 7)}, "Journey gap"
+    assert len(journeys) == 37, "Duplicate journey"
+    for journey in journeys:
+        if journey["id"] in accepted:
+            original = accepted[journey["id"]]
+            assert journey["acceptedBranches"] == original["branches"], journey["id"]
+            assert journey["acceptedDoneGuard"] == original["done"], journey["id"]
+        assert journey["exceptionsAndDoneGuards"] and journey["browserEvidence"] and journey["domainEvidence"]
+        for base, key in (("frontend/tests/e2e", "browserEvidence"), ("backend/internal/integration", "domainEvidence")):
+            for name in journey[key]:
+                assert Path(name).name == name and (ROOT / base / name).is_file(), name
+    print("31 accepted + 6 addendum journeys mapped to existing scenario files; execution evidence remains separate.")
     print(
         f"DI00 coverage: {len(baseline)} accepted + {len(additions)} added views; "
         f"{len(routes)} preserved/transitioned route contracts."

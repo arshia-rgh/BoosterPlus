@@ -21,6 +21,8 @@ class BrowserSelectionTest(unittest.TestCase):
         self.assertEqual(module.focused_batches([policy, orders]), [[orders], [policy]])
         self.assertEqual(module.focused_batches([policy]), [[policy]])
         self.assertEqual(module.focused_batches([orders]), [[orders]])
+        shop = "tests/e2e/shop-purchase.spec.ts"
+        self.assertEqual(module.focused_batches([shop, orders, policy]), [[orders], [shop, policy]])
 
     def test_invalid_selections_fail_closed(self):
         for value in ["../payments.spec.ts", "--pass-with-no-tests", "missing.spec.ts", "payments.spec", "/tmp/payments.spec.ts"]:

@@ -19,6 +19,8 @@ Planning documents:
 - [Frontend](frontend/README.md): separate React storefront/admin applications with type, lint, security, component, browser, and accessibility checks.
 - [Customer experience](docs/customer-experience.md): R03 catalog, estimator, account, conversations and booster workspace.
 
-R00–R09 and earlier UX work exist; DI00 contracts and addenda are delivered; DI01 is next. See [progress](docs/progress.md) for verified stage status and [repository rules](AGENTS.md) for the required workflow.
+DI00–DI13 are delivered with phase-local qualification. DI14 integrates historical data, routes and cross-feature behavior; DI15 runs final whole-application qualification and owner review. The implementation includes manual shop delivery, staff-managed articles and separate customer/admin/booster sign-in. See [progress](docs/progress.md) for verified stage status and [repository rules](AGENTS.md) for the required workflow.
 
 Run `make bootstrap`, start local services with `make -C backend dev-up`, then run `make pre-commit`. The root gate always runs repository policy/secret checks plus backend, frontend and production `pre-commit` targets. The tracked hook selects proportionate checks for each staged change: root checks for documentation, root plus frontend for UI-only changes, and the full gate for backend/deployment/dependency/tooling or mixed changes. Final qualification and CI retain the full gate. Stage commits are pushed directly to `origin/main`.
+
+Current transition and end-to-end evidence: [DI14](docs/redesign/DI14_QUALIFICATION.md), [journey map](docs/redesign/JOURNEY_QUALIFICATION.md). No owner-approved public products, terms or live-payment qualification are implied by local fixtures.

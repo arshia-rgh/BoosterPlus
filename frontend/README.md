@@ -49,7 +49,7 @@ Browser tests require local TiDB and Mailpit and launch a disposable database th
 
 ## Catalog editor
 
-Administrators and owners can open `/admin/catalog` after both sign-in factors. The UI manages game drafts, reference catalogs, typed forms, conditions, package variants, preview/publication, availability and historical releases. See [catalog operations and limits](../docs/catalog.md). Numeric answers and monetary minor units remain exact strings. Public catalog artwork lives under `public/catalog-assets/`; private uploads and credential handoff use the existing dedicated, access-controlled flows. Generic pre-order attachment fields are still unavailable.
+Administrators and owners can open `/admin/catalog` after both sign-in factors. The UI manages game drafts, reference catalogs, typed forms, conditions, package variants, preview/publication, availability and historical releases. See [catalog operations and limits](../docs/catalog.md). Numeric answers and monetary minor units remain exact strings. Public catalog artwork lives under `public/catalog-assets/`; private uploads and credential handoff use the existing dedicated, access-controlled flows. Published bounded intake attachments use the isolated scanned intake flow; generic unscanned uploads never enter an order.
 
 ## Customer and booster experience
 
@@ -62,3 +62,11 @@ UX02 makes `/account` the current-work overview, with separate `/account/setting
 UX03 unifies customer/staff/booster conversation history and the composer, with separate internal drafts, immutable retry payloads, reading anchors and compact attachment/staff controls. See [chat behavior, privacy and verification](../docs/ux/UX03_CHAT.md). UX04 introduces state-led order details, accepted totals, private unread indicators, quote comparison and preserved list/chat navigation. See [order workspace behavior and verification](../docs/ux/UX04_ORDERS.md). UX05–UX10 follow; R10/R11 remain held.
 
 UX10 cross-browser qualification: `make test-cross-browser` runs the complete isolated fixture journeys in Chromium, Firefox and WebKit. Install all pinned browsers with `npx playwright install chromium firefox webkit` first. Firefox narrow viewport is not actual mobile browser emulation. Optional `PUBLIC_SITE_ORIGIN=https://your-final-host` enables homepage canonical/share metadata; no public domain is guessed when absent. Reusable artwork and editable overlays are in `../docs/brand/playora/social/`. R10/R11 remain held.
+
+## Current accepted-design application
+
+DI00–DI14 replace the historical UI described above. Public discovery treats configured games equally. Each game retains its artwork, identity and statistics through Boost, Accounts, Shop and News subflows. `/accounts/:id` resolves a public listing into its game-local detail; marketplace filters survive the return. `/how-it-works`, `/terms` and `/policies/:kind` use published configuration and actual policy versions.
+
+Customer `/login`, admin `/admin/login` and booster `/booster/login` are separate passwordless experiences; customer sessions do not authorize staff. Admin/booster enrollment, challenge, recovery and recent verification stay in their own workspace. Orders and sale records retain ID/status, ordinary drafts and local sections. Admin shop delivery and article editors use saved revisions, explicit publication, conflict recovery and permission checks. Private views receive noindex and no-store; neither replaces backend authorization.
+
+Set optional server-only `PUBLIC_SITE_ORIGIN` for canonical game/article URLs. No new transition-specific environment variable is required. Proxy request limits match bounded business schemas; secrets never belong in browser environment variables. [Journey qualification](../docs/redesign/JOURNEY_QUALIFICATION.md) maps accepted flows to real-service fixture scenarios and security regressions. Final aggregate checks and review are DI15; R10/R11 stay held.

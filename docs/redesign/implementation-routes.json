@@ -6,7 +6,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/account",
@@ -15,7 +16,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/account/preferences",
@@ -24,7 +26,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/account/security",
@@ -37,7 +40,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/account/settings",
@@ -46,7 +50,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/accounts",
@@ -55,7 +60,8 @@
     ],
     "strategy": "compatibility discovery",
     "contract": "Choose game or use validated game filter; no lost listing context.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/accounts/:id",
@@ -65,7 +71,8 @@
     ],
     "strategy": "canonical redirect",
     "contract": "Resolve only public listing to its game-local detail; preserve unavailable recovery.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin",
@@ -75,7 +82,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/accounts",
@@ -84,7 +92,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/accounts/:id",
@@ -93,7 +102,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/alerts",
@@ -102,7 +112,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/calendar",
@@ -111,7 +122,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/catalog",
@@ -126,7 +138,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/content",
@@ -135,7 +148,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/coupons",
@@ -144,7 +158,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/customers",
@@ -153,7 +168,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/finance",
@@ -166,7 +182,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/jobs",
@@ -175,7 +192,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/media",
@@ -184,7 +202,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/orders",
@@ -193,7 +212,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/orders/:id",
@@ -204,7 +224,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/privacy",
@@ -214,7 +235,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/reports",
@@ -223,7 +245,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/reviews",
@@ -232,7 +255,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/reviews/:id",
@@ -241,7 +265,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/submissions",
@@ -250,7 +275,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/submissions/:id",
@@ -259,7 +285,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/support",
@@ -268,7 +295,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/admin/support/:id",
@@ -278,7 +306,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/availability",
@@ -287,7 +316,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/availability/unsubscribe",
@@ -296,7 +326,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/booster",
@@ -305,7 +336,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/booster/calendar",
@@ -314,7 +346,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/booster/orders",
@@ -323,7 +356,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/booster/orders/:id",
@@ -332,7 +366,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/booster/support/:id",
@@ -341,7 +376,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/favorites",
@@ -350,7 +386,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/games",
@@ -359,7 +396,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/games/:slug",
@@ -373,7 +411,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/games/:slug/packages/:pack",
@@ -383,7 +422,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/games/:slug/reviews",
@@ -392,7 +432,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/games/:slug/services/:service",
@@ -412,7 +453,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/login",
@@ -424,7 +466,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/notifications",
@@ -433,7 +476,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/orders",
@@ -442,7 +486,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/orders/:id",
@@ -462,7 +507,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/privacy",
@@ -471,7 +517,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/reviews",
@@ -480,7 +527,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/reviews/:id",
@@ -489,7 +537,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/sell",
@@ -498,7 +547,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/sell/:id",
@@ -510,7 +560,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/sell/new",
@@ -519,7 +570,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/support",
@@ -529,7 +581,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/support/:id",
@@ -539,7 +592,8 @@
     ],
     "strategy": "preserve",
     "contract": "Retain route with accepted shell/local sections and permitted audience.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   },
   {
     "route": "/terms",
@@ -549,6 +603,7 @@
     ],
     "strategy": "compatibility alias",
     "contract": "Link/redirect to current typed policy with old version links preserved.",
-    "status": "planned"
+    "status": "implemented",
+    "evidence": "DI14_QUALIFICATION.md; JOURNEY_QUALIFICATION.md; phase-owned screen evidence in implementation-matrix.json"
   }
 ]

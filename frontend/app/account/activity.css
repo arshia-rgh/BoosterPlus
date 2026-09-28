@@ -220,3 +220,13 @@ html:has(.customer-activity) {
     scroll-padding-bottom: 1rem;
   }
 }
+
+/* A tall enlarged header must not cover form controls in short viewports. */
+@media (max-width: 1000px) and (max-height: 600px) {
+  .site-header:has(#customer-activity-slot .customer-activity) {
+    position: static;
+  }
+  html:has(#customer-activity-slot .customer-activity) {
+    scroll-padding-top: 12px;
+  }
+}

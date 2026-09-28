@@ -1,3 +1,4 @@
+import "../ui/secondary.css";
 import { DownloadImage } from "../media/attachment";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
@@ -243,7 +244,7 @@ export function Decisions({
   return (
     <section className="catalog-section" aria-label="Order actions">
       <h2>Next steps</h2>
-      <fieldset disabled={busy}>
+      <fieldset className="order-task-controls" disabled={busy}>
         <legend>{admin ? "Manage request" : "Your decision"}</legend>
         {!admin && state === "quoted" && detail.quote && (
           <>
@@ -296,7 +297,7 @@ export function Decisions({
           />
         )}
         {admin && unaccepted && (
-          <>
+          <div className="ui-state-actions">
             <Action
               disabled={!message.trim()}
               onClick={() => void act("clarify")}
@@ -309,7 +310,7 @@ export function Decisions({
             >
               Reject request
             </Action>
-          </>
+          </div>
         )}
         {cancellable && (
           <details>
@@ -449,7 +450,7 @@ export function RequestDetails({
         </dl>
         {detail.coupon_code && <p>Requested coupon: {detail.coupon_code}</p>}
         {!admin && (
-          <>
+          <div className="ui-state-actions">
             <Action disabled={busy} onClick={() => void prepare()}>
               Reorder with current catalog
             </Action>
@@ -466,7 +467,7 @@ export function RequestDetails({
                   {editing ? "Close revision form" : "Revise request"}
                 </Action>
               )}
-          </>
+          </div>
         )}
         <ErrorNotice error={error} />
         {editing && service && (

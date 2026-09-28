@@ -1,3 +1,4 @@
+import { Button } from "../ui/primitives";
 import { useEffect, useRef, useState } from "react";
 import { z } from "../validation";
 import { Link, useLocation, useNavigate, type Location } from "react-router";
@@ -406,7 +407,7 @@ function OfferRecord({
             change={setAccept}
           />
           {offer.state === "offered" ? (
-            <>
+            <div className="ui-state-actions">
               {!admin && (
                 <Action
                   disabled={expired || !accept || note.trim().length < 10}
@@ -415,15 +416,17 @@ function OfferRecord({
                   Accept seller agreement
                 </Action>
               )}
-              <Action
+              <Button
+                variant="secondary"
+                className="button compact"
                 disabled={!accept || note.trim().length < 10}
                 onClick={() => void act(admin ? "withdraw" : "decline")}
               >
                 {admin
                   ? "Withdraw unaccepted offer"
                   : "Decline seller agreement"}
-              </Action>
-            </>
+              </Button>
+            </div>
           ) : (
             <Action
               disabled={!accept || note.trim().length < 10}

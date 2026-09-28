@@ -1,3 +1,4 @@
+import { integratedCapture } from "./integrated-capture";
 import { operationsJourney } from "./operations-journey";
 import { randomUUID } from "node:crypto";
 import { test, expect } from "@playwright/test";
@@ -101,6 +102,11 @@ for (const role of ["booster", "administrator", "owner"] as const) {
       ).status(),
     ).toBe(403);
     expect((await page.request.get("/api/v1/me/overview")).status()).toBe(401);
+    await integratedCapture(
+      page,
+      `portal-mfa-${role}-${info.project.name}`,
+      page.getByRole("button", { name: "Set up authenticator", exact: true }),
+    );
     await enroll(page);
     expect((await page.request.get("/api/v1/me/overview")).status()).toBe(401);
     expect((await page.request.get("/api/v1/admin/users")).status()).toBe(

@@ -1,0 +1,19 @@
+# DI14/DI15 integrated senior UI/UX review
+
+Reviewer: `/root/di11_shop_design_review`. DI14 scoped PASS; DI15 aggregate verdict pending complete-gate evidence.
+
+Scope: all130 mapped views and31 accepted plus six addendum journeys, phase evidence and fresh integrated application captures. Real devices, assistive technology, merchant services and owner acceptance remain separate.
+
+- Traceability audit corrected nine stale SH rows, portal-specific I03/I04/I05 destinations and owner retention A36. All37 journey references exist; all31 accepted branch lists and done guards match the accepted flow inventory verbatim. Reviewer accepted the layer-specific evidence map while explicitly separating it from executed aggregate qualification.
+- DI14 public account alias: public-only resolution, bounded recovery parameters, no credential forwarding/no-store and canonical destination reviewed; browser verification still required. Global marketplace return context must survive game-local purchase review.
+- UX01: adjoining clarification/rejection and reorder/revise buttons were ambiguous. Added explicit wrapping spaced action groups; quiet fieldset treatment limited to order actions/fulfillment. Fresh rendered verification pending.
+- UX02: 320×450 with200% root text squeezed labels and controls, and a tall sticky header obscured input. First center-point tests missed readable-word failures. Added bounded narrow gutters, complete-label wrapping, short-height nonsticky context and composer wrapping; strengthened evidence to nine control points and ordinary-word checks, with pre-assertion failure captures. Failures remain failures until the rebuilt corrected UI is reviewed.
+- UX03: selected quote tab slipped outside horizontal navigation after resize/text scaling. RecordShell now observes navigation/selected-link geometry and recenters without vertical scrolling. Narrow active labels can wrap. Test asserts selected-tab horizontal visibility; refreshed visual review pending.
+
+Run1 failed seller handover obstruction and a stale shop-return test label; run2 passed both shop journeys after the label correction but still failed enlarged quote/composer/handover states. No final PASS or full-site acceptance is inferred from earlier phase receipts.
+
+Build3 refreshed desktop/mobile quote, customer composer, booster assignment/calendar captures resolved word fragmentation; selected-tab geometry checks passed. Narrow gutter selectors needed higher specificity than the older admin stylesheet. Build4 used the exact activity-slot selector for short-height scroll-padding, resolving seller input obstruction. Reviewer inspected both seller handover text200 states and rebuilt shop consent/native-payment controls; no remaining issue in those surfaces. Seller offered-state images now wait for actual terms/decision instead of capturing loading.
+
+A later UX01 instance joined Accept/Decline seller agreement. The final source wraps both and uses the established secondary button for Decline/Withdraw; fresh populated seller and request-action capture/review is pending. Direct CUA browser review was unavailable (browser inventory empty); independent visual review uses inspected actual running-fixture captures plus source/interaction logs, not a separate live CUA walkthrough.
+
+Final DI14 round: reviewer inspected build5 populated desktop/mobile seller offers, request actions and administrator/booster MFA including text200. Accept/secondary Decline are clearly separated; terms, role and record context remain legible. Reviewer independently confirmed seven desktop plus seven mobile cases passed. **DI14 scoped verdict: PASS; no remaining actionable scoped findings.** UX01–03 are closed. DI15 aggregate review remains pending; this is not physical-device, assistive-technology, true-zoom, live-money or owner acceptance.

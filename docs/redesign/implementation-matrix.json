@@ -364,16 +364,19 @@
       "paths": []
     },
     "shop": {
-      "status": "proposed",
+      "status": "implemented",
       "paths": [
-        "/api/v1/shop/games/{slug}/products",
-        "/api/v1/shop/products/{id}",
-        "/api/v1/shop/orders",
-        "/api/v1/shop/orders/{id}/delivery",
         "/api/v1/admin/shop/products",
         "/api/v1/admin/shop/products/{id}",
-        "/api/v1/admin/shop/orders",
-        "/api/v1/admin/shop/orders/{id}/delivery"
+        "/api/v1/admin/shop/products/{id}/draft",
+        "/api/v1/admin/shop/products/{id}/preview",
+        "/api/v1/admin/shop/products/{id}/releases",
+        "/api/v1/admin/shop/products/{id}/publish",
+        "/api/v1/admin/shop/products/{id}/pause",
+        "/api/v1/admin/shop/products/{id}/resume",
+        "/api/v1/admin/shop/products/{id}/archive",
+        "/api/v1/admin/shop/products/{id}/restore",
+        "/api/v1/admin/shop/products/{id}/stock"
       ]
     },
     "news": {
@@ -1229,10 +1232,10 @@
       "mode": "adapt",
       "status": "verified",
       "baselineRoute": "/login",
-      "targetRoute": "/login",
+      "targetRoute": "/admin/login",
       "apiFamily": "identity",
       "audience": "portal-scoped",
-      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "permission": "Audience-bound first factor and mandatory staff MFA; recovery substitutes only for second factor",
       "states": [
         "Invalid code",
         "Session expired",
@@ -1253,7 +1256,11 @@
         "docs/redesign/reviews/2026-09-25-di02-portals.md",
         "docs/redesign/DI02_QUALIFICATION.md"
       ],
-      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c"
+      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c",
+      "additionalRoutes": [
+        "/booster/login",
+        "/login"
+      ]
     },
     {
       "id": "I04",
@@ -1285,7 +1292,11 @@
         "docs/redesign/reviews/2026-09-25-di02-portals.md",
         "docs/redesign/DI02_QUALIFICATION.md"
       ],
-      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c"
+      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c",
+      "additionalRoutes": [
+        "/admin/account/security",
+        "/booster/account/security"
+      ]
     },
     {
       "id": "I05",
@@ -1294,10 +1305,10 @@
       "mode": "adapt",
       "status": "verified",
       "baselineRoute": "/login",
-      "targetRoute": "/login",
+      "targetRoute": "/admin/login",
       "apiFamily": "identity",
       "audience": "portal-scoped",
-      "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
+      "permission": "Audience-bound first factor and mandatory staff MFA; recovery substitutes only for second factor",
       "states": [
         "Used or invalid",
         "Owner review",
@@ -1317,7 +1328,11 @@
         "docs/redesign/reviews/2026-09-25-di02-portals.md",
         "docs/redesign/DI02_QUALIFICATION.md"
       ],
-      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c"
+      "implementationCommit": "23c2bd2585de5983682256fab6cb774e832d257c",
+      "additionalRoutes": [
+        "/booster/login",
+        "/login"
+      ]
     },
     {
       "id": "I06",
@@ -3654,7 +3669,7 @@
       "mode": "adapt",
       "status": "verified",
       "baselineRoute": "/admin/privacy",
-      "targetRoute": "/admin/privacy",
+      "targetRoute": "/admin/content?kind=retention&section=editor",
       "apiFamily": "operations",
       "audience": "admin",
       "permission": "Portal session + role/ownership/assignment + recent verification for sensitive actions",
@@ -4132,7 +4147,7 @@
       "title": "Game shop",
       "phase": "DI11",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/games/:slug/shop",
       "apiFamily": "shop",
@@ -4152,16 +4167,22 @@
         "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI11_QUALIFICATION.md",
+        "frontend/tests/e2e/shop.spec.ts",
+        "frontend/tests/e2e/shop-purchase.spec.ts",
+        "frontend/tests/e2e/shop-promotion.spec.ts",
+        "docs/redesign/reviews/2026-09-28-di11-promotions.md"
+      ]
     },
     {
       "id": "SH02",
       "title": "Product",
       "phase": "DI11",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
-      "targetRoute": "/games/:slug/shop/:product",
+      "targetRoute": "/games/:slug/shop/:id",
       "apiFamily": "shop",
       "audience": "public",
       "permission": "Published resources only",
@@ -4179,16 +4200,22 @@
         "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI11_QUALIFICATION.md",
+        "frontend/tests/e2e/shop.spec.ts",
+        "frontend/tests/e2e/shop-purchase.spec.ts",
+        "frontend/tests/e2e/shop-promotion.spec.ts",
+        "docs/redesign/reviews/2026-09-28-di11-promotions.md"
+      ]
     },
     {
       "id": "SH03",
       "title": "Recipient",
       "phase": "DI11",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
-      "targetRoute": "/games/:slug/shop/:product?step=recipient",
+      "targetRoute": "/games/:slug/shop/:id?step=recipient",
       "apiFamily": "shop",
       "audience": "public-draft/customer-submit",
       "permission": "Guest may prepare nonsensitive draft; creating order requires customer portal session and validated published contract",
@@ -4206,16 +4233,22 @@
         "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI11_QUALIFICATION.md",
+        "frontend/tests/e2e/shop.spec.ts",
+        "frontend/tests/e2e/shop-purchase.spec.ts",
+        "frontend/tests/e2e/shop-promotion.spec.ts",
+        "docs/redesign/reviews/2026-09-28-di11-promotions.md"
+      ]
     },
     {
       "id": "SH04",
       "title": "Purchase review",
       "phase": "DI11",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
-      "targetRoute": "/games/:slug/shop/:product?step=review",
+      "targetRoute": "/games/:slug/shop/:id?step=review",
       "apiFamily": "shop",
       "audience": "public-draft/customer-submit",
       "permission": "Guest may prepare nonsensitive draft; creating order requires customer portal session and validated published contract",
@@ -4233,14 +4266,20 @@
         "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI11_QUALIFICATION.md",
+        "frontend/tests/e2e/shop.spec.ts",
+        "frontend/tests/e2e/shop-purchase.spec.ts",
+        "frontend/tests/e2e/shop-promotion.spec.ts",
+        "docs/redesign/reviews/2026-09-28-di11-promotions.md"
+      ]
     },
     {
       "id": "SH05",
       "title": "Customer shop order",
       "phase": "DI11",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/orders/:id",
       "apiFamily": "shop",
@@ -4260,14 +4299,20 @@
         "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI11_QUALIFICATION.md",
+        "frontend/tests/e2e/shop.spec.ts",
+        "frontend/tests/e2e/shop-purchase.spec.ts",
+        "frontend/tests/e2e/shop-promotion.spec.ts",
+        "docs/redesign/reviews/2026-09-28-di11-promotions.md"
+      ]
     },
     {
       "id": "SH06",
       "title": "Admin products",
       "phase": "DI11",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/admin/shop",
       "apiFamily": "shop",
@@ -4287,14 +4332,20 @@
         "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI11_QUALIFICATION.md",
+        "frontend/tests/e2e/shop.spec.ts",
+        "frontend/tests/e2e/shop-purchase.spec.ts",
+        "frontend/tests/e2e/shop-promotion.spec.ts",
+        "docs/redesign/reviews/2026-09-28-di11-promotions.md"
+      ]
     },
     {
       "id": "SH07",
       "title": "Product editor",
       "phase": "DI11",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/admin/shop/:id",
       "apiFamily": "shop",
@@ -4314,14 +4365,20 @@
         "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI11_QUALIFICATION.md",
+        "frontend/tests/e2e/shop.spec.ts",
+        "frontend/tests/e2e/shop-purchase.spec.ts",
+        "frontend/tests/e2e/shop-promotion.spec.ts",
+        "docs/redesign/reviews/2026-09-28-di11-promotions.md"
+      ]
     },
     {
       "id": "SH08",
       "title": "Shop fulfillment queue",
       "phase": "DI11",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/admin/shop/orders",
       "apiFamily": "shop",
@@ -4341,14 +4398,20 @@
         "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI11_QUALIFICATION.md",
+        "frontend/tests/e2e/shop.spec.ts",
+        "frontend/tests/e2e/shop-purchase.spec.ts",
+        "frontend/tests/e2e/shop-promotion.spec.ts",
+        "docs/redesign/reviews/2026-09-28-di11-promotions.md"
+      ]
     },
     {
       "id": "SH09",
       "title": "Shop fulfillment record",
       "phase": "DI11",
       "mode": "new",
-      "status": "planned",
+      "status": "verified",
       "baselineRoute": null,
       "targetRoute": "/admin/orders/:id",
       "apiFamily": "shop",
@@ -4368,7 +4431,13 @@
         "SHOP_NEWS_ADDENDUM.md SN01–SN04",
         "keyboard and narrow layout"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/redesign/DI11_QUALIFICATION.md",
+        "frontend/tests/e2e/shop.spec.ts",
+        "frontend/tests/e2e/shop-purchase.spec.ts",
+        "frontend/tests/e2e/shop-promotion.spec.ts",
+        "docs/redesign/reviews/2026-09-28-di11-promotions.md"
+      ]
     },
     {
       "id": "NW01",

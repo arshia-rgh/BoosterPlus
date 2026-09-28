@@ -164,3 +164,17 @@
   margin-block: 0.35rem;
   margin-inline-end: 0.65rem;
 }
+
+/* Scoped order controls keep their semantic legend without a native bevel. */
+fieldset.order-task-controls {
+  min-width: 0;
+  margin: 1rem 0 0;
+  padding: 0;
+  border: 0;
+}
+fieldset.order-task-controls > legend {
+  padding: 0;
+  margin-bottom: 0.8rem;
+  color: var(--muted);
+  font-weight: 650;
+}

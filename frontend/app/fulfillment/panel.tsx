@@ -42,7 +42,7 @@ export default function FulfillmentPanel({
         Refresh fulfillment
       </Action>
       {resource.loading && <p role="status">Refreshing fulfillment…</p>}
-      <fieldset disabled={resource.loading}>
+      <fieldset className="order-task-controls" disabled={resource.loading}>
         <legend>Fulfillment controls</legend>
         {!missing && <ErrorNotice error={resource.error} />}
         {work ? (

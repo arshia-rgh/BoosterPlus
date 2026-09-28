@@ -1,3 +1,4 @@
+import { integratedCapture, measuredInteraction } from "./integrated-capture";
 import { secondaryCapture } from "./secondary-capture";
 import { authURL } from "./identity-fixtures";
 import { qualifyOrderWorkspace } from "./order-workspace-journey";
@@ -330,6 +331,12 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     await page
       .getByLabel("Customer-visible explanation")
       .fill("Please select duo before review.");
+    await secondaryCapture(page, "request-decisions", info.project.name);
+    await integratedCapture(
+      page,
+      `request-decisions-${info.project.name}`,
+      page.getByRole("button", { name: "Request clarification", exact: true }),
+    );
     await page
       .getByRole("button", { name: "Request clarification", exact: true })
       .click();
@@ -371,9 +378,27 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
         .getByLabel("Agreed scope", { exact: true })
         .fill("Reviewed duo boost");
       await page.getByLabel("Quote explanation").fill(reason);
-      await page
-        .getByRole("button", { name: "Preview quote", exact: true })
-        .click();
+      await measuredInteraction(
+        page,
+        `admin-quote-${info.project.name}`,
+        async () => {
+          await page
+            .getByRole("button", { name: "Preview quote", exact: true })
+            .click();
+          await expect(
+            page.getByLabel(
+              "I reviewed the customer-visible price, scope, deadline and terms",
+            ),
+          ).toBeVisible();
+        },
+      );
+      await integratedCapture(
+        page,
+        `admin-quote-${info.project.name}`,
+        page.getByLabel(
+          "I reviewed the customer-visible price, scope, deadline and terms",
+        ),
+      );
       await page
         .getByLabel(
           "I reviewed the customer-visible price, scope, deadline and terms",

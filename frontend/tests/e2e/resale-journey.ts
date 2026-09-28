@@ -1,3 +1,4 @@
+import { integratedCapture } from "./integrated-capture";
 import { authURL } from "./identity-fixtures";
 import { createHmac, randomUUID } from "node:crypto";
 import {
@@ -158,6 +159,12 @@ export async function resaleJourney(
     ).toBeVisible();
     await accessible(page);
     await seller.goto(`/sell/${id}?section=agreement`);
+    await expect(
+      seller.getByText("Offer: offered", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      seller.getByLabel("Seller agreement decision note"),
+    ).toBeVisible();
     await seller.screenshot({
       path: `.cache/seller-offer-${info.project.name}.png`,
       fullPage: true,
@@ -187,6 +194,11 @@ export async function resaleJourney(
     await seller
       .getByRole("link", { name: "Secure handover", exact: true })
       .click();
+    await integratedCapture(
+      seller,
+      `seller-handover-${info.project.name}`,
+      seller.getByLabel("Protected transfer details"),
+    );
     await seller
       .getByLabel("Protected transfer details")
       .fill("synthetic seller-origin ownership bundle");
@@ -319,7 +331,18 @@ export async function resaleJourney(
       fullPage: true,
     });
     await accessible(buyer);
+    const legacy = await buyer.request.get(
+      `/accounts/${item.id}?step=review&token=discard`,
+      { maxRedirects: 0 },
+    );
+    expect(legacy.status()).toBe(302);
+    expect(legacy.headers().location).toBe(
+      `/games/${slug}/accounts/${item.id}?step=review`,
+    );
     await buyer.getByRole("link", { name: title, exact: true }).click();
+    await expect(buyer).toHaveURL(
+      new RegExp(`/games/${slug}/accounts/${item.id}`),
+    );
     await buyer.getByRole("link", { name: "← Account marketplace" }).click();
     if (info.project.name === "mobile") await filterTrigger.click();
     await expect(
@@ -337,6 +360,12 @@ export async function resaleJourney(
         .getByRole("button", { name: "Close filters", exact: true })
         .click();
     await buyer.getByRole("link", { name: title, exact: true }).click();
+    await expect(buyer).toHaveURL(
+      new RegExp(`/games/${slug}/accounts/${item.id}`),
+    );
+    await expect(
+      buyer.getByRole("heading", { name: "Account details", exact: true }),
+    ).toBeVisible();
     // Isolated reviewed-image responses qualify the native gallery without uploading private evidence.
     const listingURL = `**/api/v1/accounts/${item.id}`;
     await buyer.route(listingURL, async (route) => {

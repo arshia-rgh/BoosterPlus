@@ -57,7 +57,7 @@ def run_project(project, specs=()):
 
 def focused_batches(specs):
     """Global terms publication must follow ordinary journeys even in focused runs."""
-    policies = [name for name in specs if name == "tests/e2e/admin-policy.spec.ts"]
+    policies = [name for name in specs if name in {"tests/e2e/admin-policy.spec.ts", "tests/e2e/shop-purchase.spec.ts"}]
     ordinary = [name for name in specs if name not in policies]
     return [batch for batch in (ordinary, policies) if batch]
 

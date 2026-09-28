@@ -1,3 +1,4 @@
+import { integratedCapture, measuredInteraction } from "./integrated-capture";
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { createHmac } from "node:crypto";
@@ -168,9 +169,22 @@ test("@global-policy customer purchases shop item and staff reviews scanned manu
       .getByLabel("Player identifier (required)")
       .fill("synthetic-player-only");
     await capture(buyer, "shop-recipient", width);
-    await buyer.getByRole("button", { name: "Review purchase" }).click();
-    await expect(buyer.getByText("Total: USD 12.34")).toBeVisible();
+    await measuredInteraction(
+      buyer,
+      `shop-review-${info.project.name}`,
+      async () => {
+        await buyer.getByRole("button", { name: "Review purchase" }).click();
+        await expect(buyer.getByText("Total: USD 12.34")).toBeVisible();
+      },
+    );
     await capture(buyer, "shop-review", width);
+    await integratedCapture(
+      buyer,
+      `shop-review-${info.project.name}`,
+      buyer.getByLabel(
+        "I confirm the recipient, compatibility, price and delivery terms",
+      ),
+    );
     await buyer
       .getByLabel(
         "I confirm the recipient, compatibility, price and delivery terms",
@@ -192,6 +206,11 @@ test("@global-policy customer purchases shop item and staff reviews scanned manu
       buyer.getByRole("heading", { name: "Send your payment", exact: true }),
     ).toBeVisible({ timeout: 25000 });
     await capture(buyer, "shop-payment", width);
+    await integratedCapture(
+      buyer,
+      `shop-payment-${info.project.name}`,
+      buyer.getByRole("button", { name: "Copy address", exact: true }),
+    );
     const history = historySchema.parse(
       await (
         await buyer.request.get(`/api/v1/orders/${order}/payments`)
@@ -259,7 +278,7 @@ test("@global-policy customer purchases shop item and staff reviews scanned manu
       .getByRole("link", { name: "Messages & proof", exact: true })
       .click();
     await page
-      .getByRole("link", { name: "← Order queue", exact: true })
+      .getByRole("link", { name: "← Shop fulfillment queue", exact: true })
       .click();
     await expect(
       page.getByRole("alert").filter({ hasText: "Keep your order drafts?" }),

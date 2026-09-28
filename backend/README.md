@@ -1,6 +1,6 @@
 # PLAYORA backend
 
-Independent Go project in the PLAYORA monorepo. R01–R09 include passwordless identity, catalog publication, orders, conversations, fulfillment, account resale, payment/refund/payout workflows and owner governance. Explicit SQL migrations, API/worker processes, local services and mandatory quality gates remain separate from the frontend. Go module paths, database history and executable names retain their compatible Booster Plus identifiers. UI/UX work is underway; R10/R11 production qualification and launch remain on hold.
+Independent Go project in the PLAYORA monorepo. R01–R09 include passwordless identity, catalog publication, orders, conversations, fulfillment, account resale, payment/refund/payout workflows and owner governance. Explicit SQL migrations, API/worker processes, local services and mandatory quality gates remain separate from the frontend. Go module paths, database history and executable names retain their compatible Booster Plus identifiers. DI00–DI14 add audience-isolated portals, published game discovery, native crypto instructions, manual shop delivery, staff editorial publication and safe recorded job attempts; R10/R11 production qualification and launch remain on hold.
 
 ## Requirements and setup
 
@@ -94,3 +94,9 @@ UX02 adds `GET /api/v1/me/overview`: up to five owned items in each attention, a
 New verification emails, sender display names, authenticator enrollments, default support notifications and hosted-invoice descriptions use PLAYORA. Existing authenticator secrets, accepted records, configured sender mailboxes and provider identities remain compatible; external merchant/Google branding uses owner-provided configuration.
 
 If the canonical Go vulnerability service is unreachable, the same scan can explicitly use the Go project's official live storage endpoint: `GOVULNCHECK_DATABASE=https://storage.googleapis.com/go-vulndb make pre-commit`. The default remains `https://vuln.go.dev`; only these two HTTPS endpoints are accepted. Record the outage and database metadata in stage evidence. The command must still complete successfully; no cached/offline or arbitrary database is substituted by this target.
+
+## Redesign application contracts
+
+The current schema is38; migrations26–38 are explicit SQL, including portal invalidation, immutable commercial revisions, shop reservations/delivery, editorial publication and attempt metadata. Run `db migrate plan`, `up`, then `verify` before starting the matching API and worker. Runtime readiness never migrates. [DI14](../docs/redesign/DI14_QUALIFICATION.md) records the synthetic schema25→38 preservation rehearsal and recovery limits.
+
+Customer, admin and booster have separate `/api/v1/auth/portals/{portal}/...` endpoints and cookies. A customer session never authorizes a staff portal. Staff need both factors on every sign-in, including after migration invalidates old sessions. OAuth/email action returns are bounded to the matching portal. Shop processing requires confirmed payment and published delivery terms; scheduling an article does not bypass current author permission. Registered worker handlers are documented in [background jobs](../docs/background-jobs.md).
