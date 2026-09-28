@@ -1,4 +1,11 @@
-import { useEffect, useId, useRef, useState } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router";
 import { APIError } from "../identity/api";
 import { useResource } from "../orders/resource";
@@ -8,7 +15,29 @@ import { Action, ErrorNotice } from "../catalog/controls";
 import { overviewSchema } from "./overview-model";
 import "./activity.css";
 
+// The root header slot remains mounted for the lifetime of the storefront.
+const subscribeHeader = () => () => undefined;
+const headerSlot = () => document.getElementById("customer-activity-slot");
+const serverSlot = () => null;
 export default function ActivityWork() {
+  const host = useSyncExternalStore(subscribeHeader, headerSlot, serverSlot);
+  useEffect(() => {
+    const header = document.querySelector<HTMLElement>(".site-header");
+    if (!header || typeof ResizeObserver === "undefined") return;
+    const update = () => {
+      document.documentElement.style.setProperty(
+        "--activity-header-height",
+        `${String(header.getBoundingClientRect().height)}px`,
+      );
+    };
+    const observer = new ResizeObserver(update);
+    observer.observe(header);
+    update();
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty("--activity-header-height");
+    };
+  }, []);
   useEffect(() => {
     window.dispatchEvent(new Event("playora:activity-layout"));
     return () => {
@@ -100,7 +129,7 @@ export default function ActivityWork() {
     : [];
   const content = (
     <>
-      <header>
+      <div className="activity-heading">
         <div>
           <p className="eyebrow">MY ACCOUNT</p>
           <h2 id={id + "-title"}>Your current orders</h2>
@@ -114,7 +143,7 @@ export default function ActivityWork() {
         >
           Close
         </button>
-      </header>
+      </div>
       <ErrorNotice error={work.error} />
       {stale && (
         <p role="status">
@@ -196,7 +225,7 @@ export default function ActivityWork() {
       </div>
     </>
   );
-  return (
+  const panel = (
     <aside className="customer-activity" aria-label="Your orders and support">
       <button
         ref={trigger}
@@ -261,4 +290,5 @@ export default function ActivityWork() {
       )}
     </aside>
   );
+  return host ? createPortal(panel, host) : panel;
 }

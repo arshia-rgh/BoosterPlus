@@ -39,13 +39,13 @@
   overflow: auto;
   overscroll-behavior: contain;
 }
-.customer-activity header {
+.customer-activity .activity-heading {
   display: flex;
   gap: 1rem;
   justify-content: space-between;
   align-items: start;
 }
-.customer-activity header h2 {
+.customer-activity .activity-heading h2 {
   margin: 0.35rem 0 1rem;
   font-size: 1.1rem;
 }
@@ -60,7 +60,7 @@
   font: inherit;
   cursor: pointer;
 }
-.customer-activity header button {
+.customer-activity .activity-heading button {
   background: transparent;
   border: 1px solid var(--line);
   color: var(--text);
@@ -163,5 +163,60 @@ html:has(.customer-activity) {
 @media (max-width: 700px) {
   html:has(.customer-activity) {
     scroll-padding-bottom: 5rem;
+  }
+}
+
+#customer-activity-slot:empty {
+  display: none;
+}
+@media (max-width: 1000px) {
+  .site-header:has(#customer-activity-slot .customer-activity) {
+    background: #071611;
+    position: sticky;
+    top: 0;
+    z-index: 45;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.35rem 0.75rem;
+    padding: 0.65rem 1rem;
+  }
+  .site-header:has(.customer-activity) > .brand {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+  }
+  .site-header:has(.customer-activity) .brand-logo {
+    width: min(8rem, 100%);
+  }
+  .site-header:has(.customer-activity) > nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    justify-content: flex-end;
+  }
+  #customer-activity-slot {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  #customer-activity-slot .customer-activity {
+    position: relative;
+    right: auto;
+    bottom: auto;
+  }
+  #customer-activity-slot .activity-trigger {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.75rem;
+    box-shadow: none;
+  }
+  #customer-activity-slot .activity-popover {
+    bottom: auto;
+    top: calc(100% + 3.5rem);
+  }
+  .storefront-app:has(#customer-activity-slot .customer-activity) {
+    --activity-clearance: 0px;
+  }
+  html:has(#customer-activity-slot .customer-activity) {
+    scroll-padding-top: calc(var(--activity-header-height, 120px) + 1rem);
+    scroll-padding-bottom: 1rem;
   }
 }

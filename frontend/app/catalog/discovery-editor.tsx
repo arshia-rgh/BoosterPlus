@@ -61,7 +61,8 @@ export default function DiscoveryEditor({
             description: "",
             reason: "",
           };
-          const supported = service === "boost" || service === "accounts";
+          const supported =
+            service === "boost" || service === "accounts" || service === "shop";
           const patch = (fields: Partial<typeof policy>) => {
             update({
               capabilities: services.map(([key]) =>

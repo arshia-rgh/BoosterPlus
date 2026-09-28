@@ -69,7 +69,7 @@ func TestBrowserEnvironment(t *testing.T) {
 	}
 	fixtures := map[string]string{}
 	for _, project := range []string{"desktop", "mobile"} {
-		for _, role := range []string{"shopadmin", "contentowner", "resaleseller", "resalebuyer", "payadmin", "paybuyer", "customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond", "seller", "selleradmin", "sellerother"} {
+		for _, role := range []string{"shopbuyer", "shopworker", "shopadmin", "contentowner", "resaleseller", "resalebuyer", "payadmin", "paybuyer", "customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond", "seller", "selleradmin", "sellerother"} {
 			email := strings.ToLower(role + "-" + project + "-" + rand.Text() + "@example.test")
 			account, createErr := f.client.User.Create().SetEmail(email).SetEmailVerifiedAt(time.Now()).SetTermsVersion("test-v1").SetTermsAcceptedAt(time.Now()).SetRole(func() string {
 				if role == "workbooster" || role == "worksecond" {
@@ -78,10 +78,10 @@ func TestBrowserEnvironment(t *testing.T) {
 				if role == "shopadmin" || role == "selleradmin" || role == "workadmin" || role == "catalog" || role == "orderadmin" || role == "supportadmin" {
 					return "administrator"
 				}
-				if role == "payadmin" || role == "contentowner" {
+				if role == "shopworker" || role == "payadmin" || role == "contentowner" {
 					return "owner"
 				}
-				if role == "resaleseller" || role == "resalebuyer" || role == "paybuyer" || role == "seller" || role == "sellerother" || role == "workbuyer" || role == "workother" || role == "target" || role == "orders" || role == "orderother" || role == "supportbuyer" || role == "supportother" {
+				if role == "shopbuyer" || role == "resaleseller" || role == "resalebuyer" || role == "paybuyer" || role == "seller" || role == "sellerother" || role == "workbuyer" || role == "workother" || role == "target" || role == "orders" || role == "orderother" || role == "supportbuyer" || role == "supportother" {
 					return "customer"
 				}
 				return role
@@ -98,6 +98,7 @@ func TestBrowserEnvironment(t *testing.T) {
 	seedBrowserDiscovery(t, f, fixtures)
 	seedBrowserOperations(t, f, fixtures)
 	seedBrowserPayments(t, f, fixtures)
+	seedBrowserShop(t, f, fixtures)
 	ring, ringErr := vault.NewKeyring("v1", map[string][]byte{"v1": vaultKey(t)})
 	if ringErr != nil {
 		t.Fatal(ringErr)

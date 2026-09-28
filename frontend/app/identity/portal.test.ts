@@ -227,3 +227,14 @@ it("preserves bounded staff record and editor destinations without carrying priv
     portalReturn("/admin/catalog?game=../bad&section=catalog-pricing", "admin"),
   ).toBe("/admin/catalog");
 });
+it("retains bounded shop options after sign-in without recipient data", () => {
+  expect(
+    portalReturn(
+      "/games/mlbb/shop/item?variant=global&quantity=2&player_id=private",
+      "customer",
+    ),
+  ).toBe("/games/mlbb/shop/item?variant=global&quantity=2");
+  expect(portalReturn("/games/mlbb/shop/item?quantity=101", "customer")).toBe(
+    "/games/mlbb/shop/item",
+  );
+});

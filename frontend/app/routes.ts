@@ -17,6 +17,8 @@ export default [
       route("games/:slug/services/:service", "routes/service.tsx"),
       route("games/:slug/packages/:pack", "routes/package.tsx"),
       route("games/:slug/reviews", "routes/game-reviews.tsx"),
+      route("games/:slug/shop", "routes/game-shop.tsx"),
+      route("games/:slug/shop/:id", "routes/game-shop-product.tsx"),
       route("games/:slug/accounts", "routes/game-accounts.tsx"),
       route("games/:slug/accounts/:id", "routes/game-account.tsx"),
     ]),

@@ -94,11 +94,20 @@ export function portalReturn(
       params.set("channel", channel);
     const variant = url.searchParams.get("variant");
     if (
-      /^\/games\/[^/]+\/packages\/[^/]+$/.test(path) &&
+      /^\/games\/[^/]+\/(packages|shop)\/[^/]+$/.test(path) &&
       variant &&
       /^[a-zA-Z0-9_-]{1,64}$/.test(variant)
     )
       params.set("variant", variant);
+    const quantity = url.searchParams.get("quantity");
+    if (
+      portal === "customer" &&
+      /^\/games\/[^/]+\/shop\/[^/]+$/.test(path) &&
+      quantity &&
+      /^(?:[1-9][0-9]?|100)$/.test(quantity)
+    )
+      params.set("quantity", quantity);
+
     if (
       portal === "customer" &&
       /^\/games\/[^/]+\/(services|packages)\/[^/]+$/.test(path)

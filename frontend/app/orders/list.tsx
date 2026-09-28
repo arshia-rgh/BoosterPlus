@@ -158,6 +158,7 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
                 ["custom", "Custom boost"],
                 ["package", "Fixed pack"],
                 ["account", "Account purchase"],
+                ["shop", "Shop purchase"],
               ]}
             />
             <Text
@@ -266,13 +267,7 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
                           <small>Order {order.id}</small>
                         </Link>
                       </td>
-                      <td data-label="Service">
-                        {order.kind === "package"
-                          ? "Fixed package"
-                          : order.kind === "account"
-                            ? "Account purchase"
-                            : "Custom request"}
-                      </td>
+                      <td data-label="Service">{orderKind(order.kind)}</td>
                       <td data-label="Status">
                         <span className="status">
                           {stateLabel(order.state)}

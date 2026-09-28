@@ -81,7 +81,7 @@ const messages = new Map([
   ],
   [
     "shop_conflict",
-    "Product details or stock changed. Refresh and review the current revision before continuing.",
+    "This shop record changed or is not ready for this action. Refresh its current status; check availability, verified payment and any open case before continuing.",
   ],
   [
     "payment_invalid",

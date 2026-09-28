@@ -12,6 +12,7 @@ import (
 
 // Filters is the structured staff queue filter; all dates use inclusive/exclusive UTC bounds.
 type Filters struct {
+	Delivery string
 	Game     string
 	Kind     string
 	Customer string
@@ -51,15 +52,28 @@ func applyFilters(q *ent.OrderQuery, admin bool, f Filters) error {
 			}
 		}
 		q.Where(func(s *sql.Selector) {
-			t := sql.Table("fulfillments")
-			sub := sql.Select(t.C("order_id")).From(t)
+			boost, shop := sql.Table("fulfillments"), sql.Table("shop_deliveries")
+			a, b := sql.Select(boost.C("order_id")).From(boost), sql.Select(shop.C("order_id")).From(shop)
 			if f.Assigned == "unassigned" {
-				sub.Where(sql.NEQ(t.C("assigned_id"), ""))
-				s.Where(sql.NotIn(s.C(order.FieldID), sub))
+				a.Where(sql.NEQ(boost.C("assigned_id"), ""))
+				b.Where(sql.NEQ(shop.C("assigned_id"), ""))
+				s.Where(sql.And(sql.NotIn(s.C(order.FieldID), a), sql.NotIn(s.C(order.FieldID), b)))
 			} else {
-				sub.Where(sql.EQ(t.C("assigned_id"), f.Assigned))
-				s.Where(sql.In(s.C(order.FieldID), sub))
+				a.Where(sql.EQ(boost.C("assigned_id"), f.Assigned))
+				b.Where(sql.EQ(shop.C("assigned_id"), f.Assigned))
+				s.Where(sql.Or(sql.In(s.C(order.FieldID), a), sql.In(s.C(order.FieldID), b)))
 			}
+		})
+	}
+	if f.Delivery != "" {
+		switch f.Delivery {
+		case "processing", "held", "submitted", "completed", "cancelled":
+		default:
+			return ErrConflict
+		}
+		q.Where(order.KindEQ(order.KindShop), func(s *sql.Selector) {
+			t := sql.Table("shop_deliveries")
+			s.Where(sql.In(s.C(order.FieldID), sql.Select(t.C("order_id")).From(t).Where(sql.EQ(t.C("state"), f.Delivery))))
 		})
 	}
 	var from, to time.Time

@@ -205,7 +205,7 @@ export default function PurchaseReview({
       orderReviewSchema,
     ),
     value = resource.data;
-  if (value && !completed && !value.review) return null;
+  if (value && (!completed || !value.eligible) && !value.review) return null;
   return (
     <section
       id="purchase-review"
@@ -255,8 +255,8 @@ export default function PurchaseReview({
             />
           ) : (
             <p>
-              Writing feedback requires a completed paid boosting order, a
-              customer account and a published review policy.
+              New feedback is not currently available for this purchase. You can
+              still view or withdraw your existing review.
             </p>
           )}
         </fieldset>

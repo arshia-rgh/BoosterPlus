@@ -59,6 +59,17 @@ export default function OrderProgress({ detail }: { detail: Detail }) {
     description =
       "Review the ownership checklist and protected account delivery below. Keep recovery details out of chat.";
   }
+  if (
+    detail.order.kind === "shop" &&
+    ["queued", "in_progress", "completed"].includes(detail.order.state)
+  ) {
+    title =
+      detail.order.state === "completed"
+        ? "Your shop delivery is complete"
+        : "Your shop delivery is underway";
+    description =
+      "Follow staff updates and reviewed proof in Delivery and Messages.";
+  }
   const terminal = ["rejected", "cancelled", "expired"].includes(
     detail.order.state,
   );

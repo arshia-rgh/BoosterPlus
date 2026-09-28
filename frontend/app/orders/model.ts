@@ -24,6 +24,7 @@ export const summarySchema = z.object({
       customer_id: z.string(),
       assigned_id: z.string(),
       payment_state: z.string(),
+      delivery_state: z.string().optional(),
     })
     .optional(),
   accepted_price: z
@@ -32,7 +33,7 @@ export const summarySchema = z.object({
   unread: z.boolean().optional(),
   id: z.string(),
   version: z.number().int(),
-  kind: z.enum(["custom", "package", "account"]),
+  kind: z.enum(["custom", "package", "account", "shop"]),
   state: z.enum(states),
   slug: z.string(),
   service: z.string(),

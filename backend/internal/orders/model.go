@@ -124,9 +124,10 @@ type Summary struct {
 
 // StaffSummary contains internal references only in an authorized staff queue.
 type StaffSummary struct {
-	CustomerID   string `json:"customer_id"`
-	AssignedID   string `json:"assigned_id"`
-	PaymentState string `json:"payment_state"`
+	DeliveryState string `json:"delivery_state,omitempty"`
+	CustomerID    string `json:"customer_id"`
+	AssignedID    string `json:"assigned_id"`
+	PaymentState  string `json:"payment_state"`
 }
 
 // QuoteView exposes the customer's agreement but excludes internal staff identity.

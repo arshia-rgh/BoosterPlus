@@ -11,6 +11,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentallocation"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/paymentreceipt"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/servicecase"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/shop"
 )
 
 func eligible(ctx context.Context, c *ent.Client, row *ent.Order) (bool, error) {
@@ -32,8 +33,10 @@ func eligible(ctx context.Context, c *ent.Client, row *ent.Order) (bool, error) 
 			return false, err
 		}
 	case order.KindShop:
-		// Shop completion and its accepted review policy are qualified in DI11C.
-		return false, nil
+		allowed, err := shop.CompletedReviewAllowed(ctx, c, row)
+		if err != nil || !allowed {
+			return false, err
+		}
 	default:
 		return false, nil
 	}

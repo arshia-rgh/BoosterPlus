@@ -7,6 +7,7 @@ import {
   type KeyboardEvent,
   type SubmitEvent,
 } from "react";
+import { useRecordDraft } from "../ui/record-drafts";
 import { post } from "../identity/api";
 import { ErrorNotice, Select } from "../catalog/controls";
 import { UploadImage } from "../media/attachment";
@@ -71,6 +72,10 @@ export default function Composer({
   const labelID = useId(),
     helpID = useId();
   const body = visibility === "internal" ? drafts.internal : drafts.public;
+  useRecordDraft(
+    !!drafts.public || !!drafts.internal || !!attachment || unknown,
+    busy || uploadPending,
+  );
   useEffect(() => {
     if (typeof window.matchMedia !== "function") return;
     const query = window.matchMedia(

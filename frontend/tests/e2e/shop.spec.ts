@@ -17,11 +17,6 @@ test("administrator authors and reviews a shop product with explicit capacity", 
   await expect(
     page.getByRole("heading", { name: "Products", exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByText("No products yet. Create your first private draft above.", {
-      exact: true,
-    }),
-  ).toBeVisible();
   await page.screenshot({
     path: `.cache/shop-list-${info.project.name}.png`,
     fullPage: true,

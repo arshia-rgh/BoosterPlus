@@ -68,8 +68,8 @@ func Available(c Configuration, paused bool, service string) bool {
 }
 
 func implementedCapability(service string) bool {
-	// DI11/DI12 register shop/news only when their server and UI paths exist.
-	return service == "boost" || service == "accounts"
+	// News stays closed until DI12 supplies its complete server and UI paths.
+	return service == "boost" || service == "accounts" || service == "shop"
 }
 
 func validateDiscovery(c Configuration, publish bool, add func(string, string)) {

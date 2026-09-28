@@ -1,3 +1,4 @@
+import { GameShop } from "../shop/public";
 import { CursorPagination, filterQuery } from "../ui/list-navigation";
 import GameCards from "./game-cards";
 import {
@@ -155,6 +156,8 @@ export function GamePage() {
           </section>
         ) : selected === "accounts" ? (
           <AccountMarket gameSlug={release.slug} />
+        ) : selected === "shop" ? (
+          <GameShop />
         ) : selected === "boost" ? (
           <>
             <h2>Boosting for {release.configuration.name}</h2>
@@ -191,7 +194,9 @@ export function GamePage() {
                 {item.description ||
                   (item.service === "boost"
                     ? "Explore fixed packages and custom goals with clear scope and private updates."
-                    : "Browse reviewed accounts or submit your own for review.")}
+                    : item.service === "shop"
+                      ? "Browse in-game items with clear terms and staff delivery."
+                      : "Browse reviewed accounts or submit your own for review.")}
               </p>
               {item.state === "paused" ? (
                 <p className="status">
@@ -210,8 +215,8 @@ export function GamePage() {
               className="game-service-card"
               key={item.service}
               to={
-                item.service === "accounts"
-                  ? `/games/${release.slug}/accounts`
+                item.service === "accounts" || item.service === "shop"
+                  ? `/games/${release.slug}/${item.service}`
                   : `/games/${release.slug}?service=${item.service}`
               }
             >

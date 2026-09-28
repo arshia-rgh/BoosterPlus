@@ -31,7 +31,9 @@ function GameCard({
   ];
   const offered = capabilities.filter(
     (item) =>
-      (item.service === "boost" || item.service === "accounts") &&
+      (item.service === "boost" ||
+        item.service === "accounts" ||
+        item.service === "shop") &&
       item.state !== "off",
   );
   const paused =

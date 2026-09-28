@@ -23,13 +23,18 @@ function Editor() {
     </>
   );
 }
-it("keeps new services closed and records reviewed policies without fabricating counts", () => {
+it("keeps unimplemented services closed and records reviewed policies without fabricating counts", () => {
   render(<Editor />);
   expect(
-    within(screen.getByLabelText("Shop availability")).queryByRole("option", {
+    within(screen.getByLabelText("News availability")).queryByRole("option", {
       name: "Available",
     }),
   ).not.toBeInTheDocument();
+  expect(
+    within(screen.getByLabelText("Shop availability")).getByRole("option", {
+      name: "Available",
+    }),
+  ).toBeInTheDocument();
   fireEvent.change(screen.getByLabelText("Accounts availability"), {
     target: { value: "paused" },
   });

@@ -4952,6 +4952,142 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/games/{slug}/shop": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Published shop purchase and authorized manual delivery */
+    get: operations["getShopApiV1GamesSlugShop"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/games/{slug}/shop/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Published shop purchase and authorized manual delivery */
+    get: operations["getShopApiV1GamesSlugShopId"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/games/{slug}/shop/{id}/reserve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Published shop purchase and authorized manual delivery */
+    post: operations["postShopApiV1GamesSlugShopIdReserve"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/orders/{id}/shop": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Published shop purchase and authorized manual delivery */
+    get: operations["getShopApiV1OrdersIdShop"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/orders/{id}/shop/recipient": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Published shop purchase and authorized manual delivery */
+    post: operations["postShopApiV1OrdersIdShopRecipient"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/orders/{id}/shop": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Published shop purchase and authorized manual delivery */
+    get: operations["getShopApiV1AdminOrdersIdShop"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/orders/{id}/shop/recipient": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Published shop purchase and authorized manual delivery */
+    post: operations["postShopApiV1AdminOrdersIdShopRecipient"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/orders/{id}/shop/{action}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Published shop purchase and authorized manual delivery */
+    post: operations["postShopApiV1AdminOrdersIdShopAction"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -5486,6 +5622,7 @@ export interface components {
         customer_id: string;
         assigned_id: string;
         payment_state: string;
+        delivery_state?: string;
       };
     };
     OrderCommercial: {
@@ -7374,6 +7511,71 @@ export interface components {
       code: string;
       issues?: components["schemas"]["ShopValidationIssue"][];
     };
+    ShopPublicProduct: {
+      id: string;
+      game_id: string;
+      game_slug: string;
+      release_id: string;
+      version: number;
+      definition: components["schemas"]["ShopDefinition"];
+      available: {
+        [key: string]: number;
+      };
+    };
+    ShopPublicPage: {
+      items: components["schemas"]["ShopPublicProduct"][];
+      next: string;
+    };
+    ShopPurchase: {
+      product_id: string;
+      release_id: string;
+      product: components["schemas"]["ShopDefinition"];
+      variant: components["schemas"]["ShopVariant"];
+      quantity: number;
+      amount_minor: string;
+    };
+    ShopDelivery: {
+      order_state: string;
+      order_id: string;
+      order_version: number;
+      version: number;
+      state: string;
+      assigned_id?: string;
+      note: string;
+      proof_message_id: string;
+      /** Format: date-time */
+      updated_at: string;
+      recipient_provided: boolean;
+      purchase: components["schemas"]["ShopPurchase"];
+    };
+    ShopRecipient: {
+      order_id: string;
+      version: number;
+      values: {
+        [key: string]: string;
+      };
+    };
+    ShopReserve: {
+      request_key: string;
+      release_id: string;
+      variant: string;
+      quantity: number;
+      expected_amount: string;
+      /** @enum {string} */
+      currency: "USD" | "EUR" | "GBP";
+      recipient: {
+        [key: string]: string;
+      };
+      accept_terms: boolean;
+      terms_version: string;
+    };
+    ShopDeliveryChange: {
+      version: number;
+      order_version: number;
+      note: string;
+      proof_message_id?: string;
+    };
+    ShopRecipientAccess: Record<string, never>;
   };
   responses: never;
   parameters: never;
@@ -9894,6 +10096,8 @@ export interface operations {
         assigned?: string;
         from?: string;
         to?: string;
+        delivery?:
+          "processing" | "held" | "submitted" | "completed" | "cancelled";
       };
       header?: never;
       path?: never;
@@ -21816,6 +22020,286 @@ export interface operations {
         };
       };
       /** @description Authorization, validation, concurrency or unavailable rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  getShopApiV1GamesSlugShop: {
+    parameters: {
+      query?: {
+        after?: string;
+        q?: string;
+        region?: string;
+        category?: string;
+      };
+      header?: never;
+      path: {
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Current scoped shop state */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopPublicPage"];
+        };
+      };
+      /** @description Validation, authorization, revision or availability failure */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  getShopApiV1GamesSlugShopId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        slug: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Current scoped shop state */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopPublicProduct"];
+        };
+      };
+      /** @description Validation, authorization, revision or availability failure */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1GamesSlugShopIdReserve: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        slug: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopReserve"];
+      };
+    };
+    responses: {
+      /** @description Current scoped shop state */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopDelivery"];
+        };
+      };
+      /** @description Validation, authorization, revision or availability failure */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  getShopApiV1OrdersIdShop: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Current scoped shop state */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopDelivery"];
+        };
+      };
+      /** @description Validation, authorization, revision or availability failure */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1OrdersIdShopRecipient: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopRecipientAccess"];
+      };
+    };
+    responses: {
+      /** @description Current scoped shop state */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopRecipient"];
+        };
+      };
+      /** @description Validation, authorization, revision or availability failure */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  getShopApiV1AdminOrdersIdShop: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Current scoped shop state */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopDelivery"];
+        };
+      };
+      /** @description Validation, authorization, revision or availability failure */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1AdminOrdersIdShopRecipient: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopRecipientAccess"];
+      };
+    };
+    responses: {
+      /** @description Current scoped shop state */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopRecipient"];
+        };
+      };
+      /** @description Validation, authorization, revision or availability failure */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopProblem"];
+        };
+      };
+    };
+  };
+  postShopApiV1AdminOrdersIdShopAction: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+        action: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ShopDeliveryChange"];
+      };
+    };
+    responses: {
+      /** @description Current scoped shop state */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ShopDelivery"];
+        };
+      };
+      /** @description Validation, authorization, revision or availability failure */
       default: {
         headers: {
           [name: string]: unknown;

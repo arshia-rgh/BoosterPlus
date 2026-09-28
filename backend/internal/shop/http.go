@@ -11,8 +11,9 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
-// Register attaches administrator authoring routes without activating public purchase.
+// Register attaches staff authoring and release-backed public purchase routes.
 func (s *Store) Register(mux *http.ServeMux) {
+	s.registerPurchase(mux)
 	routes := map[string]func(http.ResponseWriter, *http.Request, *identity.Principal) error{
 		"GET /api/v1/admin/shop/products": s.listHTTP, "POST /api/v1/admin/shop/products": s.createHTTP,
 		"GET /api/v1/admin/shop/products/{id}": s.draftHTTP, "POST /api/v1/admin/shop/products/{id}/draft": s.saveHTTP,

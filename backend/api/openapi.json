@@ -3774,6 +3774,20 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "delivery",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "processing",
+                "held",
+                "submitted",
+                "completed",
+                "cancelled"
+              ]
+            }
           }
         ]
       }
@@ -22032,6 +22046,485 @@
           }
         }
       }
+    },
+    "/api/v1/games/{slug}/shop": {
+      "get": {
+        "operationId": "getShopApiV1GamesSlugShop",
+        "summary": "Published shop purchase and authorized manual delivery",
+        "security": [],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current scoped shop state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopPublicPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Validation, authorization, revision or availability failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/games/{slug}/shop/{id}": {
+      "get": {
+        "operationId": "getShopApiV1GamesSlugShopId",
+        "summary": "Published shop purchase and authorized manual delivery",
+        "security": [],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current scoped shop state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopPublicProduct"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Validation, authorization, revision or availability failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/games/{slug}/shop/{id}/reserve": {
+      "post": {
+        "operationId": "postShopApiV1GamesSlugShopIdReserve",
+        "summary": "Published shop purchase and authorized manual delivery",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current scoped shop state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopDelivery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Validation, authorization, revision or availability failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopReserve"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{id}/shop": {
+      "get": {
+        "operationId": "getShopApiV1OrdersIdShop",
+        "summary": "Published shop purchase and authorized manual delivery",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current scoped shop state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopDelivery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Validation, authorization, revision or availability failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{id}/shop/recipient": {
+      "post": {
+        "operationId": "postShopApiV1OrdersIdShopRecipient",
+        "summary": "Published shop purchase and authorized manual delivery",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current scoped shop state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopRecipient"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Validation, authorization, revision or availability failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopRecipientAccess"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/orders/{id}/shop": {
+      "get": {
+        "operationId": "getShopApiV1AdminOrdersIdShop",
+        "summary": "Published shop purchase and authorized manual delivery",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current scoped shop state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopDelivery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Validation, authorization, revision or availability failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/orders/{id}/shop/recipient": {
+      "post": {
+        "operationId": "postShopApiV1AdminOrdersIdShopRecipient",
+        "summary": "Published shop purchase and authorized manual delivery",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current scoped shop state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopRecipient"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Validation, authorization, revision or availability failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopRecipientAccess"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/orders/{id}/shop/{action}": {
+      "post": {
+        "operationId": "postShopApiV1AdminOrdersIdShopAction",
+        "summary": "Published shop purchase and authorized manual delivery",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current scoped shop state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopDelivery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Validation, authorization, revision or availability failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShopProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShopDeliveryChange"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -23995,6 +24488,9 @@
                 "type": "string"
               },
               "payment_state": {
+                "type": "string"
+              },
+              "delivery_state": {
                 "type": "string"
               }
             }
@@ -30935,6 +31431,282 @@
           }
         },
         "required": ["code"]
+      },
+      "ShopPublicProduct": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "game_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "game_slug": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "release_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "definition": {
+            "$ref": "#/components/schemas/ShopDefinition"
+          },
+          "available": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2147483645
+            }
+          }
+        },
+        "required": [
+          "id",
+          "game_id",
+          "game_slug",
+          "release_id",
+          "version",
+          "definition",
+          "available"
+        ],
+        "additionalProperties": false
+      },
+      "ShopPublicPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/ShopPublicProduct"
+            }
+          },
+          "next": {
+            "type": "string",
+            "maxLength": 36
+          }
+        },
+        "required": ["items", "next"],
+        "additionalProperties": false
+      },
+      "ShopPurchase": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "release_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "product": {
+            "$ref": "#/components/schemas/ShopDefinition"
+          },
+          "variant": {
+            "$ref": "#/components/schemas/ShopVariant"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "amount_minor": {
+            "type": "string",
+            "maxLength": 12
+          }
+        },
+        "required": [
+          "product_id",
+          "release_id",
+          "product",
+          "variant",
+          "quantity",
+          "amount_minor"
+        ],
+        "additionalProperties": false
+      },
+      "ShopDelivery": {
+        "type": "object",
+        "properties": {
+          "order_state": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "order_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "order_version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "assigned_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "proof_message_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recipient_provided": {
+            "type": "boolean"
+          },
+          "purchase": {
+            "$ref": "#/components/schemas/ShopPurchase"
+          }
+        },
+        "required": [
+          "order_state",
+          "order_id",
+          "order_version",
+          "version",
+          "state",
+          "note",
+          "proof_message_id",
+          "updated_at",
+          "recipient_provided",
+          "purchase"
+        ],
+        "additionalProperties": false
+      },
+      "ShopRecipient": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "values": {
+            "type": "object",
+            "maxProperties": 4,
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 160
+            }
+          }
+        },
+        "required": ["order_id", "version", "values"],
+        "additionalProperties": false
+      },
+      "ShopReserve": {
+        "type": "object",
+        "properties": {
+          "request_key": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "release_id": {
+            "type": "string",
+            "maxLength": 36
+          },
+          "variant": {
+            "type": "string",
+            "maxLength": 48
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "expected_amount": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "currency": {
+            "type": "string",
+            "enum": ["USD", "EUR", "GBP"]
+          },
+          "recipient": {
+            "type": "object",
+            "maxProperties": 4,
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          "accept_terms": {
+            "type": "boolean"
+          },
+          "terms_version": {
+            "type": "string",
+            "maxLength": 80
+          }
+        },
+        "required": [
+          "request_key",
+          "release_id",
+          "variant",
+          "quantity",
+          "expected_amount",
+          "currency",
+          "recipient",
+          "accept_terms",
+          "terms_version"
+        ],
+        "additionalProperties": false
+      },
+      "ShopDeliveryChange": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "order_version": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483645
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "proof_message_id": {
+            "type": "string",
+            "maxLength": 36
+          }
+        },
+        "required": ["version", "order_version", "note"],
+        "additionalProperties": false
+      },
+      "ShopRecipientAccess": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
       }
     },
     "securitySchemes": {

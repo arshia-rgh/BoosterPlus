@@ -125,7 +125,9 @@ function ThreadSession({
   booster,
   embedded,
   visible,
+  shopProof,
 }: {
+  shopProof: boolean;
   id: string;
   admin: boolean;
   booster: boolean;
@@ -656,7 +658,8 @@ function ThreadSession({
                   : "Customer and PLAYORA support"
             }
             proofAllowed={
-              (admin || booster) && chat.thread.kind === "fulfillment"
+              ((admin || booster) && chat.thread.kind === "fulfillment") ||
+              (admin && shopProof && chat.thread.kind === "order")
             }
             unavailable={!visible || chat.loading || !!chat.error}
             fail={fail}
@@ -676,12 +679,14 @@ export default function Thread({
   conversationID,
   embedded = false,
   visible = true,
+  shopProof = false,
 }: {
   admin?: boolean;
   booster?: boolean;
   conversationID?: string;
   embedded?: boolean;
   visible?: boolean;
+  shopProof?: boolean;
 }) {
   const { id: routeID = "" } = useParams();
   const id = conversationID ?? routeID;
@@ -693,6 +698,7 @@ export default function Thread({
       booster={booster}
       embedded={embedded}
       visible={visible}
+      shopProof={shopProof}
     />
   );
 }

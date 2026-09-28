@@ -56,7 +56,6 @@ func TestDiscoveryPublicationValidation(t *testing.T) {
 		{"unknown service", func(c *Configuration) { c.Discovery.Capabilities[0].Service = "wallet" }},
 		{"unknown state", func(c *Configuration) { c.Discovery.Capabilities[0].State = "success" }},
 		{"pause without reason", func(c *Configuration) { c.Discovery.Capabilities[0].State = "paused" }},
-		{"unimplemented shop", func(c *Configuration) { c.Discovery.Capabilities[2].State = "active" }},
 		{"unimplemented news", func(c *Configuration) { c.Discovery.Capabilities[3].State = "active" }},
 		{"unsafe small sample", func(c *Configuration) { c.Discovery.Metrics.MinimumSample = 1 }},
 		{"unbounded period", func(c *Configuration) { c.Discovery.Metrics.WindowDays = 367 }},

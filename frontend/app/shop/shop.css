@@ -65,3 +65,128 @@
   align-items: flex-start;
   gap: 0.35rem;
 }
+
+.shop-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: 1.5rem;
+  margin-block: 2rem;
+}
+.shop-card {
+  border: 1px solid var(--line, #25453b);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  background: var(--surface, #0d211c);
+}
+.shop-card > div {
+  padding: 1.5rem;
+}
+.shop-card img,
+.shop-product-intro img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 8/5;
+  object-fit: contain;
+  background: #07130f;
+}
+.shop-product-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: center;
+}
+.shop-purchase {
+  max-width: 65rem;
+  margin-inline: auto;
+}
+.shop-purchase fieldset {
+  border: 0;
+  padding: 1.5rem 0;
+  min-width: 0;
+  max-width: 44rem;
+}
+.shop-purchase fieldset .button {
+  margin: 0.5rem 0.5rem 0.5rem 0;
+}
+.shop-steps {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  list-style: none;
+  text-transform: capitalize;
+  border-block: 1px solid var(--line, #25453b);
+}
+.shop-steps [aria-current] {
+  color: var(--accent, #79f1b4);
+  font-weight: 700;
+}
+.shop-summary {
+  padding: 1.5rem;
+  border: 1px solid var(--line, #25453b);
+  border-radius: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+.shop-summary strong {
+  font-size: 1.5rem;
+}
+.shop-summary p {
+  flex-basis: 100%;
+  margin: 0;
+}
+.shop-purchase .catalog-label {
+  max-width: 36rem;
+}
+.shop-card p,
+.shop-purchase p,
+.shop-purchase dd {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 44rem) {
+  .shop-filters,
+  .shop-product-intro {
+    grid-template-columns: 1fr;
+  }
+  .shop-steps {
+    gap: 1rem;
+    font-size: 0.875rem;
+  }
+  .shop-product-intro {
+    gap: 1rem;
+  }
+}
+
+.shop-delivery-queue table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.shop-delivery-queue th,
+.shop-delivery-queue td {
+  padding: 1rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line, #25453b);
+  min-width: 7rem;
+}
+.shop-delivery-queue td .button {
+  min-width: 10rem;
+}
+.shop-delivery-queue time {
+  display: block;
+  min-width: 9rem;
+}
+.shop-delivery-queue caption {
+  text-align: left;
+  padding: 1rem;
+}
+.shop-delivery-queue td p {
+  margin: 0.35rem 0;
+}

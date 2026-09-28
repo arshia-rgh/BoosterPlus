@@ -26,6 +26,7 @@ export function SiteHeader() {
           </NavLink>
         </nav>
       )}
+      {!booster && <div id="customer-activity-slot" />}
     </header>
   );
 }

@@ -138,7 +138,7 @@ func (s *Store) overviewProgress(ctx context.Context, userID string, items []Sum
 	result := []ProgressSummary{}
 	ids := make([]string, 0, len(items))
 	for _, item := range items {
-		if item.Kind != "account" {
+		if item.Kind == "custom" || item.Kind == "package" {
 			ids = append(ids, item.ID)
 		}
 	}

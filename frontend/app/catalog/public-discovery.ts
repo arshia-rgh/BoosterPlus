@@ -82,8 +82,7 @@ export function capabilitiesFor(release: Release) {
       reason: "",
     };
     // A configured future service cannot become an entry point before its routes exist.
-    if (service === "shop" || service === "news")
-      return { ...policy, state: "off" as const };
+    if (service === "news") return { ...policy, state: "off" as const };
     return release.paused && policy.state !== "off"
       ? {
           ...policy,
@@ -105,6 +104,7 @@ export function selectedService(
   if (pathname.includes("/services/") || pathname.includes("/packages/"))
     return "boost";
   if (/\/games\/[^/]+\/accounts(?:\/|$)/.test(pathname)) return "accounts";
+  if (/\/games\/[^/]+\/shop(?:\/|$)/.test(pathname)) return "shop";
   const value = params.get("service");
   if (
     value === "boost" ||

@@ -38,6 +38,9 @@ export function ShopProducts() {
       </p>
       <CreateProduct search={query.toString()} />
       <section aria-label="Find shop products">
+        <Link className="button" to="/admin/shop/orders">
+          Shop delivery queue
+        </Link>
         <h2>Products</h2>
         <GameFilter
           selected={params.get("game") ?? ""}

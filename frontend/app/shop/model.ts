@@ -132,3 +132,45 @@ export const productStates = [
   ["paused", "Paused"],
   ["archived", "Archived"],
 ] satisfies [string, string][];
+
+export const publicProductSchema = z.object({
+  id: z.string(),
+  game_id: z.string(),
+  game_slug: z.string(),
+  release_id: z.string(),
+  version: z.number().int(),
+  definition: definitionSchema,
+  available: z.record(z.string(), z.number().int().nonnegative()),
+});
+export const publicPageSchema = z.object({
+  items: z.array(publicProductSchema),
+  next: z.string(),
+});
+export const purchaseSchema = z.object({
+  product_id: z.string(),
+  release_id: z.string(),
+  product: definitionSchema,
+  variant: variantSchema,
+  quantity: z.number().int(),
+  amount_minor: z.string(),
+});
+export const deliverySchema = z.object({
+  order_id: z.string(),
+  order_state: z.string(),
+  order_version: z.number().int(),
+  version: z.number().int(),
+  state: z.string(),
+  assigned_id: z.string().optional(),
+  note: z.string(),
+  proof_message_id: z.string(),
+  updated_at: z.string(),
+  recipient_provided: z.boolean(),
+  purchase: purchaseSchema,
+});
+export const recipientSchema = z.object({
+  order_id: z.string(),
+  version: z.number().int(),
+  values: z.record(z.string(), z.string()),
+});
+export type PublicProduct = z.infer<typeof publicProductSchema>;
+export type ShopDelivery = z.infer<typeof deliverySchema>;

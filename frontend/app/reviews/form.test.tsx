@@ -96,3 +96,17 @@ it("retains customer wording and expected policy after a stale-version failure",
   expect(reload).not.toHaveBeenCalled();
   expect(post).toHaveBeenCalledTimes(1);
 });
+it("does not solicit feedback when the accepted purchase is not eligible", () => {
+  vi.mocked(useResource).mockReturnValue({
+    data: { order_id: "shop", eligible: false, policy: null, review: null },
+    loading: false,
+    error: null,
+    reload: vi.fn(),
+  });
+  render(
+    <MemoryRouter>
+      <PurchaseReview orderID="shop" completed />
+    </MemoryRouter>,
+  );
+  expect(screen.queryByRole("region", { name: "Purchase review" })).toBeNull();
+});

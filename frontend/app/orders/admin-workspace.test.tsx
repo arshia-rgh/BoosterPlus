@@ -5,7 +5,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router";
+import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
 import { APIError, get } from "../identity/api";
 import { emptyConfiguration } from "../catalog/model";
@@ -83,22 +83,21 @@ const detail = detailSchema.parse({
 });
 
 function mount(query = "quote") {
-  render(
-    <MemoryRouter
-      initialEntries={[
+  const router = createMemoryRouter(
+    [{ path: "/admin/orders/:id", element: <AdminOrderWorkspace /> }],
+    {
+      initialEntries: [
         {
           pathname: "/admin/orders/order",
           search: `?section=${query}`,
           state: { orderListSearch: "state=submitted&search=game" },
         },
-      ]}
-    >
-      <Routes>
-        <Route path="/admin/orders/:id" element={<AdminOrderWorkspace />} />
-      </Routes>
-    </MemoryRouter>,
+      ],
+    },
   );
+  render(<RouterProvider router={router} />);
 }
+
 it("keeps admin record identity, queue context and ordinary drafts across local sections", async () => {
   vi.mocked(get).mockResolvedValue(detail);
   mount();

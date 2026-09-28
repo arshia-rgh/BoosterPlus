@@ -2,11 +2,13 @@ import type { summarySchema } from "./model";
 import type { z } from "../validation";
 export type OrderSummary = z.infer<typeof summarySchema>;
 export function orderKind(kind: OrderSummary["kind"]) {
-  return kind === "account"
-    ? "Account purchase"
-    : kind === "package"
-      ? "Fixed package"
-      : "Custom boost";
+  return kind === "shop"
+    ? "Shop purchase"
+    : kind === "account"
+      ? "Account purchase"
+      : kind === "package"
+        ? "Fixed package"
+        : "Custom boost";
 }
 export function nextAction(order: Pick<OrderSummary, "state" | "kind">) {
   switch (order.state) {
@@ -19,10 +21,12 @@ export function nextAction(order: Pick<OrderSummary, "state" | "kind">) {
     case "awaiting_payment":
       return "Check payment instructions";
     case "queued":
+      if (order.kind === "shop") return "Follow staff delivery";
       return order.kind === "account"
         ? "Follow account handoff"
         : "Follow assignment and setup";
     case "in_progress":
+      if (order.kind === "shop") return "Review shop delivery";
       return order.kind === "account"
         ? "Review account delivery"
         : "View progress and proof";
@@ -46,7 +50,7 @@ export function orderDestination(
     order.state === "awaiting_payment"
       ? "payment"
       : ["queued", "in_progress", "completed"].includes(order.state)
-        ? order.kind === "account"
+        ? order.kind === "account" || order.kind === "shop"
           ? "delivery"
           : "progress"
         : order.state === "on_hold"

@@ -16,6 +16,7 @@ import OrderProgress from "../experience/order-progress";
 import FulfillmentPanel from "../fulfillment/panel";
 import Checkout from "../payments/checkout";
 import Cases from "../payments/cases";
+import ShopDeliveryPanel from "../shop/delivery";
 import AccountDelivery from "../resale/delivery";
 import PurchaseReview from "../reviews/form";
 
@@ -126,15 +127,16 @@ export default function CustomerWorkspace({
   const state = detail.order.state,
     contract = detail.contract,
     paid = contract?.payment_state === "settled",
-    account = detail.order.kind === "account";
+    account = detail.order.kind === "account",
+    shop = detail.order.kind === "shop";
   const termsValid =
     !detail.quote || session.terms_version === detail.quote.data.terms_version;
   const sections = [
     { id: "overview", label: "Overview" },
     { id: "messages", label: "Messages" },
     {
-      id: account ? "delivery" : "progress",
-      label: account ? "Delivery" : "Progress & sessions",
+      id: account || shop ? "delivery" : "progress",
+      label: account || shop ? "Delivery" : "Progress & sessions",
     },
     { id: "payment", label: "Payment" },
     { id: "help", label: "Help" },
@@ -270,10 +272,12 @@ export default function CustomerWorkspace({
                         )}
                         {paid &&
                           localLink(
-                            account ? "delivery" : "progress",
-                            account
-                              ? "Review account delivery"
-                              : "View progress & sessions",
+                            account || shop ? "delivery" : "progress",
+                            shop
+                              ? "Review shop delivery"
+                              : account
+                                ? "Review account delivery"
+                                : "View progress & sessions",
                           )}
                       </div>{" "}
                       <details data-order-section="Accepted agreement">
@@ -292,7 +296,7 @@ export default function CustomerWorkspace({
                     termsValid={termsValid}
                     done={reload}
                   />
-                  {!account && (
+                  {!account && !shop && (
                     <details
                       className="order-section"
                       data-order-section="Selections & reorder"
@@ -355,18 +359,26 @@ export default function CustomerWorkspace({
               )}
               {section === "delivery" && (
                 <>
-                  <h2>Account delivery</h2>
-                  <AccountDelivery
-                    visible={visible && !suspended && !refreshing}
-                    id={detail.order.id}
-                    admin={false}
-                    owner={false}
-                    paid={
-                      paid &&
-                      ["queued", "in_progress", "completed"].includes(state)
-                    }
-                    changed={reload}
-                  />
+                  <h2>{shop ? "Item delivery" : "Account delivery"}</h2>
+                  {shop ? (
+                    <ShopDeliveryPanel
+                      id={detail.order.id}
+                      visible={visible && !suspended && !refreshing}
+                      changed={reload}
+                    />
+                  ) : (
+                    <AccountDelivery
+                      visible={visible && !suspended && !refreshing}
+                      id={detail.order.id}
+                      admin={false}
+                      owner={false}
+                      paid={
+                        paid &&
+                        ["queued", "in_progress", "completed"].includes(state)
+                      }
+                      changed={reload}
+                    />
+                  )}
                   {state === "completed" && (
                     <PurchaseReview orderID={detail.order.id} completed />
                   )}

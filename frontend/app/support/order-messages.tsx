@@ -2,12 +2,54 @@ import type { Location } from "react-router";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { Action, ErrorNotice } from "../catalog/controls";
-import { APIError, post } from "../identity/api";
+import { APIError, post, sessionSchema } from "../identity/api";
 import type { Detail } from "../orders/model";
 import { useResource } from "../orders/resource";
 import { workSchema } from "../fulfillment/model";
 import { conversationSchema } from "./model";
 import Thread from "./thread";
+import { deliverySchema } from "../shop/model";
+function ShopProofThread({
+  id,
+  conversationID,
+  visible,
+  version,
+}: {
+  id: string;
+  conversationID: string;
+  visible: boolean;
+  version: number;
+}) {
+  const delivery = useResource(`/admin/orders/${id}/shop`, deliverySchema),
+    session = useResource("/auth/session", sessionSchema);
+  const reload = delivery.reload;
+  useEffect(() => {
+    if (visible) reload();
+  }, [visible, version, reload]);
+  const allowed =
+    !delivery.loading &&
+    !delivery.error &&
+    !session.error &&
+    !session.loading &&
+    delivery.data?.assigned_id === session.data?.user?.id &&
+    delivery.data?.state === "processing" &&
+    delivery.data.order_state === "in_progress";
+  return (
+    <>
+      <ErrorNotice error={delivery.error} />
+      {delivery.error && (
+        <Action onClick={reload}>Retry delivery authority</Action>
+      )}
+      <Thread
+        conversationID={conversationID}
+        admin
+        embedded
+        visible={visible}
+        shopProof={allowed}
+      />
+    </>
+  );
+}
 
 function PrivateOrderThread({
   detail,
@@ -70,9 +112,22 @@ function PrivateOrderThread({
           )}
         </>
       )}
-      {id && (
-        <Thread conversationID={id} admin={admin} embedded visible={visible} />
-      )}
+      {id &&
+        (admin && order.kind === "shop" ? (
+          <ShopProofThread
+            id={order.id}
+            conversationID={id}
+            visible={visible}
+            version={order.version}
+          />
+        ) : (
+          <Thread
+            conversationID={id}
+            admin={admin}
+            embedded
+            visible={visible}
+          />
+        ))}
     </>
   );
 }
@@ -146,6 +201,7 @@ export default function OrderMessages({
   const query = new URLSearchParams(location.search);
   const allowed =
     detail.order.kind !== "account" &&
+    detail.order.kind !== "shop" &&
     detail.contract?.payment_state === "settled";
   const shared = allowed && query.get("channel") === "coordination";
   const [visited, setVisited] = useState({
