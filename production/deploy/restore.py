@@ -51,7 +51,7 @@ def qualify(manifest, target):
         raise ValueError("Restore requires the independently verified signed bundle of the backed-up release")
     candidate = images(manifest, signed)
     project = "boosterplus-restore-" + secrets.token_hex(8)
-    candidate.update(DEPLOY_PROJECT=project, DATA_DIRECTORY=str(restored), MAIL_MODE="external")
+    candidate.update(DEPLOY_PROJECT=project, DATA_DIRECTORY=str(restored), MAIL_MODE="external", PITR_ENABLED="false")
     for key, filename in (("BACKEND_ENV_FILE", "backend.env"), ("FRONTEND_ENV_FILE", "frontend.env"), ("MIGRATION_ENV_FILE", "migration.env")):
         path = target / "runtime" / filename
         read_env(path)

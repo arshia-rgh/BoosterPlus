@@ -54,6 +54,26 @@ def main(runtime=False):
                 pass
             else:
                 raise RuntimeError("Unsafe data/mail boundary mutation was accepted")
+        from provision import private_write
+        private_write(directory / "pitr.env", "AWS_ACCESS_KEY_ID=fixture\nAWS_SECRET_ACCESS_KEY=fixture\n")
+        (directory / "master.key").write_bytes(b"b" * 64 + b"\n")
+        (directory / "master.key").chmod(0o600)
+        private_write(directory / "snapshot.key", "a" * 64)
+        pitr = dict(manifest, PITR_ENABLED="true", PITR_ENV_FILE=str(directory / "pitr.env"),
+                    BR_MASTER_KEY_FILE=str(directory / "master.key"), BR_SNAPSHOT_KEY_FILE=str(directory / "snapshot.key"))
+        backup_model = json.loads(run(compose(pitr) + ["--profile", "tools", "config", "--format", "json"], dict(environment, **pitr)))
+        check_model(backup_model, self_hosted=True, self_mail=True, pitr=True)
+        for mutation in (lambda m:m["services"]["br"].update(read_only=False),
+                         lambda m:m["services"]["br"].update(profiles=[]),
+                         lambda m:m["services"]["pd"].update(networks={"data-cluster": {}, "backup-egress": {}})):
+            changed = copy.deepcopy(backup_model)
+            mutation(changed)
+            try:
+                check_model(changed, self_hosted=True, self_mail=True, pitr=True)
+            except ValueError:
+                pass
+            else:
+                raise RuntimeError("Unsafe backup-service mutation was accepted")
         configs = directory / "config"
         configs.mkdir()
         (configs / "application.Caddyfile").write_text((ROOT / "gateway/Caddyfile").read_text())

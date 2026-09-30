@@ -32,6 +32,8 @@ def evaluate(snapshot, at):
         return ["metrics_unavailable"]
     try:
         stamp = datetime.fromisoformat(snapshot.get("observed_at", "").replace("Z", "+00:00"))
+        if stamp.tzinfo is None:
+            return ["metrics_invalid"]
         age = at - stamp.timestamp()
     except (ValueError, TypeError, OverflowError):
         return ["metrics_invalid"]
@@ -155,6 +157,13 @@ def collect(manifest):
             alerts.append("recovery_point_stale")
     except (OSError, ValueError):
         alerts.append("backup_unavailable")
+    if manifest.get("PITR_ENABLED") == "true":
+        try:
+            from pitr import checkpoint, command, location
+            raw = run(manifest, command(["log", "status", "--task-name=playora", "--json"]), capture=True)
+            details["sql_log_age_seconds"] = checkpoint(raw, location(manifest, "logs"), time.time())["age_seconds"]
+        except (OSError, ValueError, RuntimeError):
+            alerts.append("sql_log_checkpoint_unavailable")
     return {"observed_at": datetime.fromtimestamp(at, timezone.utc).isoformat(), "alerts": sorted(set(alerts)), **details}
 
 

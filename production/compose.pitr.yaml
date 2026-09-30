@@ -1,0 +1,29 @@
+# Optional encrypted off-host SQL log/snapshot backup. Enable only with private
+# recovery material and an independently hosted S3 destination configured.
+services:
+  tikv:
+    networks: [backup-egress]
+    volumes: ["${BR_MASTER_KEY_FILE:?}:/backup/master.key:ro"]
+  br:
+    image: pingcap/br:v8.5.7@sha256:f0503b675a9c1c0d82ac24836e617bfd65bd645414bd7a87399110c3a92624c7
+    profiles: [tools]
+    user: "1000:1000"
+    read_only: true
+    restart: "no"
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:size=128m,noexec,nosuid,uid=1000,gid=1000"]
+    env_file: [{path: "${PITR_ENV_FILE:?}", format: raw}]
+    volumes:
+      - ${DATA_DIRECTORY:?}/pki/operations:/certs:ro
+      - ${BR_MASTER_KEY_FILE:?}:/backup/master.key:ro
+      - ${BR_SNAPSHOT_KEY_FILE:?}:/backup/snapshot.key:ro
+    networks: [data-cluster, backup-egress]
+    mem_limit: 1g
+    cpus: 2
+    pids_limit: 128
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+networks:
+  backup-egress: {}

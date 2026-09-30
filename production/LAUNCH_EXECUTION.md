@@ -70,3 +70,9 @@ No external email is sent by preparation tools. Live email tests require owner-s
 - Alert receiver/watchdog, measured HTTP latency/error dashboards, continuous SQL/media recovery, privacy replay and live/server acceptance remain open. No actual alert/email/payment is sent by local tests.
 
 Real-TiKV qualification now also runs the entire race-enabled domain integration suite against a uniquely provisioned TLS cluster on the dedicated loopback14001 endpoint. Storage/scanner test fixtures remain separate from the real private S3/TLS data probe; all namespaces/credentials are disposable. The suite has not been run locally, per owner direction. The reduced test profile is protocol/concurrency qualification, not the64GB production capacity measurement.
+
+### Encrypted SQL log preparation
+
+- Added optional pinned BR8.5.7 tools service, separate outbound backup network, independent master/snapshot keys and least-privilege off-host credential configuration. `pitr-start`, `pitr-status` and `pitr-snapshot` use explicit encryption and private receipts; none grants combined recovery success.
+- Matched the master-key file format and global checkpoint JSON against the exact upstream8.5.7 source. Tests reject raw/missing-newline/reused/permissive keys, overlapping/unsafe destinations, paused/error/stale/future/foreign checkpoints, missing acknowledgement and failed snapshots. The initial test run failed because a fixture attempted exclusive recreation; fixed the fixture, then33 deployment tests and daemon-free Compose/mutation validation passed.
+- New BR image execution/audit, real encrypted upload, key recovery, task restart and exact-TiKV restore remain server-deferred. Combined online media coverage and independent erasure replay remain open; SQL backup status does not clear those requirements.

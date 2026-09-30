@@ -9,7 +9,7 @@ from manage import ROOT
 
 def inventory():
     images = {RESTIC_IMAGE}
-    for name in ("compose.self-hosted.yaml", "compose.mail.yaml"):
+    for name in ("compose.self-hosted.yaml", "compose.mail.yaml", "compose.pitr.yaml"):
         for line in (ROOT / name).read_text().splitlines():
             value = line.strip().removeprefix("image: ")
             if not line.strip().startswith("image: ") or value.startswith("${"):

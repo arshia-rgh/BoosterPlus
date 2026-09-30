@@ -38,6 +38,8 @@ def read_env(path, private=True):
 
 def load(path, staging=False):
     manifest = read_env(path)
+    if manifest.get("PITR_ENABLED", "false") not in ("true", "false"):
+        raise ValueError("PITR_ENABLED must be true or false")
     mail_mode = manifest.get("MAIL_MODE", "external")
     if mail_mode not in ("external", "self-hosted"):
         raise ValueError("Unknown mail deployment mode")
@@ -104,6 +106,11 @@ def load(path, staging=False):
             raise ValueError("Self-hosted clients must use the private provisioned SQL and S3 endpoints")
     if mail_mode == "self-hosted" and (backend.get("SMTP_HOST") != manifest["MAIL_HOST"] or backend.get("SMTP_PORT") != "587" or not backend.get("SMTP_USERNAME") or not backend.get("SMTP_PASSWORD")):
         raise ValueError("Use the mail hostname and authenticated TLS submission on port587")
+    if manifest.get("PITR_ENABLED") == "true":
+        if staging:
+            raise ValueError("Production PITR cannot be combined with staging")
+        from pitr import validate as validate_pitr
+        validate_pitr(manifest)
     return manifest
 
 
@@ -117,6 +124,8 @@ def compose(manifest, staging=False):
         if staging:
             raise ValueError("Self-hosted mail cannot join disposable staging")
         args += ["-f", str(ROOT / "compose.mail.yaml")]
+    if manifest.get("PITR_ENABLED") == "true":
+        args += ["-f", str(ROOT / "compose.pitr.yaml")]
     if staging:
         args += ["-f", str(ROOT / "compose.staging.yaml")]
     return args
@@ -141,7 +150,7 @@ def run(manifest, args, staging=False, capture=False):
     return None
 
 
-def check_model(model, staging=False, self_hosted=False, self_mail=False):
+def check_model(model, staging=False, self_hosted=False, self_mail=False, pitr=False):
     services = model["services"]
     for name, service in services.items():
         if name != "gateway" and not (self_mail and name == "mailserver") and service.get("ports"):
@@ -179,8 +188,14 @@ def check_model(model, staging=False, self_hosted=False, self_mail=False):
             raise ValueError("Production TiDB must use real TiKV storage")
         if set(services["storage"]["networks"]) != {"object-internal"}:
             raise ValueError("Object administration endpoints must stay behind the private S3 gateway")
-        if set(services["pd"]["networks"]) != {"data-cluster"} or set(services["tikv"]["networks"]) != {"data-cluster"}:
+        tikv_networks = {"data-cluster", "backup-egress"} if pitr else {"data-cluster"}
+        if set(services["pd"]["networks"]) != {"data-cluster"} or set(services["tikv"]["networks"]) != tikv_networks:
             raise ValueError("Database internals require a separate cluster network")
+    if pitr:
+        allowed.add("br")
+        br = services.get("br", {})
+        if not self_hosted or br.get("profiles") != ["tools"] or set(br.get("networks", {})) != {"data-cluster", "backup-egress"} or not br.get("read_only") or br.get("user") != "1000:1000" or "ALL" not in br.get("cap_drop", []):
+            raise ValueError("PITR must use the hardened explicit backup job and cluster/egress networks")
     if not staging and set(services) - allowed:
         raise ValueError("Test data services cannot enter the production stack")
     if not model["networks"]["edge"].get("internal") or not model["networks"]["application"].get("internal"):
@@ -198,14 +213,14 @@ def check_model(model, staging=False, self_hosted=False, self_mail=False):
 
 def validate(manifest, staging=False):
     model = json.loads(run(manifest, ["--profile", "tools", "config", "--format", "json"], staging, capture=True))
-    check_model(model, staging, manifest.get("DATA_TOPOLOGY") == "self-hosted-single", manifest.get("MAIL_MODE") == "self-hosted")
+    check_model(model, staging, manifest.get("DATA_TOPOLOGY") == "self-hosted-single", manifest.get("MAIL_MODE") == "self-hosted", manifest.get("PITR_ENABLED") == "true")
     run(manifest, ["run", "--rm", "--no-deps", "gateway", "caddy", "validate", "--config", "/etc/caddy/Caddyfile"], staging)
 
 
 def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "help"
     if action == "help":
-        print("host-check data-prepare artifact-sign artifact-verify validate config-check preflight pull up status logs smoke migrate-status migrate-plan migrate-up release release-resume rollback rollback-resume backup-init backup backup-verify backup-recover restore-drill monitor monitor-notify monitor-status; staging-test and pre-commit use disposable resources. See production/OWNER_REQUIREMENTS.md and LAUNCH_EXECUTION.md for qualification boundaries.")
+        print("host-check data-prepare mail-prepare pitr-start pitr-status pitr-snapshot artifact-sign artifact-verify validate config-check preflight pull up status logs smoke migrate-status migrate-plan migrate-up release release-resume rollback rollback-resume backup-init backup backup-verify backup-recover restore-drill monitor monitor-notify monitor-status; staging-test and pre-commit use disposable resources. See production/OWNER_REQUIREMENTS.md and LAUNCH_EXECUTION.md for qualification boundaries.")
         return
     if action == "host-check":
         from host import inspect
@@ -259,6 +274,10 @@ def main():
     if action in ("monitor", "monitor-notify", "monitor-status"):
         from monitor import main as monitor
         monitor(manifest, action)
+        return
+    if action in ("pitr-start", "pitr-status", "pitr-snapshot"):
+        from pitr import main as pitr
+        pitr(manifest, action)
         return
     if action in ("validate", "config-check", "preflight"):
         validate(manifest)
