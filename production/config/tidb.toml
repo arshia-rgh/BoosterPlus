@@ -1,0 +1,14 @@
+[log]
+level = "warn"
+enable-slow-log = false
+[security]
+ssl-ca = "/certs/ca.crt"
+ssl-cert = "/certs/server.crt"
+ssl-key = "/certs/server.key"
+require-secure-transport = true
+cluster-ssl-ca = "/certs/ca.crt"
+cluster-ssl-cert = "/certs/server.crt"
+cluster-ssl-key = "/certs/server.key"
+cluster-verify-cn = ["pd", "tikv", "tidb", "operations"]
+[performance]
+server-memory-quota = 6442450944

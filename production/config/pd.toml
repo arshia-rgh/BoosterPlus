@@ -1,0 +1,10 @@
+[log]
+level = "warn"
+[replication]
+# Deliberate single-host MVP: no replica/failure-domain availability claim.
+max-replicas = 1
+[security]
+cacert-path = "/certs/ca.crt"
+cert-path = "/certs/server.crt"
+key-path = "/certs/server.key"
+cert-allowed-cn = ["pd", "tikv", "tidb", "operations"]

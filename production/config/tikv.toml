@@ -1,0 +1,9 @@
+[log]
+level = "warn"
+[storage]
+reserve-space = "10GB"
+[security]
+ca-path = "/certs/ca.crt"
+cert-path = "/certs/server.crt"
+key-path = "/certs/server.key"
+cert-allowed-cn = ["pd", "tikv", "tidb", "operations"]

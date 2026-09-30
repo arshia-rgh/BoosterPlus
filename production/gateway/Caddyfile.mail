@@ -1,0 +1,11 @@
+import /etc/caddy/application.Caddyfile
+
+# Provision/renew the mail certificate without an additional public admin UI.
+{$MAIL_HOST} {
+	tls {
+		issuer acme {
+			dir https://acme-v02.api.letsencrypt.org/directory
+		}
+	}
+	respond 404
+}

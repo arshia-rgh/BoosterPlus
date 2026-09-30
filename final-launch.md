@@ -1,10 +1,10 @@
 # PLAYORA — final launch: R10 and R11
 
-> **Hold reaffirmed — 25 September 2026.** The owner accepted the current design for implementation planning. [the accepted design implementation roadmap](docs/redesign/IMPLEMENTATION_ROADMAP.md) does not resume R10/R11. All retained scope and launch prerequisites below remain applicable after application implementation, owner review and separate authorization.
+**Status: AUTHORIZED — implementation in progress (30 September 2026).** The owner considers the MVP ready for launch preparation and explicitly authorized R10/R11. Complete the deployment package and local qualification before requesting SSH. Domain, email and server access will be supplied later; deployed identity, alert delivery, real funds, recovery and owner activation evidence remain separate requirements.
 
-**Status: ON HOLD.** The owner has deferred production-readiness implementation and launch while the accepted [redesign](docs/redesign/README.md) is planned, implemented and qualified. Neither this document nor completion of a UX phase authorizes resuming R10/R11. Separate explicit owner authorization is required.
+Selected topology: **one primary server, self-hosted database and object storage, encrypted off-host backups**. The owner accepts downtime on primary-host failure. This is not a highly available deployment. Preserve all recovery targets below until measured or explicitly revised. See [execution and evidence ledger](production/LAUNCH_EXECUTION.md).
 
-Updated: 13 September 2026. R08 is delivered as `6da4bd592e94e4f85ec87b1e2be8ccf2b8d126d6`; R09 is delivered as `7f9b7e00d9f0a6025b46bfb7cb33372bc27f987f`. These are implementation deliveries with local qualification, not production-launch certification.
+Baseline: `aeae62b5980fbf18d0c183af88a6dee67f0698a0`, 39 SQL migrations. DI15 full qualification is historical evidence for its recorded revision; qualify the new release independently.
 
 This is the retained execution plan for **all R10 and R11 work**. It consolidates [REMAINING_ROADMAP.md](REMAINING_ROADMAP.md) sections 5, 6–9, the production requirements of [BOOSTER_PLUS_SPEC.md](BOOSTER_PLUS_SPEC.md) sections 17–18 and 20, and [IMPLEMENTATION_PHASES.md](IMPLEMENTATION_PHASES.md) P11/P12. Existing requirements remain binding; the source documents are retained for traceability. New UX acceptance adds a prerequisite and does not remove a production requirement.
 
@@ -16,7 +16,7 @@ UX01–UX10 implementation and local automated qualification were delivered on 1
 
 ### New design handoff to include when this hold is lifted
 
-30 September implementation inventory: 38 explicit SQL migrations, storefront/admin builds with an isolated booster route tree, server-isolated portal sessions/MFA, persistent game/record shells, manual shop fulfillment and staff article revisions/publication are implemented. Exact qualified code/artifacts and unresolved acceptance are in [DI15 qualification](docs/redesign/DI15_QUALIFICATION.md). R10/R11 remain ON HOLD. Requalify portal OAuth/cookie/callback routing, game/article URLs/cache/metadata, shop reservation/payment/delivery jobs and notifications, privacy/report/backfills, registry provenance, real merchant funds and restore/rollback against the final owner-accepted commit. This is an inventory handoff; it removes none of the original requirements below.
+30 September implementation inventory: 39 explicit SQL migrations, storefront/admin builds with an isolated booster route tree, server-isolated portal sessions/MFA, persistent game/record shells, manual shop fulfillment and staff article revisions/publication are implemented. Exact qualified code/artifacts and unresolved acceptance are in [DI15 qualification](docs/redesign/DI15_QUALIFICATION.md). R10/R11 are now authorized; deployed qualification remains open. Requalify portal OAuth/cookie/callback routing, game/article URLs/cache/metadata, shop reservation/payment/delivery jobs and notifications, privacy/report/backfills, registry provenance, real merchant funds and restore/rollback against the final owner-accepted commit. This is an inventory handoff; it removes none of the original requirements below.
 
 The DI00–DI15 plan adds server-isolated customer/admin/booster sign-in, persistent game/record shells, manually fulfilled shop orders and staff-managed news. Before executing this retained launch plan, update its release inventory for portal cookie/audience and OAuth callback routing, game/article URLs and cache invalidation, new SQL backfills/order kinds, shop fulfillment and notification jobs, article media/publication, and privacy/report coverage. The proposed packaging retains two frontend builds with an isolated booster route tree; recheck the implemented artifacts rather than assuming a third build exists. Include these additions in real identity, financial, migration/restore, monitoring and owner walkthrough qualification. This is a queued handoff requirement, not deployment work or permission to resume R10/R11. Every original requirement below remains in scope.
 
@@ -56,7 +56,7 @@ Private credentials are supplied through protected runtime files or the chosen s
 
 ## 3. R10 — production operations and release automation
 
-**Outcome:** the chosen deployment can be released, monitored, recovered and maintained using tested procedures and accountable operators. All R10 items below are on hold.
+**Outcome:** the chosen deployment can be released, monitored, recovered and maintained using tested procedures and accountable operators. The following requirements are active.
 
 ### R10.1 Topology, configuration and clean-host preflight
 
@@ -130,7 +130,7 @@ R10 acceptance requires verified remote CI, signed/verified artifacts, clean-hos
 
 ## 4. R11 — final launch qualification
 
-**Outcome:** the final approved product works on the intended deployment, with real integrations, approved business content and operational ownership. All R11 items are on hold.
+**Outcome:** the final approved product works on the intended deployment, with real integrations, approved business content and operational ownership. The following requirements are active.
 
 ### R11.1 Final product/content and UX sign-off
 
@@ -204,6 +204,6 @@ Final handover includes release commit/digests, verified CI/evidence, configurat
 | Specification §17 release/CI; §18 acceptance/recovery/performance | R10.2–R10.7, §2, R11 |
 | R09 retention and backup limitation | R10.5, R11.5; owner policy remains mandatory |
 
-Completion ledger starts with every R10/R11 item **not started / on hold**, except the explicitly identified R04 foundations. On resumption, record for each item: implementation commit, local evidence, representative staging evidence, real production evidence, operator/owner acceptance and unresolved dependencies. Writing a runbook or defining a Makefile target does not mark the corresponding operation qualified.
+The active completion ledger is `production/LAUNCH_EXECUTION.md`; R04 foundations and DI15 evidence remain identified separately. On resumption, record for each item: implementation commit, local evidence, representative staging evidence, real production evidence, operator/owner acceptance and unresolved dependencies. Writing a runbook or defining a Makefile target does not mark the corresponding operation qualified.
 
 Repository delivery rules remain unchanged: `main`, full root/backend/frontend/production pre-commit before every commit, reviewed staged diff, direct verified push, no skipped checks or committed secrets. Preserve the full scope when later decisions revise this document and keep a clear record of approved changes.

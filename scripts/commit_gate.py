@@ -6,6 +6,23 @@ import subprocess
 # the complete repository gate at DI15. Restore normal selection at that exit.
 # CI and root/project pre-commit targets always retain their complete gates.
 FOCUSED_UNTIL_DI15 = False
+# Owner instruction, 30 September: disk-intensive launch qualification moves to
+# the deployment server. This narrow preparation window is not a full-gate pass.
+# Restore False only after the server's final complete gate is recorded.
+LAUNCH_SERVER_QUALIFICATION_PENDING = True
+
+
+def launch_preparation_only(paths):
+    """No backend/frontend/unknown source change can silently inherit this scope."""
+    return bool(paths) and all(path.startswith(("production/", "docs/")) or path in {
+        "AGENTS.md", "final-launch.md", ".github/workflows/release.yml",
+        "scripts/commit_gate.py", "scripts/test_commit_gate.py",
+    } for path in paths)
+
+
+def preparation_commands():
+    return [["make", "check-repository"], ["make", "-C", "backend", "lint", "gosec", "vuln"],
+            ["make", "-C", "production", "preparation-check"]]
 
 
 def scope(paths):
@@ -30,7 +47,13 @@ def main():
     raw = subprocess.check_output([
         "git", "diff", "--cached", "--no-renames", "--name-only", "-z",
     ])
-    selected = scope([item.decode() for item in raw.split(b"\0") if item])
+    paths = [item.decode() for item in raw.split(b"\0") if item]
+    selected = scope(paths)
+    if LAUNCH_SERVER_QUALIFICATION_PENDING and selected == "full" and launch_preparation_only(paths):
+        print("Required gate: launch preparation; heavy/full qualification DEFERRED TO SERVER, not passed", flush=True)
+        for command in preparation_commands():
+            subprocess.run(command, check=True)
+        return
     mode = "focused until DI15" if FOCUSED_UNTIL_DI15 else "complete"
     print(f"Required staged-change gate: {selected} ({mode})", flush=True)
     for command in commands(selected, FOCUSED_UNTIL_DI15):

@@ -1,9 +1,16 @@
 """Keep staged-change scope conservative, including deleted/renamed old paths."""
 import unittest
-from commit_gate import commands, scope
+from commit_gate import commands, launch_preparation_only, preparation_commands, scope
 
 
 class GateScopeTest(unittest.TestCase):
+    def test_launch_window_is_narrow_and_preserves_security(self):
+        self.assertTrue(launch_preparation_only(["production/deploy/manage.py", "docs/progress.md", ".github/workflows/release.yml"]))
+        for paths in ([], ["backend/internal/orders/store.go"], ["frontend/app/page.tsx"], ["new-tool.sh"], [".githooks/pre-commit"], [".github/workflows/ci.yml"]):
+            self.assertFalse(launch_preparation_only(paths))
+        self.assertIn(["make", "-C", "backend", "lint", "gosec", "vuln"], preparation_commands())
+        self.assertIn(["make", "-C", "production", "preparation-check"], preparation_commands())
+
     def test_docs(self):
         self.assertEqual(scope(["docs/ux/review.md", "README.md"]), "repository")
 

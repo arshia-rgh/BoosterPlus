@@ -1,0 +1,78 @@
+# Self-hosted transactional mail. Submission stays private; IMAP is SSH-tunnel only.
+services:
+  gateway:
+    environment:
+      MAIL_HOST: ${MAIL_HOST:?Set the real mail hostname}
+    volumes:
+      - ./gateway/Caddyfile.mail:/etc/caddy/Caddyfile:ro
+      - ./gateway/Caddyfile:/etc/caddy/application.Caddyfile:ro
+      - ${DATA_DIRECTORY:?}/data/gateway:/data
+  api:
+    networks: [mail-client]
+  worker:
+    networks: [mail-client]
+  mailserver:
+    image: ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86
+    hostname: ${MAIL_HOST:?}
+    restart: unless-stopped
+    stop_grace_period: 60s
+    # Upstream initializes services as root and drops daemon identities. Keep this
+    # exception bounded; never grant host networking, NET_ADMIN or a Docker socket.
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID, NET_BIND_SERVICE, KILL, SYS_CHROOT]
+    security_opt: [no-new-privileges:true]
+    environment:
+      LOG_LEVEL: warn
+      SUPERVISOR_LOGLEVEL: warn
+      ACCOUNT_PROVISIONER: FILE
+      PERMIT_DOCKER: none
+      SSL_TYPE: manual
+      SSL_CERT_PATH: /run/mail-tls/${MAIL_HOST:?}.crt
+      SSL_KEY_PATH: /run/mail-tls/${MAIL_HOST:?}.key
+      TLS_LEVEL: modern
+      SPOOF_PROTECTION: "1"
+      ENABLE_RSPAMD: "1"
+      ENABLE_RSPAMD_REDIS: "1"
+      ENABLE_CLAMAV: "0"
+      ENABLE_AMAVIS: "0"
+      ENABLE_SPAMASSASSIN: "0"
+      ENABLE_OPENDKIM: "0"
+      ENABLE_OPENDMARC: "0"
+      ENABLE_POLICYD_SPF: "0"
+      ENABLE_FAIL2BAN: "0"
+      ENABLE_POP3: "0"
+      ENABLE_IMAP: "1"
+      ENABLE_MANAGESIEVE: "0"
+      POSTFIX_INET_PROTOCOLS: ipv4
+      DOVECOT_INET_PROTOCOLS: ipv4
+      POSTFIX_MESSAGE_SIZE_LIMIT: "6291456"
+      POSTFIX_MAILBOX_SIZE_LIMIT: "1073741824"
+      POSTMASTER_ADDRESS: ${MAIL_POSTMASTER:?Set an owned postmaster mailbox}
+      LOGROTATE_INTERVAL: daily
+      LOGROTATE_COUNT: "7"
+    ports: ["25:25", "127.0.0.1:993:993"]
+    networks:
+      mail-client:
+        aliases: ["${MAIL_HOST:?}"]
+      outbound: {}
+    volumes:
+      - ${DATA_DIRECTORY:?}/mail/config:/tmp/docker-mailserver
+      - ${DATA_DIRECTORY:?}/mail/data:/var/mail
+      - ${DATA_DIRECTORY:?}/mail/state:/var/mail-state
+      - ${DATA_DIRECTORY:?}/mail/logs:/var/log/mail
+      - ${DATA_DIRECTORY:?}/data/gateway/caddy/certificates/acme-v02.api.letsencrypt.org-directory/${MAIL_HOST:?}:/run/mail-tls:ro
+    tmpfs: ["/tmp:size=128m,noexec,nosuid"]
+    mem_limit: 2g
+    cpus: 2
+    pids_limit: 256
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+    healthcheck:
+      test: [CMD-SHELL, "ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+networks:
+  mail-client: {internal: true}

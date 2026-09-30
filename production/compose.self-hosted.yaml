@@ -1,0 +1,92 @@
+# Owner-selected single-host topology. No public data ports, no unistore.
+# Merge with compose.production.yaml; never use the staging overlay here.
+x-data: &data
+  restart: unless-stopped
+  user: "1000:1000"
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs: ["/tmp:size=128m,noexec,nosuid,uid=1000,gid=1000"]
+  stop_grace_period: 120s
+  pids_limit: 256
+  logging:
+    driver: json-file
+    options: {max-size: 10m, max-file: "3"}
+services:
+  api:
+    networks: [data-client]
+    environment: {SSL_CERT_FILE: /certs/ca.crt}
+    volumes: ["${DATA_DIRECTORY:?}/pki/ca.crt:/certs/ca.crt:ro"]
+  worker:
+    networks: [data-client]
+    environment: {SSL_CERT_FILE: /certs/ca.crt}
+    volumes: ["${DATA_DIRECTORY:?}/pki/ca.crt:/certs/ca.crt:ro"]
+  migrate:
+    networks: [data-client]
+    environment: {SSL_CERT_FILE: /certs/ca.crt}
+    volumes: ["${DATA_DIRECTORY:?}/pki/ca.crt:/certs/ca.crt:ro"]
+  pd:
+    <<: *data
+    image: pingcap/pd:v8.5.7@sha256:c388050b6c2585ca168b0bf70ed891396fefa7387a21b326d2d15a0d2b4a4637
+    command: ["--name=pd", "--data-dir=/data", "--config=/config/pd.toml", "--client-urls=https://0.0.0.0:2379", "--peer-urls=https://0.0.0.0:2380", "--advertise-client-urls=https://pd:2379", "--advertise-peer-urls=https://pd:2380", "--initial-cluster=pd=https://pd:2380"]
+    volumes:
+      - ${DATA_DIRECTORY:?}/data/pd:/data
+      - ${DATA_DIRECTORY:?}/pki/pd:/certs:ro
+      - ./config/pd.toml:/config/pd.toml:ro
+    networks: [data-cluster]
+    mem_limit: 2g
+    cpus: 2
+  tikv:
+    <<: *data
+    image: pingcap/tikv:v8.5.7@sha256:0f89f2be401b3fc06ac96aebcc9f11daaab12a4b0ae89b877440db7e2ad795bf
+    command: ["--addr=0.0.0.0:20160", "--advertise-addr=tikv:20160", "--status-addr=0.0.0.0:20180", "--pd-endpoints=https://pd:2379", "--data-dir=/data", "--config=/config/tikv.toml"]
+    volumes:
+      - ${DATA_DIRECTORY:?}/data/tikv:/data
+      - ${DATA_DIRECTORY:?}/pki/tikv:/certs:ro
+      - ./config/tikv.toml:/config/tikv.toml:ro
+    networks: [data-cluster]
+    depends_on: [pd]
+    mem_limit: 16g
+    cpus: 8
+  tidb:
+    <<: *data
+    image: pingcap/tidb:v8.5.7@sha256:41708a564e47e96d346fed433c3b9bc40d1950fdcc9c768812daeff6aadd930c
+    command: ["--store=tikv", "--path=https://pd:2379", "--config=/config/tidb.toml", "--config-strict", "--initialize-sql-file=/secrets/initialize.sql", "--temp-dir=/data/tmp"]
+    volumes:
+      - ${DATA_DIRECTORY:?}/data/tidb:/data
+      - ${DATA_DIRECTORY:?}/pki/tidb:/certs:ro
+      - ${DATA_DIRECTORY:?}/secrets/initialize.sql:/secrets/initialize.sql:ro
+      - ./config/tidb.toml:/config/tidb.toml:ro
+    networks: [data-client, data-cluster]
+    depends_on: [pd, tikv]
+    mem_limit: 8g
+    cpus: 4
+  storage:
+    <<: *data
+    image: chrislusf/seaweedfs:4.46@sha256:08d516132314207d10c8e37cbffc1f32b147d870169688734cc61c6231625b62
+    working_dir: /data
+    command: ["server", "-ip=storage", "-ip.bind=0.0.0.0", "-dir=/data/volumes", "-master.dir=/data/master", "-master.telemetry=false", "-master.volumeSizeLimitMB=1024", "-volume.max=0", "-volume.minFreeSpace=20", "-volume.fileSizeLimitMB=8", "-filer", "-filer.exposeDirectoryData=false", "-filer.disableDirListing", "-s3", "-s3.config=/secrets/storage.json", "-s3.ip.bind=0.0.0.0", "-s3.port=0", "-s3.port.https=8333", "-s3.cert.file=/certs/server.crt", "-s3.key.file=/certs/server.key", "-s3.iam=false", "-s3.autoCreateBucket=false", "-s3.allowDeleteBucketNotEmpty=false", "-s3.port.iceberg=0", "-s3.port.lance=0", "-s3.concurrentUploadLimitMB=32", "-s3.concurrentFileUploadLimit=8"]
+    volumes:
+      - ${DATA_DIRECTORY:?}/data/storage:/data
+      - ${DATA_DIRECTORY:?}/pki/storage:/certs:ro
+      - ${DATA_DIRECTORY:?}/secrets/storage.json:/secrets/storage.json:ro
+      - ./config/filer.toml:/etc/seaweedfs/filer.toml:ro
+    networks: [object-internal]
+    mem_limit: 2g
+    cpus: 2
+  object-gateway:
+    <<: *data
+    image: ${GATEWAY_IMAGE:?}
+    command: [caddy, run, --config, /config/objects.Caddyfile]
+    healthcheck: {disable: true}
+    volumes:
+      - ./config/objects.Caddyfile:/config/objects.Caddyfile:ro
+      - ${DATA_DIRECTORY:?}/pki/object-gateway:/certs:ro
+    networks: [data-client, object-internal]
+    depends_on: [storage]
+    mem_limit: 128m
+    cpus: 1
+networks:
+  data-client: {internal: true}
+  data-cluster: {internal: true}
+  object-internal: {internal: true}
