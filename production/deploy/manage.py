@@ -220,7 +220,7 @@ def validate(manifest, staging=False):
 def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "help"
     if action == "help":
-        print("host-check data-prepare mail-prepare pitr-start pitr-status pitr-snapshot artifact-sign artifact-verify validate config-check preflight pull up status logs smoke migrate-status migrate-plan migrate-up release release-resume rollback rollback-resume backup-init backup backup-verify backup-recover restore-drill monitor monitor-notify monitor-status; staging-test and pre-commit use disposable resources. See production/OWNER_REQUIREMENTS.md and LAUNCH_EXECUTION.md for qualification boundaries.")
+        print("host-check data-prepare mail-prepare media-backup pitr-start pitr-status pitr-snapshot artifact-sign artifact-verify validate config-check preflight pull up status logs smoke migrate-status migrate-plan migrate-up release release-resume rollback rollback-resume backup-init backup backup-verify backup-recover restore-drill monitor monitor-notify monitor-status; staging-test and pre-commit use disposable resources. See production/OWNER_REQUIREMENTS.md and LAUNCH_EXECUTION.md for qualification boundaries.")
         return
     if action == "host-check":
         from host import inspect
@@ -274,6 +274,10 @@ def main():
     if action in ("monitor", "monitor-notify", "monitor-status"):
         from monitor import main as monitor
         monitor(manifest, action)
+        return
+    if action == "media-backup":
+        from media_backup import main as media_backup
+        media_backup(manifest)
         return
     if action in ("pitr-start", "pitr-status", "pitr-snapshot"):
         from pitr import main as pitr

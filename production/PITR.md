@@ -41,3 +41,13 @@ Checked against the pinned upstream source, not inferred from a generic encrypti
 - [BR status JSON and global checkpoint](https://github.com/pingcap/tidb/blob/v8.5.7/br/pkg/stream/stream_status.go).
 - [BR encryption options](https://github.com/pingcap/tidb/blob/v8.5.7/br/pkg/task/common.go).
 - [TiDB PITR guide](https://docs.pingcap.com/tidb/stable/br-pitr-guide/).
+
+## Matching media capture
+
+`make -C production media-backup` runs the release's `recovery-capture` CLI under the deployment lock. It reads uploaded, queued and ready media inside one repeatable-read TiDB transaction and records `@@tidb_current_ts`. Ready files use the clean namespace/checksum; uploaded/queued files use quarantine. Pending upload intents contain no completed file promise. Deleted/rejected files are excluded. Every object must match its SQL size/hash; concurrent object disappearance fails the attempt. Retrying takes a fresh snapshot instead of skipping the missing file.
+
+The CLI uses a new private directory and publishes its manifest only after the complete bounded scan. Capture is limited to8minutes,100000objects and32GiB; the operator wrapper requires100GiB free before starting. These are initial safety bounds to qualify on representative data, not a promise of capacity. The command uploads the capture with restic encryption only when the same-release full SQL base and normal global log checkpoint cover its exact TSO. If log shipping has not caught up yet, retry later; the command never substitutes wall-clock guesses for checkpoint evidence.
+
+The resulting `media_sql_candidate` receipt intentionally does not replace the verified cold backup or mark application restoration complete. Runtime/key/mail recovery, off-host integrity and isolated BR/media restore must still be exercised; SQL must not be restored later than the matching media TSO. Independent privacy replay remains open. No automatic pruning or production restore is performed.
+
+Transaction semantics reference: [TiDB START TRANSACTION](https://docs.pingcap.com/tidb/stable/sql-statement-start-transaction/). The server suite includes a101-record capture test that commits a deletion during page1 and verifies page2 still matches the original snapshot, while a fresh capture sees the deletion. That real-database test is added but not run on the disk-constrained workstation.

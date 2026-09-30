@@ -1,0 +1,67 @@
+"""Private media archives with explicit SQL coverage; no full-recovery claim."""
+import hashlib
+import json
+from pathlib import Path
+import tempfile
+import time
+import shutil
+
+from artifacts import bounded
+from backup import policy, restic, snapshot_id
+from manage import run
+from pitr import checkpoint, command, location, validate
+from provision import private_write
+from release import current
+import state
+
+
+def covered(media, base, log, commit, schema, at):
+    if not isinstance(media, dict) or type(media.get('version')) is not int or media.get('version') != 1 or type(media.get('schema')) is not int or media.get('schema') != schema or not isinstance(media.get('entries'), list) or len(media['entries']) > 100000:
+        raise ValueError('Unexpected bounded media manifest')
+    if base.get('state') != 'sql_only' or base.get('commit') != commit or not isinstance(base.get('end_tso'), str):
+        raise ValueError('A full SQL snapshot from the current release is required')
+    values = [log.get('start_tso'), base.get('end_tso'), media.get('tso'), log.get('checkpoint_tso')]
+    if any(not isinstance(v, str) or not v.isascii() or not v.isdigit() or not 0 < int(v) < 2 ** 64 for v in values):
+        raise ValueError('Missing exact SQL recovery checkpoints')
+    start, full, point, end = map(int, values)
+    if not start <= full <= point <= end:
+        raise ValueError('Full snapshot and continuous logs do not cover this media checkpoint')
+    if not 0 <= at - (point >> 18) / 1000 <= 900:
+        raise ValueError('Media recovery checkpoint is stale or in the future')
+    return point
+
+
+def main(manifest):
+    validate(manifest)
+    policy(manifest)
+    project = manifest['DEPLOY_PROJECT']
+    with state.locked(Path(manifest['DATA_DIRECTORY']) / 'operations', project) as root:
+        if state.pending(root, project):
+            raise ValueError('Resolve the interrupted release before media capture')
+        release = current(manifest)
+        if not release:
+            raise ValueError('Media capture requires a recorded signed release')
+        base = json.loads(bounded(root / (project + '-sql-snapshot.json')))
+        if base.get('project') != project:
+            raise ValueError('SQL base belongs to another project')
+        if shutil.disk_usage(root).free < 100 * 1024 ** 3:
+            raise ValueError('Media capture needs at least 100 GiB free; scratch is bounded to 32 GiB')
+        # Scratch is private on the persistent filesystem: never consume tiny /tmp
+        # or remove user-selected paths. TemporaryDirectory owns only this new tree.
+        with tempfile.TemporaryDirectory(prefix='.media-capture-', dir=root) as name:
+            scratch = Path(name)
+            run(manifest, ['run', '--rm', '--no-deps', '--user', '1000:1000',
+                           '--volume', str(scratch) + ':/capture', '--entrypoint', '/app/boosterplus',
+                           'api', 'recovery-capture', '/capture/media'])
+            raw = bounded(scratch / 'media/manifest.json', 64 << 20)
+            media = json.loads(raw)
+            log = checkpoint(run(manifest, command(['log', 'status', '--task-name=playora', '--json']), capture=True), location(manifest, 'logs'), time.time())
+            point = covered(media, base, log, release['release']['commit'], release['release']['schema'], time.time())
+            private_write(scratch / 'coverage.json', json.dumps({'project': project, 'commit': release['release']['commit'],
+                'sql_base': base, 'log': log, 'media_manifest_sha256': hashlib.sha256(raw).hexdigest(), 'tso': str(point)}))
+            output = restic(manifest, ['backup', '--json', '--host', project, '--tag', 'playora-media-v1', '/capture'], [(scratch, '/capture', False)])
+            identifier = snapshot_id(output)
+            state.write(root, project + '-media-backup.json', {'state': 'media_sql_candidate', 'project': project,
+                'commit': release['release']['commit'], 'snapshot': identifier, 'tso': str(point),
+                'uploaded_at': time.time(), 'objects': len(media['entries']), 'restore_qualified': False})
+    print('Encrypted SQL-covered media archive uploaded; integrity, runtime/keys/mail/privacy and isolated restore remain required')
