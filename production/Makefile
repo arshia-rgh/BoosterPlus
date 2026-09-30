@@ -30,3 +30,7 @@ pre-commit:
 	python3 ../scripts/scan-image.py boosterplus-gateway:local
 	$(MAKE) staging-test
 	$(MAKE) runtime-config-test infrastructure-audit self-hosted-test
+
+.PHONY: watchdog
+watchdog:
+	python3 deploy/watchdog.py

@@ -1,0 +1,18 @@
+[Unit]
+Description=Independent PLAYORA HTTPS and primary-monitor watchdog
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=playora-monitor
+Group=playora-monitor
+WorkingDirectory=/opt/playora/production
+EnvironmentFile=/etc/playora/watchdog-service.env
+ExecStart=/usr/bin/python3 /opt/playora/production/deploy/watchdog.py
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/playora-watchdog
+TimeoutStartSec=45

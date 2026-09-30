@@ -1,0 +1,12 @@
+[Unit]
+Description=Check PLAYORA from its independent watchdog host
+
+[Timer]
+OnBootSec=60
+OnUnitActiveSec=60
+AccuracySec=5
+Persistent=true
+Unit=playora-watchdog.service
+
+[Install]
+WantedBy=timers.target
