@@ -44,9 +44,11 @@ func TestDesignUpgradePreservesHistoricalCommercialEvidence(t *testing.T) {
 		executeSQL(t, db, `INSERT INTO orders(id,user_id,game_id,game_name,slug,service,kind,request_key,request_hash,state,answers,snapshot,estimate,terms_version,created_at,updated_at) VALUES (?,'old-customer','old-game','Historical game','historic-game','boost',?,?,REPEAT('f',64),'awaiting_payment','{"fixture":"answers"}','{"fixture":"immutable snapshot"}','{"fixture":"estimate"}','historic-v3',UTC_TIMESTAMP(6),UTC_TIMESTAMP(6))`, "old-"+kind, kind, "request-"+kind)
 		executeSQL(t, db, `INSERT INTO order_contracts(id,order_id,user_id,game_id,payment_state,data,created_at) VALUES (?,?,'old-customer','old-game','unpaid','{"amount_minor":"1234","terms":"accepted fixture agreement"}',UTC_TIMESTAMP(6))`, "contract-"+kind, "old-"+kind)
 	}
+	// Compare the existing commercial game; migration 39 adds private starter rows
+	// and refreshes only pristine MLBB artwork, covered separately in seed tests.
 	queries := []string{
 		"SELECT id,email,display_name,auth_version FROM users ORDER BY id",
-		"SELECT id,slug,configuration,version,published,current_release FROM games ORDER BY id",
+		"SELECT id,slug,configuration,version,published,current_release FROM games WHERE id='old-game' ORDER BY id",
 		"SELECT id,game_id,version,configuration FROM catalog_releases ORDER BY id",
 		"SELECT id,user_id,kind,state,answers,snapshot,estimate,terms_version,version FROM orders ORDER BY id",
 		"SELECT id,order_id,payment_state,data FROM order_contracts ORDER BY id",

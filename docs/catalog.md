@@ -2,6 +2,21 @@
 
 The independent Go and React projects now share the pinned OpenAPI catalog contract. SQL migration 5 adds publication storage and migration 6 guards visibility during upgrades/rollbacks. They seed Mobile Legends as an **unpublished, unverified draft**. Run migrations through `make -C backend dev-up` or the documented Cobra migration CLI; application startup never migrates the schema. An explicitly acknowledged development rollback first withdraws game visibility in migration 6; rolling back migration 5 then destroys publication history while retaining drafts. Production uses forward fixes; never use that rollback to recover a published production catalog.
 
+## Installation drafts
+
+SQL migration 39 adds missing World of Warcraft, League of Legends, VALORANT, Dota 2 and Wild Rift drafts alongside Mobile Legends. All remain unpublished and unreviewed. New games start with no configured services or prices and all discovery services off; configure actual offerings before publishing. The original MLBB intake form is retained. An untouched original MLBB draft receives its selected artwork and framing; catalogs already edited, paused, archived or published are not overwritten.
+
+| Draft slug | Selected public artwork |
+| --- | --- |
+| `mobile-legends` | `/catalog-assets/game-mlbb-1536.jpg` |
+| `world-of-warcraft` | `/catalog-assets/game-wow-1536.jpg` |
+| `league-of-legends` | `/catalog-assets/game-lol-1536.jpg` |
+| `valorant` | `/catalog-assets/game-valorant-1536.png` |
+| `dota-2` | `/catalog-assets/game-dota-1536.jpg` |
+| `wild-rift` | `/catalog-assets/game-wildrift-1536.jpg` |
+
+The accepted desktop/mobile focal points are prefilled under **Game & ranks → Game artwork framing**. Existing slugs are preserved, so running the migration on an established database does not reset those catalogs. Migration 39 rollback deliberately retains draft data because it may have acquired edits, releases or commerce history. Reapplying is idempotent. Historical SQL migration checksums are unchanged. Restart with `make -C backend dev-up` to rebuild and apply the explicit migration; this change does not itself modify a running development database.
+
 ## Staff workflow
 
 Sign in with Google/email and an authenticator, then open **Administration → Catalog editor** at `/admin/catalog`. Administrators and owners can manage catalogs. Customers and boosters cannot access drafts, previews or release history.

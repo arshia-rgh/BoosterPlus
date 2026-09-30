@@ -90,6 +90,58 @@ test("staff builds, previews, publishes and archives another game through the ge
   if (info.project.name === "mobile")
     await page.getByRole("button", { name: "Menu", exact: true }).click();
   await page.getByRole("link", { name: "Catalog editor", exact: true }).click();
+  const installationGames = [
+    ["mobile-legends", "Mobile Legends", "mlbb-1536.jpg"],
+    ["world-of-warcraft", "World of Warcraft", "wow-1536.jpg"],
+    ["league-of-legends", "League of Legends", "lol-1536.jpg"],
+    ["valorant", "VALORANT", "valorant-1536.png"],
+    ["dota-2", "Dota 2", "dota-1536.jpg"],
+    ["wild-rift", "Wild Rift", "wildrift-1536.jpg"],
+  ] as const;
+  for (const [gameSlug, name, asset] of installationGames) {
+    await page.getByLabel("Search catalog name or slug").fill(gameSlug);
+    await page
+      .getByLabel("Catalog state", { exact: true })
+      .selectOption("draft");
+    await page
+      .getByRole("button", { name: "Filter catalogs", exact: true })
+      .click();
+    const card = page
+      .locator(".game-card")
+      .filter({ has: page.getByText(gameSlug, { exact: true }) });
+    await card
+      .getByRole("button", { name: `Edit ${name}`, exact: true })
+      .click();
+    await expect(
+      page.getByLabel("Public asset path", { exact: true }),
+    ).toHaveValue(`/catalog-assets/game-${asset}`);
+    await expect(
+      page.getByLabel("Customize game artwork framing"),
+    ).toBeChecked();
+    const framing = page.locator(".artwork-framing-previews");
+    await expect(framing.locator("img")).toHaveCount(2);
+    for (const img of await framing.locator("img").all()) {
+      await expect(img).toBeVisible();
+      await expect
+        .poll(() =>
+          img.evaluate(
+            (node: HTMLImageElement) => node.complete && node.naturalWidth > 0,
+          ),
+        )
+        .toBe(true);
+    }
+    await framing.screenshot({
+      path: `.cache/installation-${gameSlug}-${info.project.name}.png`,
+    });
+    await page
+      .getByRole("button", { name: "← All catalog drafts", exact: true })
+      .click();
+  }
+  await page.getByLabel("Search catalog name or slug").fill("");
+  await page.getByLabel("Catalog state", { exact: true }).selectOption("");
+  await page
+    .getByRole("button", { name: "Filter catalogs", exact: true })
+    .click();
   const starter = page.locator(".game-card").filter({
     has: page.getByText("mobile-legends", { exact: true }),
   });
