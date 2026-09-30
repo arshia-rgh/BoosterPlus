@@ -1383,3 +1383,7 @@ Encrypted SQL preparation pushed ascd1b16607d2346fd5fd3028766e78a9aa2ecbff8; nor
 ## 1 October2026 — independent outage watchdog preparation
 
 Added optional separate-host HTTPS and fresh primary-monitor checks using a pinned SSH host key and a forced read-only command. Private numeric snapshots and deduplicated independent alerts preserve primary outage visibility without merchant/runtime secrets.37 local deployment tests/config checks passed. SSH/timer/actual alert delivery are deferred until the owner provides selected hosts and recipient configuration; no remote message sent. Black-box samples are not API latency/load qualification. Media capture stage8e902ad is pushed with exact remote match after its full local backend preparation gate. R10/R11 remain active and incomplete, including combined restore/privacy replay and final qualification.
+
+## 1 October2026 — restored-media integrity boundary
+
+Added quarantine-only `recovery-import-media`: complete SQL/index equality before writes, bounded no-follow archive reads, exact checksum/size validation and per-object storage readback. Focused race tests and broad lint passed. SQL/S3 restore, corruption, checkpoint mismatch and repeat-import tests are added to the mandatory server suite, not claimed executed locally. Source data and primary resources were not touched. End-to-end recovery/privacy replay and remaining R10/R11 qualification are still open in `production/LAUNCH_EXECUTION.md`; deployment SSH has not been requested.

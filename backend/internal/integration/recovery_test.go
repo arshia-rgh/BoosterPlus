@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strconv"
 	"testing"
@@ -54,7 +55,8 @@ func TestMediaRecoverySnapshotRemainsConsistentAcrossPagesAndConcurrentChanges(t
 		}
 		return data, nil
 	}}
-	got, err := recovery.Capture(t.Context(), f.auth.db, objects, filepath.Join(t.TempDir(), "capture"))
+	firstDirectory := filepath.Join(t.TempDir(), "capture")
+	got, err := recovery.Capture(t.Context(), f.auth.db, objects, firstDirectory)
 	if err != nil || len(got.Entries) != 101 || calls != 101 {
 		t.Fatal("capture lost historical page consistency", len(got.Entries), calls, err)
 	}
@@ -64,8 +66,31 @@ func TestMediaRecoverySnapshotRemainsConsistentAcrossPagesAndConcurrentChanges(t
 	}
 	// A fresh capture must now reflect the committed deletion, preserving no deleted object.
 	calls = 1
-	fresh, err := recovery.Capture(t.Context(), f.auth.db, objects, filepath.Join(t.TempDir(), "capture"))
+	freshDirectory := filepath.Join(t.TempDir(), "capture")
+	fresh, err := recovery.Capture(t.Context(), f.auth.db, objects, freshDirectory)
 	if err != nil || len(fresh.Entries) != 100 {
 		t.Fatal("fresh snapshot retained deleted media", err)
+	}
+	restored := mediaObjects(t, f.auth.client)
+	if _, err = recovery.RestoreMedia(t.Context(), f.auth.db, restored, firstDirectory); err == nil {
+		t.Fatal("SQL/media checkpoint mismatch accepted")
+	}
+	name := filepath.Join(freshDirectory, "clean", fresh.Entries[0].ID)
+	if err = os.WriteFile(name, []byte("corrupted archive"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = recovery.RestoreMedia(t.Context(), f.auth.db, restored, freshDirectory); err == nil {
+		t.Fatal("corrupt archive imported")
+	}
+	if err = os.WriteFile(name, data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	count, err := recovery.RestoreMedia(t.Context(), f.auth.db, restored, freshDirectory)
+	if err != nil || count != 100 {
+		t.Fatal("exact SQL/media restoration failed", count, err)
+	}
+	count, err = recovery.RestoreMedia(t.Context(), f.auth.db, restored, freshDirectory)
+	if err != nil || count != 100 {
+		t.Fatal("idempotent import failed", count, err)
 	}
 }

@@ -51,3 +51,11 @@ The CLI uses a new private directory and publishes its manifest only after the c
 The resulting `media_sql_candidate` receipt intentionally does not replace the verified cold backup or mark application restoration complete. Runtime/key/mail recovery, off-host integrity and isolated BR/media restore must still be exercised; SQL must not be restored later than the matching media TSO. Independent privacy replay remains open. No automatic pruning or production restore is performed.
 
 Transaction semantics reference: [TiDB START TRANSACTION](https://docs.pingcap.com/tidb/stable/sql-statement-start-transaction/). The server suite includes a101-record capture test that commits a deletion during page1 and verifies page2 still matches the original snapshot, while a fresh capture sees the deletion. That real-database test is added but not run on the disk-constrained workstation.
+
+## Restored media integrity
+
+The release CLI now provides `recovery-import-media PRIVATE_ARCHIVE`. Run it **only** inside the isolated restore target after independently verified restic extraction and exact-TSO SQL restoration. The target must have no gateway, workers, mail or external app network. Set `RECOVERY_ISOLATED_ACK=isolated-no-egress-no-workers` and `RECOVERY_QUARANTINE_MARKER` to its mounted regular quarantine marker. These are explicit operator safeguards, not a substitute for reviewing the target's actual Compose networks/mounts.
+
+Before writing any object, the command compares the entire archived media index with the restored database, including namespaces, sizes, content types and hashes. Extra, missing, changed or duplicate references fail. Each file is a bounded regular no-follow read through a confined archive root; each restored object is read back and checked. Partial failure remains quarantined; retry is idempotent for these immutable object keys. It never activates traffic or clears quarantine.
+
+Unit tests cover malformed schema/TSO/index, SQL mismatch, oversized files and external symlinks. The expanded real-TiKV/private-S3 integration scenario covers wrong checkpoint, corrupt archive, successful100-object readback and repeated import, but is server-deferred. The end-to-end BR+runtime/mail restoration coordinator, independently durable privacy replay and actual RPO/RTO remain open; this CLI alone does not complete them.
