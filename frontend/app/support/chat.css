@@ -716,7 +716,7 @@
     gap: 12px;
   }
   .chat-workspace .composer-toolbar > button {
-    flex: 1 0 100%;
+    flex: 1 1 auto;
     max-width: 100%;
     overflow-wrap: break-word;
   }

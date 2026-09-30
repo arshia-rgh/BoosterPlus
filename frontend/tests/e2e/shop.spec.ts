@@ -21,6 +21,26 @@ test("administrator authors and reviews a shop product with explicit capacity", 
     path: `.cache/shop-list-${info.project.name}.png`,
     fullPage: true,
   });
+  const search = page.getByLabel("Search products by title or reference");
+  await search.fill("Synthetic delivery");
+  await page
+    .getByRole("button", { name: "Search products", exact: true })
+    .click();
+  await expect(page).toHaveURL(/q=Synthetic\+delivery/);
+  await search.fill("Other item");
+  await page
+    .getByRole("button", { name: "Search products", exact: true })
+    .click();
+  await expect(page).toHaveURL(/q=Other\+item/);
+  await page.goBack();
+  await expect(search).toHaveValue("Synthetic delivery");
+  await page.goForward();
+  await expect(search).toHaveValue("Other item");
+  await page.goBack();
+  await expect(search).toHaveValue("Synthetic delivery");
+  await page.screenshot({
+    path: `.cache/di15-shop-filter-history-${info.project.name}.png`,
+  });
   await page
     .getByRole("button", { name: "New product draft", exact: true })
     .click();
@@ -212,6 +232,8 @@ test("administrator authors and reviews a shop product with explicit capacity", 
   await page
     .getByRole("link", { name: "← Shop products", exact: true })
     .click();
+  await expect(search).toHaveValue("Synthetic delivery");
+  await expect(page).toHaveURL(/q=Synthetic\+delivery/);
   await expect(
     page.getByRole("link", {
       name: "Edit Synthetic delivery item",

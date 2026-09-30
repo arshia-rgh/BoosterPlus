@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useBlocker, useNavigate, useSearchParams } from "react-router";
+import {
+  Link,
+  NavigationType,
+  useBlocker,
+  useNavigate,
+  useNavigationType,
+  useSearchParams,
+} from "react-router";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { listingSchema } from "../catalog/model";
 import { post } from "../identity/api";
@@ -14,6 +21,20 @@ import "./shop.css";
 export function ShopProducts() {
   const [params, setParams] = useSearchParams(),
     [search, setSearch] = useState(params.get("q") ?? "");
+  const navigationType = useNavigationType();
+  const [submittedSearch, setSubmittedSearch] = useState<string | null>(null);
+  const committedSearch = params.get("q") ?? "";
+  const [previousSearch, setPreviousSearch] = useState(committedSearch);
+  if (previousSearch !== committedSearch) {
+    setPreviousSearch(committedSearch);
+    // An acknowledgement of our submission must not erase newer typing.
+    if (
+      navigationType === NavigationType.Pop ||
+      submittedSearch !== committedSearch
+    )
+      setSearch(committedSearch);
+    setSubmittedSearch(null);
+  }
   const query = new URLSearchParams();
   for (const key of ["q", "state", "game", "availability", "after"]) {
     const value = params.get(key);
@@ -52,6 +73,7 @@ export function ShopProducts() {
         <form
           onSubmit={(event) => {
             event.preventDefault();
+            setSubmittedSearch(search);
             update("q", search);
           }}
         >

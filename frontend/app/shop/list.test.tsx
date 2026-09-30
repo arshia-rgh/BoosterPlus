@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { ShopProducts } from "./list";
@@ -107,4 +113,35 @@ it("creates only a private draft and enters its named editor without a discard p
     }),
     expect.anything(),
   );
+});
+
+it("restores committed search through browser history without wiping drafts on unrelated filters", async () => {
+  const { router } = mount();
+  const input = screen.getByLabelText("Search products by title or reference");
+  fireEvent.change(input, { target: { value: "First item" } });
+  fireEvent.click(screen.getByRole("button", { name: "Search products" }));
+  await waitFor(() => {
+    expect(router.state.location.search).toContain("q=First+item");
+  });
+  fireEvent.change(input, { target: { value: "Second item" } });
+  fireEvent.click(screen.getByRole("button", { name: "Search products" }));
+  await waitFor(() => {
+    expect(router.state.location.search).toContain("q=Second+item");
+  });
+  await act(async () => {
+    await router.navigate(-1);
+  });
+  expect(input).toHaveValue("First item");
+  await act(async () => {
+    await router.navigate(1);
+  });
+  expect(input).toHaveValue("Second item");
+  fireEvent.change(input, { target: { value: "Unsubmitted draft" } });
+  fireEvent.change(screen.getByLabelText("Game filter"), {
+    target: { value: "game-b" },
+  });
+  await waitFor(() => {
+    expect(router.state.location.search).toContain("game=game-b");
+  });
+  expect(input).toHaveValue("Unsubmitted draft");
 });

@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useBlocker, useNavigate, useSearchParams } from "react-router";
+import {
+  Link,
+  NavigationType,
+  useBlocker,
+  useNavigate,
+  useSearchParams,
+  useNavigationType,
+} from "react-router";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { listingSchema } from "../catalog/model";
 import { post } from "../identity/api";
@@ -251,6 +258,33 @@ export function Articles() {
   const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState(params.get("q") ?? "");
   const [author, setAuthor] = useState(params.get("author") ?? "");
+  const navigationType = useNavigationType();
+  const [submitted, setSubmitted] = useState<{
+    search: string;
+    author: string;
+  } | null>(null);
+  const committedSearch = params.get("q") ?? "";
+  const committedAuthor = params.get("author") ?? "";
+  const [previousSearch, setPreviousSearch] = useState(committedSearch);
+  const [previousAuthor, setPreviousAuthor] = useState(committedAuthor);
+  if (previousSearch !== committedSearch) {
+    setPreviousSearch(committedSearch);
+    if (
+      navigationType === NavigationType.Pop ||
+      submitted?.search !== committedSearch
+    )
+      setSearch(committedSearch);
+  }
+  if (previousAuthor !== committedAuthor) {
+    setPreviousAuthor(committedAuthor);
+    if (
+      navigationType === NavigationType.Pop ||
+      submitted?.author !== committedAuthor
+    )
+      setAuthor(committedAuthor);
+  }
+  if (previousSearch !== committedSearch || previousAuthor !== committedAuthor)
+    setSubmitted(null);
   const query = new URLSearchParams();
   for (const k of ["q", "game", "state", "kind", "author", "after"]) {
     const v = params.get(k);
@@ -282,6 +316,7 @@ export function Articles() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            setSubmitted({ search, author });
             const next = new URLSearchParams(query);
             next.delete("after");
             if (search) next.set("q", search);

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { fixture } from "./identity-fixtures";
+import { integratedCapture } from "./integrated-capture";
 
 export async function qualifyChat(buyer: Page, staff: Page, project: string) {
   const id = fixture(project, "chat_history");
@@ -227,20 +228,59 @@ export async function qualifyChat(buyer: Page, staff: Page, project: string) {
   }
   await buyer.setViewportSize({ width: 390, height: 430 });
   await input.fill("Draft while the keyboard reduces available space");
+  await buyer.screenshot({
+    path: `.cache/di15-chat-short-before-${project}.png`,
+  });
+  // Short screens use native page scrolling; keyboard focus must reach the full action.
+  const send = buyer.getByRole("button", { name: "Send message", exact: true });
+  await send.scrollIntoViewIfNeeded();
+  await send.focus();
+  await expect(send).toBeFocused();
   await expect
     .poll(() =>
-      buyer
-        .getByRole("button", { name: "Send message", exact: true })
-        .evaluate(
-          (element) =>
-            element.getBoundingClientRect().bottom <=
-            (window.visualViewport?.height ?? innerHeight),
-        ),
+      send.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        const viewportHeight = window.visualViewport?.height ?? innerHeight;
+        if (
+          rect.top < 0 ||
+          rect.bottom > viewportHeight ||
+          rect.left < 0 ||
+          rect.right > innerWidth
+        )
+          return false;
+        return [0.1, 0.5, 0.9].every((x) =>
+          [0.1, 0.5, 0.9].every((y) => {
+            const hit = document.elementFromPoint(
+              rect.left + rect.width * x,
+              rect.top + rect.height * y,
+            );
+            return hit !== null && (hit === element || element.contains(hit));
+          }),
+        );
+      }),
     )
     .toBe(true);
+  await expect(input).toHaveValue(
+    "Draft while the keyboard reduces available space",
+  );
   await expect
     .poll(() => history.evaluate((element) => element.clientHeight))
     .toBeGreaterThanOrEqual(190);
+  await expect
+    .poll(() =>
+      buyer.evaluate(
+        () =>
+          Math.max(
+            document.body.scrollWidth,
+            document.documentElement.scrollWidth,
+          ) <= innerWidth,
+      ),
+    )
+    .toBe(true);
+  await buyer.screenshot({
+    path: `.cache/di15-chat-short-after-${project}.png`,
+  });
+  await integratedCapture(buyer, `support-send-${project}`, send);
   if (viewport) await buyer.setViewportSize(viewport);
   await buyer.getByRole("link", { name: "← Inbox", exact: true }).click();
   await buyer

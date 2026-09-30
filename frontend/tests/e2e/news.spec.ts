@@ -48,6 +48,26 @@ test("staff article draft, exact preview, publication, game reading, correction 
     game = fixture(info.project.name, "news_game");
   const source = new URLSearchParams({ game, q: id, state: "draft" });
   await page.goto(`/admin/news?${source.toString()}`);
+  const titleSearch = page.getByLabel("Search article title or reference");
+  const authorSearch = page.getByLabel("Author filter", { exact: true });
+  await titleSearch.fill("Other guide");
+  await authorSearch.fill("Different author");
+  await page
+    .getByRole("button", { name: "Search articles", exact: true })
+    .click();
+  await expect(page).toHaveURL(/author=Different\+author/);
+  await page.goBack();
+  await expect(titleSearch).toHaveValue(id);
+  await expect(authorSearch).toHaveValue("");
+  await page.goForward();
+  await expect(titleSearch).toHaveValue("Other guide");
+  await expect(authorSearch).toHaveValue("Different author");
+  await page.goBack();
+  await expect(titleSearch).toHaveValue(id);
+  await expect(authorSearch).toHaveValue("");
+  await page.screenshot({
+    path: `.cache/di15-news-filter-history-${info.project.name}.png`,
+  });
   await page
     .getByRole("link", { name: "Edit Synthetic guide", exact: true })
     .click();

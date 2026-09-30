@@ -5,7 +5,7 @@ import subprocess
 # Owner instruction, 28 September 2026: retain focused stage verification and run
 # the complete repository gate at DI15. Restore normal selection at that exit.
 # CI and root/project pre-commit targets always retain their complete gates.
-FOCUSED_UNTIL_DI15 = True
+FOCUSED_UNTIL_DI15 = False
 
 
 def scope(paths):
