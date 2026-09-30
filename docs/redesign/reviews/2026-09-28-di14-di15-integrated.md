@@ -1,6 +1,6 @@
 # DI14/DI15 integrated senior UI/UX review
 
-Reviewer: `/root/di11_shop_design_review`. DI14 scoped PASS; DI15 aggregate verdict pending complete-gate evidence.
+Reviewers: `/root/di11_shop_design_review` (DI14/corrections), `/root/di15_final_design_review` (30 September integrated review). DI14 scoped and final DI15 integrated UI verdicts: PASS. Aggregate hook also passed; see DI15 qualification.
 
 Scope: all130 mapped views and31 accepted plus six addendum journeys, phase evidence and fresh integrated application captures. Real devices, assistive technology, merchant services and owner acceptance remain separate.
 
@@ -23,3 +23,5 @@ DI15 round1: full desktop/mobile gate exposed stale shop pagination and fixed-he
 DI15 round2: desktop corrected chat/filter captures were clear; mobile shop exposed typing loss during an earlier search acknowledgement. Reviewer requested preserving newer text for matching submissions, clearing stale snapshots and explicit repeated-submit/history coverage. Submitted-query snapshots with POP-aware restoration and seven focused unit cases implement this refinement. Final refreshed browser review remains pending.
 
 DI15 correction round3: reviewer inspected final mobile shop/news filter history,390×430 post-scroll composer and320×450 text200 Send, plus source and delayed multi-submit tests. Exact restored fields, complete labels and unobscured actions confirmed. Final focused build2 log independently verified:4desktop58.3s +4mobile53.6s. **Scoped corrections verdict: PASS; no remaining actionable UX04/filter-history or changed chat reachability finding.** Full aggregate DI15 verdict still awaits the repeated complete gate.
+
+30 September final integrated round: `/root/di15_final_design_review` inspected DI00–DI14 receipts,130-view/37-journey traceability and actual refreshed public/game, customer/support/seller, booster assignment/calendar, admin quote, shop and news captures. It independently verified114 browser scenarios,457 local cases and local performance budgets. Corrected filters restore their values; chat actions and complete labels remain readable/unobscured with clear role/record context. **Final integrated senior UI/UX verdict: PASS; no remaining actionable findings in reviewed scope.** DI06’s stale opening status was corrected to match its delivery receipt. Review used actual captures/source/logs, not an independent live browser, physical keyboard/touch, AT or true zoom. Owner acceptance remains open. Gate6 subsequently passed the complete unchanged hook.

@@ -1,4 +1,4 @@
-# DI06 qualification — in progress
+# DI06 qualification — delivered
 
 27 September 2026. Customer records, scheduling presentation and the signed-in activity panel. DI00–DI05 are delivered; DI07–DI15 remain authorized subsequent work. Final launch stays held.
 

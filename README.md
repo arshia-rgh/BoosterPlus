@@ -1,6 +1,6 @@
 # PLAYORA
 
-Game boosting and game-account commerce, starting with Mobile Legends. Formerly Booster Plus. The accepted redesign is now in implementation under DI00–DI15; final launch remains held.
+Game boosting and game-account commerce, starting with Mobile Legends. Formerly Booster Plus. DI00–DI15 implementation and automated qualification are delivered; owner review is next and final launch remains held.
 
 Planning documents:
 
@@ -19,7 +19,7 @@ Planning documents:
 - [Frontend](frontend/README.md): separate React storefront/admin applications with type, lint, security, component, browser, and accessibility checks.
 - [Customer experience](docs/customer-experience.md): R03 catalog, estimator, account, conversations and booster workspace.
 
-DI00–DI13 are delivered with phase-local qualification. DI14 integrates historical data, routes and cross-feature behavior; DI15 runs final whole-application qualification and owner review. The implementation includes manual shop delivery, staff-managed articles and separate customer/admin/booster sign-in. See [progress](docs/progress.md) for verified stage status and [repository rules](AGENTS.md) for the required workflow.
+DI00–DI15 implementation and automated qualification are delivered. The [DI15 receipt](docs/redesign/DI15_QUALIFICATION.md) records the complete gate, senior review, exact artifacts and remaining owner/device acceptance. The implementation includes manual shop delivery, staff-managed articles and separate customer/admin/booster sign-in. See [progress](docs/progress.md) for verified stage status and [repository rules](AGENTS.md) for the required workflow.
 
 Run `make bootstrap`, start local services with `make -C backend dev-up`, then run `make pre-commit`. The root gate always runs repository policy/secret checks plus backend, frontend and production `pre-commit` targets. The tracked hook selects proportionate checks for each staged change: root checks for documentation, root plus frontend for UI-only changes, and the full gate for backend/deployment/dependency/tooling or mixed changes. Final qualification and CI retain the full gate. Stage commits are pushed directly to `origin/main`.
 
