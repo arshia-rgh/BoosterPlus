@@ -1,0 +1,20 @@
+[Unit]
+Description=PLAYORA private operational checks and configured alerts
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=playora
+WorkingDirectory=/opt/playora/production
+EnvironmentFile=/etc/playora/operations.env
+ExecStart=/usr/bin/python3 deploy/manage.py monitor-notify
+TimeoutStartSec=180
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/srv/playora/installation/operations /opt/playora/production/.cache
+# Docker membership is administrative privilege; this is a trusted operator,
+# not an application container. Never mount the socket into web services.

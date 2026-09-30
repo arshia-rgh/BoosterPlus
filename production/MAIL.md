@@ -10,7 +10,7 @@ Incoming TCP25 receives domain mail and delivery-status notifications. Authentic
 
 Set `MAIL_MODE=self-hosted`, `MAIL_HOST`, `MAIL_POSTMASTER` and `DATA_DIRECTORY` in the private deployment manifest. Use `SMTP_HOST` equal to `MAIL_HOST`, port587, `SMTP_TLS=required` and a dedicated authenticated sender in the backend runtime file. Never use a staff member's mailbox password as the application credential.
 
-Create the private `mail/config`, `mail/data`, `mail/state`, `mail/logs` and `data/gateway` directories under the installation directory. The gateway directory and its mail-certificate leaf directory must be owned by the gateway UID1000 before starting containers. The data preparation command does not choose a domain.
+Data preparation creates private `mail/config`, `mail/data`, `mail/state`, `mail/logs` and `data/gateway` directories under the installation directory. After configuring the real hostname, run `make mail-prepare` to create its certificate directories as UID1000 before starting containers. The data preparation command does not choose a domain.
 
 Configure a real sender/postmaster mailbox through DMS's `setup email add` interactive prompt; do not put passwords on the command line or paste them in chat. Provision support and abuse/postmaster delivery destinations. Use `setup config dkim` for the selected Rspamd mode according to the pinned release help, keep the private DKIM key in the mounted configuration, and publish only its public TXT record. Exact host provisioning commands are qualified on the server before activation.
 

@@ -9,15 +9,16 @@ from pathlib import Path
 import subprocess
 import tempfile
 import time
+import secrets
 
 from manage import ROOT, check_model, compose, read_env
 from provision import prepare, private_write
 from staging import envfile, prepare as app_fixture
 
 
-def call(arguments, environment, input_text=None, must_succeed=True):
+def call(arguments, environment, input_text=None, must_succeed=True, timeout=300, cwd=None):
     result = subprocess.run(arguments, env=environment, input=input_text, text=True,
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=300, check=False)
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout, cwd=cwd, check=False)
     if must_succeed and result.returncode:
         # Output may contain generated fixture credentials; keep it private.
         log = ROOT / ".cache/self-hosted-failure.log"
@@ -43,7 +44,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="playora-tikv-qualification-") as name:
         directory = Path(name)
         manifest = app_fixture(directory)
-        installation = prepare(directory / "installation")
+        installation = prepare(directory / "installation", qualification=True)
         credentials = read_env(installation / "secrets/provisioned.env")
         backend = read_env(manifest["BACKEND_ENV_FILE"])
         backend.update({key: credentials[key] for key in ("DATABASE_DSN", "MEDIA_S3_ENDPOINT", "MEDIA_S3_BUCKET", "MEDIA_S3_ACCESS_KEY", "MEDIA_S3_SECRET_KEY")})
@@ -69,11 +70,26 @@ def main():
         storage_command[storage_command.index("-volume.max=0")] = "-volume.max=2"
         storage_command[storage_command.index("-volume.minFreeSpace=20")] = "-volume.minFreeSpace=1"
         model["volumes"]["scanner-data"] = {"external": True, "name": "boosterplus-qualification-signatures"}
+        # These listeners exist only in this random disposable fixture. The full
+        # business suite uses dedicated loopback test endpoints, never production.
+        model["services"]["tidb"]["ports"] = [{"target": 4000, "published": "14001", "host_ip": "127.0.0.1"}]
+        model["services"]["scanner"]["environment"]["CLAMD_CONF_TCPAddr"] = "0.0.0.0"
+        model["services"]["scanner"]["ports"] = [{"target": 3310, "published": "13310", "host_ip": "127.0.0.1"}]
+        integration_secret = secrets.token_hex(32)
+        model["services"]["integration-storage"] = {
+            "image": model["services"]["storage"]["image"], "command": ["mini", "-dir=/data"],
+            "ports": [{"target": 8333, "published": "8333", "host_ip": "127.0.0.1"}],
+            "environment": {"AWS_ACCESS_KEY_ID": "boosterplus-local", "AWS_SECRET_ACCESS_KEY": integration_secret, "S3_BUCKET": "boosterplus-private"},
+            "volumes": [{"type": "volume", "source": "integration-objects", "target": "/data"}],
+            "mem_limit": 1 << 30, "cpus": 1, "security_opt": ["no-new-privileges:true"],
+            "networks": {"data-client": {}},
+        }
+        model["volumes"]["integration-objects"] = {}
         fixture = directory / "compose.json"
         private_write(fixture, json.dumps(model))
         command = ["docker", "compose", "--project-name", manifest["DEPLOY_PROJECT"], "-f", str(fixture)]
         try:
-            call(command + ["up", "-d", "pd", "tikv", "tidb", "storage", "object-gateway", "scanner"], environment)
+            call(command + ["up", "-d", "pd", "tikv", "tidb", "storage", "object-gateway", "scanner", "integration-storage"], environment)
             migrations = command + ["run", "--rm", "--no-deps", "migrate", "db", "migrate"]
             wait(migrations + ["up"], environment)
             call(migrations + ["verify"], environment)
@@ -81,6 +97,10 @@ def main():
                  input_text="s3.bucket.create -name playora\n")
             dependencies = command + ["run", "--rm", "--no-deps", "--entrypoint", "/app/boosterplus", "api", "dependencies"]
             wait(dependencies + ["check"], environment, seconds=240)
+            snapshot = call(command + ["run", "--rm", "--no-deps", "--entrypoint", "/app/boosterplus", "api", "operations-snapshot"], environment)
+            from monitor import evaluate
+            if evaluate(json.loads(snapshot.stdout), time.time()):
+                raise RuntimeError("Empty real-TiKV fixture returned unhealthy operational metrics")
             # A DML-only runtime account cannot become a migration account.
             forbidden_file = directory / "forbidden.env"
             envfile(forbidden_file, {"MIGRATION_DATABASE_DSN": credentials["DATABASE_DSN"]})
@@ -92,7 +112,15 @@ def main():
             call(command + ["up", "-d", "pd", "tikv", "tidb", "storage"], environment)
             wait(migrations + ["verify"], environment)
             wait(dependencies + ["check"], environment)
+            test_environment = dict(os.environ, GOSUMDB="sum.golang.org",
+                                    TEST_DATABASE_DSN=credentials["ADMIN_DATABASE_DSN"].replace("tidb:4000", "127.0.0.1:14001"),
+                                    TEST_MEDIA_S3_SECRET_KEY=integration_secret, SSL_CERT_FILE=str(installation / "pki/ca.crt"))
+            # Run the SAME complete domain/concurrency suite against actual TiKV;
+            # fixture storage/scanner keep its existing deterministic boundaries.
+            call(["go", "test", "-race", "-count=1", "-timeout=40m", "-tags=integration", "./internal/integration/..."],
+                 test_environment, timeout=2700, cwd=ROOT.parent / "backend")
             print("Real TiKV migration/history, verified TLS, private S3/scanner round trip and restart regression passed")
+            print("Complete race-enabled business integration suite passed against the disposable real-TiKV cluster")
         finally:
             call(command + ["down", "--volumes", "--remove-orphans"], environment)
 

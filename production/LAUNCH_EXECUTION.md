@@ -24,7 +24,7 @@ Local host disk fell below 5 GB during preparation. Owner explicitly moved heavy
 | R10.1 host/topology/TLS | In progress | Existing R04 staging is historical; real TiKV qualification pending | Actual host, disk, firewall, DNS, certificate renewal, least-privilege accounts |
 | R10.2 signed artifacts/CI | Bundle/build/signature tooling implemented | Existing pinned builds/scans; authenticated remote run pending | Registry access/trust, exact signed digests and successful remote workflow |
 | R10.3 release/rollback | Serialized signed release and schema-compatible rollback implemented | Schema 39 readiness is exact, so older-schema app rollback must be rejected | Clean-host rollout, failed/interrupted rollout, compatible rollback |
-| R10.4 monitoring/alerts | Pending | Existing health/readiness endpoints only | Alert recipient, external primary-host outage detection, delivered firing/recovery messages |
+| R10.4 monitoring/alerts | Private aggregate CLI/host snapshots, alert dedup/recovery and timer implemented | Local unit/security checks; real SQL and alert delivery remain pending | Alert recipient, external primary-host outage detection, delivered firing/recovery messages |
 | R10.5 backup/restore/privacy | Cold snapshot/integrity/quarantined data-drill implemented; continuous recovery and erasure replay open | No real R10 restore claim | Off-host SQL/media/key backups, isolated restore, erasure replay, measured RPO/RTO |
 | R10.6 incidents/rotation | Pending | Existing R04 isolated outage exercises remain scoped historical evidence | New topology outages and secret rotation/recovery custodians |
 | R10.7 operations commands | In progress | Existing validate/migration/staging commands | Full operations rehearsal and handover |
@@ -61,3 +61,12 @@ No external email is sent by preparation tools. Live email tests require owner-s
 - The Docker daemon became unavailable locally. No heavy service was started, no production email or funds moved, no off-host repository initialized, and no real snapshot restored.
 - Tracked hook uses the narrow owner-authorized launch-preparation scope while heavy qualification is deferred. Root/project full gates and CI remain mandatory; reset `LAUNCH_SERVER_QUALIFICATION_PENDING` only after recording the server full-gate result.
 - Outstanding implementation: continuous SQL/media recovery meeting the proposed RPO, independent privacy restore replay, monitoring/alert automation, rotation/incident rehearsal and final R11 acceptance tooling. Cold backups alone do not satisfy the online15-minute recovery objective.
+
+### Monitoring and gate coverage stage
+
+- Preparation stage `10e2ce8ea4ebb612455f9f9d988edba67314f0f2` pushed and exact remote SHA verified. Tracked hook passed root checks, broad Go lint, standalone gosec, live vulnerability checks (zero reachable/imported; one unused-module advisory),27 deployment tests and daemon-free merged configuration.
+- New private aggregate CLI and observer cover backlog, leases, mail, media, finance uncertainty, service health, capacity, TLS/scanner freshness and backup age. Focused Go race tests and broad lint passed;29 deployment tests/config checks passed. SQL integration is added to the real-TiKV/full gate and remains server-deferred.
+- Infrastructure image audits now cover pinned data/mail/restic images in the full production gate. CI retains every root gate component but frees only its disposable development services before production qualification; timeout90minutes accommodates the expanded gate without skipping checks. Authenticated remote execution remains unverified.
+- Alert receiver/watchdog, measured HTTP latency/error dashboards, continuous SQL/media recovery, privacy replay and live/server acceptance remain open. No actual alert/email/payment is sent by local tests.
+
+Real-TiKV qualification now also runs the entire race-enabled domain integration suite against a uniquely provisioned TLS cluster on the dedicated loopback14001 endpoint. Storage/scanner test fixtures remain separate from the real private S3/TLS data probe; all namespaces/credentials are disposable. The suite has not been run locally, per owner direction. The reduced test profile is protocol/concurrency qualification, not the64GB production capacity measurement.

@@ -23,7 +23,7 @@ def openssl(*arguments):
         raise ValueError("Certificate operation failed; incomplete material was retained privately") from None
 
 
-def prepare(directory):
+def prepare(directory, *, qualification=False):
     root = Path(directory)
     if not root.is_absolute() or root.parent.is_symlink() or not root.parent.is_dir():
         raise ValueError("Choose an absolute installation path below an existing real directory")
@@ -49,9 +49,10 @@ def prepare(directory):
         for name in COMPONENTS:
             path = pki / name
             path.mkdir(mode=0o700)
+            names = name + (",IP:127.0.0.1" if qualification and name == "tidb" else "")
             private_write(path / "extensions.cnf", "basicConstraints=critical,CA:FALSE\n"
                           "keyUsage=critical,digitalSignature,keyEncipherment\n"
-                          "extendedKeyUsage=serverAuth,clientAuth\nsubjectAltName=DNS:" + name + "\n")
+                          "extendedKeyUsage=serverAuth,clientAuth\nsubjectAltName=DNS:" + names + "\n")
             openssl("req", "-newkey", "rsa:3072", "-nodes", "-subj", "/CN=" + name,
                     "-keyout", path / "server.key", "-out", path / "request.csr")
             openssl("x509", "-req", "-in", path / "request.csr", "-CA", pki / "ca.crt",

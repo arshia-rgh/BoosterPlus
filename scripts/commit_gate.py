@@ -13,15 +13,22 @@ LAUNCH_SERVER_QUALIFICATION_PENDING = True
 
 
 def launch_preparation_only(paths):
-    """No backend/frontend/unknown source change can silently inherit this scope."""
-    return bool(paths) and all(path.startswith(("production/", "docs/")) or path in {
-        "AGENTS.md", "final-launch.md", ".github/workflows/release.yml",
+    """Only deployment and explicitly listed operational Go paths use this window.
+
+    Operational Go changes retain the complete local static/security/race/build
+    gate. Real database/container qualification remains explicitly server-only.
+    """
+    return bool(paths) and all(path.startswith(("production/", "docs/", "backend/internal/opsmetrics/")) or path in {
+        "AGENTS.md", "final-launch.md", ".github/workflows/release.yml", ".github/workflows/ci.yml",
         "scripts/commit_gate.py", "scripts/test_commit_gate.py",
+        "backend/internal/cli/metrics.go", "backend/internal/cli/operations.go",
+        "backend/internal/integration/opsmetrics_test.go",
     } for path in paths)
 
 
-def preparation_commands():
-    return [["make", "check-repository"], ["make", "-C", "backend", "lint", "gosec", "vuln"],
+def preparation_commands(paths=()):
+    backend = ["make", "-C", "backend", "stage-check"] if any(path.startswith("backend/") for path in paths) else ["make", "-C", "backend", "lint", "gosec", "vuln"]
+    return [["make", "check-repository"], backend,
             ["make", "-C", "production", "preparation-check"]]
 
 
@@ -51,7 +58,7 @@ def main():
     selected = scope(paths)
     if LAUNCH_SERVER_QUALIFICATION_PENDING and selected == "full" and launch_preparation_only(paths):
         print("Required gate: launch preparation; heavy/full qualification DEFERRED TO SERVER, not passed", flush=True)
-        for command in preparation_commands():
+        for command in preparation_commands(paths):
             subprocess.run(command, check=True)
         return
     mode = "focused until DI15" if FOCUSED_UNTIL_DI15 else "complete"

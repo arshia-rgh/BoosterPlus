@@ -14,7 +14,7 @@ UX01–UX10 implementation and local automated qualification were delivered on 1
 
 ## 1. Existing foundation versus unfinished qualification
 
-### New design handoff to include when this hold is lifted
+### Accepted design implementation included in launch preparation
 
 30 September implementation inventory: 39 explicit SQL migrations, storefront/admin builds with an isolated booster route tree, server-isolated portal sessions/MFA, persistent game/record shells, manual shop fulfillment and staff article revisions/publication are implemented. Exact qualified code/artifacts and unresolved acceptance are in [DI15 qualification](docs/redesign/DI15_QUALIFICATION.md). R10/R11 are now authorized; deployed qualification remains open. Requalify portal OAuth/cookie/callback routing, game/article URLs/cache/metadata, shop reservation/payment/delivery jobs and notifications, privacy/report/backfills, registry provenance, real merchant funds and restore/rollback against the final owner-accepted commit. This is an inventory handoff; it removes none of the original requirements below.
 
@@ -24,7 +24,7 @@ The DI00–DI15 plan adds server-isolated customer/admin/booster sign-in, persis
 | --- | --- | --- |
 | Application builds and gates | Independent projects, storefront/admin builds, pinned tools, full tracked pre-commit and CI configuration | Requalify the final UX revision and actual release artifacts; verify remote CI through authenticated access |
 | Deployment foundation | `production/compose.production.yaml`, isolated staging overlay, Caddy gateway, private API routing, API/worker/migration/scanner services | Select real hosting/data services; complete operational release and recovery automation; qualify the deployed topology |
-| Commands | Configuration validation/preflight, pull/up/status/logs/smoke and explicit migration commands; local TLS outage/recovery drill | `release`, `rollback`, `backup`, `backup-verify`, `restore-drill` are reserved/fail closed in `deploy/manage.py`; they are not implemented production automation |
+| Commands | Configuration validation/preflight, pull/up/status/logs/smoke and explicit migration commands; local TLS outage/recovery drill | Signed release/compatible rollback and encrypted cold backup/quarantined restore tools are implemented locally; server rehearsal, continuous recovery and independent erasure replay remain open |
 | Finance | Live-only NOWPayments adapter and durable checkout/refund/payout workflows qualified with isolated fixtures | Controlled real invoice funding, signed public callbacks, receipts, refunds and seller payouts with actual provider evidence |
 | Privacy | Owner-published retention policy, reviewed requests, atomic live-data cleanup and confirmed eligible-file purge workflow | Operational backup retention, restore-time erasure reapplication, storage replica/version handling and recovery verification |
 | Business content | Generic games/forms/rules/packs, versioned legal/content/finance/seller configuration | Owner-approved MLBB season/ranks/prices/options, win-rate meaning/remedies, seller terms, support/contact and launch policies |
@@ -61,7 +61,7 @@ Private credentials are supplied through protected runtime files or the chosen s
 ### R10.1 Topology, configuration and clean-host preflight
 
 - Complete the chosen production topology and document host/OS/container/runtime versions, CPU/memory/disk sizing, disk growth and capacity limits. Reuse the R04 stack rather than rebuilding a parallel deployment.
-- Gateway exposes 80/443 only, persists ACME state and certificate renewal data, redirects HTTP correctly and enforces qualified request/body/time limits, compression and security headers.
+- Gateway exposes 80/443; owner-selected self-hosted mail additionally exposes SMTP25 and loopback-only IMAPS993. Gateway persists ACME state and certificate renewal data, redirects HTTP correctly and enforces qualified request/body/time limits, compression and security headers.
 - Storefront and admin use their separate immutable SSR images and asset namespaces; no development server, source mounts or unqualified static-SPA replacement. Admin stays under the qualified `/admin` routing boundary.
 - API (`cmd/server`), worker (`cmd/worker`) and explicit one-shot Cobra migration job remain distinct. Runtime accounts have no DDL privilege; migration/backup credentials are separate. Schema compatibility/readiness precedes traffic.
 - Use verified TLS for TiDB and private object storage, qualified SMTP TLS and private scanner access. Self-managed database/storage choices need actual durability and host requirements. Development TiDB unistore is never the production database; replicas on one host do not establish disaster tolerance.

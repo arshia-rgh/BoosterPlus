@@ -205,15 +205,15 @@ def validate(manifest, staging=False):
 def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "help"
     if action == "help":
-        print("host-check data-prepare artifact-sign artifact-verify validate config-check preflight pull up status logs smoke migrate-status migrate-plan migrate-up release release-resume rollback rollback-resume backup-init backup backup-verify backup-recover restore-drill; staging-test and pre-commit use disposable resources. See production/OWNER_REQUIREMENTS.md and LAUNCH_EXECUTION.md for qualification boundaries.")
+        print("host-check data-prepare artifact-sign artifact-verify validate config-check preflight pull up status logs smoke migrate-status migrate-plan migrate-up release release-resume rollback rollback-resume backup-init backup backup-verify backup-recover restore-drill monitor monitor-notify monitor-status; staging-test and pre-commit use disposable resources. See production/OWNER_REQUIREMENTS.md and LAUNCH_EXECUTION.md for qualification boundaries.")
         return
     if action == "host-check":
         from host import inspect
-        inspect(os.environ.get("DATA_DIRECTORY", "/srv/playora"))
+        inspect(os.environ.get("DATA_DIRECTORY", "/srv/playora/installation"))
         return
     if action == "data-prepare":
         from provision import main as prepare
-        prepare(os.environ.get("DATA_DIRECTORY", "/srv/playora"))
+        prepare(os.environ.get("DATA_DIRECTORY", "/srv/playora/installation"))
         return
     if action in ("artifact-sign", "artifact-verify"):
         from artifacts import sign, verify
@@ -228,6 +228,19 @@ def main():
             print("Release signature, source metadata and SBOM hashes verified")
         return
     manifest = load(os.environ.get("DEPLOY_ENV", str(ROOT / ".env")))
+    if action == "mail-prepare":
+        if manifest.get("MAIL_MODE") != "self-hosted":
+            raise ValueError("Select self-hosted mail before preparing its certificate directory")
+        path = Path(manifest["DATA_DIRECTORY"]) / "data/gateway"
+        for name in ("caddy", "certificates", "acme-v02.api.letsencrypt.org-directory", manifest["MAIL_HOST"]):
+            path = path / name
+            if path.is_symlink():
+                raise ValueError("Mail certificate path must not follow a symlink")
+            path.mkdir(mode=0o700, exist_ok=True)
+            if not path.is_dir() or path.stat().st_uid != 1000:
+                raise ValueError("Mail certificate directories require the gateway's UID1000 owner")
+        print("Mail certificate directories prepared; mailbox, DNS and delivery qualification are still required")
+        return
     if action in ("release", "release-resume", "rollback", "rollback-resume"):
         from release import execute
         execute(manifest, os.environ["RELEASE_DIRECTORY"], rollback=action.startswith("rollback"), resume=action.endswith("-resume"))
@@ -242,6 +255,10 @@ def main():
     if action in ("backup", "backup-init", "backup-verify", "backup-recover", "restore-drill"):
         from backup import main as backup
         backup(action, manifest)
+        return
+    if action in ("monitor", "monitor-notify", "monitor-status"):
+        from monitor import main as monitor
+        monitor(manifest, action)
         return
     if action in ("validate", "config-check", "preflight"):
         validate(manifest)

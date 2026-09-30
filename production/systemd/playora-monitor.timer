@@ -1,0 +1,12 @@
+[Unit]
+Description=Check PLAYORA operational state each minute
+
+[Timer]
+OnBootSec=3min
+OnUnitInactiveSec=60s
+RandomizedDelaySec=5s
+Persistent=true
+Unit=playora-monitor.service
+
+[Install]
+WantedBy=timers.target

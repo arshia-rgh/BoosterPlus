@@ -11,7 +11,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 90
     env:
       GOSUMDB: sum.golang.org
     steps:
@@ -32,8 +32,19 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run local service setup and smoke checks
         run: make -C backend dev-up dev-smoke
-      - name: Run the mandatory commit gate
-        run: make pre-commit
+      # Same complete gate as root pre-commit, sequenced so CI's disposable
+      # development database/scanner do not compete with the real-TiKV drill.
+      - name: Repository gate
+        run: make check-repository
+      - name: Complete backend gate
+        run: make -C backend pre-commit
+      - name: Complete frontend gate
+        run: make -C frontend pre-commit
+      - name: Release CI fixture memory before deployment qualification
+        working-directory: backend
+        run: docker compose --profile storage stop
+      - name: Complete production gate including real TiKV and infrastructure audits
+        run: make -C production pre-commit
       - name: Stop isolated CI services
         if: always()
         working-directory: backend
