@@ -24,7 +24,7 @@ func SealSessions(ctx context.Context, db *sql.DB) (result error) {
 		"DELETE FROM auth_flows",
 		"UPDATE auth_messages SET encrypted_payload=NULL WHERE encrypted_payload IS NOT NULL",
 		"UPDATE auth_recoveries SET state='expired',new_email='',case_reference='' WHERE state='pending'",
-		"UPDATE users SET mfa_pending=NULL,mfa_pending_expires=NULL WHERE mfa_pending IS NOT NULL",
+		"UPDATE users SET mfa_pending=NULL,mfa_pending_expires=NULL,mfa_recovery_hashes=NULL WHERE mfa_pending IS NOT NULL OR mfa_recovery_hashes IS NOT NULL",
 	} {
 		if _, err = tx.ExecContext(ctx, query); err != nil {
 			return errors.New("recovery authentication invalidation failed")

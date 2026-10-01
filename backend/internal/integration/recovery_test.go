@@ -98,6 +98,10 @@ func TestMediaRecoverySnapshotRemainsConsistentAcrossPagesAndConcurrentChanges(t
 func TestRestoredAuthenticationIsSealedWithoutRemovingMFAOrOrders(t *testing.T) {
 	f := orderDB(t)
 	ctx := t.Context()
+	enrolled, enrollmentErr := f.auth.client.User.Get(ctx, f.admin.User.ID)
+	if enrollmentErr != nil || len(enrolled.MfaRecoveryHashes) == 0 {
+		t.Fatal("fixture lacks single-use staff recovery codes", enrollmentErr)
+	}
 	var sessionsBefore int
 	if err := f.auth.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM auth_sessions WHERE revoked_at IS NULL").Scan(&sessionsBefore); err != nil || sessionsBefore == 0 {
 		t.Fatal("fixture lacks live authentication", err)
@@ -137,7 +141,7 @@ func TestRestoredAuthenticationIsSealedWithoutRemovingMFAOrOrders(t *testing.T) 
 		t.Fatal("sealing changed business record counts")
 	}
 	owner, err := f.auth.client.User.Get(ctx, f.admin.User.ID)
-	if err != nil || !owner.MfaEnabled || len(owner.MfaSecret) == 0 {
-		t.Fatal("restored owner lost second factor", err)
+	if err != nil || !owner.MfaEnabled || len(owner.MfaSecret) == 0 || len(owner.MfaRecoveryHashes) != 0 {
+		t.Fatal("restore must preserve authenticator enrollment and invalidate old recovery codes", err)
 	}
 }
