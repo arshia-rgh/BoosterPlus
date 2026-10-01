@@ -107,6 +107,19 @@ def collect(manifest):
                 alerts.append("service_" + name + "_unready")
     except (ValueError, RuntimeError, OSError):
         alerts.append("container_status_unavailable")
+    try:
+        from request_metrics import collect as request_metrics
+        requests = request_metrics(manifest)
+        details['requests'] = requests
+        if requests['malformed_lines']:
+            alerts.append('http_samples_invalid')
+        if requests['requests'] >= 20:
+            if requests['p95_ms'] > 1000:
+                alerts.append('http_latency')
+            if requests['server_errors'] >= 5 and requests['server_errors'] / requests['requests'] > .02:
+                alerts.append('http_errors')
+    except (ValueError, RuntimeError, OSError, subprocess.SubprocessError):
+        alerts.append('http_samples_unavailable')
     disk = shutil.disk_usage(manifest["DATA_DIRECTORY"])
     details["disk_free_bytes"] = disk.free
     if disk.free / disk.total < .20 or disk.free < 100 * 1024 ** 3:

@@ -8,7 +8,7 @@ import shutil
 
 from artifacts import bounded
 from backup import policy, restic, snapshot_id
-from manage import run
+from manage import read_env, run
 from pitr import checkpoint, command, location, validate
 from provision import private_write
 from release import current
@@ -55,13 +55,39 @@ def main(manifest):
                            'api', 'recovery-capture', '/capture/media'])
             raw = bounded(scratch / 'media/manifest.json', 64 << 20)
             media = json.loads(raw)
-            log = checkpoint(run(manifest, command(['log', 'status', '--task-name=playora', '--json']), capture=True), location(manifest, 'logs'), time.time())
+            # Log upload normally trails a new transaction. Wait for this exact
+            # immutable point; never recapture a moving target on every poll.
+            deadline = time.monotonic() + 180
+            while True:
+                log = checkpoint(run(manifest, command(['log', 'status', '--task-name=playora', '--json']), capture=True), location(manifest, 'logs'), time.time())
+                if int(log['checkpoint_tso']) >= int(media['tso']):
+                    break
+                if time.monotonic() >= deadline:
+                    raise ValueError('SQL log upload did not reach the captured media point')
+                time.sleep(2)
             point = covered(media, base, log, release['release']['commit'], release['release']['schema'], time.time())
+            runtime = scratch / 'runtime'
+            runtime.mkdir(mode=0o700)
+            runtime_hashes = {}
+            for key, filename in (('BACKEND_ENV_FILE', 'backend.env'), ('FRONTEND_ENV_FILE', 'frontend.env'), ('MIGRATION_ENV_FILE', 'migration.env')):
+                read_env(manifest[key])
+                data = bounded(manifest[key], 65536)
+                private_write(runtime / filename, data.decode())
+                runtime_hashes[filename] = hashlib.sha256(data).hexdigest()
             private_write(scratch / 'coverage.json', json.dumps({'project': project, 'commit': release['release']['commit'],
-                'sql_base': base, 'log': log, 'media_manifest_sha256': hashlib.sha256(raw).hexdigest(), 'tso': str(point)}))
-            output = restic(manifest, ['backup', '--json', '--host', project, '--tag', 'playora-media-v1', '/capture'], [(scratch, '/capture', False)])
+                'sql_base': base, 'log': log, 'runtime_sha256': runtime_hashes,
+                'media_manifest_sha256': hashlib.sha256(raw).hexdigest(), 'tso': str(point)}))
+            mounts = [(scratch, '/capture', False)]
+            paths = ['/capture']
+            for name in ('mail', 'pki'):
+                mounts.append((Path(manifest['DATA_DIRECTORY']) / name, '/' + name, False))
+                paths.append('/' + name)
+            output = restic(manifest, ['backup', '--json', '--host', project, '--tag', 'playora-point-v1', *paths], mounts)
+            for key, filename in (('BACKEND_ENV_FILE', 'backend.env'), ('FRONTEND_ENV_FILE', 'frontend.env'), ('MIGRATION_ENV_FILE', 'migration.env')):
+                if hashlib.sha256(bounded(manifest[key], 65536)).hexdigest() != runtime_hashes[filename]:
+                    raise ValueError('Runtime configuration changed during recovery capture; retry')
             identifier = snapshot_id(output)
             state.write(root, project + '-media-backup.json', {'state': 'media_sql_candidate', 'project': project,
                 'commit': release['release']['commit'], 'snapshot': identifier, 'tso': str(point),
                 'uploaded_at': time.time(), 'objects': len(media['entries']), 'restore_qualified': False})
-    print('Encrypted SQL-covered media archive uploaded; integrity, runtime/keys/mail/privacy and isolated restore remain required')
+    print('Encrypted SQL-covered media archive uploaded; independent integrity/privacy and isolated restore remain required')

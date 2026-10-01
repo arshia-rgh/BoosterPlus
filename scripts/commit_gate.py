@@ -18,9 +18,12 @@ def launch_preparation_only(paths):
     Operational Go changes retain the complete local static/security/race/build
     gate. Real database/container qualification remains explicitly server-only.
     """
-    return bool(paths) and all(path.startswith(("production/", "docs/", "backend/internal/opsmetrics/", "backend/internal/recovery/")) or path in {
+    return bool(paths) and all(path.startswith(("production/", "docs/", "backend/internal/opsmetrics/", "backend/internal/recovery/", "backend/internal/privacyjournal/")) or path in {
         "AGENTS.md", "final-launch.md", ".github/workflows/release.yml", ".github/workflows/ci.yml",
         "scripts/commit_gate.py", "scripts/test_commit_gate.py",
+        "backend/internal/privacy/journal.go", "backend/internal/privacy/model.go", "backend/internal/privacy/change.go", "backend/internal/privacy/recovery.go",
+        "backend/internal/config/privacy.go", "backend/internal/config/privacy_test.go", "backend/internal/config/config.go", "backend/internal/app/server.go",
+        "backend/internal/cli/recovery_test.go", "backend/internal/cli/privacy_recovery.go", "backend/internal/integration/privacy_recovery_test.go",
         "backend/internal/cli/metrics.go", "backend/internal/cli/recovery.go", "backend/internal/cli/operations.go",
         "backend/internal/integration/opsmetrics_test.go", "backend/internal/integration/recovery_test.go",
     } for path in paths)

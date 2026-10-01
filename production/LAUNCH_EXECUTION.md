@@ -21,18 +21,18 @@ Local host disk fell below 5 GB during preparation. Owner explicitly moved heavy
 
 | Scope | Implementation | Local evidence | Server/owner evidence still required |
 | --- | --- | --- | --- |
-| R10.1 host/topology/TLS | In progress | Existing R04 staging is historical; real TiKV qualification pending | Actual host, disk, firewall, DNS, certificate renewal, least-privilege accounts |
+| R10.1 host/topology/TLS | Deployment topology and preflight implemented | Existing R04 staging is historical; real TiKV qualification pending | Actual host, disk, firewall, DNS, certificate renewal, least-privilege accounts |
 | R10.2 signed artifacts/CI | Bundle/build/signature tooling implemented | Existing pinned builds/scans; authenticated remote run pending | Registry access/trust, exact signed digests and successful remote workflow |
 | R10.3 release/rollback | Serialized signed release and schema-compatible rollback implemented | Schema 39 readiness is exact, so older-schema app rollback must be rejected | Clean-host rollout, failed/interrupted rollout, compatible rollback |
-| R10.4 monitoring/alerts | Private aggregate CLI/host snapshots, alert dedup/recovery and timer implemented | Local unit/security checks; real SQL and alert delivery remain pending | Alert recipient, external primary-host outage detection, delivered firing/recovery messages |
-| R10.5 backup/restore/privacy | Cold snapshot/integrity/quarantined data-drill implemented; continuous recovery and erasure replay open | No real R10 restore claim | Off-host SQL/media/key backups, isolated restore, erasure replay, measured RPO/RTO |
-| R10.6 incidents/rotation | Pending | Existing R04 isolated outage exercises remain scoped historical evidence | New topology outages and secret rotation/recovery custodians |
-| R10.7 operations commands | In progress | Existing validate/migration/staging commands | Full operations rehearsal and handover |
+| R10.4 monitoring/alerts | Private SQL/HTTP samples, offline dashboard, independent watchdog and alert timers implemented | Local unit/security checks; real SQL and alert delivery remain pending | Alert recipient, external primary-host outage detection, delivered firing/recovery messages |
+| R10.5 backup/restore/privacy | Cold/exact-TSO SQL/media/runtime/mail restore, session sealing and independent encrypted privacy journal/replay implemented | No real R10 restore claim | Off-host SQL/media/key backups, isolated restore, erasure replay, measured RPO/RTO |
+| R10.6 incidents/rotation | Runbooks and rehearsal matrix prepared; actual exercises pending | Existing R04 isolated outage exercises remain scoped historical evidence | New topology outages and secret rotation/recovery custodians |
+| R10.7 operations commands | Commands and fail-closed evidence packet implemented | Existing validate/migration/staging commands | Full operations rehearsal and handover |
 | R11.1 content/SEO | Pending final inspection | DI15 application evidence retained separately | Domain, public offers/prices, terms/contact/content approval |
 | R11.2 identity/email | Pending deployment | Existing fixture-based portal/MFA checks | Actual Google callbacks, sender DNS, inbox delivery, first-owner MFA |
 | R11.3 crypto | Adapter delivered previously | Isolated financial fixtures | Approved small-transaction budget/routes/recipients and actual receipts |
 | R11.4 role journeys | DI15 baseline delivered | Re-run changed/integrated paths | Deployed owner walkthrough |
-| R11.5 security/load/recovery | Pending new release | Full gate remains required | Real topology load, restoration, device/AT limits recorded honestly |
+| R11.5 security/load/recovery | Fixture HTTP workload and complete acceptance packet prepared; execution pending | Full gate remains required | Real topology load, restoration, device/AT limits recorded honestly |
 | R11.6 activation | Not activated | No SSH/deployment attempted | Owner review and explicit sales activation after evidence |
 
 ## Input handoff (no secrets in this document)
@@ -95,3 +95,16 @@ Real-TiKV qualification now also runs the entire race-enabled domain integration
 - Focused Go race tests and configured lint passed. Real SQL/S3 test coverage was expanded for mismatched TSO contents, corrupted archive, exact100-object restoration and idempotent repeated import; execution remains server-deferred. Initial test-file creation used the wrong working directory and created no files; corrected paths before validation.
 - Watchdog stage3df4129a749a955bf967f004cffef989c12a3478 passed its tracked root/Go security/37 deployment configuration gate, pushed and exact remote verified. No host/timer/alert qualification is inferred.
 - Remaining preparation includes the complete BR/media/runtime/mail restore coordinator, independent erasure/hold replay, request-metric dashboards/load workload and final incident/rotation/acceptance packet. Server/domain/live-provider evidence and owner activation remain separately blocked by deferred inputs. Do not request SSH on the basis that R10/R11 are already complete.
+
+
+### Coordinated recovery and qualification handoff — 1 October2026
+
+The local deployment package now includes `restore-point-drill`, exact SQL/media/runtime archive verification, fresh target identities, independent read-only BR source credentials, session/challenge/recovery invalidation and optional current off-host privacy evidence export/replay. No public/API server, worker or mail daemon is started; cleanup includes tools-profile containers, retains all data and never clears quarantine. Mail remains an interval archive offline. Failed/interrupted targets require a new target for retry.
+
+The API now fails closed on irreversible erasure unless the independently encrypted/readback-verified journal is configured. Conservative intents/holds cannot silently become automatic deletions; committed erased facts reapply the existing protected-evidence-preserving cleanup. Actual off-host conditional-write policy, durability, historical backfill, current journal completeness, eligible-file/version/replica purge and recovery-key custody require server/operator qualification. Until then deletion remains disabled. See `RECOVERY.md`.
+
+Added bounded five-minute redacted HTTP numeric samples, an offline private dashboard, a fixture-only100-session/20requests-per-second HTTP workload, and a21-item evidence packet that rejects missing/deferred/stale/foreign-commit/tampered evidence and missing/out-of-target RPO/RTO. None sends real email/funds or enables sales. See `QUALIFICATION.md` for the complete server/owner execution sequence; HTTP response latency alone does not measure persisted chat visibility.
+
+Focused Go recovery/config/CLI/journal/app race tests passed and the new real-TiKV integration scenarios compiled. Initial checks caught a fixture principal-name error and unchecked test/config decoding errors; corrected without skipping checks. Local deployment/configuration tests passed before final additions; final tracked-hook receipt is recorded in progress after execution. Heavy real-TiKV/BR/restic/load/image/full-gate tests and authenticated remote CI remain **DEFERRED**, not passed.
+
+Remaining acceptance requires server SSH/host provisioning, independent backup/journal/watchdog configuration, domain/mail DNS and recipients, real Google callbacks, approved content/retention/terms, bounded live financial authorization and owner walkthrough. The monitor conservatively retains recovery alerts until the actual backup/restore policy is qualified; the online archive is still a candidate receipt, not a fabricated recovery PASS. Final R10/R11 completion and sales activation remain open until actual evidence is recorded.

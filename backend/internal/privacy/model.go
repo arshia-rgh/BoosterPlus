@@ -22,9 +22,11 @@ var ErrConflict = errors.New("privacy request or policy changed")
 
 // Store never infers retention periods or cascades financial records.
 type Store struct {
-	client *ent.Client
-	auth   *identity.Service
-	now    func() time.Time
+	journalRequired bool
+	journal         RecoveryJournal
+	client          *ent.Client
+	auth            *identity.Service
+	now             func() time.Time
 }
 
 // New constructs privacy workflows without activating deletion.
@@ -32,7 +34,7 @@ func New(client *ent.Client, auth *identity.Service, now func() time.Time) *Stor
 	if now == nil {
 		now = time.Now
 	}
-	return &Store{client, auth, now}
+	return &Store{client: client, auth: auth, now: now}
 }
 
 // View describes request progress without personal content.

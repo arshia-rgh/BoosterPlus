@@ -8,18 +8,20 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/privacyjournal"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
 )
 
 // Config contains process configuration. Never log the whole value.
 type Config struct {
-	Environment string
-	HTTPAddress string
-	DatabaseDSN string
-	Identity    identity.Config
-	Media       Media
-	Vault       *vault.Keyring
-	Crypto      Crypto
+	Environment    string
+	HTTPAddress    string
+	DatabaseDSN    string
+	Identity       identity.Config
+	Media          Media
+	Vault          *vault.Keyring
+	Crypto         Crypto
+	PrivacyJournal *privacyjournal.Journal
 }
 
 // Load rejects unknown environments and malformed listener addresses.
@@ -59,5 +61,10 @@ func Load(getenv func(string) string) (Config, error) {
 		return Config{}, cryptoErr
 	}
 	cfg.Crypto = cryptoConfig
+	journal, _, journalErr := PrivacyRecovery(getenv)
+	if journalErr != nil {
+		return Config{}, journalErr
+	}
+	cfg.PrivacyJournal = journal
 	return cfg, nil
 }

@@ -94,3 +94,50 @@ func TestMediaRecoverySnapshotRemainsConsistentAcrossPagesAndConcurrentChanges(t
 		t.Fatal("idempotent import failed", count, err)
 	}
 }
+
+func TestRestoredAuthenticationIsSealedWithoutRemovingMFAOrOrders(t *testing.T) {
+	f := orderDB(t)
+	ctx := t.Context()
+	var sessionsBefore int
+	if err := f.auth.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM auth_sessions WHERE revoked_at IS NULL").Scan(&sessionsBefore); err != nil || sessionsBefore == 0 {
+		t.Fatal("fixture lacks live authentication", err)
+	}
+	var usersBefore, ordersBefore int
+	if err := f.auth.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM users").Scan(&usersBefore); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.auth.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM orders").Scan(&ordersBefore); err != nil {
+		t.Fatal(err)
+	}
+	for range 2 {
+		if err := recovery.SealSessions(ctx, f.auth.db); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, query := range []string{
+		"SELECT COUNT(*) FROM auth_sessions WHERE revoked_at IS NULL",
+		"SELECT COUNT(*) FROM auth_challenges WHERE consumed=FALSE",
+		"SELECT COUNT(*) FROM auth_flows",
+		"SELECT COUNT(*) FROM auth_messages WHERE encrypted_payload IS NOT NULL",
+		"SELECT COUNT(*) FROM auth_recoveries WHERE state='pending'",
+	} {
+		var count int
+		if err := f.auth.db.QueryRowContext(ctx, query).Scan(&count); err != nil || count != 0 {
+			t.Fatal("restored authentication remains usable", err)
+		}
+	}
+	var usersAfter, ordersAfter int
+	if err := f.auth.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM users").Scan(&usersAfter); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.auth.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM orders").Scan(&ordersAfter); err != nil {
+		t.Fatal(err)
+	}
+	if usersAfter != usersBefore || ordersAfter != ordersBefore {
+		t.Fatal("sealing changed business record counts")
+	}
+	owner, err := f.auth.client.User.Get(ctx, f.admin.User.ID)
+	if err != nil || !owner.MfaEnabled || len(owner.MfaSecret) == 0 {
+		t.Fatal("restored owner lost second factor", err)
+	}
+}

@@ -58,3 +58,9 @@ Each rehearsal must use isolated test credentials/data, cover failed/partial rot
 6. Rehearse primary shutdown, web-only failure, stale monitor, changed SSH host key, alert receiver outage and recovery. Verify actual firing/recovery receipt and retry behavior. Keep an independently accessible incident runbook. No such external message or SSH probe is sent during local preparation.
 
 A failure of the watchdog timer/host itself also requires an operator check or another independently hosted missing-heartbeat receiver. Two files in systemd are not proof of monitoring coverage. Historical request-rate/error/latency dashboards and delivered alert evidence remain qualification work.
+
+## Request samples and private dashboard
+
+`monitor` now reads at most a bounded five-minute/40,000-line tail of existing redacted API completion logs, discards request IDs and retains numeric request rate, p95,4xx/5xx counts and malformed-line count. These are **sampled windows**, not exact persistent counters or per-route histograms. An empty window reports no p95 rather than healthy latency. Missing/malformed logs alert; with20samples, p95 above1000ms or at least five5xx exceeding2% alerts. These operational thresholds do not replace the stricter ordinary/estimate load acceptance targets.
+
+Set `DASHBOARD_FILE` to a new absolute private HTML file and run `make dashboard` after a fresh monitor collection. The report includes numeric queue/finance/request samples and alert codes; it loads no remote scripts/assets and opens no public port. Regenerate to refresh; do not publish or serve the file. Keep long-term independently retained numeric monitor snapshots under the approved retention policy. See `QUALIFICATION.md` for isolated load and real alert/incident evidence.

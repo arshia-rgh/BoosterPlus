@@ -87,7 +87,7 @@ func Server(ctx context.Context, cfg config.Config, logger *slog.Logger) (result
 	if outgoing, ok := paymentProvider.(payments.OutgoingProvider); ok {
 		finance.ConfigureOutgoing(outgoing, cfg.Crypto.OutgoingEnabled)
 	}
-	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, news.New(client, auth, nil).Register, shop.New(client, auth, nil).Register, finance.Register, resale.New(client, auth, cfg.Vault, nil).Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.New(client, auth, nil).Register, notices.Register, files.Register, work.Register, submissions.New(client, auth, nil).Register, reviews.New(client, auth, nil).Register, operations.New(client, auth, nil).Register, alerts.Register, reports.New(auth, nil).Register, privacy.New(client, auth, nil).Register, sitecontent.New(client, auth, nil).Register))
+	return Serve(ctx, listener, httpapi.New(ready, logger, cfg.Environment != "development" && cfg.Environment != "test", auth.Register, news.New(client, auth, nil).Register, shop.New(client, auth, nil).Register, finance.Register, resale.New(client, auth, cfg.Vault, nil).Register, catalog.New(client, auth).Register, orders.New(client, auth, nil).Register, conversations.New(client, auth, nil).Register, notices.Register, files.Register, work.Register, submissions.New(client, auth, nil).Register, reviews.New(client, auth, nil).Register, operations.New(client, auth, nil).Register, alerts.Register, reports.New(auth, nil).Register, privacyStore(client, auth, cfg).Register, sitecontent.New(client, auth, nil).Register))
 }
 
 // Serve applies transport timeouts and drains in-flight work on cancellation.
@@ -113,4 +113,14 @@ func Serve(ctx context.Context, listener net.Listener, handler http.Handler) err
 		}
 		return nil
 	}
+}
+
+// Avoid a typed nil pointer inside the journal interface: disabled configuration
+// must fail closed without panicking or accidentally acknowledging erasure.
+func privacyStore(client *ent.Client, auth *identity.Service, cfg config.Config) *privacy.Store {
+	store := privacy.New(client, auth, nil)
+	if cfg.PrivacyJournal == nil {
+		return store.WithRecoveryJournal(nil)
+	}
+	return store.WithRecoveryJournal(cfg.PrivacyJournal)
 }

@@ -41,6 +41,11 @@ func (s *Store) Update(ctx context.Context, p *identity.Principal, id string, ad
 				if row.State == "erased_pending_files" || strings.TrimSpace(input.Reason) == "" {
 					return ErrInvalid
 				}
+				if s.journal != nil {
+					if e = s.journalRecord(ctx, row.ID, row.UserID, "hold"); e != nil {
+						return e
+					}
+				}
 				update.SetState("held").SetManualHold(true).SetHoldReason(input.Reason).SetReviewedBy(current.User.ID)
 			case "release_hold":
 				if !row.ManualHold || strings.TrimSpace(input.Reason) == "" {
@@ -77,6 +82,9 @@ func (s *Store) Update(ctx context.Context, p *identity.Principal, id string, ad
 					if row.State != "reviewed" || row.HoldReason != "" || row.ReviewedPolicyID != release.ReleaseID || held || at.After(s.now()) {
 						return ErrConflict
 					}
+					if readErr = s.journalRecord(ctx, row.ID, row.UserID, "erase_intent"); readErr != nil {
+						return readErr
+					}
 					if readErr = s.erase(ctx, tx, target); readErr != nil {
 						return readErr
 					}
@@ -103,6 +111,11 @@ func (s *Store) Update(ctx context.Context, p *identity.Principal, id string, ad
 				}
 				if pending {
 					return ErrConflict
+				}
+				// The erased_pending_files state was committed earlier. Recording that
+				// irreversible fact before finalize is safe even if this transaction fails.
+				if readErr = s.journalRecord(ctx, row.ID, row.UserID, "erased"); readErr != nil {
+					return readErr
 				}
 				update.SetState("completed").SetCompletedAt(s.now()).ClearActiveUserID()
 			default:

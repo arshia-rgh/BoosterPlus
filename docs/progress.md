@@ -1387,3 +1387,16 @@ Added optional separate-host HTTPS and fresh primary-monitor checks using a pinn
 ## 1 October2026 — restored-media integrity boundary
 
 Added quarantine-only `recovery-import-media`: complete SQL/index equality before writes, bounded no-follow archive reads, exact checksum/size validation and per-object storage readback. Focused race tests and broad lint passed. SQL/S3 restore, corruption, checkpoint mismatch and repeat-import tests are added to the mandatory server suite, not claimed executed locally. Source data and primary resources were not touched. End-to-end recovery/privacy replay and remaining R10/R11 qualification are still open in `production/LAUNCH_EXECUTION.md`; deployment SSH has not been requested.
+
+
+## 1 October2026 — coordinated recovery, privacy journal and launch evidence
+
+Implemented exact-TSO restore coordination with independently read-only SQL backup credentials, new isolated database/object/TLS identities, exact media readback, runtime/key/mail archives and authentication invalidation. Optional dedicated journal export/replay stays separate from app egress and never clears quarantine. Production erasure now requires an independently encrypted off-host intent/completion journal with conditional append/readback; absent configuration leaves irreversible deletion disabled. Restored holds/intents remain conservative, confirmed erasure reuses the existing evidence-preserving cleanup, and replay is audited. No SQL migration/schema change.
+
+Added bounded redacted HTTP aggregates/private offline dashboard, fixture-only100-session/20requests-per-second workload and a21-item final evidence packet with integrity/freshness/revision/RPO/RTO checks. Updated launch/recovery/operations runbooks and retained all server, external integration and owner acceptance requirements. No SSH, heavy Docker tests, real email/alerts or funds movement performed.
+
+Focused Go race tests passed; new real-TiKV scenarios compiled but were not executed. Deployment/config tests passed45cases before the final orchestration test. Early checks caught a wrong fixture principal field and unchecked configuration/test errors; corrected and lint passed. Final tracked local preparation-gate result and push receipt follow actual execution. The full server/container/restore/load/remote-CI/live-integration gate remains deferred, never a PASS. Held untracked UI experiments are preserved.
+
+Final preparation caught an isolated orchestration-test UID mock that affected shared file-ownership validation; replacing the broad OS mock with the operator-check boundary fixed it and46deployment/configuration tests passed. The repository secret scanner also flagged ordinary slash-separated prose in the recovery checklist as a generic key; rewrote that sentence without changing scan rules or suppressions. Final hook repetition follows.
+
+The first final tracked hook passed repository, generation, vet and broad lint, then standalone gosec flagged the opaque AEAD interface's nil nonce with NewGCMWithRandomNonce. Changed to an explicit crypto/rand nonce prefix with authenticated AES-GCM and added nonce-uniqueness coverage; no suppression or scanner policy change. Repeating the unchanged required gate.

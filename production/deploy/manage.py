@@ -220,7 +220,7 @@ def validate(manifest, staging=False):
 def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "help"
     if action == "help":
-        print("host-check data-prepare mail-prepare media-backup pitr-start pitr-status pitr-snapshot artifact-sign artifact-verify validate config-check preflight pull up status logs smoke migrate-status migrate-plan migrate-up release release-resume rollback rollback-resume backup-init backup backup-verify backup-recover restore-drill monitor monitor-notify monitor-status; staging-test and pre-commit use disposable resources. See production/OWNER_REQUIREMENTS.md and LAUNCH_EXECUTION.md for qualification boundaries.")
+        print("host-check data-prepare mail-prepare media-backup pitr-start pitr-status pitr-snapshot artifact-sign artifact-verify validate config-check preflight pull up status logs smoke migrate-status migrate-plan migrate-up release release-resume rollback rollback-resume backup-init backup backup-verify backup-recover restore-drill restore-point-drill monitor monitor-notify monitor-status dashboard; load-test, qualification-init and qualification-check are separate Make targets. staging-test and pre-commit use disposable resources. See production/OWNER_REQUIREMENTS.md and LAUNCH_EXECUTION.md for qualification boundaries.")
         return
     if action == "host-check":
         from host import inspect
@@ -271,9 +271,17 @@ def main():
         from backup import main as backup
         backup(action, manifest)
         return
+    if action == "dashboard":
+        from dashboard import write
+        write(manifest, os.environ["DASHBOARD_FILE"])
+        return
     if action in ("monitor", "monitor-notify", "monitor-status"):
         from monitor import main as monitor
         monitor(manifest, action)
+        return
+    if action == "restore-point-drill":
+        from point_restore import execute
+        execute(manifest, os.environ["RESTORE_TARGET"], os.environ["RESTORE_SNAPSHOT"], os.environ["RESTORE_ACK"], os.environ["RELEASE_DIRECTORY"])
         return
     if action == "media-backup":
         from media_backup import main as media_backup
