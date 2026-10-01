@@ -23,7 +23,7 @@ Connect as the operator with `ssh -l playora playora`. The owner can later chang
 
 ## Qualification boundaries and outstanding work
 
-The deployment configuration and host checks still describe the earlier 64 GB/1 TB proposal. They do **not** pass this smaller host, and have not been weakened to claim success. A separately budgeted 16 GB configuration, complete automated gate, real TiKV capacity measurement, backup/restore drills and the rest of `production/QUALIFICATION.md` remain mandatory before launch. Preserve all security controls and payment evidence requirements.
+The initial deployment configuration and host checks described the earlier 64 GB/1 TB proposal and rejected this smaller host. The explicit 16 GB profile added later passes resource prerequisites only; see the subsequent qualification update below. The complete automated gate, real TiKV capacity measurement, backup/restore drills and the rest of `production/QUALIFICATION.md` remain mandatory before launch. Preserve all security controls and payment evidence requirements.
 
 The committed baseline intended for initial isolated qualification is `8716f16a87a258fc46c157d771b477644783bdcf`. The first source transfer was interrupted by the setup reboot; long uploads subsequently stalled. A small-chunk retry also timed out; no partial bundle is a verified checkout. A server read-only GitHub deploy key is an alternative requiring explicit owner approval and repository installation. No source-access key has been created as of this receipt.
 
@@ -35,10 +35,18 @@ The exact pinned PD/TiKV/TiDB8.5.7 images were downloaded. Restricted, no-networ
 
 The domain remains pending. The owner confirmed there is no off-host backup destination yet. Select an independent destination and recovery-key custody before initializing backups; provider snapshots alone are not a demonstrated application restore. PTR must use the eventual mail hostname, so do not request an arbitrary PTR value now. Domain/mail/OAuth, signed CI artifacts, alert delivery, bounded live financial tests and owner activation remain open.
 
-## Laptop replacement and recovery
+## Subsequent source access and qualification
 
 Subsequent source-access update: the owner explicitly approved creation of the dedicated unattended deploy key, then added it to GitHub with write access disabled. Verification and a direct clone of `main` at `715899ccc460c0912337e7927904c662a8affd81` succeeded, using GitHub's officially published Ed25519 host key. The full private qualification checkout is `/srv/playora-qualification/source`; the earlier interrupted upload attempts remain historical failures. Do not use the server key to push commits.
 
 The explicit candidate 16 GB profile subsequently passed 50 deployment preparation tests on both hosts, merged Compose budget/security mutations, pinned TiDB/TiKV configuration parsing and host resource prerequisites. The original 64 GB profile continues to reject this host; its earlier failed result is retained. No profile load, actual restore, live mail/payment or public deployment pass is inferred. Tool bootstrap encountered reproducible Go proxy TLS failures; diagnostic comparisons are underway with certificate verification retained.
+
+The profile was delivered and verified on origin/main as `6c5b8beb14fb768f46005a7db21d10af6adeb66b`, with the normal tracked preparation hook passing. The server qualification checkout matches that revision. Its frontend contract, formatting, strict-type, lint and all 136 test-file checks passed. The required npm security audit failed before establishing TLS; therefore the frontend stage gate failed. Separately, both production builds and all nine server tests passed. Private evidence is retained under `/srv/playora-qualification/evidence-6c5b8be/`.
+
+Two default tool-bootstrap attempts failed at the official Go proxy. A temporary installer-only classical TLS key-exchange diagnostic installed some tools but was stopped after further stalled downloads; it is not a successful bootstrap or a production configuration. The isolated backend fixture setup also failed while resolving pinned Go and distroless base images because of TLS handshake timeouts, before starting the application. No certificate verification was disabled and no live runtime credentials were used.
+
+Default Go TLS succeeded with full response-body reads when the diagnostic socket alone limited TCP segment size to 1240, 1200 or 1000 bytes. Ordinary default requests failed. This supports investigating packet-size/path handling but does not establish the precise network fault. The proposed host-wide MTU trial was rejected by automatic approval review pending specific owner authorization; no MTU change or rollback timer was created. Approval is requested for a two-minute automatic rollback, independent SSH/default-TLS verification and persistence only after both pass. The existing interface remains unchanged while that decision is pending.
+
+## Laptop replacement and recovery
 
 Keep an encrypted private-key backup and the passphrase in independent custody. For planned replacement, generate a new key on the new laptop, add only its public key through the working operator session, verify a separate connection, then remove the old key. For loss or compromise, use a separately held key or the provider console/rescue system and revoke the lost key. Confirm provider console access before relying on it. Never commit private keys, passphrases, cloud-init user data or provider credentials.
