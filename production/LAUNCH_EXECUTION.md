@@ -5,6 +5,7 @@ Baseline `aeae62b5980fbf18d0c183af88a6dee67f0698a0`, schema 39. This ledger dist
 
 ## Decisions
 
+- Latest sizing/access decision (1 October2026): owner purchased ParsPack Germany with 8 vCPU, 16 GB RAM and 150 GB disk and authorized deployment through `ssh playora`. The separately budgeted `single-16gb` candidate is described in `SMALL_HOST.md`; prior larger sizing below is historical, not a measured minimum. Source clone using the explicitly approved read-only deploy key now succeeds. Domain, off-host destination and final qualification remain pending.
 - Owner selected one primary server with self-hosted database and storage and a separate backup destination. Primary-host failure causes downtime; no HA claim.
 - Provisional compact-host sizing: 16 dedicated CPU cores, 64 GB RAM, 1 TB persistent NVMe, x86-64-v2 or newer, Ubuntu Server 24.04 LTS. This is an engineering starting point for measurement, below PingCAP's full production cluster recommendations. Do not purchase based on an unmeasured capacity guarantee. The scanner currently requires amd64.
 - Production SQL uses TiDB + PD + TiKV, never unistore. One-host replicas do not create independent failure domains. No TiFlash or NATS is required by the current workload.
@@ -37,7 +38,7 @@ Local host disk fell below 5 GB during preparation. Owner explicitly moved heavy
 
 ## Input handoff (no secrets in this document)
 
-Later provide the domain and DNS access method, an operator alert email, the server access method, off-host backup destination, backup/key retention and custodians. SMTP credentials and Google OAuth client secret go in protected runtime files. The Google web OAuth client must allow these exact HTTPS paths on the chosen origin:
+Provide the domain and DNS access method, an operator alert email, off-host backup destination, backup/key retention and custodians. SMTP credentials and Google OAuth client secret go in protected runtime files. The Google web OAuth client must allow these exact HTTPS paths on the chosen origin:
 
 - `/api/v1/auth/portals/customer/google/callback`
 - `/api/v1/auth/portals/admin/google/callback`

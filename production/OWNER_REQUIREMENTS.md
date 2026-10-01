@@ -4,11 +4,11 @@ Preparation is underway. **Do not send passwords, private keys, recovery codes o
 
 ## Infrastructure
 
-- **Primary server:** provisional Ubuntu Server 24.04 LTS, amd64, 16 dedicated CPU cores, 64 GB RAM, 1 TB persistent NVMe. Capacity remains subject to server load tests. One host means downtime if it fails.
+- **Primary server:** purchased ParsPack Germany, Ubuntu Server 24.04 LTS, amd64, 8 vCPU, 16 GB RAM, 150 GB provider-described NVMe. The explicit candidate budget is in [SMALL_HOST.md](SMALL_HOST.md); capacity remains subject to server load/recovery tests. One host means downtime if it fails. The original larger profile remains available.
 - **Self-hosted email:** static public IPv4, outbound TCP 25 permitted, configurable PTR/reverse DNS. Confirm these with the host before purchasing. We configure authenticated SMTP, TLS, SPF, DKIM and DMARC; actual inbox delivery must pass.
 - **Domain:** chosen website/mail hostname, DNS management access method and certificate-contact email. No domain is selected yet.
 - **Off-host backups:** a separate server or private S3-compatible destination, its region/capacity/access method, and an independently held recovery key. Agree backup expiry, key custodian and recovery operator; backups on the primary disk do not qualify.
-- **Later SSH:** server IP/hostname, SSH port, deployment username and access method with sufficient administrative permission. Prefer an authorized public key; never paste a private key here.
+- **SSH received:** the local `playora` alias and dedicated deployment operator are verified. A separate owner-approved read-only GitHub deploy key now provides source retrieval; no laptop private key was copied. Never paste private keys here.
 
 ## Identity and integrations
 

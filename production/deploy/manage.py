@@ -8,6 +8,7 @@ import subprocess
 import sys
 import stat
 import tempfile
+import capacity
 
 ROOT = Path(__file__).resolve().parents[1]
 IMAGE_KEYS = ("BACKEND_IMAGE", "STOREFRONT_IMAGE", "ADMIN_IMAGE", "SCANNER_IMAGE", "GATEWAY_IMAGE")
@@ -38,6 +39,7 @@ def read_env(path, private=True):
 
 def load(path, staging=False):
     manifest = read_env(path)
+    capacity.selected(manifest, staging)
     if manifest.get("PITR_ENABLED", "false") not in ("true", "false"):
         raise ValueError("PITR_ENABLED must be true or false")
     mail_mode = manifest.get("MAIL_MODE", "external")
@@ -115,6 +117,7 @@ def load(path, staging=False):
 
 
 def compose(manifest, staging=False):
+    profile = capacity.selected(manifest, staging)
     args = ["docker", "compose", "--project-name", manifest["DEPLOY_PROJECT"], "-f", str(ROOT / "compose.production.yaml")]
     if manifest.get("DATA_TOPOLOGY") == "self-hosted-single":
         if staging:
@@ -126,6 +129,8 @@ def compose(manifest, staging=False):
         args += ["-f", str(ROOT / "compose.mail.yaml")]
     if manifest.get("PITR_ENABLED") == "true":
         args += ["-f", str(ROOT / "compose.pitr.yaml")]
+    if profile == capacity.SMALL:
+        args += ["-f", str(ROOT / "compose.small.yaml")]
     if staging:
         args += ["-f", str(ROOT / "compose.staging.yaml")]
     return args
@@ -214,6 +219,7 @@ def check_model(model, staging=False, self_hosted=False, self_mail=False, pitr=F
 def validate(manifest, staging=False):
     model = json.loads(run(manifest, ["--profile", "tools", "config", "--format", "json"], staging, capture=True))
     check_model(model, staging, manifest.get("DATA_TOPOLOGY") == "self-hosted-single", manifest.get("MAIL_MODE") == "self-hosted", manifest.get("PITR_ENABLED") == "true")
+    capacity.check_model(model, capacity.selected(manifest, staging))
     run(manifest, ["run", "--rm", "--no-deps", "gateway", "caddy", "validate", "--config", "/etc/caddy/Caddyfile"], staging)
 
 
@@ -224,7 +230,7 @@ def main():
         return
     if action == "host-check":
         from host import inspect
-        inspect(os.environ.get("DATA_DIRECTORY", "/srv/playora/installation"))
+        inspect(os.environ.get("DATA_DIRECTORY", "/srv/playora/installation"), os.environ.get("HOST_PROFILE", capacity.DEFAULT))
         return
     if action == "data-prepare":
         from provision import main as prepare

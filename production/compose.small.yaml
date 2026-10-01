@@ -1,0 +1,20 @@
+# Explicit 16 GB candidate profile. Capacity/recovery qualification is mandatory.
+# Merge after self-hosted/mail/PITR overlays; no service or security control removed.
+services:
+  pd:
+    mem_limit: 512m
+    cpus: 1
+    environment: {GOMEMLIMIT: 384MiB, GOMAXPROCS: "1"}
+  tikv:
+    mem_limit: 3584m
+    cpus: 3
+    volumes: ["./config/tikv.small.toml:/config/tikv.toml:ro"]
+  tidb:
+    mem_limit: 2g
+    cpus: 2
+    environment: {GOMEMLIMIT: 1536MiB, GOMAXPROCS: "2"}
+    volumes: ["./config/tidb.small.toml:/config/tidb.toml:ro"]
+  storage:
+    mem_limit: 768m
+    cpus: 1
+    environment: {GOMEMLIMIT: 576MiB, GOMAXPROCS: "1"}

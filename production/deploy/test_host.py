@@ -1,5 +1,6 @@
 import unittest
 from host import GIB, evaluate
+from capacity import SMALL, budget
 
 
 class HostPolicy(unittest.TestCase):
@@ -28,6 +29,23 @@ class HostPolicy(unittest.TestCase):
         ):
             with self.subTest(key=key):
                 self.assertTrue(evaluate(dict(self.good, **{key: value})))
+
+    def test_small_profile_is_explicit_and_preserves_headroom_boundaries(self):
+        limits = budget(SMALL)
+        small = dict(self.good, cpu_count=8, docker_cpus=8, memory_bytes=16 * GIB,
+                     docker_memory_bytes=16 * GIB, disk_total_bytes=145 * GIB, disk_free_bytes=90 * GIB)
+        self.assertTrue(evaluate(small))
+        self.assertEqual(evaluate(small, SMALL), [])
+        for field, bound in (("memory_bytes", limits["memory"]), ("docker_memory_bytes", limits["memory"]),
+                             ("disk_total_bytes", limits["disk"]), ("disk_free_bytes", limits["startup_free"]),
+                             ("cpu_count", 8), ("docker_cpus", 8)):
+            with self.subTest(field=field):
+                self.assertEqual(evaluate(dict(small, **{field: bound}), SMALL), [])
+                self.assertTrue(evaluate(dict(small, **{field: bound - 1}), SMALL))
+        for field, value in (("clock_synchronized", False), ("local_docker", False), ("filesystem", "tmpfs")):
+            self.assertTrue(evaluate(dict(small, **{field: value}), SMALL))
+        with self.assertRaises(ValueError):
+            evaluate(small, "single-8gb")
 
 
 if __name__ == "__main__":

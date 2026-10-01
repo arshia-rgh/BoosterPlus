@@ -84,6 +84,8 @@ def notify(root, project, alerts, sender, at):
 
 
 def collect(manifest):
+    from capacity import budget, selected
+    capacity = budget(selected(manifest))
     at = time.time()
     alerts = []
     details = {}
@@ -122,7 +124,7 @@ def collect(manifest):
         alerts.append('http_samples_unavailable')
     disk = shutil.disk_usage(manifest["DATA_DIRECTORY"])
     details["disk_free_bytes"] = disk.free
-    if disk.free / disk.total < .20 or disk.free < 100 * 1024 ** 3:
+    if disk.free / disk.total < .20 or disk.free < capacity["warning_free"]:
         alerts.append("disk_pressure")
     filesystem = os.statvfs(manifest["DATA_DIRECTORY"])
     if filesystem.f_files and filesystem.f_favail / filesystem.f_files < .10:

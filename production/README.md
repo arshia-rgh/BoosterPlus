@@ -4,6 +4,8 @@ This directory contains deployment configuration and operator tools only. Applic
 
 The owner-selected launch topology is one primary Ubuntu24.04 amd64 host with self-hosted TiDB/PD/TiKV, private SeaweedFS and authenticated TLS email, plus off-host encrypted backups and independent monitoring. One-host failure causes downtime; this is not HA. Local preparation does not qualify real deployment, recovery, mail, funds or capacity.
 
+The purchased host has 8 vCPU, 16 GB RAM and 150 GB disk. Select the explicit candidate [small-host budget](SMALL_HOST.md) for it; the default retains the earlier larger proposal. Host prerequisite checks alone never establish production capacity. Source access and initial host setup are recorded in [the host receipt](../docs/production-host-setup.md).
+
 ## First deployment and qualification
 
 Start with [owner requirements](OWNER_REQUIREMENTS.md), [signed release/first-install procedure](RELEASE.md), [mail](MAIL.md), [operations](OPERATIONS.md), [backup](BACKUP.md), [continuous SQL recovery](PITR.md) and [coordinated recovery/privacy](RECOVERY.md). Follow [server qualification](QUALIFICATION.md) and retain actual evidence in [the execution ledger](LAUNCH_EXECUTION.md).

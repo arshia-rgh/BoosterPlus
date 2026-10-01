@@ -63,6 +63,27 @@ def main(runtime=False):
                     BR_MASTER_KEY_FILE=str(directory / "master.key"), BR_SNAPSHOT_KEY_FILE=str(directory / "snapshot.key"))
         backup_model = json.loads(run(compose(pitr) + ["--profile", "tools", "config", "--format", "json"], dict(environment, **pitr)))
         check_model(backup_model, self_hosted=True, self_mail=True, pitr=True)
+        from capacity import SMALL, GIB, check_model as check_capacity, memory_limit
+        small = dict(pitr, HOST_PROFILE=SMALL)
+        small_model = json.loads(run(compose(small) + ["--profile", "tools", "config", "--format", "json"], dict(environment, **small)))
+        check_model(small_model, self_hosted=True, self_mail=True, pitr=True)
+        check_capacity(small_model, SMALL)
+        if sum(memory_limit(s) for s in small_model["services"].values()) != 107 * GIB // 8:
+            raise RuntimeError("Small-host peak budget changed; review host headroom before accepting")
+        for mutation in (
+            lambda m:m["services"]["tikv"].update(mem_limit=16 * GIB),
+            lambda m:m["services"]["scanner"].pop("mem_limit"),
+            lambda m:m["services"].pop("worker"),
+            lambda m:m["services"]["tidb"].update(volumes=[]),
+        ):
+            changed = copy.deepcopy(small_model)
+            mutation(changed)
+            try:
+                check_capacity(changed, SMALL)
+            except ValueError:
+                pass
+            else:
+                raise RuntimeError("Unsafe small-host budget/configuration mutation was accepted")
         for mutation in (lambda m:m["services"]["br"].update(read_only=False),
                          lambda m:m["services"]["br"].update(profiles=[]),
                          lambda m:m["services"]["pd"].update(networks={"data-cluster": {}, "backup-egress": {}})):
@@ -78,12 +99,14 @@ def main(runtime=False):
         configs.mkdir()
         (configs / "application.Caddyfile").write_text((ROOT / "gateway/Caddyfile").read_text())
         (configs / "Caddyfile").write_text((ROOT / "gateway/Caddyfile.mail").read_text())
-        for filename in ("objects.Caddyfile", "tidb.toml"):
+        for filename in ("objects.Caddyfile", "tidb.toml", "tidb.small.toml", "tikv.small.toml"):
             (configs / filename).write_text((ROOT / "config" / filename).read_text())
         validators = (
             ("mail", manifest["GATEWAY_IMAGE"], ["caddy", "validate", "--config", "/etc/caddy/Caddyfile"], "object-gateway"),
             ("objects", manifest["GATEWAY_IMAGE"], ["caddy", "validate", "--config", "/etc/caddy/objects.Caddyfile"], "object-gateway"),
             ("tidb", model["services"]["tidb"]["image"], ["--config=/etc/caddy/tidb.toml", "--config-check", "--config-strict"], "tidb"),
+            ("tidb-small", model["services"]["tidb"]["image"], ["--config=/etc/caddy/tidb.small.toml", "--config-check", "--config-strict"], "tidb"),
+            ("tikv-small", model["services"]["tikv"]["image"], ["--config=/etc/caddy/tikv.small.toml", "--config-check"], "tikv"),
         )
         for config, image, arguments, cert in validators if runtime else ():
             run(["docker", "run", "--rm", "--network", "none", "--user", "0",

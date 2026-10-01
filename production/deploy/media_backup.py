@@ -5,6 +5,7 @@ from pathlib import Path
 import tempfile
 import time
 import shutil
+from capacity import budget, selected
 
 from artifacts import bounded
 from backup import policy, restic, snapshot_id
@@ -44,8 +45,8 @@ def main(manifest):
         base = json.loads(bounded(root / (project + '-sql-snapshot.json')))
         if base.get('project') != project:
             raise ValueError('SQL base belongs to another project')
-        if shutil.disk_usage(root).free < 100 * 1024 ** 3:
-            raise ValueError('Media capture needs at least 100 GiB free; scratch is bounded to 32 GiB')
+        if shutil.disk_usage(root).free < budget(selected(manifest))["capture_free"]:
+            raise ValueError('Media capture needs the selected profile free-space reserve; scratch remains bounded to 32 GiB')
         # Scratch is private on the persistent filesystem: never consume tiny /tmp
         # or remove user-selected paths. TemporaryDirectory owns only this new tree.
         with tempfile.TemporaryDirectory(prefix='.media-capture-', dir=root) as name:

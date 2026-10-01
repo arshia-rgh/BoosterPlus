@@ -37,4 +37,8 @@ The domain remains pending. The owner confirmed there is no off-host backup dest
 
 ## Laptop replacement and recovery
 
+Subsequent source-access update: the owner explicitly approved creation of the dedicated unattended deploy key, then added it to GitHub with write access disabled. Verification and a direct clone of `main` at `715899ccc460c0912337e7927904c662a8affd81` succeeded, using GitHub's officially published Ed25519 host key. The full private qualification checkout is `/srv/playora-qualification/source`; the earlier interrupted upload attempts remain historical failures. Do not use the server key to push commits.
+
+The explicit candidate 16 GB profile subsequently passed 50 deployment preparation tests on both hosts, merged Compose budget/security mutations, pinned TiDB/TiKV configuration parsing and host resource prerequisites. The original 64 GB profile continues to reject this host; its earlier failed result is retained. No profile load, actual restore, live mail/payment or public deployment pass is inferred. Tool bootstrap encountered reproducible Go proxy TLS failures; diagnostic comparisons are underway with certificate verification retained.
+
 Keep an encrypted private-key backup and the passphrase in independent custody. For planned replacement, generate a new key on the new laptop, add only its public key through the working operator session, verify a separate connection, then remove the old key. For loss or compromise, use a separately held key or the provider console/rescue system and revoke the lost key. Confirm provider console access before relying on it. Never commit private keys, passphrases, cloud-init user data or provider credentials.

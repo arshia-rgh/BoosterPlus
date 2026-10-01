@@ -6,6 +6,7 @@ import platform
 import re
 import shutil
 import subprocess
+from capacity import DEFAULT, budget
 
 GIB = 1024 ** 3
 
@@ -18,19 +19,20 @@ def command(args):
     return result.stdout
 
 
-def evaluate(inventory):
+def evaluate(inventory, profile=DEFAULT):
     """Return actionable failures, never a capacity or availability guarantee."""
     failures = []
+    limits = budget(profile)
     if inventory["system"] != "Linux" or inventory["architecture"] not in ("x86_64", "amd64"):
         failures.append("Use an amd64 Linux host; the qualified scanner is amd64")
     if inventory["os_id"] != "ubuntu" or inventory["os_version"] != "24.04":
         failures.append("The initial host recipe targets Ubuntu Server 24.04 LTS")
-    if inventory["cpu_count"] < 16:
-        failures.append("Compact self-hosted sizing requires at least 16 CPU cores")
-    if inventory["memory_bytes"] < 60 * GIB:
-        failures.append("Compact self-hosted sizing requires a 64 GB RAM class host")
-    if inventory["disk_total_bytes"] < 900 * GIB or inventory["disk_free_bytes"] < 200 * GIB:
-        failures.append("Data filesystem needs a 1 TB class persistent disk and 200 GiB free")
+    if inventory["cpu_count"] < limits["cpus"]:
+        failures.append("Host CPU allocation is below the selected profile")
+    if inventory["memory_bytes"] < limits["memory"]:
+        failures.append("Host memory cannot fit the selected profile and its headroom")
+    if inventory["disk_total_bytes"] < limits["disk"] or inventory["disk_free_bytes"] < limits["startup_free"]:
+        failures.append("Data filesystem capacity/free space is below the selected profile")
     if inventory["filesystem"] not in ("ext4", "xfs"):
         failures.append("Use ext4 or XFS for the persistent data filesystem")
     version = re.fullmatch(r"v?(\d+)\.(\d+)\.(\d+)(?:[-+].*)?", inventory["compose_version"])
@@ -38,7 +40,7 @@ def evaluate(inventory):
         failures.append("Docker Compose 2.30.0 or newer is required for raw env files")
     if inventory["docker_os"] != "linux" or inventory["docker_arch"] not in ("x86_64", "amd64"):
         failures.append("Docker must target this Linux amd64 server")
-    if inventory["docker_cpus"] < 16 or inventory["docker_memory_bytes"] < 60 * GIB:
+    if inventory["docker_cpus"] < limits["cpus"] or inventory["docker_memory_bytes"] < limits["memory"]:
         failures.append("Docker does not have the planned CPU/RAM allocation")
     if not inventory["local_docker"]:
         failures.append("Host qualification requires a local Unix-socket Docker context")
@@ -47,7 +49,8 @@ def evaluate(inventory):
     return failures
 
 
-def inspect(data_directory):
+def inspect(data_directory, profile=DEFAULT):
+    budget(profile)
     path = Path(data_directory)
     if not path.is_absolute() or not path.is_dir() or path.is_symlink():
         raise ValueError("DATA_DIRECTORY must identify an existing absolute persistent directory")
@@ -71,9 +74,9 @@ def inspect(data_directory):
         "local_docker": endpoint.startswith("unix://"),
         "clock_synchronized": command(["timedatectl", "show", "--property=NTPSynchronized", "--value"]).strip() == "yes",
     }
-    failures = evaluate(inventory)
+    failures = evaluate(inventory, profile)
     # Bounded allowlisted fields only; docker info and context can contain secrets.
-    print(json.dumps({"inventory": inventory, "failures": failures}, indent=2))
+    print(json.dumps({"profile": profile, "inventory": inventory, "failures": failures}, indent=2))
     if failures:
         raise ValueError("Host qualification failed; address the reported requirements")
     print("Host prerequisites passed; load, TLS, firewall and recovery qualification remain required")
