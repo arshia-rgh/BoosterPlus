@@ -4,6 +4,8 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 
 ## Repository and delivery
 
+- Owner deployment authorization (1 October 2026): connect through the local `playora` SSH alias and prepare the purchased ParsPack Germany host (8 vCPU, 16 GB RAM, 150 GB provider-described NVMe) as the intended production host. The owner explicitly approved a key-based `playora` operator with passwordless sudo and an SSH-preserving firewall. Keep all launch qualification requirements; smaller-host capacity is unqualified until measured. Ask the owner for required provider-panel changes. Domain and off-host backup destination remain pending. See `docs/production-host-setup.md` for actual observations; this supersedes the previous SSH deferral.
+
 - Owner qualification update (30 September 2026): run heavy real-TiKV, load, restore and complete launch qualification on the deployment server because the workstation has insufficient disk. Continue local static/security/unit/configuration checks; record heavy checks as deferred, never passed. Self-hosted email is requested; preserve SMTP authentication/TLS and qualify DNS/reputation/delivery on the chosen host. The domain and SSH are still deferred until the deployment package is prepared.
 
 - Owner authorization (30 September 2026): resume and implement final-launch R10/R11. Prepare and qualify locally before requesting SSH for deployment. Target one primary server with self-hosted database/object storage and off-host backups; owner accepts primary-host failure downtime. Domain and production email are deferred inputs, not fabricated configuration. Earlier R10/R11 holds below are historical and superseded; actual live funds tests still need bounded transaction authorization.
