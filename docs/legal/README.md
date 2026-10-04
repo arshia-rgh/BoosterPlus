@@ -21,6 +21,14 @@ Account protection expressly includes seller reclamation, missing agreed access,
 
 This is a broad commercial commitment. Cases can arise after order completion; the application, review staffing and refund reserve must support it before the wording goes live. It is not a claim that every reported account problem has already been verified or must bypass fraud review.
 
+## Account damage compensation
+
+The owner's additional instruction covers harm caused by PLAYORA staff or boosters, including damaging losses or a lower WR. The Terms and help now distinguish monetary compensation for verified account harm from the existing full affected-order refund. A missing purchased WR guarantee does not prevent a damage claim, and reaching the target rank does not automatically defeat it. Ordinary match variance is distinguished from damage using starting-state, match and order evidence.
+
+Compensation is assessed individually, with written reasons, supported recovery/replacement costs and lasting harm considered. No arbitrary payout tariff, liability cap or automatic promise of a win in every match is invented. Restoration requires consent, outgoing fees are borne by PLAYORA, and an undisputed refund cannot be held until a damage settlement is accepted. Compensation is not implemented by editing these drafts; separate approval, accounting and payment qualification remain necessary.
+
+The owner also requested reassuring wording that harm/non-delivery is almost nonexistent. The drafts express the commitment to correct delivery and account protection, without asserting an unmeasured near-zero incident rate or an “almost always” success record. A future performance claim needs verified outcomes, a defined sample/period and clear incident definitions; neither policy wording nor automated tests establish real customer success rates.
+
 ## Defaults selected for review
 
 | Drafting choice | Proposed wording and rationale |

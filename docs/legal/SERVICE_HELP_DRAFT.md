@@ -18,7 +18,11 @@ Only when that condition is included in the package or accepted order. Its match
 
 **What if an agreed condition is not delivered?**
 
-You receive a 100% refund of the affected order's purchase amount under our Terms. Partial progress does not reduce this promise. You do not have to accept store credit, a replacement or another attempt instead of an eligible full refund.
+Our aim is to deliver exactly what we agreed and protect your account throughout the service. If an agreed condition is not delivered, you receive a 100% refund of the affected order's purchase amount under our Terms. Partial progress does not reduce this promise. You do not have to accept store credit, a replacement or another attempt instead of an eligible full refund.
+
+**What if your team damages my account or lowers my win rate?**
+
+If our staff or boosters cause verified account damage, we provide fair monetary compensation separately from any full order refund you are owed. This can include harm to rank or WR statistics, unauthorized use of in-game assets, lost access or restrictions caused by our actions. We review the starting account state, match history and order conditions, explain our findings and assess compensation case by case. You can report a WR concern even without a purchased WR guarantee; ordinary match losses do not automatically establish damage or a fixed payment per loss. Restoration requires your consent, and you can request a second review. See the Terms for the assessment and payment process.
 
 **Does24/7 mean instant completion?**
 

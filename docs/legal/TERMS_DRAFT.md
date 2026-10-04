@@ -36,9 +36,21 @@ Where win rate is included, the offer must explain which matches count, the meas
 
 An offering may involve playing on your account or playing together with you. Use the mode and secure access process specified in the order. Never put game credentials in ordinary messages or public screenshots. Do not share unrelated personal email access or financial credentials.
 
+Every order is handled with the aim of delivering exactly what we agreed and protecting your account throughout the service. If we fall short or cause verified harm, we take responsibility through our refund and compensation commitments.
+
 **If we fail to fulfill an agreed deliverable or condition of your order, you are entitled to a 100% refund of that order's purchase amount.** This includes a promised rank, win rate, hero/role restriction, quantity or guaranteed deadline that we do not meet. Partial work does not reduce this full-refund promise. An explicitly labelled estimate is not a guaranteed deadline; any change to an actual guarantee requires your agreement.
 
 If required customer access or availability is missing, we explain the problem and agree how to proceed. We cannot silently treat a paused order as completed. A repair, repeat service, extension or replacement is optional for you when a full refund is due; we will not force you to accept it instead.
+
+### Account damage caused by our service
+
+**If PLAYORA or a booster or staff member acting on our behalf damages your account while providing a service, we take responsibility and provide fair monetary compensation for the verified harm. This is separate from any full order refund you are entitled to.** Examples include damage to rank or win-rate statistics caused by our handling of the order, unauthorized spending or removal of in-game assets, loss of account access, or a restriction caused by our actions.
+
+For rank or win-rate concerns, we review the account's starting position, relevant match history, the agreed match scope and conditions, and the effect of matches played by our team. A lower win rate can be reviewed even if no separate WR guarantee was purchased. Competitive play can include losses: a single loss or temporary fluctuation is not automatically compensable damage, and this clause does not promise that every match will be won. We explain how the evidence distinguishes ordinary play from harm caused by our service; we do not dismiss a claim simply because the order's final rank was reached.
+
+The compensation amount is assessed case by case using the nature and extent of the damage, reasonable supported recovery or replacement costs, and any lasting loss. We explain our assessment and proposed monetary amount in writing; there is no universal payment per lost match or WR percentage point. We may offer restoration at our expense where feasible and with your consent, but we do not promise that a publisher can reverse statistics, restore items or remove a restriction. We will not force you to accept more gameplay, store credit or a replacement service instead of compensation for verified harm.
+
+Report the issue through your order's support conversation or support@playoragames.com. We review evidence from both you and our team, without requiring you to obtain records only we hold. The review, updates and appeal process below also applies to damage claims. Before a compensation transfer, we confirm its amount, supported crypto asset/network and verified destination; PLAYORA covers the outgoing fee so the agreed compensation is not reduced. We account separately for the order refund and account damage, avoid paying twice for the same loss, and do not cap compensation automatically at the order price or make an undisputed refund depend on settling the damage claim. Your rights under applicable law remain unaffected.
 
 ## 5. Shop orders
 
