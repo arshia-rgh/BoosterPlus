@@ -20,6 +20,7 @@ import (
 type GoogleIdentity struct {
 	Subject, Email  string
 	AuthenticatedAt time.Time
+	IssuedAt        time.Time
 }
 
 // GoogleProvider separates verified OIDC communication from transactional account linking.
@@ -54,7 +55,7 @@ func (g *oidcGoogle) AuthorizationURL(state, nonce, verifier string, portal Port
 	}
 	config := g.oauth
 	config.RedirectURL = g.origin + "/api/v1/auth/portals/" + string(portal) + "/google/callback"
-	return config.AuthCodeURL(state, oidc.Nonce(nonce), oauth2.S256ChallengeOption(verifier), oauth2.SetAuthURLParam("prompt", "select_account"), oauth2.SetAuthURLParam("max_age", "0"))
+	return config.AuthCodeURL(state, oidc.Nonce(nonce), oauth2.S256ChallengeOption(verifier), oauth2.SetAuthURLParam("prompt", "select_account"), oauth2.SetAuthURLParam("claims", `{"id_token":{"auth_time":{"essential":true}}}`))
 }
 func (g *oidcGoogle) Exchange(ctx context.Context, code, verifier, nonce string, portal Portal) (GoogleIdentity, error) {
 	if !portal.valid() {
@@ -71,7 +72,7 @@ func (g *oidcGoogle) Exchange(ctx context.Context, code, verifier, nonce string,
 		return GoogleIdentity{}, ErrInvalid
 	}
 	verified, verifyErr := g.verifier.Verify(ctx, raw)
-	if verifyErr != nil {
+	if verifyErr != nil || !recentGoogleTime(verified.IssuedAt, time.Now()) {
 		return GoogleIdentity{}, ErrInvalid
 	}
 	if !hmac.Equal([]byte(verified.Nonce), []byte(nonce)) || len(verified.Subject) == 0 || len(verified.Subject) > 255 {
@@ -93,7 +94,12 @@ func (g *oidcGoogle) Exchange(ctx context.Context, code, verifier, nonce string,
 	if emailErr != nil {
 		return GoogleIdentity{}, ErrInvalid
 	}
-	return GoogleIdentity{Subject: verified.Subject, Email: email, AuthenticatedAt: time.Unix(claims.AuthTime, 0)}, nil
+	return GoogleIdentity{Subject: verified.Subject, Email: email, AuthenticatedAt: time.Unix(claims.AuthTime, 0), IssuedAt: verified.IssuedAt}, nil
+}
+
+// recentGoogleTime validates provider timestamps without treating issued-at as auth-time.
+func recentGoogleTime(stamp, now time.Time) bool {
+	return !stamp.IsZero() && stamp.Add(RecentTTL).After(now) && !stamp.After(now.Add(time.Minute))
 }
 
 // StartGoogle stores a short-lived, browser-bound, one-use flow; verifier material is encrypted at rest.
@@ -277,7 +283,7 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 				return rotateErr
 			}
 		case "login":
-			if portal != PortalCustomer && (!assertion.AuthenticatedAt.Add(RecentTTL).After(s.now()) || assertion.AuthenticatedAt.After(s.now().Add(time.Minute))) {
+			if portal != PortalCustomer && !recentGoogleTime(assertion.IssuedAt, s.now()) {
 				return ErrRecent
 			}
 			if linked != nil {
@@ -334,7 +340,18 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 				old = p.Session.ID
 			}
 			var issueErr error
-			token, issueErr = s.issueSession(ctx, tx, account, old, portal)
+			// Google account-session age is optional and does not describe this
+			// nonce/PKCE-bound application sign-in. Staff still need PLAYORA MFA.
+			// Never promote token issuance into recent credential proof: sensitive
+			// actions require fresh auth_time or explicit email re-verification.
+			authenticatedAt := s.now()
+			if portal != PortalCustomer {
+				authenticatedAt = time.Unix(0, 0)
+				if recentGoogleTime(assertion.AuthenticatedAt, s.now()) {
+					authenticatedAt = assertion.AuthenticatedAt
+				}
+			}
+			token, issueErr = s.issueSessionAt(ctx, tx, account, old, portal, authenticatedAt)
 			if issueErr != nil {
 				return issueErr
 			}

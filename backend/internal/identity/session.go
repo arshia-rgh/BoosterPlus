@@ -47,6 +47,10 @@ func (s *Service) Authenticate(ctx context.Context, token string, portal Portal)
 }
 
 func (s *Service) issueSession(ctx context.Context, tx *ent.Tx, account *ent.User, oldSession string, portal Portal) (string, error) {
+	return s.issueSessionAt(ctx, tx, account, oldSession, portal, s.now())
+}
+
+func (s *Service) issueSessionAt(ctx context.Context, tx *ent.Tx, account *ent.User, oldSession string, portal Portal, authenticatedAt time.Time) (string, error) {
 	now := s.now()
 	if account.Suspended || !portal.permitsRole(account.Role) {
 		return "", ErrUnauthenticated
@@ -61,7 +65,7 @@ func (s *Service) issueSession(ctx context.Context, tx *ent.Tx, account *ent.Use
 	if account.Role != RoleCustomer {
 		lifetime = 12 * time.Hour
 	}
-	_, err := tx.AuthSession.Create().SetID(randomToken()).SetPortal(string(portal)).SetUserID(account.ID).SetTokenHash(s.sessionDigest(portal, token)).SetAuthVersion(account.AuthVersion).SetAuthenticatedAt(now).SetCreatedAt(now).SetLastSeenAt(now).SetExpiresAt(now.Add(lifetime)).Save(ctx)
+	_, err := tx.AuthSession.Create().SetID(randomToken()).SetPortal(string(portal)).SetUserID(account.ID).SetTokenHash(s.sessionDigest(portal, token)).SetAuthVersion(account.AuthVersion).SetAuthenticatedAt(authenticatedAt).SetCreatedAt(now).SetLastSeenAt(now).SetExpiresAt(now.Add(lifetime)).Save(ctx)
 	return token, err
 }
 

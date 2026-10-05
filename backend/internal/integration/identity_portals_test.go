@@ -245,10 +245,11 @@ func TestPortalGoogleStateAndRecentFirstFactor(t *testing.T) {
 	if _, err = f.service.FinishGoogle(t.Context(), nil, f.browser, state, "code", identity.PortalCustomer); !errors.Is(err, identity.ErrInvalid) {
 		t.Fatal("Google state swapped", err)
 	}
-	provider.assertion.AuthenticatedAt = time.Unix(f.clock.Load(), 0).Add(-identity.RecentTTL - time.Second)
+	provider.assertion.IssuedAt = time.Unix(f.clock.Load(), 0).Add(-identity.RecentTTL - time.Second)
 	if _, err = f.service.FinishGoogle(t.Context(), nil, f.browser, state, "code", identity.PortalAdmin); !errors.Is(err, identity.ErrRecent) {
-		t.Fatal("stale provider first factor accepted", err)
+		t.Fatal("stale provider assertion accepted", err)
 	}
+	provider.assertion.IssuedAt = time.Unix(f.clock.Load(), 0)
 	provider.assertion.AuthenticatedAt = time.Unix(f.clock.Load(), 0)
 	state = start()
 	token, err := f.service.FinishGoogle(t.Context(), nil, f.browser, state, "code", identity.PortalAdmin)
@@ -319,4 +320,95 @@ func TestPortalMigrationInvalidatesLegacyStateAndPreservesFactors(t *testing.T) 
 		t.Fatal(err)
 	}
 	check()
+}
+
+func TestPortalGoogleOptionalAuthTimePreservesSensitiveStepUp(t *testing.T) {
+	provider := &googleStub{assertion: identity.GoogleIdentity{Subject: "optional-auth-time", Email: "optional-time@example.test"}}
+	f := authDB(t, provider)
+	_, customer := f.login(t, provider.assertion.Email)
+	secret, _, customer := f.enroll(t, customer)
+	if err := f.service.BootstrapOwner(t.Context(), customer.User.ID, "google-optional-time-test"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.client.AuthIdentity.Create().SetID("optional-auth-time-link").SetUserID(customer.User.ID).SetProvider("google").SetSubject(provider.assertion.Subject).SetCreatedAt(time.Unix(f.clock.Load(), 0)).Save(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	for _, portal := range []identity.Portal{identity.PortalAdmin, identity.PortalBooster} {
+		for _, scenario := range []string{"missing", "old", "recent"} {
+			t.Run(string(portal)+"/"+scenario, func(t *testing.T) {
+				f.clock.Add(61)
+				now := time.Unix(f.clock.Load(), 0)
+				provider.assertion.IssuedAt = now
+				provider.assertion.AuthenticatedAt = time.Time{}
+				switch scenario {
+				case "old":
+					provider.assertion.AuthenticatedAt = now.Add(-24 * time.Hour)
+				case "recent":
+					provider.assertion.AuthenticatedAt = now.Add(-time.Minute)
+				}
+				location, err := f.service.StartGoogle(t.Context(), nil, f.browser, "127.0.0.1", "login", true, portal)
+				if err != nil {
+					t.Fatal(err)
+				}
+				u, err := url.Parse(location)
+				if err != nil {
+					t.Fatal(err)
+				}
+				token, err := f.service.FinishGoogle(t.Context(), nil, f.browser, u.Query().Get("state"), "fixture-code", portal)
+				if err != nil {
+					t.Fatal("fresh Google sign-in rejected because of account-session age", err)
+				}
+				p := f.principal(t, token, portal)
+				if err = identity.Require(p, string(portal)); !errors.Is(err, identity.ErrMFA) {
+					t.Fatal("staff capability granted before MFA", err)
+				}
+				code, err := totp.GenerateCode(secret, now)
+				if err != nil {
+					t.Fatal(err)
+				}
+				verified, err := f.service.VerifyMFA(t.Context(), p, code, "127.0.0.1")
+				if err != nil {
+					t.Fatal(err)
+				}
+				p = f.principal(t, verified.Token, portal)
+				if err = identity.Require(p, string(portal)); err != nil {
+					t.Fatal("verified staff sign-in rejected", err)
+				}
+				called := false
+				mutation := func(*ent.Tx, *identity.Principal) error { called = true; return nil }
+				err = f.service.AuthorizedTransaction(t.Context(), p, string(portal), true, mutation)
+				if scenario == "recent" {
+					if err != nil || !called || !p.Session.AuthenticatedAt.Equal(provider.assertion.AuthenticatedAt) {
+						t.Fatal("actual Google credential freshness not preserved", err)
+					}
+					return
+				}
+				if !errors.Is(err, identity.ErrRecent) || called {
+					t.Fatal("fresh ID token incorrectly granted sensitive credential freshness", err)
+				}
+				challenge, emailCode := f.request(t, p.User.Email, "reauth", p, portal)
+				result, err := f.service.VerifyEmail(t.Context(), challenge, emailCode, f.browser, "127.0.0.1", p, portal)
+				if err != nil {
+					t.Fatal(err)
+				}
+				p = f.principal(t, result.Token, portal)
+				if !p.NeedsMFA() {
+					t.Fatal("email step-up retained old second-factor proof")
+				}
+				f.clock.Add(61)
+				code, err = totp.GenerateCode(secret, time.Unix(f.clock.Load(), 0))
+				if err != nil {
+					t.Fatal(err)
+				}
+				verified, err = f.service.VerifyMFA(t.Context(), p, code, "127.0.0.1")
+				if err != nil {
+					t.Fatal(err)
+				}
+				p = f.principal(t, verified.Token, portal)
+				if err = f.service.AuthorizedTransaction(t.Context(), p, string(portal), true, mutation); err != nil || !called {
+					t.Fatal("email and fresh MFA did not unlock sensitive action", err)
+				}
+			})
+		}
+	}
 }

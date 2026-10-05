@@ -144,13 +144,23 @@ func TestGoogleOIDCValidatesSignedProtocol(t *testing.T) {
 		t.Fatal(err)
 	}
 	query := location.Query()
-	if query.Get("state") != "state" || query.Get("nonce") != "nonce" || query.Get("code_challenge") != oauth2.S256ChallengeFromVerifier(verifier) || query.Get("code_challenge_method") != "S256" || query.Get("redirect_uri") != "https://booster.example/api/v1/auth/portals/customer/google/callback" {
+	if query.Get("claims") != `{"id_token":{"auth_time":{"essential":true}}}` || query.Get("max_age") != "" || query.Get("prompt") != "select_account" || query.Get("state") != "state" || query.Get("nonce") != "nonce" || query.Get("code_challenge") != oauth2.S256ChallengeFromVerifier(verifier) || query.Get("code_challenge_method") != "S256" || query.Get("redirect_uri") != "https://booster.example/api/v1/auth/portals/customer/google/callback" {
 		t.Fatal("invalid OAuth binding")
 	}
-	for _, scenario := range []string{"valid", "wrong issuer", "wrong audience", "wrong nonce", "expired", "unverified email", "empty subject", "wrong authorized party", "multi audience without authorized party", "tampered signature"} {
+	for _, scenario := range []string{"valid", "old Google session", "fresh Google session", "missing issued at", "stale issued at", "future issued at", "wrong issuer", "wrong audience", "wrong nonce", "expired", "unverified email", "empty subject", "wrong authorized party", "multi audience without authorized party", "tampered signature"} {
 		t.Run(scenario, func(t *testing.T) {
 			claims := map[string]any{"iss": issuer, "sub": "stable-subject", "aud": "test-client", "exp": time.Now().Add(time.Hour).Unix(), "iat": time.Now().Unix(), "nonce": "nonce", "email": "person@example.test", "email_verified": true}
 			switch scenario {
+			case "old Google session":
+				claims["auth_time"] = time.Now().Add(-24 * time.Hour).Unix()
+			case "fresh Google session":
+				claims["auth_time"] = time.Now().Unix()
+			case "missing issued at":
+				delete(claims, "iat")
+			case "stale issued at":
+				claims["iat"] = time.Now().Add(-RecentTTL - time.Minute).Unix()
+			case "future issued at":
+				claims["iat"] = time.Now().Add(2 * time.Minute).Unix()
 			case "wrong issuer":
 				claims["iss"] = "https://evil.example"
 			case "wrong audience":
@@ -184,10 +194,13 @@ func TestGoogleOIDCValidatesSignedProtocol(t *testing.T) {
 				raw = raw[:len(raw)-10] + "AAAAAAAAAA"
 			}
 			token.Store(raw)
-			assertion, exchangeErr := provider.Exchange(t.Context(), "code", verifier, "nonce", PortalCustomer)
-			if scenario == "valid" {
-				if exchangeErr != nil || assertion.Subject != "stable-subject" {
+			assertion, exchangeErr := provider.Exchange(t.Context(), "code", verifier, "nonce", PortalAdmin)
+			if scenario == "valid" || scenario == "old Google session" || scenario == "fresh Google session" {
+				if exchangeErr != nil || assertion.Subject != "stable-subject" || !recentGoogleTime(assertion.IssuedAt, time.Now()) {
 					t.Fatal("valid token rejected", exchangeErr)
+				}
+				if scenario != "fresh Google session" && recentGoogleTime(assertion.AuthenticatedAt, time.Now()) {
+					t.Fatal("token issuance fabricated recent Google credential proof")
 				}
 			} else if !errors.Is(exchangeErr, ErrInvalid) {
 				t.Fatal("invalid token accepted", exchangeErr)
