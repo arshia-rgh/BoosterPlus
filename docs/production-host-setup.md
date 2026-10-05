@@ -17,7 +17,7 @@ Connect as the operator with `ssh -l playora playora`. The owner can later chang
 - Initial cloud-init final stage failed because the provider's shell script called unavailable `history`. The private first-boot journal is retained under `/root/playora-host-evidence/`; package installation completed. Do not rerun cloud-init user scripts or erase the historical failure.
 - Docker Engine 29.8.2 and Compose 5.5.1 installed from Docker's signed Ubuntu repository; signing-key fingerprint checked. Installed package versions retained privately. Daemon log rotation is bounded and live restore is enabled.
 - Go 1.27.1 and Node 24.21.0 installed under `/opt/playora-tools/` from official HTTPS releases with SHA256 verification. These versions match the repository. npm reports 11.19.0.
-- UFW enabled with default incoming deny/outgoing allow and SSH 22 allowed for IPv4/IPv6. Only SSH is publicly listening; the DNS stub is loopback-only. Docker-published ports require separate verification because Docker forwarding is not governed solely by UFW input rules. No application ports have been exposed.
+- UFW enabled with default incoming deny/outgoing allow and SSH 22 allowed for IPv4/IPv6. At the initial receipt only SSH was publicly listening; the DNS stub is loopback-only. Docker-published ports require separate verification because Docker forwarding is not governed solely by UFW input rules. The4October bootstrap update below records subsequent web exposure.
 - TCP connections to Google's inbound SMTP on port 25 succeed over IPv4 and IPv6; no message was sent. This does not qualify inbox delivery, DNS, reputation, authentication, TLS or relay policy.
 - Private directories `/srv/playora` and `/srv/playora-qualification` belong to the operator and use mode 0700. No production database, runtime secrets, mail accounts, public website or funds flow has been initialized.
 
@@ -33,7 +33,7 @@ The unchanged `host-check` failed on the expected four old-sizing assertions (CP
 
 The exact pinned PD/TiKV/TiDB8.5.7 images were downloaded. Restricted, no-network/non-root PD `--version` execution passed. The initial disposable hello-world attempt timed out on Docker registry TLS; later registry probes and pinned image pulls succeeded. Source transfers still showed SSH latency/retransmissions. No arbitrary registry mirror, TLS bypass, database service or application listener was introduced.
 
-The domain remains pending. The owner confirmed there is no off-host backup destination yet. Select an independent destination and recovery-key custody before initializing backups; provider snapshots alone are not a demonstrated application restore. PTR must use the eventual mail hostname, so do not request an arbitrary PTR value now. Domain/mail/OAuth, signed CI artifacts, alert delivery, bounded live financial tests and owner activation remain open.
+On4October the owner selected `playoragames.com` through Server.ir and supplied an external contact inbox stored privately. Cloudflare delegation, website/mail A records and `mail.playoragames.com` forward/PTR agreement were independently verified on4October. The owner is considering ParsPack automatic backups; their capabilities remain unverified and no off-host application backup destination is configured. Select an independent destination and recovery-key custody before initializing backups; provider snapshots alone are not a demonstrated application restore. Domain/mail/OAuth, signed CI artifacts, alert delivery, bounded live financial tests and owner activation remain open.
 
 ## Subsequent source access and qualification
 
@@ -58,3 +58,15 @@ To reverse the network adjustment during a planned maintenance window, first ens
 ## Laptop replacement and recovery
 
 Keep an encrypted private-key backup and the passphrase in independent custody. For planned replacement, generate a new key on the new laptop, add only its public key through the working operator session, verify a separate connection, then remove the old key. For loss or compromise, use a separately held key or the provider console/rescue system and revoke the lost key. Confirm provider console access before relying on it. Never commit private keys, passphrases, cloud-init user data or provider credentials.
+
+## 4 October — isolated public HTTPS preparation
+
+The owner confirmed Cloudflare activation and ParsPack PTR. Both public resolvers
+1.1.1.1 and8.8.8.8 confirm the expected DNS. An isolated maintenance-only Caddy
+project now owns ports80/443; UFW preserves22 and permits80/443. Public SMTP25
+remains closed. Valid publicly trusted certificates cover website and mail, with
+503 maintenance and404 responses respectively. No application/data network is
+attached. Production data directories and private cluster identities were
+prepared offline; no production database, mail daemon or application started.
+Certificate renewal, actual mail delivery and application activation are open.
+See `production/DOMAIN_SETUP.md`; protected contact/runtime values stay on host.

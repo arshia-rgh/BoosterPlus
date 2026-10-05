@@ -4,7 +4,7 @@ import { authURL } from "./identity-fixtures";
 import { qualifyOrderWorkspace } from "./order-workspace-journey";
 import { availabilityJourney } from "./availability-journey";
 import { randomUUID } from "node:crypto";
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page, type Route } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { signIn, enroll, fixture } from "./identity-fixtures";
 import { sessionSchema } from "../../app/identity/api";
@@ -472,8 +472,40 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
         exact: true,
       }),
     ).toBeVisible();
-    await buyer.goto(`/games/${slug}/packages/starter`);
+    // Hold application scripts to reproduce a slow first load: server-rendered
+    // controls must remain disabled instead of accepting choices React loses.
+    let resumeScripts = () => {};
+    const scriptsReady = new Promise<void>((resolve) => {
+      resumeScripts = resolve;
+    });
+    const holdScripts = async (route: Route) => {
+      await scriptsReady;
+      await route.continue();
+    };
+    await buyer.route("**/assets/*.js", holdScripts);
+    try {
+      await buyer.goto(`/games/${slug}/packages/starter`, {
+        waitUntil: "commit",
+      });
+      await expect(buyer.getByLabel("Play mode (required)")).toBeDisabled();
+      await expect(
+        buyer.getByRole("button", { name: "Check selections", exact: true }),
+      ).toBeDisabled();
+      await buyer
+        .locator(".dynamic-form")
+        .screenshot({ path: info.outputPath("package-preparing.png") });
+    } finally {
+      resumeScripts();
+    }
+    await expect(buyer.getByLabel("Play mode (required)")).toBeEnabled();
+    await buyer.unroute("**/assets/*.js", holdScripts);
     await buyer.getByLabel("Play mode (required)").selectOption("solo");
+    await expect(
+      buyer.getByRole("complementary", { name: "Selection summary" }),
+    ).toContainText("Solo");
+    await buyer
+      .locator(".dynamic-form")
+      .screenshot({ path: info.outputPath("package-ready.png") });
     await buyer
       .getByRole("button", { name: "Check selections", exact: true })
       .click();

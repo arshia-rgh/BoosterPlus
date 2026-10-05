@@ -1,6 +1,8 @@
 [log]
 level = "warn"
 enable-slow-log = false
+# Keep disabled query logging compatible with the read-only root filesystem.
+slow-query-file = "/dev/null"
 [security]
 ssl-ca = "/certs/ca.crt"
 ssl-cert = "/certs/server.crt"

@@ -49,15 +49,21 @@ def initialize(commit, destination):
     print('Private qualification packet created; every requirement starts pending')
 
 
-def inspect(root, commit, at=None):
+def inspect(root, commit, at=None, *, initial_launch=False):
     root = Path(root)
     packet = json.loads(bounded(root / 'qualification.json'))
     if packet.get('format') != 1 or packet.get('commit') != commit or not re.fullmatch(r'[a-f0-9]{40}', commit) or set(packet.get('checks', {})) != set(REQUIREMENTS):
         raise ValueError('Qualification must cover every requirement on the exact release')
     at = at or datetime.now(timezone.utc)
     failures = []
+    recovery_deferred = False
     for key, check in packet['checks'].items():
-        if check.get('status') != 'passed' or not isinstance(check.get('operator'), str) or not check['operator'].strip() or not check.get('evidence'):
+        # This is one recorded owner scope change, never a generic skip list.
+        deferred = (initial_launch and key == 'recovery'
+                    and check.get('status') == 'owner_deferred'
+                    and check.get('owner_decision') == '2026-10-04-defer-backups-until-after-launch'
+                    and check.get('risk') == 'primary-host-loss-may-lose-all-data')
+        if (check.get('status') != 'passed' and not deferred) or not isinstance(check.get('operator'), str) or not check['operator'].strip() or not check.get('evidence'):
             failures.append(key)
             continue
         try:
@@ -73,9 +79,11 @@ def inspect(root, commit, at=None):
                     raise ValueError('Evidence cannot escape its packet')
                 if hashlib.sha256(bounded(target, 64 << 20)).hexdigest() != item['sha256']:
                     raise ValueError('Evidence integrity mismatch')
+            if deferred:
+                recovery_deferred = True
         except (ValueError, KeyError, TypeError, OSError):
             failures.append(key)
-    for key, limit in (('rpo_seconds', 900), ('rto_seconds', 14400)):
+    for key, limit in (() if recovery_deferred else (('rpo_seconds', 900), ('rto_seconds', 14400))):
         value = packet.get('measurements', {}).get(key)
         if type(value) not in (int, float) or not 0 <= value <= limit:
             failures.append(key)
@@ -87,12 +95,16 @@ def main():
     directory = os.environ['QUALIFICATION_DIRECTORY']
     if sys.argv[1] == 'init':
         initialize(commit, directory)
-    elif sys.argv[1] == 'check':
-        failures = inspect(directory, commit)
+    elif sys.argv[1] in ('check', 'initial-launch-check'):
+        initial = sys.argv[1] == 'initial-launch-check'
+        failures = inspect(directory, commit, initial_launch=initial)
         if failures:
             print('Launch evidence incomplete: ' + ', '.join(failures))
             raise SystemExit(1)
-        print('Evidence packet complete and integrity-checked; this does not independently attest manual claims or enable sales')
+        if initial:
+            print('Initial launch evidence checked under owner scope; inspect recovery deferral separately. This is not full R10/R11 completion and does not enable sales.')
+        else:
+            print('Evidence packet complete and integrity-checked; this does not independently attest manual claims or enable sales')
     else:
         raise ValueError('Choose init or check')
 

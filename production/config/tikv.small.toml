@@ -1,17 +1,23 @@
-# Below the container's 3584 MiB ceiling; measurement remains required.
-memory-usage-limit = "2816MB"
+# Below the container's 4096 MiB ceiling; measurement remains required.
+memory-usage-limit = "3072MB"
 [log]
 level = "warn"
 [storage]
 reserve-space = "10GB"
 scheduler-worker-pool-size = 2
 [storage.block-cache]
-capacity = "1GB"
+capacity = "512MB"
 [readpool.unified]
 min-thread-count = 1
 max-thread-count = 2
 [raft-engine]
 memory-limit = "128MB"
+# The soft process target does not cap RocksDB memtables. Bound these
+# separately so repeated DDL/imports retain headroom below the 4 GiB cgroup.
+[rocksdb]
+write-buffer-limit = "256MB"
+[import]
+num-threads = 2
 [security]
 ca-path = "/certs/ca.crt"
 cert-path = "/certs/server.crt"

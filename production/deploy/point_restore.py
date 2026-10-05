@@ -133,7 +133,7 @@ def restore_locked(manifest, target, identifier, acknowledgement, bundle):
     if set(restore_credentials) - {'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_DEFAULT_REGION'} or not restore_credentials.get('AWS_ACCESS_KEY_ID') or not restore_credentials.get('AWS_SECRET_ACCESS_KEY') or restore_credentials['AWS_ACCESS_KEY_ID'] == source_credentials['AWS_ACCESS_KEY_ID']:
         raise ValueError('Use a separate read-only SQL recovery identity; never the primary backup writer')
     candidate = images(manifest, signed)
-    candidate.update(DEPLOY_PROJECT=project, DATA_DIRECTORY=str(installation), MAIL_MODE='external', PITR_ENV_FILE=os.environ['PITR_RESTORE_ENV_FILE'],
+    candidate.update(DEPLOY_PROJECT=project, DATA_DIRECTORY=str(installation), MAIL_MODE='external', WEBMAIL_ENABLED='false', PITR_ENV_FILE=os.environ['PITR_RESTORE_ENV_FILE'],
         BACKEND_ENV_FILE=str(runtime / 'backend.env'), MIGRATION_ENV_FILE=str(runtime / 'migration.env'), FRONTEND_ENV_FILE=str(runtime / 'frontend.env'))
     environment = dict(os.environ, **candidate)
     model = json.loads(call(compose(candidate) + ['--profile', 'tools', 'config', '--format', 'json'], environment))

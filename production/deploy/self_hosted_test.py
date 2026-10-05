@@ -3,6 +3,7 @@
 The compact fixture has explicitly reduced memory/disk limits. It qualifies
 protocol/security behavior only, not production capacity, availability or RPO.
 """
+import argparse
 import json
 import os
 from pathlib import Path
@@ -40,10 +41,51 @@ def wait(arguments, environment, seconds=180):
     return call(arguments, environment)
 
 
-def main():
+def host_test_access(model):
+    """Publish only loopback fixture endpoints, including on Docker 29.
+
+    Docker does not publish ports for containers attached exclusively to
+    internal networks. This bridge is ONLY for synthetic qualification data;
+    production configuration is validated before fixture adaptations and keeps
+    its internal networks. No production/provider credentials enter this model.
+    """
+    endpoints = {"tidb": (4000, "14001"), "scanner": (3310, "13310"),
+                 "integration-storage": (8333, "8333")}
+    if "qualification-access" in model["networks"]:
+        raise ValueError("Qualification access network must be created by the fixture")
+    for name, (target, published) in endpoints.items():
+        expected = [{"target": target, "published": published, "host_ip": "127.0.0.1"}]
+        if model["services"][name].get("ports") != expected:
+            raise ValueError("Qualification endpoints must bind only the documented loopback ports")
+    model["networks"]["qualification-access"] = {"internal": False}
+    for name in endpoints:
+        model["services"][name]["networks"]["qualification-access"] = {}
+
+
+def run_integration(arguments, environment, project):
+    """Retain private per-scenario evidence on success, failure or timeout."""
+    evidence = ROOT / ".cache" / (project + "-integration.log")
+    evidence.parent.mkdir(exist_ok=True)
+    descriptor = os.open(evidence, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    print("Running real-TiKV business checks; private per-scenario evidence: " + evidence.name, flush=True)
+    with os.fdopen(descriptor, "w") as output:
+        result = subprocess.run(arguments, env=environment, cwd=ROOT.parent / "backend",
+                                stdout=output, stderr=subprocess.STDOUT, timeout=14700, check=False)
+    if result.returncode:
+        raise RuntimeError("Real-TiKV business checks failed; inspect the private per-scenario evidence")
+
+
+def fixture_cpu_limit(service, available):
+    """Hosted private-repository runners can have fewer CPUs than the VPS."""
+    return min({"tidb": 2, "tikv": 3}.get(service, 1), max(1, available or 1))
+
+
+def main(*, protocol_only=False):
     with tempfile.TemporaryDirectory(prefix="playora-tikv-qualification-") as name:
         directory = Path(name)
         manifest = app_fixture(directory)
+        call(["docker", "volume", "create", "--label", "boosterplus.purpose=qualification-signatures",
+              manifest["STAGING_SIGNATURE_VOLUME"]], dict(os.environ))
         installation = prepare(directory / "installation", qualification=True)
         credentials = read_env(installation / "secrets/provisioned.env")
         backend = read_env(manifest["BACKEND_ENV_FILE"])
@@ -54,20 +96,36 @@ def main():
         environment = dict(os.environ, **manifest)
         model = json.loads(call(compose(manifest) + ["--profile", "tools", "config", "--format", "json"], environment).stdout)
         check_model(model, self_hosted=True)
-        # Adapt only isolated fixture ownership and sizing; production policy was checked above.
-        for service, memory in (("pd", 384 << 20), ("tikv", 1536 << 20), ("tidb", 2 << 30), ("storage", 384 << 20), ("object-gateway", 128 << 20)):
-            model["services"][service].update(user="0:0", mem_limit=memory, cpus=1)
+        # The generated private files belong to the invoking non-root operator.
+        # UID 0 with all capabilities dropped cannot read another UID's 0700
+        # directories, and upstream storage initialization must not run as root.
+        # CI may use UID 1001; deployment uses the production UID 1000.
+        if os.getuid() == 0:
+            raise ValueError("Run isolated data qualification as a non-root operator")
+        fixture_user = f"{os.getuid()}:{os.getgid()}"
+        for service, memory in (("pd", 384 << 20), ("tikv", 4 << 30), ("tidb", 2 << 30), ("storage", 384 << 20), ("object-gateway", 128 << 20)):
+            # Match the selected small-host SQL/KV CPU ceilings; the full
+            # domain suite is not a one-CPU database capacity benchmark.
+            cpus = fixture_cpu_limit(service, os.cpu_count())
+            model["services"][service].update(user=fixture_user, mem_limit=memory, cpus=cpus)
         tidb_config = directory / "tidb.toml"
         tidb_config.write_text((ROOT / "config/tidb.toml").read_text().replace("6442450944", "1073741824"))
         tikv_config = directory / "tikv.toml"
-        tikv_config.write_text((ROOT / "config/tikv.toml").read_text().replace('"10GB"', '"64MB"'))
+        # Use the actual small-host TiKV memory budget. A 1536 MiB test cap
+        # repeatedly killed upstream startup even with reduced cache targets.
+        tikv_config.write_text((ROOT / "config/tikv.small.toml").read_text()
+                               .replace('"10GB"', '"64MB"'))
         for service, path in (("tidb", tidb_config), ("tikv", tikv_config)):
             for volume in model["services"][service]["volumes"]:
                 if volume["target"] == "/config/" + service + ".toml":
                     volume["source"] = str(path)
         # A small test disk must not cause preallocation of hundreds of empty volumes.
         storage_command = model["services"]["storage"]["command"]
-        storage_command[storage_command.index("-volume.max=0")] = "-volume.max=2"
+        # The bucket and the filer's own metadata log use separate collections.
+        # Upstream grows seven volumes per collection; a two-volume ceiling
+        # let the S3 probe pass while starving the internal log collection.
+        storage_command[storage_command.index("-volume.max=0")] = "-volume.max=16"
+        storage_command[storage_command.index("-master.volumeSizeLimitMB=1024")] = "-master.volumeSizeLimitMB=64"
         storage_command[storage_command.index("-volume.minFreeSpace=20")] = "-volume.minFreeSpace=1"
         model["volumes"]["scanner-data"] = {"external": True, "name": "boosterplus-qualification-signatures"}
         # These listeners exist only in this random disposable fixture. The full
@@ -85,6 +143,7 @@ def main():
             "networks": {"data-client": {}},
         }
         model["volumes"]["integration-objects"] = {}
+        host_test_access(model)
         fixture = directory / "compose.json"
         private_write(fixture, json.dumps(model))
         command = ["docker", "compose", "--project-name", manifest["DEPLOY_PROJECT"], "-f", str(fixture)]
@@ -112,18 +171,39 @@ def main():
             call(command + ["up", "-d", "pd", "tikv", "tidb", "storage"], environment)
             wait(migrations + ["verify"], environment)
             wait(dependencies + ["check"], environment)
+            print("Real TiKV migration/history, verified TLS, private S3/scanner round trip and restart regression passed", flush=True)
             test_environment = dict(os.environ, GOSUMDB="sum.golang.org",
                                     TEST_DATABASE_DSN=credentials["ADMIN_DATABASE_DSN"].replace("tidb:4000", "127.0.0.1:14001"),
                                     TEST_MEDIA_S3_SECRET_KEY=integration_secret, SSL_CERT_FILE=str(installation / "pki/ca.crt"))
             # Run the SAME complete domain/concurrency suite against actual TiKV;
             # fixture storage/scanner keep its existing deterministic boundaries.
-            call(["go", "test", "-race", "-count=1", "-timeout=40m", "-tags=integration", "./internal/integration/..."],
-                 test_environment, timeout=2700, cwd=ROOT.parent / "backend")
-            print("Real TiKV migration/history, verified TLS, private S3/scanner round trip and restart regression passed")
-            print("Complete race-enabled business integration suite passed against the disposable real-TiKV cluster")
+            # Measured compact-host scenarios rebuild the full schema in about
+            # 40-50s each. The 242 top-level tests also include isolated subtests;
+            # 218 completed near the old three-hour aggregate limit. Reserve
+            # bounded headroom without changing individual assertions or SLOs.
+            arguments = ["go", "test", "-race", "-count=1", "-timeout=240m", "-v", "-failfast", "-tags=integration"]
+            if protocol_only:
+                # Fast, explicitly separate diagnostic before the complete gate:
+                # this real case exercises host SQL/TLS, S3 and scanner access.
+                arguments = ["go", "test", "-race", "-count=1", "-timeout=5m", "-v", "-failfast", "-tags=integration",
+                             "-run", "^TestPrivateMediaRealStorageScannerAndAudience$"]
+            run_integration(arguments + ["./internal/integration/..."], test_environment, manifest["DEPLOY_PROJECT"])
+            if protocol_only:
+                print("Focused protocol smoke passed; complete business integration qualification remains REQUIRED")
+            else:
+                print("Complete race-enabled business integration suite passed against the disposable real-TiKV cluster")
+        except BaseException:
+            # Preserve failure diagnostics BEFORE disposable containers vanish.
+            # Vendor output can contain generated credentials: never print it.
+            diagnostics = call(command + ["logs", "--no-color", "--tail", "100"], environment, must_succeed=False)
+            private_write(ROOT / ".cache" / (manifest["DEPLOY_PROJECT"] + "-services.log"),
+                          diagnostics.stdout + diagnostics.stderr)
+            raise
         finally:
             call(command + ["down", "--volumes", "--remove-orphans"], environment)
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--protocol-only", action="store_true", help="Run focused protocol diagnostics, never full qualification")
+    main(protocol_only=parser.parse_args().protocol_only)

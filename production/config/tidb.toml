@@ -1,6 +1,8 @@
 [log]
 level = "warn"
 enable-slow-log = false
+# TiDB initializes this sink even when disabled; the root filesystem is read-only.
+slow-query-file = "/dev/null"
 [security]
 ssl-ca = "/certs/ca.crt"
 ssl-cert = "/certs/server.crt"

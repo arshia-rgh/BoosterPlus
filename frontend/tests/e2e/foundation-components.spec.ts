@@ -23,6 +23,69 @@ test.afterAll(async () => {
   await server.close();
 });
 
+test("selected record sections stay readable inside the customer theme", async ({
+  page,
+}, info) => {
+  await page.goto(`${origin}/themed-record`);
+  for (const width of [320, 768, 1280]) {
+    await page.setViewportSize({ width, height: 800 });
+    for (const section of ["Messages", "Overview"]) {
+      const tab = page.getByRole("link", { name: section, exact: true });
+      await tab.click();
+      await expect(tab).toHaveAttribute("aria-current", "page");
+      await tab.hover();
+      expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+      await tab.focus();
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Shift+Tab");
+      await expect(tab).toBeFocused();
+      expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth),
+      ).toBeLessThanOrEqual(width);
+      await page.screenshot({
+        path: info.outputPath(`record-${section}-${String(width)}.png`),
+        fullPage: true,
+      });
+    }
+  }
+});
+
+test("current and restored form edits survive unrelated saved drafts", async ({
+  page,
+}, info) => {
+  await page.goto(`${origin}/configuration`);
+  const mode = page.getByLabel("Play mode (required)");
+  const summary = page.getByRole("complementary", {
+    name: "Selection summary",
+  });
+  for (const restore of [false, true]) {
+    if (restore) {
+      await page
+        .getByRole("button", { name: "Restore this form's saved draft" })
+        .click();
+      await expect(mode).toHaveValue("duo");
+    }
+    await mode.selectOption("solo");
+    await page
+      .getByRole("button", { name: "Update unrelated saved draft" })
+      .click();
+    await expect(mode).toHaveValue("solo");
+    await expect(summary).toContainText("Solo");
+  }
+  for (const width of [320, 768, 1280]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+    await page.screenshot({
+      path: info.outputPath(`draft-retained-${String(width)}.png`),
+      fullPage: true,
+    });
+  }
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
 test("foundation variants, field-linked errors and keyboard table scrolling", async ({
   page,
 }, info) => {

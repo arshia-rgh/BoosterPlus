@@ -3,6 +3,11 @@ SHELL := /bin/sh
 .PHONY: help host-check validate preflight config-check pull up status logs smoke migrate-status migrate-plan migrate-up release rollback backup backup-verify restore-drill restore-point-drill pre-commit staging-test docker-build
 .PHONY: data-prepare artifact-sign artifact-verify release-resume rollback-resume backup-init backup-recover
 .PHONY: monitor monitor-notify monitor-status dashboard mail-prepare
+.PHONY: webmail-prepare webmail-open
+webmail-prepare:
+	python3 deploy/manage.py webmail-prepare
+webmail-open:
+	python3 deploy/open_webmail.py
 .PHONY: media-backup pitr-start pitr-status pitr-snapshot
 help host-check data-prepare mail-prepare artifact-sign artifact-verify validate preflight config-check pull up status logs smoke migrate-status migrate-plan migrate-up release release-resume rollback rollback-resume backup backup-init backup-verify backup-recover restore-drill restore-point-drill monitor monitor-notify monitor-status dashboard media-backup pitr-start pitr-status pitr-snapshot:
 	python3 deploy/manage.py $@
@@ -10,9 +15,11 @@ docker-build:
 	docker build -t boosterplus-gateway:local gateway
 staging-test:
 	python3 -u deploy/staging.py
-.PHONY: self-hosted-test
+.PHONY: self-hosted-test self-hosted-smoke
 self-hosted-test:
 	python3 -u deploy/self_hosted_test.py
+self-hosted-smoke:
+	python3 -u deploy/self_hosted_test.py --protocol-only
 .PHONY: preparation-check config-test runtime-config-test infrastructure-audit
 infrastructure-audit:
 	python3 -u deploy/scan_infrastructure.py
@@ -39,8 +46,10 @@ watchdog:
 load-test:
 	python3 deploy/load.py
 
-.PHONY: qualification-init qualification-check
+.PHONY: qualification-init qualification-check initial-launch-check
 qualification-init:
 	python3 deploy/qualification.py init
 qualification-check:
 	python3 deploy/qualification.py check
+initial-launch-check:
+	python3 deploy/qualification.py initial-launch-check

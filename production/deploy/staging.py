@@ -80,9 +80,13 @@ def prepare(directory):
     write(certs / "extensions", "subjectAltName=DNS:localhost,DNS:tidb,DNS:storage-tls,DNS:mailpit,IP:127.0.0.1\nextendedKeyUsage=serverAuth\n")
     for args in commands:
         subprocess.run(["openssl", *args], cwd=certs, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    # Bind-mounted fixture certificates are readable by non-root containers;
-    # their parent directory remains private and is removed after the drill.
-    (certs / "server.key").chmod(0o444)
+    # Disposable read-only bind mounts must work across host/container UIDs,
+    # including an operator's private umask. The enclosing staging directory and
+    # CA signing key remain private; none of these identities is used in production.
+    certs.chmod(0o755)
+    for name in ("ca.crt", "server.crt", "server.key"):
+        (certs / name).chmod(0o444)
+    (certs / "ca.key").chmod(0o600)
     auth, proxy, vault, database, storage = [secrets.token_hex(32) for _ in range(5)]
     https_port = free_port()
     manifest = {

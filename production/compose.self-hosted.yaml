@@ -27,7 +27,7 @@ services:
     volumes: ["${DATA_DIRECTORY:?}/pki/ca.crt:/certs/ca.crt:ro"]
   pd:
     <<: *data
-    image: pingcap/pd:v8.5.7@sha256:c388050b6c2585ca168b0bf70ed891396fefa7387a21b326d2d15a0d2b4a4637
+    image: pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef
     command: ["--name=pd", "--data-dir=/data", "--config=/config/pd.toml", "--client-urls=https://0.0.0.0:2379", "--peer-urls=https://0.0.0.0:2380", "--advertise-client-urls=https://pd:2379", "--advertise-peer-urls=https://pd:2380", "--initial-cluster=pd=https://pd:2380"]
     volumes:
       - ${DATA_DIRECTORY:?}/data/pd:/data
@@ -38,7 +38,7 @@ services:
     cpus: 2
   tikv:
     <<: *data
-    image: pingcap/tikv:v8.5.7@sha256:0f89f2be401b3fc06ac96aebcc9f11daaab12a4b0ae89b877440db7e2ad795bf
+    image: pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69
     command: ["--addr=0.0.0.0:20160", "--advertise-addr=tikv:20160", "--status-addr=0.0.0.0:20180", "--pd-endpoints=https://pd:2379", "--data-dir=/data", "--config=/config/tikv.toml"]
     volumes:
       - ${DATA_DIRECTORY:?}/data/tikv:/data
@@ -50,8 +50,9 @@ services:
     cpus: 8
   tidb:
     <<: *data
-    image: pingcap/tidb:v8.5.7@sha256:41708a564e47e96d346fed433c3b9bc40d1950fdcc9c768812daeff6aadd930c
-    command: ["--store=tikv", "--path=https://pd:2379", "--config=/config/tidb.toml", "--config-strict", "--initialize-sql-file=/secrets/initialize.sql", "--temp-dir=/data/tmp"]
+    image: pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5
+    # TiDB expects host:port here; cluster TLS is mandatory in tidb.toml.
+    command: ["--store=tikv", "--path=pd:2379", "--advertise-address=tidb", "--config=/config/tidb.toml", "--config-strict", "--initialize-sql-file=/secrets/initialize.sql", "--temp-dir=/data/tmp"]
     volumes:
       - ${DATA_DIRECTORY:?}/data/tidb:/data
       - ${DATA_DIRECTORY:?}/pki/tidb:/certs:ro
@@ -63,7 +64,7 @@ services:
     cpus: 4
   storage:
     <<: *data
-    image: chrislusf/seaweedfs:4.46@sha256:08d516132314207d10c8e37cbffc1f32b147d870169688734cc61c6231625b62
+    image: chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d
     working_dir: /data
     command: ["server", "-ip=storage", "-ip.bind=0.0.0.0", "-dir=/data/volumes", "-master.dir=/data/master", "-master.telemetry=false", "-master.volumeSizeLimitMB=1024", "-volume.max=0", "-volume.minFreeSpace=20", "-volume.fileSizeLimitMB=8", "-filer", "-filer.exposeDirectoryData=false", "-filer.disableDirListing", "-s3", "-s3.config=/secrets/storage.json", "-s3.ip.bind=0.0.0.0", "-s3.port=0", "-s3.port.https=8333", "-s3.cert.file=/certs/server.crt", "-s3.key.file=/certs/server.key", "-s3.iam=false", "-s3.autoCreateBucket=false", "-s3.allowDeleteBucketNotEmpty=false", "-s3.port.iceberg=0", "-s3.port.lance=0", "-s3.concurrentUploadLimitMB=32", "-s3.concurrentFileUploadLimit=8"]
     volumes:

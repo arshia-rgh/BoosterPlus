@@ -100,3 +100,24 @@ If the canonical Go vulnerability service is unreachable, the same scan can expl
 The current schema is38; migrations26–38 are explicit SQL, including portal invalidation, immutable commercial revisions, shop reservations/delivery, editorial publication and attempt metadata. Run `db migrate plan`, `up`, then `verify` before starting the matching API and worker. Runtime readiness never migrates. [DI14](../docs/redesign/DI14_QUALIFICATION.md) records the synthetic schema25→38 preservation rehearsal and recovery limits.
 
 Customer, admin and booster have separate `/api/v1/auth/portals/{portal}/...` endpoints and cookies. A customer session never authorizes a staff portal. Staff need both factors on every sign-in, including after migration invalidates old sessions. OAuth/email action returns are bounded to the matching portal. Shop processing requires confirmed payment and published delivery terms; scheduling an article does not bypass current author permission. Registered worker handlers are documented in [background jobs](../docs/background-jobs.md).
+
+### Full-suite fixture memory
+
+The local `unistore` database defaults to a 4 GiB container limit. Override
+`DEV_TIDB_MEMORY_LIMIT=6g` for complete qualification on the 16 GiB server:
+
+```sh
+DEV_TIDB_MEMORY_LIMIT=6g make dev-up
+DEV_TIDB_MEMORY_LIMIT=6g make pre-commit
+```
+
+Qualification95 hit the former 3 GiB container limit during repeated schema
+setup. Its retained heap profile attributes roughly 1 GiB to unistore lock
+arenas, with additional metadata and storage caches. This is test-engine
+evidence, not evidence of a production application leak. Keep a bounded limit,
+record container/kernel OOM events and peak memory during full runs, and retain
+the failed logs. Recreating the test container preserves its development data
+volume; never delete a data volume just to rerun verification.
+
+The production stack uses TiKV and separate memory configuration; this override
+does not alter its capacity limits or qualify production performance.

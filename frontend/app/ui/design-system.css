@@ -175,7 +175,8 @@ body {
   padding: 0.6rem 0.85rem;
   border-radius: 0.6rem;
 }
-.record-sections a[aria-current] {
+/* Keep selected text readable above generic customer-theme link/hover colors. */
+.record-shell .record-sections a[aria-current="page"]:not(.button) {
   background: var(--accent);
   color: var(--ink);
 }

@@ -2,6 +2,8 @@
 
 Revised 4 October 2026. **Drafts only: not published, not installed as production terms, and not a launch approval.**
 
+The owner subsequently approved this wording for launch preparation on 4 October 2026. See [the exact approved snapshot and future editing rules](APPROVAL.md). Publication and the implementation/disclosure requirements below remain separate.
+
 - [Terms of Service](TERMS_DRAFT.md)
 - [Privacy Notice](PRIVACY_DRAFT.md)
 - [Game and service help copy](SERVICE_HELP_DRAFT.md)

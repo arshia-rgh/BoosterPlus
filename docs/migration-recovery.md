@@ -2,6 +2,8 @@
 
 The CLI serializes mutation through `schema_migration_lock`, records file SHA-256 values in `schema_migration_journal`, and uses Goose's SQL execution/version log. TiDB DDL is not transactionally rolled back. The lock deliberately has no expiry: a delayed runner must not overlap a replacement runner's DDL.
 
+First installation creates only the lock table before ownership is acquired. Journal initialization and migration execution both require the durable lock; competing installers must not run journal DDL outside that boundary. A held lock is never automatically expired or removed by a competing runner, including before the first migration.
+
 ## Interrupted process or DDL
 
 1. Stop the failed release job and any other migration runners. Disable automatic release retry. Read the lock owner/time and the failing version without exposing the DSN.

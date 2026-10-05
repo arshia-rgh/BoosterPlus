@@ -70,13 +70,17 @@ func (s *Store) transferEvent(ctx context.Context, tx *ent.Tx, p *identity.Princ
 		return err
 	}
 	if row.Kind == "seller_payout" {
-		return s.sellerEvent(ctx, tx, p, row)
+		return s.sellerEvent(ctx, tx, p, row, action)
 	}
 	orderRow, err := tx.Order.Get(ctx, row.OrderID)
 	if err != nil {
 		return err
 	}
-	return s.event(ctx, tx, orderRow, orderRow.State, "refund_updated", "Your refund record has an update. Review its current status and any required action.")
+	eventAction := "refund_updated"
+	if row.State == "confirmed" && action == "confirmed" && p == nil {
+		eventAction = "refund_confirmed"
+	}
+	return s.event(ctx, tx, orderRow, orderRow.State, eventAction, "Your refund record has an update. Review its current status and any required action.")
 }
 func transferView(ctx context.Context, client *ent.Client, row *ent.MoneyTransfer) (TransferView, error) {
 	recipient, err := decode[nowpayments.Recipient](row.Recipient)

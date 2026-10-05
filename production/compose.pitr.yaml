@@ -5,7 +5,7 @@ services:
     networks: [backup-egress]
     volumes: ["${BR_MASTER_KEY_FILE:?}:/backup/master.key:ro"]
   br:
-    image: pingcap/br:v8.5.7@sha256:f0503b675a9c1c0d82ac24836e617bfd65bd645414bd7a87399110c3a92624c7
+    image: pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45
     profiles: [tools]
     user: "1000:1000"
     read_only: true

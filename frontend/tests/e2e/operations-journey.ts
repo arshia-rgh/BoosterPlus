@@ -1,5 +1,4 @@
 import { secondaryCapture } from "./secondary-capture";
-import { reportsJourney } from "./reports-journey";
 import { expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 export async function operationsJourney(
@@ -88,5 +87,4 @@ export async function operationsJourney(
   ).toBeVisible();
   await expect(card.getByText("Completed", { exact: true })).toBeVisible();
   await secondaryCapture(page, "job-attempts", device);
-  await reportsJourney(page, device);
 }

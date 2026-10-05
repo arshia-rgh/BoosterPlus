@@ -67,7 +67,7 @@ def command(arguments):
 
 
 def checkpoint(raw, expected_storage, at):
-    """Pinned BR8.5.7 global storage checkpoint, not a per-store optimistic TSO."""
+    """Pinned BR8.5.8 global storage checkpoint, not a per-store optimistic TSO."""
     if len(raw) > (1 << 20):
         raise ValueError("PITR status exceeded its bounded output")
     rows = json.loads(raw)

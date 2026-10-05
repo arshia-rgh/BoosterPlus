@@ -4,7 +4,7 @@ This optional layer supplements the consistent cold archive in [BACKUP.md](BACKU
 
 ## Configure on the selected server
 
-Use pinned BR/TiKV8.5.7. Give the SQL backup identity only its own off-host S3 prefix; keep it separate from the restic archive prefix. Required BR backup privileges include ListBucket scoped to the prefix and GetObject/PutObject/DeleteObject/AbortMultipartUpload there. Do not use the app storage identity or a bucket administrator. The current wrapper requires the same independently verified HTTPS storage endpoint as the archive; a different endpoint requires its own reviewed off-host policy first.
+Use pinned BR/TiKV8.5.8. Give the SQL backup identity only its own off-host S3 prefix; keep it separate from the restic archive prefix. Required BR backup privileges include ListBucket scoped to the prefix and GetObject/PutObject/DeleteObject/AbortMultipartUpload there. Do not use the app storage identity or a bucket administrator. The current wrapper requires the same independently verified HTTPS storage endpoint as the archive; a different endpoint requires its own reviewed off-host policy first.
 
 Prepare two independent cryptographically random256-bit keys under the operator-owned private recovery directory **outside** `DATA_DIRECTORY` and independently escrow both. Master key format is exactly64hexadecimal characters plus a newline; snapshot key is64hexadecimal characters, optionally newline. Never print them, paste them into command arguments or commit them. For example, from that private directory, `umask 077` then `openssl rand -hex 32 > master.key` and separately `openssl rand -hex 32 > snapshot.key`. Do not overwrite existing keys. Loss of either key can make the corresponding backup unrecoverable.
 
@@ -37,9 +37,9 @@ No automatic log truncation, snapshot deletion or key retirement is provided. Ow
 
 Checked against the pinned upstream source, not inferred from a generic encryption example:
 
-- [BR master-key file parser](https://github.com/pingcap/tidb/blob/v8.5.7/br/pkg/encryption/master_key/file_backend.go): hexadecimal key and required newline.
-- [BR status JSON and global checkpoint](https://github.com/pingcap/tidb/blob/v8.5.7/br/pkg/stream/stream_status.go).
-- [BR encryption options](https://github.com/pingcap/tidb/blob/v8.5.7/br/pkg/task/common.go).
+- [BR master-key file parser](https://github.com/pingcap/tidb/blob/v8.5.8/br/pkg/encryption/master_key/file_backend.go): hexadecimal key and required newline.
+- [BR status JSON and global checkpoint](https://github.com/pingcap/tidb/blob/v8.5.8/br/pkg/stream/stream_status.go).
+- [BR encryption options](https://github.com/pingcap/tidb/blob/v8.5.8/br/pkg/task/common.go).
 - [TiDB PITR guide](https://docs.pingcap.com/tidb/stable/br-pitr-guide/).
 
 ## Matching media capture

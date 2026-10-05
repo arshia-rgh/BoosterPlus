@@ -1,0 +1,47 @@
+{
+	admin off
+	http_port 8080
+	https_port 8443
+	email {$ACME_EMAIL}
+	servers {
+		timeouts {
+			read_header 10s
+			idle 2m
+		}
+		max_header_size 32KB
+	}
+}
+
+# Certificate preparation only. No app network, reverse proxy or sales access.
+{$SITE_ADDRESS} {
+	tls {
+		issuer acme {
+			dir https://acme-v02.api.letsencrypt.org/directory
+		}
+	}
+	header {
+		-Server
+		Cache-Control "no-store"
+		X-Robots-Tag "noindex, nofollow"
+		Retry-After "3600"
+	}
+	respond "PLAYORA is being prepared. Please check back later." 503
+}
+
+{$MAIL_HOST} {
+	tls {
+		issuer acme {
+			dir https://acme-v02.api.letsencrypt.org/directory
+		}
+	}
+	header {
+		-Server
+		Cache-Control "no-store"
+		X-Robots-Tag "noindex, nofollow"
+	}
+	respond 404
+}
+
+http://127.0.0.1:8090 {
+	respond /health 200
+}

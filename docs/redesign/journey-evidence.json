@@ -503,6 +503,7 @@
     "title": "Reports, media, alerts and job recovery",
     "browserEvidence": [
       "identity.spec.ts",
+      "operations.spec.ts",
       "operations-journey.ts",
       "reports-journey.ts",
       "orders.spec.ts"

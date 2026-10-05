@@ -1,0 +1,50 @@
+<?php
+// Operator infrastructure login only; PLAYORA portal sessions are never used.
+$host = getenv('MAIL_HOST');
+$domain = getenv('WEBMAIL_DOMAIN');
+if (!preg_match('/^[a-z0-9.-]+$/D', $host ?: '') || !preg_match('/^[a-z0-9.-]+$/D', $domain ?: '')) {
+    throw new RuntimeException('Missing webmail hostname configuration');
+}
+$config['product_name'] = 'PLAYORA Support Mail';
+$config['db_dsnw'] = 'sqlite:////var/roundcube/db/roundcube.db?mode=0600';
+$config['des_key'] = file_get_contents('/run/secrets/roundcube_des_key');
+$config['imap_host'] = 'ssl://' . $host . ':993';
+$config['smtp_host'] = 'tls://' . $host . ':587';
+$config['smtp_user'] = '%u';
+$config['smtp_pass'] = '%p';
+$config['username_domain'] = $domain;
+$config['imap_conn_options'] = ['ssl' => ['verify_peer' => true, 'verify_peer_name' => true, 'allow_self_signed' => false]];
+$config['smtp_conn_options'] = $config['imap_conn_options'];
+$config['imap_timeout'] = 10;
+$config['smtp_timeout'] = 10;
+$config['force_https'] = true;
+$config['use_https'] = true;
+$config['session_lifetime'] = 15;
+$config['session_name'] = 'playora_support_mail';
+$config['session_samesite'] = 'Strict';
+$config['ip_check'] = true;
+$config['login_rate_limit'] = 5;
+$config['enable_installer'] = false;
+$config['log_driver'] = 'stdout';
+$config['debug_level'] = 0;
+$config['log_logins'] = false;
+$config['imap_debug'] = false;
+$config['smtp_debug'] = false;
+$config['sql_debug'] = false;
+$config['plugins'] = ['archive', 'playora_support'];
+$config['skin'] = 'elastic';
+$config['support_url'] = '';
+$config['enable_spellcheck'] = false;
+$config['show_images'] = 0;
+$config['prefer_html'] = false;
+$config['protect_default_folders'] = true;
+$config['drafts_mbox'] = 'Drafts';
+$config['sent_mbox'] = 'Sent';
+$config['junk_mbox'] = 'Junk';
+$config['trash_mbox'] = 'Trash';
+$config['create_default_folders'] = true;
+$config['identities_level'] = 3;
+$config['temp_dir'] = '/tmp/roundcube-temp';
+$config['mime_types'] = '/etc/mime.types';
+$config['max_message_size'] = '4M';
+$config['dont_override'] = ['show_images', 'prefer_html', 'enable_spellcheck'];

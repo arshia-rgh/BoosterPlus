@@ -12,6 +12,15 @@ root = Path(__file__).resolve().parents[1]
 # isolated database and unchanged production rate budgets instead of lifting
 # shared-IP authentication limits as browser coverage grows.
 def run_project(project, specs=()):
+    # Policy publication gets a fresh fixture as well as a separate browser run.
+    # Sharing one ten-minute fixture across both complete batches lets the first
+    # batch exhaust the second's lifetime even when every interaction passes.
+    batches = focused_batches(specs) if specs else [["--grep-invert=@global-policy"], ["--grep=@global-policy"]]
+    results = [run_batch(project, batch, index) for index, batch in enumerate(batches)]
+    return 1 if any(results) else 0
+
+
+def run_batch(project, arguments, index):
     with tempfile.TemporaryDirectory(prefix="boosterplus-browser-") as temporary:
         directory = Path(temporary)
         environment = dict(service_environment(root), BROWSER_TEST_DIRECTORY=temporary)
@@ -28,17 +37,12 @@ def run_project(project, specs=()):
                     time.sleep(0.2)
                 settings = json.loads((directory / "ready.json").read_text())
                 environment.update(API_ORIGIN=settings["api_origin"], PROXY_SHARED_KEY=settings["proxy_key"], BROWSER_TEST_CONFIG=str(directory / "ready.json"))
-                # Global policy publication runs after ordinary journeys in the same isolated device database.
-                # Complementary filters execute every test; both results are required, with no retries or skipped failures.
-                if specs:
-                    results = []
-                    for batch in focused_batches(specs):
-                        results.append(subprocess.run(["npx", "playwright", "test", *batch, "--project=" + project, "--output=test-results/focused-" + project], cwd=root / "frontend", env=environment, check=False).returncode)
-                    result = 1 if any(results) else 0
-                else:
-                    ordinary = subprocess.run(["npx", "playwright", "test", "--grep-invert=@global-policy", "--project=" + project, "--output=test-results/" + project], cwd=root / "frontend", env=environment, check=False).returncode
-                    policies = subprocess.run(["npx", "playwright", "test", "--grep=@global-policy", "--project=" + project, "--output=test-results/policies-" + project], cwd=root / "frontend", env=environment, check=False).returncode
-                    result = 1 if ordinary or policies else 0
+                # Complementary filters execute every test; all batches remain
+                # required, with no automatic retries or skipped failures.
+                result = subprocess.run(["npx", "playwright", "test", *arguments,
+                                         "--project=" + project,
+                                         "--output=test-results/" + project + "-batch-" + str(index)],
+                                        cwd=root / "frontend", env=environment, check=False).returncode
             finally:
                 (directory / "stop").touch()
                 try:

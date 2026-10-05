@@ -49,7 +49,8 @@ def prepare(directory, *, qualification=False):
         for name in COMPONENTS:
             path = pki / name
             path.mkdir(mode=0o700)
-            names = name + (",IP:127.0.0.1" if qualification and name == "tidb" else "")
+            # PD also verifies its own client endpoint through loopback.
+            names = name + (",IP:127.0.0.1" if name == "pd" or (qualification and name == "tidb") else "")
             private_write(path / "extensions.cnf", "basicConstraints=critical,CA:FALSE\n"
                           "keyUsage=critical,digitalSignature,keyEncipherment\n"
                           "extendedKeyUsage=serverAuth,clientAuth\nsubjectAltName=DNS:" + names + "\n")

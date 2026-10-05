@@ -3,20 +3,21 @@ import AxeBuilder from "@axe-core/playwright";
 import { writeFile } from "node:fs/promises";
 import { fixture } from "./identity-fixtures";
 
-test("equal-game homepage reflows without overlapping content and all introductions reach the picker", async ({
-  page,
-}, info) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  for (const [width, height] of [
-    [320, 640],
-    [360, 740],
-    [390, 844],
-    [768, 1024],
-    [1280, 900],
-    [1440, 900],
-    [844, 390],
-  ] as const) {
+// Keep every viewport assertion and capture in its own original bounded test.
+for (const [width, height] of [
+  [320, 640],
+  [360, 740],
+  [390, 844],
+  [768, 1024],
+  [1280, 900],
+  [1440, 900],
+  [844, 390],
+] as const) {
+  test(`equal-game homepage reflows at ${String(width)} by ${String(height)}`, async ({
+    page,
+  }, info) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
     await page.setViewportSize({ width, height });
     await page.evaluate(() => {
       scrollTo(0, 0);
@@ -45,7 +46,14 @@ test("equal-game homepage reflows without overlapping content and all introducti
     await page.locator(".introduction-boost").screenshot({
       path: `.cache/di04-home-boost-${info.project.name}-${String(width)}.png`,
     });
-  }
+  });
+}
+
+test("all homepage introductions reach the picker and enlarged text reflows", async ({
+  page,
+}, info) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
   for (const link of await page
     .getByRole("link", { name: "Choose your game" })
     .all()) {
@@ -127,7 +135,13 @@ test("game discovery keeps the hero through services, account browsing, reload a
     page.getByRole("heading", { name: "Find your next account" }),
   ).toBeVisible();
   await page.getByRole("link", { name: "← Back to choose a service" }).click();
-  for (const game of ["mlbb", "wow", "lol", "valorant", "dota", "wildrift"]) {
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+for (const game of ["mlbb", "wow", "lol", "valorant", "dota", "wildrift"]) {
+  test(`game ${game} framing remains accessible across viewports`, async ({
+    page,
+  }, info) => {
     await page.goto(
       `/games/${fixture(info.project.name, `discovery_${game}`)}`,
     );
@@ -141,9 +155,9 @@ test("game discovery keeps the hero through services, account browsing, reload a
         path: `.cache/di04-game-${game}-${info.project.name}-${String(width)}.png`,
       });
     }
-  }
-  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-});
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  });
+}
 
 test("motion preferences and FAQ keyboard controls remain usable", async ({
   page,

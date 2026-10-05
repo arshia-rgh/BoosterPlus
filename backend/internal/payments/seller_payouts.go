@@ -63,7 +63,7 @@ func (s *Store) SellerObligationHandler() jobs.Handler {
 		})
 	}
 }
-func (s *Store) sellerEvent(ctx context.Context, tx *ent.Tx, p *identity.Principal, row *ent.MoneyTransfer) error {
+func (s *Store) sellerEvent(ctx context.Context, tx *ent.Tx, p *identity.Principal, row *ent.MoneyTransfer, transferAction string) error {
 	if row.SellerOfferID == nil {
 		return ErrInvalid
 	}
@@ -89,7 +89,11 @@ func (s *Store) sellerEvent(ctx context.Context, tx *ent.Tx, p *identity.Princip
 			role = "seller"
 		}
 	}
-	event, err := tx.SubmissionEvent.Create().SetSubmissionID(parent.ID).SetVersion(parent.Version).SetState(string(parent.State)).SetAction("seller_payout_updated").SetMessage(parent.CurrentNote).SetActorRole(role).SetCreatedAt(s.instant()).Save(ctx)
+	action := "seller_payout_updated"
+	if row.State == "confirmed" && transferAction == "confirmed" && p == nil {
+		action = "seller_payout_confirmed"
+	}
+	event, err := tx.SubmissionEvent.Create().SetSubmissionID(parent.ID).SetVersion(parent.Version).SetState(string(parent.State)).SetAction(action).SetMessage(parent.CurrentNote).SetActorRole(role).SetCreatedAt(s.instant()).Save(ctx)
 	if err != nil {
 		return err
 	}

@@ -9,6 +9,41 @@ from qualification import initialize, inspect, REQUIREMENTS
 
 
 class EvidenceGate(unittest.TestCase):
+    def test_initial_launch_deferral_is_recovery_only_and_requires_intact_owner_evidence(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / 'packet'
+            commit = 'a' * 40
+            initialize(commit, root)
+            path = root / 'qualification.json'
+            packet = json.loads(path.read_text())
+            evidence = root / 'owner-decision.txt'
+            evidence.write_text('Synthetic fixture: owner defers backups, acknowledges primary data loss.')
+            check = packet['checks']['recovery']
+            check.update(status='owner_deferred', operator='fixture owner',
+                         observed_at=datetime.now(timezone.utc).isoformat(),
+                         owner_decision='2026-10-04-defer-backups-until-after-launch',
+                         risk='primary-host-loss-may-lose-all-data',
+                         evidence=[{'file': evidence.name, 'sha256': hashlib.sha256(evidence.read_bytes()).hexdigest()}])
+            path.write_text(json.dumps(packet))
+            self.assertEqual(set(inspect(root, commit, initial_launch=True)), set(REQUIREMENTS) - {'recovery'})
+            self.assertIn('recovery', inspect(root, commit))
+            self.assertIn('rpo_seconds', inspect(root, commit))
+            # Identical evidence cannot defer security, payment or any other gate.
+            packet['checks']['full_gate'] = dict(check)
+            path.write_text(json.dumps(packet))
+            self.assertIn('full_gate', inspect(root, commit, initial_launch=True))
+            for field in ('owner_decision', 'risk', 'evidence', 'operator', 'observed_at'):
+                original = check[field]
+                check[field] = ''
+                path.write_text(json.dumps(packet))
+                failures = inspect(root, commit, initial_launch=True)
+                self.assertIn('recovery', failures)
+                self.assertIn('rpo_seconds', failures)
+                check[field] = original
+            evidence.write_text('tampered')
+            path.write_text(json.dumps(packet))
+            self.assertIn('recovery', inspect(root, commit, initial_launch=True))
+
     def test_pending_stale_tampered_foreign_commit_and_bad_rpo_fail(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp) / 'packet'

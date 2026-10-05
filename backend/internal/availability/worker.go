@@ -12,6 +12,7 @@ import (
 	delivery "github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitydelivery"
 	sub "github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitysubscription"
 	target "github.com/arshia-rgh/BoosterPlus/backend/ent/availabilitytarget"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/emailtemplate"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/sitecontent"
@@ -261,7 +262,8 @@ func (s *Store) EmailHandler(sender identity.Sender) jobs.Handler {
 			if copyErr != nil {
 				return copyErr
 			}
-			message = &identity.Message{To: account.Email, Subject: messageCopy.AvailabilitySubject, Body: messageCopy.AvailabilityIntro + "\nCheck its current price, eligibility and availability before ordering. This email is not a reservation or purchase guarantee.\n" + href + "\n\nStop these availability emails:\n" + unsubscribe + "\n\nManage all availability alerts: " + s.origin + "/availability" + "\n\n" + messageCopy.Footer}
+			message = &identity.Message{To: account.Email, Subject: messageCopy.AvailabilitySubject, Body: messageCopy.AvailabilityIntro + "\nCheck its current price, eligibility and availability before ordering. This email is not a reservation or purchase guarantee.\n" + href + "\n\nStop these availability emails:\n" + unsubscribe + "\n\nManage all availability alerts in your account settings." + "\n\n" + messageCopy.Footer}
+			message.View = emailtemplate.View{Heading: "An offer you follow is available", Preview: "Check the latest price and availability before ordering.", ActionLabel: "View available offer", ActionURL: href, SecondaryLabel: "Stop availability emails", SecondaryURL: unsubscribe}
 			return nil
 		})
 		if e != nil {

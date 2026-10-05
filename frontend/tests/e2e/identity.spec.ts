@@ -1,5 +1,4 @@
 import { integratedCapture } from "./integrated-capture";
-import { operationsJourney } from "./operations-journey";
 import { randomUUID } from "node:crypto";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -269,12 +268,6 @@ for (const role of ["booster", "administrator", "owner"] as const) {
         page.getByRole("heading", { name: "Operations overview", exact: true }),
       ).toBeVisible();
     }
-    if (role === "administrator")
-      await operationsJourney(
-        page,
-        fixture(info.project.name, "failed_job"),
-        info.project.name,
-      );
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
     expect(
       await page.evaluate(

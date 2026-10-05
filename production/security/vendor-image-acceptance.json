@@ -1,0 +1,4462 @@
+{
+  "images": {
+    "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86": {
+      "additional_reviews": [
+        {
+          "findings": [
+            {
+              "FixedVersion": "5:8.0.2-3+deb13u3",
+              "InstalledVersion": "5:8.0.2-3+deb13u2",
+              "PkgName": "redis-server",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+              "VulnerabilityID": "CVE-2026-23479"
+            },
+            {
+              "FixedVersion": "5:8.0.2-3+deb13u3",
+              "InstalledVersion": "5:8.0.2-3+deb13u2",
+              "PkgName": "redis-server",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+              "VulnerabilityID": "CVE-2026-23631"
+            },
+            {
+              "FixedVersion": "5:8.0.2-3+deb13u3",
+              "InstalledVersion": "5:8.0.2-3+deb13u2",
+              "PkgName": "redis-server",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+              "VulnerabilityID": "CVE-2026-25243"
+            },
+            {
+              "FixedVersion": "5:8.0.2-3+deb13u3",
+              "InstalledVersion": "5:8.0.2-3+deb13u2",
+              "PkgName": "redis-server",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+              "VulnerabilityID": "CVE-2026-81934"
+            },
+            {
+              "FixedVersion": "5:8.0.2-3+deb13u3",
+              "InstalledVersion": "5:8.0.2-3+deb13u2",
+              "PkgName": "redis-tools",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+              "VulnerabilityID": "CVE-2026-23479"
+            },
+            {
+              "FixedVersion": "5:8.0.2-3+deb13u3",
+              "InstalledVersion": "5:8.0.2-3+deb13u2",
+              "PkgName": "redis-tools",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+              "VulnerabilityID": "CVE-2026-23631"
+            },
+            {
+              "FixedVersion": "5:8.0.2-3+deb13u3",
+              "InstalledVersion": "5:8.0.2-3+deb13u2",
+              "PkgName": "redis-tools",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+              "VulnerabilityID": "CVE-2026-25243"
+            },
+            {
+              "FixedVersion": "5:8.0.2-3+deb13u3",
+              "InstalledVersion": "5:8.0.2-3+deb13u2",
+              "PkgName": "redis-tools",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+              "VulnerabilityID": "CVE-2026-81934"
+            }
+          ],
+          "owner_decision": "Accept these eight findings for this exact image",
+          "review_document": "security/MAIL_REVIEW_2026-10-04.md",
+          "reviewed_on": "2026-10-04",
+          "source_report_sha256": "132a8eee4d14aa134200e6355f00804f2b4d81b3e0f052e4c9b7fab987f523d9"
+        }
+      ],
+      "findings": [
+        {
+          "FixedVersion": "0.39.0",
+          "InstalledVersion": "v0.38.0",
+          "PkgName": "golang.org/x/text",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-56852"
+        },
+        {
+          "FixedVersion": "0.55.0",
+          "InstalledVersion": "v0.53.0",
+          "PkgName": "golang.org/x/crypto",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-56854"
+        },
+        {
+          "FixedVersion": "0.56.0",
+          "InstalledVersion": "v0.55.0",
+          "PkgName": "golang.org/x/net",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-46600"
+        },
+        {
+          "FixedVersion": "1.11.1-1+deb13u2",
+          "InstalledVersion": "1.11.1-1+deb13u1",
+          "PkgName": "libssh2-1t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58050"
+        },
+        {
+          "FixedVersion": "1.13-1+deb13u1",
+          "InstalledVersion": "1.13-1",
+          "PkgName": "gzip",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-41992"
+        },
+        {
+          "FixedVersion": "1.25.12, 1.26.5, 1.27.0-rc.2",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-39822"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-33818"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-39821"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-56853"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-56858"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-56859"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-56860"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-56862"
+        },
+        {
+          "FixedVersion": "1.26.1-0+deb13u1",
+          "InstalledVersion": "1.22.0-2+deb13u3",
+          "PkgName": "libunbound8",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-50252"
+        },
+        {
+          "FixedVersion": "1.26.1-0+deb13u1",
+          "InstalledVersion": "1.22.0-2+deb13u3",
+          "PkgName": "libunbound8",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-81642"
+        },
+        {
+          "FixedVersion": "1.26.1-0+deb13u1",
+          "InstalledVersion": "1.22.0-2+deb13u3",
+          "PkgName": "libunbound8",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-82717"
+        },
+        {
+          "FixedVersion": "1.26.1-0+deb13u1",
+          "InstalledVersion": "1.22.0-2+deb13u3",
+          "PkgName": "libunbound8",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-32665"
+        },
+        {
+          "FixedVersion": "1.26.1-0+deb13u1",
+          "InstalledVersion": "1.22.0-2+deb13u3",
+          "PkgName": "libunbound8",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40622"
+        },
+        {
+          "FixedVersion": "1.26.1-0+deb13u1",
+          "InstalledVersion": "1.22.0-2+deb13u3",
+          "PkgName": "libunbound8",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40691"
+        },
+        {
+          "FixedVersion": "1.26.1-0+deb13u1",
+          "InstalledVersion": "1.22.0-2+deb13u3",
+          "PkgName": "libunbound8",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-44690"
+        },
+        {
+          "FixedVersion": "1.26.1-0+deb13u1",
+          "InstalledVersion": "1.22.0-2+deb13u3",
+          "PkgName": "libunbound8",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-55973"
+        },
+        {
+          "FixedVersion": "1.26.1-0+deb13u1",
+          "InstalledVersion": "1.22.0-2+deb13u3",
+          "PkgName": "libunbound8",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-80225"
+        },
+        {
+          "FixedVersion": "1.26.1-0+deb13u1",
+          "InstalledVersion": "1.22.0-2+deb13u3",
+          "PkgName": "libunbound8",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-81634"
+        },
+        {
+          "FixedVersion": "1.26.1-0+deb13u1",
+          "InstalledVersion": "1.22.0-2+deb13u3",
+          "PkgName": "libunbound8",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-85501"
+        },
+        {
+          "FixedVersion": "1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-46600"
+        },
+        {
+          "FixedVersion": "1.82.1",
+          "InstalledVersion": "v1.81.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "GHSA-hrxh-6v49-42gf"
+        },
+        {
+          "FixedVersion": "1.82.2, 1.83.2, 1.84.0-dev.0.20260825144003-d5a41119e0e3, 1.85.0-dev.0.20260825072537-93e31b48545e",
+          "InstalledVersion": "v1.81.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-84445"
+        },
+        {
+          "FixedVersion": "1.83.1",
+          "InstalledVersion": "v1.81.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/step-cli",
+          "VulnerabilityID": "CVE-2026-84304"
+        },
+        {
+          "FixedVersion": "10.46-1~deb13u2",
+          "InstalledVersion": "10.46-1~deb13u1",
+          "PkgName": "libpcre2-8-0",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-86145"
+        },
+        {
+          "FixedVersion": "10.46-1~deb13u2",
+          "InstalledVersion": "10.46-1~deb13u1",
+          "PkgName": "libpcre2-8-0",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-89157"
+        },
+        {
+          "FixedVersion": "10.46-1~deb13u2",
+          "InstalledVersion": "10.46-1~deb13u1",
+          "PkgName": "libpcre2-8-0",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-89161"
+        },
+        {
+          "FixedVersion": "10.46-1~deb13u3",
+          "InstalledVersion": "10.46-1~deb13u1",
+          "PkgName": "libpcre2-8-0",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-103111"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-auth-lua",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-27852"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-auth-lua",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33263"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-auth-lua",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33605"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-auth-lua",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40018"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-auth-lua",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42007"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-auth-lua",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42391"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-auth-lua",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-73208"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-core",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-27852"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-core",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33263"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-core",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33605"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-core",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40018"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-core",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42007"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-core",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42391"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-core",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-73208"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-flatcurve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-27852"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-flatcurve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33263"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-flatcurve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33605"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-flatcurve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40018"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-flatcurve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42007"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-flatcurve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42391"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-flatcurve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-73208"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-imapd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-27852"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-imapd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33263"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-imapd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33605"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-imapd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40018"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-imapd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42007"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-imapd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42391"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-imapd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-73208"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-ldap",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-27852"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-ldap",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33263"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-ldap",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33605"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-ldap",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40018"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-ldap",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42007"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-ldap",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42391"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-ldap",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-73208"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-lmtpd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-27852"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-lmtpd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33263"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-lmtpd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33605"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-lmtpd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40018"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-lmtpd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42007"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-lmtpd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42391"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-lmtpd",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-73208"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-managesieved",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-27852"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-managesieved",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33263"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-managesieved",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33605"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-managesieved",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40018"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-managesieved",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42007"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-managesieved",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42391"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-managesieved",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-73208"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-pop3d",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-27852"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-pop3d",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33263"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-pop3d",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33605"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-pop3d",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40018"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-pop3d",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42007"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-pop3d",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42391"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-pop3d",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-73208"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-sieve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-27852"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-sieve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33263"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-sieve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33605"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-sieve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40018"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-sieve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42007"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-sieve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42391"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-sieve",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-73208"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-solr",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-27852"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-solr",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33263"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-solr",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-33605"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-solr",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-40018"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-solr",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42007"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-solr",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42391"
+        },
+        {
+          "FixedVersion": "1:2.4.1+dfsg1-6+deb13u7",
+          "InstalledVersion": "1:2.4.1+dfsg1-6+deb13u6",
+          "PkgName": "dovecot-solr",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-73208"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-dnsutils",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-19666"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-dnsutils",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-19667"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-dnsutils",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-76163"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-dnsutils",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-77692"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-dnsutils",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-80274"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-dnsutils",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-81563"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-dnsutils",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-81736"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-host",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-19666"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-host",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-19667"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-host",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-76163"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-host",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-77692"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-host",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-80274"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-host",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-81563"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-host",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-81736"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-19666"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-19667"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-76163"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-77692"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-80274"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-81563"
+        },
+        {
+          "FixedVersion": "1:9.20.29-1~deb13u1",
+          "InstalledVersion": "1:9.20.26-1~deb13u1",
+          "PkgName": "bind9-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-81736"
+        },
+        {
+          "FixedVersion": "2.1.13-stable-1~deb13u1",
+          "InstalledVersion": "2.1.12-stable-10+b1",
+          "PkgName": "libevent-2.1-7t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-63382"
+        },
+        {
+          "FixedVersion": "2.1.13-stable-1~deb13u1",
+          "InstalledVersion": "2.1.12-stable-10+b1",
+          "PkgName": "libevent-2.1-7t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-63383"
+        },
+        {
+          "FixedVersion": "2.1.13-stable-1~deb13u1",
+          "InstalledVersion": "2.1.12-stable-10+b1",
+          "PkgName": "libevent-2.1-7t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-63384"
+        },
+        {
+          "FixedVersion": "2.1.13-stable-1~deb13u1",
+          "InstalledVersion": "2.1.12-stable-10+b1",
+          "PkgName": "libevent-2.1-7t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-63385"
+        },
+        {
+          "FixedVersion": "2.1.13-stable-1~deb13u1",
+          "InstalledVersion": "2.1.12-stable-10+b1",
+          "PkgName": "libevent-2.1-7t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-63387"
+        },
+        {
+          "FixedVersion": "2.1.13-stable-1~deb13u1",
+          "InstalledVersion": "2.1.12-stable-10+b1",
+          "PkgName": "libevent-2.1-7t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-63388"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-0t64",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58016"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-0t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58010"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-0t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58011"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-0t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58012"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-0t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58013"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-0t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58014"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-0t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58015"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-data",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58016"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-data",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58010"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-data",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58011"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-data",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58012"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-data",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58013"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-data",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58014"
+        },
+        {
+          "FixedVersion": "2.84.4-3~deb13u4",
+          "InstalledVersion": "2.84.4-3~deb13u3",
+          "PkgName": "libglib2.0-data",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-58015"
+        },
+        {
+          "FixedVersion": "3.13.5-2+deb13u5",
+          "InstalledVersion": "3.13.5-2+deb13u4",
+          "PkgName": "libpython3.13-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-11940"
+        },
+        {
+          "FixedVersion": "3.13.5-2+deb13u5",
+          "InstalledVersion": "3.13.5-2+deb13u4",
+          "PkgName": "libpython3.13-stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-11940"
+        },
+        {
+          "FixedVersion": "3.13.5-2+deb13u5",
+          "InstalledVersion": "3.13.5-2+deb13u4",
+          "PkgName": "python3.13",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-11940"
+        },
+        {
+          "FixedVersion": "3.13.5-2+deb13u5",
+          "InstalledVersion": "3.13.5-2+deb13u4",
+          "PkgName": "python3.13-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-11940"
+        },
+        {
+          "FixedVersion": "3.46.1-7+deb13u2",
+          "InstalledVersion": "3.46.1-7+deb13u1",
+          "PkgName": "libsqlite3-0",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-11822"
+        },
+        {
+          "FixedVersion": "3.46.1-7+deb13u2",
+          "InstalledVersion": "3.46.1-7+deb13u1",
+          "PkgName": "libsqlite3-0",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-11824"
+        },
+        {
+          "FixedVersion": "3.5.7-1~deb13u3",
+          "InstalledVersion": "3.5.7-1~deb13u2",
+          "PkgName": "libssl3t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-75804"
+        },
+        {
+          "FixedVersion": "3.5.7-1~deb13u3",
+          "InstalledVersion": "3.5.7-1~deb13u2",
+          "PkgName": "libssl3t64",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-84782"
+        },
+        {
+          "FixedVersion": "3.5.7-1~deb13u3",
+          "InstalledVersion": "3.5.7-1~deb13u2",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-75804"
+        },
+        {
+          "FixedVersion": "3.5.7-1~deb13u3",
+          "InstalledVersion": "3.5.7-1~deb13u2",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-84782"
+        },
+        {
+          "FixedVersion": "3.5.7-1~deb13u3",
+          "InstalledVersion": "3.5.7-1~deb13u2",
+          "PkgName": "openssl-provider-legacy",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-75804"
+        },
+        {
+          "FixedVersion": "3.5.7-1~deb13u3",
+          "InstalledVersion": "3.5.7-1~deb13u2",
+          "PkgName": "openssl-provider-legacy",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-84782"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "libperl5.40",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-13221"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "libperl5.40",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42496"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "libperl5.40",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-8376"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "libperl5.40",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42497"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "libperl5.40",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-48962"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "libperl5.40",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-57432"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "libperl5.40",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-57433"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-13221"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42496"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-8376"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42497"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-48962"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-57432"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-57433"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-base",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-13221"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-base",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42496"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-base",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-8376"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-base",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42497"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-base",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-48962"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-base",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-57432"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-base",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-57433"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-doc",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-13221"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-doc",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42496"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-doc",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-8376"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-doc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42497"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-doc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-48962"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-doc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-57432"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-doc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-57433"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-modules-5.40",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-13221"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-modules-5.40",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42496"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-modules-5.40",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-8376"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-modules-5.40",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-42497"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-modules-5.40",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-48962"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-modules-5.40",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-57432"
+        },
+        {
+          "FixedVersion": "5.40.1-6+deb13u1",
+          "InstalledVersion": "5.40.1-6",
+          "PkgName": "perl-modules-5.40",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-57433"
+        },
+        {
+          "FixedVersion": "5:8.0.2-3+deb13u3",
+          "InstalledVersion": "5:8.0.2-3+deb13u2",
+          "PkgName": "redis-server",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-23479"
+        },
+        {
+          "FixedVersion": "5:8.0.2-3+deb13u3",
+          "InstalledVersion": "5:8.0.2-3+deb13u2",
+          "PkgName": "redis-server",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-23631"
+        },
+        {
+          "FixedVersion": "5:8.0.2-3+deb13u3",
+          "InstalledVersion": "5:8.0.2-3+deb13u2",
+          "PkgName": "redis-server",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-25243"
+        },
+        {
+          "FixedVersion": "5:8.0.2-3+deb13u3",
+          "InstalledVersion": "5:8.0.2-3+deb13u2",
+          "PkgName": "redis-server",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-81934"
+        },
+        {
+          "FixedVersion": "5:8.0.2-3+deb13u3",
+          "InstalledVersion": "5:8.0.2-3+deb13u2",
+          "PkgName": "redis-tools",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-23479"
+        },
+        {
+          "FixedVersion": "5:8.0.2-3+deb13u3",
+          "InstalledVersion": "5:8.0.2-3+deb13u2",
+          "PkgName": "redis-tools",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-23631"
+        },
+        {
+          "FixedVersion": "5:8.0.2-3+deb13u3",
+          "InstalledVersion": "5:8.0.2-3+deb13u2",
+          "PkgName": "redis-tools",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-25243"
+        },
+        {
+          "FixedVersion": "5:8.0.2-3+deb13u3",
+          "InstalledVersion": "5:8.0.2-3+deb13u2",
+          "PkgName": "redis-tools",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-81934"
+        },
+        {
+          "FixedVersion": "8.2504.0-1+deb13u1",
+          "InstalledVersion": "8.2504.0-1",
+          "PkgName": "rsyslog",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-19654"
+        },
+        {
+          "FixedVersion": "8.2504.0-1+deb13u2",
+          "InstalledVersion": "8.2504.0-1",
+          "PkgName": "rsyslog",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-61548"
+        },
+        {
+          "FixedVersion": "8.2504.0-1+deb13u2",
+          "InstalledVersion": "8.2504.0-1",
+          "PkgName": "rsyslog",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86 (debian 13.6)",
+          "VulnerabilityID": "CVE-2026-78002"
+        }
+      ],
+      "reviewed_on": "2026-10-02",
+      "source_report_sha256": "2c89d79c139ca605bccfcbdcc24690819b643a6692052e84064b5d5adfede3b8"
+    },
+    "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45": {
+      "findings": [
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "curl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8458"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "curl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8927"
+        },
+        {
+          "FixedVersion": "2.5.0-6.el9_8.5",
+          "InstalledVersion": "2.5.0-6.el9_8.1",
+          "PkgName": "expat",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-66046"
+        },
+        {
+          "FixedVersion": "2.5.0-6.el9_8.5",
+          "InstalledVersion": "2.5.0-6.el9_8.1",
+          "PkgName": "expat",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-93990"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "libcurl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8458"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "libcurl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8927"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63379"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63381"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63382"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63383"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63384"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63385"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63387"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63388"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-74860"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86138"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86140"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86142"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86143"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86144"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14456"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14457"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-18798"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-54874"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63072"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63073"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63074"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63075"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63076"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14456"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14457"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-18798"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-54874"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63072"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63073"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63074"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63075"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63076"
+        },
+        {
+          "FixedVersion": "3.34.1-11.el9_8",
+          "InstalledVersion": "3.34.1-10.el9_8",
+          "PkgName": "sqlite-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-11822"
+        },
+        {
+          "FixedVersion": "3.34.1-11.el9_8",
+          "InstalledVersion": "3.34.1-10.el9_8",
+          "PkgName": "sqlite-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-11824"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-28420"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-52859"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-55892"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-59857"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73072"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73076"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73077"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73078"
+        },
+        {
+          "FixedVersion": "0.24.0",
+          "InstalledVersion": "v0.23.0",
+          "PkgName": "github.com/apache/thrift",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "br",
+          "VulnerabilityID": "CVE-2026-43871"
+        },
+        {
+          "FixedVersion": "0.55.0",
+          "InstalledVersion": "v0.53.0",
+          "PkgName": "golang.org/x/crypto",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "br",
+          "VulnerabilityID": "CVE-2026-56854"
+        },
+        {
+          "FixedVersion": "1.83.1",
+          "InstalledVersion": "v1.82.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "br",
+          "VulnerabilityID": "CVE-2026-84304"
+        },
+        {
+          "FixedVersion": "1.82.2, 1.83.2, 1.84.0-dev.0.20260825144003-d5a41119e0e3, 1.85.0-dev.0.20260825072537-93e31b48545e",
+          "InstalledVersion": "v1.82.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "br",
+          "VulnerabilityID": "CVE-2026-84445"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "br",
+          "VulnerabilityID": "CVE-2026-33818"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "br",
+          "VulnerabilityID": "CVE-2026-39821"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "br",
+          "VulnerabilityID": "CVE-2026-56853"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "br",
+          "VulnerabilityID": "CVE-2026-56858"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "br",
+          "VulnerabilityID": "CVE-2026-56859"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "br",
+          "VulnerabilityID": "CVE-2026-56860"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "br",
+          "VulnerabilityID": "CVE-2026-56862"
+        }
+      ],
+      "reviewed_on": "2026-10-02",
+      "source_report_sha256": "c982b444456e22d05827e8c5dee19bd9a8a50dab7124f1ce2c80e8e049618287"
+    },
+    "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef": {
+      "findings": [
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "curl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8458"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "curl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8927"
+        },
+        {
+          "FixedVersion": "2.5.0-6.el9_8.5",
+          "InstalledVersion": "2.5.0-6.el9_8.1",
+          "PkgName": "expat",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-66046"
+        },
+        {
+          "FixedVersion": "2.5.0-6.el9_8.5",
+          "InstalledVersion": "2.5.0-6.el9_8.1",
+          "PkgName": "expat",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-93990"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "libcurl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8458"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "libcurl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8927"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63379"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63381"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63382"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63383"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63384"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63385"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63387"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63388"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-74860"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86138"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86140"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86142"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86143"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86144"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14456"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14457"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-18798"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-54874"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63072"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63073"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63074"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63075"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63076"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14456"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14457"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-18798"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-54874"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63072"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63073"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63074"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63075"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63076"
+        },
+        {
+          "FixedVersion": "3.34.1-11.el9_8",
+          "InstalledVersion": "3.34.1-10.el9_8",
+          "PkgName": "sqlite-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-11822"
+        },
+        {
+          "FixedVersion": "3.34.1-11.el9_8",
+          "InstalledVersion": "3.34.1-10.el9_8",
+          "PkgName": "sqlite-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-11824"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-28420"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-52859"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-55892"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-59857"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73072"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73076"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73077"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73078"
+        },
+        {
+          "FixedVersion": "0.55.0",
+          "InstalledVersion": "v0.53.0",
+          "PkgName": "golang.org/x/crypto",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-ctl",
+          "VulnerabilityID": "CVE-2026-56854"
+        },
+        {
+          "FixedVersion": "1.83.1",
+          "InstalledVersion": "v1.82.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-ctl",
+          "VulnerabilityID": "CVE-2026-84304"
+        },
+        {
+          "FixedVersion": "1.82.2, 1.83.2, 1.84.0-dev.0.20260825144003-d5a41119e0e3, 1.85.0-dev.0.20260825072537-93e31b48545e",
+          "InstalledVersion": "v1.82.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-ctl",
+          "VulnerabilityID": "CVE-2026-84445"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-ctl",
+          "VulnerabilityID": "CVE-2026-33818"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-ctl",
+          "VulnerabilityID": "CVE-2026-39821"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-ctl",
+          "VulnerabilityID": "CVE-2026-56853"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-ctl",
+          "VulnerabilityID": "CVE-2026-56858"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-ctl",
+          "VulnerabilityID": "CVE-2026-56859"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-ctl",
+          "VulnerabilityID": "CVE-2026-56860"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-ctl",
+          "VulnerabilityID": "CVE-2026-56862"
+        },
+        {
+          "FixedVersion": "0.55.0",
+          "InstalledVersion": "v0.53.0",
+          "PkgName": "golang.org/x/crypto",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-recover",
+          "VulnerabilityID": "CVE-2026-56854"
+        },
+        {
+          "FixedVersion": "1.83.1",
+          "InstalledVersion": "v1.82.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-recover",
+          "VulnerabilityID": "CVE-2026-84304"
+        },
+        {
+          "FixedVersion": "1.82.2, 1.83.2, 1.84.0-dev.0.20260825144003-d5a41119e0e3, 1.85.0-dev.0.20260825072537-93e31b48545e",
+          "InstalledVersion": "v1.82.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-recover",
+          "VulnerabilityID": "CVE-2026-84445"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-recover",
+          "VulnerabilityID": "CVE-2026-33818"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-recover",
+          "VulnerabilityID": "CVE-2026-39821"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-recover",
+          "VulnerabilityID": "CVE-2026-56853"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-recover",
+          "VulnerabilityID": "CVE-2026-56858"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-recover",
+          "VulnerabilityID": "CVE-2026-56859"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-recover",
+          "VulnerabilityID": "CVE-2026-56860"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-recover",
+          "VulnerabilityID": "CVE-2026-56862"
+        },
+        {
+          "FixedVersion": "0.55.0",
+          "InstalledVersion": "v0.53.0",
+          "PkgName": "golang.org/x/crypto",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-server",
+          "VulnerabilityID": "CVE-2026-56854"
+        },
+        {
+          "FixedVersion": "0.45.0",
+          "InstalledVersion": "v0.43.0",
+          "PkgName": "golang.org/x/image",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-server",
+          "VulnerabilityID": "CVE-2026-46603"
+        },
+        {
+          "FixedVersion": "1.83.1",
+          "InstalledVersion": "v1.82.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-server",
+          "VulnerabilityID": "CVE-2026-84304"
+        },
+        {
+          "FixedVersion": "1.82.2, 1.83.2, 1.84.0-dev.0.20260825144003-d5a41119e0e3, 1.85.0-dev.0.20260825072537-93e31b48545e",
+          "InstalledVersion": "v1.82.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-server",
+          "VulnerabilityID": "CVE-2026-84445"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-server",
+          "VulnerabilityID": "CVE-2026-33818"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-server",
+          "VulnerabilityID": "CVE-2026-39821"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-server",
+          "VulnerabilityID": "CVE-2026-56853"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-server",
+          "VulnerabilityID": "CVE-2026-56858"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-server",
+          "VulnerabilityID": "CVE-2026-56859"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-server",
+          "VulnerabilityID": "CVE-2026-56860"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pd-server",
+          "VulnerabilityID": "CVE-2026-56862"
+        }
+      ],
+      "reviewed_on": "2026-10-02",
+      "source_report_sha256": "2f7c2e3792009b2b55db912abb4b46edcbbeff4fa8b0187d3eb478a4d407bc68"
+    },
+    "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5": {
+      "findings": [
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "curl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8458"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "curl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8927"
+        },
+        {
+          "FixedVersion": "2.5.0-6.el9_8.5",
+          "InstalledVersion": "2.5.0-6.el9_8.1",
+          "PkgName": "expat",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-66046"
+        },
+        {
+          "FixedVersion": "2.5.0-6.el9_8.5",
+          "InstalledVersion": "2.5.0-6.el9_8.1",
+          "PkgName": "expat",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-93990"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "libcurl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8458"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "libcurl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8927"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63379"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63381"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63382"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63383"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63384"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63385"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63387"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63388"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-74860"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86138"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86140"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86142"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86143"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86144"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14456"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14457"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-18798"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-54874"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63072"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63073"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63074"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63075"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63076"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14456"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14457"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-18798"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-54874"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63072"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63073"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63074"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63075"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63076"
+        },
+        {
+          "FixedVersion": "3.34.1-11.el9_8",
+          "InstalledVersion": "3.34.1-10.el9_8",
+          "PkgName": "sqlite-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-11822"
+        },
+        {
+          "FixedVersion": "3.34.1-11.el9_8",
+          "InstalledVersion": "3.34.1-10.el9_8",
+          "PkgName": "sqlite-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-11824"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-28420"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-52859"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-55892"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-59857"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73072"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73076"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73077"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73078"
+        },
+        {
+          "FixedVersion": "0.24.0",
+          "InstalledVersion": "v0.23.0",
+          "PkgName": "github.com/apache/thrift",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "tidb-server",
+          "VulnerabilityID": "CVE-2026-43871"
+        },
+        {
+          "FixedVersion": "0.55.0",
+          "InstalledVersion": "v0.53.0",
+          "PkgName": "golang.org/x/crypto",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "tidb-server",
+          "VulnerabilityID": "CVE-2026-56854"
+        },
+        {
+          "FixedVersion": "1.83.1",
+          "InstalledVersion": "v1.82.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "tidb-server",
+          "VulnerabilityID": "CVE-2026-84304"
+        },
+        {
+          "FixedVersion": "1.82.2, 1.83.2, 1.84.0-dev.0.20260825144003-d5a41119e0e3, 1.85.0-dev.0.20260825072537-93e31b48545e",
+          "InstalledVersion": "v1.82.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "tidb-server",
+          "VulnerabilityID": "CVE-2026-84445"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "tidb-server",
+          "VulnerabilityID": "CVE-2026-33818"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "tidb-server",
+          "VulnerabilityID": "CVE-2026-39821"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "tidb-server",
+          "VulnerabilityID": "CVE-2026-56853"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "tidb-server",
+          "VulnerabilityID": "CVE-2026-56858"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "tidb-server",
+          "VulnerabilityID": "CVE-2026-56859"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "tidb-server",
+          "VulnerabilityID": "CVE-2026-56860"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.25.12",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "tidb-server",
+          "VulnerabilityID": "CVE-2026-56862"
+        }
+      ],
+      "reviewed_on": "2026-10-02",
+      "source_report_sha256": "1d691085e18b7cc9d170a001b80617a2a6012c03548a32f41fb12c42458bf039"
+    },
+    "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69": {
+      "findings": [
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "curl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8458"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "curl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8927"
+        },
+        {
+          "FixedVersion": "2.5.0-6.el9_8.5",
+          "InstalledVersion": "2.5.0-6.el9_8.1",
+          "PkgName": "expat",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-66046"
+        },
+        {
+          "FixedVersion": "2.5.0-6.el9_8.5",
+          "InstalledVersion": "2.5.0-6.el9_8.1",
+          "PkgName": "expat",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-93990"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "libcurl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8458"
+        },
+        {
+          "FixedVersion": "7.76.1-40.el9_8.7",
+          "InstalledVersion": "7.76.1-40.el9_8.5",
+          "PkgName": "libcurl-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-8927"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63379"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63381"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63382"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63383"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63384"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63385"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63387"
+        },
+        {
+          "FixedVersion": "2.1.13-1.el9_8",
+          "InstalledVersion": "2.1.12-8.el9_4",
+          "PkgName": "libevent",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63388"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-74860"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86138"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86140"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86142"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86143"
+        },
+        {
+          "FixedVersion": "2.9.13-14.el9_8.5",
+          "InstalledVersion": "2.9.13-14.el9_8.2",
+          "PkgName": "libxml2",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-86144"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14456"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14457"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-18798"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-54874"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63072"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63073"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63074"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63075"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63076"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14456"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-14457"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-18798"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-54874"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63072"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63073"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63074"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63075"
+        },
+        {
+          "FixedVersion": "1:3.5.8-1.el9_8",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "PkgName": "openssl-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-63076"
+        },
+        {
+          "FixedVersion": "3.34.1-11.el9_8",
+          "InstalledVersion": "3.34.1-10.el9_8",
+          "PkgName": "sqlite-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-11822"
+        },
+        {
+          "FixedVersion": "3.34.1-11.el9_8",
+          "InstalledVersion": "3.34.1-10.el9_8",
+          "PkgName": "sqlite-libs",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-11824"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-28420"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-52859"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-55892"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-59857"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73072"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73076"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73077"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.21",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73078"
+        }
+      ],
+      "reviewed_on": "2026-10-02",
+      "source_report_sha256": "8833b4f83dae98dc91b5cac57546b5b344fc1e4c190ca2bddf84b72485dec217"
+    },
+    "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510": {
+      "findings": [
+        {
+          "FixedVersion": "1.8.2-r0",
+          "InstalledVersion": "1.8.1-r0",
+          "PkgName": "jq",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-32316"
+        },
+        {
+          "FixedVersion": "1.8.2-r0",
+          "InstalledVersion": "1.8.1-r0",
+          "PkgName": "jq",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-40164"
+        },
+        {
+          "FixedVersion": "3.5.8-r0",
+          "InstalledVersion": "3.5.7-r0",
+          "PkgName": "libcrypto3",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-14456"
+        },
+        {
+          "FixedVersion": "3.5.8-r0",
+          "InstalledVersion": "3.5.7-r0",
+          "PkgName": "libssl3",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-14456"
+        },
+        {
+          "FixedVersion": "10.3_p1-r1",
+          "InstalledVersion": "10.3_p1-r0",
+          "PkgName": "openssh-client-common",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-60002"
+        },
+        {
+          "FixedVersion": "10.3_p1-r1",
+          "InstalledVersion": "10.3_p1-r0",
+          "PkgName": "openssh-client-common",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-59999"
+        },
+        {
+          "FixedVersion": "10.3_p1-r1",
+          "InstalledVersion": "10.3_p1-r0",
+          "PkgName": "openssh-client-common",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-60000"
+        },
+        {
+          "FixedVersion": "10.3_p1-r1",
+          "InstalledVersion": "10.3_p1-r0",
+          "PkgName": "openssh-client-default",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-60002"
+        },
+        {
+          "FixedVersion": "10.3_p1-r1",
+          "InstalledVersion": "10.3_p1-r0",
+          "PkgName": "openssh-client-default",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-59999"
+        },
+        {
+          "FixedVersion": "10.3_p1-r1",
+          "InstalledVersion": "10.3_p1-r0",
+          "PkgName": "openssh-client-default",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-60000"
+        },
+        {
+          "FixedVersion": "10.3_p1-r1",
+          "InstalledVersion": "10.3_p1-r0",
+          "PkgName": "openssh-keygen",
+          "PkgPath": "",
+          "Severity": "CRITICAL",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-60002"
+        },
+        {
+          "FixedVersion": "10.3_p1-r1",
+          "InstalledVersion": "10.3_p1-r0",
+          "PkgName": "openssh-keygen",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-59999"
+        },
+        {
+          "FixedVersion": "10.3_p1-r1",
+          "InstalledVersion": "10.3_p1-r0",
+          "PkgName": "openssh-keygen",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510 (alpine 3.24.1)",
+          "VulnerabilityID": "CVE-2026-60000"
+        },
+        {
+          "FixedVersion": "0.55.0",
+          "InstalledVersion": "v0.52.0",
+          "PkgName": "golang.org/x/crypto",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-56854"
+        },
+        {
+          "FixedVersion": "0.56.0",
+          "InstalledVersion": "v0.55.0",
+          "PkgName": "golang.org/x/net",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-46600"
+        },
+        {
+          "FixedVersion": "0.39.0",
+          "InstalledVersion": "v0.37.0",
+          "PkgName": "golang.org/x/text",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-56852"
+        },
+        {
+          "FixedVersion": "1.83.1",
+          "InstalledVersion": "v1.81.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-84304"
+        },
+        {
+          "FixedVersion": "1.82.2, 1.83.2, 1.84.0-dev.0.20260825144003-d5a41119e0e3, 1.85.0-dev.0.20260825072537-93e31b48545e",
+          "InstalledVersion": "v1.81.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-84445"
+        },
+        {
+          "FixedVersion": "1.82.1",
+          "InstalledVersion": "v1.81.1",
+          "PkgName": "google.golang.org/grpc",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "GHSA-hrxh-6v49-42gf"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-33818"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-39821"
+        },
+        {
+          "FixedVersion": "1.25.12, 1.26.5, 1.27.0-rc.2",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-39822"
+        },
+        {
+          "FixedVersion": "1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-46600"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-56853"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-56858"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-56859"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-56860"
+        },
+        {
+          "FixedVersion": "1.25.13, 1.26.6, 1.27.0-rc.3",
+          "InstalledVersion": "v1.26.4",
+          "PkgName": "stdlib",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/bin/restic",
+          "VulnerabilityID": "CVE-2026-56862"
+        }
+      ],
+      "reviewed_on": "2026-10-02",
+      "source_report_sha256": "9cb8d126d4b0c40cf78dc21c7c2edfc4cbb251d5b6a4e3968f21536f40f7eb80"
+    },
+    "roundcube/roundcubemail:1.7.4-fpm-alpine@sha256:cced4c7d40c21ec138b3622be13cadd2bbe7467eacd17029340b8650d7237ecf": {
+      "findings": [
+        {
+          "FixedVersion": "3.3.7-r2",
+          "InstalledVersion": "3.3.7-r1",
+          "PkgName": "libcrypto3",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "roundcube/roundcubemail:1.7.4-fpm-alpine@sha256:cced4c7d40c21ec138b3622be13cadd2bbe7467eacd17029340b8650d7237ecf (alpine 3.21.5)",
+          "VulnerabilityID": "CVE-2026-75804"
+        },
+        {
+          "FixedVersion": "3.3.7-r2",
+          "InstalledVersion": "3.3.7-r1",
+          "PkgName": "libcrypto3",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "roundcube/roundcubemail:1.7.4-fpm-alpine@sha256:cced4c7d40c21ec138b3622be13cadd2bbe7467eacd17029340b8650d7237ecf (alpine 3.21.5)",
+          "VulnerabilityID": "CVE-2026-84782"
+        },
+        {
+          "FixedVersion": "3.3.7-r2",
+          "InstalledVersion": "3.3.7-r1",
+          "PkgName": "libssl3",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "roundcube/roundcubemail:1.7.4-fpm-alpine@sha256:cced4c7d40c21ec138b3622be13cadd2bbe7467eacd17029340b8650d7237ecf (alpine 3.21.5)",
+          "VulnerabilityID": "CVE-2026-75804"
+        },
+        {
+          "FixedVersion": "3.3.7-r2",
+          "InstalledVersion": "3.3.7-r1",
+          "PkgName": "libssl3",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "roundcube/roundcubemail:1.7.4-fpm-alpine@sha256:cced4c7d40c21ec138b3622be13cadd2bbe7467eacd17029340b8650d7237ecf (alpine 3.21.5)",
+          "VulnerabilityID": "CVE-2026-84782"
+        },
+        {
+          "FixedVersion": "3.3.7-r2",
+          "InstalledVersion": "3.3.7-r1",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "roundcube/roundcubemail:1.7.4-fpm-alpine@sha256:cced4c7d40c21ec138b3622be13cadd2bbe7467eacd17029340b8650d7237ecf (alpine 3.21.5)",
+          "VulnerabilityID": "CVE-2026-75804"
+        },
+        {
+          "FixedVersion": "3.3.7-r2",
+          "InstalledVersion": "3.3.7-r1",
+          "PkgName": "openssl",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "roundcube/roundcubemail:1.7.4-fpm-alpine@sha256:cced4c7d40c21ec138b3622be13cadd2bbe7467eacd17029340b8650d7237ecf (alpine 3.21.5)",
+          "VulnerabilityID": "CVE-2026-84782"
+        },
+        {
+          "FixedVersion": "2.10.2",
+          "InstalledVersion": "2.10.0",
+          "PkgName": "league/commonmark",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "usr/src/roundcubemail/vendor/composer/installed.json",
+          "VulnerabilityID": "GHSA-3q6v-r5mr-hxv8"
+        }
+      ],
+      "owner_decision": "Accept this exact image and seven findings",
+      "review": "production/security/WEBMAIL_REVIEW_2026-10-04.md",
+      "reviewed_on": "2026-10-04",
+      "source_report_sha256": "699ba5acc6d3ef8b8d9b73a41054ea9aef3632eef5555a3b5faf5d74d2363468"
+    }
+  },
+  "owner_decision": "2026-10-02-official-vendor-images",
+  "rationale": "Owner explicitly authorized stable official vendor images despite reviewed findings; no custom vendor builds. Exact image and finding scope only. New findings and scan failures block.",
+  "schema": 1
+}

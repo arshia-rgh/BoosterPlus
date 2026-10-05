@@ -1,6 +1,13 @@
 # PLAYORA — final launch: R10 and R11
 
-**Status: AUTHORIZED — deployment package prepared; server and live acceptance pending (1 October 2026).** The owner considers the MVP ready for launch preparation and explicitly authorized R10/R11. Complete the deployment package and local qualification before requesting SSH. Domain, email and server access will be supplied later; deployed identity, alert delivery, real funds, recovery and owner activation evidence remain separate requirements.
+**Superseding owner decision, 4 October 2026:** off-host backups and measured
+backup recovery are deferred until after initial launch. Their requirements below
+remain follow-up work, not initial-launch blockers or passed checks. No recovery
+point/time promise is qualified; loss of the primary may lose all application and
+mail data. Preserve backup tooling and privacy holds. Other security, runtime,
+identity, content and activation checks remain in scope.
+
+**Status: AUTHORIZED — isolated server qualification resumed with official vendor images (2 October 2026).** The owner superseded the earlier vendor-fix hold and accepted the reviewed image findings. Use stable official releases pinned by digest, preserve scan reports and image/finding-scoped risk acceptance; this is not a clean security scan. Custom vendor prototypes remain unadopted. Domain, off-host backups, production email, deployed identity, alert delivery, real funds, recovery and owner activation evidence remain separate requirements. R10/R11 are not complete.
 
 Selected topology: **one primary server, self-hosted database and object storage, encrypted off-host backups**. The owner accepts downtime on primary-host failure. This is not a highly available deployment. Preserve all recovery targets below until measured or explicitly revised. See [execution and evidence ledger](production/LAUNCH_EXECUTION.md).
 
@@ -207,3 +214,15 @@ Final handover includes release commit/digests, verified CI/evidence, configurat
 The active completion ledger is `production/LAUNCH_EXECUTION.md`; R04 foundations and DI15 evidence remain identified separately. On resumption, record for each item: implementation commit, local evidence, representative staging evidence, real production evidence, operator/owner acceptance and unresolved dependencies. Writing a runbook or defining a Makefile target does not mark the corresponding operation qualified.
 
 Repository delivery remains on `main` with reviewed staged diffs, tracked hooks and verified direct pushes. The owner explicitly moved heavy launch/full qualification to the server; local launch stages retain static/security/unit/configuration checks and record heavy tests as deferred. Complete root/backend/frontend/production gates remain mandatory for final qualification. No failed check is bypassed or reported as passed. Preserve the full scope when later decisions revise this document and keep a clear record of approved changes.
+
+
+## Added mail acceptance — 4 October 2026
+
+The owner explicitly added deliverability improvement/Inbox-placement testing and
+a UI for the support mailbox to R10/R11. Follow `production/MAIL.md` for scope,
+message-authorization boundaries, security, capacity and acceptance evidence.
+Neither SMTP acceptance nor DNS publication is complete delivery qualification.
+The owner confirmed SPF/DKIM/DMARC PASS and Inbox placement for the additional
+authorized recheck. Browser-based support webmail preparation is proceeding;
+its security/runtime qualification and representative application delivery remain
+open before final launch acceptance.

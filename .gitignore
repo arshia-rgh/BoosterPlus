@@ -18,3 +18,4 @@ backend/bin/
 *.out
 
 __pycache__/
+production/secrets/

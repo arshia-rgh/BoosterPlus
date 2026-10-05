@@ -15,7 +15,7 @@ services:
     environment: {SSL_CERT_FILE: /certs/ca.crt}
     volumes: ["${STAGING_DIRECTORY:?}/certs/ca.crt:/certs/ca.crt:ro"]
   tidb:
-    image: pingcap/tidb:v8.5.7@sha256:41708a564e47e96d346fed433c3b9bc40d1950fdcc9c768812daeff6aadd930c
+    image: pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5
     command: ["--store=unistore", "--path=/data", "--host=0.0.0.0", "--config=/etc/tidb.toml"]
     volumes:
       - staging-database:/data
@@ -38,7 +38,7 @@ services:
     security_opt: [no-new-privileges:true]
     healthcheck: {disable: true}
   storage:
-    image: chrislusf/seaweedfs:4.46@sha256:08d516132314207d10c8e37cbffc1f32b147d870169688734cc61c6231625b62
+    image: chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d
     command: [mini, "-dir=/data"]
     env_file: [{path: "${STAGING_DIRECTORY:?}/storage.env", format: raw}]
     volumes: [staging-storage:/data]

@@ -13,6 +13,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authrate"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/emailtemplate"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 )
 
@@ -160,14 +161,18 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 		if createErr != nil {
 			return createErr
 		}
-		return s.queueMessage(ctx, tx, id, email, "Your PLAYORA verification code", fmt.Sprintf("Your code is %s. It expires in 10 minutes. Use it only for the %s portal %s request you started. If you did not request this code, ignore this email.", code, input.Portal, input.Purpose), 10*time.Minute)
+		return s.queueMessage(ctx, tx, id, email, "Your PLAYORA verification code", fmt.Sprintf("Enter the code in the verification screen for your request.\n\n%s\n\nIt expires in 10 minutes. Use it only for the %s portal %s request you started. If you did not request this code, ignore this email. Never share this code with support or another person.", code, input.Portal, input.Purpose), 10*time.Minute, emailtemplate.View{Heading: "Verify your request", Preview: "Your verification code expires in 10 minutes. Only use it for the request you started.", Code: code})
 	})
 	return id, err
 }
 
-func (s *Service) queueMessage(ctx context.Context, tx *ent.Tx, challengeID, email, subject, body string, lifetime time.Duration) error {
+func (s *Service) queueMessage(ctx context.Context, tx *ent.Tx, challengeID, email, subject, body string, lifetime time.Duration, views ...emailtemplate.View) error {
 	id := randomToken()
-	payload, marshalErr := json.Marshal(Message{To: email, Subject: subject, Body: body})
+	message := Message{To: email, Subject: subject, Body: body}
+	if len(views) > 0 {
+		message.View = views[0]
+	}
+	payload, marshalErr := json.Marshal(message)
 	if marshalErr != nil {
 		return marshalErr
 	}

@@ -12,6 +12,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authmessage"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/emailtemplate"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 )
 
@@ -20,6 +21,7 @@ type Message struct {
 	To      string
 	Subject string
 	Body    string
+	View    emailtemplate.View `json:"view,omitempty"`
 }
 
 // Sender is the email delivery boundary; tests inject a recorder instead of public SMTP.
@@ -52,19 +54,32 @@ func NewSMTP(cfg Config) (*SMTP, error) {
 
 // Send never exposes recipient addresses or codes in returned errors.
 func (s *SMTP) Send(ctx context.Context, value Message) error {
-	message := mail.NewMsg()
-	if err := message.From((&stdmail.Address{Name: "PLAYORA", Address: s.from}).String()); err != nil {
-		return errors.New("mail sender invalid")
+	message, err := s.compose(value)
+	if err != nil {
+		return err
 	}
-	if err := message.To(value.To); err != nil {
-		return errors.New("mail recipient invalid")
-	}
-	message.Subject(value.Subject)
-	message.SetBodyString(mail.TypeTextPlain, value.Body)
-	if err := s.client.DialAndSendWithContext(ctx, message); err != nil {
+	if err = s.client.DialAndSendWithContext(ctx, message); err != nil {
 		return errors.New("mail delivery unavailable")
 	}
 	return nil
+}
+
+func (s *SMTP) compose(value Message) (*mail.Msg, error) {
+	html, err := emailtemplate.Render(value.Subject, value.Body, value.View)
+	if err != nil {
+		return nil, err
+	}
+	message := mail.NewMsg()
+	if err := message.From((&stdmail.Address{Name: "PLAYORA", Address: s.from}).String()); err != nil {
+		return nil, errors.New("mail sender invalid")
+	}
+	if err := message.To(value.To); err != nil {
+		return nil, errors.New("mail recipient invalid")
+	}
+	message.Subject(value.Subject)
+	message.SetBodyString(mail.TypeTextPlain, value.Body+"\n\n"+emailtemplate.Footer)
+	message.AddAlternativeString(mail.TypeTextHTML, html)
+	return message, nil
 }
 
 // EmailHandler decrypts only an active message, redacts its stored payload after delivery, and tolerates retries.

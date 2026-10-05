@@ -1,0 +1,48 @@
+# Optional operator webmail. The only browser listener is loopback through SSH.
+services:
+  gateway:
+    ports: ["127.0.0.1:18443:18443"]
+    networks: [webmail-edge]
+    volumes:
+      - ./gateway/Caddyfile.mail-webmail:/etc/caddy/Caddyfile:ro
+      - ./gateway/Caddyfile.mail:/etc/caddy/mail.Caddyfile:ro
+      - ./gateway/Caddyfile.webmail:/etc/caddy/webmail.Caddyfile:ro
+      - ${DATA_DIRECTORY:?}/mail/webmail/code:/var/www/html:ro
+  webmail:
+    image: roundcube/roundcubemail:1.7.4-fpm-alpine@sha256:cced4c7d40c21ec138b3622be13cadd2bbe7467eacd17029340b8650d7237ecf
+    # Use the prepared, immutable upstream code. No startup composer/downloads.
+    entrypoint: [php-fpm, --nodaemonize]
+    working_dir: /var/www/html
+    user: "82:82"
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      MAIL_HOST: ${MAIL_HOST:?}
+      WEBMAIL_DOMAIN: ${SITE_ADDRESS:?}
+    volumes:
+      - ${DATA_DIRECTORY:?}/mail/webmail/code:/var/www/html:ro
+      - ${DATA_DIRECTORY:?}/mail/webmail/db:/var/roundcube/db
+      - ${DATA_DIRECTORY:?}/mail/webmail/des-key:/run/secrets/roundcube_des_key:ro
+      - ./webmail/config.inc.php:/var/www/html/config/config.inc.php:ro
+      - ./webmail/php.ini:/usr/local/etc/php/conf.d/zzz-playora.ini:ro
+      - ./webmail/fpm.conf:/usr/local/etc/php-fpm.d/zzzz-playora.conf:ro
+      - ./webmail/playora_support:/var/www/html/plugins/playora_support:ro
+    tmpfs: ["/tmp:size=16m,noexec,nosuid,uid=82,gid=82,mode=700"]
+    networks: [webmail-edge, mail-client]
+    mem_limit: 128m
+    cpus: 1
+    pids_limit: 32
+    stop_grace_period: 20s
+    healthcheck:
+      test: [CMD, php, -r, "$$s = @fsockopen('127.0.0.1', 9000, $$errno, $$error, 2); if (!$$s) { exit(1); } fclose($$s);"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options: {max-size: 5m, max-file: "2"}
+networks:
+  webmail-edge: {internal: true}

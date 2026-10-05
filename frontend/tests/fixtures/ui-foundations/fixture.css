@@ -9,6 +9,9 @@
   letter-spacing: -0.035em;
   overflow-wrap: anywhere;
 }
+.fixture-page h2 {
+  overflow-wrap: anywhere;
+}
 .fixture-page section {
   margin-block: 2rem;
 }

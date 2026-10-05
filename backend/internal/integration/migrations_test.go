@@ -322,13 +322,18 @@ func TestConcurrentMigrationInvocationsNeverApplyTwice(t *testing.T) {
 	r := runner(t, db)
 	errorsCh := make(chan error, 6)
 	var wait sync.WaitGroup
+	start := make(chan struct{})
 	for range 6 {
+		// Distinct runners cannot rely on an instance-local mutex for safety.
+		concurrent := runner(t, db)
 		wait.Go(func() {
-			if err := r.Apply(t.Context(), 0); err != nil && !errors.Is(err, migrate.ErrLocked) {
+			<-start
+			if err := concurrent.Apply(t.Context(), 0); err != nil && !errors.Is(err, migrate.ErrLocked) {
 				errorsCh <- err
 			}
 		})
 	}
+	close(start)
 	wait.Wait()
 	close(errorsCh)
 	for err := range errorsCh {
@@ -343,6 +348,28 @@ func TestConcurrentMigrationInvocationsNeverApplyTwice(t *testing.T) {
 	}
 	if applied != len(r.Files()) {
 		t.Fatalf("expected all applied versions, got %d", applied)
+	}
+}
+
+func TestMigrationLockBlocksJournalBootstrap(t *testing.T) {
+	db := testDB(t)
+	for _, statement := range []string{
+		"CREATE TABLE schema_migration_lock (id INT NOT NULL PRIMARY KEY, owner VARCHAR(64) NOT NULL, acquired_at DATETIME(6) NOT NULL)",
+		"INSERT INTO schema_migration_lock VALUES (1, 'first-installer', UTC_TIMESTAMP(6))",
+	} {
+		if _, err := db.ExecContext(t.Context(), statement); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := runner(t, db).Apply(t.Context(), 0); !errors.Is(err, migrate.ErrLocked) {
+		t.Fatalf("first-install lock bypassed: %v", err)
+	}
+	var journals int
+	if err := db.QueryRowContext(t.Context(), "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='schema_migration_journal'").Scan(&journals); err != nil {
+		t.Fatal(err)
+	}
+	if journals != 0 {
+		t.Fatal("non-owner created migration journal while another installer held the lock")
 	}
 }
 

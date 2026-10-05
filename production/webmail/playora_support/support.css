@@ -1,0 +1,42 @@
+/* Preserve upstream layout; make the operator login readable in PLAYORA green. */
+.btn-primary,
+.btn-primary:disabled {
+  background-color: #147347;
+  border-color: #147347;
+  color: #fff;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: #105c39 !important;
+  border-color: #105c39 !important;
+  color: #fff !important;
+}
+#login-form input::placeholder {
+  color: #59636c;
+  opacity: 1;
+}
+#login-form input:focus,
+#login-form button:focus-visible {
+  outline: 2px solid #147347;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Preserve the vendor dark palette; these links sit on light message surfaces. */
+html:not(.dark-mode) a.rcmContactAddress,
+html:not(.dark-mode) .header-links a,
+html:not(.dark-mode) .subject a.extwin,
+html:not(.dark-mode) .attachmentslist a,
+html:not(.dark-mode) a.btn-link {
+  color: #147347;
+}
+html:not(.dark-mode) .btn-secondary {
+  color: #fff;
+  background-color: #59636c;
+  border-color: #59636c;
+}
+html:not(.dark-mode) .floating-action-buttons a {
+  color: #fff;
+  background-color: #147347;
+}

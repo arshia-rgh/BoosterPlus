@@ -1,0 +1,35 @@
+# Container port is published on host loopback only. Reach it through SSH with
+# the real mail hostname so the browser verifies the public certificate normally.
+https://{$MAIL_HOST}:18443 {
+	tls {
+		issuer acme {
+			dir https://acme-v02.api.letsencrypt.org/directory
+		}
+	}
+	root * /var/www/html/public_html
+	request_body {
+		max_size 5MB
+	}
+	header {
+		-Server
+		Cache-Control "no-store"
+		X-Robots-Tag "noindex, nofollow"
+		X-Content-Type-Options nosniff
+		# Roundcube uses same-origin frames for message previews and composition.
+		X-Frame-Options SAMEORIGIN
+		Referrer-Policy no-referrer
+	}
+	@private path /installer* /config* /SQL* /vendor* /bin* /logs* /temp* /.git* /.env*
+	respond @private 404
+	@otherphp {
+		path *.php
+		not path /index.php /static.php
+	}
+	respond @otherphp 404
+	php_fastcgi webmail:9000 {
+		capture_stderr
+		dial_timeout 3s
+		read_timeout 20s
+	}
+	file_server
+}

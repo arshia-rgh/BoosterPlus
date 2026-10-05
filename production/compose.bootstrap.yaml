@@ -1,0 +1,30 @@
+# Only DNS/TLS preparation. Stop this project before the signed application
+# gateway starts; both reuse the same private Caddy certificate directory.
+name: playora-bootstrap
+services:
+  gateway:
+    image: ${GATEWAY_IMAGE:?Use the scanned immutable gateway image}
+    user: "1000:1000"
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?}
+      MAIL_HOST: ${MAIL_HOST:?}
+      ACME_EMAIL: ${ACME_EMAIL:?}
+    ports: ["80:8080", "443:8443"]
+    volumes:
+      - ./gateway/Caddyfile.bootstrap:/etc/caddy/Caddyfile:ro
+      - ${DATA_DIRECTORY:?}/data/gateway:/data
+    tmpfs: ["/tmp:size=32m,noexec,nosuid", "/config:size=16m,noexec,nosuid,uid=1000,gid=1000"]
+    mem_limit: 256m
+    cpus: 1
+    pids_limit: 128
+    stop_grace_period: 30s
+    networks: [bootstrap-egress]
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+networks:
+  bootstrap-egress: {}

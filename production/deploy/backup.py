@@ -86,7 +86,7 @@ def snapshot_id(output):
 def running_services(manifest):
     output = run(manifest, ["ps", "--services", "--filter", "status=running"], capture=True)
     names = set(output.splitlines())
-    allowed = {"gateway", "worker", "storefront", "admin", "api", "scanner", "mailserver", "pd", "tikv", "tidb", "storage", "object-gateway"}
+    allowed = {"gateway", "worker", "storefront", "admin", "api", "scanner", "mailserver", "webmail", "pd", "tikv", "tidb", "storage", "object-gateway"}
     if not names or names - allowed:
         raise ValueError("Unexpected deployment services; inspect before taking a snapshot")
     return sorted(names)

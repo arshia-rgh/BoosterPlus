@@ -10,10 +10,10 @@ def budget(name=DEFAULT):
                 "startup_free": 200 * GIB, "warning_free": 100 * GIB,
                 "capture_free": 100 * GIB}
     if name == SMALL:
-        # All service limits, including one-shot BR and migrations, total 13.375
+        # All service limits, including optional webmail, BR and migrations, total 13.5
         # GiB. Reserve another 2 GiB for the kernel, Docker and host processes.
         # Capture retains its 32 GiB hard bound plus 32 GiB free headroom.
-        return {"cpus": 8, "memory": 123 * GIB // 8, "disk": 135 * GIB,
+        return {"cpus": 8, "memory": 31 * GIB // 2, "disk": 135 * GIB,
                 "startup_free": 80 * GIB, "warning_free": 72 * GIB,
                 "capture_free": 64 * GIB}
     raise ValueError("Unknown HOST_PROFILE; choose single-64gb or single-16gb")
@@ -50,7 +50,7 @@ def check_model(model, name):
     total = 0
     for service in services.values():
         total += memory_limit(service)
-    if total > 107 * GIB // 8:
+    if total > 27 * GIB // 2:
         raise ValueError("Small-host memory budget exceeded; preserve host headroom")
     for service, filename in (("tikv", "tikv.small.toml"), ("tidb", "tidb.small.toml")):
         from pathlib import Path

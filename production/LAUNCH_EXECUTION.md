@@ -3,14 +3,39 @@
 Authorized 30 September 2026. Source scope: [final launch](../final-launch.md).
 Baseline `aeae62b5980fbf18d0c183af88a6dee67f0698a0`, schema 39. This ledger distinguishes implemented tooling from exercised operations and actual production acceptance.
 
+## Current qualification — 4 October 2026
+
+The owner deferred off-host backups and real recovery/RPO/RTO qualification until
+after initial launch. `make initial-launch-check` permits only that recorded
+recovery deferral, bound to the release packet and intact owner-decision evidence.
+Its status must be `owner_deferred`, decision
+`2026-10-04-defer-backups-until-after-launch`, risk
+`primary-host-loss-may-lose-all-data`, with operator/time and hashed evidence.
+Every other check remains required. The ordinary `qualification-check` still
+requires recovery measurements; neither command activates sales. Initial launch
+with this deferral is not full R10/R11 completion. Backup tools remain unchanged.
+
+The approved MTU correction restored verified downloads. The owner initially
+chose to wait for vendor fixes, then explicitly superseded that hold: use stable
+official images and continue despite the reviewed image vulnerabilities.
+Select supported releases, pin their digests and retain raw audit reports with
+image/finding-scoped owner risk acceptance. Accepted findings are not fixed or
+proven unreachable. Unknown findings and scan execution failures remain blocking;
+application security and runtime/recovery checks are unchanged. Private custom
+vendor prototypes are not adopted. No recurring monitor is set.
+
+See [vendor image policy](VENDOR_IMAGES.md) and [progress](../docs/progress.md).
+Public DNS/PTR, trusted maintenance/mail HTTPS and the approved Gmail authentication/Inbox check are verified. Google credentials are installed privately and GitHub CLI access works; deployed identity, alert delivery, bounded live financial qualification and owner activation remain pending. Off-host backups/recovery are explicitly deferred for initial launch, as above.
+The full server gate has not passed and no public application is activated.
+
 ## Decisions
 
-- Latest sizing/access decision (1 October2026): owner purchased ParsPack Germany with 8 vCPU, 16 GB RAM and 150 GB disk and authorized deployment through `ssh playora`. The separately budgeted `single-16gb` candidate is described in `SMALL_HOST.md`; prior larger sizing below is historical, not a measured minimum. Source clone using the explicitly approved read-only deploy key now succeeds. Domain, off-host destination and final qualification remain pending.
+- Latest sizing/access decision (1 October2026): owner purchased ParsPack Germany with 8 vCPU, 16 GB RAM and 150 GB disk and authorized deployment through `ssh playora`. The separately budgeted `single-16gb` candidate is described in `SMALL_HOST.md`; prior larger sizing below is historical, not a measured minimum. Source clone using the explicitly approved read-only deploy key now succeeds. Domain selected on4October; DNS setup, off-host destination and final qualification remain pending.
 - Owner selected one primary server with self-hosted database and storage and a separate backup destination. Primary-host failure causes downtime; no HA claim.
 - Provisional compact-host sizing: 16 dedicated CPU cores, 64 GB RAM, 1 TB persistent NVMe, x86-64-v2 or newer, Ubuntu Server 24.04 LTS. This is an engineering starting point for measurement, below PingCAP's full production cluster recommendations. Do not purchase based on an unmeasured capacity guarantee. The scanner currently requires amd64.
 - Production SQL uses TiDB + PD + TiKV, never unistore. One-host replicas do not create independent failure domains. No TiFlash or NATS is required by the current workload.
 - Reuse the already integrated SeaweedFS S3 implementation, with private access and TLS. Keep object metadata and volume data together in recovery evidence.
-- Domain, email and SSH come later. Do not invent a public hostname or generate live provider traffic while these are missing.
+- The server is accessible through the authorized `playora` operator. On 4 October the owner selected `playoragames.com`; DNS setup, external alert inbox and public mail qualification remain pending. Do not generate live payment traffic without bounded transaction authorization.
 - Owner reports NOWPayments ready; credentials remain private. Provider configuration is not evidence of completed funding/refund/payout tests.
 - Owner requests self-hosted email so transactional sending can run without an email relay provider. Select a static-IP host with outbound TCP25 and operator-controlled PTR. DNS/SPF/DKIM/DMARC, TLS, SMTP authentication, open-relay rejection, bounce handling and actual inbox delivery remain qualification requirements. This supersedes the preliminary Postmark recommendation.
 - Owner wants services without identity-document KYC. Preserve a provider-neutral SMTP adapter. No provider is represented as guaranteeing exemption from future identity/account checks. Domain/email verification remains necessary. Postmark's mandatory account review is documented; it has not been selected. Resend is a candidate with documented SMTP/domain/API-key setup; owner/provider eligibility and production inbox delivery remain unqualified.
@@ -34,11 +59,11 @@ Local host disk fell below 5 GB during preparation. Owner explicitly moved heavy
 | R11.3 crypto | Adapter delivered previously | Isolated financial fixtures | Approved small-transaction budget/routes/recipients and actual receipts |
 | R11.4 role journeys | DI15 baseline delivered | Re-run changed/integrated paths | Deployed owner walkthrough |
 | R11.5 security/load/recovery | Fixture HTTP workload and complete acceptance packet prepared; execution pending | Full gate remains required | Real topology load, restoration, device/AT limits recorded honestly |
-| R11.6 activation | Not activated | No SSH/deployment attempted | Owner review and explicit sales activation after evidence |
+| R11.6 activation | Not activated | Authorized host preparation and isolated qualification underway; full gate not yet passed | Owner review and explicit sales activation after evidence |
 
 ## Input handoff (no secrets in this document)
 
-Provide the domain and DNS access method, an operator alert email, off-host backup destination, backup/key retention and custodians. SMTP credentials and Google OAuth client secret go in protected runtime files. The Google web OAuth client must allow these exact HTTPS paths on the chosen origin:
+The owner supplied `playoragames.com` (Server.ir) and an external contact inbox, stored privately. Follow [domain setup](DOMAIN_SETUP.md); DNS management, off-host backup destination, backup/key retention and custodians remain pending. SMTP credentials and Google OAuth client secret go in protected runtime files. The Google web OAuth client must allow these exact HTTPS paths on the chosen origin:
 
 - `/api/v1/auth/portals/customer/google/callback`
 - `/api/v1/auth/portals/admin/google/callback`
@@ -109,3 +134,25 @@ Added bounded five-minute redacted HTTP numeric samples, an offline private dash
 Focused Go recovery/config/CLI/journal/app race tests passed and the new real-TiKV integration scenarios compiled. Initial checks caught a fixture principal-name error and unchecked test/config decoding errors; corrected without skipping checks. Local deployment/configuration tests passed before final additions; final tracked-hook receipt is recorded in progress after execution. Heavy real-TiKV/BR/restic/load/image/full-gate tests and authenticated remote CI remain **DEFERRED**, not passed.
 
 Remaining acceptance requires server SSH/host provisioning, independent backup/journal/watchdog configuration, domain/mail DNS and recipients, real Google callbacks, approved content/retention/terms, bounded live financial authorization and owner walkthrough. The monitor conservatively retains recovery alerts until the actual backup/restore policy is qualified; the online archive is still a candidate receipt, not a fabricated recovery PASS. Final R10/R11 completion and sales activation remain open until actual evidence is recorded.
+
+
+### Public DNS/TLS preparation and qualification — 4 October 2026
+
+Cloudflare DNS and mail forward/PTR alignment are verified. An isolated, scanned
+maintenance gateway obtained publicly trusted website/mail certificates. Website
+503 and mail404 responses are intentional; the application and public SMTP are
+not active. Certificate renewal and real delivery remain open. SPF/DKIM values
+are ready in [MAIL_DNS_SETUP.md](MAIL_DNS_SETUP.md) for owner publication.
+
+The normal gate25 passed application/static/browser/staging checks but failed
+sustained real-TiKV memory protection; run26 reproduced the failure. Heap evidence
+identified a large fixed upstream debugging-symbol cache. A measured mail fixture
+supports testing4GiB TiKV/1GiB mail within the same host memory budget. Corrected
+run34 passed protocol/security/restart probes and is executing the full database
+suite. This is not full-gate, capacity, recovery or launch success.
+
+The owner separately accepted eight newly reported Redis package findings for
+the exact existing mail digest. A fresh scan passed the explicit acceptance
+policy with474accepted findings, not a clean vulnerability result. See
+[the review](security/MAIL_REVIEW_2026-10-04.md). All unaccepted findings and scan
+errors still block; original failed reports are retained.

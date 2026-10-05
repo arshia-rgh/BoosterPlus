@@ -6,7 +6,7 @@ services:
     cpus: 1
     environment: {GOMEMLIMIT: 384MiB, GOMAXPROCS: "1"}
   tikv:
-    mem_limit: 3584m
+    mem_limit: 4g
     cpus: 3
     volumes: ["./config/tikv.small.toml:/config/tikv.toml:ro"]
   tidb:

@@ -277,25 +277,47 @@ test("private pre-sales replies recover across reconnects and keep staff notes p
     await expect(
       buyer.getByRole("link", { name: "New support reply · Read" }),
     ).toHaveCount(1);
+    let activityMessageID = "";
     await expect
       .poll(async () => {
         const response = await request.get(
           "http://127.0.0.1:8025/api/v1/search",
           {
             params: {
-              query:
-                "to:" +
-                fixture(info.project.name, "supportbuyer") +
-                " subject:New activity",
+              query: "to:" + fixture(info.project.name, "supportbuyer"),
             },
           },
         );
         const data = z
-          .object({ messages: z.array(z.object({ ID: z.string() })) })
+          .object({
+            messages: z.array(
+              z.object({ ID: z.string(), Subject: z.string() }),
+            ),
+          })
           .parse(await response.json());
-        return data.messages.length;
+        const messages = data.messages.filter(
+          (message) =>
+            message.Subject === "You have a support update | PLAYORA",
+        );
+        activityMessageID = messages[0]?.ID ?? "";
+        return messages.length;
       })
       .toBeGreaterThan(0);
+    const delivered = await request.get(
+      "http://127.0.0.1:8025/api/v1/message/" + activityMessageID,
+    );
+    expect(delivered.ok()).toBe(true);
+    const activityMail = z
+      .object({ Subject: z.string(), Text: z.string(), HTML: z.string() })
+      .parse(await delivered.json());
+    expect(activityMail.Subject).toBe("You have a support update | PLAYORA");
+    for (const body of [activityMail.Text, activityMail.HTML]) {
+      expect(body).toContain(`/support/${id}`);
+      expect(body).not.toContain("Private staff-only evaluation");
+      expect(body).not.toContain("Can you help me choose a service?");
+      expect(body).not.toContain("We can review your preferred game and rank.");
+    }
+    expect(activityMail.HTML).toContain("Open conversation");
     const strangerContext = await browser.newContext({
       baseURL: "http://127.0.0.1:4173",
     });

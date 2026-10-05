@@ -1,5 +1,12 @@
 import { GameCatalog } from "../../../app/catalog/public";
-import { listingSchema } from "../../../app/catalog/model";
+import {
+  emptyConfiguration,
+  emptyField,
+  listingSchema,
+  type Service,
+} from "../../../app/catalog/model";
+import DynamicForm from "../../../app/catalog/dynamic-form";
+import { saveConfigurationDraft } from "../../../app/catalog/configuration-draft";
 // Test-only fixture: no production route, network mutations or real account data.
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -25,6 +32,7 @@ import ErrorPage from "../../../app/ui/error-page";
 import "../../../app/styles.css";
 import "../../../app/ui/design-system.css";
 import "../../../app/ui/workspace.css";
+import "../../../app/experience/experience.css";
 import "./fixture.css";
 function Components() {
   const [draft, setDraft] = useState("");
@@ -169,7 +177,7 @@ function Results() {
 function RecordExample() {
   const [draft, setDraft] = useState("");
   return (
-    <main id="main" className="page fixture-page">
+    <main id="main" className="page identity-page fixture-page">
       <RecordShell
         id="EXAMPLE-1"
         title="Order"
@@ -203,8 +211,82 @@ function RecordExample() {
     </main>
   );
 }
+const draftService: Service = {
+  key: "boost",
+  name: "Boost",
+  description: "",
+  evaluator: "manual-review-v1",
+  rules: [],
+  fields: [
+    {
+      ...emptyField("mode"),
+      label: "Play mode",
+      required: true,
+      options: [
+        { key: "solo", label: "Solo", units: 0 },
+        { key: "duo", label: "Together", units: 0 },
+      ],
+    },
+  ],
+};
+const draftConfig = {
+  ...emptyConfiguration("Fixture game"),
+  services: [draftService],
+};
+function DraftExample() {
+  return (
+    <main id="main" className="page identity-page fixture-page">
+      <h1>Selection retention</h1>
+      <p>
+        Test-only example. Choose a play mode, then update another game's saved
+        draft. Your choice should remain.
+      </p>
+      <Button
+        onClick={() => {
+          saveConfigurationDraft(
+            "fixture-release",
+            draftService,
+            draftConfig,
+            "",
+            "",
+            { mode: "duo" },
+          );
+          window.dispatchEvent(
+            new StorageEvent("storage", { key: "playora.configuration" }),
+          );
+        }}
+      >
+        Restore this form's saved draft
+      </Button>
+      <Button
+        onClick={() => {
+          saveConfigurationDraft(
+            "another-release",
+            draftService,
+            draftConfig,
+            "another-package",
+            "standard",
+            { mode: "duo" },
+          );
+          window.dispatchEvent(
+            new StorageEvent("storage", { key: "playora.configuration" }),
+          );
+        }}
+      >
+        Update unrelated saved draft
+      </Button>
+      <DynamicForm
+        config={draftConfig}
+        service={draftService}
+        releaseID="fixture-release"
+        slug="fixture-game"
+      />
+    </main>
+  );
+}
 const router = createBrowserRouter([
   { path: "/", Component: Components },
+  { path: "/configuration", Component: DraftExample },
   {
     path: "/list",
     Component: Results,
@@ -250,6 +332,14 @@ const router = createBrowserRouter([
     },
   },
   { path: "/record", Component: RecordExample },
+  {
+    path: "/themed-record",
+    element: (
+      <div className="experience">
+        <RecordExample />
+      </div>
+    ),
+  },
   {
     path: "*",
     element: (

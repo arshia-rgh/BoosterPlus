@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { afterEach, expect, it, vi } from "vitest";
 import { APIError, post } from "../identity/api";
 import DynamicForm from "./dynamic-form";
@@ -13,7 +14,10 @@ vi.mock("../identity/api", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../identity/api")>()),
   post: vi.fn(),
 }));
-afterEach(() => vi.clearAllMocks());
+afterEach(() => {
+  vi.clearAllMocks();
+  sessionStorage.clear();
+});
 const service: Service = {
   key: "boost",
   name: "Boost",
@@ -42,6 +46,75 @@ const config: Configuration = {
   ...emptyConfiguration("Test game"),
   services: [service],
 };
+it("keeps server-rendered choices disabled until handlers can retain input", () => {
+  const form = (
+    <DynamicForm
+      config={config}
+      service={service}
+      slug="test"
+      releaseID="release"
+    />
+  );
+  const html = renderToString(form);
+  const document = new DOMParser().parseFromString(html, "text/html");
+  expect(document.querySelector("fieldset")?.hasAttribute("disabled")).toBe(
+    true,
+  );
+  expect(document.querySelector('[role="status"]')?.textContent).toContain(
+    "Preparing your form",
+  );
+  expect(document.querySelector("noscript")?.textContent).toContain(
+    "JavaScript is needed",
+  );
+  render(form);
+  expect(screen.getByLabelText("One hero")).toBeEnabled();
+  expect(screen.queryByText("Preparing your form…")).toBeNull();
+});
+it.each([false, true])(
+  "retains current choices when an unrelated draft changes (restored=%s)",
+  (restored) => {
+    if (restored)
+      sessionStorage.setItem(
+        "playora.configuration",
+        JSON.stringify({
+          release: "release",
+          service: "boost",
+          pack: "",
+          variant: "",
+          expires: Date.now() + 60000,
+          answers: { one: true },
+        }),
+      );
+    render(
+      <DynamicForm
+        config={config}
+        service={service}
+        slug="test"
+        releaseID="release"
+      />,
+    );
+    fireEvent.change(screen.getByLabelText("One hero"), {
+      target: { value: "false" },
+    });
+    sessionStorage.setItem(
+      "playora.configuration",
+      JSON.stringify({
+        release: "another-release",
+        service: "boost",
+        pack: "other-package",
+        variant: "standard",
+        expires: Date.now() + 60000,
+        answers: { one: true },
+      }),
+    );
+    fireEvent(
+      window,
+      new StorageEvent("storage", { key: "playora.configuration" }),
+    );
+    expect(screen.getByLabelText("One hero")).toHaveValue("false");
+    expect(screen.queryByText(/Your saved choices are restored/)).toBeNull();
+  },
+);
 it("renders stages/visibility and submits no hidden stale answers", async () => {
   vi.mocked(post)
     .mockResolvedValueOnce({ answers: { one: false }, issues: [] })

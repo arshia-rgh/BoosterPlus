@@ -52,6 +52,11 @@ class ProvisionMaterial(unittest.TestCase):
                                         capture_output=True, timeout=10, check=False)
                 self.assertEqual(result.returncode, 0, name)
                 handshake(leaf, name)
+                if name == "pd":
+                    handshake(leaf, "127.0.0.1")
+                else:
+                    with self.assertRaises(ssl.SSLCertVerificationError):
+                        handshake(leaf, "127.0.0.1")
                 with self.assertRaises(ssl.SSLCertVerificationError):
                     handshake(leaf, "wrong-host")
                 self.assertEqual((leaf / "server.key").stat().st_mode & 0o777, 0o600)

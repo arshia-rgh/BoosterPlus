@@ -41,13 +41,15 @@ x-runtime-env: &runtime-env
   DATABASE_DSN: boosterplus_runtime:${DEV_DATABASE_PASSWORD:-}@tcp(tidb:4000)/boosterplus
 services:
   tidb:
-    image: pingcap/tidb:v8.5.7@sha256:41708a564e47e96d346fed433c3b9bc40d1950fdcc9c768812daeff6aadd930c
+    image: pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5
     command: ["--store=unistore", "--path=/data", "--host=0.0.0.0", "--status=10080"]
     ports: ["127.0.0.1:14000:4000"]
     volumes: [tidb-data:/data]
     security_opt: [no-new-privileges:true]
-    # Repeated full-schema qualification exceeds 2 GiB with the local unistore engine.
-    mem_limit: 3g
+    # Unistore retains lock arenas/schema caches across repeated test schemas.
+    # Qualification95 exceeded 3 GiB. The 16 GiB server uses an explicit 6g
+    # override; production uses separate TiKV-backed limits and is unaffected.
+    mem_limit: ${DEV_TIDB_MEMORY_LIMIT:-4g}
     cpus: 2
     restart: unless-stopped
   bootstrap:
@@ -111,11 +113,11 @@ services:
       CLAMD_CONF_ConcurrentDatabaseReload: "no"
     volumes: [scanner-data:/var/lib/clamav]
     security_opt: [no-new-privileges:true]
-    mem_limit: 1536m
+    mem_limit: 2g
     cpus: 1
     restart: unless-stopped
   storage:
-    image: chrislusf/seaweedfs:4.46@sha256:08d516132314207d10c8e37cbffc1f32b147d870169688734cc61c6231625b62
+    image: chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d
     profiles: [storage]
     command: [mini, "-dir=/data"]
     ports: ["127.0.0.1:8333:8333"]

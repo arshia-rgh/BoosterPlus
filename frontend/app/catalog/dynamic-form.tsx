@@ -39,6 +39,10 @@ import {
   type Variant,
 } from "./model";
 
+const subscribeHydration = () => () => undefined;
+const clientHydrated = () => true;
+const serverHydrated = () => false;
+
 export function Input({
   field,
   config,
@@ -270,6 +274,12 @@ function ConfigurationForm({
   intakeScope?: string;
   journey?: { review: () => void; invalidate: () => void; edit: () => void };
 }) {
+  // Server-rendered controls must not accept input before React can retain it.
+  const hydrated = useSyncExternalStore(
+    subscribeHydration,
+    clientHydrated,
+    serverHydrated,
+  );
   const reference = useContext(RequestReference);
   const [uploadScope] = useState(
     () => intakeScope || reference || crypto.randomUUID(),
@@ -352,7 +362,7 @@ function ConfigurationForm({
   }
   async function submit(event?: SubmitEvent<HTMLFormElement>, advance = false) {
     event?.preventDefault();
-    if (busy || unavailable || uploadPending) return;
+    if (!hydrated || busy || unavailable || uploadPending) return;
     const sequence = ++requestSequence.current;
     setBusy(true);
     setError(null);
@@ -435,8 +445,12 @@ function ConfigurationForm({
       onSubmit={(event) => void submit(event)}
       noValidate
     >
+      {!hydrated && <p role="status">Preparing your form…</p>}
+      <noscript>
+        JavaScript is needed to configure and submit an order.
+      </noscript>
       <div className="configuration-layout">
-        <fieldset disabled={busy || unavailable}>
+        <fieldset disabled={!hydrated || busy || unavailable}>
           <legend>{service.name} selections</legend>
           {service.fulfillment && (
             <details className="configuration-privacy">
@@ -792,6 +806,8 @@ export default function DynamicForm(
           props.variant?.key ?? "",
         )
       : null;
+  const [restoredKey, setRestoredKey] = useState<string | null>(null);
+  if (restored && raw && raw !== restoredKey) setRestoredKey(raw);
   return (
     <>
       {restored && (
@@ -803,7 +819,9 @@ export default function DynamicForm(
       )}
       <ConfigurationForm
         {...props}
-        key={raw && raw.length <= 20000 ? raw : "fresh"}
+        // An unrelated or expired saved draft must not remount this form and
+        // discard current input when the client storage snapshot becomes ready.
+        key={restoredKey ?? "fresh"}
         initialAnswers={props.initialAnswers ?? restored ?? {}}
       />
     </>

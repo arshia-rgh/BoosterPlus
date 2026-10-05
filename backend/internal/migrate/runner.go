@@ -89,15 +89,18 @@ func (r *Runner) Status(ctx context.Context) (_ []Status, resultErr error) {
 	return result, nil
 }
 
-func (r *Runner) bootstrap(ctx context.Context) error {
-	statements := []string{
-		`CREATE TABLE IF NOT EXISTS schema_migration_lock (id INT NOT NULL PRIMARY KEY, owner VARCHAR(64) NOT NULL, acquired_at DATETIME(6) NOT NULL)`,
-		`CREATE TABLE IF NOT EXISTS schema_migration_journal (version BIGINT NOT NULL PRIMARY KEY, filename VARCHAR(255) NOT NULL, checksum CHAR(64) NOT NULL, state VARCHAR(20) NOT NULL, started_at DATETIME(6) NOT NULL, finished_at DATETIME(6) NULL)`,
+func (r *Runner) bootstrapLock(ctx context.Context) error {
+	if _, err := r.db.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS schema_migration_lock (id INT NOT NULL PRIMARY KEY, owner VARCHAR(64) NOT NULL, acquired_at DATETIME(6) NOT NULL)`); err != nil {
+		return fmt.Errorf("bootstrap migration lock: %w", err)
 	}
-	for _, statement := range statements {
-		if _, err := r.db.ExecContext(ctx, statement); err != nil {
-			return fmt.Errorf("bootstrap migration bookkeeping: %w", err)
-		}
+	return nil
+}
+
+func (r *Runner) bootstrapJournal(ctx context.Context) error {
+	// Only the durable lock owner may initialize the journal. Concurrent
+	// first-install DDL must not overlap another runner's journal writes.
+	if _, err := r.db.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS schema_migration_journal (version BIGINT NOT NULL PRIMARY KEY, filename VARCHAR(255) NOT NULL, checksum CHAR(64) NOT NULL, state VARCHAR(20) NOT NULL, started_at DATETIME(6) NOT NULL, finished_at DATETIME(6) NULL)`); err != nil {
+		return fmt.Errorf("bootstrap migration journal: %w", err)
 	}
 	return nil
 }
@@ -153,7 +156,7 @@ func (r *Runner) Down(ctx context.Context, steps int) error {
 }
 
 func (r *Runner) exclusive(ctx context.Context, action func(*goose.Provider) error) (result error) {
-	if err := r.bootstrap(ctx); err != nil {
+	if err := r.bootstrapLock(ctx); err != nil {
 		return err
 	}
 	owner := rand.Text()
@@ -171,6 +174,9 @@ func (r *Runner) exclusive(ctx context.Context, action func(*goose.Provider) err
 		_, releaseErr := r.db.ExecContext(cleanup, "DELETE FROM schema_migration_lock WHERE id = 1 AND owner = ?", owner)
 		result = errors.Join(result, releaseErr)
 	}()
+	if journalErr := r.bootstrapJournal(ctx); journalErr != nil {
+		return journalErr
+	}
 	provider, err := goose.NewProvider(goose.DialectMySQL, r.db, r.source, goose.WithDisableGlobalRegistry(true))
 	if err != nil {
 		return fmt.Errorf("initialize SQL migration provider: %w", err)

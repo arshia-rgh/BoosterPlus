@@ -59,6 +59,10 @@ def main():
     ])
     paths = [item.decode() for item in raw.split(b"\0") if item]
     selected = scope(paths)
+    if selected == "full":
+        from launch_resume import run_if_available
+        if run_if_available():
+            return
     if LAUNCH_SERVER_QUALIFICATION_PENDING and selected == "full" and launch_preparation_only(paths):
         print("Required gate: launch preparation; heavy/full qualification DEFERRED TO SERVER, not passed", flush=True)
         for command in preparation_commands(paths):

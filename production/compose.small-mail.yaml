@@ -1,0 +1,6 @@
+# Merge only with MAIL_MODE=self-hosted on the16GB profile.
+services:
+  mailserver:
+    # Isolated TLS/auth/local-delivery burst peaked at606 MiB in a1 GiB cgroup.
+    # External delivery and whole-host capacity still require qualification.
+    mem_limit: 1g

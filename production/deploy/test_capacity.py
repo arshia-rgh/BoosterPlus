@@ -15,7 +15,11 @@ class CapacityPolicy(unittest.TestCase):
         self.assertEqual(selected({}), DEFAULT)
         manifest = {"DEPLOY_PROJECT": "boosterplus-budget", "HOST_PROFILE": SMALL,
                     "DATA_TOPOLOGY": "self-hosted-single", "MAIL_MODE": "self-hosted", "PITR_ENABLED": "true"}
-        self.assertTrue(compose(manifest)[-1].endswith("compose.small.yaml"))
+        self.assertTrue(compose(manifest)[-3].endswith("compose.small.yaml"))
+        self.assertTrue(compose(manifest)[-1].endswith("compose.small-mail.yaml"))
+        external = compose(dict(manifest, MAIL_MODE="external"))
+        self.assertTrue(external[-1].endswith("compose.small.yaml"))
+        self.assertFalse(any(value.endswith("compose.small-mail.yaml") for value in external))
         for invalid in ({"HOST_PROFILE": SMALL}, dict(manifest, HOST_PROFILE="typo")):
             with self.assertRaises(ValueError):
                 compose(invalid)

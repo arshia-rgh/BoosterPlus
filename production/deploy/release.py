@@ -121,6 +121,8 @@ def execute(manifest, bundle, *, rollback=False, resume=False, runner=None, smok
             smoke("https://" + candidate["SITE_ADDRESS"])
             if candidate.get("MAIL_MODE") == "self-hosted":
                 runner(candidate, ["up", "-d", "--wait", "--wait-timeout", "180", "mailserver"])
+            if candidate.get('WEBMAIL_ENABLED') == 'true':
+                runner(candidate, ['up', '-d', '--wait', '--wait-timeout', '60', 'webmail'])
             runner(candidate, ["up", "-d", "--wait", "--wait-timeout", "180", "worker"])
             complete = {"project": project, "state": "complete", "completed_at": now(), "release": target,
                         "manifest_sha256": hashlib.sha256(bounded(Path(bundle) / "release.json")).hexdigest()}

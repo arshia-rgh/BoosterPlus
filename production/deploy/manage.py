@@ -43,6 +43,8 @@ def load(path, staging=False):
     if manifest.get("PITR_ENABLED", "false") not in ("true", "false"):
         raise ValueError("PITR_ENABLED must be true or false")
     mail_mode = manifest.get("MAIL_MODE", "external")
+    from webmail import enabled as webmail_enabled
+    webmail_enabled(manifest)
     if mail_mode not in ("external", "self-hosted"):
         raise ValueError("Unknown mail deployment mode")
     if mail_mode == "self-hosted":
@@ -129,8 +131,13 @@ def compose(manifest, staging=False):
         args += ["-f", str(ROOT / "compose.mail.yaml")]
     if manifest.get("PITR_ENABLED") == "true":
         args += ["-f", str(ROOT / "compose.pitr.yaml")]
+    from webmail import enabled as webmail_enabled
+    if webmail_enabled(manifest):
+        args += ["-f", str(ROOT / "compose.webmail.yaml")]
     if profile == capacity.SMALL:
         args += ["-f", str(ROOT / "compose.small.yaml")]
+        if manifest.get("MAIL_MODE") == "self-hosted":
+            args += ["-f", str(ROOT / "compose.small-mail.yaml")]
     if staging:
         args += ["-f", str(ROOT / "compose.staging.yaml")]
     return args
@@ -155,7 +162,7 @@ def run(manifest, args, staging=False, capture=False):
     return None
 
 
-def check_model(model, staging=False, self_hosted=False, self_mail=False, pitr=False):
+def check_model(model, staging=False, self_hosted=False, self_mail=False, pitr=False, webmail=False):
     services = model["services"]
     for name, service in services.items():
         if name != "gateway" and not (self_mail and name == "mailserver") and service.get("ports"):
@@ -169,6 +176,12 @@ def check_model(model, staging=False, self_hosted=False, self_mail=False, pitr=F
             if not service.get("read_only") or "ALL" not in service.get("cap_drop", []) or not service.get("mem_limit"):
                 raise ValueError("Application hardening/resource limits are mandatory")
     allowed = {"api", "worker", "storefront", "admin", "migrate", "gateway", "scanner"}
+    if webmail:
+        if not self_mail or staging:
+            raise ValueError('Webmail requires the private self-hosted production mail topology')
+        from webmail import check_model as check_webmail
+        check_webmail(model)
+        allowed.add('webmail')
     if self_mail:
         allowed.add("mailserver")
         mail = services.get("mailserver", {})
@@ -191,6 +204,8 @@ def check_model(model, staging=False, self_hosted=False, self_mail=False, pitr=F
                 raise ValueError("Self-hosted data service hardening is mandatory")
         if "--store=tikv" not in services["tidb"].get("command", []):
             raise ValueError("Production TiDB must use real TiKV storage")
+        if not {"--path=pd:2379", "--advertise-address=tidb"}.issubset(services["tidb"].get("command", [])):
+            raise ValueError("TiDB must use the private PD endpoint and cluster-reachable advertised name")
         if set(services["storage"]["networks"]) != {"object-internal"}:
             raise ValueError("Object administration endpoints must stay behind the private S3 gateway")
         tikv_networks = {"data-cluster", "backup-egress"} if pitr else {"data-cluster"}
@@ -212,13 +227,15 @@ def check_model(model, staging=False, self_hosted=False, self_mail=False, pitr=F
     for port in services["gateway"].get("ports", []):
         if staging and port.get("host_ip") != "127.0.0.1":
             raise ValueError("Staging listeners must be loopback-only")
-        if not staging and str(port["published"]) not in ("80", "443"):
+        if not staging and str(port["published"]) not in (("80", "443", "18443") if webmail else ("80", "443")):
             raise ValueError("Production gateway exposes only 80/443")
 
 
 def validate(manifest, staging=False):
+    from webmail import check_prepared
+    check_prepared(manifest)
     model = json.loads(run(manifest, ["--profile", "tools", "config", "--format", "json"], staging, capture=True))
-    check_model(model, staging, manifest.get("DATA_TOPOLOGY") == "self-hosted-single", manifest.get("MAIL_MODE") == "self-hosted", manifest.get("PITR_ENABLED") == "true")
+    check_model(model, staging, manifest.get("DATA_TOPOLOGY") == "self-hosted-single", manifest.get("MAIL_MODE") == "self-hosted", manifest.get("PITR_ENABLED") == "true", manifest.get("WEBMAIL_ENABLED") == "true")
     capacity.check_model(model, capacity.selected(manifest, staging))
     run(manifest, ["run", "--rm", "--no-deps", "gateway", "caddy", "validate", "--config", "/etc/caddy/Caddyfile"], staging)
 
@@ -249,6 +266,10 @@ def main():
             print("Release signature, source metadata and SBOM hashes verified")
         return
     manifest = load(os.environ.get("DEPLOY_ENV", str(ROOT / ".env")))
+    if action == 'webmail-prepare':
+        from webmail import prepare as prepare_webmail
+        prepare_webmail(manifest)
+        return
     if action == "mail-prepare":
         if manifest.get("MAIL_MODE") != "self-hosted":
             raise ValueError("Select self-hosted mail before preparing its certificate directory")
