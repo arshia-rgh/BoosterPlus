@@ -14,9 +14,11 @@ Private server receipts: `/srv/playora/releases/99f60bd/deployment109-state.json
 
 ## Owner account handover
 
+Completed: the owner confirmed Google sign-in and authenticator enrollment. The private read-only check verified the selected identity, email verification and enabled MFA, with no previous owner. The audited `identity bootstrap-owner` command granted the role; readback confirmed exactly one owner/bootstrap audit, incremented authentication version and revoked prior sessions. Separate admin sign-in and its real second-factor challenge still require the owner walkthrough. Private receipt: `/srv/playora/releases/99f60bd/owner110-bootstrap.json`. No payment setting changed.
+
 1. Open [customer sign-in](https://playoragames.com/login) and use Google with the existing owner Gmail.
 2. Open [account security](https://playoragames.com/account/security), enroll and verify an authenticator, and save recovery codes privately. Never send setup keys, codes or recovery codes in chat.
-3. Tell the deployment operator when complete. They verify that exact identity and run the audited first-owner bootstrap CLI. No role is granted by these instructions alone.
+3. Tell the deployment operator when complete. They verify that exact identity and run the audited first-owner bootstrap CLI. This step is now completed for the selected owner identity.
 4. Sign in independently at [admin sign-in](https://playoragames.com/admin/login), including the required authenticator step. A customer session does not substitute for an admin session. [Booster sign-in](https://playoragames.com/booster/login) is also separate.
 
 Support webmail runs privately behind SSH. From the repository on the owner's Mac, run `make -C production webmail-open`; use the separately supplied protected mailbox credential. See [webmail instructions](../production/WEBMAIL.md). No public webmail login is exposed.
