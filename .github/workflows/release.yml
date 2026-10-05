@@ -27,7 +27,7 @@ jobs:
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REGISTRY_USER: ${{ github.actor }}
         run: printf '%s' "$REGISTRY_TOKEN" | docker login ghcr.io --username "$REGISTRY_USER" --password-stdin
-      - name: Require exact-commit full CI, build and scan immutable artifacts
+      - name: Require exact-commit CI, build and scan immutable artifacts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 production/deploy/build_release.py

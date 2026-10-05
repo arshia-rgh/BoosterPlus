@@ -38,7 +38,7 @@ def build():
         raise ValueError("Checkout does not match the workflow source commit")
     quality = successful_quality_run(commit)
     if not quality:
-        raise ValueError("A successful complete CI gate on this exact main commit is required before publishing artifacts")
+        raise ValueError("A successful lightweight CI gate on this exact main commit is required before publishing artifacts")
     schema = int(re.search(r"const SchemaVersion = (\d+)", (ROOT / "backend/internal/database/schema.go").read_text()).group(1))
     output = ROOT / ".cache/release"
     output.mkdir(parents=True, exist_ok=False)

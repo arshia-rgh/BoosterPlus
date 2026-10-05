@@ -11,9 +11,9 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    # Application checks and real-TiKV qualification have separate runner budgets.
-    # A hosted job cannot exceed six hours; every gate remains required below.
-    timeout-minutes: 240
+    # Owner policy, 5 October 2026: hosted CI is service-free. Heavy database,
+    # browser and production runtime qualification is explicit on the server.
+    timeout-minutes: 60
     env:
       GOSUMDB: sum.golang.org
     steps:
@@ -27,63 +27,19 @@ jobs:
           node-version-file: frontend/.node-version
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - name: Reserve disk for isolated database and image qualification
-        shell: bash
+      - name: Install pinned static and security tools
         run: |
-          # These SDKs are preinstalled on the disposable hosted VM and are not
-          # dependencies of either project. Never run this cleanup on our host.
-          test "$RUNNER_ENVIRONMENT" = github-hosted
-          test "$RUNNER_OS" = Linux
-          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
-          df -h /
-      - name: Install pinned tools and dependencies
-        run: make bootstrap
-      - name: Install browser system dependencies
-        working-directory: frontend
-        run: npx playwright install --with-deps chromium
-      - name: Run local service setup and smoke checks
-        run: make -C backend dev-up dev-smoke
-      # Same application gates as root pre-commit. Production qualification runs
-      # on a fresh runner after these pass, without competing fixture databases.
-      - name: Repository gate
+          make -C backend bootstrap
+          cd backend
+          GOBIN="$GITHUB_WORKSPACE/.tools" go install github.com/zricethezav/gitleaks/v8@v8.30.1
+          GOBIN="$GITHUB_WORKSPACE/.tools" go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+      - name: Install locked frontend dependencies
+        run: make -C frontend install
+      - name: Repository policy, secrets, workflow and contracts
         run: make check-repository
-      - name: Complete backend gate
-        run: make -C backend pre-commit
-      - name: Complete frontend gate
-        run: make -C frontend pre-commit
-      - name: Stop isolated CI services
-        if: always()
-        working-directory: backend
-        run: DEV_S3_SECRET_KEY=configuration-validation-only docker compose --profile storage down
-  production:
-    needs: verify
-    runs-on: ubuntu-24.04
-    timeout-minutes: 360
-    env:
-      GOSUMDB: sum.golang.org
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: backend/go.mod
-          cache-dependency-path: backend/go.sum
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version-file: frontend/.node-version
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-      - name: Reserve disk for isolated database and image qualification
-        shell: bash
-        run: |
-          test "$RUNNER_ENVIRONMENT" = github-hosted
-          test "$RUNNER_OS" = Linux
-          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
-          df -h /
-      - name: Install pinned tools and dependencies
-        run: make bootstrap
-      - name: Build and scan application images for the isolated production fixtures
-        run: |
-          make -C backend docker-build image-security
-          make -C frontend docker-build image-security
-      - name: Complete production gate including real TiKV and infrastructure audits
-        run: make -C production pre-commit
+      - name: Backend static, security, race unit tests and builds
+        run: make -C backend stage-check
+      - name: Frontend static, security, component tests and builds
+        run: make -C frontend stage-check
+      - name: Deployment unit tests and configuration validation without service startup
+        run: make -C production preparation-check

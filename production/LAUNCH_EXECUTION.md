@@ -26,7 +26,7 @@ vendor prototypes are not adopted. No recurring monitor is set.
 
 See [vendor image policy](VENDOR_IMAGES.md) and [progress](../docs/progress.md).
 Public DNS/PTR, trusted maintenance/mail HTTPS and the approved Gmail authentication/Inbox check are verified. Google credentials are installed privately and GitHub CLI access works; deployed identity, alert delivery, bounded live financial qualification and owner activation remain pending. Off-host backups/recovery are explicitly deferred for initial launch, as above.
-The full server gate has not passed and no public application is activated.
+The complete server qualification passed as gate100 for `8339e7771ee6e47de78507bdcec66e0479606795`, including the real-TiKV race integration suite. The commit was pushed and verified on main. Public application activation remains pending. On5October the owner moved hosted CI to service-free static/security/unit/build/configuration checks; full server qualification remains distinct from CI and release-image security/signature checks.
 
 ## Decisions
 
