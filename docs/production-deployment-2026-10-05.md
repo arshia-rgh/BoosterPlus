@@ -4,13 +4,14 @@ The application is deployed at [playoragames.com](https://playoragames.com). **C
 
 ## Verified release
 
-- Deployed source: `99f60bd0a4ab75fa0aa333a3aa95b150edf371e2`; schema39.
+- Current deployed source: `2bde066ed9003597f818bc586ed7cd5f91d83561`; schema39. The [Google staff-login hotfix](google-login-hotfix-2026-10-05.md) passed focused identity/security checks, CI37287055287, release37288320672 and deployment verification. Actual owner admin Google/MFA retry remains pending.
+- Prior signed installation: `99f60bd0a4ab75fa0aa333a3aa95b150edf371e2`, retained for schema-compatible application rollback. The following original qualification remains historical evidence:
 - [Hosted quality checks](https://github.com/arshia-rgh/BoosterPlus/actions/runs/37277572594) and [release image builds/scans](https://github.com/arshia-rgh/BoosterPlus/actions/runs/37279532818) passed. Hosted CI uses the owner's lightweight policy; heavy qualification is independently recorded as server gate100 with exact application-source equivalence.
 - Five immutable image digests and SBOMs verified against the independently signed release. Signing private material remains off-server; temporary registry credentials were removed.
 - SQL migrations/history, service health, private storage/scanner probes, external HTTPS routing/security headers and anonymous API rejection passed.
 - The approved policies use first-publication version `playora-2026-10-05-v1` and the owner-selected public label “PLAYORA team”. Original approved policy hashes and protections remain preserved.
 
-Private server receipts: `/srv/playora/releases/99f60bd/deployment109-state.json`, `/srv/playora/installation/operations/boosterplus-production-release.json`, and `/srv/playora-qualification/launch-99f60bd/`. Runtime configuration and credentials stay outside Git. The deployment-only source is `/srv/playora/releases/99f60bd/source/production`; use that installed directory for production operations.
+Private server receipts: `/srv/playora/releases/99f60bd/deployment109-state.json`, `/srv/playora/installation/operations/boosterplus-production-release.json`, and `/srv/playora-qualification/launch-99f60bd/`. Runtime configuration and credentials stay outside Git. The deployment-only source remains `/srv/playora/releases/99f60bd/source/production` because its configuration/migration files are unchanged; use that installed directory with the current manifest `/srv/playora/releases/2bde066/deployment.env`. Current hotfix completion: `/srv/playora/releases/2bde066/resume118-state.json`. The failed preflight116 and isolated-validator resume118 are documented in the hotfix report; ordinary update tooling needs that validation-network fix before its next use.
 
 ## Owner account handover
 
