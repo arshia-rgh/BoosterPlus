@@ -1,6 +1,6 @@
 # Private support webmail: loading and compose template
 
-Status: implemented and tested in an isolated synthetic mailbox; the owner approved this exact focused update and pre-backup rollout, which is pending. Application, database and financial switches are unchanged.
+Status: deployed successfully as a webmail configuration update from `09cbea9726650c8f52812f8500197fd741a6ad0c`. The signed application remains `2bde066ed9003597f818bc586ed7cd5f91d83561`, schema39. Application, database and financial switches are unchanged.
 
 ## Changes
 
@@ -34,3 +34,14 @@ The current signed application remains2bde066 at schema39. No mailbox migration,
 Off-host backups remain absent. The5October one-use login-hotfix exception is consumed. The owner explicitly approved the new webmail-only focused-check/pre-backup exception after reviewing the prepared scope. No new backup PASS or full repository-gate pass is claimed. The normal hook and strict ordinary release defaults are not changed by this implementation.
 
 Runtime evidence currently resides privately under `/srv/playora-qualification/webmail120/`; local rendered copies are under `.cache/webmail120/review-final/`. Reproduce transformations with `make -C production webmail-template-test`, launcher unit tests through `preparation-check`, and the isolated prepared fixture with `webmail-browser-test` / `webmail-cache-test`. See `production/WEBMAIL.md` for fixture boundaries.
+
+
+## Deployment result
+
+The normal tracked commit hook passed repository checks, Go lint/standalone gosec/live vulnerability scan, DOM transformations and 70 deployment unit/configuration checks. The explicit owner approval covered the focused scope; unrelated full database/application suites were not repeated. Hosted CI 37441355082 started for the source commit and was still running at the deployment check; no CI success is claimed here.
+
+Private operation 121 completed on 6 October 2026. It verified the current signed application and paused finance settings, checked exact before/after file hashes, retained previous configuration bytes, and validated the candidate merged Caddy configuration in an isolated network-disabled one-shot container. Only private PHP and the shared gateway were recreated; mailbox data/settings, other application containers and database services were not changed. Vendor image references remained unchanged. The live template asset matches the committed SHA256, private login/assets return200 with expected no-store/cache/compression headers, and public HTTPS routing/security-header/redirect checks passed. An independent fresh laptop SSH tunnel also returned the login and compressed template successfully. This does not guarantee connectivity through every network/VPN.
+
+Durable operation receipt: `/srv/playora/installation/operations/boosterplus-production-webmail121.json`. Patch, logs and previous configuration are under `/srv/playora-qualification/webmail121/`. The four mounted source files under `/srv/playora/releases/99f60bd/source/production` now intentionally carry this recorded versioned webmail patch; do not claim that deployment directory is byte-identical to the original 99f60bd snapshot or silently overwrite it during rollback. Application images/current-release receipt remain 2bde066. No off-host recovery or external mail delivery was performed. This one-update exception is consumed.
+
+For the owner: save any draft, close the private helper/browser, rerun `make -C production webmail-open`, and open Compose or Reply to use the new Apply/Remove control. The existing mailbox password is unchanged. The stopped synthetic stack/evidence remains separate from production.
