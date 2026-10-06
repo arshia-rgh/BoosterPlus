@@ -9,8 +9,8 @@ ADD --checksum=sha256:724282c3b43aec998aa9527380465b45d229e021b58035f5f4f63095ea
 RUN tar -xzf /tmp/node.tar.gz -C /usr/local --strip-components=1 && rm /tmp/node.tar.gz
 
 FROM node-${TARGETARCH} AS node-runtime
-# Official Bookworm security patch, including CVE-2026-103111.
-RUN apt-get update && apt-get install -y --no-install-recommends libpcre2-8-0=10.42-1+deb12u2 && rm -rf /var/lib/apt/lists/*
+# Pinned official Bookworm security patches for PCRE2 and Perl.
+RUN apt-get update && apt-get install -y --no-install-recommends libpcre2-8-0=10.42-1+deb12u2 perl-base=5.36.0-7+deb12u4 && rm -rf /var/lib/apt/lists/*
 FROM node-runtime AS build
 WORKDIR /app
 COPY package.json package-lock.json .npmrc ./

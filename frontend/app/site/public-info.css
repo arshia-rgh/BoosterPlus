@@ -85,3 +85,134 @@
     color: #000 !important;
   }
 }
+
+/* Legal copy is a reading surface, not artwork overlay or an unbroken field. */
+.public-info.policy-page {
+  max-width: 58rem;
+}
+.policy-reader {
+  margin-block: 2rem;
+  padding: clamp(1rem, 4vw, 2.5rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: #0c1c15f5;
+}
+.public-info .policy-body {
+  max-width: 68ch;
+  white-space: normal;
+  font-size: 1rem;
+}
+.policy-body p {
+  margin-block: 1rem 1.5rem;
+  white-space: pre-wrap;
+}
+.policy-body :is(h2, h3, h4) {
+  max-width: none;
+  line-height: 1.4;
+  scroll-margin-top: 10rem;
+  overflow-wrap: anywhere;
+}
+.policy-body :is(h2, h3) {
+  margin-block: 2.5rem 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+  font-size: 1.35rem;
+}
+.policy-body h2 {
+  font-size: 1.65rem;
+}
+.policy-body h4 {
+  margin-block: 2rem 1rem;
+  font-size: 1.125rem;
+}
+.policy-body > :first-child {
+  margin-top: 0;
+  border: 0;
+  padding-top: 0;
+}
+.policy-body li {
+  margin-block: 0.75rem;
+}
+.policy-body ul {
+  padding-inline-start: 1.4rem;
+}
+.policy-jump {
+  margin-bottom: 2rem;
+}
+.policy-jump summary {
+  cursor: pointer;
+  color: var(--accent);
+  padding-block: 0.75rem;
+  font-weight: 700;
+}
+.policy-jump ul {
+  list-style: none;
+  margin: 0.5rem 0;
+  padding: 0;
+}
+.policy-jump a {
+  display: block;
+  padding-block: 0.65rem;
+  line-height: 1.5;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.policy-facts {
+  margin-block: 1.5rem;
+}
+.policy-facts > div {
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+}
+.policy-facts dt {
+  font-weight: 700;
+  color: var(--accent);
+}
+.policy-facts dd {
+  margin: 0.75rem 0 0;
+}
+.policy-fact-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+@media (max-width: 600px) {
+  .public-info.policy-page {
+    padding-inline: 1rem;
+  }
+  .policy-reader {
+    border-inline: 0;
+    border-radius: 0;
+    padding-inline: 0;
+  }
+  .policy-body :is(h2, h3, h4) {
+    scroll-margin-top: 14rem;
+  }
+}
+@media print {
+  .policy-jump {
+    display: none !important;
+  }
+  .policy-reader {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .policy-body :is(h2, h3, h4, dt) {
+    break-after: avoid;
+  }
+  .policy-body p {
+    orphans: 3;
+    widows: 3;
+  }
+  .policy-facts > div {
+    break-inside: avoid;
+  }
+  .policy-page {
+    page: playora-policy;
+  }
+  @page playora-policy {
+    margin: 16mm;
+  }
+}

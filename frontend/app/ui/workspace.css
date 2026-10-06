@@ -132,6 +132,78 @@
     font-size: 0.875rem;
   }
 }
+@media (max-width: 600px) {
+  .admin-app .admin-drawer {
+    width: calc(100% - 24px);
+    max-width: calc(100% - 24px);
+    padding: 16px;
+  }
+  .admin-drawer-heading {
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .admin-drawer-heading > .brand-logo {
+    width: min(9rem, 100%);
+  }
+  .admin-app .admin-drawer-heading > button {
+    flex: 0 0 auto;
+    max-width: 100%;
+    overflow-wrap: normal;
+    margin: 0;
+    padding: 10px 14px;
+  }
+  .admin-drawer .admin-navigation a {
+    padding-inline: 12px;
+  }
+}
+
+:is(.workspace-experience, .admin-app) .order-advanced-filters {
+  grid-column: 1 / -1;
+  border-block: 1px solid var(--line);
+  border-inline: 0;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+}
+.order-advanced-filters summary {
+  cursor: pointer;
+  color: var(--accent);
+}
+@media (max-width: 850px) {
+  .workspace-experience .orders-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  :is(.workspace-experience, .admin-app) :is(.orders-filters, .order-filters) {
+    gap: 0.75rem;
+    padding: 1rem;
+    margin-block: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    background: var(--surface);
+  }
+  :is(.workspace-experience, .admin-app)
+    :is(.orders-filters, .order-filters)
+    .catalog-label {
+    margin-block: 0;
+    gap: 0.4rem;
+  }
+  .order-advanced-filters .catalog-grid {
+    gap: 0.75rem;
+    padding-block: 0.5rem 1rem;
+  }
+  .admin-topbar {
+    gap: 0.5rem;
+    padding-block: 0.75rem;
+  }
+  .admin-app .admin-topbar {
+    padding-block: 0.5rem;
+  }
+  .admin-app .order-filters > .button {
+    margin: 0;
+    width: 100%;
+  }
+}
 
 /* Keep narrow, enlarged-text workspaces usable without compounded rem gutters. */
 @media (max-width: 600px) {
@@ -193,5 +265,20 @@
     .catalog-section {
     padding-inline: 0;
     border-inline: 0;
+  }
+}
+
+/* Keep task text quiet and avoid duplicate links above authenticated shortcuts. */
+body:has(.workspace-experience) .site-ambient::after,
+.admin-app .site-ambient::after {
+  background: linear-gradient(#071611e8, #071611f5);
+}
+@media (max-width: 850px) {
+  body:has(.account-layout) .minimal-header > nav {
+    display: none;
+  }
+  .admin-app
+    :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+    font-size: max(1rem, 16px);
   }
 }

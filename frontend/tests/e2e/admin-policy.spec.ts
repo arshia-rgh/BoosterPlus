@@ -66,7 +66,10 @@ test("@global-policy owner publishes content and retention, customer exports dat
   request,
   browser,
 }, info) => {
-  test.setTimeout(180000);
+  // Publication, export/deletion review and responsive/print captures reached
+  // the last recovery page at the former 180s overall limit on the bounded VPS.
+  // Preserve individual assertion deadlines and allow the complete journey.
+  test.setTimeout(300000);
   await signIn(
     page,
     request,

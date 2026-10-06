@@ -17,7 +17,10 @@ test("paid work supports both modes, narrow booster access and reviewed completi
   browser,
   request,
 }, info) => {
-  test.setTimeout(150000);
+  // Three portals, both fulfillment modes and multi-viewport captures exceeded
+  // 150s on the bounded VPS without a slow/assertion-failing operation. Retain
+  // per-action/expectation deadlines while allowing the whole journey to finish.
+  test.setTimeout(240000);
   await signIn(
     page,
     request,

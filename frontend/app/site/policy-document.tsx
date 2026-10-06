@@ -1,4 +1,5 @@
 import type { loadTerms } from "./loaders.server";
+import PolicyText from "./policy-text";
 import "./public-info.css";
 export default function PolicyDocument({
   data,
@@ -11,7 +12,7 @@ export default function PolicyDocument({
 }) {
   const chosen = data.sections.find((section) => section.kind === kind);
   return (
-    <main id="main" className="page public-info">
+    <main id="main" className="page public-info policy-page">
       <title>{`${chosen?.title ?? "Account terms"} | PLAYORA`}</title>
       <p className="eyebrow">TERMS & POLICIES</p>
       <h1>
@@ -30,35 +31,43 @@ export default function PolicyDocument({
           . Your accepted agreement is not changed by viewing a newer version.
         </p>
       )}
-      <nav aria-label="Policy contents" className="policy-contents">
-        <a
-          href={`/terms${requestedVersion ? `?version=${encodeURIComponent(requestedVersion)}` : ""}`}
-          aria-current={!kind ? "page" : undefined}
-        >
-          Account terms
-        </a>
-        {data.sections.map((section) => (
+      {data.sections.length > 0 && (
+        <nav aria-label="Policy contents" className="policy-contents">
           <a
-            key={section.kind}
-            href={`/policies/${section.kind}${requestedVersion ? `?version=${encodeURIComponent(requestedVersion)}` : ""}`}
-            aria-current={section.kind === kind ? "page" : undefined}
+            href={`/terms${requestedVersion ? `?version=${encodeURIComponent(requestedVersion)}` : ""}`}
+            aria-current={!kind ? "page" : undefined}
           >
-            {section.title}
+            Account terms
           </a>
-        ))}
-      </nav>
+          {data.sections.map((section) => (
+            <a
+              key={section.kind}
+              href={`/policies/${section.kind}${requestedVersion ? `?version=${encodeURIComponent(requestedVersion)}` : ""}`}
+              aria-current={section.kind === kind ? "page" : undefined}
+            >
+              {section.title}
+            </a>
+          ))}
+        </nav>
+      )}
       {chosen ? (
-        <div className="legal-text">{chosen.text}</div>
+        <PolicyText
+          text={chosen.text}
+          prefix={`policy-${chosen.kind}-clause`}
+        />
       ) : (
         <>
-          <div className="legal-text">{data.text}</div>
+          <PolicyText text={data.text} prefix="account-clause" />
           {data.sections.map((section) => (
             <section
               key={section.kind}
               aria-labelledby={`policy-${section.kind}`}
             >
               <h2 id={`policy-${section.kind}`}>{section.title}</h2>
-              <div className="legal-text">{section.text}</div>
+              <PolicyText
+                text={section.text}
+                prefix={`policy-${section.kind}-clause`}
+              />
             </section>
           ))}
         </>

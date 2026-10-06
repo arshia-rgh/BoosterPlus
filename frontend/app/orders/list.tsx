@@ -139,63 +139,72 @@ function OrderListView({ admin = false }: { admin?: boolean }) {
           ]}
         />
         {admin && (
-          <>
-            <Text
-              label="Game slug"
-              value={advanced.game ?? ""}
-              change={(v) => {
-                setAdvanced({ ...advanced, game: v });
-              }}
-            />
-            <Select
-              label="Order type"
-              value={advanced.kind ?? ""}
-              change={(v) => {
-                setAdvanced({ ...advanced, kind: v });
-              }}
-              options={[
-                ["", "All types"],
-                ["custom", "Custom boost"],
-                ["package", "Fixed pack"],
-                ["account", "Account purchase"],
-                ["shop", "Shop purchase"],
-              ]}
-            />
-            <Text
-              label="Customer ID"
-              value={advanced.customer ?? ""}
-              change={(v) => {
-                setAdvanced({ ...advanced, customer: v });
-              }}
-            />
-            <Text
-              label="Assignee ID or unassigned"
-              value={advanced.assigned ?? ""}
-              change={(v) => {
-                setAdvanced({ ...advanced, assigned: v });
-              }}
-            />
-            <label>
-              Created from (UTC, inclusive)
-              <input
-                type="date"
-                value={advanced.from ?? ""}
-                onChange={(event) => {
-                  setAdvanced({ ...advanced, from: event.target.value });
+          <details
+            className="order-advanced-filters"
+            key={appliedFilters}
+            open={
+              Object.keys(advanced).some((key) => params.get(key)) || undefined
+            }
+          >
+            <summary>More filters</summary>
+            <div className="catalog-grid">
+              <Text
+                label="Game slug"
+                value={advanced.game ?? ""}
+                change={(v) => {
+                  setAdvanced({ ...advanced, game: v });
                 }}
               />
-            </label>
-            <label>
-              Created until (UTC, exclusive)
-              <input
-                type="date"
-                value={advanced.to ?? ""}
-                onChange={(event) => {
-                  setAdvanced({ ...advanced, to: event.target.value });
+              <Select
+                label="Order type"
+                value={advanced.kind ?? ""}
+                change={(v) => {
+                  setAdvanced({ ...advanced, kind: v });
+                }}
+                options={[
+                  ["", "All types"],
+                  ["custom", "Custom boost"],
+                  ["package", "Fixed pack"],
+                  ["account", "Account purchase"],
+                  ["shop", "Shop purchase"],
+                ]}
+              />
+              <Text
+                label="Customer ID"
+                value={advanced.customer ?? ""}
+                change={(v) => {
+                  setAdvanced({ ...advanced, customer: v });
                 }}
               />
-            </label>
-          </>
+              <Text
+                label="Assignee ID or unassigned"
+                value={advanced.assigned ?? ""}
+                change={(v) => {
+                  setAdvanced({ ...advanced, assigned: v });
+                }}
+              />
+              <label>
+                Created from (UTC, inclusive)
+                <input
+                  type="date"
+                  value={advanced.from ?? ""}
+                  onChange={(event) => {
+                    setAdvanced({ ...advanced, from: event.target.value });
+                  }}
+                />
+              </label>
+              <label>
+                Created until (UTC, exclusive)
+                <input
+                  type="date"
+                  value={advanced.to ?? ""}
+                  onChange={(event) => {
+                    setAdvanced({ ...advanced, to: event.target.value });
+                  }}
+                />
+              </label>
+            </div>
+          </details>
         )}
         <button className="button" type="submit">
           Filter orders

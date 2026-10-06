@@ -5,6 +5,7 @@ import {
   legalSchema,
   type PolicySection,
 } from "./model";
+import { readablePolicyText } from "./policy-layout.server";
 export async function loadContent(kind: string) {
   const response = await fetch(
     new URL(
@@ -41,7 +42,12 @@ export async function loadTerms(versionLabel = "") {
     if (typeof text !== "string" || !text.trim())
       throw new Error("Account terms unavailable");
     const sections = legalSchema.parse(content.data).sections ?? [];
-    return { text, sections, preview: false, version: content.label };
+    return {
+      text: readablePolicyText(text),
+      sections,
+      preview: false,
+      version: content.label,
+    };
   }
   return bootstrapTerms();
 }
@@ -54,7 +60,7 @@ function bootstrapTerms() {
   if (!local && (!text || version.startsWith("development-")))
     throw new Error("Account terms unavailable");
   return {
-    text: text || previewText,
+    text: readablePolicyText(text || previewText),
     sections: [] as PolicySection[],
     preview: !text,
     version,

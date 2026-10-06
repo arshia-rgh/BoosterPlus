@@ -212,6 +212,13 @@ body {
   }
   .site-ambient::before {
     background-image: url("/artwork/ascension-768.jpg");
+    background-position: 62% top;
+  }
+}
+@media (max-width: 850px) {
+  .site-ambient {
+    bottom: auto;
+    height: 100lvh;
   }
 }
 @media (prefers-reduced-motion: reduce) {

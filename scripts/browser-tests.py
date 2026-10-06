@@ -12,10 +12,14 @@ root = Path(__file__).resolve().parents[1]
 # isolated database and unchanged production rate budgets instead of lifting
 # shared-IP authentication limits as browser coverage grows.
 def run_project(project, specs=()):
-    # Policy publication gets a fresh fixture as well as a separate browser run.
-    # Sharing one ten-minute fixture across both complete batches lets the first
-    # batch exhaust the second's lifetime even when every interaction passes.
-    batches = focused_batches(specs) if specs else [["--grep-invert=@global-policy"], ["--grep=@global-policy"]]
+    # Each complementary shard gets a fresh ten-minute fixture. The expanded
+    # mobile suite can exceed one fixture's lifetime even when journeys pass.
+    # Global policy mutations stay in their own final environment.
+    batches = focused_batches(specs) if specs else [
+        ["--grep-invert=@global-policy", "--shard=1/2"],
+        ["--grep-invert=@global-policy", "--shard=2/2"],
+        ["--grep=@global-policy"],
+    ]
     results = [run_batch(project, batch, index) for index, batch in enumerate(batches)]
     return 1 if any(results) else 0
 

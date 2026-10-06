@@ -949,3 +949,12 @@
   background: #1c3228;
   border-radius: 1rem 1rem 0.2rem 1rem;
 }
+
+/* Prevent focus zoom on narrow touch screens while preserving enlarged text. */
+@media (max-width: 850px) {
+  .storefront-app
+    .experience
+    :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+    font-size: max(1rem, 16px);
+  }
+}

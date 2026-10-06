@@ -15,7 +15,8 @@ vi.mock("../identity/api", async (importOriginal) => ({
   post: vi.fn(),
 }));
 afterEach(() => {
-  vi.clearAllMocks();
+  // Discard unused one-shot responses even when an earlier assertion fails.
+  vi.resetAllMocks();
   sessionStorage.clear();
 });
 const service: Service = {
@@ -191,13 +192,14 @@ it("surfaces authoritative field errors and stale releases without a success cla
     />,
   );
   fireEvent.click(screen.getByRole("button", { name: "Check selections" }));
-  await waitFor(() =>
+  await waitFor(() => {
     expect(screen.getByLabelText("One hero")).toHaveAttribute(
       "aria-invalid",
       "true",
-    ),
-  );
-  expect(screen.getByLabelText("One hero")).toHaveFocus();
+    );
+    // Focus is applied by an effect after the invalid field is rendered.
+    expect(screen.getByLabelText("One hero")).toHaveFocus();
+  });
   expect(
     screen.getByRole("complementary", { name: "Selection summary" }),
   ).toHaveTextContent("Some selections need attention");

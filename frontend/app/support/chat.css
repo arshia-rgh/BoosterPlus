@@ -649,8 +649,10 @@
   scroll-margin-block: 1rem calc(var(--activity-clearance, 80px) + 1rem);
 }
 
-.storefront-app:has(.customer-activity) .chat-workspace .chat-composer {
-  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+@media (min-width: 1001px) {
+  .storefront-app:has(.customer-activity) .chat-workspace .chat-composer {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
 }
 .storefront-app:has(.customer-activity)
   .chat-composer

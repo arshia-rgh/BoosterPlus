@@ -31,12 +31,13 @@ class BrowserSelectionTest(unittest.TestCase):
                 module.selected_specs([value])
 
     def test_complete_batches_use_distinct_environments_and_retain_failures(self):
-        for results in ([0, 0], [1, 0], [0, 1], [1, 1]):
+        for results in ([0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]):
             with self.subTest(results=results), patch.object(module, "run_batch", side_effect=results) as run:
                 self.assertEqual(module.run_project("desktop"), int(any(results)))
                 self.assertEqual(run.call_args_list, [
-                    call("desktop", ["--grep-invert=@global-policy"], 0),
-                    call("desktop", ["--grep=@global-policy"], 1),
+                    call("desktop", ["--grep-invert=@global-policy", "--shard=1/2"], 0),
+                    call("desktop", ["--grep-invert=@global-policy", "--shard=2/2"], 1),
+                    call("desktop", ["--grep=@global-policy"], 2),
                 ])
 
     def test_focused_batches_each_receive_their_own_environment(self):

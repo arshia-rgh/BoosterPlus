@@ -119,12 +119,19 @@
   }
 }
 @media (max-width: 700px) {
+  .game-backdrop {
+    bottom: auto;
+    height: 100lvh;
+  }
+  .game-backdrop > div {
+    background: linear-gradient(#071611ed, #071611f5);
+  }
   .game-stage {
     align-items: end;
-    min-height: 530px;
+    min-height: 0;
   }
   .game-stage .game-stage-art {
-    height: 380px;
+    height: clamp(260px, 76vw, 380px);
     mask-image: linear-gradient(
       to bottom,
       transparent,
@@ -152,7 +159,7 @@
     width: 100%;
     max-width: none;
     margin: 0;
-    padding: 300px 1.5rem 2.25rem;
+    padding: clamp(180px, 49vw, 260px) 1.25rem 1.5rem;
   }
   .experience .game-stage-copy h1 {
     font-size: clamp(2.125rem, 8vw, 3rem);

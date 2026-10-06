@@ -114,6 +114,7 @@ function Navigation({ close, owner }: { close?: () => void; owner: boolean }) {
 }
 export default function AdminShell({ session, title, children }: FrameProps) {
   const drawer = useRef<HTMLDialogElement>(null);
+  const menuButton = useRef<HTMLButtonElement>(null);
   const { pathname } = useLocation();
   const authorized =
     !!session?.user &&
@@ -157,6 +158,7 @@ export default function AdminShell({ session, title, children }: FrameProps) {
           {authorized ? (
             <>
               <button
+                ref={menuButton}
                 className="admin-menu-button button"
                 type="button"
                 onClick={() => drawer.current?.showModal()}
@@ -220,7 +222,12 @@ export default function AdminShell({ session, title, children }: FrameProps) {
         )}
       </div>
       {authorized && (
-        <dialog ref={drawer} className="admin-drawer" aria-label="Staff menu">
+        <dialog
+          ref={drawer}
+          className="admin-drawer"
+          aria-label="Staff menu"
+          onClose={() => menuButton.current?.focus()}
+        >
           <div className="admin-drawer-heading">
             <BrandLogo />
             <button

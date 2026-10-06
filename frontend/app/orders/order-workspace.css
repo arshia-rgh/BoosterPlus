@@ -320,7 +320,10 @@
 }
 
 .customer-order-workspace .sr-only,
-.identity-page:has(.customer-order-workspace) > .page-heading {
+.identity-page:has(.customer-order-workspace) > .page-heading,
+.customer-shell[data-workspace="booster"]
+  .identity-page:has(.record-shell)
+  > .page-heading {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -386,6 +389,25 @@
 .customer-order-workspace .order-toolbar p {
   margin: 0;
   font-size: 0.875rem;
+}
+@media (max-width: 600px) {
+  .customer-order-workspace .order-toolbar {
+    justify-content: flex-start;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  .customer-order-workspace .order-toolbar p {
+    flex-basis: 100%;
+  }
+  .customer-order-workspace .order-toolbar .button {
+    margin: 0;
+  }
+  .customer-order-workspace .record-heading {
+    padding-bottom: 0.75rem;
+  }
+  .customer-order-workspace .record-sections {
+    margin-bottom: 0.75rem;
+  }
 }
 .customer-order-workspace .order-current-data > h2 {
   margin-top: 0;

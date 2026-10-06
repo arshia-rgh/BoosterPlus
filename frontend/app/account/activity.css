@@ -175,28 +175,33 @@ html:has(.customer-activity) {
     position: sticky;
     top: 0;
     z-index: 45;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    display: flex;
+    flex-wrap: wrap;
     gap: 0.35rem 0.75rem;
     padding: 0.65rem 1rem;
   }
   .site-header:has(.customer-activity) > .brand {
-    grid-column: 1;
-    grid-row: 1;
+    order: 1;
+    flex: 1 1 8rem;
     min-width: 0;
   }
   .site-header:has(.customer-activity) .brand-logo {
     width: min(8rem, 100%);
   }
   .site-header:has(.customer-activity) > nav {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    order: 3;
+    flex-basis: 100%;
     width: 100%;
     justify-content: flex-end;
   }
   #customer-activity-slot {
-    grid-column: 2;
-    grid-row: 1;
+    order: 2;
+    flex: 1 1 8rem;
+    display: flex;
+    justify-content: flex-end;
+    min-width: 0;
+    justify-self: end;
+    max-width: 100%;
   }
   #customer-activity-slot .customer-activity {
     position: relative;
@@ -207,6 +212,9 @@ html:has(.customer-activity) {
     padding: 0.5rem 0.65rem;
     font-size: 0.75rem;
     box-shadow: none;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: normal;
   }
   #customer-activity-slot .activity-popover {
     bottom: auto;
