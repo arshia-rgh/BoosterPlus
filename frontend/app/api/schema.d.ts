@@ -5344,6 +5344,57 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/artwork/{id}/bytes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Admin-only bounded scanned artwork upload; exact request IDs are replay-safe. Same request ID must retain bytes, MIME, purpose and focal point. Drafts stay private. */
+    put: operations["uploadEditorialArtwork"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/artwork/{id}/{variant}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Serves only sanitized derivatives referenced by a currently public game, product or article. Rechecks publication after object retrieval. */
+    get: operations["getPublishedArtwork"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/admin/artwork/{id}/{variant}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Current admin authority required for draft previews. */
+    get: operations["previewEditorialArtwork"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -8022,6 +8073,33 @@ export interface components {
     OperationalJobAttempts: {
       items: components["schemas"]["OperationalJobAttempt"][];
       next: string;
+    };
+    ArtworkVariant: {
+      width: number;
+      height: number;
+      size: number;
+      /** @enum {string} */
+      content_type: "image/jpeg" | "image/png";
+      checksum: string;
+    };
+    Artwork: {
+      /** Format: uuid */
+      id: string;
+      /** @description Canonical upload reference. Public bytes require a current publication; admin preview uses its separate endpoint. */
+      asset: string;
+      /** @enum {string} */
+      purpose: "game" | "cover" | "product" | "inline";
+      width: number;
+      height: number;
+      focus_x: number;
+      focus_y: number;
+      variants: {
+        [key: string]: components["schemas"]["ArtworkVariant"];
+      };
+    };
+    ArtworkProblem: {
+      /** @enum {string} */
+      code: "artwork_invalid" | "artwork_conflict" | "artwork_rejected";
     };
   };
   responses: never;
@@ -23322,6 +23400,164 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["OperationalProblem"];
         };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  uploadEditorialArtwork: {
+    parameters: {
+      query: {
+        purpose: "game" | "cover" | "product" | "inline";
+        focus_x: number;
+        focus_y: number;
+      };
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "image/jpeg": string;
+        "image/png": string;
+        "image/webp": string;
+      };
+    };
+    responses: {
+      /** @description Checked responsive derivatives. Does not save or publish any catalog/article/product. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Artwork"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArtworkProblem"];
+        };
+      };
+      /** @description Correct validation or reload current state. */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ArtworkProblem"];
+        };
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  getPublishedArtwork: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        variant:
+          "wide" | "wide-small" | "mobile" | "mobile-small" | "card" | "thumb";
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Checked image pixels; private cache revalidation required. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "image/jpeg": string;
+          "image/png": string;
+        };
+      };
+      /** @description Unchanged pixels; current access was verified. */
+      304: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Image is missing, not ready or not currently published. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  previewEditorialArtwork: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        variant:
+          "wide" | "wide-small" | "mobile" | "mobile-small" | "card" | "thumb";
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Checked image pixels; private cache revalidation required. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "image/jpeg": string;
+          "image/png": string;
+        };
+      };
+      /** @description Unchanged pixels; current access was verified. */
+      304: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Image is missing, not ready or not currently published. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */
       default: {

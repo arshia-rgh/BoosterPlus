@@ -99,6 +99,9 @@ func event(ctx context.Context, tx *ent.Tx, row *ent.Article, actor, action, rev
 	return e
 }
 func revision(ctx context.Context, tx *ent.Tx, id string, version int, d Definition, now time.Time) (*ent.ArticleRevision, error) {
+	if e := checkArtwork(ctx, tx.Client(), d); e != nil {
+		return nil, e
+	}
 	data, e := document(d)
 	if e != nil {
 		return nil, e

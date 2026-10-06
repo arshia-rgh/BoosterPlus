@@ -191,6 +191,9 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, slug string, 
 	}
 	var output Draft
 	err = s.auth.StaffTransaction(ctx, p, false, func(tx *ent.Tx, current *identity.Principal) error {
+		if artworkErr := checkArtwork(ctx, tx.Client(), c); artworkErr != nil {
+			return artworkErr
+		}
 		g, createErr := tx.Game.Create().SetSlug(slug).SetName(c.Name).SetConfiguration(data).Save(ctx)
 		if createErr != nil {
 			if ent.IsConstraintError(createErr) {
@@ -236,6 +239,9 @@ func (s *Store) Mutate(ctx context.Context, p *identity.Principal, id, action st
 		update := tx.Game.Update().Where(game.IDEQ(id), game.VersionEQ(input.Revision)).AddVersion(1)
 		switch action {
 		case "save":
+			if err := checkArtwork(ctx, tx.Client(), input.Configuration); err != nil {
+				return err
+			}
 			data, encodeErr := document(input.Configuration)
 			if encodeErr != nil {
 				return encodeErr
@@ -251,6 +257,9 @@ func (s *Store) Mutate(ctx context.Context, p *identity.Principal, id, action st
 			}
 			if issues := ValidateConfiguration(c, true); len(issues) > 0 {
 				return &Invalid{issues}
+			}
+			if err := checkArtwork(ctx, tx.Client(), c); err != nil {
+				return err
 			}
 			if err := validatePromotionTargets(ctx, tx.Client(), Release{GameID: g.ID, Slug: g.Slug, Configuration: c}, time.Now()); err != nil {
 				return err

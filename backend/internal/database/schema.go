@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 39
+const SchemaVersion = 40
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,6 +47,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"artworks.variants": "json", "artworks.state": "varchar", "artworks.request_hash": "varchar",
 		"job_attempts.retry_generation": "bigint", "job_attempts.finished_at": "datetime", "job_attempts.outcome": "varchar", "job_attempts.attempt": "int", "job_attempts.started_at": "datetime",
 		"articles.current_revision": "varchar", "article_revisions.data": "json",
 		"shop_deliveries.proof_message_id": "varchar",

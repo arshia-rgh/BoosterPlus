@@ -1,3 +1,4 @@
+import { ArtworkImage } from "../artwork/image";
 import {
   createContext,
   useContext,
@@ -101,16 +102,17 @@ export function GameShell({
     >
       {hasArt && (
         <div className="game-backdrop" aria-hidden="true">
-          <img src={source} alt="" />
+          <ArtworkImage source={source} placement="background" alt="" />
           <div />
         </div>
       )}
       <header className={`game-stage ${hasArt ? "" : "game-stage-compact"}`}>
         {hasArt && (
-          <img
+          <ArtworkImage
             ref={artworkRef}
             className="game-stage-art"
-            src={source}
+            source={source}
+            placement="hero"
             alt={release.configuration.asset_alt}
             width="1440"
             height="720"

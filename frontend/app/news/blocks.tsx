@@ -1,3 +1,4 @@
+import ArtworkUpload from "../artwork/upload";
 import { useState, useRef, useContext } from "react";
 import { FieldValidation } from "../ui/form-validation";
 import { Action, Select, Text } from "../catalog/controls";
@@ -9,6 +10,8 @@ export function BlocksEditor({
   value: Block[];
   change: (blocks: Block[]) => void;
 }) {
+  const [keys, setKeys] = useState(() => value.map((_, i) => String(i)));
+  const nextKey = useRef(value.length);
   const validation = useContext(FieldValidation);
   const container = useRef<HTMLElement>(null);
   const focus = (i: number) => {
@@ -39,7 +42,7 @@ export function BlocksEditor({
       {value.map((b, i) => (
         <fieldset
           className="news-block"
-          key={i}
+          key={keys.at(i) ?? `external-${String(i)}`}
           name={`blocks.${String(i)}`}
           data-block-index={i}
           tabIndex={-1}
@@ -85,9 +88,9 @@ export function BlocksEditor({
               }}
             />
           )}
-          {(b.kind === "image" || b.kind === "link") && (
+          {b.kind === "link" && (
             <Text
-              label={b.kind === "image" ? "Local image path" : "HTTPS URL"}
+              label="HTTPS URL"
               value={b.url}
               change={(url) => {
                 update(i, { url });
@@ -96,6 +99,14 @@ export function BlocksEditor({
           )}
           {b.kind === "image" && (
             <>
+              <ArtworkUpload
+                purpose="inline"
+                pathLabel="Local image path"
+                value={b.url}
+                change={(url) => {
+                  update(i, { url });
+                }}
+              />
               <Text
                 label="Image description"
                 value={b.alt}
@@ -158,6 +169,15 @@ export function BlocksEditor({
               onClick={() => {
                 const previous = value.at(i - 1);
                 if (previous) {
+                  setKeys((old) =>
+                    old.map((key, index) =>
+                      index === i - 1
+                        ? (old.at(i) ?? key)
+                        : index === i
+                          ? (old.at(i - 1) ?? key)
+                          : key,
+                    ),
+                  );
                   change(
                     value.map((item, index) =>
                       index === i - 1 ? b : index === i ? previous : item,
@@ -174,6 +194,15 @@ export function BlocksEditor({
               onClick={() => {
                 const following = value.at(i + 1);
                 if (following) {
+                  setKeys((old) =>
+                    old.map((key, index) =>
+                      index === i + 1
+                        ? (old.at(i) ?? key)
+                        : index === i
+                          ? (old.at(i + 1) ?? key)
+                          : key,
+                    ),
+                  );
                   change(
                     value.map((item, index) =>
                       index === i + 1 ? b : index === i ? following : item,
@@ -187,6 +216,7 @@ export function BlocksEditor({
             </Action>
             <Action
               onClick={() => {
+                setKeys((old) => old.filter((_, index) => index !== i));
                 change(value.filter((_, index) => index !== i));
                 focus(Math.min(i, value.length - 2));
               }}
@@ -208,6 +238,8 @@ export function BlocksEditor({
       <Action
         disabled={value.length >= 100}
         onClick={() => {
+          const key = String(nextKey.current++);
+          setKeys((old) => [...old, key]);
           change([...value, emptyBlock(kind)]);
           focus(value.length);
         }}

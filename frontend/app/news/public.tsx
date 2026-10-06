@@ -74,6 +74,7 @@ export function NewsIndex() {
           <article className="news-card" key={v.id}>
             {v.definition.asset && (
               <ShopArtwork
+                placement="card"
                 source={v.definition.asset}
                 alt={v.definition.asset_alt}
                 lazy

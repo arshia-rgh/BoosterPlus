@@ -37,6 +37,9 @@ func checkedRevision(ctx context.Context, tx *ent.Tx, row *ent.Article, id strin
 	if issues := Validate(d, true); len(issues) > 0 {
 		return nil, d, &Invalid{issues}
 	}
+	if artworkErr := checkArtwork(ctx, tx.Client(), d); artworkErr != nil {
+		return nil, d, artworkErr
+	}
 	g, e := tx.Game.Get(ctx, row.GameID)
 	if e != nil {
 		return nil, d, e

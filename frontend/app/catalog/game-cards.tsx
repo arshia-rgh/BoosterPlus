@@ -1,3 +1,4 @@
+import { ArtworkImage } from "../artwork/image";
 import { cardArtwork } from "./artwork";
 import { useCallback, useState } from "react";
 import { Link } from "react-router";
@@ -41,10 +42,11 @@ function GameCard({
   const body = (
     <>
       {game.asset && !failed ? (
-        <img
+        <ArtworkImage
           className="game-card-art"
           ref={imageRef}
-          src={cardArtwork(game.asset)}
+          source={cardArtwork(game.asset)}
+          placement="card"
           alt=""
           width="640"
           height="400"

@@ -1,3 +1,4 @@
+import ArtworkUpload from "../artwork/upload";
 import {
   Action,
   Check,
@@ -57,14 +58,13 @@ export function ProductFields({
               patch({ category });
             }}
           />
-          <Text
-            name="asset"
-            label="Approved artwork path"
+          <ArtworkUpload
+            purpose="product"
+            pathLabel="Approved artwork path"
             value={value.asset}
             change={(asset) => {
               patch({ asset });
             }}
-            help="Use an approved /catalog-assets/ image. Do not paste private media links."
           />
           <Text
             name="asset_alt"

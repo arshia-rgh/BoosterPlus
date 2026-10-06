@@ -84,9 +84,31 @@ test("administrator authors and reviews a shop product with explicit capacity", 
     .getByLabel("Product description")
     .fill("Synthetic browser fixture only, not a commercial offer.");
   await page.getByLabel("Category", { exact: true }).fill("Fixture items");
+  await page.getByText("Existing artwork path", { exact: true }).click();
   await page
     .getByLabel("Approved artwork path")
     .fill("/catalog-assets/game-placeholder.svg");
+  const productArtwork = page.locator(
+    '.artwork-upload[data-purpose="product"]',
+  );
+  await productArtwork
+    .getByLabel("Choose a replacement image")
+    .setInputFiles("tests/fixtures/proof.png");
+  await productArtwork
+    .getByRole("button", { name: "Prepare image versions", exact: true })
+    .click();
+  await expect(
+    productArtwork.getByRole("button", { name: "Use this image", exact: true }),
+  ).toBeEnabled();
+  await expect(
+    productArtwork.getByAltText("Large image preview"),
+  ).toBeVisible();
+  await productArtwork
+    .getByRole("button", { name: "Use this image", exact: true })
+    .click();
+  await expect(page.getByLabel("Approved artwork path")).toHaveValue(
+    /^\/api\/v1\/artwork\//,
+  );
   await page
     .getByLabel("Artwork alternative text")
     .fill("Synthetic game item placeholder");

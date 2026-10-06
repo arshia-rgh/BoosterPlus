@@ -160,6 +160,9 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, gameID string
 		return out, err
 	}
 	err = s.auth.StaffTransaction(ctx, p, false, func(tx *ent.Tx, current *identity.Principal) error {
+		if artworkErr := checkArtwork(ctx, tx.Client(), value); artworkErr != nil {
+			return artworkErr
+		}
 		game, e := tx.Game.Get(ctx, gameID)
 		if e != nil {
 			return e
@@ -211,6 +214,9 @@ func (s *Store) Save(ctx context.Context, p *identity.Principal, id string, vers
 		return out, err
 	}
 	err = s.auth.StaffTransaction(ctx, p, false, func(tx *ent.Tx, current *identity.Principal) error {
+		if artworkErr := checkArtwork(ctx, tx.Client(), value); artworkErr != nil {
+			return artworkErr
+		}
 		row, e := tx.ShopProduct.Get(ctx, id)
 		if e != nil {
 			return e

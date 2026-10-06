@@ -23,6 +23,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articlerevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleslug"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/artwork"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
@@ -113,6 +114,8 @@ type Client struct {
 	ArticleRevision *ArticleRevisionClient
 	// ArticleSlug is the client for interacting with the ArticleSlug builders.
 	ArticleSlug *ArticleSlugClient
+	// Artwork is the client for interacting with the Artwork builders.
+	Artwork *ArtworkClient
 	// AuthAudit is the client for interacting with the AuthAudit builders.
 	AuthAudit *AuthAuditClient
 	// AuthChallenge is the client for interacting with the AuthChallenge builders.
@@ -259,6 +262,7 @@ func (c *Client) init() {
 	c.ArticleEvent = NewArticleEventClient(c.config)
 	c.ArticleRevision = NewArticleRevisionClient(c.config)
 	c.ArticleSlug = NewArticleSlugClient(c.config)
+	c.Artwork = NewArtworkClient(c.config)
 	c.AuthAudit = NewAuthAuditClient(c.config)
 	c.AuthChallenge = NewAuthChallengeClient(c.config)
 	c.AuthFlow = NewAuthFlowClient(c.config)
@@ -423,6 +427,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ArticleEvent:             NewArticleEventClient(cfg),
 		ArticleRevision:          NewArticleRevisionClient(cfg),
 		ArticleSlug:              NewArticleSlugClient(cfg),
+		Artwork:                  NewArtworkClient(cfg),
 		AuthAudit:                NewAuthAuditClient(cfg),
 		AuthChallenge:            NewAuthChallengeClient(cfg),
 		AuthFlow:                 NewAuthFlowClient(cfg),
@@ -514,6 +519,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ArticleEvent:             NewArticleEventClient(cfg),
 		ArticleRevision:          NewArticleRevisionClient(cfg),
 		ArticleSlug:              NewArticleSlugClient(cfg),
+		Artwork:                  NewArtworkClient(cfg),
 		AuthAudit:                NewAuthAuditClient(cfg),
 		AuthChallenge:            NewAuthChallengeClient(cfg),
 		AuthFlow:                 NewAuthFlowClient(cfg),
@@ -608,17 +614,17 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountDelivery, c.AccountListing, c.AccountListingRelease,
 		c.AccountReservation, c.AccountSubmission, c.Article, c.ArticleEvent,
-		c.ArticleRevision, c.ArticleSlug, c.AuthAudit, c.AuthChallenge, c.AuthFlow,
-		c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession,
-		c.AvailabilityDelivery, c.AvailabilitySubscription, c.AvailabilityTarget,
-		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CaseEvent, c.CatalogRelease,
-		c.Conversation, c.ConversationMessage, c.ConversationRead, c.Coupon,
-		c.CouponClaim, c.CouponRevision, c.Favorite, c.Fulfillment, c.Game,
-		c.MediaFile, c.MoneyTransfer, c.Notification, c.Order, c.OrderContract,
-		c.OrderEvent, c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt,
-		c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord,
-		c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest, c.Review,
-		c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
+		c.ArticleRevision, c.ArticleSlug, c.Artwork, c.AuthAudit, c.AuthChallenge,
+		c.AuthFlow, c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery,
+		c.AuthSession, c.AvailabilityDelivery, c.AvailabilitySubscription,
+		c.AvailabilityTarget, c.AvailabilityWindow, c.Booking, c.BookingEvent,
+		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
+		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
+		c.Fulfillment, c.Game, c.MediaFile, c.MoneyTransfer, c.Notification, c.Order,
+		c.OrderContract, c.OrderEvent, c.OrderQuote, c.PaymentAllocation,
+		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
+		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
+		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
 		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
 		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
 		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
@@ -635,17 +641,17 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountDelivery, c.AccountListing, c.AccountListingRelease,
 		c.AccountReservation, c.AccountSubmission, c.Article, c.ArticleEvent,
-		c.ArticleRevision, c.ArticleSlug, c.AuthAudit, c.AuthChallenge, c.AuthFlow,
-		c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery, c.AuthSession,
-		c.AvailabilityDelivery, c.AvailabilitySubscription, c.AvailabilityTarget,
-		c.AvailabilityWindow, c.Booking, c.BookingEvent, c.CaseEvent, c.CatalogRelease,
-		c.Conversation, c.ConversationMessage, c.ConversationRead, c.Coupon,
-		c.CouponClaim, c.CouponRevision, c.Favorite, c.Fulfillment, c.Game,
-		c.MediaFile, c.MoneyTransfer, c.Notification, c.Order, c.OrderContract,
-		c.OrderEvent, c.OrderQuote, c.PaymentAllocation, c.PaymentAttempt,
-		c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt, c.PaymentRecord,
-		c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest, c.Review,
-		c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
+		c.ArticleRevision, c.ArticleSlug, c.Artwork, c.AuthAudit, c.AuthChallenge,
+		c.AuthFlow, c.AuthIdentity, c.AuthMessage, c.AuthRate, c.AuthRecovery,
+		c.AuthSession, c.AvailabilityDelivery, c.AvailabilitySubscription,
+		c.AvailabilityTarget, c.AvailabilityWindow, c.Booking, c.BookingEvent,
+		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
+		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
+		c.Fulfillment, c.Game, c.MediaFile, c.MoneyTransfer, c.Notification, c.Order,
+		c.OrderContract, c.OrderEvent, c.OrderQuote, c.PaymentAllocation,
+		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
+		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
+		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
 		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
 		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
 		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
@@ -677,6 +683,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.ArticleRevision.mutate(ctx, m)
 	case *ArticleSlugMutation:
 		return c.ArticleSlug.mutate(ctx, m)
+	case *ArtworkMutation:
+		return c.Artwork.mutate(ctx, m)
 	case *AuthAuditMutation:
 		return c.AuthAudit.mutate(ctx, m)
 	case *AuthChallengeMutation:
@@ -2002,6 +2010,139 @@ func (c *ArticleSlugClient) mutate(ctx context.Context, m *ArticleSlugMutation) 
 		return (&ArticleSlugDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown ArticleSlug mutation op: %q", m.Op())
+	}
+}
+
+// ArtworkClient is a client for the Artwork schema.
+type ArtworkClient struct {
+	config
+}
+
+// NewArtworkClient returns a client for the Artwork from the given config.
+func NewArtworkClient(c config) *ArtworkClient {
+	return &ArtworkClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `artwork.Hooks(f(g(h())))`.
+func (c *ArtworkClient) Use(hooks ...Hook) {
+	c.hooks.Artwork = append(c.hooks.Artwork, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `artwork.Intercept(f(g(h())))`.
+func (c *ArtworkClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Artwork = append(c.inters.Artwork, interceptors...)
+}
+
+// Create returns a builder for creating a Artwork entity.
+func (c *ArtworkClient) Create() *ArtworkCreate {
+	mutation := newArtworkMutation(c.config, OpCreate)
+	return &ArtworkCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Artwork entities.
+func (c *ArtworkClient) CreateBulk(builders ...*ArtworkCreate) *ArtworkCreateBulk {
+	return &ArtworkCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ArtworkClient) MapCreateBulk(slice any, setFunc func(*ArtworkCreate, int)) *ArtworkCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ArtworkCreateBulk{err: fmt.Errorf("calling to ArtworkClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ArtworkCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ArtworkCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Artwork.
+func (c *ArtworkClient) Update() *ArtworkUpdate {
+	mutation := newArtworkMutation(c.config, OpUpdate)
+	return &ArtworkUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ArtworkClient) UpdateOne(_m *Artwork) *ArtworkUpdateOne {
+	mutation := newArtworkMutation(c.config, OpUpdateOne, withArtwork(_m))
+	return &ArtworkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ArtworkClient) UpdateOneID(id string) *ArtworkUpdateOne {
+	mutation := newArtworkMutation(c.config, OpUpdateOne, withArtworkID(id))
+	return &ArtworkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Artwork.
+func (c *ArtworkClient) Delete() *ArtworkDelete {
+	mutation := newArtworkMutation(c.config, OpDelete)
+	return &ArtworkDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ArtworkClient) DeleteOne(_m *Artwork) *ArtworkDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ArtworkClient) DeleteOneID(id string) *ArtworkDeleteOne {
+	builder := c.Delete().Where(artwork.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ArtworkDeleteOne{builder}
+}
+
+// Query returns a query builder for Artwork.
+func (c *ArtworkClient) Query() *ArtworkQuery {
+	return &ArtworkQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeArtwork},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Artwork entity by its id.
+func (c *ArtworkClient) Get(ctx context.Context, id string) (*Artwork, error) {
+	return c.Query().Where(artwork.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ArtworkClient) GetX(ctx context.Context, id string) *Artwork {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ArtworkClient) Hooks() []Hook {
+	return c.hooks.Artwork
+}
+
+// Interceptors returns the client interceptors.
+func (c *ArtworkClient) Interceptors() []Interceptor {
+	return c.inters.Artwork
+}
+
+func (c *ArtworkClient) mutate(ctx context.Context, m *ArtworkMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ArtworkCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ArtworkUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ArtworkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ArtworkDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Artwork mutation op: %q", m.Op())
 	}
 }
 
@@ -10389,35 +10530,35 @@ type (
 	hooks struct {
 		AccountDelivery, AccountListing, AccountListingRelease, AccountReservation,
 		AccountSubmission, Article, ArticleEvent, ArticleRevision, ArticleSlug,
-		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, AvailabilityDelivery, AvailabilitySubscription,
-		AvailabilityTarget, AvailabilityWindow, Booking, BookingEvent, CaseEvent,
-		CatalogRelease, Conversation, ConversationMessage, ConversationRead, Coupon,
-		CouponClaim, CouponRevision, Favorite, Fulfillment, Game, MediaFile,
-		MoneyTransfer, Notification, Order, OrderContract, OrderEvent, OrderQuote,
-		PaymentAllocation, PaymentAttempt, PaymentObservation, PaymentPolicy,
-		PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal, PrivacyRequest,
-		Review, ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent,
-		ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent, ShopProductRelease,
-		ShopRecipient, ShopReservation, ShopStock, SiteRelease, SiteSetting,
-		StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
+		Artwork, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage,
+		AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
+		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
+		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationMessage,
+		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
+		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
+		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
+		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
+		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
+		SellerOfferEvent, ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent,
+		ShopProductRelease, ShopRecipient, ShopReservation, ShopStock, SiteRelease,
+		SiteSetting, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
 		TransferObservation, TransferRecord, User []ent.Hook
 	}
 	inters struct {
 		AccountDelivery, AccountListing, AccountListingRelease, AccountReservation,
 		AccountSubmission, Article, ArticleEvent, ArticleRevision, ArticleSlug,
-		AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage, AuthRate,
-		AuthRecovery, AuthSession, AvailabilityDelivery, AvailabilitySubscription,
-		AvailabilityTarget, AvailabilityWindow, Booking, BookingEvent, CaseEvent,
-		CatalogRelease, Conversation, ConversationMessage, ConversationRead, Coupon,
-		CouponClaim, CouponRevision, Favorite, Fulfillment, Game, MediaFile,
-		MoneyTransfer, Notification, Order, OrderContract, OrderEvent, OrderQuote,
-		PaymentAllocation, PaymentAttempt, PaymentObservation, PaymentPolicy,
-		PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal, PrivacyRequest,
-		Review, ReviewRevision, SecretBundle, SellerOffer, SellerOfferEvent,
-		ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent, ShopProductRelease,
-		ShopRecipient, ShopReservation, ShopStock, SiteRelease, SiteSetting,
-		StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
+		Artwork, AuthAudit, AuthChallenge, AuthFlow, AuthIdentity, AuthMessage,
+		AuthRate, AuthRecovery, AuthSession, AvailabilityDelivery,
+		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
+		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationMessage,
+		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
+		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
+		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
+		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
+		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
+		SellerOfferEvent, ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent,
+		ShopProductRelease, ShopRecipient, ShopReservation, ShopStock, SiteRelease,
+		SiteSetting, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
 		TransferObservation, TransferRecord, User []ent.Interceptor
 	}
 )

@@ -1,13 +1,17 @@
+import { ArtworkImage } from "../artwork/image";
+import { validArtwork } from "../artwork/model";
 import { useCallback, useState } from "react";
 /** One bounded, failure-safe media presentation for released items and private previews. */
 export default function ShopArtwork({
   source,
   alt,
   lazy = false,
+  placement = "content",
 }: {
   source: string;
   alt: string;
   lazy?: boolean;
+  placement?: "card" | "content";
 }) {
   const [failed, setFailed] = useState<string | null>(null);
   const ready = useCallback(
@@ -16,12 +20,7 @@ export default function ShopArtwork({
     },
     [source],
   );
-  if (
-    !/^\/catalog-assets\/[a-z0-9][a-z0-9_-]{0,79}\.(png|jpg|webp|avif|svg)$/.test(
-      source,
-    ) ||
-    failed === source
-  )
+  if (!validArtwork(source) || failed === source)
     return (
       <div
         className="shop-artwork shop-artwork-unavailable"
@@ -34,10 +33,12 @@ export default function ShopArtwork({
       </div>
     );
   return (
-    <img
+    <ArtworkImage
       ref={ready}
       className="shop-artwork"
-      src={source}
+      source={source}
+      placement={placement}
+      data-placement={placement}
       alt={alt}
       width="640"
       height="400"

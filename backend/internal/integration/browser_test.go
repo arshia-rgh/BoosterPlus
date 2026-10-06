@@ -15,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/artwork"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/availability"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/conversations"
@@ -117,9 +118,11 @@ func TestBrowserEnvironment(t *testing.T) {
 	if alertErr != nil {
 		t.Fatal(alertErr)
 	}
-	files := media.New(f.client, service, mediaObjects(t, f.client), media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
+	objects := mediaObjects(t, f.client)
+	art := artwork.New(f.client, service, objects, media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
+	files := media.New(f.client, service, objects, media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
 	finance := payments.New(f.client, service, &browserPaymentProvider{newPaymentProvider(t)}, "fixture:browser-fixture", true, nil).ConfigureOutgoing(&browserOutgoingProvider{outgoingFixture: &outgoingFixture{}}, true)
-	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, news.New(f.client, service, nil).Register, resale.New(f.client, service, ring, nil).Register, shop.New(f.client, service, nil).Register, finance.Register, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, execution.Register, submissions.New(f.client, service, nil).Register, reviews.New(f.client, service, nil).Register, operations.New(f.client, service, nil).Register, alerts.Register, reports.New(service, nil).Register, privacy.New(f.client, service, nil).Register, sitecontent.New(f.client, service, nil).Register))
+	server := httptest.NewServer(httpapi.New(f.db.PingContext, slog.New(slog.DiscardHandler), false, news.New(f.client, service, nil).Register, resale.New(f.client, service, ring, nil).Register, shop.New(f.client, service, nil).Register, finance.Register, service.Register, catalog.New(f.client, service).Register, orders.New(f.client, service, nil).Register, conversations.New(f.client, service, nil).Register, notices.Register, files.Register, art.Register, execution.Register, submissions.New(f.client, service, nil).Register, reviews.New(f.client, service, nil).Register, operations.New(f.client, service, nil).Register, alerts.Register, reports.New(service, nil).Register, privacy.New(f.client, service, nil).Register, sitecontent.New(f.client, service, nil).Register))
 	defer server.Close()
 	work, cancel := context.WithCancel(t.Context())
 	defer cancel()

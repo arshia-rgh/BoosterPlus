@@ -14,6 +14,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articlerevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleslug"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/artwork"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
@@ -546,6 +547,46 @@ func init() {
 	articleslug.DefaultID = articleslugDescID.Default.(func() string)
 	// articleslug.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	articleslug.IDValidator = articleslugDescID.Validators[0].(func(string) error)
+	artworkFields := schema.Artwork{}.Fields()
+	_ = artworkFields
+	// artworkDescUserID is the schema descriptor for user_id field.
+	artworkDescUserID := artworkFields[1].Descriptor()
+	// artwork.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	artwork.UserIDValidator = artworkDescUserID.Validators[0].(func(string) error)
+	// artworkDescRequestHash is the schema descriptor for request_hash field.
+	artworkDescRequestHash := artworkFields[2].Descriptor()
+	// artwork.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	artwork.RequestHashValidator = artworkDescRequestHash.Validators[0].(func(string) error)
+	// artworkDescPurpose is the schema descriptor for purpose field.
+	artworkDescPurpose := artworkFields[3].Descriptor()
+	// artwork.PurposeValidator is a validator for the "purpose" field. It is called by the builders before save.
+	artwork.PurposeValidator = artworkDescPurpose.Validators[0].(func(string) error)
+	// artworkDescState is the schema descriptor for state field.
+	artworkDescState := artworkFields[4].Descriptor()
+	// artwork.DefaultState holds the default value on creation for the state field.
+	artwork.DefaultState = artworkDescState.Default.(string)
+	// artwork.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	artwork.StateValidator = artworkDescState.Validators[0].(func(string) error)
+	// artworkDescWidth is the schema descriptor for width field.
+	artworkDescWidth := artworkFields[5].Descriptor()
+	// artwork.DefaultWidth holds the default value on creation for the width field.
+	artwork.DefaultWidth = artworkDescWidth.Default.(int)
+	// artworkDescHeight is the schema descriptor for height field.
+	artworkDescHeight := artworkFields[6].Descriptor()
+	// artwork.DefaultHeight holds the default value on creation for the height field.
+	artwork.DefaultHeight = artworkDescHeight.Default.(int)
+	// artworkDescCreatedAt is the schema descriptor for created_at field.
+	artworkDescCreatedAt := artworkFields[10].Descriptor()
+	// artwork.DefaultCreatedAt holds the default value on creation for the created_at field.
+	artwork.DefaultCreatedAt = artworkDescCreatedAt.Default.(func() time.Time)
+	// artworkDescUpdatedAt is the schema descriptor for updated_at field.
+	artworkDescUpdatedAt := artworkFields[11].Descriptor()
+	// artwork.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	artwork.DefaultUpdatedAt = artworkDescUpdatedAt.Default.(func() time.Time)
+	// artworkDescID is the schema descriptor for id field.
+	artworkDescID := artworkFields[0].Descriptor()
+	// artwork.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	artwork.IDValidator = artworkDescID.Validators[0].(func(string) error)
 	authauditFields := schema.AuthAudit{}.Fields()
 	_ = authauditFields
 	// authauditDescActorID is the schema descriptor for actor_id field.

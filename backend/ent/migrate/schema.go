@@ -313,6 +313,34 @@ var (
 			},
 		},
 	}
+	// ArtworksColumns holds the columns for the "artworks" table.
+	ArtworksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "purpose", Type: field.TypeString, Size: 16},
+		{Name: "state", Type: field.TypeString, Size: 16, Default: "processing"},
+		{Name: "width", Type: field.TypeInt, Default: 0},
+		{Name: "height", Type: field.TypeInt, Default: 0},
+		{Name: "focus_x", Type: field.TypeInt},
+		{Name: "focus_y", Type: field.TypeInt},
+		{Name: "variants", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ArtworksTable holds the schema information for the "artworks" table.
+	ArtworksTable = &schema.Table{
+		Name:       "artworks",
+		Columns:    ArtworksColumns,
+		PrimaryKey: []*schema.Column{ArtworksColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "artwork_state_age",
+				Unique:  false,
+				Columns: []*schema.Column{ArtworksColumns[4], ArtworksColumns[11], ArtworksColumns[0]},
+			},
+		},
+	}
 	// AuthAuditsColumns holds the columns for the "auth_audits" table.
 	AuthAuditsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 64},
@@ -2319,6 +2347,7 @@ var (
 		ArticleEventsTable,
 		ArticleRevisionsTable,
 		ArticleSlugsTable,
+		ArtworksTable,
 		AuthAuditsTable,
 		AuthChallengesTable,
 		AuthFlowsTable,

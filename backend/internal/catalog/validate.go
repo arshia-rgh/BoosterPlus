@@ -8,6 +8,8 @@ import (
 	"slices"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/artwork"
 )
 
 var (
@@ -15,7 +17,6 @@ var (
 	slugPattern    = regexp.MustCompile(`^[a-z][a-z0-9-]{0,79}$`)
 	decimalPattern = regexp.MustCompile(`^-?(0|[1-9][0-9]{0,11})(\.[0-9]{1,6})?$`)
 	amountPattern  = regexp.MustCompile(`^[1-9][0-9]{0,11}$`)
-	assetPattern   = regexp.MustCompile(`^/catalog-assets/[a-z0-9][a-z0-9_-]{0,79}\.(png|jpg|webp|avif|svg)$`)
 )
 
 func decimal(value string) (*big.Rat, bool) {
@@ -54,8 +55,8 @@ func ValidateConfiguration(c Configuration, publish bool) []Issue {
 	if !validText(c.Name, 1, 120) || !validText(c.Description, 0, 4000) {
 		add("name", "Use a name of 1–120 characters and a description up to 4,000 characters.")
 	}
-	if c.Asset != "" && (!assetPattern.MatchString(c.Asset) || !validText(c.AssetAlt, 1, 160)) {
-		add("asset", "Choose an approved /catalog-assets/ filename and descriptive alternative text.")
+	if c.Asset != "" && (!artwork.ValidPath(c.Asset) || !validText(c.AssetAlt, 1, 160)) {
+		add("asset", "Choose bundled or checked uploaded artwork and descriptive alternative text.")
 	}
 	if len(c.References) > 20 || len(c.Services) > 12 || len(c.Packages) > 40 || len(c.FAQs) > 20 {
 		add("configuration", "Catalog limits exceeded.")

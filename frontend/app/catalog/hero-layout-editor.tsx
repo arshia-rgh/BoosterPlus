@@ -1,3 +1,4 @@
+import { rendition } from "../artwork/model";
 import { useId, useState } from "react";
 import { Check, Select } from "./controls";
 import { defaultHeroLayout, type Configuration } from "./model";
@@ -111,7 +112,11 @@ export default function HeroLayoutEditor({
                   >
                     <img
                       key={previewAttempt}
-                      src={config.asset}
+                      src={rendition(
+                        config.asset,
+                        size === "mobile" ? "mobile" : "wide",
+                        true,
+                      )}
                       alt={config.asset_alt}
                       onError={() => {
                         setFailedSource(config.asset);

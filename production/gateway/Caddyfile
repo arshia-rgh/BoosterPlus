@@ -22,7 +22,7 @@
 	header_up X-Forwarded-Host {http.request.hostport}
 	transport http {
 		dial_timeout 5s
-		response_header_timeout 15s
+		response_header_timeout {args[0]}
 	}
 }
 
@@ -33,16 +33,27 @@
 	}
 	header -Server
 	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	@artworkUpload {
+		method PUT
+		path_regexp artworkUpload ^/api/v1/admin/artwork/[a-f0-9-]{36}/bytes$
+	}
+	handle @artworkUpload {
+		# Retain the trusted storefront proxy and backend admin/CSRF checks.
+		# Scanning and fixed derivative generation have a 55-second work budget.
+		reverse_proxy storefront:3000 {
+			import upstream 70s
+		}
+	}
 	@admin path /admin /admin/* /admin.data
 	handle @admin {
 		reverse_proxy admin:3000 {
-			import upstream
+			import upstream 15s
 		}
 	}
 	handle {
 		# /api stays behind the storefront's trusted proxy, never a direct API bypass.
 		reverse_proxy storefront:3000 {
-			import upstream
+			import upstream 15s
 		}
 	}
 }

@@ -9,13 +9,14 @@ import (
 	"slices"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/artwork"
 )
 
 // ErrInvalid rejects unsafe or unsupported product and recipient input.
 var ErrInvalid = errors.New("shop input is invalid")
 var keyPattern = regexp.MustCompile(`^[a-z][a-z0-9_-]{0,47}$`)
 var amountPattern = regexp.MustCompile(`^[1-9][0-9]{0,11}$`)
-var assetPattern = regexp.MustCompile(`^/catalog-assets/[a-z0-9][a-z0-9_-]{0,79}\.(png|jpg|webp|avif|svg)$`)
 
 // Definition is a public publication unit, never a place for recipient values.
 type Definition struct {
@@ -94,7 +95,7 @@ func Validate(value Definition, publish bool) []Issue {
 			add(field.key, "Provide bounded plain text.")
 		}
 	}
-	if !text(value.AssetAlt, 0, 160) || !text(value.AssetSource, 0, 1000) || value.Asset != "" && (!assetPattern.MatchString(value.Asset) || !text(value.AssetAlt, 1, 160) || !text(value.AssetSource, 1, 1000)) {
+	if !text(value.AssetAlt, 0, 160) || !text(value.AssetSource, 0, 1000) || value.Asset != "" && (!artwork.ValidPath(value.Asset) || !text(value.AssetAlt, 1, 160) || !text(value.AssetSource, 1, 1000)) {
 		add("asset", "Choose approved artwork with alternative text and provenance.")
 	}
 	if publish && (!value.Reviewed || value.Asset == "") {

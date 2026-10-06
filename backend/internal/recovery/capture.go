@@ -12,7 +12,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -65,12 +67,20 @@ func Capture(ctx context.Context, db *sql.DB, objects media.Objects, destination
 }
 
 func page(ctx context.Context, tx *sql.Tx, after string) (entries []Entry, result error) {
-	rows, err := tx.QueryContext(ctx, `SELECT id,
-CASE WHEN state='ready' THEN 'clean' ELSE 'quarantine' END,
-CASE WHEN state='ready' THEN clean_checksum ELSE checksum END,
-CASE WHEN state='ready' THEN clean_content_type ELSE content_type END,
-CASE WHEN state='ready' THEN clean_size ELSE size END
-FROM media_files WHERE state IN ('uploaded','queued','ready') AND id>? ORDER BY id LIMIT 100`, after)
+	rows, err := tx.QueryContext(ctx, `SELECT id, namespace, checksum, content_type, size FROM (SELECT id,
+CASE WHEN state='ready' THEN 'clean' ELSE 'quarantine' END AS namespace,
+CASE WHEN state='ready' THEN clean_checksum ELSE checksum END AS checksum,
+CASE WHEN state='ready' THEN clean_content_type ELSE content_type END AS content_type,
+CASE WHEN state='ready' THEN clean_size ELSE size END AS size
+FROM media_files WHERE state IN ('uploaded','queued','ready')
+UNION ALL
+SELECT CONCAT(a.id,'/',v.name), 'artwork',
+JSON_UNQUOTE(JSON_EXTRACT(a.variants,CONCAT('$."',v.name,'".checksum'))),
+JSON_UNQUOTE(JSON_EXTRACT(a.variants,CONCAT('$."',v.name,'".content_type'))),
+CAST(JSON_UNQUOTE(JSON_EXTRACT(a.variants,CONCAT('$."',v.name,'".size'))) AS SIGNED)
+FROM artworks a CROSS JOIN (SELECT 'wide' AS name UNION ALL SELECT 'wide-small' UNION ALL SELECT 'mobile' UNION ALL SELECT 'mobile-small' UNION ALL SELECT 'card' UNION ALL SELECT 'thumb') v
+WHERE a.state='ready' AND JSON_EXTRACT(a.variants,CONCAT('$."',v.name,'"')) IS NOT NULL
+) objects WHERE id>? ORDER BY id LIMIT 100`, after)
 	if err != nil {
 		return nil, errors.New("recovery media snapshot unavailable")
 	}
@@ -89,8 +99,18 @@ FROM media_files WHERE state IN ('uploaded','queued','ready') AND id>? ORDER BY 
 }
 
 func valid(entry Entry) bool {
-	id, err := uuid.Parse(entry.ID)
-	if err != nil || id.String() != entry.ID || (entry.Namespace != "clean" && entry.Namespace != "quarantine") || entry.Size < 1 || entry.Size > media.MaxBytes {
+	identifier := entry.ID
+	if entry.Namespace == "artwork" {
+		parts := strings.Split(entry.ID, "/")
+		if len(parts) != 2 || !slices.Contains([]string{"wide", "wide-small", "mobile", "mobile-small", "card", "thumb"}, parts[1]) {
+			return false
+		}
+		identifier = parts[0]
+	} else if entry.Namespace != "clean" && entry.Namespace != "quarantine" {
+		return false
+	}
+	id, err := uuid.Parse(identifier)
+	if err != nil || id.String() != identifier || entry.Size < 1 || entry.Size > media.MaxBytes {
 		return false
 	}
 	hash, err := hex.DecodeString(entry.Checksum)
@@ -109,7 +129,7 @@ func capture(ctx context.Context, tso string, objects media.Objects, destination
 		return manifest, errors.New("recovery directory unavailable")
 	}
 	defer func() { result = errors.Join(result, root.Close()) }()
-	for _, name := range []string{"clean", "quarantine"} {
+	for _, name := range []string{"clean", "quarantine", "artwork"} {
 		if err = root.Mkdir(name, 0o700); err != nil {
 			return manifest, errors.New("recovery directory preparation failed")
 		}
@@ -139,6 +159,11 @@ func capture(ctx context.Context, tso string, objects media.Objects, destination
 			hash := sha256.Sum256(data)
 			if int64(len(data)) != entry.Size || hex.EncodeToString(hash[:]) != entry.Checksum {
 				return Manifest{}, errors.New("historical recovery object does not match database evidence")
+			}
+			if entry.Namespace == "artwork" {
+				if e = root.Mkdir("artwork/"+strings.Split(entry.ID, "/")[0], 0700); e != nil && !errors.Is(e, os.ErrExist) {
+					return Manifest{}, errors.New("artwork recovery directory preparation failed")
+				}
 			}
 			if e = write(root, entry.Namespace+"/"+entry.ID, data); e != nil {
 				return Manifest{}, errors.New("private recovery object write failed")

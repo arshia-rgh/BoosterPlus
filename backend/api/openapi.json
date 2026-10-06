@@ -23481,6 +23481,281 @@
           }
         ]
       }
+    },
+    "/api/v1/admin/artwork/{id}/bytes": {
+      "put": {
+        "operationId": "uploadEditorialArtwork",
+        "summary": "Admin-only bounded scanned artwork upload; exact request IDs are replay-safe. Same request ID must retain bytes, MIME, purpose and focal point. Drafts stay private.",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "409": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtworkProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Correct validation or reload current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtworkProblem"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Checked responsive derivatives. Does not save or publish any catalog/article/product.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Artwork"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "purpose",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["game", "cover", "product", "inline"]
+            }
+          },
+          {
+            "name": "focus_x",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "focus_y",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary",
+                "maxLength": 4194304
+              }
+            },
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary",
+                "maxLength": 4194304
+              }
+            },
+            "image/webp": {
+              "schema": {
+                "type": "string",
+                "format": "binary",
+                "maxLength": 4194304
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/artwork/{id}/{variant}": {
+      "get": {
+        "operationId": "getPublishedArtwork",
+        "summary": "Serves only sanitized derivatives referenced by a currently public game, product or article. Rechecks publication after object retrieval.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "variant",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "wide",
+                "wide-small",
+                "mobile",
+                "mobile-small",
+                "card",
+                "thumb"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checked image pixels; private cache revalidation required.",
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Unchanged pixels; current access was verified."
+          },
+          "404": {
+            "description": "Image is missing, not ready or not currently published."
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/artwork/{id}/{variant}": {
+      "get": {
+        "operationId": "previewEditorialArtwork",
+        "summary": "Current admin authority required for draft previews.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "variant",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "wide",
+                "wide-small",
+                "mobile",
+                "mobile-small",
+                "card",
+                "thumb"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checked image pixels; private cache revalidation required.",
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Unchanged pixels; current access was verified."
+          },
+          "404": {
+            "description": "Image is missing, not ready or not currently published."
+          },
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -33424,6 +33699,100 @@
           },
           "next": {
             "type": "string"
+          }
+        }
+      },
+      "ArtworkVariant": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["width", "height", "size", "content_type", "checksum"],
+        "properties": {
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1600
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1600
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4194304
+          },
+          "content_type": {
+            "type": "string",
+            "enum": ["image/jpeg", "image/png"]
+          },
+          "checksum": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "Artwork": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "asset",
+          "purpose",
+          "width",
+          "height",
+          "focus_x",
+          "focus_y",
+          "variants"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "asset": {
+            "type": "string",
+            "description": "Canonical upload reference. Public bytes require a current publication; admin preview uses its separate endpoint."
+          },
+          "purpose": {
+            "type": "string",
+            "enum": ["game", "cover", "product", "inline"]
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4096
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4096
+          },
+          "focus_x": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "focus_y": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "variants": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ArtworkVariant"
+            }
+          }
+        }
+      },
+      "ArtworkProblem": {
+        "type": "object",
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["artwork_invalid", "artwork_conflict", "artwork_rejected"]
           }
         }
       }

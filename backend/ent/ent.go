@@ -21,6 +21,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articlerevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleslug"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/artwork"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
@@ -153,6 +154,7 @@ func checkColumn(t, c string) error {
 			articleevent.Table:             articleevent.ValidColumn,
 			articlerevision.Table:          articlerevision.ValidColumn,
 			articleslug.Table:              articleslug.ValidColumn,
+			artwork.Table:                  artwork.ValidColumn,
 			authaudit.Table:                authaudit.ValidColumn,
 			authchallenge.Table:            authchallenge.ValidColumn,
 			authflow.Table:                 authflow.ValidColumn,

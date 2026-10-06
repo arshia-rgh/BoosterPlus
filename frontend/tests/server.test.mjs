@@ -43,6 +43,20 @@ test(
     const secret = randomBytes(32).toString("hex");
     const backend = createServer((req, res) => {
       res.setHeader("Content-Type", "application/json");
+      if (req.url?.startsWith("/api/v1/admin/artwork/")) {
+        let size = 0;
+        req.on("data", (chunk) => {
+          size += chunk.length;
+        });
+        req.on("end", () => {
+          res.setHeader("ETag", '"synthetic-artwork"');
+          res.end(
+            JSON.stringify({ size, conditional: req.headers["if-none-match"] }),
+          );
+        });
+        return;
+      }
+
       if (req.url === "/api/v1/auth/session") {
         res.end(JSON.stringify({ terms_version: "approved-test-v1" }));
         return;
@@ -159,6 +173,25 @@ test(
       );
       assert.equal(result.headers.get("x-robots-tag"), "noindex, nofollow");
     }
+
+    const image = await fetch(
+      url +
+        "/api/v1/admin/artwork/11111111-1111-4111-8111-111111111111/bytes?purpose=game&focus_x=50&focus_y=50",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "image/png",
+          "If-None-Match": '"previous-artwork"',
+        },
+        body: Buffer.alloc(3 << 20),
+      },
+    );
+    assert.equal(image.status, 200);
+    assert.equal(image.headers.get("etag"), '"synthetic-artwork"');
+    assert.deepEqual(await image.json(), {
+      size: 3 << 20,
+      conditional: '"previous-artwork"',
+    });
     for (const path of [
       "/login",
       "/account",

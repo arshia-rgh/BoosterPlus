@@ -11,6 +11,8 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/artwork"
 )
 
 // ErrInvalid rejects malformed editorial input.
@@ -19,7 +21,6 @@ var ErrInvalid = errors.New("article input invalid")
 // ErrConflict requires refreshing an outdated editorial state.
 var ErrConflict = errors.New("article revision or publication changed")
 var slugPattern = regexp.MustCompile(`^[a-z][a-z0-9-]{0,99}$`)
-var assetPattern = regexp.MustCompile(`^/catalog-assets/[a-z0-9][a-z0-9_-]{0,79}\.(png|jpg|webp|avif|svg)$`)
 
 // Definition contains public editorial content, never arbitrary markup.
 type Definition struct {
@@ -101,8 +102,8 @@ func Validate(d Definition, publish bool) []Issue {
 	if d.SourceURL != "" && !safeURL(d.SourceURL) {
 		add("source_url", "Use a complete HTTPS source link without credentials.")
 	}
-	if d.Asset != "" && (!assetPattern.MatchString(d.Asset) || !text(d.AssetAlt, minimum, 300) || !text(d.AssetSource, minimum, 1000)) {
-		add("asset", "Use a local catalog asset with alt text and attribution.")
+	if d.Asset != "" && (!artwork.ValidPath(d.Asset) || !text(d.AssetAlt, minimum, 300) || !text(d.AssetSource, minimum, 1000)) {
+		add("asset", "Use bundled or checked uploaded artwork with alt text and attribution.")
 	}
 	if d.Asset == "" && (d.AssetAlt != "" || d.AssetSource != "") {
 		add("asset", "Choose artwork or clear its unused metadata.")
@@ -143,8 +144,8 @@ func validateBlock(b Block, path string, add func(string, string)) {
 			add(path, "Use descriptive link text and a safe HTTPS URL.")
 		}
 	case "image":
-		if !assetPattern.MatchString(b.URL) || !text(b.Alt, 1, 300) || !text(b.Source, 1, 1000) {
-			add(path, "Images need a local asset, alt text and attribution.")
+		if !artwork.ValidPath(b.URL) || !text(b.Alt, 1, 300) || !text(b.Source, 1, 1000) {
+			add(path, "Images need bundled or checked uploaded artwork, alt text and attribution.")
 		}
 	case "list":
 		if len(b.Items) == 0 {

@@ -18,7 +18,7 @@
   aspect-ratio: 16 / 7;
 }
 .artwork-framing-image.mobile {
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 3;
   max-width: 20rem;
 }
 .artwork-framing-image img {

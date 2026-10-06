@@ -97,6 +97,7 @@ app.use("/api", (req, res) => {
     "x-csrf-token",
     "x-playora-portal",
     "last-event-id",
+    "if-none-match",
     "x-nowpayments-sig",
   ]) {
     if (req.headers[name]) headers[name] = req.headers[name];
@@ -112,13 +113,18 @@ app.use("/api", (req, res) => {
       method: req.method,
       path: "/api" + req.url,
       headers,
-      timeout: 12000,
+      timeout:
+        req.method === "PUT" &&
+        /^\/v1\/admin\/artwork\/[a-f0-9-]{36}\/bytes$/.test(req.path)
+          ? 65000
+          : 12000,
     },
     (response) => {
       res.status(response.statusCode ?? 502);
       for (const name of [
         "content-type",
         "content-disposition",
+        "etag",
         "set-cookie",
         "location",
         "retry-after",
@@ -144,7 +150,8 @@ app.use("/api", (req, res) => {
       bytes >
       (req.method === "PUT" &&
       (req.path.startsWith("/v1/media/") ||
-        req.path.startsWith("/v1/admin/media/")) &&
+        req.path.startsWith("/v1/admin/media/") ||
+        req.path.startsWith("/v1/admin/artwork/")) &&
       req.path.endsWith("/bytes")
         ? 4194304
         : req.path.startsWith("/v1/media") ||

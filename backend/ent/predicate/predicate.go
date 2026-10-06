@@ -33,6 +33,9 @@ type ArticleRevision func(*sql.Selector)
 // ArticleSlug is the predicate function for articleslug builders.
 type ArticleSlug func(*sql.Selector)
 
+// Artwork is the predicate function for artwork builders.
+type Artwork func(*sql.Selector)
+
 // AuthAudit is the predicate function for authaudit builders.
 type AuthAudit func(*sql.Selector)
 

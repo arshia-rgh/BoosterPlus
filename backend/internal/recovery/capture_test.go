@@ -98,3 +98,41 @@ func TestCaptureFailureNeverPublishesCompleteManifest(t *testing.T) {
 		})
 	}
 }
+
+func TestArtworkCaptureAndManifestValidation(t *testing.T) {
+	t.Parallel()
+	data := []byte("synthetic artwork")
+	row := entry(data)
+	row.Namespace = "artwork"
+	row.ID += "/wide-small"
+	directory := filepath.Join(t.TempDir(), "artwork")
+	manifest, err := capture(t.Context(), "1234567890", fixtureObjects{data: data}, directory, pages(row))
+	if err != nil || len(manifest.Entries) != 1 {
+		t.Fatal("artwork capture", err)
+	}
+	root, err := os.OpenRoot(directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if e := root.Close(); e != nil {
+			t.Error(e)
+		}
+	}()
+	raw, err := root.ReadFile("manifest.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = decode(raw); err != nil {
+		t.Fatal("artwork manifest", err)
+	}
+	if got, err := root.ReadFile("artwork/" + row.ID); err != nil || string(got) != string(data) {
+		t.Fatal("artwork bytes", err)
+	}
+	for _, id := range []string{"../wide", "00000001-0000-4000-8000-000000000000/../wide", "00000001-0000-4000-8000-000000000000/original", "00000001-0000-4000-8000-000000000000"} {
+		row.ID = id
+		if valid(row) {
+			t.Fatal("unsafe artwork entry accepted")
+		}
+	}
+}

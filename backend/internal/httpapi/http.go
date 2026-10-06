@@ -91,7 +91,7 @@ func security(next http.Handler, logger *slog.Logger, production bool) http.Hand
 			logger.InfoContext(ctx, "request completed", "request_id", requestID, "method", r.Method, "status", wrapped.status, "duration_ms", time.Since(started).Milliseconds())
 		}()
 		limit := int64(1 << 20)
-		if r.Method == http.MethodPut && (strings.HasPrefix(r.URL.Path, "/api/v1/media/") || strings.HasPrefix(r.URL.Path, "/api/v1/admin/media/")) && strings.HasSuffix(r.URL.Path, "/bytes") {
+		if r.Method == http.MethodPut && (strings.HasPrefix(r.URL.Path, "/api/v1/media/") || strings.HasPrefix(r.URL.Path, "/api/v1/admin/media/") || strings.HasPrefix(r.URL.Path, "/api/v1/admin/artwork/")) && strings.HasSuffix(r.URL.Path, "/bytes") {
 			limit = 4 << 20
 		}
 		r.Body = http.MaxBytesReader(w, r.Body, limit)

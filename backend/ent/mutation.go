@@ -20,6 +20,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleevent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articlerevision"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/articleslug"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/artwork"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authaudit"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authchallenge"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authflow"
@@ -104,6 +105,7 @@ const (
 	TypeArticleEvent             = "ArticleEvent"
 	TypeArticleRevision          = "ArticleRevision"
 	TypeArticleSlug              = "ArticleSlug"
+	TypeArtwork                  = "Artwork"
 	TypeAuthAudit                = "AuthAudit"
 	TypeAuthChallenge            = "AuthChallenge"
 	TypeAuthFlow                 = "AuthFlow"
@@ -8382,6 +8384,1013 @@ func (m *ArticleSlugMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ArticleSlugMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown ArticleSlug edge %s", name)
+}
+
+// ArtworkMutation represents an operation that mutates the Artwork nodes in the graph.
+type ArtworkMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	user_id       *string
+	request_hash  *string
+	purpose       *string
+	state         *string
+	width         *int
+	addwidth      *int
+	height        *int
+	addheight     *int
+	focus_x       *int
+	addfocus_x    *int
+	focus_y       *int
+	addfocus_y    *int
+	variants      *map[string]interface{}
+	created_at    *time.Time
+	updated_at    *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*Artwork, error)
+	predicates    []predicate.Artwork
+}
+
+var _ ent.Mutation = (*ArtworkMutation)(nil)
+
+// artworkOption allows management of the mutation configuration using functional options.
+type artworkOption func(*ArtworkMutation)
+
+// newArtworkMutation creates new mutation for the Artwork entity.
+func newArtworkMutation(c config, op Op, opts ...artworkOption) *ArtworkMutation {
+	m := &ArtworkMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeArtwork,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withArtworkID sets the ID field of the mutation.
+func withArtworkID(id string) artworkOption {
+	return func(m *ArtworkMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Artwork
+		)
+		m.oldValue = func(ctx context.Context) (*Artwork, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Artwork.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withArtwork sets the old Artwork of the mutation.
+func withArtwork(node *Artwork) artworkOption {
+	return func(m *ArtworkMutation) {
+		m.oldValue = func(context.Context) (*Artwork, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ArtworkMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ArtworkMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Artwork entities.
+func (m *ArtworkMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ArtworkMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ArtworkMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Artwork.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetUserID sets the "user_id" field.
+func (m *ArtworkMutation) SetUserID(s string) {
+	m.user_id = &s
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *ArtworkMutation) UserID() (r string, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Artwork entity.
+// If the Artwork object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArtworkMutation) OldUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *ArtworkMutation) ResetUserID() {
+	m.user_id = nil
+}
+
+// SetRequestHash sets the "request_hash" field.
+func (m *ArtworkMutation) SetRequestHash(s string) {
+	m.request_hash = &s
+}
+
+// RequestHash returns the value of the "request_hash" field in the mutation.
+func (m *ArtworkMutation) RequestHash() (r string, exists bool) {
+	v := m.request_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestHash returns the old "request_hash" field's value of the Artwork entity.
+// If the Artwork object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArtworkMutation) OldRequestHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestHash: %w", err)
+	}
+	return oldValue.RequestHash, nil
+}
+
+// ResetRequestHash resets all changes to the "request_hash" field.
+func (m *ArtworkMutation) ResetRequestHash() {
+	m.request_hash = nil
+}
+
+// SetPurpose sets the "purpose" field.
+func (m *ArtworkMutation) SetPurpose(s string) {
+	m.purpose = &s
+}
+
+// Purpose returns the value of the "purpose" field in the mutation.
+func (m *ArtworkMutation) Purpose() (r string, exists bool) {
+	v := m.purpose
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPurpose returns the old "purpose" field's value of the Artwork entity.
+// If the Artwork object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArtworkMutation) OldPurpose(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPurpose is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPurpose requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPurpose: %w", err)
+	}
+	return oldValue.Purpose, nil
+}
+
+// ResetPurpose resets all changes to the "purpose" field.
+func (m *ArtworkMutation) ResetPurpose() {
+	m.purpose = nil
+}
+
+// SetState sets the "state" field.
+func (m *ArtworkMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *ArtworkMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the Artwork entity.
+// If the Artwork object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArtworkMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *ArtworkMutation) ResetState() {
+	m.state = nil
+}
+
+// SetWidth sets the "width" field.
+func (m *ArtworkMutation) SetWidth(i int) {
+	m.width = &i
+	m.addwidth = nil
+}
+
+// Width returns the value of the "width" field in the mutation.
+func (m *ArtworkMutation) Width() (r int, exists bool) {
+	v := m.width
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWidth returns the old "width" field's value of the Artwork entity.
+// If the Artwork object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArtworkMutation) OldWidth(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWidth is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWidth requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWidth: %w", err)
+	}
+	return oldValue.Width, nil
+}
+
+// AddWidth adds i to the "width" field.
+func (m *ArtworkMutation) AddWidth(i int) {
+	if m.addwidth != nil {
+		*m.addwidth += i
+	} else {
+		m.addwidth = &i
+	}
+}
+
+// AddedWidth returns the value that was added to the "width" field in this mutation.
+func (m *ArtworkMutation) AddedWidth() (r int, exists bool) {
+	v := m.addwidth
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetWidth resets all changes to the "width" field.
+func (m *ArtworkMutation) ResetWidth() {
+	m.width = nil
+	m.addwidth = nil
+}
+
+// SetHeight sets the "height" field.
+func (m *ArtworkMutation) SetHeight(i int) {
+	m.height = &i
+	m.addheight = nil
+}
+
+// Height returns the value of the "height" field in the mutation.
+func (m *ArtworkMutation) Height() (r int, exists bool) {
+	v := m.height
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHeight returns the old "height" field's value of the Artwork entity.
+// If the Artwork object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArtworkMutation) OldHeight(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHeight is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHeight requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHeight: %w", err)
+	}
+	return oldValue.Height, nil
+}
+
+// AddHeight adds i to the "height" field.
+func (m *ArtworkMutation) AddHeight(i int) {
+	if m.addheight != nil {
+		*m.addheight += i
+	} else {
+		m.addheight = &i
+	}
+}
+
+// AddedHeight returns the value that was added to the "height" field in this mutation.
+func (m *ArtworkMutation) AddedHeight() (r int, exists bool) {
+	v := m.addheight
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetHeight resets all changes to the "height" field.
+func (m *ArtworkMutation) ResetHeight() {
+	m.height = nil
+	m.addheight = nil
+}
+
+// SetFocusX sets the "focus_x" field.
+func (m *ArtworkMutation) SetFocusX(i int) {
+	m.focus_x = &i
+	m.addfocus_x = nil
+}
+
+// FocusX returns the value of the "focus_x" field in the mutation.
+func (m *ArtworkMutation) FocusX() (r int, exists bool) {
+	v := m.focus_x
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFocusX returns the old "focus_x" field's value of the Artwork entity.
+// If the Artwork object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArtworkMutation) OldFocusX(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFocusX is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFocusX requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFocusX: %w", err)
+	}
+	return oldValue.FocusX, nil
+}
+
+// AddFocusX adds i to the "focus_x" field.
+func (m *ArtworkMutation) AddFocusX(i int) {
+	if m.addfocus_x != nil {
+		*m.addfocus_x += i
+	} else {
+		m.addfocus_x = &i
+	}
+}
+
+// AddedFocusX returns the value that was added to the "focus_x" field in this mutation.
+func (m *ArtworkMutation) AddedFocusX() (r int, exists bool) {
+	v := m.addfocus_x
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFocusX resets all changes to the "focus_x" field.
+func (m *ArtworkMutation) ResetFocusX() {
+	m.focus_x = nil
+	m.addfocus_x = nil
+}
+
+// SetFocusY sets the "focus_y" field.
+func (m *ArtworkMutation) SetFocusY(i int) {
+	m.focus_y = &i
+	m.addfocus_y = nil
+}
+
+// FocusY returns the value of the "focus_y" field in the mutation.
+func (m *ArtworkMutation) FocusY() (r int, exists bool) {
+	v := m.focus_y
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFocusY returns the old "focus_y" field's value of the Artwork entity.
+// If the Artwork object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArtworkMutation) OldFocusY(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFocusY is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFocusY requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFocusY: %w", err)
+	}
+	return oldValue.FocusY, nil
+}
+
+// AddFocusY adds i to the "focus_y" field.
+func (m *ArtworkMutation) AddFocusY(i int) {
+	if m.addfocus_y != nil {
+		*m.addfocus_y += i
+	} else {
+		m.addfocus_y = &i
+	}
+}
+
+// AddedFocusY returns the value that was added to the "focus_y" field in this mutation.
+func (m *ArtworkMutation) AddedFocusY() (r int, exists bool) {
+	v := m.addfocus_y
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFocusY resets all changes to the "focus_y" field.
+func (m *ArtworkMutation) ResetFocusY() {
+	m.focus_y = nil
+	m.addfocus_y = nil
+}
+
+// SetVariants sets the "variants" field.
+func (m *ArtworkMutation) SetVariants(value map[string]interface{}) {
+	m.variants = &value
+}
+
+// Variants returns the value of the "variants" field in the mutation.
+func (m *ArtworkMutation) Variants() (r map[string]interface{}, exists bool) {
+	v := m.variants
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVariants returns the old "variants" field's value of the Artwork entity.
+// If the Artwork object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArtworkMutation) OldVariants(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVariants is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVariants requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVariants: %w", err)
+	}
+	return oldValue.Variants, nil
+}
+
+// ResetVariants resets all changes to the "variants" field.
+func (m *ArtworkMutation) ResetVariants() {
+	m.variants = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ArtworkMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ArtworkMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Artwork entity.
+// If the Artwork object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArtworkMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ArtworkMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ArtworkMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ArtworkMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Artwork entity.
+// If the Artwork object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArtworkMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ArtworkMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the ArtworkMutation builder.
+func (m *ArtworkMutation) Where(ps ...predicate.Artwork) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ArtworkMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ArtworkMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Artwork, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ArtworkMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ArtworkMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Artwork).
+func (m *ArtworkMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ArtworkMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.user_id != nil {
+		fields = append(fields, artwork.FieldUserID)
+	}
+	if m.request_hash != nil {
+		fields = append(fields, artwork.FieldRequestHash)
+	}
+	if m.purpose != nil {
+		fields = append(fields, artwork.FieldPurpose)
+	}
+	if m.state != nil {
+		fields = append(fields, artwork.FieldState)
+	}
+	if m.width != nil {
+		fields = append(fields, artwork.FieldWidth)
+	}
+	if m.height != nil {
+		fields = append(fields, artwork.FieldHeight)
+	}
+	if m.focus_x != nil {
+		fields = append(fields, artwork.FieldFocusX)
+	}
+	if m.focus_y != nil {
+		fields = append(fields, artwork.FieldFocusY)
+	}
+	if m.variants != nil {
+		fields = append(fields, artwork.FieldVariants)
+	}
+	if m.created_at != nil {
+		fields = append(fields, artwork.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, artwork.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ArtworkMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case artwork.FieldUserID:
+		return m.UserID()
+	case artwork.FieldRequestHash:
+		return m.RequestHash()
+	case artwork.FieldPurpose:
+		return m.Purpose()
+	case artwork.FieldState:
+		return m.State()
+	case artwork.FieldWidth:
+		return m.Width()
+	case artwork.FieldHeight:
+		return m.Height()
+	case artwork.FieldFocusX:
+		return m.FocusX()
+	case artwork.FieldFocusY:
+		return m.FocusY()
+	case artwork.FieldVariants:
+		return m.Variants()
+	case artwork.FieldCreatedAt:
+		return m.CreatedAt()
+	case artwork.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ArtworkMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case artwork.FieldUserID:
+		return m.OldUserID(ctx)
+	case artwork.FieldRequestHash:
+		return m.OldRequestHash(ctx)
+	case artwork.FieldPurpose:
+		return m.OldPurpose(ctx)
+	case artwork.FieldState:
+		return m.OldState(ctx)
+	case artwork.FieldWidth:
+		return m.OldWidth(ctx)
+	case artwork.FieldHeight:
+		return m.OldHeight(ctx)
+	case artwork.FieldFocusX:
+		return m.OldFocusX(ctx)
+	case artwork.FieldFocusY:
+		return m.OldFocusY(ctx)
+	case artwork.FieldVariants:
+		return m.OldVariants(ctx)
+	case artwork.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case artwork.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Artwork field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ArtworkMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case artwork.FieldUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case artwork.FieldRequestHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestHash(v)
+		return nil
+	case artwork.FieldPurpose:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPurpose(v)
+		return nil
+	case artwork.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case artwork.FieldWidth:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWidth(v)
+		return nil
+	case artwork.FieldHeight:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHeight(v)
+		return nil
+	case artwork.FieldFocusX:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFocusX(v)
+		return nil
+	case artwork.FieldFocusY:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFocusY(v)
+		return nil
+	case artwork.FieldVariants:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVariants(v)
+		return nil
+	case artwork.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case artwork.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Artwork field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ArtworkMutation) AddedFields() []string {
+	var fields []string
+	if m.addwidth != nil {
+		fields = append(fields, artwork.FieldWidth)
+	}
+	if m.addheight != nil {
+		fields = append(fields, artwork.FieldHeight)
+	}
+	if m.addfocus_x != nil {
+		fields = append(fields, artwork.FieldFocusX)
+	}
+	if m.addfocus_y != nil {
+		fields = append(fields, artwork.FieldFocusY)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ArtworkMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case artwork.FieldWidth:
+		return m.AddedWidth()
+	case artwork.FieldHeight:
+		return m.AddedHeight()
+	case artwork.FieldFocusX:
+		return m.AddedFocusX()
+	case artwork.FieldFocusY:
+		return m.AddedFocusY()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ArtworkMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case artwork.FieldWidth:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddWidth(v)
+		return nil
+	case artwork.FieldHeight:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddHeight(v)
+		return nil
+	case artwork.FieldFocusX:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFocusX(v)
+		return nil
+	case artwork.FieldFocusY:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFocusY(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Artwork numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ArtworkMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ArtworkMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ArtworkMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Artwork nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ArtworkMutation) ResetField(name string) error {
+	switch name {
+	case artwork.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case artwork.FieldRequestHash:
+		m.ResetRequestHash()
+		return nil
+	case artwork.FieldPurpose:
+		m.ResetPurpose()
+		return nil
+	case artwork.FieldState:
+		m.ResetState()
+		return nil
+	case artwork.FieldWidth:
+		m.ResetWidth()
+		return nil
+	case artwork.FieldHeight:
+		m.ResetHeight()
+		return nil
+	case artwork.FieldFocusX:
+		m.ResetFocusX()
+		return nil
+	case artwork.FieldFocusY:
+		m.ResetFocusY()
+		return nil
+	case artwork.FieldVariants:
+		m.ResetVariants()
+		return nil
+	case artwork.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case artwork.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Artwork field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ArtworkMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ArtworkMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ArtworkMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ArtworkMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ArtworkMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ArtworkMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ArtworkMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Artwork unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ArtworkMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Artwork edge %s", name)
 }
 
 // AuthAuditMutation represents an operation that mutates the AuthAudit nodes in the graph.

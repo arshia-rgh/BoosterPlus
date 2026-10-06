@@ -207,3 +207,8 @@
   color: #bccfbd;
   border: 1px solid #35503e;
 }
+
+.shop-artwork[data-placement="content"] {
+  aspect-ratio: auto;
+  height: auto;
+}

@@ -68,6 +68,9 @@ func (s *Store) Change(ctx context.Context, p *identity.Principal, id string, ve
 			if issues := Validate(value, true); len(issues) > 0 {
 				return &Invalid{issues}
 			}
+			if artworkErr := checkArtwork(ctx, tx.Client(), value); artworkErr != nil {
+				return artworkErr
+			}
 			game, gameErr := tx.Game.Get(ctx, row.GameID)
 			if gameErr != nil {
 				return gameErr

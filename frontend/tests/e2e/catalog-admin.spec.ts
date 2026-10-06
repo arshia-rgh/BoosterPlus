@@ -112,12 +112,58 @@ test("staff builds, previews, publishes and archives another game through the ge
     await card
       .getByRole("button", { name: `Edit ${name}`, exact: true })
       .click();
+    await page.getByText("Existing artwork path", { exact: true }).click();
     await expect(
       page.getByLabel("Public asset path", { exact: true }),
     ).toHaveValue(`/catalog-assets/game-${asset}`);
     await expect(
       page.getByLabel("Customize game artwork framing"),
     ).toBeChecked();
+    if (gameSlug === "mobile-legends") {
+      const artwork = page.locator('.artwork-upload[data-purpose="game"]');
+      await artwork
+        .getByLabel("Choose a replacement image")
+        .setInputFiles("tests/fixtures/proof.png");
+      await artwork
+        .getByRole("button", { name: "Prepare image versions", exact: true })
+        .click();
+      await expect(
+        artwork.getByRole("button", { name: "Use this image", exact: true }),
+      ).toBeEnabled();
+      await artwork
+        .getByRole("button", { name: "Use this image", exact: true })
+        .click();
+      await expect(
+        page.getByLabel("Public asset path", { exact: true }),
+      ).toHaveValue(/^\/api\/v1\/artwork\//);
+      await expect(
+        page.getByRole("slider", {
+          name: "Mobile horizontal focus",
+          exact: true,
+        }),
+      ).toHaveValue("50");
+      await artwork
+        .getByRole("button", {
+          name: "Restore default game artwork",
+          exact: true,
+        })
+        .click();
+      await expect(
+        page.getByLabel("Public asset path", { exact: true }),
+      ).toHaveValue(`/catalog-assets/game-${asset}`);
+      await expect(
+        page.getByRole("slider", {
+          name: "Mobile horizontal focus",
+          exact: true,
+        }),
+      ).toHaveValue("85");
+      await page
+        .getByRole("button", { name: "Save changes", exact: true })
+        .click();
+      await expect(
+        page.getByText("Draft saved", { exact: true }),
+      ).toBeVisible();
+    }
     const framing = page.locator(".artwork-framing-previews");
     await expect(framing.locator("img")).toHaveCount(2);
     for (const img of await framing.locator("img").all()) {
@@ -200,6 +246,7 @@ test("staff builds, previews, publishes and archives another game through the ge
   await page
     .getByLabel("Game description", { exact: true })
     .fill("Isolated browser fixture — not a live offering.");
+  await page.getByText("Existing artwork path", { exact: true }).click();
   await page
     .getByLabel("Public asset path", { exact: true })
     .fill("/catalog-assets/game-placeholder.svg");

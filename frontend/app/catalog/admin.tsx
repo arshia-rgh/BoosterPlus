@@ -1,3 +1,9 @@
+import ArtworkUpload from "../artwork/upload";
+import {
+  defaultGameArtwork,
+  defaultGameLayout,
+  uploadedArtwork,
+} from "../artwork/model";
 import type { Location } from "react-router";
 import { PricingEditor } from "./pricing-editor";
 import "./admin-workspace.css";
@@ -401,13 +407,33 @@ function Editor({
                     update({ name });
                   }}
                 />
-                <Text
-                  label="Public asset path"
+                <ArtworkUpload
+                  purpose="game"
+                  pathLabel="Public asset path"
                   value={draft.configuration.asset}
+                  defaultAsset={defaultGameArtwork(draft.slug)}
                   change={(asset) => {
-                    update({ asset });
+                    if (asset === defaultGameArtwork(draft.slug)) {
+                      const layout = defaultGameLayout(draft.slug);
+                      update({
+                        asset,
+                        ...(layout ? { hero_layout: layout } : {}),
+                      });
+                    } else if (uploadedArtwork(asset)) {
+                      update({
+                        asset,
+                        hero_layout: {
+                          desktop_x: 50,
+                          desktop_y: 50,
+                          mobile_x: 50,
+                          mobile_y: 50,
+                          copy_side:
+                            draft.configuration.hero_layout?.copy_side ??
+                            "left",
+                        },
+                      });
+                    } else update({ asset });
                   }}
-                  help="Approved files under /catalog-assets/ only. Add public media to frontend/public/catalog-assets before publishing."
                 />
                 <Text
                   label="Image alternative text"

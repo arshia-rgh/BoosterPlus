@@ -32,6 +32,8 @@ type Tx struct {
 	ArticleRevision *ArticleRevisionClient
 	// ArticleSlug is the client for interacting with the ArticleSlug builders.
 	ArticleSlug *ArticleSlugClient
+	// Artwork is the client for interacting with the Artwork builders.
+	Artwork *ArtworkClient
 	// AuthAudit is the client for interacting with the AuthAudit builders.
 	AuthAudit *AuthAuditClient
 	// AuthChallenge is the client for interacting with the AuthChallenge builders.
@@ -298,6 +300,7 @@ func (tx *Tx) init() {
 	tx.ArticleEvent = NewArticleEventClient(tx.config)
 	tx.ArticleRevision = NewArticleRevisionClient(tx.config)
 	tx.ArticleSlug = NewArticleSlugClient(tx.config)
+	tx.Artwork = NewArtworkClient(tx.config)
 	tx.AuthAudit = NewAuthAuditClient(tx.config)
 	tx.AuthChallenge = NewAuthChallengeClient(tx.config)
 	tx.AuthFlow = NewAuthFlowClient(tx.config)

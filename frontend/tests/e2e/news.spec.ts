@@ -87,6 +87,28 @@ test("staff article draft, exact preview, publication, game reading, correction 
   await expect(page.getByLabel("Title", { exact: true })).toHaveValue(
     "Synthetic reader guide",
   );
+  const cover = page.locator('.artwork-upload[data-purpose="cover"]');
+  await cover
+    .getByLabel("Choose a replacement image")
+    .setInputFiles("tests/fixtures/proof.png");
+  await cover
+    .getByRole("button", { name: "Prepare image versions", exact: true })
+    .click();
+  await expect(
+    cover.getByRole("button", { name: "Use this image", exact: true }),
+  ).toBeEnabled();
+  await cover
+    .getByRole("button", { name: "Use this image", exact: true })
+    .click();
+  await cover.getByText("Existing artwork path", { exact: true }).click();
+  const artworkPath = await cover
+    .getByLabel("Hero image path (optional)")
+    .inputValue();
+  expect(artworkPath).toMatch(/^\/api\/v1\/artwork\/[a-f0-9-]{36}\/wide$/);
+  expect((await request.get(artworkPath)).status()).toBe(404);
+  await page
+    .getByLabel("Hero image description", { exact: true })
+    .fill("Synthetic browser artwork");
   await page
     .getByLabel(
       "I reviewed accuracy, attribution and all media rights for this revision",
@@ -209,6 +231,17 @@ test("staff article draft, exact preview, publication, game reading, correction 
       exact: true,
     }),
   ).toBeVisible();
+  expect((await request.get(artworkPath)).status()).toBe(200);
+  const delivered = await request.get(artworkPath);
+  const etag = delivered.headers()["etag"];
+  expect(etag).toBeTruthy();
+  expect(
+    (
+      await request.get(artworkPath, {
+        headers: { "If-None-Match": etag ?? "" },
+      })
+    ).status(),
+  ).toBe(304);
   await capture(page, "article", info.project.name === "desktop");
   await page
     .getByRole("link", { name: "Back to news & guides", exact: false })
@@ -245,6 +278,13 @@ test("staff article draft, exact preview, publication, game reading, correction 
   await expect(
     page.getByText("Article publish action saved.", { exact: true }),
   ).toBeVisible();
+  expect(
+    (
+      await request.get(artworkPath, {
+        headers: { "If-None-Match": etag ?? "" },
+      })
+    ).status(),
+  ).toBe(304);
   await page.goto(`/games/${slug}/news/synthetic-guide?q=Synthetic`);
   await expect(page).toHaveURL(
     new RegExp("synthetic-corrected-guide\\?q=Synthetic"),
@@ -279,6 +319,13 @@ test("staff article draft, exact preview, publication, game reading, correction 
   await expect(
     page.getByText("Article unpublish action saved.", { exact: true }),
   ).toBeVisible();
+  expect(
+    (
+      await request.get(artworkPath, {
+        headers: { "If-None-Match": etag ?? "" },
+      })
+    ).status(),
+  ).toBe(404);
   await page.goto(`/games/${slug}/news/synthetic-guide?q=Synthetic`);
   await expect(
     page.getByRole("heading", {

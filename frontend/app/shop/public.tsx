@@ -111,6 +111,7 @@ function ShopBrowse({ slug }: { slug: string }) {
                 {resource.data.items.map((p) => (
                   <article key={p.id} className="shop-card">
                     <ShopArtwork
+                      placement="card"
                       source={p.definition.asset}
                       alt={p.definition.asset_alt}
                       lazy

@@ -1,3 +1,4 @@
+import ArtworkUpload from "../artwork/upload";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   Link,
@@ -411,9 +412,9 @@ function Editor({
                         update({ game_version });
                       }}
                     />
-                    <Text
-                      name="asset"
-                      label="Hero image path (optional)"
+                    <ArtworkUpload
+                      purpose="cover"
+                      pathLabel="Hero image path (optional)"
                       value={value.asset}
                       change={(asset) => {
                         update({ asset });
