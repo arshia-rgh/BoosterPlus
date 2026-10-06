@@ -27,11 +27,11 @@ config-test:
 	python3 -u deploy/config_test.py
 runtime-config-test:
 	python3 -u deploy/config_test.py --runtime
-preparation-check:
+preparation-check: webmail-template-test
 	python3 -m unittest discover -s deploy -p 'test_*.py'
 	PYTHONPYCACHEPREFIX=$(CURDIR)/.cache/python python3 -m compileall -q deploy
 	$(MAKE) config-test
-pre-commit:
+pre-commit: webmail-template-test
 	python3 -m unittest discover -s deploy -p 'test_*.py'
 	$(MAKE) docker-build
 	python3 ../scripts/scan-image.py boosterplus-gateway:local
@@ -53,3 +53,16 @@ qualification-check:
 	python3 deploy/qualification.py check
 initial-launch-check:
 	python3 deploy/qualification.py initial-launch-check
+
+.PHONY: webmail-template-test
+webmail-template-test:
+	node webmail/test_template.cjs
+
+.PHONY: webmail-browser-test
+# Requires the explicitly prepared isolated .test mailbox; never target live mail.
+webmail-browser-test:
+	node webmail/browser_test.cjs
+
+.PHONY: webmail-cache-test
+webmail-cache-test:
+	python3 webmail/cache_test.py

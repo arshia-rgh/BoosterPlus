@@ -67,3 +67,55 @@ run two mail servers against the same mailbox files. Requalify UI/state, TLS,
 memory, restart and image findings on updates. See the exact accepted risks in
 [the vendor review](security/WEBMAIL_REVIEW_2026-10-04.md). Initial runtime and
 senior UI review evidence remain pending until explicitly recorded.
+
+## PLAYORA support template
+
+In Compose or Reply, write the message and select **Apply PLAYORA template**.
+For a plain-text draft, the button instead says **Use rich text & apply template**
+and Roundcube asks before converting the text. The result is an editable green
+PLAYORA header, your current message and a simple support footer. No external
+images, tracking pixels or promises are inserted. Review it and choose Send
+normally; applying the template never sends a message or changes recipients,
+subject or attachments.
+
+**Remove PLAYORA template** removes the added framing while retaining current
+message edits. Editor Undo/Redo remains available. Applying again does not nest
+the same outer template; quoted earlier branded replies stay part of your text.
+Save a draft normally to retain the template. Switching a branded draft to plain
+text uses Roundcube's normal conversion and loses HTML framing, so remove the
+template first if you do not want its header/footer text. Manually deleting or
+rewriting the template's source markup can also remove its recognition markers.
+
+## Loading and connection troubleshooting
+
+The launcher verifies the remote HTTPS response through SSH before opening
+Chrome; it refuses invalid certificates. A stalled network/tunnel produces a
+bounded retry error. Keep its terminal open, and restart the helper after
+changing networks or VPN connections. Browser-interface CSS/JavaScript/fonts
+are compressed and privately cached for one day. Login pages, mailbox content,
+attachments and other responses remain uncached. The separate temporary Chrome
+profile's cache is removed when that browser process closes. No public webmail
+listener or weaker TLS setting is needed.
+
+## Focused regression commands
+
+`make -C production webmail-template-test` checks the DOM transformations using
+the already pinned frontend jsdom dependency; it is also included in preparation
+and full production gates. `test_open_webmail.py` covers stalled/dead tunnels,
+certificate failures and unsuccessful HTTP readiness.
+
+The browser regression uses a prepared, isolated Roundcube + mail fixture with
+no outbound mail network and HTTPS on loopback19443. Set
+`WEBMAIL_TEST_DIRECTORY` to its private evidence directory containing `login.json`
+with only the synthetic `support@qualification.test` account, then run
+`make -C production webmail-browser-test`. It refuses other account names,
+retains screenshots/results there and saves only synthetic drafts. With Xvfb,
+set `WEBMAIL_HEADED=true` for real headed keyboard traversal. Do not point this
+fixture at a customer mailbox. External delivery remains separate and requires
+explicit send authorization.
+
+The composer keeps table tools in the standard Table menu; floating layout-table
+controls and table resize handles are disabled so they cannot cover mobile
+Save/Send. Image resizing remains available. Run `webmail-cache-test` against the
+isolated loopback fixture to check compressed interface assets, no-store private
+responses and forbidden source paths.

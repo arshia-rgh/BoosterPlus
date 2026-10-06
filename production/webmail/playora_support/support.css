@@ -40,3 +40,30 @@ html:not(.dark-mode) .floating-action-buttons a {
   color: #fff;
   background-color: #147347;
 }
+
+#playora-template-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 12px 0;
+  flex: 0 0 auto;
+}
+#playora-template-tools button {
+  white-space: normal;
+  min-height: 44px;
+  max-width: 100%;
+  text-align: start;
+}
+#playora-template-tools button:focus-visible {
+  outline: 3px solid #147347;
+  outline-offset: 3px;
+}
+#playora-template-status {
+  flex: 1 1 200px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+html.dark-mode #playora-template-tools button:focus-visible {
+  outline-color: #42df95;
+}

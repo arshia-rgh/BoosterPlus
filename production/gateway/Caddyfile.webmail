@@ -7,12 +7,18 @@ https://{$MAIL_HOST}:18443 {
 		}
 	}
 	root * /var/www/html/public_html
+	# Only bundled interface assets are cacheable/compressed. Message bodies,
+	# attachments, authenticated responses and login pages retain no-store.
+	@ui_assets path_regexp ui_assets ^/static\.php/(program|skins|plugins)/[A-Za-z0-9_./-]+\.(css|js|woff|woff2)$
+	@private_response not path_regexp ^/static\.php/(program|skins|plugins)/[A-Za-z0-9_./-]+\.(css|js|woff|woff2)$
+	encode @ui_assets zstd gzip
+	header @ui_assets >Cache-Control "private, max-age=86400"
+	header @private_response >Cache-Control "no-store"
 	request_body {
 		max_size 5MB
 	}
 	header {
 		-Server
-		Cache-Control "no-store"
 		X-Robots-Tag "noindex, nofollow"
 		X-Content-Type-Options nosniff
 		# Roundcube uses same-origin frames for message previews and composition.
