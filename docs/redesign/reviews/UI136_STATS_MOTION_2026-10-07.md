@@ -37,3 +37,13 @@ Private server evidence: `/srv/playora-qualification/ui136/round2/{gate.log,gate
 Round1 remains a failure: the order journey clicked the intentionally removed Reduced button and reached its150-second deadline. Its trace identified that exact obsolete locator. The failed attempt was stopped, its own test services cleaned up and evidence retained under `ui136/failed1-test-results`, `gate.log` and `interruption1.json`. Round2 restarted the complete normal frontend gate with corrected device-preference emulation; no retry bypass, timeout increase or reduced threshold was used.
 
 Deployment is separate. The current live release remains signed6ae48bf at schema40, with checkout enabled and outgoing transfers disabled. Off-host recovery is still absent and the previous exact-release backup-deferral approval is consumed. This UI verification does not create a fresh deployment exception, authorize external messages or qualify a real financial transaction.
+
+## Signed release ready for deployment decision
+
+Candidate: `6c5fdcdf683e3c5845d7d5745b33105efbda673d` (documentation-only descendant of the qualified implementation). Exact [CI37603689898](https://github.com/arshia-rgh/BoosterPlus/actions/runs/37603689898) and [release37605518418](https://github.com/arshia-rgh/BoosterPlus/actions/runs/37605518418) passed. All five image builds/scans, bound SBOMs and operator signature verified. Signed manifest SHA256: `dbc027a25bd384d1413d56a95523bc86583d033a69707606edfa57adf70d32c9`.
+
+The server verified the signature using its pinned trust key. All38 mounted runtime configuration files match the candidate, including webmail121 and the artwork gateway deadline. Read-only preflight passed isolated gateway validation, backend configuration validation, schema40 compatibility and migration history. Checkout remains enabled, outgoing payments remain disabled, and no live configuration or service was changed. Temporary registry authentication was removed.
+
+Protected server evidence: `/srv/playora-qualification/ui136/{preflight-state.json,preflight-private.log,runtime-comparison.json}` and `/srv/playora/releases/6c5fdcd/preflight136.json`. Prepared deployment manifest: `/srv/playora/releases/6c5fdcd/deployment.env`. Signed bundle: `/srv/playora-qualification/ui136/release`.
+
+This is ready for an exact-release deployment decision, not deployed. The ordinary release procedure requires a verified off-host recovery point. None exists; the earlier artwork exception is consumed. A new owner decision is required before deploying with that requirement deferred. Prior signed6ae48bf is schema40-compatible application rollback material, not data or host recovery.
