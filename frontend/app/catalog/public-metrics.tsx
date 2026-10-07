@@ -38,6 +38,17 @@ export function publicTime(value: string) {
         timeStyle: "short",
       }) + " UTC";
 }
+function reportingPeriod(start: string, end: string) {
+  const from = new Date(start);
+  const until = new Date(end);
+  if (Number.isNaN(from.getTime()) || Number.isNaN(until.getTime()))
+    return "Reporting period unavailable";
+  const format = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "UTC",
+    dateStyle: "short",
+  });
+  return `${format.format(from)} – ${format.format(until)} UTC`;
+}
 export default function PublicMetrics({
   metrics,
   loading = false,
@@ -87,7 +98,13 @@ export default function PublicMetrics({
               <strong>
                 {available ? metric.value?.toLocaleString("en-US") : "—"}
               </strong>
-              <small>
+              <small
+                title={
+                  available && metric.period_start
+                    ? `${publicTime(metric.period_start)} to ${publicTime(metric.period_end)} (end exclusive)`
+                    : undefined
+                }
+              >
                 {loading
                   ? "Loading activity…"
                   : failed
@@ -98,7 +115,10 @@ export default function PublicMetrics({
                         ? "Not enough eligible records"
                         : available
                           ? metric.period_start
-                            ? "During the stated period"
+                            ? reportingPeriod(
+                                metric.period_start,
+                                metric.period_end,
+                              )
                             : "At the last update"
                           : "Not available yet"}
               </small>
@@ -106,34 +126,6 @@ export default function PublicMetrics({
           );
         })}
       </div>
-      <details className="metric-method">
-        <summary>How these statistics are measured</summary>
-        {values.map((metric) => (
-          <div key={metric.key}>
-            <h2>{metric.label}</h2>
-            <p>{metric.definition}</p>
-            {metric.period_start && (
-              <p>
-                Period: {publicTime(metric.period_start)} to{" "}
-                {publicTime(metric.period_end)} (end exclusive).
-              </p>
-            )}
-            {metric.refreshed_at && (
-              <p>
-                Updated: {publicTime(metric.refreshed_at)}
-                {metric.sample_size != null && metric.state === "available"
-                  ? ` · ${String(metric.sample_size)} eligible records`
-                  : ""}
-                .
-              </p>
-            )}
-          </div>
-        ))}
-        <p>
-          Past activity is not a guarantee of a future result. Unavailable
-          values are never shown as zero.
-        </p>
-      </details>
       {retry &&
         (failed ||
           metrics.some(

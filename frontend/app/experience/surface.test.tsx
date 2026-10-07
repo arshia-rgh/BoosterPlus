@@ -1,17 +1,23 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import Surface from "./surface";
-import { setMotionPreference } from "../home/motion";
+let reduced = false;
+const changes = new Set<() => void>();
 beforeEach(() => {
   localStorage.clear();
-  setMotionPreference(false);
+  reduced = false;
+  changes.clear();
   vi.stubGlobal(
     "matchMedia",
     vi.fn(() => ({
-      matches: false,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      matches: reduced,
+      addEventListener: (_: string, notify: () => void) => {
+        changes.add(notify);
+      },
+      removeEventListener: (_: string, notify: () => void) => {
+        changes.delete(notify);
+      },
     })),
   );
 });
@@ -19,7 +25,7 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
-it("cancels decorative motion immediately when reduced motion is selected", () => {
+it("cancels decorative motion immediately when the device requests reduced motion", () => {
   const cancel = vi.fn(),
     animate = vi.fn(() => ({ cancel }));
   Object.defineProperty(Element.prototype, "animate", {
@@ -34,11 +40,17 @@ it("cancels decorative motion immediately when reduced motion is selected", () =
     </MemoryRouter>,
   );
   expect(animate).toHaveBeenCalledOnce();
-  fireEvent.click(screen.getByRole("button", { name: "Reduced" }));
+  reduced = true;
+  act(() => {
+    for (const notify of changes) notify();
+  });
   expect(cancel).toHaveBeenCalledOnce();
   expect(view.container.firstChild).toHaveAttribute("data-motion", "reduced");
   expect(screen.getByRole("heading")).toBeVisible();
-  fireEvent.click(screen.getByRole("button", { name: "System" }));
+  reduced = false;
+  act(() => {
+    for (const notify of changes) notify();
+  });
   expect(animate).toHaveBeenCalledTimes(2);
   view.unmount();
   expect(cancel).toHaveBeenCalledTimes(2);

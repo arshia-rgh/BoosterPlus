@@ -52,6 +52,21 @@ const metric: PublicMetric = {
   refreshed_at: "2026-09-26T12:00:00Z",
   stale_at: "2026-09-26T12:00:30Z",
 };
+it("keeps reporting dates without calculation disclosures and handles invalid dates", () => {
+  const value = {
+    ...metric,
+    stale_at: "2099-01-01T00:00:00Z",
+    period_start: "2026-09-01T00:00:00Z",
+  };
+  const view = render(<PublicMetrics metrics={[value]} />);
+  expect(screen.getByText("01/09/2026 – 26/09/2026 UTC")).toBeVisible();
+  expect(screen.queryByText(metric.definition)).not.toBeInTheDocument();
+  expect(view.container.querySelector("details")).toBeNull();
+  view.rerender(
+    <PublicMetrics metrics={[{ ...value, period_end: "invalid" }]} />,
+  );
+  expect(screen.getByText("Reporting period unavailable")).toBeVisible();
+});
 it("withdraws expired numeric claims and offers an explicit refresh", () => {
   vi.useFakeTimers();
   vi.setSystemTime(new Date("2026-09-26T12:00:00Z"));

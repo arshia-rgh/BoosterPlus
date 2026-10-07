@@ -36,9 +36,7 @@ test("records native homepage reveals and persistent game atmosphere", async ({
     "animation-name",
     "game-background-drift",
   );
-  await page
-    .getByRole("button", { name: "Reduce background motion", exact: true })
-    .click();
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator(".game-backdrop img")).toHaveCSS(
     "animation-name",
     "none",

@@ -65,7 +65,7 @@ body {
 }
 .site-footer {
   display: grid;
-  grid-template-columns: 1.1fr 1fr 1.3fr;
+  grid-template-columns: 1.1fr 1fr;
   align-items: start;
   gap: 2rem;
   padding: 3rem max(1rem, 5vw);
@@ -103,26 +103,6 @@ body {
   color: var(--text);
   font-weight: 650;
   margin-bottom: 0.5rem;
-}
-.motion-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-.motion-options button {
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--line);
-  padding: 0.6rem 0.75rem;
-  border-radius: 0.5rem;
-  min-height: 44px;
-  font: inherit;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-.motion-options button[aria-pressed="true"] {
-  border-color: var(--accent);
-  background: var(--raised);
 }
 .site-footer .footer-workspaces {
   grid-column: 1 / -1;

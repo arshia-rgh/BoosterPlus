@@ -291,23 +291,6 @@
   transform-origin: 70% 31%;
 }
 
-.world-motion {
-  display: block;
-  min-height: 44px;
-  margin-bottom: 0.75rem;
-  padding: 0.5rem 0.9rem;
-  border: 1px solid #718a7155;
-  border-radius: 999px;
-  color: #c7dbc6;
-  background: transparent;
-  font: inherit;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-.world-motion:disabled {
-  cursor: default;
-  opacity: 0.8;
-}
 @media (max-width: 750px) {
   .scene-character .character-rig {
     transform: translateY(clamp(-3px, var(--character-travel), 3px));

@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { useLocation } from "react-router";
-import { setMotionPreference, useMotionPreference } from "../ui/motion";
+import { useMotionPreference } from "../ui/motion";
 
 export default function Surface({
   children,
@@ -45,31 +45,6 @@ export default function Surface({
     >
       <div className="experience-glow" aria-hidden="true" />
       {children}
-      <div
-        className="experience-preferences"
-        role="region"
-        aria-label="Page motion"
-      >
-        <span>Motion</span>
-        <button
-          type="button"
-          aria-pressed={motion !== "reduced"}
-          onClick={() => {
-            setMotionPreference(false);
-          }}
-        >
-          System
-        </button>
-        <button
-          type="button"
-          aria-pressed={motion === "reduced"}
-          onClick={() => {
-            setMotionPreference(true);
-          }}
-        >
-          Reduced
-        </button>
-      </div>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { fixture } from "./identity-fixtures";
 // Supersedes the retired homepage character-showcase journeys. The historic rig
 // remains component-tested; the accepted runtime now uses equal game hubs.
 for (const game of ["mlbb", "wow", "lol", "valorant", "dota", "wildrift"]) {
-  test(`game ${game} preserves its framing, motion choice and failed-image fallback`, async ({
+  test(`game ${game} preserves its framing, device motion and failed-image fallback`, async ({
     page,
   }, info) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
@@ -20,9 +20,7 @@ for (const game of ["mlbb", "wow", "lol", "valorant", "dota", "wildrift"]) {
     const source = await hero.getAttribute("src");
     expect(source).toContain(`/catalog-assets/game-${game}-1536.`);
     await expect(backdrop).toHaveAttribute("src", source ?? "");
-    await page
-      .getByRole("button", { name: "Reduce background motion", exact: true })
-      .click();
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await expect(page.locator(".game-shell")).toHaveAttribute(
       "data-motion",
       "reduced",
@@ -34,9 +32,9 @@ for (const game of ["mlbb", "wow", "lol", "valorant", "dota", "wildrift"]) {
       "reduced",
     );
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page
-      .getByRole("button", { name: "Use device motion setting", exact: true })
-      .click();
+    await expect(
+      page.getByRole("button", { name: /background motion|device motion/i }),
+    ).toHaveCount(0);
     await expect(backdrop).toHaveCSS("animation-name", "none");
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
     await page.route(`**/catalog-assets/game-${game}-1536.*`, (route) =>

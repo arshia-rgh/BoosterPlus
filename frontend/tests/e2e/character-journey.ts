@@ -47,12 +47,12 @@ export async function qualifyCharacters(page: Page, project: string) {
     await page.screenshot({ path: `.cache/character-${project}-${key}.png` });
   }
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  await page.getByRole("button", { name: "Reduced", exact: true }).click();
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(
     showcase.locator('.scene-layer[data-visible="true"] .character-art'),
   ).toHaveAttribute("data-motion", "reduced");
   await expect(showcase.locator("animate")).toHaveCount(0);
-  await page.getByRole("button", { name: "System", exact: true }).click();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await showcase.scrollIntoViewIfNeeded();
   await expect(
     showcase.locator('.scene-layer[data-visible="true"] .character-art'),

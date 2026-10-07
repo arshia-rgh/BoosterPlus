@@ -1,10 +1,6 @@
 import { useEffect, useRef } from "react";
 import { bindScrollProgress } from "../ui/motion";
-export {
-  sceneProgress,
-  setMotionPreference,
-  useMotionPreference,
-} from "../ui/motion";
+export { sceneProgress, useMotionPreference } from "../ui/motion";
 
 // A paused Web Animation is scrubbed by native scroll position. No animation
 // loop runs between scroll/resize events, and CSS remains the no-JS fallback.

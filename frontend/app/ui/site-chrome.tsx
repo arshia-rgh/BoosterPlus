@@ -1,6 +1,6 @@
 import { Link, NavLink, useLocation } from "react-router";
 import { BrandLogo } from "../brand/brand";
-import { setMotionPreference, useMotionPreference } from "./motion";
+import { useMotionPreference } from "./motion";
 
 export function SiteHeader() {
   const pathname = useLocation().pathname;
@@ -46,7 +46,6 @@ export function SiteFooter() {
   const { pathname } = useLocation();
   const staff = pathname.startsWith("/admin");
   const booster = pathname.startsWith("/booster");
-  const motion = useMotionPreference();
   return (
     <footer className="site-footer">
       <div className="footer-introduction">
@@ -84,34 +83,6 @@ export function SiteFooter() {
           </>
         )}
       </nav>
-      <div className="footer-accessibility">
-        <span className="footer-label">Make yourself comfortable</span>
-        <p>Background motion follows your device preferences.</p>
-        <div
-          className="motion-options"
-          role="group"
-          aria-label="Background motion"
-        >
-          <button
-            type="button"
-            aria-pressed={motion === "reduced"}
-            onClick={() => {
-              setMotionPreference(true);
-            }}
-          >
-            Reduce background motion
-          </button>
-          <button
-            type="button"
-            aria-pressed={motion !== "reduced"}
-            onClick={() => {
-              setMotionPreference(false);
-            }}
-          >
-            Use device motion setting
-          </button>
-        </div>
-      </div>
     </footer>
   );
 }

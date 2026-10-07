@@ -186,7 +186,10 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       buyer.getByRole("complementary", { name: "Selection summary" }),
     ).toContainText("Solo");
     await accessible(buyer);
-    await buyer.getByRole("button", { name: "Reduced", exact: true }).click();
+    await expect(
+      buyer.getByRole("region", { name: "Page motion" }),
+    ).toHaveCount(0);
+    await buyer.emulateMedia({ reducedMotion: "reduce" });
     await expect(buyer.locator(".experience")).toHaveAttribute(
       "data-motion",
       "reduced",

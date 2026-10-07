@@ -1,9 +1,9 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { SiteFooter } from "../ui/site-chrome";
 import { HomePage } from "./page";
-import { sceneProgress, setMotionPreference, useRankScene } from "./motion";
+import { sceneProgress, useRankScene } from "./motion";
 
 let reduced = false;
 const mediaChanges = new Set<() => void>();
@@ -11,7 +11,6 @@ beforeEach(() => {
   reduced = false;
   mediaChanges.clear();
   localStorage.clear();
-  setMotionPreference(false);
   vi.stubGlobal(
     "matchMedia",
     vi.fn(() => ({
@@ -44,18 +43,17 @@ describe("accessible homepage motion", () => {
     expect(sceneProgress(-2000, 1500, 500)).toBe(1);
     expect(sceneProgress(0, 500, 500)).toBe(0);
   });
-  it("persists reduced motion and still honors OS reduction in system mode", () => {
+  it("follows device changes and ignores obsolete stored website overrides", () => {
+    localStorage.setItem("boosterplus.motion", "reduced");
     renderHome();
     expect(screen.getByRole("main")).toHaveAttribute("data-motion", "full");
-    fireEvent.click(
-      screen.getByRole("button", { name: "Reduce background motion" }),
-    );
-    expect(localStorage.getItem("boosterplus.motion")).toBe("reduced");
-    expect(screen.getByRole("main")).toHaveAttribute("data-motion", "reduced");
+    expect(
+      screen.queryByRole("button", { name: /background motion/i }),
+    ).not.toBeInTheDocument();
     reduced = true;
-    fireEvent.click(
-      screen.getByRole("button", { name: "Use device motion setting" }),
-    );
+    act(() => {
+      for (const notify of mediaChanges) notify();
+    });
     expect(screen.getByRole("main")).toHaveAttribute("data-motion", "reduced");
     reduced = false;
     act(() => {
@@ -63,36 +61,16 @@ describe("accessible homepage motion", () => {
     });
     expect(screen.getByRole("main")).toHaveAttribute("data-motion", "full");
   });
-  it("keeps preferences usable when storage is blocked", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
-      throw new Error("Blocked");
-    });
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
-      throw new Error("Blocked");
-    });
-    vi.spyOn(Storage.prototype, "removeItem").mockImplementation(() => {
-      throw new Error("Blocked");
-    });
-    setMotionPreference(false);
+  it("honors device reduction without using browser storage", () => {
+    const read = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw new Error("Blocked");
+      });
+    reduced = true;
     renderHome();
-    fireEvent.click(
-      screen.getByRole("button", { name: "Reduce background motion" }),
-    );
     expect(screen.getByRole("main")).toHaveAttribute("data-motion", "reduced");
-    fireEvent.click(
-      screen.getByRole("button", { name: "Use device motion setting" }),
-    );
-    expect(screen.getByRole("main")).toHaveAttribute("data-motion", "full");
-  });
-  it("uses the selected preference when only storage writes fail", () => {
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
-      throw new Error("Quota exceeded");
-    });
-    renderHome();
-    fireEvent.click(
-      screen.getByRole("button", { name: "Reduce background motion" }),
-    );
-    expect(screen.getByRole("main")).toHaveAttribute("data-motion", "reduced");
+    expect(read).not.toHaveBeenCalled();
   });
   it("cancels paused animations and removes scroll observers on unmount", () => {
     const cancel = vi.fn();

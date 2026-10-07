@@ -32,18 +32,6 @@
   font-size: 0.72rem;
   line-height: 1.5;
 }
-.metric-method {
-  color: #aabfb1;
-  font-size: 0.78rem;
-  padding-block: 0.9rem;
-}
-.metric-method summary {
-  cursor: pointer;
-}
-.public-metrics .metric-method h2 {
-  margin-bottom: 0.35rem;
-  font-size: 0.9rem;
-}
 .discovery-game-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

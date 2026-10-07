@@ -4,7 +4,7 @@ The accepted reference is `docs/redesign/design/`; do not import its workspace c
 
 - `site-chrome.tsx`: shared footer and ambient art; minimal storefront/booster header. Destinations follow workspace identity. Authorization remains server-owned; recognizing a pathname never grants a capability.
 - `design-system.css`: green theme tokens and explicitly named shared surfaces. Keep feature selectors scoped; do not add global rules for all forms, sections or buttons.
-- `motion.ts`: shared persistent device/reduced-motion preference. Decorative effects must stop in reduced mode; content and controls remain present without animation or JavaScript.
+- `motion.ts`: shared automatic device reduced-motion preference. Decorative effects must stop in reduced mode; content and controls remain present without animation or JavaScript.
 - `page-header.tsx`: page identity for ordinary workspace screens.
 - `record-shell.tsx`: persistent record identity plus query-backed local sections. It does not load records, authorize access, persist sensitive drafts or replace server checks.
 

@@ -703,32 +703,6 @@
   padding: 1.5rem;
   overflow-wrap: anywhere;
 }
-.experience-preferences {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: end;
-  gap: 0.5rem;
-  max-width: 1280px;
-  padding: 2rem min(2rem, 5vw);
-  margin: auto;
-  font-size: 0.72rem;
-  color: #bdcdb6;
-}
-.experience-preferences button {
-  flex-shrink: 0;
-  border: 1px solid #516c44;
-  background: transparent;
-  color: #dfebd4;
-  padding: 0.5rem 0.75rem;
-  border-radius: 2rem;
-  cursor: pointer;
-  font: inherit;
-}
-.experience-preferences button[aria-pressed="true"] {
-  background: #304b2a;
-  border-color: #a9c38e;
-}
 .experience[data-motion="reduced"] *,
 .experience[data-motion="reduced"] *::before,
 .experience[data-motion="reduced"] *::after {

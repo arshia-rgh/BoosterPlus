@@ -1,8 +1,7 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
 import { AmbientBackdrop, SiteFooter, SiteHeader } from "./site-chrome";
-import { setMotionPreference } from "./motion";
 
 afterEach(() => vi.unstubAllGlobals());
 function show(path: string) {
@@ -14,7 +13,6 @@ function show(path: string) {
       removeEventListener: vi.fn(),
     })),
   );
-  setMotionPreference(false);
   return render(
     <MemoryRouter initialEntries={[path]}>
       <AmbientBackdrop />
@@ -23,7 +21,7 @@ function show(path: string) {
     </MemoryRouter>,
   );
 }
-it("keeps service discovery out of global navigation and provides functional help and preferences", () => {
+it("keeps service discovery out of global navigation and provides functional help without motion controls", () => {
   const ui = show("/games/mobile-legends");
   const nav = screen.getByRole("navigation", { name: "Main navigation" });
   expect(
@@ -34,16 +32,9 @@ it("keeps service discovery out of global navigation and provides functional hel
   expect(
     screen.getByRole("link", { name: "Contact us & support" }),
   ).toHaveAttribute("href", "/support");
-  fireEvent.click(
-    screen.getByRole("button", { name: "Reduce background motion" }),
-  );
-  expect(ui.container.querySelector(".site-ambient")).toHaveAttribute(
-    "data-motion",
-    "reduced",
-  );
-  fireEvent.click(
-    screen.getByRole("button", { name: "Use device motion setting" }),
-  );
+  expect(
+    screen.queryByRole("group", { name: "Background motion" }),
+  ).not.toBeInTheDocument();
   expect(ui.container.querySelector(".site-ambient")).toHaveAttribute(
     "data-motion",
     "full",

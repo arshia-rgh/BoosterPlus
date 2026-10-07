@@ -159,33 +159,28 @@ for (const game of ["mlbb", "wow", "lol", "valorant", "dota", "wildrift"]) {
   });
 }
 
-test("motion preferences and FAQ keyboard controls remain usable", async ({
+test("device motion and FAQ keyboard controls remain usable without preference UI", async ({
   page,
 }, info) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
-  await page
-    .getByRole("button", { name: "Reduce background motion", exact: true })
-    .click();
+  await expect(page.getByRole("main")).toHaveAttribute("data-motion", "full");
+  await expect(
+    page.getByRole("button", { name: /background motion|device motion/i }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByText("How these statistics are measured", { exact: true }),
+  ).toHaveCount(0);
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.getByRole("main")).toHaveAttribute(
     "data-motion",
     "reduced",
   );
   await page.reload();
-  await expect(
-    page.getByRole("button", { name: "Reduce background motion", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page
-    .getByRole("button", { name: "Use device motion setting", exact: true })
-    .click();
   await expect(page.getByRole("main")).toHaveAttribute(
     "data-motion",
     "reduced",
   );
-  await page
-    .getByText("How these statistics are measured", { exact: true })
-    .click();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   const question = page.locator(".home-faq summary").first();
   await question.focus();

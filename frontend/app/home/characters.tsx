@@ -4,7 +4,6 @@ import "./characters.css";
 import SceneCharacter from "./scene-character";
 import { scenes, sceneByKey, type SceneKey } from "./scene-catalog";
 import { useCharacterMotion } from "./character-motion";
-import { setMotionPreference, useMotionPreference } from "./motion";
 export { viewportProgress } from "./character-motion";
 
 const characters = [
@@ -159,15 +158,7 @@ export default function CharacterShowcase({ enabled }: { enabled: boolean }) {
     ...new Set([...(previous ? [previous] : []), displayed, selected]),
   ];
   const stage = useRef<HTMLDivElement>(null);
-  const anchorFrame = useRef(0);
-  useEffect(
-    () => () => {
-      cancelAnimationFrame(anchorFrame.current);
-    },
-    [],
-  );
   const [nearby, setNearby] = useState(false);
-  const preference = useMotionPreference();
   useEffect(() => {
     const element = stage.current;
     if (!element) return;
@@ -266,32 +257,6 @@ export default function CharacterShowcase({ enabled }: { enabled: boolean }) {
           ))}
       </div>
       <div className="world-action">
-        <button
-          className="world-motion"
-          type="button"
-          disabled={preference === "system-reduced"}
-          onClick={(event) => {
-            const button = event.currentTarget;
-            const top = button.getBoundingClientRect().top;
-            setMotionPreference(enabled);
-            cancelAnimationFrame(anchorFrame.current);
-            // The rank scene above changes height with the shared preference.
-            // Preserve this explicit control's viewport position after that layout.
-            anchorFrame.current = requestAnimationFrame(() => {
-              if (button.isConnected)
-                window.scrollBy({
-                  top: Math.round(button.getBoundingClientRect().top - top),
-                  behavior: "instant",
-                });
-            });
-          }}
-        >
-          {preference === "system-reduced"
-            ? "System motion reduced"
-            : enabled
-              ? "Pause motion"
-              : "Resume motion"}
-        </button>
         <Link className="home-text-link" to="/games">
           Browse available games <span aria-hidden="true">↗</span>
         </Link>
