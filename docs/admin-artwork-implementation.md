@@ -80,3 +80,19 @@ After the completed preflight and explicit backup/schema40 disclosure, the owner
 Migration40/history and dependency checks passed. All six application service instances matched the signed image digests and reported healthy. HTTPS smoke and HTTP-to-HTTPS redirects passed; a public browser check loaded homepage content without pending loading messages. The actual running API/worker environment independently confirmed checkout enabled and outgoing payments disabled. Temporary registry credentials were removed. No private admin session, production upload, invoice, email or money movement was created for verification. Live upload acceptance remains an owner check; isolated upload workflows passed before release.
 
 Use `/srv/playora/releases/6ae48bf/deployment.env` for current operations. Stable mounted deployment source remains `/srv/playora/releases/99f60bd/source/production`, preserving webmail121 and the reviewed upload-route deadline change. No automatic schema downgrade was performed or promised. Backups/recovery remain unfinished; future deployment decisions must not reuse this consumed approval. A published payment policy and confirmed receiving coin/network are still needed for manual checkout; approved proposed settings were not silently published as financial terms.
+
+## Confirmed payment settings and prepared draft — 7 October 2026
+
+The owner subsequently confirmed USDT receiving wallets on BNB Smart Chain, TRON/TRC-20 and Solana, and explicitly selected 365 days for in-app disputes, 30 days per appeal and 3 appeals. The complete field values are in [PAYMENT_POLICY_DRAFT.json](legal/PAYMENT_POLICY_DRAFT.json). This is a local review artifact, not a database seed, imported policy or published agreement. Enter it through **Admin → Finance → Payment policy** using normal recent staff authentication; save, preview the exact saved revision, then complete the owner's publication review. Never write the policy directly to SQL or bypass authenticator checks.
+
+| Customer choice | NOWPayments asset code | Network identifier |
+| --- | --- | --- |
+| USDT — BNB Smart Chain (BEP-20) | `usdtbsc` | `bsc` |
+| USDT — TRON (TRC-20) | `usdttrc20` | `trx` |
+| USDT — Solana (SPL) | `usdtsol` | `sol` |
+
+Live GET-only checks returned these three routes as payment-enabled, fixed-rate supported and among merchant choices. Same-asset minimum snapshots were approximately USD8.96, USD20.19 and USD9.50 respectively. These change with provider/route conditions and do not establish a final invoice quote or guarantee successful settlement. No merchant wallet setting was changed and no transaction was created. Redacted evidence is retained privately as `artwork135/provider-three-usdt-readiness.json` on the server.
+
+The draft uses USD pricing, merchant-paid processing fees, fixed quotes and a 30-minute local checkout window, subject to earlier provider expiry. Remedy fields preserve the approved full-refund/account-protection/account-damage promises. The in-app values are `dispute_hours=8760`, `appeal_hours=720`, `max_appeals=3`; they are interface limits, not expiry of the underlying protections or legal rights. Account listings retain their separately accepted reporting window, as implemented by the resale contract snapshot; staff support review remains available outside the in-app path. Do not silently rewrite the historical approved terms or existing order agreements.
+
+The available browser session showed the normal admin sign-in page. The owner was asked to sign in themselves before draft entry; no email code was requested or MFA bypass attempted. Draft save, publication and owner-led real payment testing remain pending.
