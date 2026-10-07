@@ -18,7 +18,7 @@ Unit tests cover decoding/crops/bounds/metadata, paths and responsive selection.
 
 Reference: [MDN responsive images](https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images) distinguishes crop/art direction from resolution selection. [OWASP upload guidance](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html) informs independent format, authorization, storage and resource checks.
 
-Status: implementation, scoped senior UI review and the complete normal repository gate passed. Verified implementation commit: `29992d9c605c8d1e122a9af7d5ceb3f1efd26844`. Signed release preparation and production rollout remain pending; the upload feature is not deployed yet.
+Status: implementation, scoped senior UI review and the complete normal repository gate passed. Verified implementation commit: `29992d9c605c8d1e122a9af7d5ceb3f1efd26844`. Its documentation-only descendant `6ae48bf13fb43eaf72afbd5125cb1bbb491aa990` has passed exact-commit CI, release image scans, signature verification and server preflight. Production rollout remains pending; the upload feature is not deployed yet.
 
 ## Placement guide
 
@@ -56,6 +56,14 @@ Private evidence is retained under `/srv/playora-qualification/artwork135/`:
 | `full8-state.json` | `4e878a5f4de55aa7b98a17745301f959eb17454400e7006cabb60066d0a80715` |
 | `manifest8.json` | `d4671f38697ac6b6e782fee4dfff5206605fde5f1e94f40236ff380c5f9fa11c` |
 | `full8-resources.log` | `5a3fc1fbd4d4a3e6f0c707f8b77ee8c176b078d6a9b41dcdbdb7200f7b203236` |
+
+## Signed candidate preflight — 7 October 2026
+
+Exact-commit [CI 37561535071](https://github.com/arshia-rgh/BoosterPlus/actions/runs/37561535071) and [release build 37562642731](https://github.com/arshia-rgh/BoosterPlus/actions/runs/37562642731) passed for `6ae48bf13fb43eaf72afbd5125cb1bbb491aa990`. The release manifest and five SBOMs were independently compared with authenticated workflow artifacts before signing. Server verification used the existing pinned public-key fingerprint.
+
+The private candidate at `/srv/playora/releases/6ae48bf` passed image pulls, hardened Compose/capacity validation, isolated gateway validation, checkout-enabled backend configuration validation, binary schema40 verification and read-only live schema39/migration-history checks. Evidence is `preflight135.json` and `preflight-state.json` in that directory. Temporary registry credentials were removed. The live release remains `80e08c961de78b804c4822983c2f23b7a0224218`; no migration, service restart or checkout activation occurred.
+
+The candidate preserves stable deployment bind paths and the webmail121 patch. Its sole runtime configuration-file change is the gateway upload-route deadline; private backend configuration changes only the owner-requested checkout flag. Strict release defaults still require a fresh verified off-host backup. No such backup exists, and previous one-use deployment exceptions are consumed. A new exact-release owner decision is required before proceeding without that recovery point; schema40 also prevents ordinary rollback to the current schema39 binary. This preflight is not a backup waiver or production recovery test.
 
 ## Owner-requested checkout activation
 
