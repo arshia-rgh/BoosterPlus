@@ -21,3 +21,19 @@ The reviewer found reporting dates/UTC and unavailable values readable, the two-
 ## Limits
 
 The reviewer inspected rendered captures and browser evidence rather than directly controlling a browser. This does not establish real authenticated-flow, physical-device or assistive-technology acceptance. No production deployment is implied. Full route browser/container checks are recorded separately in `docs/progress.md`; do not claim missing checks passed.
+
+## Completed automated qualification
+
+Normal tracked frontend commit gate round2 passed and created `18f1064dfdbec17141250022fe201ef75eac3eff`, tree `f038dccf3e60fd9600ff0d64c9fafaf3fb2a77c3`, parent `2ec72e62837dbdbaea970c57403c3b21e43e1bd8`. All25 source files were SHA256-verified before importing the hook-created commit locally. The added order/legacy-character test corrections change only how device reduction is selected, with the existing motion assertions retained; no subsequent visual implementation changed after the senior review.
+
+Passed: root repository/security/contracts/workflow checks; frontend formatting/type/lint/live dependency audit; 139 shipped unit files/461 tests; both production builds and budgets; nine server/proxy checks; all154 desktop/mobile browser cases; both image scans and non-root/read-only container smoke. Browser totals were38+37+2 per device. Unchanged full backend/production suites were not repeated under the established UI-only policy.
+
+Private server evidence: `/srv/playora-qualification/ui136/round2/{gate.log,gate-state.json,source-manifest.json,manifest.json,qualified.bundle}`.
+
+- Gate log SHA256: `34477d32977afcd75196140f00a9b21beaaa3343168e6d74d40a77093434e9ee`.
+- Source manifest SHA256: `cea9e70fd222e8b78a3f5c249e8e22bcda59ef025076d1eb0410bc0a0b6c578d`.
+- Commit bundle SHA256: `47e0b76ba53b6243d5890343d2b014cd7d86f1be009edac43a60c4bebe5330d3`.
+
+Round1 remains a failure: the order journey clicked the intentionally removed Reduced button and reached its150-second deadline. Its trace identified that exact obsolete locator. The failed attempt was stopped, its own test services cleaned up and evidence retained under `ui136/failed1-test-results`, `gate.log` and `interruption1.json`. Round2 restarted the complete normal frontend gate with corrected device-preference emulation; no retry bypass, timeout increase or reduced threshold was used.
+
+Deployment is separate. The current live release remains signed6ae48bf at schema40, with checkout enabled and outgoing transfers disabled. Off-host recovery is still absent and the previous exact-release backup-deferral approval is consumed. This UI verification does not create a fresh deployment exception, authorize external messages or qualify a real financial transaction.
