@@ -52,6 +52,7 @@ export function ReferencesEditor({
           </summary>
           <div className="catalog-grid">
             <Text
+              name={`references.${String(i)}.key`}
               label="Catalog key"
               value={reference.key}
               change={(key) => {
@@ -59,6 +60,7 @@ export function ReferencesEditor({
               }}
             />
             <Text
+              name={`references.${String(i)}.label`}
               label="Catalog label"
               value={reference.label}
               change={(label) => {
@@ -66,6 +68,7 @@ export function ReferencesEditor({
               }}
             />
             <Select
+              name={`references.${String(i)}.kind`}
               label="Catalog kind"
               value={reference.kind}
               change={(kind) => {
@@ -82,6 +85,7 @@ export function ReferencesEditor({
             />
           </div>
           <OptionsEditor
+            path={`references.${String(i)}.options`}
             options={reference.options}
             change={(options) => {
               update(i, { options });
@@ -120,9 +124,11 @@ export function ReferencesEditor({
 }
 
 function DefaultEditor({
+  path = "",
   field,
   change,
 }: {
+  path?: string;
   field: Field;
   change: (patch: Partial<Field>) => void;
 }) {
@@ -147,6 +153,7 @@ function DefaultEditor({
       {field.default !== undefined &&
         (field.type === "boolean" ? (
           <Check
+            name={`${path}.default`}
             label="Default yes"
             value={field.default === true}
             change={(value) => {
@@ -179,12 +186,14 @@ function DefaultEditor({
   );
 }
 export function FieldEditor({
+  path = "",
   field,
   change,
   service,
   config,
   intake = false,
 }: {
+  path?: string;
   field: Field;
   intake?: boolean;
   change: (patch: Partial<Field>) => void;
@@ -200,6 +209,7 @@ export function FieldEditor({
     <>
       <div className="catalog-grid">
         <Text
+          name={`${path}.key`}
           label="Field key"
           value={field.key}
           change={(key) => {
@@ -207,6 +217,7 @@ export function FieldEditor({
           }}
         />
         <Text
+          name={`${path}.label`}
           label="Field label"
           value={field.label}
           change={(label) => {
@@ -214,6 +225,7 @@ export function FieldEditor({
           }}
         />
         <Select
+          name={`${path}.type`}
           label="Field type"
           value={field.type}
           change={(type) => {
@@ -226,6 +238,7 @@ export function FieldEditor({
                 "boolean",
                 "integer",
                 "decimal",
+                "win_rate",
                 "short_text",
                 "long_text",
                 "attachment",
@@ -247,14 +260,19 @@ export function FieldEditor({
             "boolean",
             "integer",
             "decimal",
+            "win_rate",
             "short_text",
             "long_text",
             "attachment",
           ]
             .filter((type) => !intake || type !== "attachment")
-            .map((type) => [type, type])}
+            .map((type) => [
+              type,
+              type === "win_rate" ? "Win-rate preference" : type,
+            ])}
         />
         <Select
+          name={`${path}.stage`}
           label="Collection stage"
           value={field.stage}
           change={(stage) => {
@@ -277,6 +295,7 @@ export function FieldEditor({
         />
       </div>
       <Text
+        name={`${path}.help`}
         label="Field help"
         value={field.help}
         change={(help) => {
@@ -284,6 +303,7 @@ export function FieldEditor({
         }}
       />
       <Check
+        name={`${path}.required`}
         label="Required field"
         value={field.required}
         change={(required) => {
@@ -293,6 +313,7 @@ export function FieldEditor({
       {choice && (
         <>
           <Select
+            name={`${path}.reference`}
             label="Reference catalog"
             value={field.reference}
             change={(reference) => {
@@ -305,6 +326,7 @@ export function FieldEditor({
           />
           {!field.reference && (
             <OptionsEditor
+              path={`${path}.options`}
               options={field.options}
               change={(options) => {
                 change({ options });
@@ -313,9 +335,17 @@ export function FieldEditor({
           )}
         </>
       )}
+      {field.type === "win_rate" && (
+        <p className="quiet">
+          Customers can request no preference, a percentage range, below or
+          above a percentage, or exactly 100%. The accepted order defines the
+          promise; this field does not create a global guarantee.
+        </p>
+      )}
       {number && (
         <div className="catalog-grid">
           <Text
+            name={`${path}.min`}
             label="Minimum value"
             value={field.min}
             change={(min) => {
@@ -323,6 +353,7 @@ export function FieldEditor({
             }}
           />
           <Text
+            name={`${path}.max`}
             label="Maximum value"
             value={field.max}
             change={(max) => {
@@ -330,6 +361,7 @@ export function FieldEditor({
             }}
           />
           <Text
+            name={`${path}.step`}
             label="Numeric step"
             value={field.step}
             change={(step) => {
@@ -337,6 +369,7 @@ export function FieldEditor({
             }}
           />
           <Text
+            name={`${path}.unit`}
             label="Unit"
             value={field.unit}
             change={(unit) => {
@@ -348,6 +381,7 @@ export function FieldEditor({
       {text && (
         <div className="catalog-grid">
           <NumberInput
+            name={`${path}.min_length`}
             label="Minimum text length"
             value={field.min_length}
             change={(min_length) => {
@@ -355,6 +389,7 @@ export function FieldEditor({
             }}
           />
           <NumberInput
+            name={`${path}.max_length`}
             label="Maximum text length"
             value={field.max_length}
             change={(max_length) => {
@@ -366,6 +401,7 @@ export function FieldEditor({
       {field.type === "multiselect" && (
         <div className="catalog-grid">
           <NumberInput
+            name={`${path}.min_selections`}
             label="Minimum selections"
             value={field.min_selections}
             change={(min_selections) => {
@@ -373,6 +409,7 @@ export function FieldEditor({
             }}
           />
           <NumberInput
+            name={`${path}.max_selections`}
             label="Maximum selections"
             value={field.max_selections}
             change={(max_selections) => {
@@ -389,9 +426,10 @@ export function FieldEditor({
           references.
         </p>
       ) : (
-        <DefaultEditor field={field} change={change} />
+        <DefaultEditor path={path} field={field} change={change} />
       )}
       <ConditionEditor
+        path={`${path}.visible_when`}
         label="Show field when"
         value={field.visible_when}
         change={(visible_when) => {
@@ -400,6 +438,7 @@ export function FieldEditor({
         fields={service.fields}
       />
       <ConditionEditor
+        path={`${path}.required_when`}
         label="Require field when"
         value={field.required_when}
         change={(required_when) => {
@@ -411,10 +450,12 @@ export function FieldEditor({
   );
 }
 export function RuleEditor({
+  path = "",
   rule,
   change,
   fields,
 }: {
+  path?: string;
   rule: Rule;
   change: (patch: Partial<Rule>) => void;
   fields: Field[];
@@ -427,6 +468,7 @@ export function RuleEditor({
     <>
       <div className="catalog-grid">
         <Text
+          name={`${path}.key`}
           label="Rule key"
           value={rule.key}
           change={(key) => {
@@ -434,6 +476,7 @@ export function RuleEditor({
           }}
         />
         <Select
+          name={`${path}.kind`}
           label="Rule kind"
           value={rule.kind}
           change={(kind) => {
@@ -447,6 +490,7 @@ export function RuleEditor({
         />
       </div>
       <Text
+        name={`${path}.message`}
         label="Validation message"
         value={rule.message}
         change={(message) => {
@@ -456,6 +500,7 @@ export function RuleEditor({
       {rule.kind !== "reject" && (
         <div className="catalog-grid">
           <Select
+            name={`${path}.from`}
             label="Starting field"
             value={rule.from}
             change={(from) => {
@@ -464,6 +509,7 @@ export function RuleEditor({
             options={options}
           />
           <Select
+            name={`${path}.to`}
             label="Target field"
             value={rule.to}
             change={(to) => {
@@ -474,6 +520,7 @@ export function RuleEditor({
           {rule.kind === "progression" && (
             <>
               <Select
+                name={`${path}.from_units`}
                 label="Starting units field"
                 value={rule.from_units}
                 change={(from_units) => {
@@ -482,6 +529,7 @@ export function RuleEditor({
                 options={options}
               />
               <Select
+                name={`${path}.to_units`}
                 label="Target units field"
                 value={rule.to_units}
                 change={(to_units) => {
@@ -494,6 +542,7 @@ export function RuleEditor({
         </div>
       )}
       <ConditionEditor
+        path={`${path}.when`}
         label="Apply rule when"
         value={rule.when}
         change={(when) => {
@@ -534,6 +583,7 @@ export function ServicesEditor({
           </summary>
           <div className="catalog-grid">
             <Text
+              name={`services.${String(i)}.key`}
               label="Service key"
               value={service.key}
               change={(key) => {
@@ -541,6 +591,7 @@ export function ServicesEditor({
               }}
             />
             <Text
+              name={`services.${String(i)}.name`}
               label="Service name"
               value={service.name}
               change={(name) => {
@@ -549,6 +600,7 @@ export function ServicesEditor({
             />
           </div>
           <Text
+            name={`services.${String(i)}.description`}
             label="Service description"
             multiline
             value={service.description}
@@ -558,6 +610,7 @@ export function ServicesEditor({
           />
           {showPricing && (
             <PricingEditor
+              path={`services.${String(i)}`}
               service={service}
               config={config}
               change={(patch) => {
@@ -566,6 +619,7 @@ export function ServicesEditor({
             />
           )}
           <FulfillmentEditor
+            path={`services.${String(i)}.fulfillment`}
             service={service}
             change={(patch) => {
               update(i, patch);
@@ -573,6 +627,7 @@ export function ServicesEditor({
           />
           <h3>Form fields</h3>
           <DeliveryEditor
+            path={`services.${String(i)}.delivery`}
             service={service}
             change={(patch) => {
               update(i, patch);
@@ -584,6 +639,7 @@ export function ServicesEditor({
                 {field.label} · {field.key}
               </summary>
               <FieldEditor
+                path={`services.${String(i)}.fields.${String(j)}`}
                 field={field}
                 service={service}
                 config={config}
@@ -627,6 +683,7 @@ export function ServicesEditor({
             <details key={j} className="catalog-section">
               <summary>{rule.key}</summary>
               <RuleEditor
+                path={`services.${String(i)}.rules.${String(j)}`}
                 rule={rule}
                 fields={service.fields}
                 change={(patch) => {
@@ -733,6 +790,7 @@ export function PackagesEditor({
           </summary>
           <div className="catalog-grid">
             <Text
+              name={`packages.${String(i)}.key`}
               label="Package key"
               value={pack.key}
               change={(key) => {
@@ -740,6 +798,7 @@ export function PackagesEditor({
               }}
             />
             <Text
+              name={`packages.${String(i)}.name`}
               label="Package name"
               value={pack.name}
               change={(name) => {
@@ -747,6 +806,7 @@ export function PackagesEditor({
               }}
             />
             <Select
+              name={`packages.${String(i)}.service`}
               label="Package service"
               value={pack.service}
               change={(service) => {
@@ -759,6 +819,7 @@ export function PackagesEditor({
             />
           </div>
           <Text
+            name={`packages.${String(i)}.description`}
             label="Package description"
             multiline
             value={pack.description}
@@ -781,6 +842,7 @@ export function PackagesEditor({
                 <legend>Variant {j + 1}</legend>
                 <div className="catalog-grid">
                   <Text
+                    name={`packages.${String(i)}.variants.${String(j)}.key`}
                     label="Variant key"
                     value={variant.key}
                     change={(key) => {
@@ -788,6 +850,7 @@ export function PackagesEditor({
                     }}
                   />
                   <Text
+                    name={`packages.${String(i)}.variants.${String(j)}.name`}
                     label="Variant name"
                     value={variant.name}
                     change={(name) => {
@@ -795,6 +858,7 @@ export function PackagesEditor({
                     }}
                   />
                   <Select
+                    name={`packages.${String(i)}.variants.${String(j)}.currency`}
                     label="Pricing currency"
                     value={variant.currency}
                     change={(currency) => {
@@ -808,6 +872,7 @@ export function PackagesEditor({
                     ]}
                   />
                   <Text
+                    name={`packages.${String(i)}.variants.${String(j)}.amount_minor`}
                     label="Price in minor units"
                     value={variant.amount_minor}
                     change={(amount_minor) => {
@@ -816,6 +881,7 @@ export function PackagesEditor({
                     help="Whole minor units only, e.g. 1234 represents 12.34. Enter your approved price."
                   />
                   <NumberInput
+                    name={`packages.${String(i)}.variants.${String(j)}.delivery_min_hours`}
                     label="Minimum delivery hours"
                     value={variant.delivery_min_hours}
                     change={(delivery_min_hours) => {
@@ -823,6 +889,7 @@ export function PackagesEditor({
                     }}
                   />
                   <NumberInput
+                    name={`packages.${String(i)}.variants.${String(j)}.delivery_max_hours`}
                     label="Maximum delivery hours"
                     value={variant.delivery_max_hours}
                     change={(delivery_max_hours) => {
@@ -839,6 +906,7 @@ export function PackagesEditor({
                 />
                 {variant.capacity !== undefined && (
                   <NumberInput
+                    name={`packages.${String(i)}.variants.${String(j)}.capacity`}
                     label="Available capacity"
                     value={variant.capacity}
                     change={(capacity) => {
@@ -855,6 +923,7 @@ export function PackagesEditor({
                     )
                     .map((field) => (
                       <Check
+                        name={`packages.${String(i)}.variants.${String(j)}.required_fields`}
                         key={field.key}
                         label={field.label}
                         value={variant.required_fields.includes(field.key)}
@@ -871,6 +940,7 @@ export function PackagesEditor({
                     ))}
                 </fieldset>
                 <ConditionEditor
+                  path={`packages.${String(i)}.variants.${String(j)}.eligibility`}
                   label="Variant eligibility"
                   fields={fields}
                   value={variant.eligibility}

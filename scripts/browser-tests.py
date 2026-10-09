@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import time
-from test_services import environment as service_environment
+from test_services import environment as service_environment, scanner_ready
 
 root = Path(__file__).resolve().parents[1]
 # Each device project represents an independent client population. Give it an
@@ -89,6 +89,7 @@ def main():
     except ValueError as error:
         parser.error(str(error))
     print("Browser qualification: " + (", ".join(specs) if specs else "complete suite"), flush=True)
+    scanner_ready(root, service_environment(root))
     results = [run_project(project, specs) for project in (args.project or ("desktop", "mobile"))]
     raise SystemExit(1 if any(results) else 0)
 

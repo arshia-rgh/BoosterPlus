@@ -1,3 +1,4 @@
+import { publicAPIHeaders } from "../portal/routing.server";
 import { retryTime } from "../ui/retry-time";
 import { z } from "../validation";
 import { listingSchema, releaseSchema } from "./model";
@@ -8,6 +9,7 @@ async function read<T>(path: string, schema: z.ZodType<T>): Promise<T> {
   try {
     const response = await fetch(new URL("/api/v1/catalog/" + path, origin), {
       cache: "no-store",
+      headers: publicAPIHeaders(),
       signal: AbortSignal.timeout(8000),
       redirect: "error",
     });

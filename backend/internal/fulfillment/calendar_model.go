@@ -65,7 +65,7 @@ func staffTarget(ctx context.Context, c *ent.Client, p *identity.Principal, id s
 	return activeStaff(ctx, c, id)
 }
 func activeStaff(ctx context.Context, c *ent.Client, id string) error {
-	_, err := c.User.Query().Where(user.IDEQ(id), user.RoleIn(identity.RoleBooster, identity.RoleAdmin, identity.RoleOwner), user.SuspendedEQ(false), user.MfaEnabledEQ(true)).Only(ctx)
+	_, err := c.User.Query().Where(user.IDEQ(id), user.PortalEQ(string(identity.PortalBooster)), user.RoleEQ(identity.RoleBooster), user.SuspendedEQ(false), user.MfaEnabledEQ(true)).Only(ctx)
 	return err
 }
 func staffCapability(admin bool) string {

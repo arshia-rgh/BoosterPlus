@@ -19,11 +19,7 @@ import (
 
 func TestArticleHTTPPortalCSRFAndStrictInput(t *testing.T) {
 	f := orderDB(t)
-	_, first := f.auth.login(t, "news-http-admin@example.test")
-	if _, err := f.auth.client.User.UpdateOneID(first.User.ID).SetRole("administrator").Save(t.Context()); err != nil {
-		t.Fatal(err)
-	}
-	pending := f.auth.enterPortal(t, first, identity.PortalAdmin)
+	_, pending := f.auth.staffLogin(t, "news-http-admin@example.test", identity.RoleAdmin)
 	enrollment, err := f.auth.service.EnrollMFA(t.Context(), pending)
 	if err != nil {
 		t.Fatal(err)

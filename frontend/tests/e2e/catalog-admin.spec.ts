@@ -228,9 +228,15 @@ test("staff builds, previews, publishes and archives another game through the ge
   await page
     .getByRole("button", { name: "Preview saved draft", exact: true })
     .click();
-  await expect(page.getByText(/Review actual catalog data/)).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Publish catalog", exact: true }),
+    page.getByRole("link", { name: /Review actual catalog data/ }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: "Publish catalog",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeDisabled();
   await page
     .getByRole("button", { name: "← All catalog drafts", exact: true })
@@ -253,6 +259,23 @@ test("staff builds, previews, publishes and archives another game through the ge
   await page
     .getByLabel("Image alternative text", { exact: true })
     .fill("Synthetic catalog artwork");
+  // Invalid drafts open the actual input even when submitted from another editor section.
+  await page.getByLabel("Game name", { exact: true }).fill("");
+  await section("FAQ");
+  await page.getByRole("button", { name: "Save changes", exact: true }).click();
+  await expect(page.getByLabel("Game name", { exact: true })).toBeFocused();
+  await expect(page.getByLabel("Game name", { exact: true })).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  await expect(
+    page.getByLabel("Game description", { exact: true }),
+  ).toHaveValue("Isolated browser fixture — not a live offering.");
+  await page.screenshot({
+    path: info.outputPath("validation-catalog-hidden-section.png"),
+    fullPage: true,
+  });
+  await page.getByLabel("Game name", { exact: true }).fill("Synthetic UI game");
   await page.getByLabel("Customize game artwork framing").check();
   await page.getByLabel("Desktop text placement").selectOption("right");
   await page.getByLabel("Desktop horizontal focus").focus();
@@ -301,6 +324,7 @@ test("staff builds, previews, publishes and archives another game through the ge
   // Deliberate self-reference must fail publication; fixes happen through the same controls.
   await condition(hero, "Show field when", "hero", "alpha");
   await condition(hero, "Require field when", "restrict", "true");
+  await addField("win_preference", "Requested win rate", "win_rate");
   const matches = await addField("matches", "Matches", "integer");
   await matches.getByLabel("Required field", { exact: true }).check();
   await matches.getByLabel("Minimum value", { exact: true }).fill("1");
@@ -460,11 +484,24 @@ test("staff builds, previews, publishes and archives another game through the ge
     .getByRole("button", { name: "Preview saved draft", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: "Publish catalog", exact: true }),
+    page.getByRole("button", {
+      name: "Publish catalog",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeDisabled();
   await expect(
-    page.getByText(/Field dependencies contain a cycle/),
+    page.getByRole("link", { name: /Field dependencies contain a cycle/ }),
   ).toBeVisible();
+  await expect(
+    page
+      .getByRole("navigation", { name: "Catalog sections" })
+      .getByRole("link", { name: "Boosting forms", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  await page.screenshot({
+    path: info.outputPath("validation-catalog-nested-field.png"),
+    fullPage: true,
+  });
   // Locators now use stable keys because names changed during editing.
   await section("Boosting forms");
   const savedHero = service.locator('[data-catalog-field="2"]');
@@ -513,10 +550,16 @@ test("staff builds, previews, publishes and archives another game through the ge
     .getByRole("button", { name: "Preview saved draft", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: "Publish catalog", exact: true }),
+    page.getByRole("button", {
+      name: "Publish catalog",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeDisabled();
   await expect(
-    page.getByText("Expected result differs from the current pricing rules."),
+    page.getByRole("link", {
+      name: /Expected result differs from the current pricing rules/,
+    }),
   ).toBeVisible();
   await section("Price estimation");
   await priceCase.getByLabel("Expected amount in minor units").fill("301");
@@ -642,6 +685,28 @@ test("staff builds, previews, publishes and archives another game through the ge
     await customer.getByRole("link", { name: "Configure Duo boost" }).click();
     await customer.getByLabel("Play mode (required)").selectOption("solo");
     await customer.getByLabel("Matches (required)").fill("2");
+    await customer
+      .getByLabel("Win-rate preference", { exact: true })
+      .selectOption("range");
+    await customer.getByLabel("Lower win rate (%)", { exact: true }).fill("80");
+    await customer.getByLabel("Upper win rate (%)", { exact: true }).fill("60");
+    await customer
+      .getByRole("button", { name: "Check selections", exact: true })
+      .click();
+    await expect(
+      customer.getByLabel("Upper win rate (%)", { exact: true }),
+    ).toBeFocused();
+    await expect(
+      customer.getByLabel("Upper win rate (%)", { exact: true }),
+    ).toHaveAttribute("aria-invalid", "true");
+    await customer.screenshot({
+      path: info.outputPath("validation-win-rate-range.png"),
+      fullPage: true,
+    });
+    await customer.getByLabel("Lower win rate (%)", { exact: true }).fill("50");
+    await expect(
+      customer.getByRole("complementary", { name: "Selection summary" }),
+    ).toContainText("Between 50–60%");
     await customer.getByLabel("Single hero").selectOption("true");
     await expect(customer.getByLabel("Hero (required)")).toBeVisible();
     await customer

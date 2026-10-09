@@ -16,6 +16,69 @@ The callback is `PUBLIC_ORIGIN` plus `/api/v1/webhooks/payments/nowpayments`. In
 
 For live IPN retry settings, five recurrent notifications one minute apart are a recommended starting point, not a provider requirement. Duplicates are safe. The provider documents a three-second callback deadline; the handler budgets two seconds for durable receipt and returns an error if persistence fails. See [IPN setup](https://nowpayments.zendesk.com/hc/en-us/articles/21395546303389-IPN-and-how-to-setup). Only HMAC-authenticated notices are accepted; customer sessions/CSRF are deliberately not required on the callback. Customer/staff mutations retain normal identity, CSRF and rate limits.
 
+### PLAYORA dashboard values — 8 October 2026
+
+In NOWPayments **Payment Settings → Instant Payment Notifications**, use:
+
+| Setting | Value |
+| --- | --- |
+| Webhook format | **Classic way** |
+| IPN callback URL | `https://playoragames.com/api/v1/webhooks/payments/nowpayments` |
+| Number of recurrent notifications | `5` |
+| Timeout / interval | `1 minute` (`60` if the field is explicitly in seconds) |
+| IPN secret | Keep the existing secret matching private server configuration |
+
+The callback remains on the customer host when admin and booster move to their
+own subdomains. Invoice creation already supplies this exact URL. The retry
+values are PLAYORA's recommendation; the provider describes these as retries
+after callback-processing errors, not scheduled customer emails. Do not put a
+secret into the URL or rotate the secret merely to set the URL.
+
+Classic way matches the existing independently signed webhook fixtures, with
+numeric IDs/amounts and mixed JSON values. The parser retains JSON types while
+checking HMAC; it does not mark an order paid from callback amounts. The focused
+webhook signature, malformed-input and deduplication tests were rerun successfully
+after the owner asked about this dashboard option. All-Strings is not required
+for this configuration; no backend code or credential changes were made.
+The owner subsequently confirmed completing these NOWPayments dashboard settings.
+That is owner-reported configuration completion, not verified callback delivery
+or a funded transaction result.
+
+The owner then narrowed the initial payment route to **USDT on BNB Smart Chain
+(BEP-20)** only. In the PLAYORA policy editor, use asset code `usdtbsc`, network
+`bsc` and display label `USDT — BNB Smart Chain (BEP-20)`. This supersedes the
+earlier TRON/Solana selection for new publication. The local draft was updated;
+all approved refund, compensation, fee and dispute terms remain unchanged.
+Asset codes can be checked through the provider's
+[supported-coins list](https://nowpayments.io/supported-coins) and authenticated
+`GET /v1/full-currencies` or merchant-enabled coin endpoints documented in its
+[API reference](https://nowpayments.zendesk.com/hc/en-us/articles/21345824322717-API-and-endpoint-description).
+Changing this local draft does not publish it or alter merchant wallet settings.
+
+The owner subsequently authorized saving and publishing this exact starter
+policy through the admin panel and completed normal sign-in/MFA in the in-app
+browser. The policy was saved as revision2, previewed and published as revision3,
+agreement `e1957da6-a9dd-4e66-b78b-4cd2ed4df190`. The editor confirmed **Payment
+policy published** with checkout enabled and outgoing payments disabled. The
+submitted policy exactly matches the local document; all observed text/number
+fields also match. Private UI receipt and screenshot are under
+`.cache/contact138/payment-policy-published/`. Later revisions remain editable
+and create new agreements; existing accepted orders keep their saved terms.
+No invoice, transfer, provider wallet change or direct database write occurred.
+One subsequent read-only `GET /v1/merchant/coins` check also confirmed `usdtbsc`
+in this merchant's enabled-currency list. That response does not expose receiving
+wallet details; wallet presence is unverified, not reported missing. The earlier
+full-currencies check confirms network `bsc` and payment availability.
+
+Read-only production checks on 8 October found `PAYMENTS_ENABLED=true` and
+`PAYOUTS_ENABLED=false` in both API and worker, with all required provider
+credential fields present. At that initial check there was **no published
+payment policy**; the later authenticated publication above resolves that
+missing-policy prerequisite. The [starter policy](legal/PAYMENT_POLICY_DRAFT.json)
+is now published through **Admin → Finance → Payment policy**. Publication does
+not qualify a successful live invoice, signed provider callback or funds transfer.
+Those still require the owner's controlled manual test.
+
 ## Financial behavior
 
 - A published policy snapshot, route and accepted order contract bind each attempt. Policy publishing and manual reconciliation require recent staff factors. Repeated checkout requests reuse the single active attempt; a route or policy change cannot silently modify it.

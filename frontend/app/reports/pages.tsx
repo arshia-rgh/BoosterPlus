@@ -128,14 +128,7 @@ export default function Reports() {
         Audit reports are restricted to the owner.
       </p>
       <p>
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="/admin/account/security?returnTo=%2Fadmin%2Freports"
-        >
-          Verify staff identity for report export (opens a new tab)
-        </a>
-        . Return and preview the current report before downloading.
+        If this action needs fresh verification, confirm it in the dialog here.
       </p>
       <form className="report-form" onSubmit={submit}>
         <fieldset disabled={busy}>
@@ -279,9 +272,8 @@ export default function Reports() {
             multiline
           />
           <p>
-            Downloading requires recent email/Google and authenticator
-            verification. If records change, refresh the preview before
-            downloading.
+            Downloading requires recent authenticator or email verification. If
+            records change, refresh the preview before downloading.
           </p>
           <Action
             disabled={busy || reason.trim() === ""}

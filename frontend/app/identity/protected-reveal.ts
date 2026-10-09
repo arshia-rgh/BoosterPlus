@@ -45,7 +45,7 @@ export function useProtectedReveal(path: string, lifetime: number) {
       if (sessionEventMatches(event, portal)) invalidate(false);
     };
     const dismiss = () => {
-      invalidate();
+      invalidate(false);
     };
     window.addEventListener("blur", dismiss);
     document.addEventListener("visibilitychange", dismiss);
@@ -76,7 +76,13 @@ export function useProtectedReveal(path: string, lifetime: number) {
     setBusy(true);
     setError(null);
     try {
-      const result = await post(path, {}, z.object({ value: z.string() }));
+      const result = await post(
+        path,
+        {},
+        z.object({ value: z.string() }),
+        portal,
+        () => current() && !hidden(),
+      );
       if (!current() || hidden()) return;
       const bytes = Uint8Array.from(atob(result.value), (c) => c.charCodeAt(0));
       try {
@@ -101,5 +107,52 @@ export function useProtectedReveal(path: string, lifetime: number) {
     error,
     reveal,
     hide,
+  };
+}
+
+// Focus safe labels, never credential text. Passive concealment (blur/expiry)
+// must not move focus or bring the browser back into the user's foreground.
+export function useProtectedRevealFocus(
+  revealed: boolean,
+  busy: boolean,
+  error: unknown,
+  scope: string,
+) {
+  const result = useRef<HTMLHeadingElement>(null);
+  const problem = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLDivElement>(null);
+  const hiddenByUser = useRef<string | null>(null);
+  const previousScope = useRef(scope);
+  const failed = Boolean(error);
+  useEffect(() => {
+    if (previousScope.current !== scope) {
+      previousScope.current = scope;
+      hiddenByUser.current = null;
+      return;
+    }
+    if (document.hidden || !document.hasFocus()) {
+      hiddenByUser.current = null;
+      return;
+    }
+    if (busy) return;
+    if (revealed) {
+      hiddenByUser.current = null;
+      result.current?.focus();
+    } else if (failed) {
+      hiddenByUser.current = null;
+      problem.current?.focus();
+    } else if (hiddenByUser.current === scope) {
+      hiddenByUser.current = null;
+      trigger.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    }
+  }, [revealed, failed, busy, scope]);
+  return {
+    result,
+    problem,
+    trigger,
+    hideExplicitly: (hide: () => void) => {
+      hiddenByUser.current = scope;
+      hide();
+    },
   };
 }

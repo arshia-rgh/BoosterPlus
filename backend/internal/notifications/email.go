@@ -80,3 +80,20 @@ func activityMessage(to, origin, href, kind, action string, copyText sitecontent
 	body += "\n\n" + origin + href + "\n\nChange activity email preferences in your account settings.\n\n" + copyText.Footer
 	return identity.Message{To: to, Subject: subject, Body: body, View: emailtemplate.View{Heading: notice.Heading, Preview: notice.Description, ActionLabel: notice.ActionLabel, ActionURL: origin + href}}
 }
+
+// emailDestination resolves links at delivery time, so queued notices follow a
+// portal-host migration without changing their immutable event/reference data.
+func (s *Store) emailDestination(kind, href string) (string, string, error) {
+	portal := identity.PortalCustomer
+	switch kind {
+	case "conversation_staff":
+		portal = identity.PortalAdmin
+	case "coordination_booster", "booking_staff", "order_staff":
+		portal = identity.PortalBooster
+	}
+	if portal == identity.PortalCustomer {
+		return s.origin, href, nil
+	}
+	destination, err := s.auth.PortalLink(portal, href)
+	return "", destination, err
+}

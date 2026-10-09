@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from self_hosted_test import fixture_cpu_limit, host_test_access, run_integration
+from self_hosted_test import fixture_cpu_limit, host_test_access, integration_arguments, run_integration
 
 
 class FixturePorts(unittest.TestCase):
@@ -49,6 +49,29 @@ class FixturePorts(unittest.TestCase):
 
 
 class PrivateIntegrationEvidence(unittest.TestCase):
+    def test_full_suite_and_protocol_keep_distinct_scope_and_bounded_deadlines(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for protocol_only, minutes in ((False, 360), (True, 5)):
+                with self.subTest(protocol_only=protocol_only):
+                    arguments = integration_arguments(protocol_only=protocol_only)
+                    self.assertEqual(arguments[:2], ["go", "test"])
+                    self.assertEqual(arguments[-1], "./internal/integration/...")
+                    for flag in ("-race", "-count=1", "-failfast", "-tags=integration", f"-timeout={minutes}m"):
+                        self.assertIn(flag, arguments)
+                    if protocol_only:
+                        index = arguments.index("-run")
+                        self.assertEqual(arguments[index + 1], "^TestPrivateMediaRealStorageScannerAndAudience$")
+                    else:
+                        self.assertNotIn("-run", arguments)
+                    with patch("self_hosted_test.ROOT", Path(directory)), \
+                         patch("self_hosted_test.subprocess.run", return_value=subprocess.CompletedProcess(arguments, 0)) as execute, \
+                         contextlib.redirect_stdout(io.StringIO()):
+                        run_integration(arguments, {}, "protocol" if protocol_only else "business")
+                    self.assertEqual(execute.call_args.args[0], arguments)
+                    self.assertEqual(execute.call_args.kwargs["timeout"], 21900)
+                    if not protocol_only:
+                        self.assertEqual(execute.call_args.kwargs["timeout"] - minutes * 60, 300)
+
     def test_evidence_is_private_preserved_and_never_turns_failure_into_success(self):
         for outcome in ("success", "failure", "timeout"):
             with self.subTest(outcome=outcome), tempfile.TemporaryDirectory() as directory:

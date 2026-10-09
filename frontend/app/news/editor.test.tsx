@@ -93,6 +93,35 @@ it("retains article drafts across sections and returns to the filtered list only
   await screen.findByText("Article list destination");
   expect(router.state.location.search).toBe("?state=draft&q=fixture");
 });
+
+it("allows preview and history after a draft error, then returns to its field on a new save attempt", async () => {
+  vi.mocked(post).mockRejectedValue(
+    Object.assign(new APIError("Invalid article"), {
+      status: 422,
+      code: "article_invalid",
+      issues: [{ path: "title", message: "Enter the article title." }],
+    }),
+  );
+  const { router } = mount();
+  fireEvent.change(screen.getByLabelText("Title"), { target: { value: "" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+  await waitFor(() => expect(screen.getByLabelText("Title")).toHaveFocus());
+  fireEvent.click(screen.getByRole("link", { name: "Preview" }));
+  await screen.findByRole("heading", { name: "Fixture article" });
+  expect(router.state.location.search).toContain("section=preview");
+  fireEvent.click(screen.getByRole("link", { name: "History" }));
+  await waitFor(() => {
+    expect(router.state.location.search).toContain("section=history");
+  });
+  expect(screen.queryByLabelText("Title")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("link", { name: "Write" }));
+  expect(await screen.findByLabelText("Title")).toHaveValue("");
+  fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+  await waitFor(() => expect(screen.getByLabelText("Title")).toHaveFocus());
+  expect(screen.getByLabelText("Title")).toHaveAccessibleDescription(
+    /Enter the article title/,
+  );
+});
 it("refreshes a revision conflict without overwriting the working draft", async () => {
   vi.mocked(post).mockRejectedValue(
     Object.assign(new APIError("Changed"), {

@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { useResource } from "../orders/resource";
 import { minorDisplay } from "./dynamic-form";
 import type { Release } from "./model";

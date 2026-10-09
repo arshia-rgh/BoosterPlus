@@ -55,7 +55,7 @@ it("resolves only public data and retains bounded review recovery", async () => 
     cache: "no-store",
     redirect: "error",
   });
-  expect(fetcher.mock.calls[0]?.[1]).not.toHaveProperty("headers");
+  expect(fetcher.mock.calls[0]?.[1]).toHaveProperty("headers", {});
 });
 it("drops unknown or malformed state and handles unavailable public listings", async () => {
   fetcher.mockResolvedValueOnce(Response.json(listing));

@@ -53,8 +53,8 @@ func (s *Store) erase(ctx context.Context, tx *ent.Tx, target *ent.User) error {
 		query string
 		args  []any
 	}{
-		{"UPDATE auth_messages SET encrypted_payload=NULL WHERE challenge_id IN (SELECT id FROM auth_challenges WHERE user_id=? OR email=?)", []any{id, target.Email}},
-		{"DELETE FROM auth_challenges WHERE user_id=? OR email=?", []any{id, target.Email}},
+		{"UPDATE auth_messages SET encrypted_payload=NULL WHERE challenge_id IN (SELECT id FROM auth_challenges WHERE user_id=? OR (portal=? AND email=?))", []any{id, target.Portal, target.Email}},
+		{"DELETE FROM auth_challenges WHERE user_id=? OR (portal=? AND email=?)", []any{id, target.Portal, target.Email}},
 		{"DELETE FROM auth_flows WHERE user_id=?", []any{id}},
 		{"UPDATE auth_recoveries SET new_email='',state='redacted',case_reference='' WHERE user_id=?", []any{id}},
 		{"UPDATE conversation_messages SET body='[Removed following an approved privacy request]',sender_label='Removed account',attachments=JSON_ARRAY() WHERE sender_id=? AND purpose='message' AND id NOT IN (SELECT message_id FROM case_events WHERE message_id<>'')", []any{id}},

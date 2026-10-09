@@ -1,12 +1,13 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
-import { get } from "../identity/api";
+import { get, post } from "../identity/api";
 import type { Work } from "./model";
 import Bookings from "./bookings";
 vi.mock("../identity/api", async (original) => ({
   ...(await original<typeof import("../identity/api")>()),
   get: vi.fn(),
+  post: vi.fn(),
 }));
 afterEach(() => vi.clearAllMocks());
 const work: Work = {
@@ -85,4 +86,55 @@ it("requires a current available window before presenting session detail inputs"
   expect(
     screen.queryByLabelText("Session time zone (IANA)"),
   ).not.toBeInTheDocument();
+});
+
+it("focuses an invalid session note or zone without sending a proposal", async () => {
+  const slot = {
+    availability_id: "window",
+    starts_at: "2099-01-01T10:00:00Z",
+    ends_at: "2099-01-01T11:00:00Z",
+    timezone: "UTC",
+  };
+  vi.mocked(get).mockImplementation((path) =>
+    Promise.resolve({ items: path.includes("/slots") ? [slot] : [], next: "" }),
+  );
+  render(
+    <MemoryRouter>
+      <Bookings
+        work={{ ...work, mode: "together" }}
+        audience="account"
+        reload={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  await waitFor(() => {
+    expect(
+      screen.getByLabelText("Available window").querySelectorAll("option"),
+    ).toHaveLength(2);
+  });
+  fireEvent.change(screen.getByLabelText("Available window"), {
+    target: { value: "window:" + slot.starts_at },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Submit session proposal" }),
+  );
+  await waitFor(() => {
+    expect(screen.getByLabelText("Session note")).toHaveFocus();
+  });
+  fireEvent.change(screen.getByLabelText("Session note"), {
+    target: { value: "Please use this agreed window." },
+  });
+  fireEvent.change(screen.getByLabelText("Session time zone (IANA)"), {
+    target: { value: "not-a-zone" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Submit session proposal" }),
+  );
+  await waitFor(() => {
+    expect(screen.getByLabelText("Session time zone (IANA)")).toHaveFocus();
+  });
+  expect(screen.getByLabelText("Session note")).toHaveValue(
+    "Please use this agreed window.",
+  );
+  expect(post).not.toHaveBeenCalled();
 });

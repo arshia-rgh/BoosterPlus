@@ -10,7 +10,7 @@ export TEST_DATABASE_DSN ?= root@tcp(127.0.0.1:14000)/mysql
 help:
 	@printf '%s\n' 'bootstrap fmt lint test test-integration security pre-commit build-cli migrate-up compose-up'
 bootstrap:
-	GOBIN=$(TOOLS) go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2
+	GOBIN=$(TOOLS) go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0
 	GOBIN=$(TOOLS) go install github.com/securego/gosec/v2/cmd/gosec@v2.29.0
 	GOBIN=$(TOOLS) go install golang.org/x/vuln/cmd/govulncheck@v1.8.0
 fmt:
@@ -33,6 +33,7 @@ test test-race:
 	go test -race -count=1 ./...
 test-scripts:
 	python3 scripts/test-wait-tidb.py
+	go test -race -count=1 -tags=integration -run '^TestScannerFixtureReadinessPolicy$$' ./internal/integration
 test-integration:
 	python3 ../scripts/integration-tests.py
 test-coverage:

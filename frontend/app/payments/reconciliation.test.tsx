@@ -117,3 +117,21 @@ it("queues an exact inspected reference and refreshes evidence without calling i
   ]);
   expect(screen.getByText(/Provider check requested/)).toBeInTheDocument();
 });
+
+it("guides an invalid provider reference and reason before a provider read is queued", async () => {
+  mount();
+  fireEvent.click(screen.getByRole("button", { name: "Reconcile payment" }));
+  await waitFor(() =>
+    expect(screen.getByLabelText("Reason for reconciliation")).toHaveFocus(),
+  );
+  expect(post).not.toHaveBeenCalled();
+  const field = screen.getByLabelText("Provider payment ID");
+  fireEvent.change(field, { target: { value: "invoice-not-payment" } });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Inspect provider reference" }),
+  );
+  await waitFor(() => expect(field).toHaveFocus());
+  expect(field).toHaveAttribute("aria-invalid", "true");
+  expect(field).toHaveAccessibleDescription(/1–32 digits/);
+  expect(post).not.toHaveBeenCalled();
+});

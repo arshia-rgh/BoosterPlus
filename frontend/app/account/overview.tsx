@@ -1,5 +1,5 @@
 import { orderDestination, type OrderSummary } from "../orders/presentation";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { useResource } from "../orders/resource";
 import { overviewSchema } from "./overview-model";
 export { overviewSchema } from "./overview-model";

@@ -3,6 +3,11 @@ import http from "node:http";
 import https from "node:https";
 import express from "express";
 import { createRequestHandler } from "@react-router/express";
+import {
+  portalOrigins,
+  portalForHost,
+  legacyPortalTarget,
+} from "./portal-hosts.mjs";
 
 const environment = process.env.APP_ENV ?? "development";
 if (!["development", "test", "staging", "production"].includes(environment))
@@ -19,6 +24,12 @@ if (["staging", "production"].includes(environment)) {
       "Configure approved terms, API origin, and proxy secret before public deployment",
     );
 }
+const application = process.env.FRONTEND_APP ?? "both";
+if (!["both", "storefront", "admin", "booster"].includes(application))
+  throw new Error("Invalid FRONTEND_APP");
+const origins = portalOrigins(process.env);
+if (origins && application === "both" && environment === "production")
+  throw new Error("Production portal hosts require an explicit application");
 const app = express();
 app.disable("x-powered-by");
 // Trust only explicitly configured gateway addresses, never arbitrary forwarding headers.
@@ -36,14 +47,44 @@ if (
   throw new Error("API_ORIGIN must be a trusted HTTP origin");
 const proxyKey = process.env.PROXY_SHARED_KEY ?? "";
 if (["staging", "production"].includes(environment)) {
-  const response = await fetch(new URL("/api/v1/auth/session", api), {
-    signal: AbortSignal.timeout(10000),
-  });
+  const startupPortal =
+    application === "admin"
+      ? "admin"
+      : application === "booster"
+        ? "booster"
+        : "customer";
+  const startupHeaders = origins
+    ? {
+        "X-Booster-Proxy-Key": proxyKey,
+        "X-Playora-Request-Origin": origins[startupPortal],
+        "X-Playora-Portal": startupPortal,
+      }
+    : {};
+  const response = await fetch(
+    new URL(
+      origins
+        ? `/api/v1/auth/portals/${startupPortal}/session`
+        : "/api/v1/auth/session",
+      api,
+    ),
+    {
+      headers: startupHeaders,
+      signal: AbortSignal.timeout(10000),
+    },
+  );
   if (!response.ok)
     throw new Error("Identity backend is unavailable at startup");
   const session = await response.json();
   if (session.terms_version !== process.env.TERMS_VERSION) {
     const policyResponse = await fetch(new URL("/api/v1/site/legal", api), {
+      // Public reads have no staff portal selector. They carry only the
+      // authenticated proxy authority and this server's validated origin.
+      headers: origins
+        ? {
+            "X-Booster-Proxy-Key": proxyKey,
+            "X-Playora-Request-Origin": origins[startupPortal],
+          }
+        : {},
       signal: AbortSignal.timeout(10000),
       redirect: "error",
     });
@@ -84,6 +125,34 @@ app.use((req, res, next) => {
     res.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
   next();
 });
+app.use((req, res, next) => {
+  // The SSR routing context is internal. A client cannot choose a portal through
+  // this header, and forwarded host headers never select the application.
+  delete req.headers["x-playora-frontend-portal"];
+  if (req.path === "/healthz" && ["GET", "HEAD"].includes(req.method))
+    return res.status(200).type("text/plain").send("OK");
+  if (!origins) return next();
+  const portal = portalForHost(req.headers.host, origins, application);
+  if (!portal)
+    return res.status(421).type("text/plain").send("Unknown portal host");
+  req.headers["x-playora-frontend-portal"] = portal;
+  if (portal !== "customer") res.set("X-Robots-Tag", "noindex, nofollow");
+  const target = legacyPortalTarget(req.originalUrl, portal, origins);
+  if (target) {
+    if (!["GET", "HEAD"].includes(req.method))
+      return res
+        .status(405)
+        .set("Allow", "GET, HEAD")
+        .type("text/plain")
+        .send("Open the new portal address");
+    if (target.location) return res.redirect(target.status, target.location);
+    return res
+      .status(target.status)
+      .type("text/plain")
+      .send("Reload the portal at its new address");
+  }
+  next();
+});
 app.use("/api", (req, res) => {
   if (proxyKey.length < 32)
     return res.status(503).json({ code: "unavailable" });
@@ -103,6 +172,10 @@ app.use("/api", (req, res) => {
     if (req.headers[name]) headers[name] = req.headers[name];
   }
   headers["x-booster-proxy-key"] = proxyKey;
+  if (origins) {
+    const portal = req.headers["x-playora-frontend-portal"];
+    headers["x-playora-request-origin"] = origins[portal];
+  }
   headers["x-booster-client-ip"] = req.ip;
   // Authority and headers are selected by the server. The request path cannot replace API_ORIGIN.
   const upstream = (api.protocol === "https:" ? https : http).request(
@@ -180,62 +253,69 @@ app.use("/api", (req, res) => {
   req.on("aborted", () => upstream.destroy());
   req.pipe(upstream);
 });
-const application = process.env.FRONTEND_APP ?? "both";
-if (!["both", "storefront", "admin"].includes(application))
-  throw new Error("Invalid FRONTEND_APP");
-// Each handler owns an isolated route graph and asset namespace. The combined
-// local server follows the same /admin boundary as the production gateway.
-if (application !== "storefront") {
+const staticOptions = {
+  setHeaders(res) {
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+  },
+  immutable: true,
+  maxAge: "1y",
+  index: false,
+  dotfiles: "deny",
+};
+const handlers = {};
+if (application !== "storefront" && application !== "booster") {
   app.use(
     "/admin/assets",
-    express.static("build/admin/client/assets", {
-      setHeaders(res) {
-        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-      },
-      immutable: true,
-      maxAge: "1y",
-      index: false,
-      dotfiles: "deny",
-    }),
+    express.static("build/admin/client/assets", staticOptions),
   );
-  const admin = createRequestHandler({
+  handlers.admin = createRequestHandler({
     build: await import("./build/admin/server/index.js"),
-  });
-  app.use((req, res, next) => {
-    if (
-      req.path === "/admin" ||
-      req.path === "/admin.data" ||
-      req.path.startsWith("/admin/")
-    )
-      return admin(req, res, next);
-    next();
   });
 }
 if (application !== "admin") {
   app.use(
     "/assets",
-    express.static("build/storefront/client/assets", {
-      setHeaders(res) {
-        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-      },
-      immutable: true,
-      maxAge: "1y",
-      index: false,
-      dotfiles: "deny",
-    }),
+    express.static("build/storefront/client/assets", staticOptions),
   );
   app.use(
-    express.static("build/storefront/client", {
-      index: false,
-      dotfiles: "deny",
-    }),
+    "/booster/assets",
+    express.static("build/booster/client/assets", staticOptions),
   );
-  app.use(
-    createRequestHandler({
-      build: await import("./build/storefront/server/index.js"),
-    }),
-  );
+  handlers.customer = createRequestHandler({
+    build: await import("./build/storefront/server/index.js"),
+  });
+  if (origins || application === "booster") {
+    handlers.booster = createRequestHandler({
+      build: await import("./build/booster/server/index.js"),
+    });
+  }
 }
+// Public media is served locally on each portal; no credentialed cross-origin
+// asset requests are necessary. Hashed application code uses isolated namespaces.
+app.use(
+  express.static(
+    application === "admin" ? "build/admin/client" : "build/storefront/client",
+    {
+      index: false,
+      dotfiles: "deny",
+    },
+  ),
+);
+app.use((req, res, next) => {
+  if (origins) {
+    const handler = handlers[req.headers["x-playora-frontend-portal"]];
+    return handler ? handler(req, res, next) : next();
+  }
+  // Legacy path-mode development remains available without public staff origins.
+  if (
+    req.path === "/admin" ||
+    req.path === "/admin.data" ||
+    req.path.startsWith("/admin/")
+  )
+    return handlers.admin ? handlers.admin(req, res, next) : next();
+  if (application === "booster") return handlers.booster(req, res, next);
+  return handlers.customer ? handlers.customer(req, res, next) : next();
+});
 app.use((_req, res) =>
   res.status(404).type("text/plain").send("Page not found"),
 );

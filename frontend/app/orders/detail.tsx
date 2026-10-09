@@ -1,11 +1,17 @@
 import AdminOrderWorkspace from "./admin-workspace";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "../validation";
-import { Link, useLocation, useParams } from "react-router";
+import { Link, useLocation, useParams } from "../portal-router";
 import { Action, ErrorNotice } from "../catalog/controls";
-import { sessionEventMatches, activePortal } from "../identity/portal";
+import {
+  sessionEventMatches,
+  sessionVerificationReason,
+  type VerificationReason,
+} from "../identity/portal";
+import { safeReturnPath, VerificationLink } from "../account/return-path";
+import { focusValidationTarget } from "../ui/form-validation";
 import { denied } from "../support/chat-state";
-import { sessionSchema, type Session } from "../identity/api";
+import { APIError, sessionSchema, type Session } from "../identity/api";
 import { detailSchema, type Detail } from "./model";
 import { useResource } from "./resource";
 import CustomerWorkspace from "./customer-workspace";
@@ -25,9 +31,14 @@ function OrderSession() {
       ? "?" + new URLSearchParams(source.data.orderListSearch).toString()
       : "");
   const [interrupted, setInterrupted] = useState(false);
+  const [verification, setVerification] = useState<VerificationReason>();
+  const recoveryHeading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     const changed = (event: Event) => {
-      if (sessionEventMatches(event, activePortal())) setInterrupted(true);
+      if (sessionEventMatches(event, "customer")) {
+        setInterrupted(true);
+        setVerification(sessionVerificationReason(event));
+      }
     };
     window.addEventListener("boosterplus:session-changed", changed);
     return () => {
@@ -38,6 +49,7 @@ function OrderSession() {
     reloadSession = session.reload;
   const reload = useCallback(() => {
     setInterrupted(false);
+    setVerification(undefined);
     reloadOrder();
     reloadSession();
   }, [reloadOrder, reloadSession]);
@@ -61,6 +73,9 @@ function OrderSession() {
         session.data.mfa_required ||
         session.data.portal !== "customer" ||
         !session.data.capabilities.includes("account")));
+  useEffect(() => {
+    if (lost) focusValidationTarget(recoveryHeading.current);
+  }, [lost, verification]);
   if (lost && saved) setSaved(null);
   else if (
     !lost &&
@@ -69,15 +84,36 @@ function OrderSession() {
     (saved?.detail !== detail || saved.session !== session.data)
   )
     setSaved({ detail, session: session.data });
-  if (lost)
+  if (lost) {
+    const recovery = verification
+      ? Object.assign(
+          new APIError(
+            "Verify your identity again, then return to this order. Private details and unsent drafts have been cleared; access will be checked again before they can be shown.",
+          ),
+          { code: verification, status: 403 },
+        )
+      : null;
+    const returnTo =
+      safeReturnPath(location.pathname + location.search, "customer") ??
+      "/orders";
     return (
       <section aria-label="Order access unavailable">
+        <h2 ref={recoveryHeading} tabIndex={-1}>
+          {recovery ? "Verify to continue" : "Order access changed"}
+        </h2>
         <p role="alert">
-          Order access is no longer available. Sign in to your customer account
-          to continue.
+          {recovery
+            ? recovery.message
+            : "Order access needs to be checked. Private details and unsent drafts have been cleared. Check access again or sign in to your customer account."}
         </p>
-        <div className="configuration-actions">
-          <Link to="/login">Customer sign-in</Link>
+        <div className="catalog-actions">
+          {recovery ? (
+            <VerificationLink error={recovery} />
+          ) : (
+            <Link to={"/login?returnTo=" + encodeURIComponent(returnTo)}>
+              Customer sign-in
+            </Link>
+          )}
           <Action
             disabled={resource.loading || session.loading}
             onClick={reload}
@@ -88,6 +124,7 @@ function OrderSession() {
         </div>
       </section>
     );
+  }
   const current =
     detail && session.data ? { detail, session: session.data } : saved;
   if (current) {

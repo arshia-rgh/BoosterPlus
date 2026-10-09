@@ -1,6 +1,6 @@
 import type { Location } from "react-router";
 import { useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "../portal-router";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { post } from "../identity/api";
 import { conversationSchema } from "../support/model";

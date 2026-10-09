@@ -1,7 +1,7 @@
 import { activePortal } from "../identity/portal";
 import { useCallback, useEffect, useState } from "react";
 import type { z } from "../validation";
-import { get } from "../identity/api";
+import { actionVerifiedEvent, get } from "../identity/api";
 // Private data is held in component memory and discarded on route/session unmount.
 export function useResource<T>(
   path: string,
@@ -47,6 +47,23 @@ export function useResource<T>(
   const reload = useCallback(() => {
     setRevision((v) => v + 1);
   }, []);
+  useEffect(() => {
+    const verified = (event: Event) => {
+      const detail: unknown =
+        event instanceof CustomEvent ? event.detail : null;
+      if (
+        typeof detail === "object" &&
+        detail !== null &&
+        "portal" in detail &&
+        detail.portal === portal
+      )
+        reload();
+    };
+    window.addEventListener(actionVerifiedEvent, verified);
+    return () => {
+      window.removeEventListener(actionVerifiedEvent, verified);
+    };
+  }, [portal, reload]);
   const failed = failure?.path === scopedPath && failure.revision === revision;
   return {
     requestedAt: value?.path === scopedPath ? value.requestedAt : undefined,

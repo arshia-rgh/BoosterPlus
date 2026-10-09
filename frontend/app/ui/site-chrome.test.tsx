@@ -31,7 +31,7 @@ it("keeps service discovery out of global navigation and provides functional hel
   ).toEqual(["Support", "My account"]);
   expect(
     screen.getByRole("link", { name: "Contact us & support" }),
-  ).toHaveAttribute("href", "/support");
+  ).toHaveAttribute("href", "/contact");
   expect(
     screen.queryByRole("group", { name: "Background motion" }),
   ).not.toBeInTheDocument();

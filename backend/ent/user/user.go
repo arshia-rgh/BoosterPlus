@@ -15,6 +15,8 @@ const (
 	FieldID = "id"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
+	// FieldPortal holds the string denoting the portal field in the database.
+	FieldPortal = "portal"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
 	// FieldDisplayName holds the string denoting the display_name field in the database.
@@ -57,6 +59,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldDeletedAt,
+	FieldPortal,
 	FieldEmail,
 	FieldDisplayName,
 	FieldEmailVerifiedAt,
@@ -87,6 +90,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultPortal holds the default value on creation for the "portal" field.
+	DefaultPortal string
+	// PortalValidator is a validator for the "portal" field. It is called by the builders before save.
+	PortalValidator func(string) error
 	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	EmailValidator func(string) error
 	// DefaultDisplayName holds the default value on creation for the "display_name" field.
@@ -134,6 +141,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByDeletedAt orders the results by the deleted_at field.
 func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByPortal orders the results by the portal field.
+func ByPortal(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPortal, opts...).ToFunc()
 }
 
 // ByEmail orders the results by the email field.

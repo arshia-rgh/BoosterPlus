@@ -246,7 +246,7 @@ func (s *Store) Change(ctx context.Context, p *identity.Principal, id, action st
 				return ErrConflict
 			}
 			if input.AssignedTo != "" {
-				staff, lookupErr := tx.User.Query().Where(user.IDEQ(input.AssignedTo), user.RoleIn(identity.RoleAdmin, identity.RoleOwner), user.SuspendedEQ(false), user.MfaEnabledEQ(true)).Only(ctx)
+				staff, lookupErr := tx.User.Query().Where(user.IDEQ(input.AssignedTo), user.PortalEQ(string(identity.PortalAdmin)), user.RoleIn(identity.RoleAdmin, identity.RoleOwner), user.SuspendedEQ(false), user.MfaEnabledEQ(true)).Only(ctx)
 				if lookupErr != nil {
 					return lookupErr
 				}

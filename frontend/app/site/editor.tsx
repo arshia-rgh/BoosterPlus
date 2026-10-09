@@ -1,6 +1,6 @@
 import "../ui/secondary.css";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Link, useBlocker, useSearchParams } from "react-router";
+import { Link, useBlocker, useSearchParams } from "../portal-router";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { AuthorizedIdentity } from "../identity/frame";
@@ -33,8 +33,7 @@ export default function ContentEditor() {
       <h2>Content and policies</h2>
       <p>
         Draft changes stay private. Legal and retention policies require the
-        owner. Publishing requires recent email/Google and authenticator
-        verification.
+        owner. Publishing requires recent authenticator or email verification.
       </p>
       <label className="catalog-label">
         Editor
@@ -371,11 +370,8 @@ function ContentWorkspace({
                     </Action>
                   </fieldset>
                   <p>
-                    <Link
-                      to={`/admin/account/security?returnTo=${encodeURIComponent(`/admin/content?kind=${saved.kind}&section=preview`)}`}
-                    >
-                      Verify staff identity before publication
-                    </Link>
+                    If this action needs fresh verification, confirm it in the
+                    dialog here.
                   </p>
                 </>
               )}

@@ -1,4 +1,7 @@
 APP_ENV=production
+PUBLIC_ORIGIN=https://boost.example.com
+ADMIN_PUBLIC_ORIGIN=https://admin.boost.example.com
+BOOSTER_PUBLIC_ORIGIN=https://booster.boost.example.com
 PROXY_SHARED_KEY=
 TERMS_VERSION=
 ACCOUNT_TERMS_TEXT=

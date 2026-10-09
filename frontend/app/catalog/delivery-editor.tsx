@@ -12,9 +12,11 @@ import {
 import type { DeliveryRule, Service } from "./model";
 
 export default function DeliveryEditor({
+  path = "",
   service,
   change,
 }: {
+  path?: string;
   service: Service;
   change: (patch: Partial<Service>) => void;
 }) {
@@ -40,6 +42,7 @@ export default function DeliveryEditor({
         requires review.
       </p>
       <Check
+        name={path}
         label="Configure delivery forecasts"
         value={!!policy}
         change={(enabled) => {
@@ -53,6 +56,7 @@ export default function DeliveryEditor({
       {policy && (
         <>
           <Text
+            name={`${path}.calendar.zone`}
             label="Operating time zone"
             value={policy.calendar.zone}
             help="Declare an IANA zone such as Asia/Tehran. Repeated openings use the first occurrence and closings the second. Skipped clock boundaries require review."
@@ -66,6 +70,7 @@ export default function DeliveryEditor({
             <fieldset key={index} className="catalog-item">
               <legend>Operating window {index + 1}</legend>
               <Select
+                name={`${path}.calendar.windows.${String(index)}.weekday`}
                 label="Weekday"
                 value={String(window.weekday)}
                 options={[
@@ -94,6 +99,7 @@ export default function DeliveryEditor({
               {(["start", "end"] as const).map((boundary) => (
                 <Text
                   key={boundary}
+                  name={`${path}.calendar.windows.${String(index)}.${boundary}`}
                   label={
                     boundary === "start"
                       ? "Opens (HH:mm)"
@@ -162,6 +168,7 @@ export default function DeliveryEditor({
               <Text
                 label={`Closure date ${String(index + 1)}`}
                 type="date"
+                name={`${path}.calendar.closures.${String(index)}`}
                 value={date}
                 change={(value) => {
                   change({
@@ -224,6 +231,7 @@ export default function DeliveryEditor({
               <legend>Delivery rule {index + 1}</legend>
               <Text
                 label="Delivery rule key"
+                name={`${path}.rules.${String(index)}.key`}
                 value={rule.key}
                 change={(key) => {
                   updateRule(index, { key });
@@ -231,6 +239,7 @@ export default function DeliveryEditor({
               />
               <Select
                 label="Forecast mode"
+                name={`${path}.rules.${String(index)}.mode`}
                 value={rule.mode}
                 options={[
                   ["account", "Play on account"],
@@ -266,6 +275,7 @@ export default function DeliveryEditor({
                 <NumberInput
                   key={key}
                   label={label}
+                  name={`${path}.rules.${String(index)}.${key}`}
                   value={value}
                   change={(value) => {
                     updateRule(index, { [key]: value });
@@ -277,6 +287,7 @@ export default function DeliveryEditor({
                 fields={service.fields.filter(
                   (f) => f.stage !== "fulfillment" && f.type !== "attachment",
                 )}
+                path={`${path}.rules.${String(index)}.when`}
                 value={rule.when}
                 change={(when) => {
                   updateRule(index, { when });

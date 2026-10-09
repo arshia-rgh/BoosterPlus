@@ -84,13 +84,28 @@ const transferDescriptions = new Map([
     ],
   ],
 ]);
-export function transferPresentation(state: string) {
+export function transferPresentation(
+  state: string,
+  recipient: "you" | "seller" | "customer" = "you",
+) {
+  if (recipient !== "you" && state === "recipient_pending")
+    return {
+      title: `Waiting for the ${recipient}'s destination`,
+      description: `The ${recipient} must review the asset, network and terms and confirm their receiving address. No funds have been sent.`,
+    };
+  if (recipient !== "you" && state === "verified")
+    return {
+      title: "Waiting for owner approval",
+      description: `The ${recipient}'s destination is confirmed. Review the exact transfer before owner approval. No funds have been sent yet.`,
+    };
   const value = transferDescriptions.get(state);
   return {
     title: value?.[0] ?? "Transfer under review",
     description:
       value?.[1] ??
-      "Contact support for the current status. This record does not confirm that funds were sent.",
+      (recipient === "you"
+        ? "Contact support for the current status. This record does not confirm that funds were sent."
+        : "Review the transfer evidence for the current status. This record does not confirm that funds were sent."),
   };
 }
 export function caseNextStep(state: string, admin: boolean) {

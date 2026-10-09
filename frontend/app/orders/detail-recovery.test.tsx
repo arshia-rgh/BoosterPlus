@@ -96,6 +96,7 @@ function detail(
 const signed = {
   ...session,
   user: userSchema.parse({
+    portal: "customer",
     id: "customer",
     email: "fixture@example.invalid",
     display_name: "Fixture",
@@ -106,9 +107,9 @@ const signed = {
     notify_updates: true,
   }),
 };
-function mount() {
+function mount(path = "/orders/owned-order") {
   return render(
-    <MemoryRouter initialEntries={["/orders/owned-order"]}>
+    <MemoryRouter initialEntries={[path]}>
       <Routes>
         <Route path="/orders/:id" element={<OrderDetail />} />
       </Routes>
@@ -213,4 +214,85 @@ it("clears the record on an API session event without repeatedly refetching a de
       .mocked(get)
       .mock.calls.filter(([path]) => path === "/orders/owned-order"),
   ).toHaveLength(2);
+});
+
+it.each(["recent_auth_required", "mfa_required"])(
+  "keeps %s recovery in the customer panel and waits for fresh order access",
+  async (verification) => {
+    let refreshPending = false;
+    let resolveOrder: ((result: Detail) => void) | undefined;
+    vi.mocked(get).mockImplementation((path) => {
+      if (path === "/auth/session") return Promise.resolve(signed);
+      if (refreshPending)
+        return new Promise<Detail>((resolve) => {
+          resolveOrder = resolve;
+        });
+      return Promise.resolve(detail());
+    });
+    mount("/orders/owned-order?section=delivery&ignored=private");
+    fireEvent.change(await screen.findByLabelText("Unsent draft"), {
+      target: { value: "Discard this protected-context draft" },
+    });
+    fireEvent(
+      window,
+      new CustomEvent("boosterplus:session-changed", {
+        detail: { portal: "admin", verification },
+      }),
+    );
+    expect(screen.getByLabelText("Unsent draft")).toBeVisible();
+    fireEvent(
+      window,
+      new CustomEvent("boosterplus:session-changed", {
+        detail: { portal: "customer", verification },
+      }),
+    );
+    expect(screen.queryByLabelText("Unsent draft")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Verify to continue" }),
+    ).toHaveFocus();
+    if (verification === "recent_auth_required")
+      expect(
+        screen.getByRole("button", { name: "Verify to continue here" }),
+      ).toBeVisible();
+    else
+      expect(
+        screen.getByRole("link", {
+          name: "Finish signing in to this workspace",
+        }),
+      ).toHaveAttribute("href", "/login");
+    expect(get).toHaveBeenCalledTimes(2);
+    refreshPending = true;
+    fireEvent.click(
+      screen.getByRole("button", { name: "Check order access again" }),
+    );
+    await waitFor(() => {
+      expect(resolveOrder).toBeDefined();
+    });
+    expect(screen.queryByLabelText("Unsent draft")).not.toBeInTheDocument();
+    resolveOrder?.(detail());
+    expect(await screen.findByLabelText("Unsent draft")).toHaveValue("");
+  },
+);
+
+it("preserves only the safe order section when an ended session needs sign-in", async () => {
+  vi.mocked(get).mockImplementation((path) =>
+    Promise.resolve(path === "/auth/session" ? signed : detail()),
+  );
+  mount("/orders/owned-order?section=payment&ignored=private");
+  await screen.findByLabelText("Unsent draft");
+  fireEvent(
+    window,
+    new CustomEvent("boosterplus:session-changed", {
+      detail: { portal: "customer" },
+    }),
+  );
+  expect(
+    screen.getByRole("link", { name: "Customer sign-in" }),
+  ).toHaveAttribute(
+    "href",
+    "/login?returnTo=%2Forders%2Fowned-order%3Fsection%3Dpayment",
+  );
+  expect(
+    screen.queryByRole("button", { name: "Verify to continue here" }),
+  ).not.toBeInTheDocument();
 });

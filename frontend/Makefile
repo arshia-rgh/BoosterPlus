@@ -3,7 +3,7 @@ SHELL := /bin/sh
 .PHONY: help install dev build start preview typecheck lint fmt fmt-check test test-watch test-coverage test-e2e test-a11y security pre-commit ci clean docker-build docker-run
 
 help:
-	@printf '%s\n' 'install dev dev-storefront dev-admin build build-storefront build-admin start typecheck lint fmt fmt-check test test-e2e test-home test-admin test-experience test-server budget-home budget-experience security pre-commit docker-build'
+	@printf '%s\n' 'install dev dev-storefront dev-admin build build-storefront build-admin build-booster start typecheck lint fmt fmt-check test test-e2e test-home test-admin test-experience test-server budget-home budget-experience security pre-commit docker-build'
 install:
 	npm ci --include=dev
 dev: setup-env
@@ -80,7 +80,7 @@ test-home: build
 budget-home:
 	npm run budget:home
 
-.PHONY: dev-storefront dev-admin build-storefront build-admin start-storefront start-admin test-admin
+.PHONY: dev-storefront dev-admin build-storefront build-admin build-booster start-storefront start-admin test-admin
 dev-storefront: setup-env
 	npm run dev:storefront
 dev-admin: setup-env
@@ -89,6 +89,8 @@ build-storefront:
 	npm run build:storefront
 build-admin:
 	npm run build:admin
+build-booster:
+	npm run build:booster
 start-storefront:
 	npm run start:storefront
 start-admin:
@@ -108,3 +110,8 @@ test-cross-browser: build
 	PLAYWRIGHT_ENGINE=chromium npm run test:e2e
 	PLAYWRIGHT_ENGINE=firefox npm run test:e2e
 	PLAYWRIGHT_ENGINE=webkit npm run test:e2e
+
+.PHONY: test-portals
+# Actual three SSR graphs, isolated synthetic provider/API fixtures and browser cookies.
+test-portals: build
+	npm run test:portals

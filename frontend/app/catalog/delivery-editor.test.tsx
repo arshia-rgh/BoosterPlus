@@ -55,7 +55,7 @@ it("requires declared durations and supports removing closures and rules", () =>
   });
   fireEvent.click(screen.getByRole("button", { name: "Remove closure date" }));
   fireEvent.click(screen.getByRole("button", { name: "Add delivery rule" }));
-  expect(screen.getByLabelText("Minimum work minutes")).toHaveValue(0);
+  expect(screen.getByLabelText("Minimum work minutes")).toHaveValue("0");
   fireEvent.change(screen.getByLabelText("Minimum work minutes"), {
     target: { value: "60" },
   });

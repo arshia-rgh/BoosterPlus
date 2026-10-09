@@ -1,5 +1,5 @@
 import { DirectoryFilters, useDirectoryFilters } from "./directory-filters";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { Form } from "../identity/identity";

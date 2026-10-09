@@ -142,6 +142,8 @@ it("submits only the acknowledged saved revision without waiting for a parent re
   const value = fixture(),
     saved = {
       ...value,
+      ownership_notes: "I own and control this account.",
+      ownership_declared: true,
       submission: { ...value.submission, version: 5, title: "Saved title" },
     };
   vi.mocked(post).mockResolvedValue(saved);
@@ -149,6 +151,10 @@ it("submits only the acknowledged saved revision without waiting for a parent re
   fireEvent.change(screen.getByLabelText("Private account title"), {
     target: { value: "Saved title" },
   });
+  fireEvent.change(screen.getByLabelText("Ownership and control information"), {
+    target: { value: saved.ownership_notes },
+  });
+  fireEvent.click(screen.getByRole("checkbox"));
   fireEvent.click(screen.getByRole("button", { name: "Save account draft" }));
   await waitFor(() => {
     expect(

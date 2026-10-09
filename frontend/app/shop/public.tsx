@@ -9,7 +9,7 @@ import {
   useSearchParams,
   useBlocker,
   type Location,
-} from "react-router";
+} from "../portal-router";
 import type { Release } from "../catalog/model";
 import { serviceAvailable } from "../catalog/public-discovery";
 import { Action, Check, ErrorNotice, Text } from "../catalog/controls";
@@ -24,6 +24,12 @@ import {
 } from "./model";
 import { sessionEventMatches } from "../identity/portal";
 import { z } from "../validation";
+import {
+  FieldValidation,
+  useFormValidation,
+  focusValidationTarget,
+  type FieldIssue,
+} from "../ui/form-validation";
 import "./shop.css";
 
 export function GameShop({ detail = false }: { detail?: boolean }) {
@@ -250,6 +256,23 @@ function ProductFlow({
   const [accepted, setAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>(null);
+  const failurePanel = useRef<HTMLElement>(null);
+  const focusFailure = useRef(false);
+  useEffect(() => {
+    if (!busy && error && focusFailure.current) {
+      focusFailure.current = false;
+      focusValidationTarget(failurePanel.current);
+    }
+  }, [busy, error]);
+  const [recipientIssues, setRecipientIssues] = useState<FieldIssue[]>([]);
+  const validation = useFormValidation(
+    recipientIssues,
+    (name) => {
+      setRecipientIssues((old) => old.filter((issue) => issue.path !== name));
+    },
+    undefined,
+    step === "recipient" && !busy,
+  );
   const [key, setKey] = useState(() => crypto.randomUUID());
   const stepHeading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
@@ -279,6 +302,7 @@ function ProductFlow({
     setAccepted(false);
     setStep("options");
     setChangedTerms(true);
+    setRecipientIssues([]);
     setRecipient(
       Object.fromEntries(
         Object.entries(recipient).filter(([key]) =>
@@ -311,6 +335,7 @@ function ProductFlow({
     const changed = (event: Event) => {
       if (sessionEventMatches(event, "customer")) {
         setRecipient({});
+        setRecipientIssues([]);
         setAccepted(false);
         setStep("options");
         setIdentity(null);
@@ -349,17 +374,26 @@ function ProductFlow({
   if ((session.data || denied) && identity !== currentIdentity) {
     setIdentity(currentIdentity);
     setRecipient({});
+    setRecipientIssues([]);
     setStep("options");
     setAccepted(false);
     setPending(null);
   }
-  const fieldsValid = product.definition.recipient.every((field) => {
-    const value =
-      Object.entries(recipient).find(([name]) => name === field.key)?.[1] ?? "";
-    return (
-      (!field.required || !!value.trim()) && value.length <= field.max_length
-    );
-  });
+  function checkRecipient(): FieldIssue[] {
+    return product.definition.recipient.flatMap((field) => {
+      const value = recipientValue(recipient, field.key);
+      const message =
+        field.required && !value.trim()
+          ? `Enter ${field.label}.`
+          : // The API bounds Unicode code points (Go runes), not UTF-16 units.
+            Array.from(value).length > field.max_length
+            ? `Use ${String(field.max_length)} characters or fewer for ${field.label}. Your entered value has been kept.`
+            : value.includes("\0")
+              ? `Remove the unsupported character from ${field.label}.`
+              : "";
+      return message ? [{ path: `recipient.${field.key}`, message }] : [];
+    });
+  }
   function options(nextVariant: string, nextQuantity: number) {
     setVariantKey(nextVariant);
     setQuantity(nextQuantity);
@@ -382,6 +416,14 @@ function ProductFlow({
     )
       return;
     if (!pending && !variant) return;
+    if (!pending) {
+      const issues = checkRecipient();
+      setRecipientIssues(issues);
+      if (issues.length) {
+        setStep("recipient");
+        return;
+      }
+    }
     const request = pending ?? {
       request_key: key,
       release_id: product.release_id,
@@ -418,301 +460,319 @@ function ProductFlow({
       )
         setPending(null);
       setError(cause);
+      focusFailure.current = true;
     } finally {
       lock.current = false;
       setBusy(false);
     }
   }
   return (
-    <div className="shop-purchase">
-      <div className="shop-product-intro">
-        <ShopArtwork
-          source={product.definition.asset}
-          alt={product.definition.asset_alt}
-        />
-        <div>
-          <p className="eyebrow">{product.definition.category}</p>
-          <h2>{product.definition.title}</h2>
-          <p>{product.definition.description}</p>
-          <p>Manual delivery by PLAYORA staff after verified payment.</p>
-        </div>
-      </div>
-      <ol className="shop-steps" aria-label="Purchase steps">
-        {["options", "recipient", "review"].map((value, index) => (
-          <li key={value} aria-current={step === value ? "step" : undefined}>
-            {index + 1}. {value}
-          </li>
-        ))}
-      </ol>
-      <ErrorNotice error={error} />
-      <ErrorNotice error={session.error} />
-      {!!session.error && (
-        <Action onClick={refreshSession}>Retry sign-in check</Action>
-      )}
-      {!!error && (
-        <p>
-          Your payment has not been assumed successful. Retry with the same
-          selection to recover an interrupted reservation, or{" "}
-          <Action onClick={reload}>reload current availability</Action> to
-          review changed terms.
-        </p>
-      )}
-      {pending && !!error && (
-        <div role="alert">
-          <p>
-            The reservation result is uncertain. Your exact selection is locked
-            until it is recovered; retrying cannot create a second order.
-          </p>
-          <Action
-            disabled={busy || session.loading || !!session.error || !signedIn}
-            onClick={() => void reserve()}
-          >
-            Retry reservation
-          </Action>
-          <Link to="/orders">Check my orders</Link>
-        </div>
-      )}
-      {changedTerms && (
-        <p role="alert">
-          The published product changed. Your draft is retained; review the
-          current options, recipient fields and terms before accepting again.
-        </p>
-      )}
-      {blocker.state === "blocked" && (
-        <section role="alert" ref={leave} tabIndex={-1}>
-          <h3>Keep this purchase draft?</h3>
-          <p>Leaving clears private recipient details.</p>
-          <div className="catalog-actions">
-            <Action
-              onClick={() => {
-                blocker.reset();
-              }}
-            >
-              Stay with purchase
-            </Action>
-            <Action
-              disabled={busy}
-              onClick={() => {
-                blocker.proceed();
-              }}
-            >
-              Discard draft and leave
-            </Action>
+    <FieldValidation value={validation}>
+      <div className="shop-purchase">
+        <div className="shop-product-intro">
+          <ShopArtwork
+            source={product.definition.asset}
+            alt={product.definition.asset_alt}
+          />
+          <div>
+            <p className="eyebrow">{product.definition.category}</p>
+            <h2>{product.definition.title}</h2>
+            <p>{product.definition.description}</p>
+            <p>Manual delivery by PLAYORA staff after verified payment.</p>
           </div>
-        </section>
-      )}
-      <fieldset
-        disabled={
-          busy || !!pending || unavailable || session.loading || !!session.error
-        }
-      >
-        <legend className="ui-visually-hidden">Shop purchase</legend>
-        {step === "options" && (
-          <>
-            <h3 ref={stepHeading} tabIndex={-1}>
-              Choose your options
-            </h3>
-            <label className="catalog-label">
-              Variant
-              <select
-                value={variantKey}
-                onChange={(e) => {
-                  const next = variants.find((v) => v.key === e.target.value);
-                  options(e.target.value, next?.min_quantity ?? 1);
+        </div>
+        <ol className="shop-steps" aria-label="Purchase steps">
+          {["options", "recipient", "review"].map((value, index) => (
+            <li key={value} aria-current={step === value ? "step" : undefined}>
+              {index + 1}. {value}
+            </li>
+          ))}
+        </ol>
+        <ErrorNotice error={session.error} />
+        {!!session.error && (
+          <Action onClick={refreshSession}>Retry sign-in check</Action>
+        )}
+        {!!error && (
+          <section
+            aria-label="Reservation recovery"
+            ref={failurePanel}
+            tabIndex={-1}
+          >
+            <ErrorNotice error={error} />
+            <p>
+              Your payment has not been assumed successful. Retry with the same
+              selection to recover an interrupted reservation, or{" "}
+              <Action onClick={reload}>reload current availability</Action> to
+              review changed terms.
+            </p>
+            {pending && (
+              <div role="alert">
+                <p>
+                  The reservation result is uncertain. Your exact selection is
+                  locked until it is recovered; retrying cannot create a second
+                  order.
+                </p>
+                <div className="catalog-actions">
+                  <Action
+                    disabled={
+                      busy || session.loading || !!session.error || !signedIn
+                    }
+                    onClick={() => void reserve()}
+                  >
+                    Retry reservation
+                  </Action>
+                  <Link to="/orders">Check my orders</Link>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+        {changedTerms && (
+          <p role="alert">
+            The published product changed. Your draft is retained; review the
+            current options, recipient fields and terms before accepting again.
+          </p>
+        )}
+        {blocker.state === "blocked" && (
+          <section role="alert" ref={leave} tabIndex={-1}>
+            <h3>Keep this purchase draft?</h3>
+            <p>Leaving clears private recipient details.</p>
+            <div className="catalog-actions">
+              <Action
+                onClick={() => {
+                  blocker.reset();
                 }}
               >
-                {variants.map((v) => (
-                  <option key={v.key} value={v.key}>
-                    {v.label} · {v.currency} {minorDisplay(v.unit_amount_minor)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {variant && (
-              <>
-                <p>
-                  {variant.region} · {variant.platform} · {variant.server}
-                </p>
-                <label className="catalog-label">
-                  Quantity
-                  <input
-                    type="number"
-                    min={variant.min_quantity}
-                    max={Math.min(variant.max_quantity, stock)}
-                    step="1"
-                    aria-invalid={!valid}
-                    aria-describedby="shop-quantity-guidance"
-                    value={quantity}
-                    onChange={(e) => {
-                      options(variantKey, Number(e.target.value));
-                    }}
-                  />
-                </label>
-                <p>
-                  {stock > 0
-                    ? `${String(stock)} available; confirmed again when you reserve.`
-                    : "This variant is sold out."}
-                </p>
-              </>
-            )}
-            <p id="shop-quantity-guidance">
-              {variant
-                ? `Choose ${String(variant.min_quantity)}–${String(variant.max_quantity)} whole units, within available stock.`
-                : "Choose an available variant."}
-            </p>
-            {signedIn ? (
+                Stay with purchase
+              </Action>
+              <Action
+                disabled={busy}
+                onClick={() => {
+                  blocker.proceed();
+                }}
+              >
+                Discard draft and leave
+              </Action>
+            </div>
+          </section>
+        )}
+        <fieldset
+          disabled={
+            busy ||
+            !!pending ||
+            unavailable ||
+            session.loading ||
+            !!session.error
+          }
+        >
+          <legend className="ui-visually-hidden">Shop purchase</legend>
+          {step === "options" && (
+            <>
+              <h3 ref={stepHeading} tabIndex={-1}>
+                Choose your options
+              </h3>
+              <label className="catalog-label">
+                Variant
+                <select
+                  value={variantKey}
+                  onChange={(e) => {
+                    const next = variants.find((v) => v.key === e.target.value);
+                    options(e.target.value, next?.min_quantity ?? 1);
+                  }}
+                >
+                  {variants.map((v) => (
+                    <option key={v.key} value={v.key}>
+                      {v.label} · {v.currency}{" "}
+                      {minorDisplay(v.unit_amount_minor)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {variant && (
+                <>
+                  <p>
+                    {variant.region} · {variant.platform} · {variant.server}
+                  </p>
+                  <label className="catalog-label">
+                    Quantity
+                    <input
+                      type="number"
+                      min={variant.min_quantity}
+                      max={Math.min(variant.max_quantity, stock)}
+                      step="1"
+                      aria-invalid={!valid}
+                      aria-describedby="shop-quantity-guidance"
+                      value={quantity}
+                      onChange={(e) => {
+                        options(variantKey, Number(e.target.value));
+                      }}
+                    />
+                  </label>
+                  <p>
+                    {stock > 0
+                      ? `${String(stock)} available; confirmed again when you reserve.`
+                      : "This variant is sold out."}
+                  </p>
+                </>
+              )}
+              <p id="shop-quantity-guidance">
+                {variant
+                  ? `Choose ${String(variant.min_quantity)}–${String(variant.max_quantity)} whole units, within available stock.`
+                  : "Choose an available variant."}
+              </p>
+              {signedIn ? (
+                <Action
+                  disabled={!valid}
+                  onClick={() => {
+                    setStep("recipient");
+                  }}
+                >
+                  Continue to recipient
+                </Action>
+              ) : session.loading ? (
+                <p role="status">Checking sign-in…</p>
+              ) : (
+                <>
+                  <p>
+                    Sign in before entering private recipient details. Your
+                    selected options stay in this URL.
+                  </p>
+                  <Link
+                    className="button"
+                    to={`/login?returnTo=${encodeURIComponent(location.pathname + location.search)}`}
+                  >
+                    Sign in to continue
+                  </Link>
+                </>
+              )}
+            </>
+          )}
+          {step === "recipient" && !session.error && !session.loading && (
+            <>
+              <h3 ref={stepHeading} tabIndex={-1}>
+                Where should we deliver?
+              </h3>
+              <p>
+                Use only the requested game identifiers. Never enter a password
+                or recovery code.
+              </p>
+              {product.definition.recipient.map((field) => (
+                <Text
+                  key={field.key}
+                  name={`recipient.${field.key}`}
+                  label={`${field.label}${field.required ? " (required)" : " (optional)"}`}
+                  help={`${field.help} Maximum ${String(field.max_length)} characters.`}
+                  value={
+                    Object.entries(recipient).find(
+                      ([name]) => name === field.key,
+                    )?.[1] ?? ""
+                  }
+                  change={(value) => {
+                    setRecipient((old) => ({ ...old, [field.key]: value }));
+                    setAccepted(false);
+                    setKey(crypto.randomUUID());
+                  }}
+                />
+              ))}
+              <Action
+                onClick={() => {
+                  setStep("options");
+                }}
+              >
+                Back to options
+              </Action>
               <Action
                 disabled={!valid}
+                onClick={() => {
+                  const issues = checkRecipient();
+                  setRecipientIssues(issues);
+                  if (!issues.length) setStep("review");
+                }}
+              >
+                Review purchase
+              </Action>
+            </>
+          )}
+          {step === "review" && (
+            <>
+              <h3 ref={stepHeading} tabIndex={-1}>
+                Review your purchase
+              </h3>
+              <p>
+                {variant?.region} · {variant?.platform} · {variant?.server}
+              </p>
+              <p>
+                {variant?.label} · Quantity {quantity}
+              </p>
+              <dl>
+                {product.definition.recipient.map((field) => (
+                  <div key={field.key}>
+                    <dt>{field.label}</dt>
+                    <dd>
+                      {recipientValue(recipient, field.key)
+                        ? "••••" +
+                          recipientValue(recipient, field.key).slice(-2)
+                        : "Not provided"}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              <h4>Delivery terms</h4>
+              <p className="payment-policy">
+                {product.definition.policy.delivery_terms}
+              </p>
+              <h4>Cancellation</h4>
+              <p className="payment-policy">
+                {product.definition.policy.cancellation_terms}
+              </p>
+              <h4>Refunds</h4>
+              <p className="payment-policy">
+                {product.definition.policy.refund_terms}
+              </p>
+              <p>{product.definition.policy.fees}</p>
+              <p>
+                Estimated delivery:{" "}
+                {product.definition.policy.delivery_min_hours}–
+                {product.definition.policy.delivery_max_hours} hours after
+                verified payment. Reservation:{" "}
+                {product.definition.policy.reservation_minutes} minutes before
+                checkout; payment instructions show the final invoice deadline.
+              </p>
+              <p className="shop-review-total">
+                <strong>
+                  Total: {variant?.currency} {minorDisplay(amount)}
+                </strong>
+              </p>
+              <Check
+                label="I confirm the recipient, compatibility, price and delivery terms"
+                value={accepted}
+                change={setAccepted}
+              />
+              <Action
                 onClick={() => {
                   setStep("recipient");
                 }}
               >
-                Continue to recipient
+                Edit recipient
               </Action>
-            ) : session.loading ? (
-              <p role="status">Checking sign-in…</p>
-            ) : (
-              <>
-                <p>
-                  Sign in before entering private recipient details. Your
-                  selected options stay in this URL.
-                </p>
-                <Link
-                  className="button"
-                  to={`/login?returnTo=${encodeURIComponent(location.pathname + location.search)}`}
-                >
-                  Sign in to continue
-                </Link>
-              </>
-            )}
-          </>
-        )}
-        {step === "recipient" && !session.error && !session.loading && (
-          <>
-            <h3 ref={stepHeading} tabIndex={-1}>
-              Where should we deliver?
-            </h3>
-            <p>
-              Use only the requested game identifiers. Never enter a password or
-              recovery code.
-            </p>
-            {product.definition.recipient.map((field) => (
-              <Text
-                key={field.key}
-                label={`${field.label}${field.required ? " (required)" : " (optional)"}`}
-                help={`${field.help} Maximum ${String(field.max_length)} characters.`}
-                value={
-                  Object.entries(recipient).find(
-                    ([name]) => name === field.key,
-                  )?.[1] ?? ""
-                }
-                change={(value) => {
-                  setRecipient((old) => ({ ...old, [field.key]: value }));
-                  setAccepted(false);
-                  setKey(crypto.randomUUID());
-                }}
-              />
-            ))}
-            {!fieldsValid && (
-              <p role="status">
-                Complete the required identifiers within the stated character
-                limits to continue.
-              </p>
-            )}
-            <Action
-              onClick={() => {
-                setStep("options");
-              }}
-            >
-              Back to options
-            </Action>
-            <Action
-              disabled={!fieldsValid || !valid}
-              onClick={() => {
-                setStep("review");
-              }}
-            >
-              Review purchase
-            </Action>
-          </>
-        )}
-        {step === "review" && (
-          <>
-            <h3 ref={stepHeading} tabIndex={-1}>
-              Review your purchase
-            </h3>
-            <p>
-              {variant?.region} · {variant?.platform} · {variant?.server}
-            </p>
-            <p>
-              {variant?.label} · Quantity {quantity}
-            </p>
-            <dl>
-              {product.definition.recipient.map((field) => (
-                <div key={field.key}>
-                  <dt>{field.label}</dt>
-                  <dd>
-                    {recipientValue(recipient, field.key)
-                      ? "••••" + recipientValue(recipient, field.key).slice(-2)
-                      : "Not provided"}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-            <h4>Delivery terms</h4>
-            <p className="payment-policy">
-              {product.definition.policy.delivery_terms}
-            </p>
-            <h4>Cancellation</h4>
-            <p className="payment-policy">
-              {product.definition.policy.cancellation_terms}
-            </p>
-            <h4>Refunds</h4>
-            <p className="payment-policy">
-              {product.definition.policy.refund_terms}
-            </p>
-            <p>{product.definition.policy.fees}</p>
-            <p>
-              Estimated delivery: {product.definition.policy.delivery_min_hours}
-              –{product.definition.policy.delivery_max_hours} hours after
-              verified payment. Reservation:{" "}
-              {product.definition.policy.reservation_minutes} minutes before
-              checkout; payment instructions show the final invoice deadline.
-            </p>
-            <p className="shop-review-total">
-              <strong>
-                Total: {variant?.currency} {minorDisplay(amount)}
-              </strong>
-            </p>
-            <Check
-              label="I confirm the recipient, compatibility, price and delivery terms"
-              value={accepted}
-              change={setAccepted}
-            />
-            <Action
-              onClick={() => {
-                setStep("recipient");
-              }}
-            >
-              Edit recipient
-            </Action>
-            <Action
-              disabled={!valid || !fieldsValid || !accepted || !signedIn}
-              onClick={() => void reserve()}
-            >
-              {busy ? "Reserving…" : "Reserve and continue to payment"}
-            </Action>
-          </>
-        )}
-      </fieldset>
-      <aside className="shop-summary" aria-label="Purchase total">
-        <span>Total</span>
-        <strong>
-          {variant?.currency} {minorDisplay(amount)}
-        </strong>
-        <p>Direct crypto payment. No wallet balance.</p>
-      </aside>
-    </div>
+              <Action
+                disabled={!valid || !accepted || !signedIn}
+                onClick={() => void reserve()}
+              >
+                {busy ? "Reserving…" : "Reserve and continue to payment"}
+              </Action>
+            </>
+          )}
+        </fieldset>
+        <aside className="shop-summary" aria-label="Purchase total">
+          <span>Total</span>
+          <strong>
+            {variant?.currency} {minorDisplay(amount)}
+          </strong>
+          <p>Direct crypto payment. No wallet balance.</p>
+        </aside>
+      </div>
+    </FieldValidation>
   );
 }
 function recipientValue(values: Record<string, string>, key: string) {

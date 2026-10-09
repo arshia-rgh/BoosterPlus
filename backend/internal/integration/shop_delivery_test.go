@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/pquerna/otp/totp"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/conversation"
@@ -203,7 +202,7 @@ func TestShopDeliveryPaymentAndRecentAuthenticationGuards(t *testing.T) {
 			case "recipient_erased":
 				_, err = f.base.auth.client.ShopRecipient.Update().SetErasedAt(time.Now()).Save(ctx)
 			case "stale_auth":
-				_, err = f.base.auth.client.AuthSession.UpdateOneID(f.base.admin.Session.ID).SetAuthenticatedAt(time.Unix(f.base.auth.clock.Load(), 0).Add(-time.Hour)).Save(ctx)
+				_, err = f.base.auth.client.AuthSession.UpdateOneID(f.base.admin.Session.ID).SetAuthenticatedAt(time.Unix(f.base.auth.clock.Load(), 0).Add(-time.Hour)).SetMfaVerifiedAt(time.Unix(f.base.auth.clock.Load(), 0).Add(-time.Hour)).Save(ctx)
 			case "suspended":
 				_, err = f.base.auth.client.User.UpdateOneID(f.base.admin.User.ID).SetSuspended(true).Save(ctx)
 			}
@@ -355,8 +354,8 @@ func TestShopDeliveryProofPublicationBoundaries(t *testing.T) {
 	if err != nil || after.Version != before.Version || after.OrderVersion != before.OrderVersion || after.State != "processing" {
 		t.Fatal("proof publication completed or submitted order", err)
 	}
-	// Age only primary verification, leaving the session active to test step-up.
-	if _, err = f.base.auth.client.AuthSession.UpdateOneID(f.base.admin.Session.ID).SetAuthenticatedAt(time.Unix(f.base.auth.clock.Load(), 0).Add(-time.Hour)).Save(ctx); err != nil {
+	// Age both factors, leaving the completed sign-in active to test step-up.
+	if _, err = f.base.auth.client.AuthSession.UpdateOneID(f.base.admin.Session.ID).SetAuthenticatedAt(time.Unix(f.base.auth.clock.Load(), 0).Add(-time.Hour)).SetMfaVerifiedAt(time.Unix(f.base.auth.clock.Load(), 0).Add(-time.Hour)).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = support.Send(ctx, f.base.admin, thread.ID, true, retry); err == nil {
@@ -367,31 +366,19 @@ func TestShopDeliveryProofPublicationBoundaries(t *testing.T) {
 func TestShopDeliveryAssignmentAndPortalBoundaries(t *testing.T) {
 	f := paymentDB(t)
 	ctx := t.Context()
-	secrets := map[string]string{}
-	staff := func(email, role string, portal identity.Portal) *identity.Principal {
-		_, p := f.base.auth.login(t, email)
-		if _, err := f.base.auth.client.User.UpdateOneID(p.User.ID).SetRole(role).Save(t.Context()); err != nil {
-			t.Fatal(err)
-		}
-		p = f.base.auth.enterPortal(t, p, portal)
-		secret, _, enrolled := f.base.auth.enroll(t, p)
-		secrets[enrolled.User.ID] = secret
-		p = enrolled
+	staff := func(email, role string) *identity.Principal {
+		_, p := f.base.auth.staffLogin(t, email, role)
+		_, _, p = f.base.auth.enroll(t, p)
 		return p
 	}
-	other := staff("shop-staff@example.test", identity.RoleAdmin, identity.PortalAdmin)
-	owner := staff("shop-owner@example.test", identity.RoleOwner, identity.PortalAdmin)
-	booster := staff("shop-booster@example.test", identity.RoleBooster, identity.PortalBooster)
-	customerOwner := f.base.auth.enterPortal(t, owner, identity.PortalCustomer)
-	code, codeErr := totp.GenerateCode(secrets[owner.User.ID], time.Unix(f.base.auth.clock.Load(), 0))
-	if codeErr != nil {
-		t.Fatal(codeErr)
+	other := staff("shop-staff@example.test", identity.RoleAdmin)
+	owner := staff("shop-owner@example.test", identity.RoleOwner)
+	booster := staff("shop-booster@example.test", identity.RoleBooster)
+	f.base.auth.clock.Add(61)
+	_, customerOwner := f.base.auth.login(t, owner.User.Email)
+	if customerOwner.User.ID == owner.User.ID || customerOwner.User.MfaEnabled {
+		t.Fatal("customer inherited staff identity or factor")
 	}
-	verified, verifyErr := f.base.auth.service.VerifyMFA(ctx, customerOwner, code, "127.0.0.1")
-	if verifyErr != nil {
-		t.Fatal(verifyErr)
-	}
-	customerOwner = f.base.auth.principal(t, verified.Token, identity.PortalCustomer)
 	store, id := shopDeliveryForFixture(t, f, true)
 	view := deliveryChange(t, f, store, id, "claim", "")
 	change := shop.DeliveryChange{OrderVersion: view.OrderVersion, Version: view.Version, Note: "Explicit assignment boundary test."}
@@ -419,7 +406,7 @@ func TestShopDeliveryAssignmentAndPortalBoundaries(t *testing.T) {
 	if out, e := store.RevealRecipient(ctx, f.base.admin, id, true); !errors.Is(e, identity.ErrForbidden) || out.Values != nil {
 		t.Fatal("former assignee access", e)
 	}
-	// A real customer-portal session for the same owner is never staff authority.
+	// An independent customer account with the same email is never staff authority.
 	if _, err = store.Delivery(ctx, customerOwner, id, true); !errors.Is(err, identity.ErrForbidden) {
 		t.Fatal("customer portal became staff", err)
 	}

@@ -1,3 +1,4 @@
+import { Anchor } from "../portal-router";
 import type { HomeContent } from "./model";
 import "./public-info.css";
 const services = [
@@ -52,18 +53,18 @@ export default function HowItWorks({ content }: { content: HomeContent }) {
         {content.contact_email && (
           <p>
             Email:{" "}
-            <a href={`mailto:${content.contact_email}`}>
+            <Anchor href={`mailto:${content.contact_email}`}>
               {content.contact_email}
-            </a>
+            </Anchor>
           </p>
         )}
         {content.support_hours && <p>Support hours: {content.support_hours}</p>}
         <div className="catalog-actions">
-          <a className="button" href="/games">
+          <Anchor className="button" href="/games">
             Choose your game
-          </a>
-          <a href="/support">Contact support</a>
-          <a href="/terms">Read terms & policies</a>
+          </Anchor>
+          <Anchor href="/contact">Contact support</Anchor>
+          <Anchor href="/terms">Read terms & policies</Anchor>
         </div>
       </section>
     </main>

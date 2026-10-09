@@ -65,7 +65,7 @@ func TestReportsAuthorityPrivacyAndExactPreview(t *testing.T) {
 	if _, e = s.Preview(ctx, f.admin, reportQuery("audits")); !errors.Is(e, identity.ErrForbidden) {
 		t.Fatal("admin read owner audit report", e)
 	}
-	executeSQL(t, f.auth.db, "UPDATE auth_sessions SET authenticated_at=? WHERE id=?", time.Unix(f.auth.clock.Load(), 0).Add(-11*time.Minute), f.admin.Session.ID)
+	executeSQL(t, f.auth.db, "UPDATE auth_sessions SET authenticated_at=?,mfa_verified_at=? WHERE id=?", time.Unix(f.auth.clock.Load(), 0).Add(-11*time.Minute), time.Unix(f.auth.clock.Load(), 0).Add(-11*time.Minute), f.admin.Session.ID)
 	current, e := s.Preview(ctx, f.admin, q)
 	if e != nil {
 		t.Fatal("stale primary should still preview", e)
@@ -74,8 +74,8 @@ func TestReportsAuthorityPrivacyAndExactPreview(t *testing.T) {
 		t.Fatal("stale primary exported", e)
 	}
 	executeSQL(t, f.auth.db, "UPDATE auth_sessions SET authenticated_at=?,mfa_verified_at=? WHERE id=?", time.Unix(f.auth.clock.Load(), 0), time.Unix(f.auth.clock.Load(), 0).Add(-11*time.Minute), f.admin.Session.ID)
-	if _, e = s.Download(ctx, f.admin, reports.ExportInput{Query: q, Digest: current.Digest, Reason: "Requires recent authenticator"}); !errors.Is(e, identity.ErrMFA) {
-		t.Fatal("stale authenticator exported", e)
+	if _, e = s.Download(ctx, f.admin, reports.ExportInput{Query: q, Digest: current.Digest, Reason: "Fresh primary verification allows export"}); e != nil {
+		t.Fatal("fresh email factor did not authorize export", e)
 	}
 }
 func TestReportsPaginationFilterBindingAndPlainData(t *testing.T) {

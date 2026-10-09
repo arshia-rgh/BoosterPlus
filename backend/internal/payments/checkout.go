@@ -41,6 +41,9 @@ func (s *Store) Start(ctx context.Context, p *identity.Principal, id string, inp
 	if s.provider == nil || !s.enabled || s.account == "" {
 		return Attempt{}, ErrUnavailable
 	}
+	if err := s.preflight(ctx, p, id, input); err != nil {
+		return Attempt{}, err
+	}
 	var result Attempt
 	err := s.auth.AuthorizedTransaction(ctx, p, "account", false, func(tx *ent.Tx, current *identity.Principal) error {
 		row, err := owned(ctx, tx.Client(), current, id, false)
@@ -102,7 +105,9 @@ func (s *Store) Start(ctx context.Context, p *identity.Principal, id string, inp
 			return err
 		}
 		now := s.instant()
-		_, native := s.provider.(InvoicePaymentProvider)
+		// New checkout uses the provider-hosted page; persisted native attempts
+		// retain their original instructions and reconciliation behavior.
+		native := false
 		attempt, err := tx.PaymentAttempt.Create().SetPostClaimed(false).SetNativeCheckout(native).SetDepositClaimed(!native).SetOrderID(id).SetContractID(contract.ID).SetActiveContractID(contract.ID).SetUserID(current.User.ID).SetAccount(s.account).SetPolicyID(policy.ID).SetPolicy(policyDoc).SetRoute(routeDoc).SetCurrency(commercial.Currency).SetAmountMinor(commercial.AmountMinor).SetState("new").SetCreatedAt(now).SetUpdatedAt(now).SetExpiresAt(now.Add(time.Duration(policy.Data.WindowMinutes) * time.Minute)).Save(ctx)
 		if err != nil {
 			return err

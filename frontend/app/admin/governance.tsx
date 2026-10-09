@@ -1,6 +1,7 @@
-import { useContext, useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Link, useSearchParams } from "../portal-router";
 import { AuthorizedIdentity } from "../identity/frame";
+import { focusValidationTarget } from "../ui/form-validation";
 import { command, auditsSchema, recoveriesSchema } from "../identity/api";
 import { Form, Text, value } from "../identity/identity";
 import { Action, ErrorNotice, Text as Field } from "../catalog/controls";
@@ -25,6 +26,17 @@ function OwnerReview() {
   });
   const audits = useResource(`/admin/audit?${query.toString()}`, auditsSchema);
   const requests = useResource("/admin/recoveries", recoveriesSchema);
+  const recoveryHeading = useRef<HTMLHeadingElement>(null);
+  const pendingRecoveryFocus = useRef(false);
+  const [completedRecovery, setCompletedRecovery] = useState<{
+    id: string;
+    message: string;
+  } | null>(null);
+  useEffect(() => {
+    if (requests.loading || !pendingRecoveryFocus.current) return;
+    focusValidationTarget(recoveryHeading.current);
+    pendingRecoveryFocus.current = false;
+  }, [requests.loading, requests.data, requests.error]);
   return (
     <section className="staff-security-review">
       <h2>Audit & recovery review</h2>
@@ -33,13 +45,7 @@ function OwnerReview() {
         identifiers; dates include the full UTC day.
       </p>
       <p>
-        <Link
-          target="_blank"
-          rel="noopener noreferrer"
-          to="/admin/account/security?returnTo=%2Fadmin%3Fview%3Daudit"
-        >
-          Verify admin identity in a new tab, then return here
-        </Link>
+        If this action needs fresh verification, confirm it in the dialog here.
       </p>
       <form
         className="catalog-grid"
@@ -115,7 +121,9 @@ function OwnerReview() {
           </div>
         </>
       )}
-      <h3>Account recovery requests</h3>
+      <h3 ref={recoveryHeading} tabIndex={-1}>
+        Account recovery requests
+      </h3>
       <p>
         Verify ownership using independent evidence before approval. A code sent
         to a new address is insufficient. Keep evidence in your restricted
@@ -126,46 +134,59 @@ function OwnerReview() {
       <Action disabled={requests.loading} onClick={requests.reload}>
         Load recovery requests
       </Action>
+      {completedRecovery && <p role="status">{completedRecovery.message}</p>}
       <ErrorNotice error={requests.error} />
       {requests.loading && <p role="status">Loading recovery requests…</p>}
       {requests.data?.recoveries.length === 0 && (
         <p>No pending recovery requests.</p>
       )}
-      {(requests.data?.recoveries ?? []).map((entry) => (
-        <Form
-          key={entry.id}
-          title={"Recovery for " + entry.user_id}
-          label="Resolve recovery"
-          submit={async (data) => {
-            await command(
-              "/admin/recoveries/" + encodeURIComponent(entry.id) + "/resolve",
-              {
-                approve: value(data, "decision") === "approve",
-                case_reference: value(data, "reference"),
-              },
-            );
-            requests.reload();
-          }}
-        >
-          <p>Requested destination: {entry.new_email}</p>
-          <Text
-            name="reference"
-            label="Independent support case reference"
-            maxLength={64}
-          />
-          <label>
-            Decision
-            <select name="decision" defaultValue="reject">
-              <option value="reject">Reject</option>
-              <option value="approve">Approve after independent review</option>
-            </select>
-          </label>
-          <label className="check">
-            <input type="checkbox" required />I reviewed ownership evidence and
-            recorded the case
-          </label>
-        </Form>
-      ))}
+      {(requests.error ? [] : (requests.data?.recoveries ?? []))
+        .filter((entry) => entry.id !== completedRecovery?.id)
+        .map((entry) => (
+          <Form
+            key={entry.id}
+            title={"Recovery for " + entry.user_id}
+            label="Resolve recovery"
+            submit={async (data) => {
+              const approve = value(data, "decision") === "approve";
+              await command(
+                "/admin/recoveries/" +
+                  encodeURIComponent(entry.id) +
+                  "/resolve",
+                {
+                  approve,
+                  case_reference: value(data, "reference"),
+                },
+              );
+              pendingRecoveryFocus.current = true;
+              setCompletedRecovery({
+                id: entry.id,
+                message: `Recovery for ${entry.user_id} ${approve ? "approved" : "rejected"}.`,
+              });
+              requests.reload();
+            }}
+          >
+            <p>Requested destination: {entry.new_email}</p>
+            <Text
+              name="reference"
+              label="Independent support case reference"
+              maxLength={64}
+            />
+            <label>
+              Decision
+              <select name="decision" defaultValue="reject">
+                <option value="reject">Reject</option>
+                <option value="approve">
+                  Approve after independent review
+                </option>
+              </select>
+            </label>
+            <label className="check">
+              <input type="checkbox" required />I reviewed ownership evidence
+              and recorded the case
+            </label>
+          </Form>
+        ))}
     </section>
   );
 }

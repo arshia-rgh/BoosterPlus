@@ -1,5 +1,9 @@
 import { useEffect, useRef } from "react";
-import { NavigationType, useLocation, useNavigationType } from "react-router";
+import {
+  NavigationType,
+  useLocation,
+  useNavigationType,
+} from "../portal-router";
 export default function AccountRouteFocus() {
   const { pathname } = useLocation();
   const navigation = useNavigationType();

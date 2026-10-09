@@ -2,9 +2,11 @@
 from pathlib import Path
 import subprocess
 import sys
-from test_services import environment
+from test_services import environment, scanner_ready
 
 root = Path(__file__).resolve().parents[1]
+settings = environment(root)
+scanner_ready(root, settings)
 raise SystemExit(subprocess.run(
     # The full commerce suite runs serial disposable schemas under the race detector.
     # On the compact VPS, 209 of 241 cases passed before the former 60m total
@@ -14,5 +16,5 @@ raise SystemExit(subprocess.run(
     # Verbose/fail-fast output exposes actual failures without marking a partial
     # run passed. Production's real-TiKV suite has its own measured budget.
     ["go", "test", "-race", "-count=1", "-timeout=90m", "-v", "-failfast", "-tags=integration", *sys.argv[1:], "./internal/integration/..."],
-    cwd=root / "backend", env=environment(root), check=False,
+    cwd=root / "backend", env=settings, check=False,
 ).returncode)

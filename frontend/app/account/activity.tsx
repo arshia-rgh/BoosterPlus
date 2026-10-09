@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { useLocation } from "react-router";
+import { useLocation } from "../portal-router";
 import { APIError, sessionSchema } from "../identity/api";
 import { portalFromPath, sessionEventMatches } from "../identity/portal";
 import { useResource } from "../orders/resource";

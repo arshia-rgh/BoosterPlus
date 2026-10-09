@@ -1,3 +1,6 @@
+import { FieldValidation, ValidationSummary } from "../ui/form-validation";
+import { useActionValidation } from "../ui/action-validation";
+import { productIssues } from "./validation";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   Link,
@@ -6,7 +9,7 @@ import {
   useParams,
   useSearchParams,
   type Location,
-} from "react-router";
+} from "../portal-router";
 import {
   Action,
   Check,
@@ -158,9 +161,23 @@ function Editor({
       `/admin/submissions/${row.submission_id}`,
       submissionSchema,
     );
+  const [params, setParams] = useSearchParams();
+  const location: Location<unknown> = useLocation();
+  const validation = useActionValidation((target) => {
+    const section = target.closest<HTMLElement>("[data-editor-section]")
+      ?.dataset.editorSection;
+    if (section && params.get("section") !== section) {
+      const next = new URLSearchParams(params);
+      next.set("section", section);
+      setParams(next, {
+        replace: true,
+        preventScrollReset: true,
+        state: location.state,
+      });
+    }
+  });
   const lock = useRef(false);
   const leavePrompt = useRef<HTMLElement>(null);
-  const location: Location<unknown> = useLocation();
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       (dirty || busy) && currentLocation.pathname !== nextLocation.pathname,
@@ -189,6 +206,7 @@ function Editor({
     setReviewed(false);
     setPreview(false);
     setError(null);
+    validation.clear();
   }
   if (stale && !dirty && !busy) reset(row);
   function edit<K extends keyof Product>(key: K, value: Product[K]) {
@@ -199,6 +217,8 @@ function Editor({
   }
   async function act(action: string) {
     if (lock.current || stale || loading || suspended) return;
+    if (action !== "withdraw" && !validation.check(productIssues(product)))
+      return;
     lock.current = true;
     setBusy(true);
     setError(null);
@@ -211,6 +231,7 @@ function Editor({
       reset(saved);
       changed();
     } catch (cause) {
+      validation.server(cause);
       setError(cause);
     } finally {
       lock.current = false;
@@ -218,118 +239,124 @@ function Editor({
     }
   }
   return (
-    <div className="admin-order-workspace">
-      {blocker.state === "blocked" && (
-        <section
-          ref={leavePrompt}
-          tabIndex={-1}
-          role="alert"
-          aria-label="Unsaved listing changes"
-        >
-          <h2>Keep your listing draft?</h2>
-          <p>
-            Leaving this account listing discards unsaved edits. Local listing
-            sections preserve your draft.
-          </p>
-          <Action
-            onClick={() => {
-              blocker.reset();
-            }}
+    <FieldValidation value={validation.validation}>
+      <div className="admin-order-workspace">
+        {blocker.state === "blocked" && (
+          <section
+            ref={leavePrompt}
+            tabIndex={-1}
+            role="alert"
+            aria-label="Unsaved listing changes"
           >
-            Stay with this draft
-          </Action>
-          <Action
-            disabled={busy}
-            onClick={() => {
-              blocker.proceed();
-            }}
-          >
-            Discard draft and leave
-          </Action>
-        </section>
-      )}
-      <RecordShell
-        id={row.id}
-        title="Account listing"
-        headingLevel={2}
-        compactReference
-        workspace="Admin workspace"
-        stickyStatus={row.state}
-        back={{
-          to: back,
-          state: location.state,
-          label: back.startsWith("/admin/submissions/")
-            ? "Seller agreement"
-            : "Account inventory",
-        }}
-        sections={[
-          { id: "details", label: "Listing details" },
-          { id: "images", label: "Public images" },
-          { id: "terms", label: "Buyer terms" },
-          { id: "publication", label: "Preview & publication" },
-        ]}
-        status={
-          <>
-            <strong>{row.draft.title || "Untitled account"}</strong>
-            <span>{row.game}</span>
-            <span className="status">{row.state}</span>
-            <Action disabled={loading} onClick={changed}>
-              Refresh inventory item
-            </Action>
-          </>
-        }
-      >
-        {(section) => (
-          <>
-            <p>Inventory state: {row.state}</p>
-            <Link
-              to={`/admin/submissions/${row.submission_id}?section=agreement`}
-              state={{
-                inventorySearch:
-                  typeof location.state === "object" &&
-                  location.state !== null &&
-                  "inventorySearch" in location.state &&
-                  typeof location.state.inventorySearch === "string"
-                    ? location.state.inventorySearch.slice(0, 2048)
-                    : undefined,
-                inventoryID: row.id,
-                inventorySection:
-                  new URLSearchParams(location.search).get("section") ??
-                  "details",
+            <h2>Keep your listing draft?</h2>
+            <p>
+              Leaving this account listing discards unsaved edits. Local listing
+              sections preserve your draft.
+            </p>
+            <Action
+              onClick={() => {
+                blocker.reset();
               }}
             >
-              Private seller agreement and ownership review
-            </Link>
-            <ErrorNotice error={error} />
-            {stale && dirty && (
-              <section role="alert">
-                <p>
-                  This listing changed. Your draft is retained, but you must
-                  load the current version before saving or publishing.
-                </p>
-                <Action
-                  onClick={() => {
-                    reset(row);
-                  }}
-                >
-                  Discard draft and load current listing
-                </Action>
-              </section>
-            )}
-            <fieldset
-              disabled={
-                busy ||
-                loading ||
-                suspended ||
-                stale ||
-                ["reserved", "sold"].includes(row.state)
-              }
+              Stay with this draft
+            </Action>
+            <Action
+              disabled={busy}
+              onClick={() => {
+                blocker.proceed();
+              }}
             >
-              <legend>Account listing editor</legend>
-              {textFields
-                .filter(([key]) =>
-                  section === "details"
-                    ? [
+              Discard draft and leave
+            </Action>
+          </section>
+        )}
+        <RecordShell
+          id={row.id}
+          title="Account listing"
+          headingLevel={2}
+          compactReference
+          workspace="Admin workspace"
+          stickyStatus={row.state}
+          back={{
+            to: back,
+            state: location.state,
+            label: back.startsWith("/admin/submissions/")
+              ? "Seller agreement"
+              : "Account inventory",
+          }}
+          sections={[
+            { id: "details", label: "Listing details" },
+            { id: "images", label: "Public images" },
+            { id: "terms", label: "Buyer terms" },
+            { id: "publication", label: "Preview & publication" },
+          ]}
+          status={
+            <>
+              <strong>{row.draft.title || "Untitled account"}</strong>
+              <span>{row.game}</span>
+              <span className="status">{row.state}</span>
+              <Action disabled={loading} onClick={changed}>
+                Refresh inventory item
+              </Action>
+            </>
+          }
+        >
+          {(section) => (
+            <>
+              <p>Inventory state: {row.state}</p>
+              <Link
+                to={`/admin/submissions/${row.submission_id}?section=agreement`}
+                state={{
+                  inventorySearch:
+                    typeof location.state === "object" &&
+                    location.state !== null &&
+                    "inventorySearch" in location.state &&
+                    typeof location.state.inventorySearch === "string"
+                      ? location.state.inventorySearch.slice(0, 2048)
+                      : undefined,
+                  inventoryID: row.id,
+                  inventorySection:
+                    new URLSearchParams(location.search).get("section") ??
+                    "details",
+                }}
+              >
+                Private seller agreement and ownership review
+              </Link>
+              <ErrorNotice error={error} />
+              <ValidationSummary
+                issues={validation.validation.issues}
+                fields={validation.validation.fields}
+              />
+              {stale && dirty && (
+                <section role="alert">
+                  <p>
+                    This listing changed. Your draft is retained, but you must
+                    load the current version before saving or publishing.
+                  </p>
+                  <Action
+                    onClick={() => {
+                      reset(row);
+                    }}
+                  >
+                    Discard draft and load current listing
+                  </Action>
+                </section>
+              )}
+              <fieldset
+                disabled={
+                  busy ||
+                  loading ||
+                  suspended ||
+                  stale ||
+                  ["reserved", "sold"].includes(row.state)
+                }
+              >
+                <legend>Account listing editor</legend>
+                {textFields.map(([key, label]) => (
+                  <div
+                    key={key}
+                    data-editor-section={
+                      [
                         "title",
                         "description",
                         "region",
@@ -337,199 +364,216 @@ function Editor({
                         "currency",
                         "amount_minor",
                       ].includes(key)
-                    : section === "terms"
-                      ? [
-                          "sale_terms",
-                          "transfer_requirements",
-                          "dispute_terms",
-                          "acknowledgement_terms",
-                        ].includes(key)
-                      : false,
-                )
-                .map(([key, label]) => (
-                  <Text
-                    key={key}
-                    label={label}
-                    value={productText(product, key)}
-                    change={(v) => {
-                      edit(key, v);
-                    }}
-                    multiline={[
-                      "description",
-                      "sale_terms",
-                      "transfer_requirements",
-                      "dispute_terms",
-                      "acknowledgement_terms",
-                    ].includes(key)}
-                    help={
-                      key === "amount_minor"
-                        ? "For a two-decimal currency, 1234 means 12.34."
-                        : ""
+                        ? "details"
+                        : "terms"
                     }
+                    hidden={
+                      section !==
+                      ([
+                        "title",
+                        "description",
+                        "region",
+                        "rank",
+                        "currency",
+                        "amount_minor",
+                      ].includes(key)
+                        ? "details"
+                        : "terms")
+                    }
+                  >
+                    <Text
+                      name={`product.${key}`}
+                      label={label}
+                      value={productText(product, key)}
+                      change={(v) => {
+                        edit(key, v);
+                      }}
+                      multiline={[
+                        "description",
+                        "sale_terms",
+                        "transfer_requirements",
+                        "dispute_terms",
+                        "acknowledgement_terms",
+                      ].includes(key)}
+                      help={
+                        key === "amount_minor"
+                          ? "For a two-decimal currency, 1234 means 12.34."
+                          : ""
+                      }
+                    />
+                  </div>
+                ))}
+                <div hidden={section !== "terms"} data-editor-section="terms">
+                  <NumberInput
+                    name="product.dispute_hours"
+                    label="Buyer dispute window hours"
+                    value={product.dispute_hours}
+                    change={(v) => {
+                      edit("dispute_hours", v);
+                    }}
                   />
-                ))}
-              <div hidden={section !== "terms"}>
-                <NumberInput
-                  label="Buyer dispute window hours"
-                  value={product.dispute_hours}
-                  change={(v) => {
-                    edit("dispute_hours", v);
-                  }}
-                />
-                <NumberInput
-                  label="Earliest delivery hours"
-                  value={product.delivery_min_hours}
-                  change={(v) => {
-                    edit("delivery_min_hours", v);
-                  }}
-                />
-                <NumberInput
-                  label="Latest delivery hours"
-                  value={product.delivery_max_hours}
-                  change={(v) => {
-                    edit("delivery_max_hours", v);
-                  }}
-                />
-              </div>
-              <div hidden={section !== "details"}>
-                <h3>Public account characteristics</h3>
-                {product.attributes.map((item, index) => (
-                  <fieldset key={index}>
-                    <legend>Characteristic {index + 1}</legend>
-                    <Text
-                      label={`Characteristic ${String(index + 1)} name`}
-                      value={item.label}
-                      change={(v) => {
-                        edit(
-                          "attributes",
-                          product.attributes.map((a, i) =>
-                            i === index ? { ...a, label: v } : a,
-                          ),
-                        );
-                      }}
-                    />
-                    <Text
-                      label={`Characteristic ${String(index + 1)} value`}
-                      value={item.value}
-                      change={(v) => {
-                        edit(
-                          "attributes",
-                          product.attributes.map((a, i) =>
-                            i === index ? { ...a, value: v } : a,
-                          ),
-                        );
-                      }}
-                    />
-                    <Action
-                      onClick={() => {
-                        edit(
-                          "attributes",
-                          product.attributes.filter((_, i) => i !== index),
-                        );
-                      }}
-                    >
-                      Remove characteristic {index + 1}
-                    </Action>
-                  </fieldset>
-                ))}
-                <Action
-                  disabled={product.attributes.length >= 30}
-                  onClick={() => {
-                    edit("attributes", [
-                      ...product.attributes,
-                      { label: "", value: "" },
-                    ]);
-                  }}
+                  <NumberInput
+                    name="product.delivery_min_hours"
+                    label="Earliest delivery hours"
+                    value={product.delivery_min_hours}
+                    change={(v) => {
+                      edit("delivery_min_hours", v);
+                    }}
+                  />
+                  <NumberInput
+                    name="product.delivery_max_hours"
+                    label="Latest delivery hours"
+                    value={product.delivery_max_hours}
+                    change={(v) => {
+                      edit("delivery_max_hours", v);
+                    }}
+                  />
+                </div>
+                <div
+                  hidden={section !== "details"}
+                  data-editor-section="details"
                 >
-                  Add account characteristic
+                  <h3>Public account characteristics</h3>
+                  {product.attributes.map((item, index) => (
+                    <fieldset key={index}>
+                      <legend>Characteristic {index + 1}</legend>
+                      <Text
+                        name={`product.attributes.${String(index)}.label`}
+                        label={`Characteristic ${String(index + 1)} name`}
+                        value={item.label}
+                        change={(v) => {
+                          edit(
+                            "attributes",
+                            product.attributes.map((a, i) =>
+                              i === index ? { ...a, label: v } : a,
+                            ),
+                          );
+                        }}
+                      />
+                      <Text
+                        name={`product.attributes.${String(index)}.value`}
+                        label={`Characteristic ${String(index + 1)} value`}
+                        value={item.value}
+                        change={(v) => {
+                          edit(
+                            "attributes",
+                            product.attributes.map((a, i) =>
+                              i === index ? { ...a, value: v } : a,
+                            ),
+                          );
+                        }}
+                      />
+                      <Action
+                        onClick={() => {
+                          edit(
+                            "attributes",
+                            product.attributes.filter((_, i) => i !== index),
+                          );
+                        }}
+                      >
+                        Remove characteristic {index + 1}
+                      </Action>
+                    </fieldset>
+                  ))}
+                  <Action
+                    disabled={product.attributes.length >= 30}
+                    onClick={() => {
+                      edit("attributes", [
+                        ...product.attributes,
+                        { label: "", value: "" },
+                      ]);
+                    }}
+                  >
+                    Add account characteristic
+                  </Action>
+                </div>
+                {section === "images" && (
+                  <>
+                    <h3>Public image selection</h3>
+                    <ErrorNotice error={submission.error} />
+                    {!!submission.error && (
+                      <Action onClick={submission.reload}>
+                        Retry source images
+                      </Action>
+                    )}
+                  </>
+                )}
+                {section === "images" && submission.data && (
+                  <Images
+                    conversation={submission.data.conversation_id}
+                    selected={product.media_ids}
+                    change={(ids) => {
+                      if (ids.length <= 8) edit("media_ids", ids);
+                    }}
+                  />
+                )}
+                <div hidden={section !== "publication"}>
+                  <h3>Staff preview and publication</h3>
+                  <p>
+                    Preview the saved listing before publishing. Draft changes
+                    are private until publication.
+                  </p>
+                  <Check
+                    label="I reviewed every public field and selected image, with permission to publish, and removed private information"
+                    value={reviewed}
+                    change={setReviewed}
+                  />
+                  <Action
+                    onClick={() => {
+                      setPreview((v) => !v);
+                    }}
+                  >
+                    {preview ? "Hide" : "Show"} listing preview
+                  </Action>
+                  <Action
+                    disabled={!reviewed || dirty || !preview}
+                    onClick={() => void act("publish")}
+                  >
+                    Publish account listing
+                  </Action>
+                  <Action onClick={() => void act("withdraw")}>
+                    Withdraw account listing
+                  </Action>
+                </div>
+                <Action disabled={!dirty} onClick={() => void act("save")}>
+                  Save account listing
                 </Action>
-              </div>
-              {section === "images" && (
-                <>
-                  <h3>Public image selection</h3>
-                  <ErrorNotice error={submission.error} />
-                  {!!submission.error && (
-                    <Action onClick={submission.reload}>
-                      Retry source images
-                    </Action>
-                  )}
-                </>
+                {dirty && (
+                  <p role="status">
+                    You have unsaved changes. Save them before publication.
+                  </p>
+                )}
+              </fieldset>
+              {section === "publication" && preview && (
+                <section aria-label="Private staff listing preview">
+                  <h3>Customer preview · private draft</h3>
+                  <ProductTerms
+                    listing={{
+                      id: row.id,
+                      release_id: row.release_id,
+                      game: row.game,
+                      slug: row.slug,
+                      state: row.state,
+                      product,
+                      images: [],
+                    }}
+                  />
+                  {product.media_ids.map((id) => (
+                    <DownloadImage key={id} id={id} admin />
+                  ))}
+                </section>
               )}
-              {section === "images" && submission.data && (
-                <Images
-                  conversation={submission.data.conversation_id}
-                  selected={product.media_ids}
-                  change={(ids) => {
-                    if (ids.length <= 8) edit("media_ids", ids);
-                  }}
-                />
-              )}
-              <div hidden={section !== "publication"}>
-                <h3>Staff preview and publication</h3>
+              {["reserved", "sold"].includes(row.state) && (
                 <p>
-                  Preview the saved listing before publishing. Draft changes are
-                  private until publication.
-                </p>
-                <Check
-                  label="I reviewed every public field and selected image, with permission to publish, and removed private information"
-                  value={reviewed}
-                  change={setReviewed}
-                />
-                <Action
-                  onClick={() => {
-                    setPreview((v) => !v);
-                  }}
-                >
-                  {preview ? "Hide" : "Show"} listing preview
-                </Action>
-                <Action
-                  disabled={!reviewed || dirty || !preview}
-                  onClick={() => void act("publish")}
-                >
-                  Publish account listing
-                </Action>
-                <Action onClick={() => void act("withdraw")}>
-                  Withdraw account listing
-                </Action>
-              </div>
-              <Action disabled={!dirty} onClick={() => void act("save")}>
-                Save account listing
-              </Action>
-              {dirty && (
-                <p role="status">
-                  You have unsaved changes. Save them before publication.
+                  Reserved or paid inventory is locked. Handle payment or
+                  delivery issues through the buyer order and its service case.
                 </p>
               )}
-            </fieldset>
-            {section === "publication" && preview && (
-              <section aria-label="Private staff listing preview">
-                <h3>Customer preview · private draft</h3>
-                <ProductTerms
-                  listing={{
-                    id: row.id,
-                    release_id: row.release_id,
-                    game: row.game,
-                    slug: row.slug,
-                    state: row.state,
-                    product,
-                    images: [],
-                  }}
-                />
-                {product.media_ids.map((id) => (
-                  <DownloadImage key={id} id={id} admin />
-                ))}
-              </section>
-            )}
-            {["reserved", "sold"].includes(row.state) && (
-              <p>
-                Reserved or paid inventory is locked. Handle payment or delivery
-                issues through the buyer order and its service case.
-              </p>
-            )}
-          </>
-        )}
-      </RecordShell>
-    </div>
+            </>
+          )}
+        </RecordShell>
+      </div>
+    </FieldValidation>
   );
 }
 function InventorySession() {

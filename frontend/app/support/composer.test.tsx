@@ -84,6 +84,16 @@ it("locks an ambiguous send and retries exactly the same payload without duplica
   fireEvent.submit(form);
   fireEvent.submit(form);
   await screen.findByRole("button", { name: "Retry same message" });
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Retry same message" }),
+    ).toHaveFocus(),
+  );
+  expect(
+    screen.getByRole("button", { name: "Retry same message" }),
+  ).toHaveAccessibleDescription(
+    /Send not confirmed.*Retry checks the same send/,
+  );
   expect(post).toHaveBeenCalledTimes(1);
   expect(screen.getByLabelText("Message", { exact: true })).toHaveValue(
     "One message only",
@@ -183,4 +193,38 @@ it("names the shared recipients separately from private staff notes", () => {
   expect(
     screen.getByText("Private note · visible to administrators only."),
   ).toBeVisible();
+});
+it("shows message and proof errors beside their controls and never sends an incomplete proof", async () => {
+  render(
+    <Composer
+      base="/admin/conversations/thread"
+      admin
+      proofAllowed
+      unavailable={false}
+      done={done}
+      fail={fail}
+    />,
+  );
+  const input = screen.getByLabelText("Message", { exact: true });
+  fireEvent.click(screen.getByRole("button", { name: "Send message" }));
+  await waitFor(() => expect(input).toHaveFocus());
+  expect(input).toHaveAttribute("aria-invalid", "true");
+  expect(input).toHaveAccessibleDescription(
+    expect.stringContaining("Write a message of 1–4,000 characters."),
+  );
+  fireEvent.change(input, { target: { value: "Proof description retained" } });
+  fireEvent.change(screen.getByLabelText("Message type"), {
+    target: { value: "proof" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Publish proof" }));
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "Attach image" })).toHaveFocus(),
+  );
+  expect(
+    screen.getByRole("button", { name: "Attach image" }),
+  ).toHaveAccessibleDescription(
+    "Attach an approved image before publishing proof.",
+  );
+  expect(input).toHaveValue("Proof description retained");
+  expect(post).not.toHaveBeenCalled();
 });

@@ -1,3 +1,4 @@
+import { publicAPIHeaders } from "../portal/routing.server";
 import { redirect } from "react-router";
 import { publicListingSchema } from "./model";
 
@@ -22,6 +23,7 @@ export async function legacyAccountLoader({
       ),
       {
         cache: "no-store",
+        headers: publicAPIHeaders(),
         redirect: "error",
         signal: AbortSignal.timeout(8000),
       },

@@ -209,7 +209,7 @@ func (s *Store) validate(w http.ResponseWriter, r *http.Request, _ *identity.Pri
 			return &Invalid{[]Issue{{"capacity", "This package is currently unavailable."}}}
 		}
 	}
-	result := ValidateAnswers(release.Configuration, input.Service, input.Stage, input.Answers, variant)
+	result := ValidateNewAnswers(release.Configuration, input.Service, input.Stage, input.Answers, variant)
 	return write(w, http.StatusOK, result)
 }
 
@@ -237,7 +237,7 @@ func (s *Store) validatePreview(w http.ResponseWriter, r *http.Request, p *ident
 	if issues := previewIssues(c); len(issues) > 0 {
 		return &Invalid{issues}
 	}
-	return write(w, http.StatusOK, ValidateAnswers(c, input.Service, input.Stage, input.Answers, nil))
+	return write(w, http.StatusOK, ValidateNewAnswers(c, input.Service, input.Stage, input.Answers, nil))
 }
 
 func (s *Store) estimate(preview bool) func(http.ResponseWriter, *http.Request, *identity.Principal) error {
@@ -278,7 +278,7 @@ func (s *Store) estimate(preview bool) func(http.ResponseWriter, *http.Request, 
 				return ErrConflict
 			}
 		}
-		return write(w, http.StatusOK, Calculate(release, input.Service, input.Answers, time.Now()))
+		return write(w, http.StatusOK, CalculateNew(release, input.Service, input.Answers, time.Now()))
 	}
 }
 

@@ -11,6 +11,8 @@ const (
 	Label = "auth_identity"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldPortal holds the string denoting the portal field in the database.
+	FieldPortal = "portal"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
 	// FieldProvider holds the string denoting the provider field in the database.
@@ -26,6 +28,7 @@ const (
 // Columns holds all SQL columns for authidentity fields.
 var Columns = []string{
 	FieldID,
+	FieldPortal,
 	FieldUserID,
 	FieldProvider,
 	FieldSubject,
@@ -43,6 +46,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultPortal holds the default value on creation for the "portal" field.
+	DefaultPortal string
+	// PortalValidator is a validator for the "portal" field. It is called by the builders before save.
+	PortalValidator func(string) error
 	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	UserIDValidator func(string) error
 	// ProviderValidator is a validator for the "provider" field. It is called by the builders before save.
@@ -59,6 +66,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByPortal orders the results by the portal field.
+func ByPortal(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPortal, opts...).ToFunc()
 }
 
 // ByUserID orders the results by the user_id field.

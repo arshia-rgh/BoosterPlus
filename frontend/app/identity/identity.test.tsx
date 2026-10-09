@@ -8,8 +8,16 @@ import {
 import { MemoryRouter } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
 import Identity, { Form, Text } from "./identity";
-import { command, get, errorMessage, APIError, sessionSchema } from "./api";
+import {
+  command,
+  get,
+  post,
+  errorMessage,
+  APIError,
+  sessionSchema,
+} from "./api";
 const user = {
+  portal: "customer",
   id: "test-id",
   email: "person@example.test",
   display_name: "Person",
@@ -361,6 +369,9 @@ it("links server validation to the matching field and preserves other inputs", a
   expect(screen.getByLabelText("Display name")).toHaveAccessibleDescription(
     "Your visible name Use at least three characters.",
   );
+  await waitFor(() => {
+    expect(screen.getByLabelText("Display name")).toHaveFocus();
+  });
   fireEvent.click(link);
   expect(screen.getByLabelText("Display name")).toHaveFocus();
   fireEvent.change(screen.getByLabelText("Display name"), {
@@ -377,3 +388,48 @@ it("links server validation to the matching field and preserves other inputs", a
   fireEvent.click(screen.getByRole("button", { name: "Profile" }));
   await screen.findByText("Request completed.");
 });
+
+it("explains a provider minimum failure without exposing provider details", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          code: "payment_below_minimum",
+          detail: "private upstream detail",
+        }),
+        { status: 400 },
+      ),
+    ),
+  );
+  await expect(get("/orders/synthetic/payment", sessionSchema)).rejects.toThrow(
+    "No checkout was created",
+  );
+  await expect(
+    get("/orders/synthetic/payment", sessionSchema),
+  ).rejects.not.toThrow("private upstream detail");
+});
+
+it.each([Number.NaN, Infinity, -Infinity])(
+  "rejects non-finite numeric input before any request or null serialization (%s)",
+  async (invalid) => {
+    const fetcher = vi.fn();
+    vi.stubGlobal("fetch", fetcher);
+    const error = await post(
+      "/admin/example",
+      { configuration: { packages: [{ stock_limit: invalid }] } },
+      sessionSchema,
+    ).catch((cause: unknown) => cause);
+    expect(error).toBeInstanceOf(APIError);
+    expect(error).toMatchObject({
+      status: 400,
+      issues: [
+        {
+          path: "packages.0.stock_limit",
+          message: "Enter a whole number before continuing.",
+        },
+      ],
+    });
+    expect(fetcher).not.toHaveBeenCalled();
+  },
+);

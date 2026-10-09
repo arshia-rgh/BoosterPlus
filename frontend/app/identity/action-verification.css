@@ -1,0 +1,121 @@
+.action-verification {
+  width: min(30rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid #476955;
+  border-radius: 1.5rem;
+  color: #edf7f0;
+  background: #10251c;
+  box-shadow: 0 2rem 6rem #0009;
+}
+.action-verification::backdrop {
+  background: #04110bdd;
+  backdrop-filter: blur(8px);
+}
+.action-verification h2 {
+  margin: 1rem 0 0.6rem;
+  font-size: 1.6rem;
+  line-height: 1.25;
+}
+.action-verification p {
+  line-height: 1.55;
+}
+.action-verification-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #acd8ba;
+  text-transform: capitalize;
+}
+.action-verification-badge {
+  border: 1px solid #74b98c;
+  padding: 0.2rem 0.55rem;
+  border-radius: 50%;
+}
+.action-verification-methods {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.25rem 0;
+}
+.action-verification button {
+  min-height: 44px;
+  cursor: pointer;
+  font: inherit;
+}
+.action-verification button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.action-verification-methods button {
+  flex: 1;
+  border: 1px solid #476955;
+  background: transparent;
+  color: inherit;
+  border-radius: 0.65rem;
+}
+.action-verification-methods button[aria-pressed="true"] {
+  background: #b6e898;
+  color: #10251c;
+  border-color: #b6e898;
+}
+.action-verification-address {
+  overflow-wrap: anywhere;
+}
+.action-verification form {
+  display: grid;
+  gap: 0.65rem;
+}
+.action-verification input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  padding: 0.8rem;
+  border: 1px solid #749581;
+  border-radius: 0.7rem;
+  background: #06150d;
+  color: #f1fff4;
+  font: inherit;
+  font-size: 1.3rem;
+  letter-spacing: 0.25em;
+}
+.action-verification :focus-visible {
+  outline: 3px solid #d5f6bc;
+  outline-offset: 3px;
+}
+.action-verification [role="alert"] {
+  color: #ffbfaf;
+}
+.action-verification-cancel,
+.action-verification-resend {
+  margin-top: 0.7rem;
+  width: 100%;
+  border: 1px solid #476955;
+  border-radius: 0.65rem;
+  background: transparent;
+  color: #d7f0dd;
+}
+.action-verification-note {
+  color: #abc1b3;
+  font-size: 0.85rem;
+  margin-bottom: 0;
+}
+
+.action-verification .button {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid #b6e898;
+  border-radius: 0.7rem;
+  background: #b6e898;
+  color: #10251c;
+  font: inherit;
+  font-weight: 650;
+  text-align: center;
+  box-shadow: none;
+}
+.action-verification .button:hover:not(:disabled) {
+  background: #c9f0b2;
+}

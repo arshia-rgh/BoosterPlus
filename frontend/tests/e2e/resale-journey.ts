@@ -1,3 +1,4 @@
+import { hostedCheckout } from "./hosted-checkout";
 import { integratedCapture } from "./integrated-capture";
 import { authURL } from "./identity-fixtures";
 import { createHmac, randomUUID } from "node:crypto";
@@ -464,19 +465,7 @@ export async function resaleJourney(
     await buyer
       .getByLabel("I accept this payment policy and the agreed order price")
       .check();
-    await buyer.getByRole("button", { name: "Create secure checkout" }).click();
-    const instructions = buyer.getByRole("region", {
-      name: "Provider deposit instructions",
-    });
-    await expect(
-      instructions.getByRole("heading", {
-        name: "Send your payment",
-        exact: true,
-      }),
-    ).toBeVisible({ timeout: 20000 });
-    const paymentID = await instructions.locator("p code").first().innerText();
-    if (!/^[1-9][0-9]*$/.test(paymentID))
-      throw new Error("Missing payment reference");
+    const paymentID = await hostedCheckout(buyer);
     const body = JSON.stringify({
         payment_id: paymentID,
         payment_status: "finished",

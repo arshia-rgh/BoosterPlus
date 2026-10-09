@@ -151,7 +151,66 @@ it("hides recoverable drafts, restores them after success and clears on forbidde
   fireEvent.click(screen.getByRole("button", { name: "Refresh order" }));
   await screen.findByRole("region", { name: "Admin order access removed" });
   expect(screen.queryByLabelText("Quote draft")).not.toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Admin sign-in" })).toHaveAttribute(
+    "href",
+    "/admin/login?returnTo=%2Fadmin%2Forders%2Forder%3Fsection%3Dquote",
+  );
 });
+
+it.each(["recent_auth_required", "mfa_required"])(
+  "recovers %s in admin security with fresh authority and no retained drafts",
+  async (verification) => {
+    let resolve: (value: Detail) => void = () => {};
+    let reads = 0;
+    vi.mocked(get).mockImplementation(() =>
+      ++reads === 1
+        ? Promise.resolve(detail)
+        : new Promise((done) => {
+            resolve = done;
+          }),
+    );
+    mount("quote&ignored=private");
+    fireEvent.change(await screen.findByLabelText("Quote draft"), {
+      target: { value: "Clear this draft on access change" },
+    });
+    fireEvent(
+      window,
+      new CustomEvent("boosterplus:session-changed", {
+        detail: { portal: "customer", verification },
+      }),
+    );
+    expect(screen.getByLabelText("Quote draft")).toBeVisible();
+    fireEvent(
+      window,
+      new CustomEvent("boosterplus:session-changed", {
+        detail: { portal: "admin", verification },
+      }),
+    );
+    expect(screen.queryByLabelText("Quote draft")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Verify to continue" }),
+    ).toHaveFocus();
+    if (verification === "recent_auth_required")
+      expect(
+        screen.getByRole("button", { name: "Verify to continue here" }),
+      ).toBeVisible();
+    else
+      expect(
+        screen.getByRole("link", {
+          name: "Finish signing in to this workspace",
+        }),
+      ).toHaveAttribute("href", "/admin/login");
+    fireEvent.click(
+      screen.getByRole("button", { name: "Check admin order access" }),
+    );
+    expect(screen.queryByLabelText("Quote draft")).not.toBeInTheDocument();
+    await act(async () => {
+      resolve(detail);
+      await Promise.resolve();
+    });
+    expect(await screen.findByLabelText("Quote draft")).toHaveValue("");
+  },
+);
 it("waits for fresh authority after an admin session event instead of remounting cached private drafts", async () => {
   let resolve: (value: Detail) => void = () => {};
   let reads = 0;

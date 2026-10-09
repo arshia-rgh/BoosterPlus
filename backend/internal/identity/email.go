@@ -17,6 +17,11 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
 )
 
+const (
+	emailChallengeTTL    = 10 * time.Minute
+	emailRequestCooldown = time.Minute
+)
+
 // EmailRequest binds a challenge to its browser, purpose, and current session where applicable.
 type EmailRequest struct {
 	Portal       Portal
@@ -80,13 +85,8 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 		if err := Require(input.Principal, "self"); err != nil {
 			return "", err
 		}
-		if err := s.recent(input.Principal); err != nil {
+		if err := s.sensitive(input.Principal); err != nil {
 			return "", err
-		}
-		if input.Principal.User.MfaEnabled {
-			if err := s.sensitive(input.Principal); err != nil {
-				return "", err
-			}
 		}
 		accountID = input.Principal.User.ID
 		sessionID = input.Principal.Session.ID
@@ -95,7 +95,7 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 		if originalErr != nil {
 			return "", ErrInvalid
 		}
-		account, findErr := s.client.User.Query().Where(user.EmailEQ(original)).Only(ctx)
+		account, findErr := s.client.User.Query().Where(user.PortalEQ(string(input.Portal)), user.EmailEQ(original)).Only(ctx)
 		if findErr != nil && !ent.IsNotFound(findErr) {
 			return "", findErr
 		}
@@ -134,14 +134,14 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 			return e
 		}
 		if input.Purpose == "login" && input.Portal != PortalCustomer {
-			account, findErr := tx.User.Query().Where(user.EmailEQ(email), user.SuspendedEQ(false)).Only(ctx)
+			account, findErr := tx.User.Query().Where(user.PortalEQ(string(input.Portal)), user.EmailEQ(email), user.SuspendedEQ(false), user.DeletedAtIsNil()).Only(ctx)
 			if ent.IsNotFound(findErr) {
 				return nil
 			}
 			if findErr != nil {
 				return findErr
 			}
-			if !input.Portal.permitsRole(account.Role) {
+			if !input.Portal.permitsUser(account) {
 				return nil
 			}
 		}
@@ -157,11 +157,11 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 				return termsErr
 			}
 		}
-		_, createErr := tx.AuthChallenge.Create().SetID(id).SetPortal(string(input.Portal)).SetEmail(email).SetPurpose(input.Purpose).SetUserID(accountID).SetSessionID(sessionID).SetBrowserHash(s.browserDigest(input.Portal, input.Browser)).SetCodeDigest(s.digest("code.portal", string(input.Portal), id, input.Purpose, code)).SetTermsVersion(terms).SetCreatedAt(s.now()).SetExpiresAt(s.now().Add(10 * time.Minute)).Save(ctx)
+		_, createErr := tx.AuthChallenge.Create().SetID(id).SetPortal(string(input.Portal)).SetEmail(email).SetPurpose(input.Purpose).SetUserID(accountID).SetSessionID(sessionID).SetBrowserHash(s.browserDigest(input.Portal, input.Browser)).SetCodeDigest(s.digest("code.portal", string(input.Portal), id, input.Purpose, code)).SetTermsVersion(terms).SetCreatedAt(s.now()).SetExpiresAt(s.now().Add(emailChallengeTTL)).Save(ctx)
 		if createErr != nil {
 			return createErr
 		}
-		return s.queueMessage(ctx, tx, id, email, "Your PLAYORA verification code", fmt.Sprintf("Enter the code in the verification screen for your request.\n\n%s\n\nIt expires in 10 minutes. Use it only for the %s portal %s request you started. If you did not request this code, ignore this email. Never share this code with support or another person.", code, input.Portal, input.Purpose), 10*time.Minute, emailtemplate.View{Heading: "Verify your request", Preview: "Your verification code expires in 10 minutes. Only use it for the request you started.", Code: code})
+		return s.queueMessage(ctx, tx, id, email, "Your PLAYORA verification code", fmt.Sprintf("Enter the code in the verification screen for your request.\n\n%s\n\nIt expires in 10 minutes. Use it only for the %s portal %s request you started. If you did not request this code, ignore this email. Never share this code with support or another person.", code, input.Portal, input.Purpose), emailChallengeTTL, emailtemplate.View{Heading: "Verify your request", Preview: "Your verification code expires in 10 minutes. Only use it for the request you started.", Code: code})
 	})
 	return id, err
 }
@@ -261,8 +261,8 @@ func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string,
 			if termsErr != nil {
 				return termsErr
 			}
-			account, accountErr := tx.User.Query().Where(user.EmailEQ(challenge.Email)).Only(ctx)
-			if portal != PortalCustomer && (ent.IsNotFound(accountErr) || accountErr == nil && !portal.permitsRole(account.Role)) {
+			account, accountErr := tx.User.Query().Where(user.PortalEQ(string(portal)), user.EmailEQ(challenge.Email)).Only(ctx)
+			if portal != PortalCustomer && (ent.IsNotFound(accountErr) || accountErr == nil && !portal.permitsUser(account)) {
 				return nil
 			}
 			if ent.IsNotFound(accountErr) {
@@ -270,7 +270,7 @@ func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string,
 					resultErr = ErrTerms
 					return nil
 				}
-				account, accountErr = tx.User.Create().SetEmail(challenge.Email).SetEmailVerifiedAt(s.now()).SetTermsVersion(challenge.TermsVersion).SetTermsAcceptedAt(s.now()).Save(ctx)
+				account, accountErr = tx.User.Create().SetPortal(string(portal)).SetEmail(challenge.Email).SetEmailVerifiedAt(s.now()).SetTermsVersion(challenge.TermsVersion).SetTermsAcceptedAt(s.now()).Save(ctx)
 			} else if accountErr == nil && account.EmailVerifiedAt == nil {
 				account, accountErr = tx.User.UpdateOne(account).SetEmailVerifiedAt(s.now()).Save(ctx)
 			}
@@ -319,13 +319,8 @@ func (s *Service) VerifyEmail(ctx context.Context, id, code, browser, ip string,
 				return auditErr
 			}
 		case "email_change":
-			if recentErr := s.recent(p); recentErr != nil {
+			if recentErr := s.sensitive(p); recentErr != nil {
 				return reject(recentErr)
-			}
-			if p.User.MfaEnabled {
-				if sensitiveErr := s.sensitive(p); sensitiveErr != nil {
-					return reject(sensitiveErr)
-				}
 			}
 			if changeErr := s.changeEmail(ctx, tx, p.User.ID, challenge.Email, p.User.ID, "email.changed", false); changeErr != nil {
 				if errors.Is(changeErr, ErrConflict) {
@@ -360,7 +355,7 @@ func (s *Service) cooldown(ctx context.Context, email string) (bool, error) {
 	key := s.digest("email.cooldown", email)
 	allowed := false
 	err := s.transaction(ctx, func(tx *ent.Tx) error {
-		_, writeErr := tx.ExecContext(ctx, "INSERT INTO auth_rates (id,count,expires_at) VALUES (?,1,?) ON DUPLICATE KEY UPDATE count=IF(expires_at<=?,1,LEAST(count+1,1000000)),expires_at=IF(expires_at<=?,VALUES(expires_at),expires_at)", key, s.now().Add(time.Minute), s.now(), s.now())
+		_, writeErr := tx.ExecContext(ctx, "INSERT INTO auth_rates (id,count,expires_at) VALUES (?,1,?) ON DUPLICATE KEY UPDATE count=IF(expires_at<=?,1,LEAST(count+1,1000000)),expires_at=IF(expires_at<=?,VALUES(expires_at),expires_at)", key, s.now().Add(emailRequestCooldown), s.now(), s.now())
 		if writeErr != nil {
 			return writeErr
 		}

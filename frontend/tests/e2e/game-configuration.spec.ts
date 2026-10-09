@@ -31,6 +31,11 @@ for (const game of ["mlbb", "wow", "lol", "valorant", "dota", "wildrift"]) {
         page.getByText("This field is required.", { exact: true }),
       ).toBeVisible();
       await expect(page).not.toHaveURL(/step=review/);
+      await expect(mode).toBeFocused();
+      await expect(mode).toHaveAttribute("aria-invalid", "true");
+      await expect(
+        page.getByRole("link", { name: "Mode: This field is required." }),
+      ).toBeVisible();
       await mode.selectOption("solo");
       await page
         .getByRole("button", { name: "Continue to order information →" })

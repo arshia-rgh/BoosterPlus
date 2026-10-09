@@ -1,5 +1,26 @@
 import { expect, it } from "vitest";
-import { effectiveInstructionStatus, instructionTitle } from "./presentation";
+import {
+  effectiveInstructionStatus,
+  instructionTitle,
+  transferPresentation,
+} from "./presentation";
+it.each(["seller", "customer"] as const)(
+  "identifies the %s as the payee in staff transfer guidance",
+  (payee) => {
+    expect(transferPresentation("recipient_pending", payee).title).toBe(
+      `Waiting for the ${payee}'s destination`,
+    );
+    expect(transferPresentation("verified", payee).description).toContain(
+      `The ${payee}'s destination is confirmed`,
+    );
+    expect(transferPresentation("recipient_pending").title).toBe(
+      "Your destination is needed",
+    );
+    expect(transferPresentation("verified").description).toContain(
+      "Your destination is confirmed",
+    );
+  },
+);
 it("uses provider expiry, freshness and connection state consistently", () => {
   const now = Date.parse("2026-09-27T12:00:00Z");
   const attempt = {

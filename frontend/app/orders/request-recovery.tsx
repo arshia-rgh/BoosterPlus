@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { Link, useLocation, useSearchParams } from "react-router";
+import { Link, useLocation, useSearchParams } from "../portal-router";
 import { get, sessionSchema } from "../identity/api";
 import { ErrorNotice } from "../catalog/controls";
 import { z } from "../validation";

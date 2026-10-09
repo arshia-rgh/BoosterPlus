@@ -31,14 +31,18 @@ func TestDiscoveryReviewShowcaseMigrationReadiness(t *testing.T) {
 	if err := database.Ready(ctx, db); err == nil {
 		t.Fatal("schema without the showcase index passed readiness")
 	}
-	if err := r.Apply(ctx, 0); err != nil {
+	if err := r.Apply(ctx, 28); err != nil {
 		t.Fatal(err)
 	}
-	if err := database.Ready(ctx, db); err != nil {
+	var indexes int
+	if err := db.QueryRowContext(ctx, "SELECT COUNT(DISTINCT index_name) FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='reviews' AND index_name='review_showcase'").Scan(&indexes); err != nil || indexes != 1 {
+		t.Fatal("showcase index missing after upgrade", err)
+	}
+	if err := r.Down(ctx, 1); err != nil {
 		t.Fatal(err)
 	}
-	if err := r.Down(ctx, len(r.Files())-27); err != nil {
-		t.Fatal(err)
+	if err := db.QueryRowContext(ctx, "SELECT COUNT(DISTINCT index_name) FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='reviews' AND index_name='review_showcase'").Scan(&indexes); err != nil || indexes != 0 {
+		t.Fatal("rollback retained showcase index", err)
 	}
 	if err := database.Ready(ctx, db); err == nil {
 		t.Fatal("rolled-back showcase migration passed readiness")

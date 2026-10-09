@@ -1,9 +1,10 @@
 import "../ui/secondary.css";
 import { DownloadImage } from "../media/attachment";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { Action, Check, ErrorNotice, Issues, Text } from "../catalog/controls";
 import DynamicForm, { minorDisplay } from "../catalog/dynamic-form";
+import { formatWinRate, isWinRateField } from "../catalog/win-rate";
 import {
   optionsFor,
   type Answers,
@@ -31,6 +32,8 @@ function selectionLabel(
   if (Array.isArray(value))
     return value.map((item) => selectionLabel(field, item, config)).join(", ");
   if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (field && isWinRateField(field) && typeof value === "string")
+    return formatWinRate(value);
   return (
     (field
       ? optionsFor(field, config).find((option) => option.key === String(value))

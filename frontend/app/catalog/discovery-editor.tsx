@@ -97,6 +97,7 @@ export default function DiscoveryEditor({
               <legend>{label}</legend>
               <Select
                 label={`${label} availability`}
+                name={`discovery.capabilities.${service}.state`}
                 value={policy.state}
                 change={(state) => {
                   patch({ state: state as typeof policy.state });
@@ -109,6 +110,7 @@ export default function DiscoveryEditor({
               />
               <Text
                 label={`${label} description`}
+                name={`discovery.capabilities.${service}.description`}
                 value={policy.description}
                 multiline
                 change={(description) => {
@@ -119,6 +121,7 @@ export default function DiscoveryEditor({
               {policy.state === "paused" && (
                 <Text
                   label={`${label} unavailable reason`}
+                  name={`discovery.capabilities.${service}.reason`}
                   value={policy.reason}
                   change={(reason) => {
                     patch({ reason });

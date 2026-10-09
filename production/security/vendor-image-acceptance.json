@@ -1898,6 +1898,25 @@
       "source_report_sha256": "2c89d79c139ca605bccfcbdcc24690819b643a6692052e84064b5d5adfede3b8"
     },
     "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45": {
+      "additional_reviews": [
+        {
+          "findings": [
+            {
+              "FixedVersion": "2:8.2.2637-26.el9_8.23",
+              "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+              "PkgName": "vim-minimal",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+              "VulnerabilityID": "CVE-2026-73073"
+            }
+          ],
+          "owner_decision": "yes i approve",
+          "review_document": "security/DATABASE_REVIEW_2026-10-08.md",
+          "reviewed_on": "2026-10-08",
+          "source_report_sha256": "346d10315aea8b2b0a7980d0dd095cd383218ad509f665a42d7daa146a6cd1c3"
+        }
+      ],
       "findings": [
         {
           "FixedVersion": "7.76.1-40.el9_8.7",
@@ -2429,12 +2448,40 @@
           "Severity": "HIGH",
           "Target": "br",
           "VulnerabilityID": "CVE-2026-56862"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.23",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73073"
         }
       ],
       "reviewed_on": "2026-10-02",
       "source_report_sha256": "c982b444456e22d05827e8c5dee19bd9a8a50dab7124f1ce2c80e8e049618287"
     },
     "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef": {
+      "additional_reviews": [
+        {
+          "findings": [
+            {
+              "FixedVersion": "2:8.2.2637-26.el9_8.23",
+              "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+              "PkgName": "vim-minimal",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+              "VulnerabilityID": "CVE-2026-73073"
+            }
+          ],
+          "owner_decision": "yes i approve",
+          "review_document": "security/DATABASE_REVIEW_2026-10-08.md",
+          "reviewed_on": "2026-10-08",
+          "source_report_sha256": "f1b65605d5760a58491252b6e27595095aac5cc9c57b9d0388f282549d9ed7f6"
+        }
+      ],
       "findings": [
         {
           "FixedVersion": "7.76.1-40.el9_8.7",
@@ -3146,12 +3193,40 @@
           "Severity": "HIGH",
           "Target": "pd-server",
           "VulnerabilityID": "CVE-2026-56862"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.23",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73073"
         }
       ],
       "reviewed_on": "2026-10-02",
       "source_report_sha256": "2f7c2e3792009b2b55db912abb4b46edcbbeff4fa8b0187d3eb478a4d407bc68"
     },
     "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5": {
+      "additional_reviews": [
+        {
+          "findings": [
+            {
+              "FixedVersion": "2:8.2.2637-26.el9_8.23",
+              "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+              "PkgName": "vim-minimal",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+              "VulnerabilityID": "CVE-2026-73073"
+            }
+          ],
+          "owner_decision": "yes i approve",
+          "review_document": "security/DATABASE_REVIEW_2026-10-08.md",
+          "reviewed_on": "2026-10-08",
+          "source_report_sha256": "a04bc8e3c3752fc033df8903f61938e9e9fc91e0668018b394dbdfec3c17ddde"
+        }
+      ],
       "findings": [
         {
           "FixedVersion": "7.76.1-40.el9_8.7",
@@ -3683,12 +3758,40 @@
           "Severity": "HIGH",
           "Target": "tidb-server",
           "VulnerabilityID": "CVE-2026-56862"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.23",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73073"
         }
       ],
       "reviewed_on": "2026-10-02",
       "source_report_sha256": "1d691085e18b7cc9d170a001b80617a2a6012c03548a32f41fb12c42458bf039"
     },
     "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69": {
+      "additional_reviews": [
+        {
+          "findings": [
+            {
+              "FixedVersion": "2:8.2.2637-26.el9_8.23",
+              "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+              "PkgName": "vim-minimal",
+              "PkgPath": "",
+              "Severity": "HIGH",
+              "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+              "VulnerabilityID": "CVE-2026-73073"
+            }
+          ],
+          "owner_decision": "yes i approve",
+          "review_document": "security/DATABASE_REVIEW_2026-10-08.md",
+          "reviewed_on": "2026-10-08",
+          "source_report_sha256": "ecd7eaa07409e9ceebfcf34952cfd627f6201910df5e754b96250853fa0a4a25"
+        }
+      ],
       "findings": [
         {
           "FixedVersion": "7.76.1-40.el9_8.7",
@@ -4121,6 +4224,15 @@
           "Severity": "HIGH",
           "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
           "VulnerabilityID": "CVE-2026-73078"
+        },
+        {
+          "FixedVersion": "2:8.2.2637-26.el9_8.23",
+          "InstalledVersion": "2:8.2.2637-26.el9_8.13",
+          "PkgName": "vim-minimal",
+          "PkgPath": "",
+          "Severity": "HIGH",
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "VulnerabilityID": "CVE-2026-73073"
         }
       ],
       "reviewed_on": "2026-10-02",

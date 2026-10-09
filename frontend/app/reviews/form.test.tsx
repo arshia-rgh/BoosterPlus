@@ -10,7 +10,10 @@ vi.mock("../identity/api", async (original) => ({
   post: vi.fn(),
 }));
 vi.mock("../orders/resource", () => ({ useResource: vi.fn() }));
-afterEach(() => vi.clearAllMocks());
+afterEach(() => {
+  vi.clearAllMocks();
+  vi.restoreAllMocks();
+});
 function setup() {
   const value: OrderReview = {
     order_id: "order",
@@ -43,14 +46,26 @@ it("requires an explicit rating and policy acceptance and submits the bound rele
     name: "Submit review for moderation",
   });
   expect(screen.getByLabelText("Purchase rating")).toHaveValue("");
-  expect(submit).toBeDisabled();
+  fireEvent.click(submit);
+  await waitFor(() =>
+    expect(screen.getByLabelText("Purchase rating")).toHaveFocus(),
+  );
+  expect(screen.getByLabelText("Purchase rating")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  expect(post).not.toHaveBeenCalled();
   fireEvent.change(screen.getByLabelText("Purchase rating"), {
     target: { value: "1" },
   });
   fireEvent.change(screen.getByLabelText("Purchase feedback"), {
     target: { value: "Honest constructive criticism" },
   });
-  expect(submit).toBeDisabled();
+  fireEvent.click(submit);
+  expect(post).not.toHaveBeenCalled();
+  expect(
+    screen.getByLabelText("I accept this review publication policy"),
+  ).toHaveAttribute("aria-invalid", "true");
   fireEvent.click(
     screen.getByLabelText("I accept this review publication policy"),
   );
@@ -70,7 +85,8 @@ it("requires an explicit rating and policy acceptance and submits the bound rele
     expect.anything(),
   );
 });
-it("retains customer wording and expected policy after a stale-version failure", async () => {
+it("retains customer wording and focuses the local notice after a stale-version failure", async () => {
+  vi.spyOn(document, "hasFocus").mockReturnValue(true);
   const reload = setup();
   vi.mocked(post).mockRejectedValue(
     new APIError("The review changed. Refresh before saving."),
@@ -93,6 +109,9 @@ it("retains customer wording and expected policy after a stale-version failure",
   expect(screen.getByLabelText("Purchase feedback")).toHaveValue(
     "Keep my unsaved feedback",
   );
+  expect(
+    screen.getByRole("group", { name: "Review could not be submitted" }),
+  ).toHaveFocus();
   expect(reload).not.toHaveBeenCalled();
   expect(post).toHaveBeenCalledTimes(1);
 });
@@ -109,4 +128,39 @@ it("does not solicit feedback when the accepted purchase is not eligible", () =>
     </MemoryRouter>,
   );
   expect(screen.queryByRole("region", { name: "Purchase review" })).toBeNull();
+});
+it("keeps focus in the last corrected field after a server validation error", async () => {
+  vi.spyOn(document, "hasFocus").mockReturnValue(true);
+  setup();
+  const rejection = new APIError("Correct the highlighted field.");
+  rejection.status = 422;
+  rejection.issues = [
+    { path: "body", message: "Please explain your experience." },
+  ];
+  vi.mocked(post).mockRejectedValue(rejection);
+  fireEvent.change(screen.getByLabelText("Purchase rating"), {
+    target: { value: "4" },
+  });
+  const body = screen.getByLabelText("Purchase feedback");
+  fireEvent.change(body, { target: { value: "Initial feedback" } });
+  fireEvent.click(
+    screen.getByLabelText("I accept this review publication policy"),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Submit review for moderation" }),
+  );
+  await waitFor(() => {
+    expect(body).toHaveAttribute("aria-invalid", "true");
+  });
+  await waitFor(() => {
+    expect(body).toHaveFocus();
+  });
+  fireEvent.change(body, { target: { value: "My detailed experience." } });
+  await waitFor(() => {
+    expect(body).not.toHaveAttribute("aria-invalid", "true");
+  });
+  expect(body).toHaveFocus();
+  expect(
+    screen.queryByText("Correct the highlighted field."),
+  ).not.toBeInTheDocument();
 });

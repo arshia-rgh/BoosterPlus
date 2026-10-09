@@ -3,7 +3,10 @@ import { expect, it, vi } from "vitest";
 import { z } from "../validation";
 import { get } from "../identity/api";
 import { useResource } from "./resource";
-vi.mock("../identity/api", () => ({ get: vi.fn() }));
+vi.mock("../identity/api", () => ({
+  get: vi.fn(),
+  actionVerifiedEvent: "playora:action-verified",
+}));
 const schema = z.object({ label: z.string() });
 it("marks refresh immediately pending and ignores responses for a previous private route", async () => {
   let resolveOld: (value: { label: string }) => void = () => {};

@@ -1,0 +1,76 @@
+.mfa-setup {
+  max-inline-size: 48rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: var(--surface);
+}
+
+.mfa-setup-intro h3 {
+  margin-block: 0.5rem;
+}
+
+.mfa-setup-body {
+  display: grid;
+  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: center;
+  margin-block-start: 1.25rem;
+}
+
+.mfa-setup-qr {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 18rem;
+  block-size: auto;
+  background: #fff;
+  border-radius: 0.5rem;
+}
+
+.mfa-setup-account {
+  display: grid;
+  gap: 0.4rem;
+  overflow-wrap: anywhere;
+}
+
+.mfa-setup .mfa-setup-fallback {
+  min-block-size: 2.75rem;
+  margin-block-start: 0.25rem;
+  padding: 0.5rem 0;
+  border: 0;
+  color: var(--accent);
+  background: transparent;
+  text-align: start;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  cursor: pointer;
+}
+
+.mfa-setup-manual {
+  margin-block-start: 0.75rem;
+  padding-block-start: 0.75rem;
+  border-block-start: 1px solid var(--line);
+}
+
+.mfa-setup-manual code {
+  display: block;
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  color: var(--text);
+  background: #0b1410;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+@media (max-width: 42rem) {
+  .mfa-setup-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mfa-setup-qr {
+    margin-inline: auto;
+  }
+}

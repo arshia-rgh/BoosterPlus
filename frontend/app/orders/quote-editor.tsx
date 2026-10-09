@@ -1,13 +1,21 @@
-import { useRef, useState, type SubmitEvent } from "react";
+import {
+  FieldValidation,
+  useFormValidation,
+  focusValidationTarget,
+  type FieldIssue,
+} from "../ui/form-validation";
+import { quoteIssues } from "./quote-validation";
+import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import {
   Action,
   Check,
   ErrorNotice,
+  Issues,
   NumberInput,
   Select,
   Text,
 } from "../catalog/controls";
-import { get, post } from "../identity/api";
+import { APIError, get, post } from "../identity/api";
 import { commercialSchema, detailSchema, type Detail } from "./model";
 import { z } from "../validation";
 import { uncertain } from "../support/chat-state";
@@ -54,12 +62,37 @@ export default function QuoteEditor({
   const [approved, setApproved] = useState(false);
   const [unknown, setUnknown] = useState(false);
   const [message, setMessage] = useState("");
+  const previewHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (review) focusValidationTarget(previewHeading.current);
+  }, [review]);
+  const [issues, setIssues] = useState<FieldIssue[]>([]);
+  const validation = useFormValidation(issues, (name) => {
+    setIssues((old) => old.filter((issue) => issue.path !== name));
+  });
   const lock = useRef(false);
   const stale =
     !!review && review.preview.order_version !== detail.order.version;
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (lock.current || unknown) return;
+    const invalid = quoteIssues({
+      amount_minor: amount,
+      currency,
+      scope,
+      reason,
+      lines,
+      delivery_min_hours: minimum,
+      delivery_max_hours: maximum,
+      expiry_hours: hours,
+    });
+    setIssues(invalid);
+    if (invalid.length) {
+      setError(null);
+      setReview(null);
+      setApproved(false);
+      return;
+    }
     lock.current = true;
     setBusy(true);
     setError(null);
@@ -86,6 +119,7 @@ export default function QuoteEditor({
       setReview({ input, preview });
     } catch (cause) {
       setError(cause);
+      if (cause instanceof APIError) setIssues(cause.issues);
     } finally {
       lock.current = false;
       setBusy(false);
@@ -108,6 +142,7 @@ export default function QuoteEditor({
       done();
     } catch (cause) {
       setError(cause);
+      if (cause instanceof APIError) setIssues(cause.issues);
       setUnknown(uncertain(cause));
       if (!uncertain(cause)) {
         setReview(null);
@@ -139,177 +174,202 @@ export default function QuoteEditor({
       done();
     } catch (cause) {
       setError(cause);
+      if (cause instanceof APIError) setIssues(cause.issues);
     } finally {
       lock.current = false;
       setBusy(false);
     }
   }
   return (
-    <form onSubmit={(event) => void submit(event)} className="catalog-section">
-      <fieldset
-        disabled={busy || unknown}
-        onChange={() => {
-          setReview(null);
-          setApproved(false);
-          setMessage("");
-        }}
+    <FieldValidation value={validation}>
+      <form
+        onSubmit={(event) => void submit(event)}
+        className="catalog-section"
       >
-        <legend>
-          {detail.quote ? "Issue a replacement quote" : "Issue final quote"}
-        </legend>
-        <p>
-          The customer must accept this quote. All scope, reasons, and line
-          items below are visible to them. Issuing a replacement supersedes the
-          previous quote.
-        </p>
-        <div className="catalog-grid">
-          <Text
-            label="Pre-discount amount in minor units"
-            value={amount}
-            change={setAmount}
-            help="For example, 1234 means 12.34. Do not include a currency symbol."
-          />
-          <Select
-            label="Quote currency"
-            value={currency}
-            change={setCurrency}
-            options={[
-              ["", "Choose currency"],
-              ["USD", "USD"],
-              ["EUR", "EUR"],
-              ["GBP", "GBP"],
-            ]}
-          />
-          <NumberInput
-            label="Minimum delivery hours"
-            value={minimum}
-            change={setMinimum}
-          />
-          <NumberInput
-            label="Maximum delivery hours"
-            value={maximum}
-            change={setMaximum}
-          />
-          <NumberInput
-            label="Quote expires in hours"
-            value={hours}
-            change={setHours}
-          />
-        </div>
-        <Text label="Agreed scope" value={scope} change={setScope} multiline />
-        <Text
-          label="Quote explanation"
-          value={reason}
-          change={setReason}
-          multiline
-        />
-        <p>
-          Optional line items must sum exactly to the pre-discount total. Coupon
-          eligibility is calculated by the server.
-        </p>
-        {lines.map((line, index) => (
-          <fieldset key={line.key}>
-            <legend>Line {index + 1}</legend>
-            <Text
-              label="Line label"
-              value={line.label}
-              change={(label) => {
-                setLines(
-                  lines.map((v) => (v.key === line.key ? { ...v, label } : v)),
-                );
-              }}
-            />
-            <Text
-              label="Line amount in minor units"
-              value={line.amount_minor}
-              change={(amount_minor) => {
-                setLines(
-                  lines.map((v) =>
-                    v.key === line.key ? { ...v, amount_minor } : v,
-                  ),
-                );
-              }}
-            />
-            <Action
-              onClick={() => {
-                setReview(null);
-                setApproved(false);
-                setLines(lines.filter((v) => v.key !== line.key));
-              }}
-            >
-              Remove line {index + 1}
-            </Action>
-          </fieldset>
-        ))}
-        <Action
-          disabled={lines.length >= 20}
-          onClick={() => {
+        <Issues issues={issues} />
+        <fieldset
+          disabled={busy || unknown}
+          onChange={() => {
             setReview(null);
             setApproved(false);
-            setLines([
-              ...lines,
-              { key: crypto.randomUUID(), label: "", amount_minor: "" },
-            ]);
+            setMessage("");
           }}
         >
-          Add quote line
-        </Action>
-        <button className="button" type="submit">
-          {busy ? "Preparing…" : "Preview quote"}
-        </button>
-      </fieldset>
-      {message && <p role="status">{message}</p>}
-      {review && (
-        <section
-          aria-label="Customer quote preview"
-          className="catalog-section"
-        >
-          <h3>Customer quote preview · not issued</h3>
+          <legend>
+            {detail.quote ? "Issue a replacement quote" : "Issue final quote"}
+          </legend>
           <p>
-            This is the exact agreement proposed for this order. Previewing does
-            not charge the customer or replace a quote.
+            The customer must accept this quote. All scope, reasons, and line
+            items below are visible to them. Issuing a replacement supersedes
+            the previous quote.
           </p>
-          {detail.quote && (
-            <details>
-              <summary>
-                Compare with current quote · revision{" "}
-                {detail.quote.data.revision}
-              </summary>
-              <Agreement data={detail.quote.data} />
-            </details>
-          )}
-          <Agreement data={review.preview.data} />
-          {stale && (
-            <p role="alert">
-              This order changed. Preview again before issuing; your edited
-              fields are retained.
-            </p>
-          )}
-          <Check
-            label="I reviewed the customer-visible price, scope, deadline and terms"
-            value={approved}
-            change={setApproved}
+          <div className="catalog-grid">
+            <Text
+              name="amount_minor"
+              label="Pre-discount amount in minor units"
+              value={amount}
+              change={setAmount}
+              help="For example, 1234 means 12.34. Do not include a currency symbol."
+            />
+            <Select
+              name="currency"
+              label="Quote currency"
+              value={currency}
+              change={setCurrency}
+              options={[
+                ["", "Choose currency"],
+                ["USD", "USD"],
+                ["EUR", "EUR"],
+                ["GBP", "GBP"],
+              ]}
+            />
+            <NumberInput
+              name="delivery_min_hours"
+              label="Minimum delivery hours"
+              value={minimum}
+              change={setMinimum}
+            />
+            <NumberInput
+              name="delivery_max_hours"
+              label="Maximum delivery hours"
+              value={maximum}
+              change={setMaximum}
+            />
+            <NumberInput
+              name="expires_at"
+              label="Quote expires in hours"
+              value={hours}
+              change={setHours}
+            />
+          </div>
+          <Text
+            name="scope"
+            label="Agreed scope"
+            value={scope}
+            change={setScope}
+            multiline
           />
-          <Action
-            disabled={busy || unknown || stale || !approved}
-            onClick={() => void issue()}
-          >
-            {busy ? "Working…" : "Issue quote"}
-          </Action>
-        </section>
-      )}
-      {unknown && (
-        <section aria-label="Quote outcome recovery">
-          <p role="alert">
-            Issuing was not confirmed. Do not create another quote until the
-            latest order has been checked.
+          <Text
+            name="reason"
+            label="Quote explanation"
+            value={reason}
+            change={setReason}
+            multiline
+          />
+          <p>
+            Optional line items must sum exactly to the pre-discount total.
+            Coupon eligibility is calculated by the server.
           </p>
-          <Action disabled={busy} onClick={() => void checkOutcome()}>
-            Check latest quote
+          {lines.map((line, index) => (
+            <fieldset key={line.key}>
+              <legend>Line {index + 1}</legend>
+              <Text
+                name={"lines." + String(index) + ".label"}
+                label="Line label"
+                value={line.label}
+                change={(label) => {
+                  setLines(
+                    lines.map((v) =>
+                      v.key === line.key ? { ...v, label } : v,
+                    ),
+                  );
+                }}
+              />
+              <Text
+                name={"lines." + String(index) + ".amount_minor"}
+                label="Line amount in minor units"
+                value={line.amount_minor}
+                change={(amount_minor) => {
+                  setLines(
+                    lines.map((v) =>
+                      v.key === line.key ? { ...v, amount_minor } : v,
+                    ),
+                  );
+                }}
+              />
+              <Action
+                onClick={() => {
+                  setReview(null);
+                  setApproved(false);
+                  setLines(lines.filter((v) => v.key !== line.key));
+                }}
+              >
+                Remove line {index + 1}
+              </Action>
+            </fieldset>
+          ))}
+          <Action
+            disabled={lines.length >= 20}
+            onClick={() => {
+              setReview(null);
+              setApproved(false);
+              setLines([
+                ...lines,
+                { key: crypto.randomUUID(), label: "", amount_minor: "" },
+              ]);
+            }}
+          >
+            Add quote line
           </Action>
-        </section>
-      )}
-      <ErrorNotice error={error} />
-    </form>
+          <button className="button" type="submit">
+            {busy ? "Preparing…" : "Preview quote"}
+          </button>
+        </fieldset>
+        {message && <p role="status">{message}</p>}
+        {review && (
+          <section
+            aria-label="Customer quote preview"
+            className="catalog-section"
+          >
+            <h3 ref={previewHeading} tabIndex={-1}>
+              Customer quote preview · not issued
+            </h3>
+            <p>
+              This is the exact agreement proposed for this order. Previewing
+              does not charge the customer or replace a quote.
+            </p>
+            {detail.quote && (
+              <details>
+                <summary>
+                  Compare with current quote · revision{" "}
+                  {detail.quote.data.revision}
+                </summary>
+                <Agreement data={detail.quote.data} />
+              </details>
+            )}
+            <Agreement data={review.preview.data} />
+            {stale && (
+              <p role="alert">
+                This order changed. Preview again before issuing; your edited
+                fields are retained.
+              </p>
+            )}
+            <Check
+              label="I reviewed the customer-visible price, scope, deadline and terms"
+              value={approved}
+              change={setApproved}
+            />
+            <Action
+              disabled={busy || unknown || stale || !approved}
+              onClick={() => void issue()}
+            >
+              {busy ? "Working…" : "Issue quote"}
+            </Action>
+          </section>
+        )}
+        {unknown && (
+          <section aria-label="Quote outcome recovery">
+            <p role="alert">
+              Issuing was not confirmed. Do not create another quote until the
+              latest order has been checked.
+            </p>
+            <Action disabled={busy} onClick={() => void checkOutcome()}>
+              Check latest quote
+            </Action>
+          </section>
+        )}
+        <ErrorNotice error={error} hideIssues />
+      </form>
+    </FieldValidation>
   );
 }

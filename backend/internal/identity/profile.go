@@ -24,7 +24,7 @@ func (s *Service) UpdateProfile(ctx context.Context, p *Principal, name, alias s
 		return ErrInvalid
 	}
 	return s.AuthorizedTransaction(ctx, p, "self", false, func(tx *ent.Tx, current *Principal) error {
-		// A staff member using the customer portal cannot edit their staff identity.
+		// Customer profiles have no staff alias.
 		if (current.User.Role == RoleCustomer || current.Session.Portal == string(PortalCustomer)) && alias != current.User.StaffAlias {
 			return ErrForbidden
 		}
@@ -72,11 +72,14 @@ func (s *Service) GrantRole(ctx context.Context, p *Principal, id, role string) 
 		if targetErr != nil {
 			return targetErr
 		}
+		if !Portal(target.Portal).permitsRole(role) {
+			return ErrForbidden
+		}
 		if target.EmailVerifiedAt == nil || target.DeletedAt != nil {
 			return ErrInvalid
 		}
 		if target.Role == RoleOwner && role != RoleOwner {
-			count, countErr := tx.User.Query().Where(user.RoleEQ(RoleOwner), user.SuspendedEQ(false)).Count(ctx)
+			count, countErr := tx.User.Query().Where(user.PortalEQ(string(PortalAdmin)), user.RoleEQ(RoleOwner), user.SuspendedEQ(false)).Count(ctx)
 			if countErr != nil {
 				return countErr
 			}
@@ -127,7 +130,7 @@ func (s *Service) Suspend(ctx context.Context, p *Principal, id string, suspende
 			return ErrForbidden
 		}
 		if suspended && target.Role == RoleOwner {
-			count, countErr := tx.User.Query().Where(user.RoleEQ(RoleOwner), user.SuspendedEQ(false)).Count(ctx)
+			count, countErr := tx.User.Query().Where(user.PortalEQ(string(PortalAdmin)), user.RoleEQ(RoleOwner), user.SuspendedEQ(false)).Count(ctx)
 			if countErr != nil {
 				return countErr
 			}
@@ -161,7 +164,7 @@ func (s *Service) BootstrapOwner(ctx context.Context, id, operator string) error
 		if err := lockSecurity(ctx, tx); err != nil {
 			return err
 		}
-		count, countErr := tx.User.Query().Where(user.RoleEQ(RoleOwner)).Count(ctx)
+		count, countErr := tx.User.Query().Where(user.PortalEQ(string(PortalAdmin)), user.RoleEQ(RoleOwner)).Count(ctx)
 		if countErr != nil {
 			return countErr
 		}
@@ -171,6 +174,9 @@ func (s *Service) BootstrapOwner(ctx context.Context, id, operator string) error
 		account, accountErr := activeUser(ctx, tx, id)
 		if accountErr != nil {
 			return accountErr
+		}
+		if account.Portal != string(PortalAdmin) || account.Role != RoleAdmin {
+			return ErrForbidden
 		}
 		if account.EmailVerifiedAt == nil || !account.MfaEnabled {
 			return ErrMFA
@@ -190,7 +196,7 @@ func (s *Service) changeEmail(ctx context.Context, tx *ent.Tx, id, email, actor,
 	if accountErr != nil {
 		return accountErr
 	}
-	conflict, conflictErr := tx.User.Query().Where(user.EmailEQ(email), user.IDNEQ(id)).Exist(ctx)
+	conflict, conflictErr := tx.User.Query().Where(user.PortalEQ(account.Portal), user.EmailEQ(email), user.IDNEQ(id)).Exist(ctx)
 	if conflictErr != nil {
 		return conflictErr
 	}
@@ -253,7 +259,15 @@ func (s *Service) ResolveRecovery(ctx context.Context, p *Principal, id, referen
 			}
 			return requestErr
 		}
-		if request.UserID == actor.User.ID {
+		target, targetErr := tx.User.Get(ctx, request.UserID)
+		if targetErr != nil {
+			return targetErr
+		}
+		conflict, conflictErr := IndependentReviewConflict(ctx, tx, actor.User, target)
+		if conflictErr != nil {
+			return conflictErr
+		}
+		if conflict {
 			return ErrForbidden
 		}
 		state := "rejected"

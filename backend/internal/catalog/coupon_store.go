@@ -203,9 +203,9 @@ func (s *Store) CheckCoupon(ctx context.Context, p *identity.Principal, slug str
 	if stage != "estimate" && stage != "order" {
 		return Estimate{}, &Invalid{[]Issue{{"stage", "Choose estimate or order information."}}}
 	}
-	result := Calculate(release, input.Service, input.Answers, now)
+	result := CalculateNew(release, input.Service, input.Answers, now)
 	if stage == "order" && input.Package == "" && input.Variant == "" {
-		validated := ValidateAnswers(release.Configuration, input.Service, stage, input.Answers, nil)
+		validated := ValidateNewAnswers(release.Configuration, input.Service, stage, input.Answers, nil)
 		estimateAnswers := Answers{}
 		for _, service := range release.Configuration.Services {
 			if service.Key == input.Service {
@@ -218,7 +218,7 @@ func (s *Store) CheckCoupon(ctx context.Context, p *identity.Principal, slug str
 				}
 			}
 		}
-		result = Calculate(release, input.Service, estimateAnswers, now)
+		result = CalculateNew(release, input.Service, estimateAnswers, now)
 		result.Answers = validated.Answers
 		if len(validated.Issues) > 0 {
 			result.Issues = validated.Issues
@@ -244,7 +244,7 @@ func (s *Store) CheckCoupon(ctx context.Context, p *identity.Principal, slug str
 		if variant.Capacity != nil && *variant.Capacity == 0 {
 			return invalid()
 		}
-		validated := ValidateAnswers(release.Configuration, input.Service, "order", input.Answers, &variant)
+		validated := ValidateNewAnswers(release.Configuration, input.Service, "order", input.Answers, &variant)
 		result.Answers, result.Issues = validated.Answers, validated.Issues
 		if len(result.Issues) > 0 {
 			result.Outcome = "invalid"

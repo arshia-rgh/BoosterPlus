@@ -1,5 +1,5 @@
 import { useContext, useEffect, useId, useRef, useState } from "react";
-import { FieldValidation } from "../ui/form-validation";
+import { FieldValidation, fieldError } from "../ui/form-validation";
 import { Action, Select, Text } from "../catalog/controls";
 import { get, sessionSchema } from "../identity/api";
 import { activePortal, portalHeaders } from "../identity/portal";
@@ -36,9 +36,8 @@ export default function ArtworkUpload({
   const id = useId();
   const validation = useContext(FieldValidation);
   const fieldName = purpose === "inline" ? undefined : "asset";
-  const invalid =
-    !!fieldName &&
-    !!validation?.issues.some((issue) => issue.path === fieldName);
+  const fieldMessage = fieldError(validation, fieldName);
+  const invalid = !!fieldMessage;
   const [pathOpen, setPathOpen] = useState(false);
   const container = useRef<HTMLFieldSetElement>(null);
   const [loaded, setLoaded] = useState<string[]>([]);
@@ -268,10 +267,18 @@ export default function ArtworkUpload({
           type="file"
           accept="image/jpeg,image/png,image/webp"
           disabled={busy}
-          aria-describedby={guidanceID}
+          aria-invalid={invalid ? true : undefined}
+          aria-describedby={[guidanceID, invalid ? id + "-validation" : ""]
+            .filter(Boolean)
+            .join(" ")}
           onChange={(e) => void select(e.target.files?.[0])}
         />
       </label>
+      {fieldMessage && (
+        <p id={id + "-validation"} className="field-error">
+          {fieldMessage}
+        </p>
+      )}
       {choice && (
         <>
           <p>

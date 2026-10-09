@@ -2,7 +2,10 @@ import { useEffect, useId, useRef, useState } from "react";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { post } from "../identity/api";
-import { useProtectedReveal } from "../identity/protected-reveal";
+import {
+  useProtectedReveal,
+  useProtectedRevealFocus,
+} from "../identity/protected-reveal";
 import { useResource } from "../orders/resource";
 import { active, secretSchema, type Work } from "./model";
 export function CustomerSecret({ work }: { work: Work }) {
@@ -113,8 +116,9 @@ export function CustomerSecret({ work }: { work: Work }) {
             }}
           />
           <p>
-            Only authorized staff can reveal this after recent sign-in and
-            authenticator verification. You cannot read the saved value back.
+            Only authorized staff can reveal this. When confirmation is needed,
+            they use an authenticator or email code. You cannot read the saved
+            value back.
           </p>
           <Action
             disabled={busy || !value.trim() || !status.data || !!status.error}
@@ -144,29 +148,54 @@ export function StaffSecret({ work, admin }: { work: Work; admin: boolean }) {
     `/${admin ? "admin" : "booster"}/fulfillment/${work.order_id}/secret/reveal`,
     30000,
   );
+  const {
+    result: resultRef,
+    problem: problemRef,
+    trigger: triggerRef,
+    hideExplicitly,
+  } = useProtectedRevealFocus(Boolean(value), busy, error, work.order_id);
   if (work.mode !== "account" || !active(work)) return null;
   return (
     <section className="catalog-section">
       <h3>Game access</h3>
       <p>
-        Access is audited and requires recent verification of both factors. The
-        value hides after 30 seconds or when this page loses focus.
+        Access is audited and requires recent authenticator or email
+        verification. The value hides after 30 seconds or when this page loses
+        focus.
       </p>
-      <ErrorNotice error={error} />
+      <div
+        ref={problemRef}
+        tabIndex={-1}
+        role="group"
+        aria-label="Game access notice"
+      >
+        <ErrorNotice error={error} />
+      </div>
       {value ? (
         <>
+          <h4 ref={resultRef} tabIndex={-1}>
+            Game access ready
+          </h4>
           <pre className="secret-value">{value}</pre>
-          <Action onClick={hide}>Hide game access</Action>
+          <Action
+            onClick={() => {
+              hideExplicitly(hide);
+            }}
+          >
+            Hide game access
+          </Action>
         </>
       ) : (
-        <Action
-          disabled={busy}
-          onClick={() => {
-            void reveal();
-          }}
-        >
-          Reveal game access
-        </Action>
+        <div ref={triggerRef}>
+          <Action
+            disabled={busy}
+            onClick={() => {
+              void reveal();
+            }}
+          >
+            Reveal game access
+          </Action>
+        </div>
       )}
     </section>
   );

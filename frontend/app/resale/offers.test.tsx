@@ -1,8 +1,13 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
 import { useResource } from "../orders/resource";
+import { post } from "../identity/api";
 import SellerOffers from "./offers";
+vi.mock("../identity/api", async (original) => ({
+  ...(await original<typeof import("../identity/api")>()),
+  post: vi.fn(),
+}));
 vi.mock("../orders/resource", () => ({ useResource: vi.fn() }));
 afterEach(() => vi.clearAllMocks());
 it.each(["buy_first", "consignment"])(
@@ -79,3 +84,52 @@ it.each(["buy_first", "consignment"])(
     ).toBeVisible();
   },
 );
+
+it("explains invalid seller offer fields before any commercial request", async () => {
+  const responses = new Map<string, ReturnType<typeof useResource>>();
+  vi.mocked(useResource).mockImplementation((path) => {
+    const old = responses.get(path);
+    if (old) return old;
+    const result = {
+      data: path.endsWith("/offers")
+        ? { offers: [] }
+        : path === "/auth/session"
+          ? { user: { role: "owner", portal: "admin" } }
+          : { transfers: [] },
+      error: null,
+      loading: false,
+      reload: vi.fn(),
+    };
+    responses.set(path, result);
+    return result;
+  });
+  render(
+    <MemoryRouter>
+      <SellerOffers
+        id="submission"
+        version={2}
+        state="approved_pending_terms"
+        admin
+        changed={vi.fn()}
+        view="agreement"
+      />
+    </MemoryRouter>,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Propose exact seller terms" }),
+  );
+  await waitFor(() => {
+    expect(screen.getByLabelText("Seller payout asset code")).toHaveFocus();
+  });
+  expect(screen.getByLabelText("Seller payout asset code")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  expect(post).not.toHaveBeenCalled();
+  fireEvent.change(screen.getByLabelText("Seller payout asset code"), {
+    target: { value: "usdtbsc" },
+  });
+  expect(screen.getByLabelText("Seller payout asset code")).not.toHaveAttribute(
+    "aria-invalid",
+  );
+});

@@ -1,3 +1,4 @@
+import { ServiceIcon } from "../ui/service-icon";
 import { GameShop } from "../shop/public";
 import { CursorPagination, filterQuery } from "../ui/list-navigation";
 import GameCards from "./game-cards";
@@ -17,7 +18,7 @@ import {
   useLocation,
   useParams,
   useSearchParams,
-} from "react-router";
+} from "../portal-router";
 import { FavoriteButton } from "../orders/favorites";
 import DynamicForm from "./dynamic-form";
 import RequestJourney from "../orders/request-recovery";
@@ -191,7 +192,7 @@ export function GamePage() {
           const body = (
             <>
               <span className="game-service-symbol" aria-hidden="true">
-                {item.service === "boost" ? "↗" : "◇"}
+                <ServiceIcon kind={item.service} />
               </span>
               <h3>{serviceNames[item.service]}</h3>
               <p>

@@ -1,7 +1,15 @@
+import { FieldValidation, ValidationSummary } from "../ui/form-validation";
+import { useActionValidation } from "../ui/action-validation";
+import { sellerIssues } from "./validation";
 import { Button } from "../ui/primitives";
 import { useEffect, useRef, useState } from "react";
 import { z } from "../validation";
-import { Link, useLocation, useNavigate, type Location } from "react-router";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  type Location,
+} from "../portal-router";
 import {
   Action,
   Check,
@@ -12,7 +20,7 @@ import {
 } from "../catalog/controls";
 import { post, sessionSchema } from "../identity/api";
 import { useResource } from "../orders/resource";
-import { TransferRecord } from "../payments/refunds";
+import { TransferRecord, useRecipientConfirmation } from "../payments/refunds";
 import { transfersSchema } from "../payments/cases-model";
 import {
   listingSchema,
@@ -73,11 +81,13 @@ function Proposal({
     [key, setKey] = useState(() => crypto.randomUUID()),
     [error, setError] = useState<unknown>(null),
     [busy, setBusy] = useState(false);
+  const validation = useActionValidation();
   function edit<K extends keyof SellerTerms>(field: K, value: SellerTerms[K]) {
     setTerms((v) => ({ ...v, [field]: value }));
     setKey(crypto.randomUUID());
   }
   async function propose() {
+    if (busy || !validation.check(sellerIssues(terms, expires))) return;
     setBusy(true);
     setError(null);
     try {
@@ -93,97 +103,105 @@ function Proposal({
       );
       changed();
     } catch (cause) {
+      validation.server(cause);
       setError(cause);
     } finally {
       setBusy(false);
     }
   }
   return (
-    <fieldset disabled={busy}>
-      <legend>Owner: propose seller agreement</legend>
-      <p>
-        Choose the arrangement per offer. Enter the exact net crypto obligation
-        and all commercial terms. The seller must explicitly accept; acceptance
-        does not itself move funds.
-      </p>
-      <ErrorNotice error={error} />
-      <Select
-        label="Seller payment arrangement"
-        value={terms.model}
-        change={(v) => {
-          edit("model", v === "buy_first" ? "buy_first" : "consignment");
-        }}
-        options={[
-          ["consignment", "Pay after buyer delivery and dispute window"],
-          ["buy_first", "Pay seller before publishing for resale"],
-        ]}
-      />
-      <Text
-        label="Seller payout asset code"
-        value={terms.currency}
-        change={(v) => {
-          edit("currency", v);
-        }}
-      />
-      <Text
-        label="Seller payout network"
-        value={terms.network}
-        change={(v) => {
-          edit("network", v);
-        }}
-      />
-      <Text
-        label="Exact net seller crypto amount"
-        value={terms.amount}
-        change={(v) => {
-          edit("amount", v);
-        }}
-      />
-      {termFields.map(([key, label]) => (
-        <Text
-          key={key}
-          label={label}
-          multiline
-          value={sellerTerm(terms, key)}
+    <FieldValidation value={validation.validation}>
+      <fieldset disabled={busy}>
+        <legend>Owner: propose seller agreement</legend>
+        <p>
+          Choose the arrangement per offer. Enter the exact net crypto
+          obligation and all commercial terms. The seller must explicitly
+          accept; acceptance does not itself move funds.
+        </p>
+        <ErrorNotice error={error} />
+        <ValidationSummary
+          issues={validation.validation.issues}
+          fields={validation.validation.fields}
+        />
+        <Select
+          name="terms.model"
+          label="Seller payment arrangement"
+          value={terms.model}
           change={(v) => {
-            edit(key, v);
+            edit("model", v === "buy_first" ? "buy_first" : "consignment");
+          }}
+          options={[
+            ["consignment", "Pay after buyer delivery and dispute window"],
+            ["buy_first", "Pay seller before publishing for resale"],
+          ]}
+        />
+        <Text
+          name="terms.currency"
+          label="Seller payout asset code"
+          value={terms.currency}
+          change={(v) => {
+            edit("currency", v);
           }}
         />
-      ))}
-      <NumberInput
-        label="Payout delay hours after eligibility"
-        value={terms.payout_delay_hours}
-        change={(v) => {
-          edit("payout_delay_hours", v);
-        }}
-      />
-      <NumberInput
-        label="Payout deadline hours after eligibility"
-        value={terms.payout_deadline_hours}
-        change={(v) => {
-          edit("payout_deadline_hours", v);
-        }}
-      />
-      <Text
-        label="Seller offer expires"
-        type="datetime-local"
-        value={expires}
-        change={(v) => {
-          setExpires(v);
-          setKey(crypto.randomUUID());
-        }}
-      />
-      <Action
-        disabled={
-          !expires ||
-          !terms.amount ||
-          termFields.some(([k]) => sellerTerm(terms, k).trim().length < 20)
-        }
-        onClick={() => void propose()}
-      >
-        Propose exact seller terms
-      </Action>
-    </fieldset>
+        <Text
+          name="terms.network"
+          label="Seller payout network"
+          value={terms.network}
+          change={(v) => {
+            edit("network", v);
+          }}
+        />
+        <Text
+          name="terms.amount"
+          label="Exact net seller crypto amount"
+          value={terms.amount}
+          change={(v) => {
+            edit("amount", v);
+          }}
+        />
+        {termFields.map(([key, label]) => (
+          <Text
+            key={key}
+            name={`terms.${key}`}
+            label={label}
+            multiline
+            value={sellerTerm(terms, key)}
+            change={(v) => {
+              edit(key, v);
+            }}
+          />
+        ))}
+        <NumberInput
+          name="terms.payout_delay_hours"
+          label="Payout delay hours after eligibility"
+          value={terms.payout_delay_hours}
+          change={(v) => {
+            edit("payout_delay_hours", v);
+          }}
+        />
+        <NumberInput
+          name="terms.payout_deadline_hours"
+          label="Payout deadline hours after eligibility"
+          value={terms.payout_deadline_hours}
+          change={(v) => {
+            edit("payout_deadline_hours", v);
+          }}
+        />
+        <Text
+          name="expires_at"
+          label="Seller offer expires"
+          type="datetime-local"
+          value={expires}
+          change={(v) => {
+            setExpires(v);
+            setKey(crypto.randomUUID());
+          }}
+        />
+        <Action disabled={busy} onClick={() => void propose()}>
+          Propose exact seller terms
+        </Action>
+      </fieldset>
+    </FieldValidation>
   );
 }
 function SellerBundle({ id }: { id: string }) {
@@ -293,6 +311,7 @@ function OfferRecord({
       lock.current ||
       !accept ||
       note.trim().length < 10 ||
+      Array.from(note).length > 2000 ||
       (action === "accept" && expired)
     )
       return;
@@ -397,6 +416,14 @@ function OfferRecord({
           <legend>Commercial decision</legend>
           <Text
             label="Seller agreement decision note"
+            help="Enter 10–2,000 characters explaining this decision, then confirm the terms below."
+            error={
+              note &&
+              (Array.from(note.trim()).length < 10 ||
+                Array.from(note).length > 2000)
+                ? "Enter a decision note of 10–2,000 characters."
+                : undefined
+            }
             value={note}
             change={setNote}
             multiline
@@ -410,7 +437,12 @@ function OfferRecord({
             <div className="ui-state-actions">
               {!admin && (
                 <Action
-                  disabled={expired || !accept || note.trim().length < 10}
+                  disabled={
+                    expired ||
+                    !accept ||
+                    note.trim().length < 10 ||
+                    Array.from(note).length > 2000
+                  }
                   onClick={() => void act("accept")}
                 >
                   Accept seller agreement
@@ -419,7 +451,11 @@ function OfferRecord({
               <Button
                 variant="secondary"
                 className="button compact"
-                disabled={!accept || note.trim().length < 10}
+                disabled={
+                  !accept ||
+                  note.trim().length < 10 ||
+                  Array.from(note).length > 2000
+                }
                 onClick={() => void act(admin ? "withdraw" : "decline")}
               >
                 {admin
@@ -429,7 +465,11 @@ function OfferRecord({
             </div>
           ) : (
             <Action
-              disabled={!accept || note.trim().length < 10}
+              disabled={
+                !accept ||
+                note.trim().length < 10 ||
+                Array.from(note).length > 2000
+              }
               onClick={() => void act("verify_control")}
             >
               Verify ownership control
@@ -484,6 +524,11 @@ export function SellerPayouts({
     `${admin ? "/admin" : ""}/submissions/${id}/payouts`,
     transfersSchema,
   );
+  const confirmation = useRecipientConfirmation(
+    `${admin ? "admin" : "customer"}:${id}`,
+    resource.loading,
+    resource.error,
+  );
   return (
     <section>
       <h3>Direct seller payouts</h3>
@@ -492,6 +537,7 @@ export function SellerPayouts({
       </Action>
       {resource.loading && <p role="status">Checking seller payouts…</p>}
       <ErrorNotice error={resource.error} />
+      {confirmation.feedback}
       {resource.data?.transfers.map((row) => (
         <TransferRecord
           key={`${row.id}:${String(row.version)}`}
@@ -500,6 +546,7 @@ export function SellerPayouts({
           owner={owner}
           reload={resource.reload}
           refreshing={resource.loading}
+          onRecipientSaved={confirmation.recipientSaved}
         />
       ))}
       {resource.data?.transfers.length === 0 && (
@@ -548,7 +595,7 @@ export default function SellerOffers({
   if (view === "payout")
     return (
       <section aria-label="Seller payout">
-        <h3>Your direct payout</h3>
+        <h3>{admin ? "Seller payout" : "Your direct payout"}</h3>
         <p>
           Payouts follow the accepted arrangement and its eligibility, fees and
           timing. There is no account wallet.

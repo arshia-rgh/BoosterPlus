@@ -69,6 +69,11 @@ func DeletedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldDeletedAt, v))
 }
 
+// Portal applies equality check predicate on the "portal" field. It's identical to PortalEQ.
+func Portal(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPortal, v))
+}
+
 // Email applies equality check predicate on the "email" field. It's identical to EmailEQ.
 func Email(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldEmail, v))
@@ -197,6 +202,71 @@ func DeletedAtIsNil() predicate.User {
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldDeletedAt))
+}
+
+// PortalEQ applies the EQ predicate on the "portal" field.
+func PortalEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPortal, v))
+}
+
+// PortalNEQ applies the NEQ predicate on the "portal" field.
+func PortalNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldPortal, v))
+}
+
+// PortalIn applies the In predicate on the "portal" field.
+func PortalIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldPortal, vs...))
+}
+
+// PortalNotIn applies the NotIn predicate on the "portal" field.
+func PortalNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldPortal, vs...))
+}
+
+// PortalGT applies the GT predicate on the "portal" field.
+func PortalGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldPortal, v))
+}
+
+// PortalGTE applies the GTE predicate on the "portal" field.
+func PortalGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldPortal, v))
+}
+
+// PortalLT applies the LT predicate on the "portal" field.
+func PortalLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldPortal, v))
+}
+
+// PortalLTE applies the LTE predicate on the "portal" field.
+func PortalLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldPortal, v))
+}
+
+// PortalContains applies the Contains predicate on the "portal" field.
+func PortalContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldPortal, v))
+}
+
+// PortalHasPrefix applies the HasPrefix predicate on the "portal" field.
+func PortalHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldPortal, v))
+}
+
+// PortalHasSuffix applies the HasSuffix predicate on the "portal" field.
+func PortalHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldPortal, v))
+}
+
+// PortalEqualFold applies the EqualFold predicate on the "portal" field.
+func PortalEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldPortal, v))
+}
+
+// PortalContainsFold applies the ContainsFold predicate on the "portal" field.
+func PortalContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldPortal, v))
 }
 
 // EmailEQ applies the EQ predicate on the "email" field.

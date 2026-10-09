@@ -35,7 +35,7 @@ func (s *Service) EnrollMFA(ctx context.Context, p *Principal) (Enrollment, erro
 		if actor.User.MfaEnabled {
 			return ErrConflict
 		}
-		key, keyErr := totp.Generate(totp.GenerateOpts{Issuer: "PLAYORA", AccountName: actor.User.Email, SecretSize: 32, Period: 30, Digits: otp.DigitsSix})
+		key, keyErr := totp.Generate(totp.GenerateOpts{Issuer: "PLAYORA " + map[string]string{"customer": "Customer", "admin": "Admin", "booster": "Booster"}[actor.User.Portal], AccountName: actor.User.Email, SecretSize: 32, Period: 30, Digits: otp.DigitsSix})
 		if keyErr != nil {
 			return keyErr
 		}
@@ -200,6 +200,9 @@ func (s *Service) DisableMFA(ctx context.Context, p *Principal) error {
 		if actor.User.Role != RoleCustomer {
 			return ErrForbidden
 		}
+		if !actor.User.MfaEnabled {
+			return ErrConflict
+		}
 		if sensitiveErr := s.sensitive(actor); sensitiveErr != nil {
 			return sensitiveErr
 		}
@@ -248,6 +251,9 @@ func (s *Service) RegenerateRecoveryCodes(ctx context.Context, p *Principal) (MF
 		actor, actorErr := s.fresh(ctx, tx, p)
 		if actorErr != nil {
 			return actorErr
+		}
+		if !actor.User.MfaEnabled || actor.Session.MfaVerifiedAt == nil {
+			return ErrMFA
 		}
 		if sensitiveErr := s.sensitive(actor); sensitiveErr != nil {
 			return sensitiveErr

@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Link, useLocation, useParams, type Location } from "react-router";
+import { Link, useLocation, useParams, type Location } from "../portal-router";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { AuthorizedIdentity } from "../identity/frame";

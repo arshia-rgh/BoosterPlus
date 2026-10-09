@@ -118,6 +118,11 @@ export async function qualifyOrderWorkspace(page: Page, project: string) {
   await expect(
     page.locator('[data-order-section="Accepted agreement"] > summary'),
   ).toBeVisible();
+  await tabs.getByRole("link", { name: "Messages", exact: true }).click();
+  await page
+    .getByLabel("Message", { exact: true })
+    .fill("Private draft that must clear when order access changes");
+  await tabs.getByRole("link", { name: "Overview", exact: true }).click();
   await page.route(`**/api/v1/orders/${id}`, (route) =>
     route.fulfill({
       status: 403,
@@ -128,15 +133,28 @@ export async function qualifyOrderWorkspace(page: Page, project: string) {
   await page
     .getByRole("button", { name: "Refresh order", exact: true })
     .click();
+  const recovery = page.getByRole("region", {
+    name: "Order access unavailable",
+    exact: true,
+  });
+  const recoveryHeading = recovery.getByRole("heading", {
+    name: "Order access changed",
+    exact: true,
+  });
+  await expect(recoveryHeading).toBeFocused();
+  await expect(recoveryHeading).toBeInViewport();
+  await expect(recovery.getByRole("alert")).toHaveText(
+    "Order access needs to be checked. Private details and unsent drafts have been cleared. Check access again or sign in to your customer account.",
+  );
   await expect(
-    page.getByText(
-      "Order access is no longer available. Sign in to your customer account to continue.",
-      {
-        exact: true,
-      },
-    ),
-  ).toBeVisible();
+    recovery.getByRole("link", { name: "Customer sign-in", exact: true }),
+  ).toHaveAttribute(
+    "href",
+    "/login?returnTo=" + encodeURIComponent(`/orders/${id}?section=overview`),
+  );
   await expect(page.locator(".customer-order-workspace")).toHaveCount(0);
+  await expect(page.locator(".record-heading")).toHaveCount(0);
+  await expect(page.getByLabel("Message", { exact: true })).toHaveCount(0);
   await page.unroute(`**/api/v1/orders/${id}`);
   await page
     .getByRole("button", { name: "Check order access again", exact: true })
@@ -144,4 +162,7 @@ export async function qualifyOrderWorkspace(page: Page, project: string) {
   await expect(
     page.locator('[data-order-section="Accepted agreement"] > summary'),
   ).toBeVisible();
+  await tabs.getByRole("link", { name: "Messages", exact: true }).click();
+  await expect(page.getByLabel("Message", { exact: true })).toHaveValue("");
+  await tabs.getByRole("link", { name: "Overview", exact: true }).click();
 }

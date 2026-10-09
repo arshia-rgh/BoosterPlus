@@ -1,9 +1,11 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-import { post } from "../identity/api";
+import { APIError, post } from "../identity/api";
 import { useResource } from "../orders/resource";
 import type { Detail } from "../orders/model";
 import Checkout from "./checkout";
+import { continueToProvider } from "./provider-navigation";
+vi.mock("./provider-navigation", () => ({ continueToProvider: vi.fn() }));
 vi.mock("../identity/api", async (original) => ({
   ...(await original<typeof import("../identity/api")>()),
   post: vi.fn(),
@@ -344,4 +346,91 @@ it("keeps payment uncertainty guidance when status retrieval fails", () => {
   expect(
     screen.queryByRole("button", { name: "Create secure checkout" }),
   ).not.toBeInTheDocument();
+});
+
+it("continues a newly requested hosted checkout once, with a visible fallback", async () => {
+  const { data, reload, changed } = setup();
+  vi.mocked(post).mockResolvedValue({ id: "fresh" });
+  const view = render(
+    <Checkout detail={detail} admin={false} changed={changed} />,
+  );
+  fireEvent.change(screen.getByLabelText("Payment asset and network"), {
+    target: { value: "usdttrc20" },
+  });
+  fireEvent.click(
+    screen.getByLabelText(
+      "I accept this payment policy and the agreed order price",
+    ),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Create secure checkout" }),
+  );
+  await waitFor(() => {
+    expect(reload).toHaveBeenCalledOnce();
+  });
+  const attempt = {
+    id: "fresh",
+    order_id: "order",
+    native_checkout: false,
+    state: "awaiting_payment",
+    issue: "",
+    currency: "USD",
+    amount_minor: "1234",
+    route: policy.data.routes[0],
+    policy,
+    checkout_url: "https://nowpayments.io/payment/?iid=123",
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 600000).toISOString(),
+  };
+  vi.mocked(useResource).mockReturnValue({
+    data: {
+      ...data,
+      server_time: new Date().toISOString(),
+      attempts: [attempt],
+    },
+    loading: false,
+    error: null,
+    reload,
+    requestedAt: performance.now(),
+  });
+  view.rerender(<Checkout detail={detail} admin={false} changed={changed} />);
+  await waitFor(() => {
+    expect(continueToProvider).toHaveBeenCalledExactlyOnceWith(
+      attempt.checkout_url,
+    );
+  });
+  expect(
+    screen.getByRole("link", { name: "Continue to NOWPayments" }),
+  ).toHaveAttribute("href", attempt.checkout_url);
+  view.rerender(<Checkout detail={detail} admin={false} changed={changed} />);
+  expect(continueToProvider).toHaveBeenCalledOnce();
+});
+
+it("brings a failed checkout into view and links minimum errors to this order's support", async () => {
+  const { changed } = setup();
+  const error = new APIError(
+    "This order is below the current minimum. No checkout was created.",
+  );
+  error.code = "payment_below_minimum";
+  error.status = 422;
+  vi.mocked(post).mockRejectedValue(error);
+  render(<Checkout detail={detail} admin={false} changed={changed} />);
+  fireEvent.change(screen.getByLabelText("Payment asset and network"), {
+    target: { value: "usdttrc20" },
+  });
+  fireEvent.click(
+    screen.getByLabelText(
+      "I accept this payment policy and the agreed order price",
+    ),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Create secure checkout" }),
+  );
+  const help = await screen.findByRole("link", {
+    name: "Ask support about this order",
+  });
+  expect(help).toHaveAttribute("href", "/orders/order?section=messages");
+  await waitFor(() => expect(help.parentElement?.parentElement).toHaveFocus());
+  expect(changed).not.toHaveBeenCalled();
+  expect(continueToProvider).not.toHaveBeenCalled();
 });

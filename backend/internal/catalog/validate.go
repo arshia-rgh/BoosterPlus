@@ -193,7 +193,7 @@ func validateForm(service ServiceDefinition, refs map[string]Reference, path str
 			add(fp, "Use a unique field key, label and bounded help/unit text.")
 		}
 		seen[field.Key] = true
-		if !slices.Contains([]string{"select", "radio", "multiselect", "boolean", "integer", "decimal", "short_text", "long_text", "rank", "attachment"}, field.Type) || stage(field.Stage) < 0 {
+		if !slices.Contains([]string{"select", "radio", "multiselect", "boolean", "integer", "decimal", "win_rate", "short_text", "long_text", "rank", "attachment"}, field.Type) || stage(field.Stage) < 0 {
 			add(fp, "Choose a supported field type and collection stage.")
 		}
 		if len(field.Options) > 300 || field.MinLength < 0 || field.MaxLength < field.MinLength || field.MaxLength > 4000 || field.MinSelections < 0 || field.MaxSelections < field.MinSelections || field.MaxSelections > 300 {

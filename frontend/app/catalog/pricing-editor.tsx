@@ -19,10 +19,12 @@ import {
 } from "./model";
 
 export function PricingEditor({
+  path = "",
   service,
   config,
   change,
 }: {
+  path?: string;
   service: Service;
   config: Configuration;
   change: (patch: Partial<Service>) => void;
@@ -44,6 +46,7 @@ export function PricingEditor({
         and saved examples are published together with the form.
       </p>
       <Select
+        name={`${path}.evaluator`}
         label="Price evaluator"
         value={service.evaluator}
         change={(evaluator) => {
@@ -71,6 +74,7 @@ export function PricingEditor({
         <>
           <div className="catalog-grid">
             <Select
+              name={`${path}.pricing.currency`}
               label="Estimate currency"
               value={plan.currency}
               change={(currency) => {
@@ -84,6 +88,7 @@ export function PricingEditor({
               ]}
             />
             <Text
+              name={`${path}.pricing.base_minor`}
               label="Base amount in minor units"
               value={plan.base_minor}
               change={(base_minor) => {
@@ -91,6 +96,7 @@ export function PricingEditor({
               }}
             />
             <Text
+              name={`${path}.pricing.minimum_minor`}
               label="Minimum estimate in minor units"
               value={plan.minimum_minor}
               change={(minimum_minor) => {
@@ -98,6 +104,7 @@ export function PricingEditor({
               }}
             />
             <Text
+              name={`${path}.pricing.maximum_minor`}
               label="Maximum estimate in minor units"
               value={plan.maximum_minor}
               change={(maximum_minor) => {
@@ -129,6 +136,7 @@ export function PricingEditor({
                   {rule.label} · {rule.kind}
                 </summary>
                 <Text
+                  name={`${path}.pricing.rules.${String(i)}.key`}
                   label="Pricing rule key"
                   value={rule.key}
                   change={(key) => {
@@ -136,6 +144,7 @@ export function PricingEditor({
                   }}
                 />
                 <Text
+                  name={`${path}.pricing.rules.${String(i)}.label`}
                   label="Price breakdown label"
                   value={rule.label}
                   change={(label) => {
@@ -143,6 +152,7 @@ export function PricingEditor({
                   }}
                 />
                 <Select
+                  name={`${path}.pricing.rules.${String(i)}.kind`}
                   label="Price operation"
                   value={rule.kind}
                   change={(kind) => {
@@ -159,6 +169,7 @@ export function PricingEditor({
                 />
                 {!["rank_interval", "manual_review"].includes(rule.kind) && (
                   <Text
+                    name={`${path}.pricing.rules.${String(i)}.value`}
                     label="Operation value"
                     value={rule.value}
                     change={(value) => {
@@ -175,6 +186,7 @@ export function PricingEditor({
                 )}
                 {rule.kind === "per_unit" && (
                   <Select
+                    name={`${path}.pricing.rules.${String(i)}.field`}
                     label="Quantity field"
                     value={rule.field}
                     change={(field) => {
@@ -186,6 +198,7 @@ export function PricingEditor({
                 {rule.kind === "rank_interval" && (
                   <>
                     <Select
+                      name={`${path}.pricing.rules.${String(i)}.from`}
                       label="Price starting rank field"
                       value={rule.from}
                       change={(from) => {
@@ -194,6 +207,7 @@ export function PricingEditor({
                       options={choices}
                     />
                     <Select
+                      name={`${path}.pricing.rules.${String(i)}.to`}
                       label="Price target rank field"
                       value={rule.to}
                       change={(to) => {
@@ -202,6 +216,7 @@ export function PricingEditor({
                       options={choices}
                     />
                     <Select
+                      name={`${path}.pricing.rules.${String(i)}.from_units`}
                       label="Price starting units field"
                       value={rule.from_units}
                       change={(from_units) => {
@@ -210,6 +225,7 @@ export function PricingEditor({
                       options={choices}
                     />
                     <Select
+                      name={`${path}.pricing.rules.${String(i)}.to_units`}
                       label="Price target units field"
                       value={rule.to_units}
                       change={(to_units) => {
@@ -224,6 +240,7 @@ export function PricingEditor({
                     </p>
                     {ranks.map((rank) => (
                       <Text
+                        name={`${path}.pricing.rules.${String(i)}.intervals`}
                         key={rank.key}
                         label={`${rank.label} interval price`}
                         value={
@@ -245,6 +262,7 @@ export function PricingEditor({
                   </>
                 )}
                 <ConditionEditor
+                  path={`${path}.pricing.rules.${String(i)}.when`}
                   label="Apply price operation when"
                   fields={fields}
                   value={rule.when}
@@ -307,6 +325,7 @@ export function PricingEditor({
               <details key={i} className="catalog-section" data-price-case={i}>
                 <summary>{example.key}</summary>
                 <Text
+                  name={`${path}.pricing.cases.${String(i)}.key`}
                   label="Example key"
                   value={example.key}
                   change={(key) => {
@@ -314,6 +333,7 @@ export function PricingEditor({
                   }}
                 />
                 <Select
+                  name={`${path}.pricing.cases.${String(i)}.outcome`}
                   label="Expected pricing outcome"
                   value={example.outcome}
                   change={(outcome) => {
@@ -326,6 +346,7 @@ export function PricingEditor({
                 />
                 {example.outcome === "estimated" && (
                   <Text
+                    name={`${path}.pricing.cases.${String(i)}.amount_minor`}
                     label="Expected amount in minor units"
                     value={example.amount_minor}
                     change={(amount_minor) => {

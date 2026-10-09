@@ -80,10 +80,19 @@ func rounded(n *big.Rat) *big.Int {
 	return numerator.Quo(numerator, new(big.Int).Mul(n.Denom(), big.NewInt(2)))
 }
 
-// Calculate validates ordinary selections before evaluating a published plan.
+// Calculate preserves validation of historical answers and published price cases.
+// New customer selections must use CalculateNew instead.
 func Calculate(release Release, serviceKey string, submitted Answers, now time.Time) Estimate {
+	return calculate(release, serviceKey, ValidateAnswers(release.Configuration, serviceKey, "estimate", submitted, nil), now)
+}
+
+// CalculateNew validates current selection rules before evaluating a plan.
+func CalculateNew(release Release, serviceKey string, submitted Answers, now time.Time) Estimate {
+	return calculate(release, serviceKey, ValidateNewAnswers(release.Configuration, serviceKey, "estimate", submitted, nil), now)
+}
+
+func calculate(release Release, serviceKey string, validated Validation, now time.Time) Estimate {
 	result := Estimate{ReleaseID: release.ID, Version: release.Version, ExpiresAt: now.UTC().Add(15 * time.Minute), Outcome: "invalid", Lines: []PriceLine{}, Issues: []Issue{}}
-	validated := ValidateAnswers(release.Configuration, serviceKey, "estimate", submitted, nil)
 	result.Answers, result.Issues = validated.Answers, validated.Issues
 	if len(result.Issues) > 0 {
 		return result
@@ -104,6 +113,19 @@ func evaluatePrice(c Configuration, service ServiceDefinition, answers Answers) 
 	}
 	if service.Evaluator != "pricing-v1" || service.Pricing == nil {
 		return manual()
+	}
+	// An old numeric win-rate rule cannot price a new range or comparison. Keep
+	// its published rule immutable and request a quote instead of dropping its
+	// surcharge when the old numeric comparison cannot match the richer answer.
+	for _, field := range service.Fields {
+		if field.Type != "decimal" || !IsWinRateField(field) || !validWinRate(answerString(answers[field.Key])) {
+			continue
+		}
+		for _, rule := range service.Pricing.Rules {
+			if rule.Field == field.Key || slices.Contains(conditionFields(rule.When), field.Key) {
+				return manual()
+			}
+		}
 	}
 	plan := service.Pricing
 	total, ok := decimal(plan.BaseMinor)

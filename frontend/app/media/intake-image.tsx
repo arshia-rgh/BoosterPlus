@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "../portal-router";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { sessionSchema } from "../identity/api";
 import { useResource } from "../orders/resource";

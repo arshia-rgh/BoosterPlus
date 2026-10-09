@@ -13,7 +13,7 @@
 }
 
 # Certificate preparation only. No app network, reverse proxy or sales access.
-{$SITE_ADDRESS} {
+{$SITE_ADDRESS}, {$ADMIN_SITE_ADDRESS}, {$BOOSTER_SITE_ADDRESS} {
 	tls {
 		issuer acme {
 			dir https://acme-v02.api.letsencrypt.org/directory

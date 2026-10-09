@@ -1,4 +1,9 @@
+import { Anchor } from "../portal-router";
 import { DisplayPreferences } from "./display-preferences";
+import { MFASetup } from "./mfa-setup";
+import { RecoveryResult } from "./recovery-result";
+import { countdownLabel, useCountdown } from "./countdown";
+import { parseMFAEnrollment, type MFAEnrollment } from "./mfa-enrollment";
 import {
   portalFromPath,
   portalLogin,
@@ -12,7 +17,7 @@ import {
   FieldValidation,
   TextField as Text,
   ValidationSummary,
-  type RegisteredField,
+  useFormValidation,
   type FieldIssue,
 } from "../ui/form-validation";
 export { TextField as Text } from "../ui/form-validation";
@@ -27,6 +32,7 @@ import {
 } from "../account/return-path";
 import AccountNavigation from "../account/navigation";
 import AccountOverview from "../account/overview";
+import { useResource } from "../orders/resource";
 import { RetryButton, useRetryPending } from "../ui/retry-button";
 import { Feedback, PanelState } from "../ui/feedback";
 import "../ui/feedback.css";
@@ -47,7 +53,7 @@ import {
   Navigate,
   useLocation,
   useSearchParams,
-} from "react-router";
+} from "../portal-router";
 import { z } from "../validation";
 import {
   get,
@@ -97,6 +103,7 @@ export function Form({
   label = title,
   compact = false,
   success = "Request completed.",
+  disabled = false,
 }: {
   title: string;
   children?: ReactNode;
@@ -104,6 +111,7 @@ export function Form({
   label?: string;
   compact?: boolean;
   success?: string;
+  disabled?: boolean;
 }) {
   const entry = useContext(EntryProgress);
   const [busy, setBusy] = useState(false),
@@ -116,17 +124,13 @@ export function Form({
       entry?.retryAt ?? 0,
     ) || undefined,
   );
-  const [fields, setFields] = useState<RegisteredField[]>([]);
+  const retrySeconds = useCountdown(
+    Math.max(
+      problem instanceof APIError ? (problem.retryAt ?? 0) : 0,
+      entry?.retryAt ?? 0,
+    ) || undefined,
+  );
   const [issues, setIssues] = useState<FieldIssue[]>([]);
-  const register = useCallback((field: RegisteredField) => {
-    setFields((current) => [
-      ...current.filter((item) => item.id !== field.id),
-      field,
-    ]);
-    return () => {
-      setFields((current) => current.filter((item) => item.id !== field.id));
-    };
-  }, []);
   const correct = useCallback(
     (name: string) => {
       if (!issues.some((issue) => issue.path === name)) return;
@@ -139,14 +143,21 @@ export function Form({
     },
     [issues],
   );
+  const validation = useFormValidation(
+    issues,
+    correct,
+    undefined,
+    !busy && !entry?.busy,
+  );
+  const fields = validation.fields;
   const lock = useRef(false);
   const feedback = useRef<HTMLParagraphElement>(null);
   useEffect(() => {
-    if (failed) feedback.current?.focus();
-  }, [failed]);
+    if (failed && issues.length === 0) feedback.current?.focus();
+  }, [failed, issues.length]);
   async function send(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (lock.current || cooling) return;
+    if (lock.current || cooling || disabled) return;
     if (entry && !entry.acquire()) return;
     lock.current = true;
     const data = new FormData(event.currentTarget);
@@ -172,14 +183,14 @@ export function Form({
     }
   }
   return (
-    <FieldValidation value={{ issues, register, correct }}>
+    <FieldValidation value={validation}>
       <form
         method="post"
         className={compact ? "identity-session-action" : "identity-card"}
         onSubmit={(event) => void send(event)}
       >
         {!compact && <h2>{title}</h2>}
-        <fieldset disabled={busy || entry?.busy}>
+        <fieldset disabled={busy || entry?.busy || disabled}>
           {children}
           <Button
             className="button"
@@ -190,6 +201,11 @@ export function Form({
             {cooling ? "Wait before trying again" : label}
           </Button>
         </fieldset>
+        {cooling && (
+          <p role="timer" aria-live="off">
+            Try again in {countdownLabel(retrySeconds)}.
+          </p>
+        )}
         <Feedback feedbackRef={feedback} kind={failed ? "error" : "status"}>
           {message}
         </Feedback>
@@ -203,25 +219,91 @@ export const value = (data: FormData, name: string) => {
   const field = data.get(name);
   return typeof field === "string" ? field : "";
 };
-function EmailForm({
+const challengeSchema = z.object({
+  challenge_id: z.string().min(1),
+  retry_after_seconds: z.number().int().min(0).max(86400),
+  expires_in_seconds: z.number().int().min(1).max(86400),
+});
+type EmailRequest = {
+  email: string;
+  account_email: string;
+  purpose: "login" | "reauth" | "email_change" | "recovery";
+  accept_terms: boolean;
+  terms_version: string;
+};
+type EmailFormProps = {
+  purpose: EmailRequest["purpose"];
+  termsVersion?: string;
+  email?: string;
+  refresh: Refresh;
+};
+function EmailForm(props: EmailFormProps) {
+  const entry = useContext(EntryProgress);
+  return entry ? (
+    <EmailFormFields {...props} />
+  ) : (
+    <AuthEntryProgress>
+      <EmailFormFields {...props} />
+    </AuthEntryProgress>
+  );
+}
+function EmailFormFields({
   termsVersion = "",
   purpose,
   email = "",
   refresh,
-}: {
-  purpose: "login" | "reauth" | "email_change" | "recovery";
-  termsVersion?: string;
-  email?: string;
-  refresh: Refresh;
-}) {
+}: EmailFormProps) {
   const portal = portalFromPath(useLocation().pathname);
-  const [challenge, setChallenge] = useState(""),
-    [done, setDone] = useState(false),
-    [requestedEmail, setRequestedEmail] = useState("");
+  const entry = useContext(EntryProgress);
+  const [challenge, setChallenge] = useState("");
+  const [done, setDone] = useState(false);
+  const [request, setRequest] = useState<EmailRequest | null>(null);
+  const [retryAt, setRetryAt] = useState<number | undefined>();
+  const [expiresAt, setExpiresAt] = useState<number | undefined>();
+  const [sending, setSending] = useState(false);
+  const [resendProblem, setResendProblem] = useState<unknown>(null);
+  const [resent, setResent] = useState(false);
+  const sendLock = useRef(false);
+  const retrySeconds = useCountdown(
+    Math.max(retryAt ?? 0, entry?.retryAt ?? 0) || undefined,
+  );
+  const expiresSeconds = useCountdown(expiresAt);
+  const expired = expiresAt !== undefined && expiresSeconds === 0;
   const codeContainer = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (challenge) codeContainer.current?.querySelector("input")?.focus();
   }, [challenge]);
+  async function requestCode(body: EmailRequest) {
+    const startedAt = Date.now();
+    const result = await post("/auth/email/request", body, challengeSchema);
+    setRequest(body);
+    setChallenge(result.challenge_id);
+    setRetryAt(Date.now() + result.retry_after_seconds * 1000);
+    setExpiresAt(startedAt + result.expires_in_seconds * 1000);
+    setDone(false);
+  }
+  async function resend() {
+    if (!request || retrySeconds > 0 || sendLock.current || entry?.busy) return;
+    if (entry && !entry.acquire()) return;
+    sendLock.current = true;
+    setSending(true);
+    setResendProblem(null);
+    setResent(false);
+    try {
+      await requestCode(request);
+      setResent(true);
+    } catch (error) {
+      setResendProblem(error);
+      if (error instanceof APIError && error.retryAt !== undefined) {
+        setRetryAt(error.retryAt);
+        entry?.setRetryAt(error.retryAt);
+      }
+    } finally {
+      sendLock.current = false;
+      entry?.release();
+      setSending(false);
+    }
+  }
   const title =
     new Map([
       ["login", "Continue with email"],
@@ -235,34 +317,31 @@ function EmailForm({
         <Form
           title={title}
           success="Check your inbox for the verification code."
+          disabled={retrySeconds > 0}
           label={
             purpose === "recovery"
               ? "Send recovery verification code"
               : "Send verification code"
           }
           submit={async (data) => {
-            const result = await post(
-              "/auth/email/request",
-              {
-                email: email || value(data, "email"),
-                account_email: value(data, "account_email"),
-                purpose,
-                accept_terms: data.get("terms") === "on",
-                terms_version: termsVersion,
-              },
-              z.object({ challenge_id: z.string() }),
-            );
-            setRequestedEmail(email || value(data, "email"));
-            setChallenge(result.challenge_id);
-            setDone(false);
+            setResendProblem(null);
+            setResent(false);
+            await requestCode({
+              email: email || value(data, "email"),
+              account_email: value(data, "account_email"),
+              purpose,
+              accept_terms: data.get("terms") === "on",
+              terms_version: termsVersion,
+            });
           }}
         >
           {purpose === "recovery" && (
             <>
               <p>
-                Access to a new email address does not prove ownership of an
-                existing account. An owner must independently review your
-                request. Your authenticator remains required.
+                Access to a new email address does not prove ownership of this{" "}
+                {portal === "customer" ? "customer" : portal} account. An owner
+                must independently review your request. Your authenticator
+                remains required.
               </p>
               <Text
                 name="account_email"
@@ -297,9 +376,13 @@ function EmailForm({
             </label>
           )}
           <p>
-            Codes expire after 10 minutes. Wait at least 60 seconds before
-            requesting another.
+            We’ll email a short-lived verification code. No password is needed.
           </p>
+          {retrySeconds > 0 && (
+            <p role="timer" aria-live="off">
+              Request another code in {countdownLabel(retrySeconds)}.
+            </p>
+          )}
         </Form>
       )}
       {challenge && !done && (
@@ -309,6 +392,7 @@ function EmailForm({
             title="Check your inbox"
             success="Email verified."
             label="Verify email code"
+            disabled={expired || sending}
             submit={async (data) => {
               await post(
                 "/auth/email/verify",
@@ -320,7 +404,7 @@ function EmailForm({
             }}
           >
             <p>
-              If the request is eligible, a code will arrive at {requestedEmail}{" "}
+              If the request is eligible, a code will arrive at {request?.email}{" "}
               shortly.
             </p>
             <Text
@@ -331,21 +415,62 @@ function EmailForm({
               inputMode="numeric"
               pattern="[0-9]{6}"
             />
-            <p>
-              Codes expire after 10 minutes. You can request another after 60
-              seconds.
-            </p>
+            {expired ? (
+              <p role="status">
+                This code has expired. Request a new code below.
+              </p>
+            ) : (
+              <p role="timer" aria-live="off">
+                Code expires in {countdownLabel(expiresSeconds)}.
+              </p>
+            )}
           </Form>
-          <button
-            className="account-text-action"
-            type="button"
-            onClick={() => {
-              setChallenge("");
-              setDone(false);
-            }}
-          >
-            Change email or request another code
-          </button>
+          <div className="identity-resend">
+            <Button
+              className="button"
+              type="button"
+              busy={sending}
+              disabled={retrySeconds > 0 || entry?.busy || sending}
+              onClick={() => {
+                void resend();
+              }}
+            >
+              {retrySeconds > 0
+                ? `Resend code in ${countdownLabel(retrySeconds)}`
+                : "Resend code"}
+            </Button>
+            {resent && (
+              <p role="status">
+                Another code was requested. If eligible, use the newest email to
+                continue.
+              </p>
+            )}
+            {resendProblem !== null && (
+              <>
+                <p role="alert">{errorMessage(resendProblem)}</p>
+                <VerificationLink error={resendProblem} />
+              </>
+            )}
+            <p className="quiet">
+              Check your spam folder too. Use the latest code sent to this
+              address.
+            </p>
+            {!email && (
+              <button
+                className="account-text-action"
+                type="button"
+                disabled={sending || entry?.busy}
+                onClick={() => {
+                  setChallenge("");
+                  setDone(false);
+                  setResendProblem(null);
+                  setResent(false);
+                }}
+              >
+                Change email address
+              </button>
+            )}
+          </div>
         </div>
       )}
       {done && (
@@ -372,6 +497,7 @@ function EmailForm({
     </section>
   );
 }
+
 function Google({
   session,
   purpose,
@@ -381,6 +507,7 @@ function Google({
   purpose: "login" | "link" | "reauth";
   refresh: Refresh;
 }) {
+  const location = useLocation();
   return (
     <Form
       title={
@@ -405,13 +532,15 @@ function Google({
           throw new Error("Unexpected provider");
         await refresh();
         const requested = safeReturnPath(
-          new URLSearchParams(window.location.search).get("returnTo"),
+          new URLSearchParams(location.search).get("returnTo"),
+          session.portal,
         );
         rememberGoogleReturn(
           purpose === "login"
-            ? (requested ?? window.location.pathname)
+            ? (requested ?? location.pathname)
             : portalSecurity(session.portal),
           purpose === "login" ? undefined : (requested ?? undefined),
+          session.portal,
         );
         window.location.assign(target.href);
       }}
@@ -435,12 +564,37 @@ function Security({
   session,
   refresh,
   onCodes,
+  showRecoveryTools = true,
 }: {
   session: Session;
   refresh: Refresh;
   onCodes: (codes: string[]) => void;
+  showRecoveryTools?: boolean;
 }) {
-  const [secret, setSecret] = useState("");
+  const [enrollment, setEnrollment] = useState<{
+    value: MFAEnrollment;
+    expiresAt: number;
+  } | null>(null);
+  const [setupExpired, setSetupExpired] = useState(false);
+  useEffect(() => {
+    if (!enrollment) return;
+    const expire = () => {
+      setEnrollment(null);
+      setSetupExpired(true);
+    };
+    const timer = window.setTimeout(
+      expire,
+      Math.max(0, enrollment.expiresAt - Date.now()),
+    );
+    const leave = () => {
+      setEnrollment(null);
+    };
+    window.addEventListener("pagehide", leave);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pagehide", leave);
+    };
+  }, [enrollment]);
   const heading = useRef<HTMLHeadingElement>(null);
   const pending = session.mfa_required;
   useEffect(() => {
@@ -457,38 +611,42 @@ function Security({
         {session.portal === "customer"
           ? "When enabled, your authenticator adds a second verification step to sign-in."
           : "Staff must verify an authenticator at every sign-in."}{" "}
-        A code can be used only once. Sensitive changes require email or Google
-        verification and an authenticator code from the last 10 minutes.
+        A code can be used only once. If a sensitive action needs fresh
+        verification, you can confirm it in a dialog without leaving your work.
       </p>
-      {!user.mfa_enabled && (
+      {user.mfa_enabled && !pending && (
+        <p role="status">Authenticator enabled for this account.</p>
+      )}
+      {!user.mfa_enabled && !enrollment && (
         <Form
           title="Set up authenticator"
           submit={async () => {
+            const startedAt = Date.now();
             const result = await post(
               "/auth/mfa/enroll",
               {},
               z.object({ secret: z.string(), url: z.string() }),
             );
-            setSecret(result.secret);
+            setEnrollment({
+              value: parseMFAEnrollment(result, user.email, session.portal),
+              expiresAt: startedAt + 10 * 60 * 1000,
+            });
+            setSetupExpired(false);
           }}
         >
           <p>
-            Add this account to your authenticator app using the setup key, then
-            verify its six-digit code.
+            Connect your authenticator by scanning a QR code, then confirm its
+            six-digit code. Keep your recovery codes somewhere private.
           </p>
         </Form>
       )}
-      {secret && (
-        <div className="secret" role="status">
-          <p>Manual setup key (time based, six digits, 30 seconds)</p>
-          <code>{secret}</code>
-          <p>
-            Keep this key private. It expires in 10 minutes if setup is not
-            completed.
-          </p>
-        </div>
+      {setupExpired && (
+        <p role="status">
+          Your setup code expired. Start setup again to get a new QR code.
+        </p>
       )}
-      {(user.mfa_enabled || secret) && (
+      {enrollment && <MFASetup enrollment={enrollment.value} />}
+      {((pending && user.mfa_enabled) || enrollment) && (
         <Form
           title="Verify authenticator"
           submit={async (data) => {
@@ -498,15 +656,26 @@ function Security({
               codesSchema,
             );
             onCodes(result.recovery_codes);
-            setSecret("");
+            setEnrollment(null);
             await refresh();
           }}
         >
           <Text
             name="code"
-            label="Authenticator or recovery code"
+            label={
+              user.mfa_enabled
+                ? "Authenticator or recovery code"
+                : "Six-digit authenticator code"
+            }
             autoComplete="one-time-code"
-            maxLength={26}
+            maxLength={user.mfa_enabled ? 26 : 6}
+            inputMode={user.mfa_enabled ? "text" : "numeric"}
+            {...(!user.mfa_enabled
+              ? {
+                  pattern: "[0-9]{6}",
+                  help: "Enter the current code from the PLAYORA account in your app.",
+                }
+              : {})}
           />
         </Form>
       )}
@@ -536,26 +705,10 @@ function Security({
       )}
       {user.mfa_enabled && !session.mfa_required && (
         <>
-          <Form
-            title="Replace recovery codes"
-            submit={async () => {
-              const result = await post(
-                "/auth/mfa/recovery-codes",
-                {},
-                codesSchema,
-              );
-              onCodes(result.recovery_codes);
-            }}
-          >
-            <p>
-              This invalidates previous codes and signs out your other sessions.
-            </p>
-            <label className="check">
-              <input type="checkbox" required />
-              Replace my existing recovery codes
-            </label>
-          </Form>
-          {user.role === "customer" && (
+          {showRecoveryTools && (
+            <RecoveryCodes session={session} onCodes={onCodes} />
+          )}
+          {session.portal === "customer" && (
             <Form
               title="Disable authenticator"
               submit={async () => {
@@ -575,38 +728,112 @@ function Security({
     </section>
   );
 }
-function SessionList({ refresh }: { refresh: Refresh }) {
-  const [items, setItems] = useState<
-    z.infer<typeof sessionsSchema>["sessions"]
-  >([]);
+function RecoveryCodes({
+  session,
+  onCodes,
+}: {
+  session: Session;
+  onCodes: (codes: string[]) => void;
+}) {
+  if (!session.user?.mfa_enabled || session.mfa_required) return null;
   return (
-    <section>
-      <Form
-        title="Active sessions"
-        label="Load sessions"
-        submit={async () => {
-          setItems((await get("/me/sessions", sessionsSchema)).sessions);
-        }}
-      />
-      {items.map((item) => (
-        <Form
-          key={item.id}
-          title={`${item.portal === "admin" ? "Admin" : item.portal === "booster" ? "Booster" : "Customer"} · ${item.current ? "This session" : "Another session"}`}
-          label="Sign out this session"
-          submit={async () => {
-            await command("/auth/sessions/revoke", { id: item.id, all: false });
-            setItems([]);
-            await refresh();
-          }}
-        >
-          <p>
-            Started {new Date(item.created_at).toLocaleString()}. Expires{" "}
-            {new Date(item.expires_at).toLocaleString()}.
-          </p>
-        </Form>
-      ))}
+    <Form
+      title="Replace recovery codes"
+      submit={async () => {
+        const result = await post("/auth/mfa/recovery-codes", {}, codesSchema);
+        onCodes(result.recovery_codes);
+      }}
+    >
+      <p>
+        This invalidates previous recovery codes and signs out your other{" "}
+        {session.portal} sessions. It does not change a separate PLAYORA account
+        in another workspace.
+      </p>
+      <label className="check">
+        <input type="checkbox" required />
+        Replace my existing recovery codes
+      </label>
+    </Form>
+  );
+}
+function SessionList({
+  session,
+  refresh,
+}: {
+  session: Session;
+  refresh: Refresh;
+}) {
+  const resource = useResource("/me/sessions", sessionsSchema);
+  const wrongPortal =
+    resource.data?.sessions.some((item) => item.portal !== session.portal) ??
+    false;
+  return (
+    <section className="identity-section">
+      <h2>Active sessions</h2>
+      <p>
+        These sessions belong only to your{" "}
+        {session.portal === "admin"
+          ? "admin"
+          : session.portal === "booster"
+            ? "booster"
+            : "customer"}{" "}
+        account. Separate PLAYORA accounts have their own sessions.
+      </p>
+      <RetryButton
+        deadline={
+          resource.error instanceof APIError
+            ? resource.error.retryAt
+            : undefined
+        }
+        busy={resource.loading}
+        onRetry={resource.reload}
+      >
+        {resource.loading ? "Loading sessions…" : "Refresh sessions"}
+      </RetryButton>
+      {resource.error != null && (
+        <p role="alert">{errorMessage(resource.error)}</p>
+      )}
+      {wrongPortal && (
+        <p role="alert">
+          Session information did not match this workspace. Refresh this page
+          before trying again.
+        </p>
+      )}
+      {resource.data && !wrongPortal && (
+        <>
+          {resource.data.sessions.length === 0 && (
+            <p role="status">
+              No active sessions were returned. Refresh to check your sign-in.
+            </p>
+          )}
+          {resource.data.sessions.map((item) => (
+            <Form
+              key={item.id}
+              title={item.current ? "This session" : "Another session"}
+              label={
+                item.current ? "Sign out this device" : "Sign out this session"
+              }
+              submit={async () => {
+                await command("/auth/sessions/revoke", {
+                  id: item.id,
+                  all: false,
+                });
+                resource.reload();
+                await refresh();
+              }}
+            >
+              <p>
+                Started {new Date(item.created_at).toLocaleString()}. Last
+                active {new Date(item.last_seen_at).toLocaleString()}. Expires{" "}
+                {new Date(item.expires_at).toLocaleString()}.
+              </p>
+            </Form>
+          ))}
+        </>
+      )}
       <Form
         title="Sign out everywhere"
+        label="Sign out this account everywhere"
         submit={async () => {
           await command("/auth/sessions/revoke", { id: "", all: true });
           await refresh();
@@ -614,12 +841,14 @@ function SessionList({ refresh }: { refresh: Refresh }) {
       >
         <label className="check">
           <input type="checkbox" required />
-          End every session
+          End every session for this {session.portal} account, including this
+          device
         </label>
       </Form>
     </section>
   );
 }
+
 function Account({
   session,
   refresh,
@@ -629,7 +858,7 @@ function Account({
   session: Session;
   refresh: Refresh;
   onCodes: (codes: string[]) => void;
-  section?: "profile" | "security" | "preferences";
+  section?: "profile" | "security" | "preferences" | "sessions" | "recovery";
 }) {
   const portal = session.portal;
   const base = portal === "customer" ? "/account" : `/${portal}/account`;
@@ -643,9 +872,46 @@ function Account({
       <nav className="settings-navigation" aria-label="Account settings">
         <NavLink to={`${base}/settings`}>Profile</NavLink>
         <NavLink to={`${base}/security`}>Security</NavLink>
+        <NavLink to={`${base}/sessions`}>Sessions</NavLink>
+        <NavLink to={`${base}/recovery`}>Recovery codes</NavLink>
         <NavLink to={`${base}/preferences`}>Preferences</NavLink>
         {portal === "customer" && <Link to="/privacy">Privacy</Link>}
       </nav>
+      {portal !== "customer" && (
+        <p className="quiet">
+          Your {portal === "admin" ? "admin" : "booster"} profile, sign-in
+          methods, authenticator and sessions belong to this workspace only,
+          even if you use the same email for another PLAYORA account.
+        </p>
+      )}
+      {section === "sessions" && (
+        <SessionList session={session} refresh={refresh} />
+      )}
+      {section === "recovery" && (
+        <section className="identity-section">
+          <h2>Recovery for this account</h2>
+          <p>
+            A recovery code replaces one authenticator check after you verify
+            email or Google. Each code works once and only for this {portal}{" "}
+            account. Keep the codes private.
+          </p>
+          <p>
+            If fresh verification is needed, you can confirm it here when you
+            replace your codes.
+          </p>
+          <RecoveryCodes session={session} onCodes={onCodes} />
+          <details>
+            <summary>Lost your authenticator and recovery codes?</summary>
+            <p>
+              {portal === "customer"
+                ? "Contact PLAYORA support for an independent ownership review."
+                : "Contact your PLAYORA administrator through your established staff channel for an independent ownership review."}{" "}
+              Email verification alone does not remove the second factor. Never
+              send a setup key, password or recovery code.
+            </p>
+          </details>
+        </section>
+      )}
       {section === "profile" && (
         <Form
           title="Profile"
@@ -743,23 +1009,26 @@ function Account({
       )}
       {section === "security" && (
         <>
-          <section className="account-panel">
-            <h2>Verify a sensitive change</h2>
+          <Security
+            key={`${session.portal}:${user.id}:${user.email}:${String(user.mfa_enabled)}`}
+            session={session}
+            refresh={refresh}
+            onCodes={onCodes}
+            showRecoveryTools={portal === "customer"}
+          />
+          {portal === "customer" ? (
+            <details>
+              <summary>Active sessions and sign-out options</summary>
+              <SessionList session={session} refresh={refresh} />
+            </details>
+          ) : (
             <p>
-              Verify your email or Google account and a fresh authenticator code
-              before sensitive changes. Then return to the original action and
-              review it again.
+              <Link to={`${base}/sessions`}>
+                Manage this workspace’s sessions
+              </Link>{" "}
+              · <Link to={`${base}/recovery`}>Manage recovery codes</Link>
             </p>
-            <EmailForm purpose="reauth" email={user.email} refresh={refresh} />
-            {session.google_enabled && session.google_linked && (
-              <Google session={session} purpose="reauth" refresh={refresh} />
-            )}
-          </section>
-          <Security session={session} refresh={refresh} onCodes={onCodes} />
-          <details>
-            <summary>Active sessions and sign-out options</summary>
-            <SessionList refresh={refresh} />
-          </details>
+          )}
           <details>
             <summary>Email and linked Google account</summary>
             <EmailForm purpose="email_change" refresh={refresh} />
@@ -791,7 +1060,13 @@ function Account({
 }
 type IdentityProps = {
   title: string;
-  view?: "overview" | "profile" | "security" | "preferences";
+  view?:
+    | "overview"
+    | "profile"
+    | "security"
+    | "preferences"
+    | "sessions"
+    | "recovery";
   capability?: "self" | "account" | "admin" | "booster" | "owner";
   children?: ReactNode;
 };
@@ -1003,28 +1278,12 @@ function PortalIdentity({
         ) : (
           <>
             {codes.length > 0 && (
-              <section className="secret">
-                <h2>Save your recovery codes</h2>
-                <p>
-                  Each code works once, after Google or email verification.
-                  Store them privately; they will not be shown again.
-                </p>
-                <ul>
-                  {codes.map((code) => (
-                    <li key={code}>
-                      <code>{code}</code>
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  className="button"
-                  onClick={() => {
-                    setCodes([]);
-                  }}
-                >
-                  I saved my recovery codes
-                </button>
-              </section>
+              <RecoveryResult
+                codes={codes}
+                acknowledge={() => {
+                  setCodes([]);
+                }}
+              />
             )}
             {!session.user ? (
               <>
@@ -1087,18 +1346,11 @@ function PortalIdentity({
                       in.
                     </p>
                     <Security
+                      key={`${session.portal}:${session.user.id}:${session.user.email}:${String(session.user.mfa_enabled)}`}
                       session={session}
                       refresh={refresh}
                       onCodes={setCodes}
                     />
-                    <details>
-                      <summary>Verify email again</summary>
-                      <EmailForm
-                        purpose="reauth"
-                        email={session.user.email}
-                        refresh={refresh}
-                      />
-                    </details>
                   </>
                 ) : !session.capabilities.includes(capability) ? (
                   <p role="alert">You do not have access to this portal.</p>
@@ -1166,7 +1418,7 @@ function PortalIdentity({
         )}
         {entry && portal !== "customer" && (
           <p className="portal-entry-help">
-            <a href="/">Visit the PLAYORA website ↗</a>
+            <Anchor href="/">Visit the PLAYORA website ↗</Anchor>
           </p>
         )}
       </main>

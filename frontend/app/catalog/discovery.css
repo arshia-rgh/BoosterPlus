@@ -214,3 +214,21 @@
   background: #263d30;
   color: #d2f3bf;
 }
+
+.configuration-fields .catalog-input:has(.win-rate-preference) {
+  grid-column: 1 / -1;
+}
+.win-rate-preference {
+  min-width: 0;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid #466751;
+  border-radius: 0.75rem;
+}
+.win-rate-preference legend {
+  padding: 0 0.4rem;
+  font-weight: 650;
+}
+.win-rate-preference .catalog-grid {
+  margin-top: 0.8rem;
+}

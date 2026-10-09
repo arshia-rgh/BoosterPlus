@@ -96,3 +96,68 @@ it("storage failure never prevents configuring or signing in", () => {
     saveConfigurationDraft("v1", service, config, "", "", {});
   }).not.toThrow();
 });
+
+it.each(["win_rate", "decimal"] as const)(
+  "preserves only supported win-rate choices for %s fields across sign-in",
+  (type) => {
+    const field = {
+      ...emptyField("requested_win_rate"),
+      type,
+      unit: "%",
+      min: "0",
+      max: "100",
+    };
+    const request = { ...service, fields: [...service.fields, field] };
+    const definition = { ...config, services: [request] };
+    for (const selection of [
+      "any",
+      "range:80:90",
+      "below:80",
+      "above:70.5",
+      "exact:100",
+    ]) {
+      const answers = {
+        current: "a",
+        requested_win_rate: selection,
+        message: "private",
+      };
+      saveConfigurationDraft("v1", request, definition, "", "", answers);
+      expect(
+        restoreConfiguration(
+          draftSnapshot(),
+          "v1",
+          request,
+          definition,
+          "",
+          "",
+        ),
+      ).toEqual({ current: "a", requested_win_rate: selection });
+      expect(draftSnapshot()).not.toContain("private");
+    }
+    for (const selection of [
+      "85",
+      "100",
+      "exact:85",
+      "range:90:80",
+      "range:80:101",
+      "above:100",
+      "free text",
+      "range:80:90:extra",
+    ]) {
+      expect(
+        safeConfiguration(request, definition, {
+          requested_win_rate: selection,
+        }),
+      ).toEqual({});
+    }
+    const afterOrder = {
+      ...request,
+      fields: [{ ...field, stage: "order" as const }],
+    };
+    expect(
+      safeConfiguration(afterOrder, definition, {
+        requested_win_rate: "range:80:90",
+      }),
+    ).toEqual({});
+  },
+);

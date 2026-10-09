@@ -255,3 +255,23 @@ it("retains bounded shop options after sign-in without recipient data", () => {
     "/games/mlbb/shop/item",
   );
 });
+
+it.each(["admin", "booster"] as const)(
+  "keeps %s profile security sessions and recovery return paths scoped",
+  (portal) => {
+    for (const section of [
+      "settings",
+      "security",
+      "sessions",
+      "recovery",
+      "preferences",
+    ]) {
+      const path = `/${portal}/account/${section}`;
+      expect(portalReturn(`${path}?token=private#secret`, portal)).toBe(path);
+      expect(portalReturn(path, "customer")).toBeNull();
+      expect(
+        portalReturn(path, portal === "admin" ? "booster" : "admin"),
+      ).toBeNull();
+    }
+  },
+);

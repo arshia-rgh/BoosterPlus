@@ -9,7 +9,10 @@ test("workspace shortcuts remain readable with enlarged text and restore drawer 
       const session = {
         user: {
           id: "chrome-fixture",
+          portal: role,
           email: "chrome@example.test",
+          email_verified: true,
+          deleted: false,
           display_name: "Layout reviewer",
           role,
           staff_alias: "Reviewer",
@@ -102,10 +105,34 @@ test("workspace shortcuts remain readable with enlarged text and restore drawer 
     ).toBeLessThanOrEqual(320);
     const more = navigation.getByRole("button", { name: "More", exact: true });
     await more.click();
-    await expect(page.getByRole("dialog")).toBeVisible();
+    const drawer = page.getByRole("dialog", {
+      name: role === "booster" ? "Booster menu" : "Account menu",
+      exact: true,
+    });
+    await expect(drawer).toBeVisible();
+    const destination =
+      role === "booster" ? "/booster/account/security" : "/account/settings";
+    const ownSettings = drawer.getByRole("link", {
+      name: role === "booster" ? "Security" : "Settings",
+      exact: true,
+    });
+    await expect(ownSettings).toHaveAttribute("href", destination);
     await page.keyboard.press("Escape");
-    await expect(page.getByRole("dialog")).not.toBeVisible();
+    await expect(drawer).not.toBeVisible();
     await expect(more).toBeFocused();
+    await more.click();
+    await ownSettings.click();
+    await expect(page).toHaveURL(new URL(destination, page.url()).href);
+    await expect(drawer).not.toBeVisible();
+    await expect(
+      page.getByRole("heading", {
+        name: role === "booster" ? "Account security" : "Your profile",
+        exact: true,
+      }),
+    ).toBeFocused();
+    await expect(page.locator(".page-heading .eyebrow")).toHaveText(
+      role === "booster" ? "Booster workspace" : "My account",
+    );
     await page.unroute("**/api/v1/**");
   }
 });

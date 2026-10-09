@@ -148,6 +148,10 @@ it("locks an uncertain reservation and retries exactly once with its original ke
     screen.getByRole("button", { name: "Reserve and continue to payment" }),
   );
   await screen.findByRole("button", { name: "Retry reservation" });
+  expect(
+    screen.getByRole("region", { name: "Reservation recovery" }),
+  ).toHaveFocus();
+  expect(post).toHaveBeenCalledTimes(1);
   expect(screen.getByRole("button", { name: "Edit recipient" })).toBeDisabled();
   expect(screen.queryByText("private-recipient")).not.toBeInTheDocument();
   const initial = vi.mocked(post).mock.calls[0]?.[1];
@@ -259,4 +263,71 @@ it("removes obsolete recipient fields after publication changes before another r
     }),
     expect.anything(),
   );
+});
+
+it("identifies and focuses invalid recipient fields while retaining every entered value", async () => {
+  product.definition.recipient.push({
+    key: "server_id",
+    label: "Server ID",
+    help: "Destination server",
+    required: true,
+    max_length: 16,
+  });
+  mount();
+  await screen.findByText("Fixture item");
+  fireEvent.click(
+    screen.getByRole("button", { name: "Continue to recipient" }),
+  );
+  const player = screen.getByLabelText("Player ID (required)");
+  const server = screen.getByLabelText("Server ID (required)");
+  const submit = screen.getByRole("button", { name: "Review purchase" });
+  fireEvent.change(player, { target: { value: "x".repeat(33) } });
+  fireEvent.change(server, { target: { value: "1234" } });
+  expect(submit).toBeEnabled();
+  fireEvent.click(submit);
+  await waitFor(() => expect(player).toHaveFocus());
+  expect(player).toHaveAttribute("aria-invalid", "true");
+  expect(player).toHaveAccessibleDescription(/32 characters or fewer/);
+  expect(server).not.toHaveAttribute("aria-invalid");
+  expect(player).toHaveValue("x".repeat(33));
+  expect(server).toHaveValue("1234");
+  expect(post).not.toHaveBeenCalled();
+  server.focus();
+  fireEvent.click(submit);
+  await waitFor(() => expect(player).toHaveFocus());
+  fireEvent.change(player, { target: { value: "accepted-player" } });
+  fireEvent.change(server, { target: { value: "   " } });
+  fireEvent.click(submit);
+  await waitFor(() => expect(server).toHaveFocus());
+  expect(server).toHaveAccessibleDescription(/Enter Server ID/);
+  expect(player).not.toHaveAttribute("aria-invalid");
+  fireEvent.change(server, { target: { value: "1234" } });
+  fireEvent.click(submit);
+  expect(
+    screen.getByRole("heading", { name: "Review your purchase" }),
+  ).toHaveFocus();
+  expect(post).not.toHaveBeenCalled();
+});
+
+it("counts recipient Unicode characters consistently and allows blank optional fields", async () => {
+  product.definition.recipient.push({
+    key: "delivery_note",
+    label: "Extra ID",
+    help: "Optional",
+    required: false,
+    max_length: 8,
+  });
+  mount();
+  await screen.findByText("Fixture item");
+  fireEvent.click(
+    screen.getByRole("button", { name: "Continue to recipient" }),
+  );
+  fireEvent.change(screen.getByLabelText("Player ID (required)"), {
+    target: { value: "🎮".repeat(32) },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Review purchase" }));
+  expect(
+    screen.getByRole("heading", { name: "Review your purchase" }),
+  ).toHaveFocus();
+  expect(screen.getByText("Not provided")).toBeInTheDocument();
 });

@@ -34,6 +34,20 @@ func (_c *UserCreate) SetNillableDeletedAt(v *time.Time) *UserCreate {
 	return _c
 }
 
+// SetPortal sets the "portal" field.
+func (_c *UserCreate) SetPortal(v string) *UserCreate {
+	_c.mutation.SetPortal(v)
+	return _c
+}
+
+// SetNillablePortal sets the "portal" field if the given value is not nil.
+func (_c *UserCreate) SetNillablePortal(v *string) *UserCreate {
+	if v != nil {
+		_c.SetPortal(*v)
+	}
+	return _c
+}
+
 // SetEmail sets the "email" field.
 func (_c *UserCreate) SetEmail(v string) *UserCreate {
 	_c.mutation.SetEmail(v)
@@ -289,6 +303,10 @@ func (_c *UserCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *UserCreate) defaults() {
+	if _, ok := _c.mutation.Portal(); !ok {
+		v := user.DefaultPortal
+		_c.mutation.SetPortal(v)
+	}
 	if _, ok := _c.mutation.DisplayName(); !ok {
 		v := user.DefaultDisplayName
 		_c.mutation.SetDisplayName(v)
@@ -337,6 +355,14 @@ func (_c *UserCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *UserCreate) check() error {
+	if _, ok := _c.mutation.Portal(); !ok {
+		return &ValidationError{Name: "portal", err: errors.New(`ent: missing required field "User.portal"`)}
+	}
+	if v, ok := _c.mutation.Portal(); ok {
+		if err := user.PortalValidator(v); err != nil {
+			return &ValidationError{Name: "portal", err: fmt.Errorf(`ent: validator failed for field "User.portal": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Email(); !ok {
 		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "User.email"`)}
 	}
@@ -438,6 +464,10 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.DeletedAt(); ok {
 		_spec.SetField(user.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
+	}
+	if value, ok := _c.mutation.Portal(); ok {
+		_spec.SetField(user.FieldPortal, field.TypeString, value)
+		_node.Portal = value
 	}
 	if value, ok := _c.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)

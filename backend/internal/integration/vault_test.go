@@ -162,11 +162,7 @@ func TestVaultAuthorizationRecentFactorsAndEnvelopeStorage(t *testing.T) {
 	if err != nil || audits != 1 {
 		t.Fatal("access audit missing", err)
 	}
-	_, booster := f.auth.login(t, "vaultbooster@example.test")
-	if _, err = f.auth.client.User.UpdateOneID(booster.User.ID).SetRole(identity.RoleBooster).Save(ctx); err != nil {
-		t.Fatal(err)
-	}
-	booster = f.auth.enterPortal(t, booster, identity.PortalBooster)
+	_, booster := f.auth.staffLogin(t, "vaultbooster@example.test", identity.RoleBooster)
 	_, _, booster = f.auth.enroll(t, booster)
 	if _, err = store.RevealForStaff(ctx, booster, scope); !errors.Is(err, identity.ErrForbidden) {
 		t.Fatal("unassigned staff read credentials", err)
@@ -197,8 +193,8 @@ func TestVaultAuthorizationRecentFactorsAndEnvelopeStorage(t *testing.T) {
 	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(time.Unix(f.auth.clock.Load(), 0)).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
-	if raw, e := store.RevealForStaff(ctx, f.admin, scope); !errors.Is(e, identity.ErrMFA) || raw != nil {
-		t.Fatal("stale second factor received plaintext", e)
+	if raw, e := store.RevealForStaff(ctx, f.admin, scope); e != nil || len(raw) == 0 {
+		t.Fatal("fresh primary factor could not reveal", e)
 	}
 
 }

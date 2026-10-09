@@ -36,6 +36,8 @@ func write(w http.ResponseWriter, value any) error {
 func problem(w http.ResponseWriter, err error) error {
 	status, code := 0, ""
 	switch {
+	case errors.Is(err, nowpayments.ErrBelowMinimum):
+		status, code = http.StatusUnprocessableEntity, "payment_below_minimum"
 	case errors.Is(err, ErrInvalid):
 		status, code = http.StatusUnprocessableEntity, "payment_invalid"
 	case errors.Is(err, ErrConflict):

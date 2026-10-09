@@ -1,3 +1,4 @@
+import { formatWinRate, isWinRateField } from "../catalog/win-rate";
 import {
   matches,
   optionsFor,
@@ -71,6 +72,7 @@ export default function SelectionSummary({
         "boolean",
         "integer",
         "decimal",
+        "win_rate",
       ].includes(field.type) && field.stage === "estimate",
   );
   return (
@@ -92,8 +94,12 @@ export default function SelectionSummary({
           <div key={field.key}>
             <dt>{field.label}</dt>
             <dd>
-              {selectedLabel(values[field.key], optionsFor(field, config))}
-              {field.unit && values[field.key] !== undefined
+              {isWinRateField(field) && typeof values[field.key] === "string"
+                ? formatWinRate(values[field.key] as string)
+                : selectedLabel(values[field.key], optionsFor(field, config))}
+              {!isWinRateField(field) &&
+              field.unit &&
+              values[field.key] !== undefined
                 ? ` ${field.unit}`
                 : ""}
             </dd>

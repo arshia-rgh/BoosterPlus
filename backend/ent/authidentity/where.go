@@ -64,6 +64,11 @@ func IDContainsFold(id string) predicate.AuthIdentity {
 	return predicate.AuthIdentity(sql.FieldContainsFold(FieldID, id))
 }
 
+// Portal applies equality check predicate on the "portal" field. It's identical to PortalEQ.
+func Portal(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldEQ(FieldPortal, v))
+}
+
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
 func UserID(v string) predicate.AuthIdentity {
 	return predicate.AuthIdentity(sql.FieldEQ(FieldUserID, v))
@@ -82,6 +87,71 @@ func Subject(v string) predicate.AuthIdentity {
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.AuthIdentity {
 	return predicate.AuthIdentity(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// PortalEQ applies the EQ predicate on the "portal" field.
+func PortalEQ(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldEQ(FieldPortal, v))
+}
+
+// PortalNEQ applies the NEQ predicate on the "portal" field.
+func PortalNEQ(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldNEQ(FieldPortal, v))
+}
+
+// PortalIn applies the In predicate on the "portal" field.
+func PortalIn(vs ...string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldIn(FieldPortal, vs...))
+}
+
+// PortalNotIn applies the NotIn predicate on the "portal" field.
+func PortalNotIn(vs ...string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldNotIn(FieldPortal, vs...))
+}
+
+// PortalGT applies the GT predicate on the "portal" field.
+func PortalGT(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldGT(FieldPortal, v))
+}
+
+// PortalGTE applies the GTE predicate on the "portal" field.
+func PortalGTE(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldGTE(FieldPortal, v))
+}
+
+// PortalLT applies the LT predicate on the "portal" field.
+func PortalLT(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldLT(FieldPortal, v))
+}
+
+// PortalLTE applies the LTE predicate on the "portal" field.
+func PortalLTE(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldLTE(FieldPortal, v))
+}
+
+// PortalContains applies the Contains predicate on the "portal" field.
+func PortalContains(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldContains(FieldPortal, v))
+}
+
+// PortalHasPrefix applies the HasPrefix predicate on the "portal" field.
+func PortalHasPrefix(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldHasPrefix(FieldPortal, v))
+}
+
+// PortalHasSuffix applies the HasSuffix predicate on the "portal" field.
+func PortalHasSuffix(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldHasSuffix(FieldPortal, v))
+}
+
+// PortalEqualFold applies the EqualFold predicate on the "portal" field.
+func PortalEqualFold(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldEqualFold(FieldPortal, v))
+}
+
+// PortalContainsFold applies the ContainsFold predicate on the "portal" field.
+func PortalContainsFold(v string) predicate.AuthIdentity {
+	return predicate.AuthIdentity(sql.FieldContainsFold(FieldPortal, v))
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.

@@ -4,9 +4,11 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 )
 
-// Portal is the selected authentication audience, independent of an account's role.
+// Portal is the selected authentication audience, and immutable account namespace.
 type Portal string
 
 // Supported portal audiences are explicit and independent of staff roles.
@@ -31,7 +33,7 @@ func portalMatches(principal *Principal, portal Portal) error {
 	if principal.User == nil || principal.Session == nil {
 		return ErrUnauthenticated
 	}
-	if principal.Session.Portal != string(portal) {
+	if principal.Session.Portal != string(portal) || !portal.permitsUser(principal.User) {
 		return ErrForbidden
 	}
 	return nil
@@ -41,15 +43,19 @@ func (p Portal) valid() bool { return p == PortalCustomer || p == PortalBooster 
 func (p Portal) permitsRole(role string) bool {
 	switch p {
 	case PortalCustomer:
-		return validateRole(role) == nil
+		return role == RoleCustomer
 	case PortalBooster:
-		return role == RoleBooster || role == RoleAdmin || role == RoleOwner
+		return role == RoleBooster
 	case PortalAdmin:
 		return role == RoleAdmin || role == RoleOwner
 	default:
 		return false
 	}
 }
+func (p Portal) permitsUser(account *ent.User) bool {
+	return account != nil && account.Portal == string(p) && p.permitsRole(account.Role)
+}
+
 func (p Portal) home() string {
 	switch p {
 	case PortalAdmin:

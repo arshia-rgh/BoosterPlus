@@ -82,6 +82,6 @@ it("does not offer customer cancellation after live erasure starts", () => {
     screen.getByText(/This request can no longer be cancelled/),
   ).toBeVisible();
   expect(
-    screen.getByRole("link", { name: /Verify your identity/ }),
-  ).toHaveAttribute("target", "_blank");
+    screen.getByText(/If this action needs fresh verification/),
+  ).toBeVisible();
 });

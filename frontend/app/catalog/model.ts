@@ -43,6 +43,7 @@ export const fieldSchema = z.object({
     "boolean",
     "integer",
     "decimal",
+    "win_rate",
     "short_text",
     "long_text",
     "rank",

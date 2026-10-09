@@ -107,9 +107,13 @@ test("foundation variants, field-linked errors and keyboard table scrolling", as
   await expect(page.getByRole("alert")).toHaveText(
     "Check the highlighted fields.",
   );
-  await expect(page.getByRole("alert")).toBeFocused();
   const name = page.getByLabel("Display name", { exact: true });
+  await expect(name).toBeFocused();
+  await expect(name).toBeInViewport();
   await expect(name).toHaveAttribute("aria-invalid", "true");
+  await expect(
+    page.getByText("Use at least three characters.", { exact: true }),
+  ).toBeVisible();
   await expect(name).toHaveAccessibleDescription(
     "This name appears in your own workspace. Use at least three characters.",
   );

@@ -20,6 +20,8 @@ type User struct {
 	ID string `json:"id,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	// Portal holds the value of the "portal" field.
+	Portal string `json:"portal,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// DisplayName holds the value of the "display_name" field.
@@ -68,7 +70,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case user.FieldAuthVersion, user.FieldMfaCounter:
 			values[i] = new(sql.NullInt64)
-		case user.FieldID, user.FieldEmail, user.FieldDisplayName, user.FieldRole, user.FieldStaffAlias, user.FieldTermsVersion:
+		case user.FieldID, user.FieldPortal, user.FieldEmail, user.FieldDisplayName, user.FieldRole, user.FieldStaffAlias, user.FieldTermsVersion:
 			values[i] = new(sql.NullString)
 		case user.FieldDeletedAt, user.FieldEmailVerifiedAt, user.FieldTermsAcceptedAt, user.FieldMfaPendingExpires, user.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -99,6 +101,12 @@ func (_m *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.DeletedAt = new(time.Time)
 				*_m.DeletedAt = value.Time
+			}
+		case user.FieldPortal:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field portal", values[i])
+			} else if value.Valid {
+				_m.Portal = value.String
 			}
 		case user.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -247,6 +255,9 @@ func (_m *User) String() string {
 		builder.WriteString("deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("portal=")
+	builder.WriteString(_m.Portal)
 	builder.WriteString(", ")
 	builder.WriteString("email=")
 	builder.WriteString(_m.Email)

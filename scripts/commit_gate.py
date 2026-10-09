@@ -44,7 +44,7 @@ def scope(paths):
             "BOOSTER_PLUS_SPEC.md", "final-launch.md", "frontend/README.md", "backend/README.md",
         }:
             continue
-        if path.startswith(("frontend/app/", "frontend/admin-app/", "frontend/public/", "frontend/tests/")):
+        if path.startswith(("frontend/app/", "frontend/admin-app/", "frontend/booster-app/", "frontend/public/", "frontend/tests/")):
             frontend = True
             continue
         # Build/server/dependency/security configuration and unknown paths need all checks.

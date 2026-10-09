@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Link, useLocation, useParams } from "react-router";
+import { Link, useLocation, useParams } from "../portal-router";
 import { z } from "../validation";
 import { command } from "../identity/api";
 import { AuthorizedIdentity } from "../identity/frame";

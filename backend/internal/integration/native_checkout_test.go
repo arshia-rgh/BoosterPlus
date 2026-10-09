@@ -41,6 +41,7 @@ func (p *nativePaymentProvider) CreateInvoicePayment(_ context.Context, invoice,
 func nativePaymentDB(t *testing.T) (*paymentFixture, *nativePaymentProvider) {
 	t.Helper()
 	f := paymentDB(t)
+	f.provider.legacyNative = true // Exercise persisted attempts from the previous release.
 	p := &nativePaymentProvider{paymentProvider: f.provider}
 	f.store = payments.New(f.base.auth.client, f.base.auth.service, p, "fixture:synthetic-merchant", true, func() time.Time { return time.Unix(f.base.auth.clock.Load(), 0) })
 	return f, p
@@ -222,11 +223,11 @@ func TestNativeCheckoutExplicitMigrationReadiness(t *testing.T) {
 	if err := database.Ready(ctx, db); err == nil {
 		t.Fatal("old schema accepted")
 	}
-	if err := r.Apply(ctx, 0); err != nil {
+	if err := r.Apply(ctx, 29); err != nil {
 		t.Fatal(err)
 	}
-	if err := database.Ready(ctx, db); err != nil {
-		t.Fatal(err)
+	if err := r.Verify(ctx); err != nil {
+		t.Fatal("native checkout migration journal", err)
 	}
 	// SQL defaults, not an application migration, protect existing hosted attempts.
 	var native, claimed string
@@ -239,13 +240,20 @@ func TestNativeCheckoutExplicitMigrationReadiness(t *testing.T) {
 	if native != "0" || claimed != "1" {
 		t.Fatal("unsafe migration defaults")
 	}
-	if err := r.Down(ctx, len(r.Files())-28); err != nil {
+	if err := r.Down(ctx, 1); err != nil {
 		t.Fatal(err)
+	}
+	var columns int
+	if err := db.QueryRowContext(ctx, "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='payment_attempts' AND column_name IN ('native_checkout','deposit_claimed','deposit_payment_id','deposit_data')").Scan(&columns); err != nil || columns != 0 {
+		t.Fatal("rollback retained native checkout columns", err)
 	}
 	if err := database.Ready(ctx, db); err == nil {
 		t.Fatal("rollback accepted")
 	}
 	if err := r.Apply(ctx, 0); err != nil {
+		t.Fatal(err)
+	}
+	if err := database.Ready(ctx, db); err != nil {
 		t.Fatal(err)
 	}
 	executeSQL(t, db, "ALTER TABLE payment_attempts DROP COLUMN deposit_claimed")

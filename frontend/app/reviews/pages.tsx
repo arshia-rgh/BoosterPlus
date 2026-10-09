@@ -9,7 +9,7 @@ import {
   useSearchParams,
   useLocation,
   type Location,
-} from "react-router";
+} from "../portal-router";
 import { Action, Check, ErrorNotice, Select, Text } from "../catalog/controls";
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";

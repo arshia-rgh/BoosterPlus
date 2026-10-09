@@ -1,4 +1,4 @@
-import { useLocation } from "react-router";
+import { useLocation } from "../portal-router";
 import Identity from "../identity/identity";
 import { portalFromPath } from "../identity/portal";
 export default function Login() {

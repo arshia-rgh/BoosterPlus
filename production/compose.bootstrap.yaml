@@ -11,6 +11,8 @@ services:
     security_opt: [no-new-privileges:true]
     environment:
       SITE_ADDRESS: ${SITE_ADDRESS:?}
+      ADMIN_SITE_ADDRESS: ${ADMIN_SITE_ADDRESS:?}
+      BOOSTER_SITE_ADDRESS: ${BOOSTER_SITE_ADDRESS:?}
       MAIL_HOST: ${MAIL_HOST:?}
       ACME_EMAIL: ${ACME_EMAIL:?}
     ports: ["80:8080", "443:8443"]

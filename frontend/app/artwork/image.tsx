@@ -1,5 +1,5 @@
 import { type ComponentProps } from "react";
-import { useInRouterContext, useLocation } from "react-router";
+import { useInRouterContext, useLocation } from "../portal-router";
 import { rendition, uploadedArtwork } from "./model";
 import "./artwork.css";
 /** Bundled paths retain their exact rendering; uploads use finite checked derivatives. */

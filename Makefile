@@ -18,6 +18,7 @@ hooks:
 check-repository:
 	python3 -m unittest discover -s scripts -p 'test_commit_gate.py'
 	python3 -m unittest discover -s scripts -p 'test_browser_selection.py'
+	python3 -m unittest discover -s scripts -p 'test_scanner_preflight.py'
 	python3 scripts/check_repository.py
 	python3 docs/redesign/check_implementation.py
 	cmp backend/api/openapi.json frontend/contracts/openapi.json

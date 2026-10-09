@@ -14,6 +14,7 @@ export default [
     route("terms", "routes/terms.tsx"),
     route("policies/:kind", "routes/policy.tsx"),
     route("how-it-works", "routes/how-it-works.tsx"),
+    route("contact", "routes/contact.tsx"),
     route("games", "routes/games.tsx"),
     layout("routes/game-shell.tsx", [
       route("games/:slug", "routes/game.tsx"),
@@ -46,6 +47,8 @@ export default [
     route("account", "routes/portal.tsx", { id: "account" }),
     route("account/settings", "routes/portal.tsx", { id: "account-settings" }),
     route("account/security", "routes/portal.tsx", { id: "account-security" }),
+    route("account/sessions", "routes/portal.tsx", { id: "account-sessions" }),
+    route("account/recovery", "routes/portal.tsx", { id: "account-recovery" }),
     route("account/preferences", "routes/portal.tsx", {
       id: "account-preferences",
     }),
@@ -56,6 +59,12 @@ export default [
     route("booster/account/security", "routes/portal.tsx", {
       id: "booster-security",
     }),
+    route("booster/account/sessions", "routes/portal.tsx", {
+      id: "booster-sessions",
+    }),
+    route("booster/account/recovery", "routes/portal.tsx", {
+      id: "booster-recovery",
+    }),
     route("booster/account/preferences", "routes/portal.tsx", {
       id: "booster-preferences",
     }),
@@ -65,4 +74,5 @@ export default [
     route("booster/orders/:id", "routes/booster-order.tsx"),
     route("booster", "routes/booster-home.tsx", { id: "booster" }),
   ]),
+  route("*", "routes/not-found.tsx"),
 ] satisfies RouteConfig;

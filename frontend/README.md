@@ -2,6 +2,34 @@
 
 Independent React/TypeScript project in the PLAYORA monorepo. Includes passwordless identity, protected customer/admin/booster workflows, catalog configuration, orders, conversations, fulfillment and account intake. R01 adds the animated storefront and MLBB rank transformation; the existing checkout uses live-provider adapters and isolated test fixtures. See [visual implementation and checks](../docs/visual-design.md). R02 adds the dedicated staff application at `/admin`, with its own route graph, shell, build and image. See [staff onboarding and architecture](../docs/admin-workspace.md).
 
+## Dedicated production portal hosts
+
+Production keeps the customer site at `https://playoragames.com`, with admin at
+`https://admin.playoragames.com` and boosters at `https://pro.playoragames.com`.
+Both staff dashboards use `/`, their sign-in uses `/login`, and record links use
+paths such as `/orders/<id>`. Each host has its own host-only cookies; moving to
+its new address requires a fresh staff sign-in and authenticator check.
+
+Set matching `PUBLIC_ORIGIN`, `ADMIN_PUBLIC_ORIGIN` and `BOOSTER_PUBLIC_ORIGIN` in
+both backend and frontend runtime configuration. The Node entrypoint selects the
+portal from the exact raw Host and rejects unknown hosts. Only that trusted
+entrypoint may supply the internal SSR/proxy routing headers. Never expose Vite
+or the backend directly in production. Leave staff origins unset for ordinary
+`make dev`, which retains `/admin` and `/booster` on the shared local origin.
+
+`make build` builds three isolated route graphs. The storefront image contains
+customer and booster builds; the separate admin image contains only admin. This
+keeps two application containers and their existing resource limits. Code assets
+retain `/admin/assets/` and `/booster/assets/` namespaces; page URLs do not use
+those prefixes. Public images/fonts are served on each host without cross-origin
+credentials. Navigation adapters preserve canonical internal routes, map page
+links at the navigation boundary, and leave role-scoped API routes unchanged.
+
+See [production cutover and rollback](../production/PORTAL_DOMAINS.md) before
+changing a deployed host. Prior images must be rolled back together with their
+matching gateway and runtime configuration. The historical path-based examples
+below remain local-development references.
+
 ## Commands
 
 ```sh

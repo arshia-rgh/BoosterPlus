@@ -1,4 +1,4 @@
-import { Link, useLoaderData, useSearchParams } from "react-router";
+import { Link, useLoaderData, useSearchParams } from "../portal-router";
 import type { Feed } from "./model";
 export default function PublicReviews() {
   const feed = useLoaderData<Feed>(),

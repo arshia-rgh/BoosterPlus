@@ -38,6 +38,7 @@ var minorPattern = regexp.MustCompile(`^[1-9][0-9]{0,11}$`)
 
 // Provider is implemented by the authenticated NOWPayments boundary. Tests inject isolated fixtures.
 type Provider interface {
+	CheckInvoice(context.Context, nowpayments.InvoiceRequest) error
 	CreateInvoice(context.Context, nowpayments.InvoiceRequest) (nowpayments.Invoice, error)
 	VerifyWebhook([]byte, string) (nowpayments.Notice, error)
 	GetPayment(context.Context, string) (nowpayments.Payment, error)

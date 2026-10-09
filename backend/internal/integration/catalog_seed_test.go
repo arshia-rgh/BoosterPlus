@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/database"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 )
 
@@ -92,7 +93,8 @@ func TestCatalogDraftUpgradePreservesOperatorWorkAndRollback(t *testing.T) {
 			executeSQL(t, db, `INSERT INTO games(id,slug,name,configuration,version,published,archived,current_release,created_at) VALUES ('existing-wow','world-of-warcraft','Owner catalog','{"owner":"data"}',9,?,TRUE,'existing-release',UTC_TIMESTAMP(6))`, published)
 			query := "SELECT id,slug,name,configuration,version,published,paused,archived,current_release FROM games WHERE slug IN ('mobile-legends','world-of-warcraft') ORDER BY id"
 			before := upgradeDigest(t, db, query)
-			if err := r.Apply(ctx, 0); err != nil {
+			// Qualify the seed's own reversible boundary before migration 41.
+			if err := r.Apply(ctx, 39); err != nil {
 				t.Fatal(err)
 			}
 			if after := upgradeDigest(t, db, query); after != before {
@@ -112,6 +114,9 @@ func TestCatalogDraftUpgradePreservesOperatorWorkAndRollback(t *testing.T) {
 			}
 			if after := upgradeDigest(t, db, all); after != saved {
 				t.Fatal("reapply rewrote retained drafts")
+			}
+			if err := database.Ready(ctx, db); err != nil {
+				t.Fatal(err)
 			}
 		})
 	}

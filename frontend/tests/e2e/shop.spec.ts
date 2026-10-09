@@ -57,23 +57,30 @@ test("administrator authors and reviews a shop product with explicit capacity", 
   const productURL = page.url().split("?")[0];
   await page.getByRole("link", { name: "Publication", exact: true }).click();
   await page.getByRole("button", { name: "Preview saved revision" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Check these product details" }),
-  ).toBeVisible();
+  await expect(page).toHaveURL(/section=basics&field=description/);
+  const description = page.getByLabel("Product description", { exact: true });
+  await expect(description).toBeFocused();
+  await expect(description).toBeInViewport();
+  await expect(description).toHaveAttribute("aria-invalid", "true");
+  await expect(description).toHaveAccessibleDescription(
+    "Provide bounded plain text.",
+  );
   await page.screenshot({
     path: `.cache/shop-validation-${info.project.name}.png`,
     fullPage: true,
   });
-  await page
-    .getByRole("link", {
-      name: "Delivery and commercial terms · Minimum delivery hours: Set an explicit ordered delivery estimate.",
-    })
-    .click();
-  await expect(page.getByLabel("Minimum delivery hours")).toBeFocused();
-  await expect(page.getByLabel("Minimum delivery hours")).toHaveAttribute(
-    "aria-invalid",
-    "true",
+  await page.getByRole("link", { name: "Terms", exact: true }).click();
+  const minimumDelivery = page.getByLabel("Minimum delivery hours");
+  await expect(minimumDelivery).toBeVisible();
+  await expect(minimumDelivery).toHaveAttribute("aria-invalid", "true");
+  await expect(minimumDelivery).toHaveAccessibleDescription(
+    "Set an explicit ordered delivery estimate.",
   );
+  await expect(
+    page.getByText("Set an explicit ordered delivery estimate.", {
+      exact: true,
+    }),
+  ).toBeVisible();
   await page.screenshot({
     path: `.cache/shop-field-correction-${info.project.name}.png`,
     fullPage: true,
@@ -149,6 +156,58 @@ test("administrator authors and reviews a shop product with explicit capacity", 
     await page
       .getByLabel(label, { exact: true })
       .fill("Explicit synthetic fixture terms for this browser test only.");
+  await page.getByRole("link", { name: "Variants", exact: true }).click();
+  const minimumQuantity = page.getByLabel("Minimum quantity", { exact: true });
+  await minimumQuantity.fill("1.5");
+  let invalidDraftWrites = 0;
+  const countDraftWrite = (request: import("@playwright/test").Request) => {
+    if (
+      request.method() === "POST" &&
+      /\/api\/v1\/admin\/shop\/products\/[^/]+\/draft$/.test(
+        new URL(request.url()).pathname,
+      )
+    )
+      invalidDraftWrites++;
+  };
+  page.on("request", countDraftWrite);
+  for (const attempt of [1, 2]) {
+    await page.getByRole("button", { name: "Save product draft" }).click();
+    await expect(page).toHaveURL(
+      /section=variants&field=variants\.0\.min_quantity/,
+    );
+    await expect(minimumQuantity).toBeVisible();
+    await expect(minimumQuantity).toBeFocused();
+    await expect(minimumQuantity).toBeInViewport();
+    await expect(minimumQuantity).toHaveValue("1.5");
+    await expect(minimumQuantity).toHaveAttribute("aria-invalid", "true");
+    await expect(minimumQuantity).toHaveAccessibleDescription(
+      "Enter a whole number before continuing.",
+    );
+    if (attempt === 1) {
+      await page.getByRole("link", { name: "Terms", exact: true }).click();
+      const deliveryTerms = page.getByLabel("Delivery terms", { exact: true });
+      await expect(page).toHaveURL(/section=terms/);
+      await expect(minimumQuantity).toBeHidden();
+      await expect(deliveryTerms).toBeVisible();
+      await deliveryTerms.focus();
+      // Let the old field query's scheduled focus run before checking Terms.
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) =>
+            requestAnimationFrame(() => {
+              resolve();
+            }),
+          ),
+      );
+      await expect(deliveryTerms).toBeFocused();
+      await expect(deliveryTerms).toHaveValue(
+        "Explicit synthetic fixture terms for this browser test only.",
+      );
+    }
+  }
+  expect(invalidDraftWrites).toBe(0);
+  page.off("request", countDraftWrite);
+  await minimumQuantity.fill("1");
   await page.getByRole("link", { name: "Details", exact: true }).click();
   await expect(page.getByLabel("Product description")).toHaveValue(
     "Synthetic browser fixture only, not a commercial offer.",
@@ -285,22 +344,56 @@ test("administrator authors and reviews a shop product with explicit capacity", 
     page.getByText("Saved revision 6", { exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Preview saved revision" }).click();
-  const correction = page.getByRole("link", {
-    name: /Variants and prices · Variant 1 · Stable key: Published variant keys keep/,
-  });
-  await expect(correction).toBeVisible();
+  await expect(page).toHaveURL(/section=variants&field=variants\.0\.key/);
+  const stableKey = page.getByLabel("Stable variant key", { exact: true });
+  const compatibilityError =
+    "Published variant keys keep their region, platform and server. Use a new key for different compatibility.";
+  await expect(stableKey).toBeFocused();
+  await expect(stableKey).toBeInViewport();
+  await expect(stableKey).toHaveValue("variant_1");
+  await expect(stableKey).toHaveAttribute("aria-invalid", "true");
+  await expect(stableKey).toHaveAccessibleDescription(compatibilityError);
+  await expect(
+    page.getByText(compatibilityError, { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Supported region")).toHaveValue(
+    "Different compatibility",
+  );
+  // Invalid preview moves to the correction field and removes Publication.
   await expect(
     page.getByRole("button", { name: "Publish reviewed revision" }),
-  ).toBeDisabled();
-  await correction.click();
-  await expect(page.getByLabel("Stable variant key")).toBeFocused();
-  await expect(page.getByLabel("Stable variant key")).toHaveAttribute(
-    "aria-invalid",
-    "true",
-  );
+  ).toHaveCount(0);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.screenshot({
     path: `.cache/shop-compatibility-${info.project.name}.png`,
     fullPage: true,
   });
+  await page.getByLabel("Supported region").fill("Fixture only");
+  await expect(stableKey).toHaveValue("variant_1");
+  await page.getByRole("link", { name: "Publication", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Preview saved revision" }),
+  ).toBeDisabled();
+  await page
+    .getByLabel(
+      "I reviewed artwork rights, public details, compatibility, prices and terms",
+    )
+    .check();
+  await page.getByRole("button", { name: "Save product draft" }).click();
+  await expect(
+    page.getByText("Saved revision 7", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Preview saved revision" }).click();
+  await expect(
+    page.getByRole("article", { name: "Private customer preview" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Publish reviewed revision" }),
+  ).toBeEnabled();
+  await expect(page.getByText(compatibilityError, { exact: true })).toHaveCount(
+    0,
+  );
+  await expect(
+    page.getByText("paused · Revision 7", { exact: true }),
+  ).toBeVisible();
 });

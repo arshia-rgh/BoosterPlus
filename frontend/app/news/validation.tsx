@@ -1,13 +1,44 @@
 import { useEffect, useRef } from "react";
-import { Link, useLocation, type Location } from "react-router";
-import type { FieldIssue } from "../ui/form-validation";
-export function ArticleIssues({ issues }: { issues: readonly FieldIssue[] }) {
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  type Location,
+} from "../portal-router";
+import { focusValidationTarget, type FieldIssue } from "../ui/form-validation";
+export function ArticleIssues({
+  issues,
+  attempt = 0,
+}: {
+  issues: readonly FieldIssue[];
+  attempt?: number;
+}) {
   const location: Location<unknown> = useLocation(),
     summary = useRef<HTMLElement>(null);
-  const fingerprint = JSON.stringify(issues);
+  const fingerprint = JSON.stringify([attempt, issues]);
+  const navigate = useNavigate();
+  const attempted = useRef("");
   useEffect(() => {
-    if (fingerprint !== "[]") summary.current?.focus();
-  }, [fingerprint]);
+    if (attempted.current === fingerprint) return;
+    attempted.current = fingerprint;
+    const first = issues[0];
+    if (!first) return;
+    const query = new URLSearchParams(location.search);
+    query.set("section", first.path === "at" ? "publication" : "editor");
+    query.set("field", first.path);
+    void navigate(
+      { pathname: location.pathname, search: query.toString() },
+      { replace: true, preventScrollReset: true, state: location.state },
+    );
+    summary.current?.focus({ preventScroll: true });
+  }, [
+    fingerprint,
+    issues,
+    location.pathname,
+    location.search,
+    location.state,
+    navigate,
+  ]);
   useEffect(() => {
     const field = new URLSearchParams(location.search).get("field");
     if (
@@ -17,16 +48,16 @@ export function ArticleIssues({ issues }: { issues: readonly FieldIssue[] }) {
     )
       return;
     const frame = requestAnimationFrame(() => {
-      document
-        .querySelector<HTMLElement>(
+      focusValidationTarget(
+        document.querySelector<HTMLElement>(
           `[name="${field}"], [data-news-field="${field}"]`,
-        )
-        ?.focus();
+        ),
+      );
     });
     return () => {
       cancelAnimationFrame(frame);
     };
-  }, [location.search]);
+  }, [location.search, fingerprint]);
   if (!issues.length) return null;
   return (
     <section role="alert" tabIndex={-1} ref={summary}>

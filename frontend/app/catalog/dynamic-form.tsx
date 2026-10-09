@@ -1,8 +1,16 @@
+import WinRateInput from "./win-rate-input";
+import { isWinRateField, parseWinRate } from "./win-rate";
+import {
+  FieldValidation,
+  fieldError,
+  useFormValidation,
+} from "../ui/form-validation";
 import { sessionEventMatches } from "../identity/portal";
 import IntakeImage from "../media/intake-image";
 import { RequestReference } from "../orders/request-recovery";
 import SelectionSummary from "../experience/selection-summary";
 import {
+  useCallback,
   useContext,
   useEffect,
   useId,
@@ -21,7 +29,7 @@ import {
 import "./discovery.css";
 import SubmitOrder from "../orders/submit";
 import { Action } from "./controls";
-import { post } from "../identity/api";
+import { APIError, post } from "../identity/api";
 import { ErrorNotice, Issues } from "./controls";
 import {
   matches,
@@ -49,7 +57,7 @@ export function Input({
   value,
   change,
   required,
-  error,
+  error: suppliedError,
   intake,
 }: {
   field: Field;
@@ -62,9 +70,23 @@ export function Input({
     | { scope: string; pending: (busy: boolean) => void; onSignIn: () => void }
     | undefined;
 }) {
+  const validation = useContext(FieldValidation);
+  const error = suppliedError || fieldError(validation, field.key);
   const id = useId(),
     helpId = id + "-help",
     errorId = id + "-error";
+  const register = validation?.register;
+  const fieldRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (node && register)
+        return register({
+          name: field.key,
+          id: id + "-field",
+          label: field.label,
+        });
+    },
+    [field.key, field.label, id, register],
+  );
   const description = [field.help ? helpId : "", error ? errorId : ""]
     .filter(Boolean)
     .join(" ");
@@ -77,7 +99,18 @@ export function Input({
   const options = optionsFor(field, config);
   const scalar = typeof value === "string" ? value : "";
   let control;
-  if (field.type === "radio" || field.type === "multiselect")
+  if (isWinRateField(field))
+    control = (
+      <WinRateInput
+        id={id}
+        label={label}
+        value={scalar}
+        change={change}
+        error={error}
+        describedBy={field.help ? helpId : undefined}
+      />
+    );
+  else if (field.type === "radio" || field.type === "multiselect")
     control = (
       <fieldset
         className="catalog-choices"
@@ -226,14 +259,14 @@ export function Input({
       </>
     );
   return (
-    <div className="catalog-input">
+    <div ref={fieldRef} id={id + "-field"} className="catalog-input">
       {control}
       {field.help && (
         <p id={helpId} className="quiet">
           {field.help}
         </p>
       )}
-      {error && (
+      {error && !isWinRateField(field) && (
         <p id={errorId} className="field-error">
           {error}
         </p>
@@ -333,14 +366,24 @@ function ConfigurationForm({
     [stage, releaseID, service.key, pack, variant?.key],
   );
   const form = useRef<HTMLFormElement>(null);
-  useEffect(() => {
-    if (!busy && issues.length > 0) {
-      form.current
-        ?.querySelector<HTMLElement>('[aria-invalid="true"]')
-        ?.focus();
-    }
-  }, [issues, busy]);
+  const validation = useFormValidation(
+    issues,
+    (name) => {
+      setIssues((current) => current.filter((issue) => issue.path !== name));
+    },
+    undefined,
+    !busy,
+  );
   const couponID = useId();
+  const register = validation.register;
+  const couponRef = useCallback(
+    (input: HTMLInputElement | null) => {
+      if (input)
+        return register({ name: "code", id: couponID, label: "Coupon code" });
+    },
+    [couponID, register],
+  );
+  const couponError = fieldError(validation, "code");
   const values = visibleAnswers(service, raw, stage);
   const unavailable = paused || variant?.capacity === 0;
   const uploadPending = service.fields.some(
@@ -363,6 +406,25 @@ function ConfigurationForm({
   async function submit(event?: SubmitEvent<HTMLFormElement>, advance = false) {
     event?.preventDefault();
     if (!hydrated || busy || unavailable || uploadPending) return;
+    const preferenceIssues = service.fields
+      .filter(
+        (field) =>
+          isWinRateField(field) &&
+          typeof values[field.key] === "string" &&
+          ["invalid", "legacy"].includes(
+            parseWinRate(values[field.key] as string).kind,
+          ),
+      )
+      .map((field) => ({
+        path: field.key,
+        message:
+          "Choose a win-rate preference and enter valid percentages before continuing.",
+      }));
+    if (preferenceIssues.length) {
+      setIssues(preferenceIssues);
+      setValid(false);
+      return;
+    }
     const sequence = ++requestSequence.current;
     setBusy(true);
     setError(null);
@@ -387,7 +449,8 @@ function ConfigurationForm({
       );
       if (sequence !== requestSequence.current) return;
       setIssues(result.issues);
-      setRaw(retainOrderDetails(result.answers));
+      if (result.issues.length === 0)
+        setRaw(retainOrderDetails(result.answers));
       if (
         result.issues.length === 0 &&
         !onCommit &&
@@ -434,353 +497,384 @@ function ConfigurationForm({
       if (sequence !== requestSequence.current) return;
       setValid(false);
       setError(cause);
+      if (cause instanceof APIError) setIssues(cause.issues);
     } finally {
       setBusy(false);
     }
   }
   return (
-    <form
-      className="dynamic-form guided-configuration"
-      ref={form}
-      onSubmit={(event) => void submit(event)}
-      noValidate
-    >
-      {!hydrated && <p role="status">Preparing your form…</p>}
-      <noscript>
-        JavaScript is needed to configure and submit an order.
-      </noscript>
-      <div className="configuration-layout">
-        <fieldset disabled={!hydrated || busy || unavailable}>
-          <legend>{service.name} selections</legend>
-          {service.fulfillment && (
-            <details className="configuration-privacy">
-              <summary>How your information is shared</summary>
-              <p>
-                After payment, your assigned booster can see these selected
-                fields:{" "}
-                {service.fields
-                  .filter((field) =>
-                    service.fulfillment?.share_fields.includes(field.key),
-                  )
-                  .map((field) => field.label)
-                  .join(", ") || "none"}
-                . Temporary game access is collected separately only for
-                play-on-account work.
-              </p>
-            </details>
-          )}
-          {[
-            {
-              title: "Your goal",
-              fields: service.fields.filter((field) => field.type === "rank"),
-            },
-            {
-              title: "Play mode",
-              fields: service.fields.filter(
-                (field) =>
-                  field.type !== "rank" &&
-                  service.fulfillment?.field === field.key,
-              ),
-            },
-            {
-              title: "Your preferences",
-              fields: service.fields.filter(
-                (field) =>
-                  field.type !== "rank" &&
-                  service.fulfillment?.field !== field.key &&
-                  field.stage === "estimate",
-              ),
-            },
-            {
-              title: "Order details",
-              fields: service.fields.filter(
-                (field) =>
-                  field.type !== "rank" &&
-                  service.fulfillment?.field !== field.key &&
-                  field.stage !== "estimate",
-              ),
-            },
-          ]
-            .map((group) => ({
-              ...group,
-              fields: group.fields.filter(
-                (field) =>
-                  stageIndex(field.stage) <= stageIndex(stage) &&
-                  (!journey || stage !== "order" || field.stage === "order") &&
-                  matches(field.visible_when, values, service.fields),
-              ),
-            }))
-            .filter((group) => group.fields.length > 0)
-            .map((group) => (
-              <section
-                className="configuration-group"
-                key={group.title}
-                aria-label={group.title}
-              >
-                <h2>{group.title}</h2>
-                <div className="configuration-fields">
-                  {group.fields.map((field) => (
-                    <Input
-                      key={`${field.key}:${String(uploadEpoch)}`}
-                      field={field}
-                      intake={
-                        !previewPath &&
-                        field.type === "attachment" &&
-                        (!onCommit || intakeScope)
-                          ? {
-                              scope: uploadScope,
-                              onSignIn: () => {
-                                saveConfigurationDraft(
-                                  releaseID,
-                                  service,
-                                  config,
-                                  pack,
-                                  variant?.key ?? "",
-                                  values,
-                                );
-                              },
-                              pending: (pending) => {
-                                setUploads((previous) =>
-                                  previous[field.key] === pending
-                                    ? previous
-                                    : { ...previous, [field.key]: pending },
-                                );
-                              },
-                            }
-                          : undefined
-                      }
-                      config={config}
-                      value={values[field.key]}
-                      required={
-                        field.required ||
-                        (!!field.required_when &&
-                          matches(
-                            field.required_when,
-                            values,
-                            service.fields,
-                          )) ||
-                        (variant?.required_fields.includes(field.key) ?? false)
-                      }
-                      change={(value) => {
-                        const next: Answers = Object.fromEntries(
-                          Object.entries(values).filter(
-                            ([key]) => key !== field.key,
-                          ),
-                        );
-                        if (value !== undefined) next[field.key] = value;
-                        setRaw(
-                          retainOrderDetails(
-                            visibleAnswers(service, next, stage),
-                          ),
-                        );
-                        if (stage === "estimate") journey?.invalidate();
-                        setChanged(true);
-                        setError(null);
-                        setIssues([]);
-                        setValid(false);
-                        if (!journey || stage === "estimate") setEstimate(null);
-                      }}
-                      error={
-                        issues.find((issue) => issue.path === field.key)
-                          ?.message
-                      }
-                    />
-                  ))}
-                </div>
-              </section>
-            ))}
-          {!previewPath &&
-            (!journey || stage === "estimate") &&
-            (stage === "estimate" || stage === "order") && (
-              <div className="catalog-input">
-                <label htmlFor={couponID}>Coupon code (optional)</label>
-                <input
-                  id={couponID}
-                  value={coupon}
-                  maxLength={40}
-                  onChange={(event) => {
-                    setCoupon(event.target.value);
-                    journey?.invalidate();
-                    setChanged(true);
-                    setIssues([]);
-                    setEstimate(null);
-                    setValid(false);
-                    setError(null);
-                  }}
-                />
-                <p className="quiet">
-                  One code per order. Eligibility is rechecked when you accept
-                  the final price.
-                </p>
-              </div>
-            )}
-          {journey && stage === "order" && (
-            <p>
-              Your goal and preferences are shown in the summary.{" "}
-              <button
-                type="button"
-                className="button compact"
-                disabled={uploadPending}
-                onClick={journey.edit}
-              >
-                Edit choices
-              </button>
-            </p>
-          )}
-          <div className="configuration-actions">
-            <button
-              className={
-                journey && stage === "estimate" ? "button secondary" : "button"
-              }
-              type="submit"
-              disabled={uploadPending}
-            >
-              {busy ? "Checking…" : "Check selections"}
-            </button>
-            {journey && stage === "estimate" && (
-              <button
-                className="button"
-                type="button"
-                onClick={() => void submit(undefined, true)}
-              >
-                {busy ? "Checking…" : "Continue to order information →"}
-              </button>
-            )}
-          </div>
-        </fieldset>
-        {!previewPath && !onCommit && (
-          <SelectionSummary
-            config={config}
-            service={service}
-            values={values}
-            stage={stage}
-            fixed={!!variant}
-            state={
-              unavailable
-                ? "unavailable"
-                : busy
-                  ? "checking"
-                  : error
-                    ? "error"
-                    : issues.length
-                      ? "invalid"
-                      : estimate?.outcome === "manual_review"
-                        ? "manual"
-                        : estimate?.outcome === "estimated"
-                          ? "estimated"
-                          : valid
-                            ? "valid"
-                            : changed
-                              ? "changed"
-                              : "unchecked"
-            }
-          />
-        )}
-      </div>
-      <Issues issues={issues} />
-      <ErrorNotice error={error} />
-      {uploadPending && (
-        <p role="status">
-          Finish checking or remove the selected image before continuing.
-        </p>
-      )}
-      {valid && !uploadPending && (
-        <p role="status">
-          Selections are valid. No order has been created.{" "}
-          {variant
-            ? "This variant has a fixed price."
-            : "A custom order will require an administrator’s final quote."}
-        </p>
-      )}
-      {estimate && (
-        <section aria-label="Price estimate" aria-live="polite">
-          {estimate.outcome === "estimated" ? (
-            <>
-              <h2>
-                Estimated price: {estimate.currency}{" "}
-                {minorDisplay(estimate.amount_minor)}
-              </h2>
-              <ul>
-                {estimate.lines.map((line) => (
-                  <li key={line.key}>
-                    {line.label}: {estimate.currency}{" "}
-                    {minorDisplay(line.amount_minor)}
-                  </li>
-                ))}
-              </ul>
-              <p>
-                {variant
-                  ? "Package discount is provisional until checkout."
-                  : "Final price requires an administrator’s quote."}{" "}
-                This estimate expires{" "}
-                {new Date(estimate.expires_at).toLocaleTimeString()}.
-              </p>
-              {estimate.discount && (
+    <FieldValidation value={validation}>
+      <form
+        className="dynamic-form guided-configuration"
+        ref={form}
+        onSubmit={(event) => void submit(event)}
+        noValidate
+      >
+        {!hydrated && <p role="status">Preparing your form…</p>}
+        <noscript>
+          JavaScript is needed to configure and submit an order.
+        </noscript>
+        <div className="configuration-layout">
+          <fieldset disabled={!hydrated || busy || unavailable}>
+            <legend>{service.name} selections</legend>
+            {service.fulfillment && (
+              <details className="configuration-privacy">
+                <summary>How your information is shared</summary>
                 <p>
-                  Coupon checks do not reserve a use. Personal limits apply when
-                  signed in; eligibility is checked again when the order becomes
-                  payable.
+                  After payment, your assigned booster can see these selected
+                  fields:{" "}
+                  {service.fields
+                    .filter((field) =>
+                      service.fulfillment?.share_fields.includes(field.key),
+                    )
+                    .map((field) => field.label)
+                    .join(", ") || "none"}
+                  . Temporary game access is collected separately only for
+                  play-on-account work.
                 </p>
+              </details>
+            )}
+            {[
+              {
+                title: "Your goal",
+                fields: service.fields.filter((field) => field.type === "rank"),
+              },
+              {
+                title: "Play mode",
+                fields: service.fields.filter(
+                  (field) =>
+                    field.type !== "rank" &&
+                    service.fulfillment?.field === field.key,
+                ),
+              },
+              {
+                title: "Your preferences",
+                fields: service.fields.filter(
+                  (field) =>
+                    field.type !== "rank" &&
+                    service.fulfillment?.field !== field.key &&
+                    field.stage === "estimate",
+                ),
+              },
+              {
+                title: "Order details",
+                fields: service.fields.filter(
+                  (field) =>
+                    field.type !== "rank" &&
+                    service.fulfillment?.field !== field.key &&
+                    field.stage !== "estimate",
+                ),
+              },
+            ]
+              .map((group) => ({
+                ...group,
+                fields: group.fields.filter(
+                  (field) =>
+                    stageIndex(field.stage) <= stageIndex(stage) &&
+                    (!journey ||
+                      stage !== "order" ||
+                      field.stage === "order") &&
+                    matches(field.visible_when, values, service.fields),
+                ),
+              }))
+              .filter((group) => group.fields.length > 0)
+              .map((group) => (
+                <section
+                  className="configuration-group"
+                  key={group.title}
+                  aria-label={group.title}
+                >
+                  <h2>{group.title}</h2>
+                  <div className="configuration-fields">
+                    {group.fields.map((field) => (
+                      <Input
+                        key={`${field.key}:${String(uploadEpoch)}`}
+                        field={field}
+                        intake={
+                          !previewPath &&
+                          field.type === "attachment" &&
+                          (!onCommit || intakeScope)
+                            ? {
+                                scope: uploadScope,
+                                onSignIn: () => {
+                                  saveConfigurationDraft(
+                                    releaseID,
+                                    service,
+                                    config,
+                                    pack,
+                                    variant?.key ?? "",
+                                    values,
+                                  );
+                                },
+                                pending: (pending) => {
+                                  setUploads((previous) =>
+                                    previous[field.key] === pending
+                                      ? previous
+                                      : { ...previous, [field.key]: pending },
+                                  );
+                                },
+                              }
+                            : undefined
+                        }
+                        config={config}
+                        value={values[field.key]}
+                        required={
+                          field.required ||
+                          (!!field.required_when &&
+                            matches(
+                              field.required_when,
+                              values,
+                              service.fields,
+                            )) ||
+                          (variant?.required_fields.includes(field.key) ??
+                            false)
+                        }
+                        change={(value) => {
+                          const next: Answers = Object.fromEntries(
+                            Object.entries(values).filter(
+                              ([key]) => key !== field.key,
+                            ),
+                          );
+                          if (value !== undefined) next[field.key] = value;
+                          setRaw(
+                            retainOrderDetails(
+                              visibleAnswers(service, next, stage),
+                            ),
+                          );
+                          if (stage === "estimate") journey?.invalidate();
+                          setChanged(true);
+                          setError(null);
+                          setIssues((current) =>
+                            current.filter(
+                              (issue) =>
+                                issue.path !== field.key &&
+                                (!service.fields.some(
+                                  (candidate) => candidate.key === issue.path,
+                                ) ||
+                                  service.fields.some(
+                                    (candidate) =>
+                                      candidate.key === issue.path &&
+                                      matches(
+                                        candidate.visible_when,
+                                        next,
+                                        service.fields,
+                                      ),
+                                  )),
+                            ),
+                          );
+                          setValid(false);
+                          if (!journey || stage === "estimate")
+                            setEstimate(null);
+                        }}
+                        error={
+                          issues.find((issue) => issue.path === field.key)
+                            ?.message
+                        }
+                      />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            {!previewPath &&
+              (!journey || stage === "estimate") &&
+              (stage === "estimate" || stage === "order") && (
+                <div className="catalog-input">
+                  <label htmlFor={couponID}>Coupon code (optional)</label>
+                  <input
+                    ref={couponRef}
+                    id={couponID}
+                    aria-invalid={couponError ? true : undefined}
+                    aria-describedby={
+                      couponError ? couponID + "-error" : undefined
+                    }
+                    value={coupon}
+                    maxLength={40}
+                    onChange={(event) => {
+                      setCoupon(event.target.value);
+                      journey?.invalidate();
+                      setChanged(true);
+                      setIssues([]);
+                      setEstimate(null);
+                      setValid(false);
+                      setError(null);
+                    }}
+                  />
+                  <p className="quiet">
+                    One code per order. Eligibility is rechecked when you accept
+                    the final price.
+                  </p>
+                </div>
               )}
-            </>
-          ) : estimate.outcome === "manual_review" ? (
-            <p>Your selections need a manual price review.</p>
-          ) : null}
-        </section>
-      )}
-      {valid &&
-        !uploadPending &&
-        stage === "order" &&
-        !previewPath &&
-        !unavailable &&
-        (onCommit ? (
-          <Action
-            disabled={busy}
-            onClick={() => {
-              setBusy(true);
-              setError(null);
-              void onCommit(values, coupon)
-                .catch((cause: unknown) => {
-                  setError(cause);
-                })
-                .finally(() => {
-                  setBusy(false);
-                });
-            }}
-          >
-            Save revised request
-          </Action>
-        ) : (
-          <SubmitOrder
-            intakeKey={uploadScope}
-            onSignIn={() => {
-              saveConfigurationDraft(
-                releaseID,
-                service,
-                config,
-                pack,
-                variant?.key ?? "",
-                values,
-              );
-            }}
-            slug={slug}
-            service={service.key}
-            releaseID={releaseID}
-            pack={pack}
-            variant={variant}
-            answers={values}
-            coupon={coupon}
-            estimate={estimate}
-            setBusy={setBusy}
-          />
-        ))}
-      {unavailable && (
-        <p role="status">This offering is currently unavailable.</p>
-      )}
-      <p className="quiet">
-        Do not enter game passwords or recovery codes in this form.
-      </p>
-    </form>
+            {journey && stage === "order" && (
+              <p>
+                Your goal and preferences are shown in the summary.{" "}
+                <button
+                  type="button"
+                  className="button compact"
+                  disabled={uploadPending}
+                  onClick={journey.edit}
+                >
+                  Edit choices
+                </button>
+              </p>
+            )}
+            <div className="configuration-actions">
+              <button
+                className={
+                  journey && stage === "estimate"
+                    ? "button secondary"
+                    : "button"
+                }
+                type="submit"
+                disabled={uploadPending}
+              >
+                {busy ? "Checking…" : "Check selections"}
+              </button>
+              {journey && stage === "estimate" && (
+                <button
+                  className="button"
+                  type="button"
+                  onClick={() => void submit(undefined, true)}
+                >
+                  {busy ? "Checking…" : "Continue to order information →"}
+                </button>
+              )}
+            </div>
+          </fieldset>
+          {!previewPath && !onCommit && (
+            <SelectionSummary
+              config={config}
+              service={service}
+              values={values}
+              stage={stage}
+              fixed={!!variant}
+              state={
+                unavailable
+                  ? "unavailable"
+                  : busy
+                    ? "checking"
+                    : error
+                      ? "error"
+                      : issues.length
+                        ? "invalid"
+                        : estimate?.outcome === "manual_review"
+                          ? "manual"
+                          : estimate?.outcome === "estimated"
+                            ? "estimated"
+                            : valid
+                              ? "valid"
+                              : changed
+                                ? "changed"
+                                : "unchecked"
+              }
+            />
+          )}
+        </div>
+        <Issues issues={issues} />
+        <ErrorNotice error={error} hideIssues />
+        {uploadPending && (
+          <p role="status">
+            Finish checking or remove the selected image before continuing.
+          </p>
+        )}
+        {valid && !uploadPending && (
+          <p role="status">
+            Selections are valid. No order has been created.{" "}
+            {variant
+              ? "This variant has a fixed price."
+              : "A custom order will require an administrator’s final quote."}
+          </p>
+        )}
+        {estimate && (
+          <section aria-label="Price estimate" aria-live="polite">
+            {estimate.outcome === "estimated" ? (
+              <>
+                <h2>
+                  Estimated price: {estimate.currency}{" "}
+                  {minorDisplay(estimate.amount_minor)}
+                </h2>
+                <ul>
+                  {estimate.lines.map((line) => (
+                    <li key={line.key}>
+                      {line.label}: {estimate.currency}{" "}
+                      {minorDisplay(line.amount_minor)}
+                    </li>
+                  ))}
+                </ul>
+                <p>
+                  {variant
+                    ? "Package discount is provisional until checkout."
+                    : "Final price requires an administrator’s quote."}{" "}
+                  This estimate expires{" "}
+                  {new Date(estimate.expires_at).toLocaleTimeString()}.
+                </p>
+                {estimate.discount && (
+                  <p>
+                    Coupon checks do not reserve a use. Personal limits apply
+                    when signed in; eligibility is checked again when the order
+                    becomes payable.
+                  </p>
+                )}
+              </>
+            ) : estimate.outcome === "manual_review" ? (
+              <p>Your selections need a manual price review.</p>
+            ) : null}
+          </section>
+        )}
+        {valid &&
+          !uploadPending &&
+          stage === "order" &&
+          !previewPath &&
+          !unavailable &&
+          (onCommit ? (
+            <Action
+              disabled={busy}
+              onClick={() => {
+                setBusy(true);
+                setError(null);
+                void onCommit(values, coupon)
+                  .catch((cause: unknown) => {
+                    setError(cause);
+                  })
+                  .finally(() => {
+                    setBusy(false);
+                  });
+              }}
+            >
+              Save revised request
+            </Action>
+          ) : (
+            <SubmitOrder
+              intakeKey={uploadScope}
+              onSignIn={() => {
+                saveConfigurationDraft(
+                  releaseID,
+                  service,
+                  config,
+                  pack,
+                  variant?.key ?? "",
+                  values,
+                );
+              }}
+              slug={slug}
+              service={service.key}
+              releaseID={releaseID}
+              pack={pack}
+              variant={variant}
+              answers={values}
+              coupon={coupon}
+              estimate={estimate}
+              setBusy={setBusy}
+            />
+          ))}
+        {unavailable && (
+          <p role="status">This offering is currently unavailable.</p>
+        )}
+        <p className="quiet">
+          Do not enter game passwords or recovery codes in this form.
+        </p>
+      </form>
+    </FieldValidation>
   );
 }
 

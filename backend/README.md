@@ -73,8 +73,10 @@ Useful commands from `backend/`:
 make setup-env
 make dev-up
 make pre-commit
-# After signing up and enrolling MFA in the frontend:
-docker compose run --rm --entrypoint /app/boosterplus api identity bootstrap-owner --user <user-id> --operator <operator-reference>
+# First installation only: prepare an independent admin account (prints its ID).
+docker compose run --rm --entrypoint /app/boosterplus api identity prepare-owner --email <owner-email> --operator <operator-reference>
+# Sign in at the admin portal and enroll its authenticator, then:
+docker compose run --rm --entrypoint /app/boosterplus api identity bootstrap-owner --user <admin-account-id> --operator <operator-reference>
 ```
 
 The operator reference is an auditable identifier, never a password or free-form case history. Setup appends missing identity keys without rotating existing secrets. Use `PUBLIC_ORIGIN=http://127.0.0.1:3000` in the local backend `.env` if testing Google with the production frontend server instead of Vite on port 5173.
@@ -97,9 +99,35 @@ If the canonical Go vulnerability service is unreachable, the same scan can expl
 
 ## Redesign application contracts
 
-The current schema is38; migrations26–38 are explicit SQL, including portal invalidation, immutable commercial revisions, shop reservations/delivery, editorial publication and attempt metadata. Run `db migrate plan`, `up`, then `verify` before starting the matching API and worker. Runtime readiness never migrates. [DI14](../docs/redesign/DI14_QUALIFICATION.md) records the synthetic schema25→38 preservation rehearsal and recovery limits.
+The current schema is 41; migrations 26–41 are explicit SQL, including portal invalidation, immutable commercial revisions, shop reservations/delivery, editorial publication and attempt metadata. Run `db migrate plan`, `up`, then `verify` before starting the matching API and worker. Runtime readiness never migrates. [DI14](../docs/redesign/DI14_QUALIFICATION.md) records the synthetic schema25→38 preservation rehearsal and recovery limits.
 
 Customer, admin and booster have separate `/api/v1/auth/portals/{portal}/...` endpoints and cookies. A customer session never authorizes a staff portal. Staff need both factors on every sign-in, including after migration invalidates old sessions. OAuth/email action returns are bounded to the matching portal. Shop processing requires confirmed payment and published delivery terms; scheduling an article does not bypass current author permission. Registered worker handlers are documented in [background jobs](../docs/background-jobs.md).
+
+### Dedicated staff hosts
+
+Set `PUBLIC_ORIGIN`, `ADMIN_PUBLIC_ORIGIN` and `BOOSTER_PUBLIC_ORIGIN` to the
+customer, admin and booster origins. Both staff origins must be configured
+together; production requires HTTPS and three distinct hostnames. Leave
+`ALLOWED_ORIGINS` empty in this mode. Staff home/login URLs become `/` and
+`/login` on their own hosts. Leaving both staff origins blank retains local
+`/admin` and `/booster` development routes.
+
+Register these exact Google redirect URLs for the production OAuth client:
+
+- `https://playoragames.com/api/v1/auth/portals/customer/google/callback`
+- `https://admin.playoragames.com/api/v1/auth/portals/admin/google/callback`
+- `https://pro.playoragames.com/api/v1/auth/portals/booster/google/callback`
+
+The server-side proxy overwrites `X-Playora-Request-Origin` with the configured
+origin for the validated incoming host and authenticates that value with
+`X-Booster-Proxy-Key`. Send both headers for server-side bootstrap/SSR requests
+as well. The backend checks the selected portal before reading or issuing
+cookies; mutation Origin/CSRF validation remains separate. Only explicitly public
+read handlers may accept another configured portal host. Secure cookies remain
+host-only (`__Host-`, no Domain attribute), and staff MFA is unchanged. A host
+move requires a new staff sign-in; it never transfers customer or old-host
+cookies. The worker resolves staff notification links to the current configured
+portal when delivering queued notices.
 
 ### Full-suite fixture memory
 
@@ -121,3 +149,44 @@ volume; never delete a data volume just to rerun verification.
 
 The production stack uses TiKV and separate memory configuration; this override
 does not alter its capacity limits or qualify production performance.
+
+
+## Independent account namespaces (schema 41)
+
+Customer, admin and booster accounts have independent IDs, profiles, email/Google
+links, MFA enrollments/recovery codes, sessions and notification preferences. The
+same email or Google subject can exist independently in each namespace. Changing
+or revoking one account never changes a sibling account by mailbox matching.
+Staff accounts are provisioned explicitly by an owner with recent first and second
+factors through `POST /api/v1/admin/staff/invitations`; provisioning does not send
+mail, copy factors, promote a customer, or create a session. The invited person
+verifies their email (or first verifies an unverified invitation using Google)
+and completes staff MFA on the intended portal. Returning email accounts link
+Google explicitly within that account. A migration-created, unverified customer
+may first verify through Google only after its exact deterministic migration
+mapping and untouched factor state are checked. Role changes stay within a namespace;
+boost assignments use booster accounts, while shop/support staff use admin accounts.
+
+Run migration 41 with API/worker writers stopped. It preserves original staff IDs,
+factors and historical staff actors, creates independently verifiable customer
+accounts for their historical customer ownership, and separately moves former
+admin-held boost assignments where needed. It retains commercial snapshots,
+receipts, agreements and audit history. New customer/booster records do not copy
+Google/MFA credentials or terms acceptance. Original admin/owner sign-in remains
+available after fresh authentication. All prior sessions/challenges are invalidated. Pending legacy recovery cases are
+expired with audit evidence because their original portal was not recorded.
+Ambiguous media/secret ownership, malformed staff identities and mapping collisions
+fail closed for explicit investigation; a dirty migration journal must never be
+replayed blindly.
+
+Historical customer vault ciphertext is retained with a narrowly validated,
+deterministically bound legacy owner marker. Authorization uses the new customer;
+AAD still authenticates the original resource/purpose/owner. Replacement clears
+the marker and encrypts under the current owner. Historical privacy recovery
+entries resolve only through the exact migration mapping. There is no runtime
+cross-account alias or email-based identity merge.
+
+Schema 41 is forward-only. An image downgrade cannot merge newly independent
+accounts or safely restore schema 40. A return to the previous identity model
+requires a separately verified pre-migration restore and reconciliation plan.
+The normal runtime readiness check rejects mismatched schema versions.

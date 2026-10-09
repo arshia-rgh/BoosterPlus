@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { useResource } from "../orders/resource";
 import { transferHistorySchema, type Transfer } from "./cases-model";

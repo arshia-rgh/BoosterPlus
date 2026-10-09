@@ -90,6 +90,13 @@ async function review() {
   });
   fireEvent.click(screen.getByRole("button", { name: "Preview quote" }));
   await screen.findByRole("region", { name: "Customer quote preview" });
+  await waitFor(() =>
+    expect(
+      screen.getByRole("heading", {
+        name: "Customer quote preview · not issued",
+      }),
+    ).toHaveFocus(),
+  );
 }
 it("requires preview and explicit review, binds issue to the reviewed payload and clears preview after edits", async () => {
   vi.mocked(post).mockImplementation((path) =>
@@ -152,4 +159,25 @@ it("freezes unknown issuance until authoritative read-back, retaining edited sco
   );
   expect(screen.getByLabelText("Agreed scope")).toHaveValue("Reviewed scope");
   expect(post).toHaveBeenCalledTimes(2);
+});
+
+it("puts quote errors next to their fields and focuses the first without discarding input", async () => {
+  mount();
+  fireEvent.change(screen.getByLabelText("Agreed scope"), {
+    target: { value: "Preserve this draft scope" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Preview quote" }));
+  const amount = screen.getByLabelText("Pre-discount amount in minor units");
+  await waitFor(() => {
+    expect(amount).toHaveFocus();
+  });
+  expect(amount).toHaveAttribute("aria-invalid", "true");
+  expect(screen.getByLabelText("Quote explanation")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  expect(screen.getByLabelText("Agreed scope")).toHaveValue(
+    "Preserve this draft scope",
+  );
+  expect(post).not.toHaveBeenCalled();
 });

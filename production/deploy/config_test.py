@@ -40,7 +40,7 @@ def webmail_validation_files(directory):
 def main(runtime=False):
     with tempfile.TemporaryDirectory(prefix="playora-configuration-") as name:
         directory = Path(name)
-        manifest = {"DEPLOY_PROJECT":"boosterplus-config-fixture", "SITE_ADDRESS":"operator.test", "ACME_EMAIL":"fixture@operator.test",
+        manifest = {"DEPLOY_PROJECT":"boosterplus-config-fixture", "SITE_ADDRESS":"operator.test", "ADMIN_SITE_ADDRESS":"admin.operator.test", "BOOSTER_SITE_ADDRESS":"booster.operator.test", "ACME_EMAIL":"fixture@operator.test",
                     "EDGE_SUBNET":"172.29.194.0/24", "EDGE_DYNAMIC_RANGE":"172.29.194.128/25", "GATEWAY_IP":"172.29.194.2",
                     **{key:"registry.invalid/config-fixture@sha256:" + "a" * 64 for key in IMAGE_KEYS}}
         for key, name in (("BACKEND_ENV_FILE","backend"), ("FRONTEND_ENV_FILE","frontend"), ("MIGRATION_ENV_FILE","migration")):
@@ -177,12 +177,12 @@ def main(runtime=False):
             run(["docker", "run", "--rm", "--network", "none", "--user", "0",
                  "--mount", "type=bind,src=" + str(configs) + ",dst=/etc/caddy,readonly",
                  "--mount", "type=bind,src=" + str(installation / "pki" / cert) + ",dst=/certs,readonly",
-                 "-e", "SITE_ADDRESS=operator.test", "-e", "MAIL_HOST=mail.operator.test",
+                 "-e", "SITE_ADDRESS=operator.test", "-e", "ADMIN_SITE_ADDRESS=admin.operator.test", "-e", "BOOSTER_SITE_ADDRESS=booster.operator.test", "-e", "MAIL_HOST=mail.operator.test",
                  "-e", "ACME_EMAIL=fixture@operator.test", image, *arguments], environment)
             if config == "bootstrap":
                 adapted = json.loads(run(["docker", "run", "--rm", "--network", "none",
                     "--mount", "type=bind,src=" + str(configs) + ",dst=/etc/caddy,readonly",
-                    "-e", "SITE_ADDRESS=operator.test", "-e", "MAIL_HOST=mail.operator.test",
+                    "-e", "SITE_ADDRESS=operator.test", "-e", "ADMIN_SITE_ADDRESS=admin.operator.test", "-e", "BOOSTER_SITE_ADDRESS=booster.operator.test", "-e", "MAIL_HOST=mail.operator.test",
                     "-e", "ACME_EMAIL=fixture@operator.test", image, "caddy", "adapt",
                     "--config", "/etc/caddy/bootstrap.Caddyfile", "--adapter", "caddyfile"], environment))
                 handlers, responses = [], []

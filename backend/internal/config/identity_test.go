@@ -34,3 +34,45 @@ func TestIdentityProductionConfigurationFailsClosed(t *testing.T) {
 		})
 	}
 }
+
+func TestIdentitySeparatePortalOrigins(t *testing.T) {
+	baseline := map[string]string{"AUTH_KEY": hex.EncodeToString([]byte("synthetic-authentication-key-123")), "PROXY_SHARED_KEY": hex.EncodeToString([]byte("synthetic-proxy-security-key-123")), "PUBLIC_ORIGIN": "https://playora.example", "ADMIN_PUBLIC_ORIGIN": "https://admin.playora.example", "BOOSTER_PUBLIC_ORIGIN": "https://booster.playora.example", "TERMS_VERSION": "approved-v1", "SMTP_HOST": "smtp.example.test", "SMTP_PORT": "587", "SMTP_FROM": "security@playora.example", "SMTP_TLS": "required"}
+	cfg, err := Identity(func(key string) string { return baseline[key] }, "production")
+	if err != nil || cfg.AdminPublicOrigin != baseline["ADMIN_PUBLIC_ORIGIN"] || cfg.BoosterPublicOrigin != baseline["BOOSTER_PUBLIC_ORIGIN"] || cfg.TermsURL != baseline["PUBLIC_ORIGIN"]+"/terms" {
+		t.Fatal("separate portal configuration rejected", err)
+	}
+	for _, scenario := range []struct{ key, value string }{
+		{"ADMIN_PUBLIC_ORIGIN", ""}, {"BOOSTER_PUBLIC_ORIGIN", ""},
+		{"ADMIN_PUBLIC_ORIGIN", baseline["PUBLIC_ORIGIN"]}, {"ADMIN_PUBLIC_ORIGIN", baseline["BOOSTER_PUBLIC_ORIGIN"]},
+		{"ADMIN_PUBLIC_ORIGIN", baseline["PUBLIC_ORIGIN"] + ":8443"}, {"BOOSTER_PUBLIC_ORIGIN", baseline["ADMIN_PUBLIC_ORIGIN"] + ":443"},
+		{"ADMIN_PUBLIC_ORIGIN", "http://admin.playora.example"}, {"ADMIN_PUBLIC_ORIGIN", "https://admin.playora.example/admin"},
+		{"ADMIN_PUBLIC_ORIGIN", "https://admin.playora.example?"}, {"ADMIN_PUBLIC_ORIGIN", "https://admin.playora.example#"},
+		{"ADMIN_PUBLIC_ORIGIN", "https://admin.playora.example:70000"}, {"ADMIN_PUBLIC_ORIGIN", "https://admin.playora.example:"},
+		{"BOOSTER_PUBLIC_ORIGIN", "https://user:password@booster.playora.example"}, {"ALLOWED_ORIGINS", "https://extra.example"},
+	} {
+		t.Run(scenario.key+"="+scenario.value, func(t *testing.T) {
+			_, scenarioErr := Identity(func(key string) string {
+				if key == scenario.key {
+					return scenario.value
+				}
+				return baseline[key]
+			}, "production")
+			if scenarioErr == nil {
+				t.Fatal("unsafe portal configuration accepted")
+			}
+		})
+	}
+	baseline["ADMIN_PUBLIC_ORIGIN"] = "https://ADMIN.PLAYORA.EXAMPLE/"
+	cfg, err = Identity(func(key string) string { return baseline[key] }, "production")
+	if err != nil || cfg.AdminPublicOrigin != "https://admin.playora.example" {
+		t.Fatal("origin did not normalize", err)
+	}
+	baseline["PUBLIC_ORIGIN"], baseline["ADMIN_PUBLIC_ORIGIN"], baseline["BOOSTER_PUBLIC_ORIGIN"] = "http://127.0.0.1:4173", "http://127.0.0.1:4174", "http://127.0.0.1:4175"
+	if _, err = Identity(func(key string) string { return baseline[key] }, "test"); err != nil {
+		t.Fatal("isolated local portal fixture rejected", err)
+	}
+	baseline["ALLOWED_ORIGINS"] = "http://127.0.0.1:5173"
+	if _, err = Identity(func(key string) string { return baseline[key] }, "test"); err == nil {
+		t.Fatal("extra origins widened split portal fixture")
+	}
+}

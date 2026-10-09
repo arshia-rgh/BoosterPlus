@@ -35,6 +35,10 @@ func (s *Store) RotateForOwner(ctx context.Context, p *identity.Principal, scope
 		if row.State != secretbundle.StateActive || !row.ExpiresAt.After(s.now()) {
 			return ErrUnavailable
 		}
+		storedScope, e := cipherScope(row, scope)
+		if e != nil {
+			return e
+		}
 		if row.KeyVersion == s.keys.active {
 			result = metadata(row)
 			return nil
@@ -42,7 +46,7 @@ func (s *Store) RotateForOwner(ctx context.Context, p *identity.Principal, scope
 		if row.Version != version || version >= 2147483646 {
 			return ErrConflict
 		}
-		encrypted, e := s.keys.Rewrap(row.ID, scope, envelope(row))
+		encrypted, e := s.keys.Rewrap(row.ID, storedScope, envelope(row))
 		if e != nil {
 			return e
 		}

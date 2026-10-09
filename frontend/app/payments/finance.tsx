@@ -1,7 +1,7 @@
 import SellerPayoutQueue from "../resale/payout-queue";
 import CaseQueue from "./case-queue";
 import { useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams } from "../portal-router";
 import { Action, ErrorNotice, Select } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { useResource } from "../orders/resource";

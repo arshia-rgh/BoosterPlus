@@ -3,13 +3,28 @@ import ipaddress
 import os
 from pathlib import Path
 import ssl
+import socket
 import tempfile
 import unittest
 from unittest.mock import patch
-from staging import fixture_subnets, prepare
+from staging import fixture_resolution, fixture_subnets, prepare
+from manage import read_env
 
 
 class FixtureNetworks(unittest.TestCase):
+    def test_portal_resolver_is_bounded_and_restored_on_failure(self):
+        with patch("socket.getaddrinfo", return_value=[]) as resolver:
+            with self.assertRaisesRegex(RuntimeError, "fixture failure"):
+                with fixture_resolution():
+                    socket.getaddrinfo("admin.localhost", 443)
+                    resolver.assert_called_with("127.0.0.1", 443)
+                    socket.getaddrinfo("booster.localhost", 443)
+                    resolver.assert_called_with("127.0.0.1", 443)
+                    socket.getaddrinfo("foreign.example", 443)
+                    resolver.assert_called_with("foreign.example", 443)
+                    raise RuntimeError("fixture failure")
+            self.assertIs(socket.getaddrinfo, resolver)
+
     def test_fixture_public_certificates_are_readable_under_private_umask(self):
         for mask in (0o022, 0o077):
             with self.subTest(umask=mask), tempfile.TemporaryDirectory() as directory:
@@ -28,6 +43,15 @@ class FixtureNetworks(unittest.TestCase):
                 self.assertEqual((Path(directory) / "backend.env").stat().st_mode & 0o777, 0o600)
                 context = ssl.create_default_context(cafile=str(certs / "ca.crt"))
                 self.assertEqual(len(context.get_ca_certs()), 1)
+                backend = read_env(Path(directory) / "backend.env")
+                frontend = read_env(Path(directory) / "frontend.env")
+                for key, host in (("PUBLIC_ORIGIN", "localhost"), ("ADMIN_PUBLIC_ORIGIN", "admin.localhost"), ("BOOSTER_PUBLIC_ORIGIN", "booster.localhost")):
+                    self.assertEqual(backend[key], "https://" + host + ":18443")
+                    self.assertEqual(frontend[key], backend[key])
+                gateway = (Path(directory) / "Caddyfile").read_text()
+                self.assertEqual(gateway.count("tls /certs/server.crt /certs/server.key"), 3)
+                for host in ("localhost", "admin.localhost", "booster.localhost"):
+                    self.assertIn("redir https://" + host + ":18443{uri} 308", gateway)
 
     def test_automatic_pool_cannot_overlap_explicit_edge(self):
         # Reproduces the previous auto /16 versus fixed edge /24 collision.

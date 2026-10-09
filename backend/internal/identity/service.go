@@ -40,21 +40,23 @@ const (
 
 // Config is trusted, server-side identity configuration. Never log this value.
 type Config struct {
-	Key                []byte
-	PublicOrigin       string
-	AllowedOrigins     []string
-	ProxyKey           string
-	SecureCookies      bool
-	TermsVersion       string
-	TermsURL           string
-	GoogleClientID     string
-	GoogleClientSecret string
-	SMTPHost           string
-	SMTPPort           int
-	SMTPUsername       string
-	SMTPPassword       string
-	SMTPFrom           string
-	SMTPPlaintext      bool
+	Key                 []byte
+	PublicOrigin        string
+	AdminPublicOrigin   string
+	BoosterPublicOrigin string
+	AllowedOrigins      []string
+	ProxyKey            string
+	SecureCookies       bool
+	TermsVersion        string
+	TermsURL            string
+	GoogleClientID      string
+	GoogleClientSecret  string
+	SMTPHost            string
+	SMTPPort            int
+	SMTPUsername        string
+	SMTPPassword        string
+	SMTPFrom            string
+	SMTPPlaintext       bool
 }
 
 // Service shares the application's Ent client; it never migrates database state.
@@ -93,7 +95,7 @@ func Require(p *Principal, capability string) error {
 		return ErrUnauthenticated
 	}
 	portal := Portal(p.Session.Portal)
-	if !portal.permitsRole(p.User.Role) {
+	if !portal.permitsUser(p.User) {
 		return ErrForbidden
 	}
 	if p.NeedsMFA() {
@@ -128,13 +130,18 @@ func (s *Service) recent(p *Principal) error {
 	return nil
 }
 func (s *Service) sensitive(p *Principal) error {
-	if err := s.recent(p); err != nil {
+	// A fresh factor can renew an already completed sign-in, never replace the
+	// mandatory staff/enrolled-customer MFA step of a new session.
+	if err := Require(p, "self"); err != nil {
 		return err
 	}
-	if !p.User.MfaEnabled || p.Session.MfaVerifiedAt == nil || !p.Session.MfaVerifiedAt.Add(RecentTTL).After(s.now()) {
-		return ErrMFA
+	if s.recent(p) == nil {
+		return nil
 	}
-	return nil
+	if p.User.MfaEnabled && p.Session.MfaVerifiedAt != nil && p.Session.MfaVerifiedAt.Add(RecentTTL).After(s.now()) {
+		return nil
+	}
+	return ErrRecent
 }
 
 // transaction retries only known serialization failures; all effects remain inside the transaction.

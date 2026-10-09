@@ -32,6 +32,7 @@ export default function ReviewPolicyEditor({
       {policy && (
         <>
           <Text
+            name={`review_policy.content`}
             label="Review publication policy"
             multiline
             value={policy.content}

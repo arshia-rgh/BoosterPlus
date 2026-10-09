@@ -90,6 +90,7 @@ it("moves focus from email verification into the staff authenticator step", asyn
                     ...anonymous,
                     user: {
                       id: "staff",
+                      portal: "admin",
                       email: "staff@example.test",
                       display_name: "Staff",
                       role: "administrator",
@@ -106,7 +107,13 @@ it("moves focus from email verification into the staff authenticator step", asyn
         );
       if (url.endsWith("/email/request"))
         return Promise.resolve(
-          new Response(JSON.stringify({ challenge_id: "challenge" })),
+          new Response(
+            JSON.stringify({
+              challenge_id: "challenge",
+              retry_after_seconds: 60,
+              expires_in_seconds: 600,
+            }),
+          ),
         );
       if (url.endsWith("/email/verify")) {
         verified = true;
@@ -160,7 +167,15 @@ it("blocks Google while email issuance is still in flight", async () => {
     ).toBeDisabled(),
   );
   act(() => {
-    release?.(new Response(JSON.stringify({ challenge_id: "challenge" })));
+    release?.(
+      new Response(
+        JSON.stringify({
+          challenge_id: "challenge",
+          retry_after_seconds: 60,
+          expires_in_seconds: 600,
+        }),
+      ),
+    );
   });
   await screen.findByLabelText("Email verification code");
   expect(
@@ -179,6 +194,7 @@ it("gives customer MFA recovery public help without a staff contact or inbox loo
             portal: "customer",
             user: {
               id: "customer",
+              portal: "customer",
               email: "buyer@example.test",
               display_name: "Buyer",
               role: "customer",

@@ -114,21 +114,64 @@ test("seller drafts, clarification and review stay private and create no commerc
     const submit = seller.getByRole("button", {
       name: "Submit saved account for review",
     });
-    await submit.click();
-    await expect(
-      seller.getByText("region: This field is required.", { exact: true }),
-    ).toBeVisible();
-    await seller
-      .getByLabel("Account region (required)")
-      .fill("Synthetic region");
-    await seller
-      .getByLabel("Ownership and control information")
-      .fill("I created and control this synthetic account.");
-    await seller
-      .getByLabel(
-        "I control this account and have authority to submit it for review",
+    const submitRequests: string[] = [];
+    seller.on("request", (request) => {
+      if (
+        request.method() === "POST" &&
+        request.url().endsWith(`/submissions/${id}/submit`)
       )
-      .check();
+        submitRequests.push(request.url());
+    });
+    await submit.click();
+    const ownership = seller.getByLabel("Ownership and control information");
+    const authority = seller.getByLabel(
+      "I control this account and have authority to submit it for review",
+    );
+    await expect(ownership).toBeFocused();
+    await expect(ownership).toBeInViewport();
+    await expect(ownership).toHaveAttribute("aria-invalid", "true");
+    await expect(ownership).toHaveAccessibleDescription(
+      "Describe how you obtained and control the account and relevant restrictions. Do not include login or recovery information. Describe your ownership using 1–2,000 characters.",
+    );
+    await expect(authority).toHaveAttribute("aria-invalid", "true");
+    await expect(authority).toHaveAccessibleDescription(
+      "Confirm your authority to submit this account for review.",
+    );
+    await expect(
+      seller.getByText("Describe your ownership using 1–2,000 characters.", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    expect(submitRequests).toHaveLength(0);
+    await ownership.fill("I created and control this synthetic account.");
+    await authority.check();
+    await expect(submit).toBeDisabled();
+    await action(seller, "Save account draft", `/submissions/${id}/edit`);
+    await expect(submit).toBeEnabled();
+    const requiredRegion = seller.waitForResponse(
+      (response) =>
+        response.request().method() === "POST" &&
+        response.url().endsWith(`/submissions/${id}/submit`),
+    );
+    await submit.click();
+    expect((await requiredRegion).status()).toBe(422);
+    const region = seller.getByLabel("Account region (required)");
+    await expect(region).toBeFocused();
+    await expect(region).toBeInViewport();
+    await expect(region).toHaveAttribute("aria-invalid", "true");
+    await expect(region).toHaveAccessibleDescription("This field is required.");
+    await expect(
+      seller.getByRole("link", {
+        name: "Account region: This field is required.",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      seller.getByText("This field is required.", { exact: true }),
+    ).toBeVisible();
+    expect(submitRequests).toHaveLength(1);
+    await region.fill("Synthetic region");
+    await expect(region).not.toHaveAttribute("aria-invalid", "true");
     await seller.screenshot({
       path: `.cache/seller-intake-${info.project.name}.png`,
       fullPage: true,

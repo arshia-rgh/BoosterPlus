@@ -304,12 +304,12 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, input CreateI
 				return readErr
 			}
 		}
-		validated := catalog.ValidateAnswers(release.Configuration, input.Service, "order", input.Answers, variant)
+		validated := catalog.ValidateNewAnswers(release.Configuration, input.Service, "order", input.Answers, variant)
 		if len(validated.Issues) > 0 {
 			return &Invalid{validated.Issues}
 		}
 		now := s.instant()
-		estimate := catalog.Calculate(release, input.Service, estimateSelections(release.Configuration, input.Service, validated.Answers), now)
+		estimate := catalog.CalculateNew(release, input.Service, estimateSelections(release.Configuration, input.Service, validated.Answers), now)
 		answerData, readErr := document(validated.Answers)
 		if readErr != nil {
 			return readErr

@@ -48,7 +48,6 @@ Verified locally on 9 September 2026 before stage delivery:
 
 Limits: these are foundation tests, not a complete production/security certification. Image gates use a documented severity/fixability threshold and do not scan all vendor service images. Distributed TiDB failures, scale/load tests, authentication/authorization, object-upload processing, real email delivery, payments and complete business journeys belong to later phases. Delivery remains at least once; handlers require their own idempotent business/provider effects. The current portals expose prelaunch content only. No production deployment has been performed. Remote GitHub Actions status remains unverified until authenticated repository access is available; workflow syntax and its local command sequence are checked.
 
-
 ## P02 verification evidence
 
 Verified locally on 9 September 2026, with the same full gate required again by the commit hook:
@@ -67,7 +66,6 @@ Dependency findings: `golang.org/x/crypto` was updated to 0.56.0 to fix two SSH 
 
 Remaining deployment work: live Google OAuth consent and a real transactional SMTP provider have not been exercised because credentials were not provided. Public startup requires approved account/privacy text, matching terms versions, HTTPS/trusted gateway configuration, protected secrets and verified database TLS. Production distributed TiDB failure/load tests, complete data-retention/key-rotation procedures and authenticated GitHub Actions status remain release/deployment work. The current image scans retain the existing severity/fixability threshold. This phase is not a production launch or proof of every possible security scenario; order ownership, chat, financial and credential-access permissions arrive with their feature phases. P03 (configurable games, packages and forms) is next.
 
-
 ## P03 verification evidence
 
 Verified locally on 10 September 2026. The full repository gate passed; the final visibility-guard migration also passed TiDB integration and local deployment checks. The commit hook reruns the entire gate on the final staged source before delivery.
@@ -83,7 +81,6 @@ Verified locally on 10 September 2026. The full repository gate passed; the fina
 
 Scope limits: the catalog is functional, but P04 estimates/coupons, P05 orders, P06 private uploads/chat, P07 crypto checkout/reservations and later fulfillment/resale features are not implemented by this phase. Public artwork is deployed under `frontend/public/catalog-assets/`; P03 declares existing assets and does not provide an upload pipeline. Attachment fields remain optional and reject submitted values until ownership-aware uploads exist. Capacity is configuration rather than an inventory reservation; delivery-hour ranges are metadata rather than scheduled/guaranteed completion. Actual Mobile Legends rank/hero/region data, launch prices, availability and win-rate promises remain owner inputs and the seed stays unpublished. Production distributed TiDB, live providers, full release qualification and authenticated remote GitHub Actions status remain open. The tests establish implemented behavior, not exhaustive security or production certification.
 
-
 ## P04 pricing stage verification evidence
 
 Verified locally on 10 September 2026. P04 remains **in progress** because coupon administration/eligibility is not delivered by this pricing stage.
@@ -96,7 +93,6 @@ Verified locally on 10 September 2026. P04 remains **in progress** because coupo
 - Gosec/golangci reported no findings; npm audit reported zero vulnerabilities; both runtime images met the unchanged fixable HIGH/CRITICAL Trivy gate. Govulncheck found no affected symbols/imported packages, while the previously documented unused OpenPGP module advisory remains without a fix.
 
 Remaining scope: coupons are the next P04 stage; P05–P12 and production qualification remain outstanding. Actual launch currency, Mobile Legends catalog/prices and win-rate promises remain owner decisions. Payment provider/country/assets/refund terms and seller settlement/proceeds were requested again while independent implementation proceeds. No live payment adapter, seller payout, production deployment or remote CI success is claimed.
-
 
 ## P04 coupon stage verification evidence
 
@@ -113,7 +109,6 @@ Verified locally on 10 September 2026. P04 pricing and policy/indicative eligibi
 
 Next: P05 idempotent orders, immutable quotes/contracts, customer history, private favorites, safe reordering and transactionally reserved coupon uses. P06–P12 remain in scope. Requested payment/settlement decisions are still pending and do not block these independent workflows.
 
-
 ## P05 — Orders, quotes, favorites, and reordering (verified; delivery carried by this stage commit)
 
 P04 coupon delivery is committed and pushed as `e7152987170aebeba24a3e282325d16c4da2beb7`. P05 adds SQL migration 8 and Ent query models for immutable offer snapshots, order revisions, quote history, accepted contracts, private timelines, and favorites. [Order design](orders-design.md) explains authority and reservation boundaries.
@@ -126,11 +121,9 @@ Browser testing found duplicate React sibling keys that retained obsolete action
 
 Limitations: checkout is explicitly unavailable pending provider/asset/network and operating-region decisions. No admin button marks an order paid. Claims are not blindly expired, and provider-pending/detected/settled contracts cannot use unissued cancellation. The global security-control fence deliberately serializes these short mutations; production throughput/lock contention still requires P12 qualification. The 100% frontend coverage threshold covers route wrappers, not every application branch. Live Mobile Legends data/prices/win-rate guarantees and approved commercial terms remain owner inputs; the seed stays unpublished. No production deployment or remote CI result is claimed.
 
-
 ## P06 — Conversations, files, and notifications (in progress)
 
 P05 is committed and pushed as `8b8c16cc9fd63d258310185ec6454cbeceba5e34`; the tracked hook passed both complete project gates again and the remote main SHA matched. P06 starts with private conversations and durable notifications, followed by secure file/secret infrastructure. [Conversation design](conversations-design.md) records the privacy and delivery boundaries. No P06 completion or production readiness is claimed yet.
-
 
 ### P06 private conversations and notifications — verified stage
 
@@ -192,7 +185,6 @@ Full shared-communication gate: root `make pre-commit` passed both complete proj
 
 `make -C backend dev-up` applied migration 14 through the explicit Cobra job and passed API/worker/email/private-storage/fresh-scanner smoke checks with existing volumes preserved (`.cache/p08-sharing-dev-up.log`). SQL migrations 1–14 are now applied locally and remain immutable. No live payment settlement or financial bypass was introduced.
 
-
 ## P08 operational delivery forecasts — verified; delivery carried by this stage commit
 
 Shared coordination and proof are committed and pushed as `65e03d0d9a31067ba61a568d25af1469bece189a`, with matching remote main. SQL migration 15 adds saved operational forecasts. Administrator-declared service rules cover fulfillment mode, typed prepayment conditions (including declared region/priority), working calendars/closures, ranges and current paid workload. Together-mode work consumes confirmed sessions. Admin preview/application uses recent factors, observed versions and recomputation; customer/booster views retain fixed ranges and flag later changes. The accepted commercial agreement remains unchanged. See [delivery estimate design](delivery-estimates-design.md).
@@ -202,7 +194,6 @@ Targeted race-enabled TiDB cases passed (7.460 seconds), covering role/ownership
 The first root gate passed backend generation, vet, golangci-lint, standalone gosec, govulncheck, dependency verification, race tests, the complete isolated TiDB/storage/scanner suite (100.483 seconds), all 15 migration checks, production binaries and container builds/scans. Frontend type checking then caught an unsupported option in a new test-library call; the test was corrected. Frontend types/security/accessibility lint and 45 unit/component tests subsequently passed, with the unchanged 100% route-wrapper threshold. All 32 real desktop/mobile browser/accessibility journeys passed (28.2 seconds), including admin preview/application and customer range visibility. The mobile customer delivery view was visually inspected. Logs: `.cache/p08-delivery-integration-retry.log`, `.cache/p08-delivery-front-final.log`, `.cache/p08-delivery-pre-commit.log`. The complete corrected-source gate and local explicit migration smoke are required before committing; no bypass or reduced threshold was used.
 
 No live duration, price, business calendar, win-rate promise, payment verification or seller settlement was invented. Policy-dependent cancellation/dispute behavior, P07 and P09–P12 remain in scope. Production qualification and the previously requested commercial/provider/deployment inputs remain outstanding.
-
 
 Final corrected-source root `make pre-commit` passed both complete project gates: repository/secret/workflow/contracts, readiness-script tests, deterministic Ent generation, formatting, vet, golangci-lint, standalone gosec, govulncheck, module verification, race tests, isolated TiDB/storage/scanner integration (101.168 seconds), 15 explicit migrations, three production binaries, Compose validation, backend/scanner/frontend image builds and vulnerability scans, strict frontend types/lint, 45 unit/component tests, unchanged route coverage, npm audit, 32 desktop/mobile browser/accessibility journeys (30.9 seconds), and non-root/read-only frontend SSR container smoke. Log: `.cache/p08-delivery-pre-commit-final.log`. The tracked staged hook reruns this full gate before the authorized main commit.
 
@@ -215,7 +206,6 @@ The post-review backend gate passed, including the full TiDB suite (109.725 seco
 The synchronized final browser suite passed all 32 desktop/mobile journeys (30.3 seconds; `.cache/p08-delivery-browser-reviewed.log`). The tracked commit hook supplies the complete final-source repository gate, including both project `pre-commit` targets, before any commit can be created. Its result and delivered commit are recorded in the following stage's delivery entry.
 
 Local final-source images passed `make -C backend dev-up` and all API/worker/email/private-storage/fresh-scanner smoke checks again (`.cache/p08-delivery-dev-up-reviewed.log`). Migration 15 remained unchanged and was verified through the CLI; data volumes were retained.
-
 
 ## P09 private account intake and review — implementation in progress
 
@@ -261,7 +251,6 @@ Frontend types/lint and 61 unit/component tests passed with unchanged 100% route
 
 The controlled local TiDB/API/worker restart preserved all volumes and passed stack smoke (`.cache/p11-restart-smoke.log`). Local `make -C backend dev-up` then applied reviewed SQL18 through the explicit Cobra migration service and passed API/worker/email/private-storage/fresh-scanner smoke (`.cache/p11-dev-up.log`). Applied migrations1–18 are immutable. The complete root and both project gates remain mandatory in the tracked final commit hook; no stage delivery or full P11 completion is claimed until that gate and push verification succeed.
 
-
 ## P10 limited-package availability alerts — qualification in progress
 
 Operational administration is committed and pushed as `7746bea163a3a06b71403422b4194a7fe5e1978f`; actual remote main matched. The final tracked hook passed the complete repository/backend/frontend gate, including all TiDB tests (151.229 seconds), 61 frontend tests, 17 desktop and 17 mobile browser/accessibility journeys (22.5/23.7 seconds), security/dependency checks, builds, image scans and production-container smoke (`.cache/p11-commit.log`). The shorter TiDB runtime followed a controlled project-only database restart retaining volumes; no test timeout or requirement changed, and this is not proof of a particular upstream performance cause.
@@ -298,7 +287,6 @@ The first ten targeted test groups passed with race detection (3.001 seconds; `.
 
 All 13 expanded test groups passed with race detection (1.928 seconds; `.cache/p07-nowpayments-unit6.log`), including 16 concurrent API reads and signature checks, exact commercial echoes and independent JavaScript fixtures. Golangci-lint, standalone gosec, govulncheck and module verification passed (`.cache/p07-nowpayments-security3.log`); the previously documented unused OpenPGP advisory remains outside imported packages. A final configuration bound and regression limit callback origins to 2,048 bytes. The required tracked commit hook will rerun the complete root and both project gates, including real TiDB/browser/container checks despite no database or frontend route changes. Staged review caught an accidental documentation overwrite; the previous progress history was restored exactly before appending this entry. No P07 completion or real sandbox/live payment qualification is claimed.
 
-
 ## Revised remaining roadmap — documentation stage
 
 NOWPayments transport is committed and pushed as `f20abed6cb4f1909ffde9fe8fa789b7f74fea2de`; actual remote main matched. Its final tracked hook passed the full repository and both project gates, including TiDB integration (253.139 seconds), 71 frontend tests, 17 desktop/17 mobile browser/accessibility journeys (32.8/27.5 seconds), required security/dependency checks, image scans and container smoke (`.cache/p07-nowpayments-commit.log`). The package remains an unwired transport; full finance and real provider qualification are outstanding.
@@ -310,7 +298,6 @@ The owner clarified that `production/` is exclusively for deployment artifacts, 
 The required final root and both-project pre-commit gates still run before the authorized documentation commit. Roadmap review checks coverage and cross-links; final gate and push evidence will be reported at delivery. Production topology and visual defaults are proposed implementation choices, not claims of deployed or completed features.
 
 Roadmap local links/anchors, R00–R11 sequence, seven-feature table and repository checks passed. The first full hook passed backend checks (TiDB 350.709 seconds), 71 frontend tests and 17 desktop browser tests (39.4 seconds), but correctly blocked the commit when one mobile quote-acceptance assertion timed out after five seconds; 16 mobile tests passed. Trace inspection showed the accept POST still pending and the UI in its disabled submitting state, without a returned rejection. An unchanged rerun using `cd frontend && npm run test:e2e` passed all 17 desktop and 17 mobile journeys (32.2/33.1 seconds) against fresh isolated schemas. No assertion, timeout, worker setting or application code was changed. This does not establish the cause of the intermittent delay; retain it as performance/reliability evidence for launch qualification. Logs: `.cache/remaining-roadmap-commit.log` and `.cache/remaining-roadmap-browser-rerun.log`. A second full tracked-hook run is required before delivery, recorded in `.cache/remaining-roadmap-commit2.log`.
-
 
 ## R01 — Animated storefront and rank journey
 
@@ -374,7 +361,6 @@ Remaining qualification: actual device/network field performance and operator-ap
 
 The first full R03 hook stopped at TiDB integration after 206.682 seconds (`.cache/r03-commit.log`): `TestAvailabilityBoundedFanoutReconciliationAndSafeReferences` assumed one 50-subscription sweep processed all 55 subscriptions. Random UUID ordering occasionally placed the buyer on the second page, leaving the stored suppression state correctly pending. The test now deterministically selects the final subscriber, asserts the 50-delivery first-page boundary, checks queued email is refused before reconciliation, processes the remaining page, and requires `identity_changed` suppression plus exactly 54 eligible deliveries. Production availability logic and all thresholds remain unchanged. Five race-enabled runs of the corrected scenario passed in 16.577 seconds (`TEST_DATABASE_DSN='root@tcp(127.0.0.1:14001)/mysql' python3 scripts/integration-tests.py -run '^TestAvailabilityBoundedFanoutReconciliationAndSafeReferences$' -count=5`, `.cache/r03-availability.log`). The mandatory full hook is repeated in `.cache/r03-commit2.log`; no commit is made from the failed run.
 
-
 R03 delivery completed as `c559d79c93ead20d4225171ec0fc434e3265d681`, with remote main matching. The second complete hook passed TiDB integration (235.574 seconds), 102 unit/component tests, seven server/launcher tests, 21 desktop/21 mobile browser journeys (30.5/29.7 seconds), all backend/security/container checks and frontend image scans/smoke. Its disposable database was removed.
 
 ## R04 — Deployment foundation
@@ -389,12 +375,9 @@ Qualification caught and corrected upstream scanner defaults: duplicate socket p
 
 Focused backend diagnostic tests and broad golangci-lint passed, as did three deployment policy test groups and repository checks. The full required hook log is `.cache/r04-commit.log`; it includes both project gates plus the new production policy/image-scan/isolated-stack gate. Tests use dedicated localhost:14001 TiDB (`boosterplus-r04-test-tidb`) and the existing local test mail/storage/scanner resources; no production database is used. Final staging and hook results will be recorded before delivery is claimed. External provider qualification, actual domain/Google/mail delivery, clustered database/load, monitoring, backups/restores and release automation remain their explicitly assigned later gates. No check proves absence of all vulnerabilities.
 
-
 The focused ninth staging drill passed explicit SQL migrations, TLS dependency checks, HTTPS redirects, storefront/admin routes, forged-header rejection, private caching/CSP/HSTS, real STARTTLS email login with Secure cookies, customer/staff and CSRF boundaries, scanner outage/recovery and database readiness recovery (`.cache/r04-staging9.log`). The final gate additionally checks storage outage/recovery and zero-exit API/worker shutdown. The worker now has a read-only schema readiness command instead of inheriting the server HTTP probe. CLI tests and lint passed after explicitly enabling the checksum database and granting Go-cache access; neither the initial sandbox cache denial nor the host's `GOSUMDB=off` environment was treated as a passing check.
 
-
 The pre-gate gateway scan failed closed on fixable OS and embedded Go advisories (`.cache/r04-gateway-security.log`), including OpenSSL, curl/c-ares, x/crypto, x/net, x/text, gRPC and the Go standard library. The deployment image now rebuilds the same Caddy 2.11.4 release with official xcaddy 0.4.7, pinned Go 1.27.1, x/crypto 0.55.0, x/net 0.56.0, x/text 0.39.0 and gRPC 1.83.2. It removes unused curl and pins OpenSSL 3.5.8-r0; all source downloads retain checksum-database verification. The runtime scan remains unchanged and must pass before the stage commit. This gateway build is deployment tooling, not a third application project.
-
 
 R04 delivery completed as `8af4078a592c2c2b9e203fb53460b759552731d7`, with remote main matching. The complete hook passed all gates, including TiDB integration (232.809 seconds), 102 frontend tests, seven server/launcher tests, 21 desktop/21 mobile browser journeys (25.5/29.0 seconds), every required security/image check, TLS email sign-in, storage/scanner/database outage recovery and zero-exit API/worker shutdown (`.cache/r04-commit.log`). The test-only localhost:14001 TiDB remains available for the continuing R05–R09 gates; staging application resources were removed.
 
@@ -402,11 +385,9 @@ R04 delivery completed as `8af4078a592c2c2b9e203fb53460b759552731d7`, with remot
 
 The owner confirmed NOWPayments merchant registration is not yet available because the site/domain and business email are pending. Implementation and isolated provider-fixture testing continue. Actual provider sandbox qualification remains pending merchant access and is not represented as a passing local fixture test. Live checkout remains disabled without explicit server configuration and an approved published payment policy. R10/R11 remain outside the current authorized implementation scope.
 
-
 R05 work-in-progress evidence: the initial race-enabled TiDB payment suite passed (24.581 seconds, `.cache/r05-payment-tests.log`), including attempt concurrency, single invoice invocation, ownership, forged/duplicate/missed callbacks, exact allocations, partial/extra/wrong-route funds, late funds, coupon/capacity release, reversals and stale observation fencing. Broad golangci-lint reported zero issues and standalone gosec passed (`.cache/r05-lint2.log`). Customer checkout/receipt and staff finance/policy screens and API contracts are being connected; their browser/component qualification and the complete stage gate remain outstanding. No R05 commit or completion is claimed.
 
 The owner subsequently placed merchant credentials in the ignored, mode-0600 backend `.env`; only key presence was inspected. The four credential fields in tracked `.env.example` are empty. Credential environment is unconfirmed, so no authenticated provider request has been made. The official sandbox sign-in and registration pages were inspected without submitting data: `https://account-sandbox.nowpayments.io/sign-in` and `https://account-sandbox.nowpayments.io/create-account`. The owner is obtaining separate sandbox credentials. Do not infer a sandbox key from a live dashboard or activate checkout while mode is unconfirmed.
-
 
 The owner confirmed replacement with sandbox credentials. Private runtime configuration explicitly selects sandbox and disables checkout; the tracked example contains no credentials or selected merchant mode. A stable local merchant namespace is configured without printing its value. Sandbox status returned HTTP 200, but authenticated `/auth` and `/estimate` reads returned HTTP 403 on 12 September. No invoice, refund or payout was created; the cause remains unknown. The dashboard callback is intentionally empty until a public HTTPS endpoint exists. Read-only maintenance can run locally, while both the adapter and store forbid invoice creation with checkout disabled. See [payment operations](payments.md).
 
@@ -417,7 +398,6 @@ The R05 implementation delivery requires the complete tracked hook, logged in `.
 The first full R05 hook stopped at a staticcheck simplification in the new read-only origin validation (`.cache/r05-commit.log`). The equivalent condition is rewritten without changing accepted origins or disabling the rule. The complete hook is repeated in `.cache/r05-commit2.log`.
 
 The second full R05 hook passed the entire backend gate, including TiDB integration (248.137 seconds), production builds, Compose and both backend/scanner image scans. Frontend strict types then rejected optional viewport/touch values in the new browser fixture (`.cache/r05-commit2.log`). The fixture now supplies explicit null/false defaults under exact optional property typing, preserving each browser project’s configured values. No type check was disabled. The complete hook is repeated in `.cache/r05-commit3.log`.
-
 
 R05 implementation delivered as `e5a877af3eec42ae1bd92d37fbdf94b5ee3719e0`; the push was verified against `origin/main`. The third complete hook passed all gates: TiDB integration 284.896 seconds, 107 frontend tests, seven server/launcher checks, 22 desktop/22 mobile journeys (36.7/40.1 seconds), all security/build/image checks and the complete isolated HTTPS/TLS dependency/failure-recovery drill (`.cache/r05-commit3.log`). Actual merchant sandbox qualification is still outstanding; one additional authentication-only request matching the official SDK's optional-header behavior also returned HTTP 403. No public endpoint or financial transfer was created.
 
@@ -493,7 +473,6 @@ R08 delivered as `6da4bd592e94e4f85ec87b1e2be8ccf2b8d126d6`. The complete tracke
 
 The owner has authorized R09 and requires an owner-entered retention policy before deletion is enabled. Implementing explicit policy publication, current-version legal acceptance, private data export, owner-reviewed erasure with active-business and retention holds, bounded staff directories, editorial content, finance reports and operational controls. SQL migration 25 and initial application drafts are unqualified work; no R09 completion or launch readiness is claimed. R10/R11 remain deferred.
 
-
 R09 adds explicit SQL migration 25, immutable content/legal/retention publications, owner-reviewed privacy requests, recent-factor self exports, reviewed erasure, customer/media/consent directories, staff session revocation, intersected order/support filters, exact-unit financial reports and additional operational queues. Existing structured catalog/quote/pack/finance/calendars/case/resale controls remain integrated. See `docs/admin-operations-privacy.md` for the full screen map, report basis and operator workflow. Homepage and activity/availability email copy are editable plain text; private drafts do not affect delivery. Mandatory email routing, consent, unsubscribe and verification instructions remain enforced.
 
 Deletion remains disabled without an explicit enabled owner publication. Original/current minimum periods are combined conservatively; manual holds require an explicit release and new review. Live business records, including seller-linked buyer orders/cases, block erasure. Erasure and new orders share the authorization fence. Database redaction is atomic; files remain pending until real worker purge confirmation after the in-flight-upload safety window. Proof and case-cited messages/images, financial contracts/routes/evidence, audits and anonymous reviews remain preserved. Ordinary customer messages and eligible private files are removed. Backups and preserved evidence are not falsely reported as physically destroyed; the owner must honor the published backup policy through deferred production operations.
@@ -519,7 +498,6 @@ The bounded-worker browser rerun passed every journey: 22 ordinary plus one poli
 A staging retry found the zero-byte Git index lock dated to the first failed hook. Process and open-file inspection found no live Git operation. Removed only that orphaned lock; the blocked attempt ran no checks and created no commit (`.cache/r09-commit-lock.log`). The full second hook remains required.
 
 The second complete hook passed the backend suite again (TiDB 418.173 seconds), migrations, security and image checks, then failed one existing frontend reconnect test: 124/125 passed (`.cache/r09-commit2.log`). The chat subscribed to `online` only in a passive effect after rendering an error, leaving a reconnect-event timing gap. The listener now lives from mount outside the hidden message subtree, while failure polling remains conditional. A new pending-request/late-failure regression fails against the previous implementation (`.cache/r09-reconnect-before.log`) and passes with the fix. All 126 frontend tests and lint pass (`.cache/r09-front-tests6.log`, `.cache/r09-front-lint9.log`); no assertion deadline or coverage threshold changed. The complete hook is repeated in `.cache/r09-commit3.log` after refreshing the same disposable TiDB container with identical image/resource limits.
-
 
 R09 delivered as `7f9b7e00d9f0a6025b46bfb7cb33372bc27f987f`, verified against `origin/main` with a clean worktree. The third complete tracked hook passed TiDB integration (433.281 seconds), all 25 SQL migrations, broad Go lint/standalone gosec/vulnerability/module/race checks, 126 frontend tests across 46 files, 23 desktop and 23 mobile browser journeys with zero retries, both SSR builds, container scans and isolated HTTPS/TLS outages/recovery/graceful shutdown (`.cache/r09-commit3.log`). Live funds movement and real deployment/recovery qualification remain outstanding.
 
@@ -551,7 +529,6 @@ The initial full hook passed repository checks and backend lint/security/race ch
 
 Verification for the revised stage: inspect both final green images, check asset dimensions/alpha, review Markdown links and staged scope, then run the complete tracked root/backend/frontend/production pre-commit gate. Reproducible gate output is retained in `.cache/ux00b-green-commit.log`; commit/push only after it passes. No live provider call or money movement is required by this asset/planning change.
 
-
 UX00B delivered as `43b212ba88746dcf40d2f432a255a1937d8af8a4`, verified against `origin/main` with a clean worktree. The fresh full gate passed repository and Go security/race checks, isolated TiDB integration (444.586 seconds), migration validation, 126 frontend tests across 46 files, 23 desktop and 23 mobile browser journeys, production builds/container scans and the isolated TLS/recovery regression (`.cache/ux00b-green-commit.log`). No application rebranding was implemented.
 
 ## UX00C — Character social artwork, refined O and rich-motion plan (13 September 2026)
@@ -561,7 +538,6 @@ The owner requested game-related social artwork, a more detailed O separating PL
 Added roadmap section 1.2: scene-by-scene motion direction, layered/rigged asset requirements, actual idle/character movement beyond flat-image parallax, reversible scroll choreography, native input/history behavior, discoverable motion controls, static fallbacks, lifecycle/performance rules and complete motion evidence. Assigned preparation to UX01, implementation/social derivatives to UX05 and final verification to UX10. W3C Animation from Interactions and Pause, Stop, Hide were checked for motion-control guidance; the plan explicitly distinguishes the former’s AAA criterion from whole-site conformance. Multi-game artwork does not add unpublished game services or establish publication rights. Updated brand guide, README, repository instructions and the held final-launch acceptance reference.
 
 Verification: visual inspection of both assets; local reference/link and staged diff checks; complete tracked root/backend/frontend/production pre-commit gate before committing. Reproducible full-gate output is retained in `.cache/ux00c-commit.log`. Current stage changes only assets/documentation: no application animation, layout, route, live payment or production implementation. UX01–UX10 remain unstarted pending authorization; R10/R11 stay on hold.
-
 
 UX00C delivered as `15d8d43712c399c8a5c8bb6da858bbdd6f681278`, verified against `origin/main` with a clean worktree. Its full gate passed TiDB integration (585.524 seconds), Go lint/security/race checks, 126 frontend tests across 46 files, 23 desktop and 23 mobile browser journeys, image scans/builds and TLS/recovery checks (`.cache/ux00c-commit.log`).
 
@@ -603,7 +579,6 @@ Reviewed rendered desktop overview and desktop/mobile profile screenshots with l
 
 During final return-flow review, found that an admin destination could use the storefront client router despite the independent admin route graph. Deliberately interrupted the first full gate during database integration (exit 130; `.cache/ux02-commit-attempt1.log`) before any commit. Admin returns now use document navigation; customer returns retain normal client navigation. Added a component regression and real authenticated administrator/owner browser return checks. The fresh full hook must include this correction; the interrupted gate is not a passing result.
 
-
 UX02 delivered as `1e3e51c9860b00619bc1300c23c3ac161860ca68`, verified against `origin/main`. The complete hook passed repository/backend security checks, race tests, TiDB integration (792.873 seconds), all migrations, 139 frontend tests, all 50 desktop/mobile browser journeys, production builds/container checks and the retained TLS/outage regression gate (`.cache/ux02-commit.log`).
 
 ## UX03 — Chat and support (13 September 2026)
@@ -624,7 +599,6 @@ During final review, deliberately interrupted the first full commit gate after G
 
 The corrected desktop/mobile chat rerun passed (`.cache/ux03-chat-targeted.log`), including a staff reply arriving during a forced transient outage: recovery retains the old reading position and exposes New messages. The component test also supersedes a stalled manual refresh and rejects its late failure. The final 148-test type/lint/component run passed again. The repeated full hook is required before commit.
 
-
 UX03 delivered as `8d219756fb0f3b2198a8d894455d73f133034835`, verified against `origin/main` with a clean worktree. Its complete tracked gate passed Go lint/security/race checks, TiDB integration (449.041 seconds), 148 frontend tests, all 50 desktop/mobile browser journeys, builds/container checks and retained TLS/outage regression (`.cache/ux03-commit.log`).
 
 ## UX04 — Order workspace (13 September 2026)
@@ -637,20 +611,15 @@ Browser iteration caught a receipt assertion hidden by the new disclosure; payme
 
 The full tracked hook is required before commit, with output in `.cache/ux04-commit.log`. It uses the pinned, mount-free synthetic `boosterplus-ux04-test-tidb` on loopback port 14001; only the previous inspected synthetic UX03 database was replaced. Development data and live provider configuration are untouched. Financial journeys use isolated fixtures; no live funds movement or production implementation is claimed.
 
-
 **UX04 delivery is currently blocked; no commit or push has occurred.** The full hook failed closed at govulncheck: `https://vuln.go.dev` returned HTTP 403. The Makefile-approved official Google Storage endpoint also returned 403 and explicitly reported that the service was unavailable from this network location. A later recheck still returned 403. Both endpoints remain required live sources; no cached substitute, suppression or hook bypass was used. The failed gate is retained as `.cache/ux04-commit-attempt1.log`. The owner has been asked to restore the previously working network connection.
 
 The independent complete frontend gate passed (`.cache/ux04-frontend-gate.log`): 154 tests in 53 files, all 50 desktop/mobile journeys including the corrected order navigation/denial regression, accessibility/reflow checks, strict types/lint, dependency audit, contract checks, unchanged asset budgets, both production builds, image scans and non-root/read-only container smoke. Final desktop/mobile order and list screenshots were reviewed. Backend checks beyond the blocked vulnerability scan and retained deployment regressions are being completed independently; these do not count as a successful root gate. Once feed access returns, rerun the entire tracked hook before commit/push.
 
-
 Independent remaining backend checks passed: module verification, race tests, full TiDB integration (570.146 seconds), all 25 ordered SQL migrations, server/worker/CLI builds, Compose validation, backend/scanner image builds and scans (`.cache/ux04-backend-remaining.log`). The retained production gate also passed: configuration tests, gateway build/scan, isolated real TLS email authentication, secure cookies, roles/CSRF, routing/private caching/security headers, explicit migrations, dependency outages/recovery and graceful shutdown (`.cache/ux04-production-gate.log`). These are existing regressions, not resumed R10/R11 work. No additional implementation failure remains known. UX04 stays staged and uncommitted because the mandatory live govulncheck could not run; the complete root hook must be rerun once the official feed is accessible. No commit or push is claimed.
-
 
 The owner authorized continuation through UX10 and proportionate commit checks: UI-only stages no longer rerun unchanged backend/production suites. The tracked hook now classifies staged paths (including deleted/renamed old paths), runs frontend plus repository checks for UI, repository checks for documentation, and defaults backend/infrastructure/dependencies/unknown paths to the full gate. Classifier regressions run in root checks. CI and explicit root `make pre-commit` retain the complete gate. The official vulnerability feed now returns HTTP 200; UX04 and this gate-tooling change still require a fresh full hook before delivery.
 
-
 The fresh UX04 gate passed govulncheck but failed closed because Docker Desktop was stopped (test database connection refused). Started Docker Desktop and restored the existing UX04 database, mail, storage and scanner containers without deleting data. The failed attempt is `.cache/ux04-commit-attempt2.log`; a complete rerun is required.
-
 
 UX04 delivered as `a7687d01a8f5d996f6b2e140fcc0006d1c4859fd`, pushed and verified against `origin/main`. The complete tracked hook passed (`.cache/ux04-commit.log`): Go checks including standalone gosec and govulncheck, race tests, TiDB integration (445.555 seconds), all 25 SQL migrations, 154 frontend tests in 53 files, 50 browser journeys, production builds, image/security checks and retained TLS/outage regression. The worktree was clean before UX05 began.
 
@@ -662,7 +631,6 @@ The configurable form now groups goals, play mode, preferences and private order
 
 Verification in progress: unit/component tests, browser journeys, character matrix/reduced/offscreen/failure assertions, same-tab sign-in and private-data exclusion. The first browser run exposed missing SVG image error events in Chromium; an HTML Image check of the same cached source now handles failure across engines. Hero compositing was corrected after visual review to preserve opaque character materials. UX05 delivery requires the tracked frontend/repository hook. Social crop kit and extended cross-browser/device motion evidence remain in UX10; R10/R11 remain held.
 
-
 UX05 delivered as `65f06869f306b46b8d8e58b68b3cde2834305eb8`, pushed and verified against remote main. The tracked frontend/repository gate passed: 161 tests in 55 files, all 50 desktop/mobile browser journeys, strict types/lint, dependency audit, contract checks, builds, unchanged bundle/transfer/CLS budgets, image scans and container smoke (`.cache/ux05-commit.log`). Desktop hero and all three game showcase screenshots were inspected; fallback and accessible-name test corrections are included. UX06 follows. The owner confirmed character choice may change to fit the green theme; preserve diversity across games.
 
 ## UX06 — Focused checkout and service review
@@ -670,7 +638,6 @@ UX05 delivered as `65f06869f306b46b8d8e58b68b3cde2834305eb8`, pushed and verifie
 Reorganized payment into choice, provider payment and verified receipt; the current attempt shows authoritative order amount, selected asset/network and exact local deadline. Past accepted policies/history are secondary disclosures. Failed reads expose retry and stop the loading message; expired links disappear while provider reconciliation remains authoritative. Consent is bound to policy, contract and route; stale refreshes and pending requests cannot create duplicate submissions. New checkout pause still leaves orders unpaid; existing reconciliation continues.
 
 Formal service review now starts through an explicit disclosure, states its hold/refund consequences and presents a readable case timeline plus current next action. Refunds/payouts explain whose action is needed and distinguish approval, processing, uncertainty and provider confirmation. Recipient/terms confirmation, observed revisions, owner verification and exact crypto amounts remain unchanged. No wallet, bypass, backend change or live funds movement. Verification is in progress for this UI-only stage; R10/R11 remain held.
-
 
 UX06 delivered as `6544d41a1b80f7ecda86870feb46b08f5fd9a537`, pushed and verified against remote main. Frontend/repository gate passed: 170 tests in 55 files, all 50 browser journeys, axe/reflow, types/lint, audit, contracts, budgets/builds, image scans and container smoke (`.cache/ux06-commit.log`). Desktop/mobile checkout and case/refund screenshots were inspected. A final UX10 pass will shorten the default accepted-agreement display above checkout; no functional payment blocker remains known.
 
@@ -682,7 +649,6 @@ Seller intake separates account description, ownership declaration and save/subm
 
 Verification in progress includes filter/back behavior, reviewed-image keyboard gallery, seller review/offer/handoff journeys, expiry for both arrangements and protected-secret boundaries. No backend or production change. R10/R11 remain held.
 
-
 UX07 delivered as `6a22212` and verified against `origin/main`. The tracked frontend/repository gate passed 174 tests in 57 files, all 50 desktop/mobile browser journeys, gallery Escape/focus return, filter/back and both arrangement expiry, strict types/lint, audit, contracts, unchanged budgets/builds, image scans and container smoke (`.cache/ux07-commit.log`). Seller intake and product screenshots were inspected. Final UX10 follow-ups: wait for loaded cards before the marketplace capture and quiet empty commercial panels on draft submissions.
 
 ## UX08 — Admin triage, finance and editor navigation
@@ -693,12 +659,9 @@ Finance has URL-addressable payments/cases/payouts/policy/reconciliation views. 
 
 Verification in progress: module role visibility, editor types/lint/build, owner/admin directory mutations, finance view draft preservation, existing all-admin route/security/accessibility journeys. Content, policy, privacy, media, alerts, reports and review workflows retain the shared UX01 surfaces and their existing tested authorization/consent boundaries. No backend or held production change.
 
-
 UX08 review caught a view-isolation defect: reconciliation errors were inside the now-hidden payment queue. Stopped the pending commit before delivery, moved error feedback into the reconciliation view and added a focused failure/duplicate request regression. The original gate may finish against its initial build, but only a fresh tracked gate counts for delivery.
 
-
 The interrupted UX08 browser run also identified two old navigation assertions (embedded directory on the home page and payout queue on the default finance view). Updated them to assert the focused operations page and navigate explicitly to payouts; all original authorization/mutation assertions remain. The initial output is retained as `.cache/ux08-commit-attempt1.log`.
-
 
 UX08 delivered as `c7e9c3bce203f95bb6d6f178c27f9227dd4bd0a5`, pushed and verified against remote main. The fresh tracked frontend/repository gate passed 176 tests in 58 files, all 50 desktop/mobile browser journeys, strict types/lint, accessibility/reflow, audit, contracts, budgets/builds, image scans and container smoke (`.cache/ux08-commit.log`). Final UX10 review will quiet the many zero-value dashboard metrics.
 
@@ -708,9 +671,7 @@ Assigned work now uses readable cards with the actual mode, reported progress, n
 
 Favorites use compact named removal controls, activity distinguishes unread rows with text plus an accent, and review/availability lists share responsive spacing and clear empty states. Paginated links encode cursors and offer a return to newest entries. Email consent and review eligibility remain explicit. Personal export filenames now use PLAYORA. Unit/component verification passed 177 tests in 58 files, including hidden-tab polling and cleanup; types and lint passed. Delivery requires the tracked frontend/repository gate, recorded in `.cache/ux09-commit.log`. No backend or production implementation change. UX10 is next; R10/R11 remain held.
 
-
 The initial UX09 gate passed 48 ordinary browser journeys but stopped on both device policy journeys because the download expectation still used the old brand filename. Corrected the expectation to `playora-personal-profile.json`; the underlying export/privacy assertions remain. The failed log is `.cache/ux09-commit-attempt1.log`; a fresh complete frontend/repository hook is required.
-
 
 UX09 delivered as `9af8fb331e476633842ce5657e6668eb27f9a8ea`, pushed and verified against remote main. The fresh tracked frontend/repository gate passed 177 tests in 58 files, all 50 desktop/mobile browser journeys, types/lint, axe/reflow, audit/contracts, budgets/builds, image scans and read-only container smoke (`.cache/ux09-commit.log`). Activity and booster scheduling screenshots were inspected.
 
@@ -720,24 +681,17 @@ Implemented the final review corrections: zero admin metrics move to a secondary
 
 Added a reproducible three-engine browser target using the same isolated fixture populations, extended public reflow/landscape/text sizing, motion recording and truthful unsupported performance metrics. Initial local checks caught a route type import unavailable across the two separate builds and JSDOM's role query treatment of closed details; corrected the metadata signature and used actual visibility for the disclosure test. Full cross-browser and root gate results are pending. R10/R11 remain held.
 
-
 The first Firefox setup run stopped because Playwright requires video settings at file scope; moved recording to its own spec (`.cache/ux10-firefox-attempt1.log`). The next complete run found only stale expectations for the collapsed accepted agreement and human-readable work status, on both device projects. Updated those interactions while retaining amount/state checks (`.cache/ux10-firefox-attempt2.log`). The final brand audit also renamed the staff report export and its filename assertion to PLAYORA; internal event/storage/API identifiers remain compatible.
-
 
 The next Firefox run passed all functional journeys but found that the layout probe counted retained geometry inside a closed recovery disclosure. It now checks rendered visibility and also explicitly opens the recovery panel at 320 px, strengthening real visible-control coverage (`.cache/ux10-firefox-attempt3.log`). Final roadmap review also completed the mobile marketplace filter drawer with native Escape/focus return, preserved filter values and applied-result context. Final browser reruns include this addition.
 
-
 WebKit qualification exposed real focus-return and hardware-keyboard table-scroll gaps: pointer-opened gallery/filter dialogs now explicitly focus their native trigger, and the focused report region handles left/right keys without intercepting child controls. Test corrections use Safari's documented Option-Tab link navigation, native mobile scrolling where Playwright forbids mouse wheel, and a genuine PNG canvas fixture (WebKit's WebP export fallback produced PNG bytes, correctly rejected by media validation). No media validation or keyboard assertion was removed. Initial WebKit evidence is `.cache/ux10-webkit-attempt1.log`; both alternate engines must rerun against these corrections.
-
 
 The second WebKit run suffered browser-process closures and broad page/resize timeouts after 16 ordinary desktop tests. Stopped only its identified process group with SIGINT, retaining `.cache/ux10-webkit-attempt2.log`. The test database remained within its limits, and a fresh independent WebKit 26.6 process opened/resized three local pages successfully. The full rerun keeps the same workers, timeouts and assertions; no infrastructure failure counts as qualification.
 
-
 The subsequent fixture startup exceeded its unchanged 120-second limit (`.cache/ux10-webkit-attempt3.log`). Confirmed the pinned Go toolchain starts promptly and restarted only the mount-free synthetic TiDB on port 14001. The next attempt correctly refused a stale test HTTP server on port 4173 (`.cache/ux10-webkit-attempt4.log`); identified it as PID 68900 from the interrupted run and terminated that process. The runner does not reuse existing servers. No development database or live configuration was modified.
 
-
 The clean corrected WebKit and Firefox runs both passed all 54 desktop/mobile and policy journeys, with separate screenshot/video/performance evidence retained under `.cache/ux10-evidence/`. Typed/linted frontend component coverage remains 180 tests in 60 files with 100% required route coverage. Final delivery requires the complete tracked root hook (`.cache/ux10-commit.log`), including unchanged backend/security/race/TiDB and retained deployment regressions plus Chromium. No R10/R11 implementation or launch is authorized.
-
 
 UX10 delivered as `712828bbf9860b06c5b3dc905752f3577ffcff1d`, pushed and verified against remote main. The complete tracked hook passed (`.cache/ux10-commit.log`): Go lint/vet/generated checks, standalone gosec, govulncheck with no reachable findings, modules/race tests, TiDB integration (513.748 seconds), 25 SQL migrations, backend builds/scans, 180 frontend tests in 60 files, all 54 Chromium journeys, audit/contracts/budgets/builds, frontend image/read-only smoke and retained real TLS/outage/recovery regression. Combined Firefox/WebKit/Chromium qualification totals 162 successful journeys. The existing unimported OpenPGP module-only advisory is recorded with its scope in the handoff.
 
@@ -793,11 +747,9 @@ The owner confirmed no local audio/animation files and asked us to source them. 
 
 HF02A first tracked commit attempt stopped before commit: the new component test used Playwright’s `exact` option with Testing Library’s role query. Removed that unsupported test-only option; exact string name matching is already the component query default. Re-run the complete required hook; the failed attempt remains `.cache/hf02a-commit-attempt1.log`.
 
-
 HF02A delivery: the corrected tracked commit gate passed with 182 component tests in 61 files, all 58 Chromium desktop/mobile journeys, root repository/secret checks, formatting/type/lint/security rules, contracts/audit, both production builds and budgets, image scans and read-only container smoke. The final desktop form capture was reviewed after the spacing correction; summary and result remain separate and readable. Commit `91771cdcf73e5a26dcedf3e67122a093623848b3` was pushed and verified against origin/main. The failed first attempt was not counted as successful validation.
 
 HF03 asset experiments have begun, with no qualified loop delivered. The downloaded Miya model is 8.7 MB and its rendered costume does not match the green/gold candidate. Two built-in image-generation attempts produced opaque painted-checkerboard atlases, confirmed by PNG metadata; both were rejected and retained only in ignored cache. A short Miya voice candidate decoded in the source browser, but local acquisition and listening qualification remain incomplete. `docs/ux/HF_MEDIA_SOURCING.md` records actual sources, prompts, failures and next asset requirements. No provisional media, third-party player, new runtime/dependency or generic substitute was shipped. The following documentation-only receipt uses the tracked root checks; R10/R11 remain held and the new refinement roadmap is not marked complete.
-
 
 ## HF03 — Miya character-motion prototype
 
@@ -807,14 +759,11 @@ Prototype checks caught test-only typing/non-null issues, a loopback sandbox res
 
 Typed/linted component tests initially passed 186 tests in 62 files. Final prototype Firefox/WebKit recordings and the complete tracked frontend/root gate must pass before delivery; see `.cache/hf03-*-final.log` and `.cache/hf03-commit.log`. Chromium's final 20-second recording and all existing route/security/accessibility regressions run in the hook with isolated fixtures. HF04 multi-game polish, HF04A cameo, HF04B audio and HF05 final review remain open; R10/R11 remain held.
 
-
 The first HF03 tracked gate stopped on mobile: the new anchor assertion excluded an exact 0.5px rounding boundary, and several existing email journeys timed out waiting for SMTP delivery. The synthetic request trace returned 202; the corresponding captured message arrived about 53 seconds later, after the unchanged 20-second check. Test services were healthy at inspection. Corrected the anchor comparison to include the mathematical half-pixel rounding boundary (the 0.5px tolerance is unchanged). The email timeout, production rate budgets and required journeys are unchanged. Preserve `.cache/hf03-commit-attempt1.log` and rerun with read-only aggregate queue diagnostics; this failed run is not qualification.
-
 
 HF03 delivery: the full required frontend/root hook passed on the final staged tree: 186 component tests (62 files), all 60 Chromium desktop/mobile and global-policy journeys, formatting/types/lint/security rules, contracts/audit, production builds and existing budgets, root repository/secret checks, both image scans and read-only container smoke. Commit `22f7afc68266505ec58f5b888678f910f128b047` was pushed and verified against origin/main. Focused Firefox and WebKit scenarios also passed against the final application. The first run's delayed test email did not recur; aggregate queue samples showed brief pending work without a sustained email backlog. Its underlying transient delay remains unexplained; no email timeout or rate limit was raised.
 
 Final normal/static/pose/performance evidence is under `.cache/hf03-evidence/`, with final Chromium desktop/mobile clips named `miya-desktop.webm` and `miya-mobile.webm`. The earlier Chromium prototype is retained separately as `chromium-initial`. The temporary frontend-only preview and aggregate queue monitor were stopped. This documentation-only receipt updates delivered status through the tracked root hook. HF04–HF05, including cameo/audio assets and owner/device acceptance, remain open; R10/R11 are still held.
-
 
 ## HF03 correction — Perceptible soft motion before HF04
 
@@ -825,7 +774,6 @@ Peak-pose review caught crown clipping and a duplicate bow sliver after increasi
 Added a browser regression against the actual rendered pixels: more than 6 CSS px between head centers in opposite poses, less than 0.75px foot-center movement. This catches the previous head-static effect even when its animation clock advances. WebKit desktop/mobile passed and measured 13.15px / 6.77px head-center movement with zero foot movement. Its recorded local RAF p95 was 44ms / 28ms; these are scheduling samples under concurrent recording, not physical-device FPS guarantees. Type and lint checks passed. Focused final Firefox evidence and the complete tracked frontend/root gate are recorded in `.cache/hf03-revision-pixels-firefox.log` and `.cache/hf03-correction-commit.log`; delivery requires their successful completion. Normal-size pose/recording evidence is under `.cache/hf03-motion-correction/`.
 
 The old prototype's successful gate did not establish visual acceptance. This correction also awaits the owner's judgment, with later refinement stages held rather than advanced automatically. R10/R11 remain separately on hold.
-
 
 HF03 correction delivery: the first tracked commit gate passed with 186 component tests in 62 files, all 60 Chromium desktop/mobile route and global-policy journeys, formatting/types/lint/security rules, audit/contracts, production builds and unchanged budgets, root repository/secret checks, both image scans and read-only container smoke. Focused Firefox/WebKit desktop/mobile tests also passed with the rendered-pixel assertions. Commit `0ac3450a3df55a92288e8fcb720d8aa0c441dae0` was pushed and verified against origin/main. Chromium's final head-center travel was 13.49px desktop / 7.54px phone, feet stayed still, and recorded local RAF p95 was 17.6ms / 17.4ms. Final media and timing evidence is preserved under `.cache/hf03-motion-correction/`; `miya-motion-preview.webm` is a 13-second normal-speed excerpt of the final Firefox desktop clip. The temporary frontend preview was stopped. No later refinement or launch stage was started; review of this correction remains with the owner.
 
@@ -846,7 +794,6 @@ Final WebKit checks passed all 10 desktop/phone cases after the single-chain fil
 Linux Firefox launched successfully and passed desktop motion/loading tests. Narrow runs caught exact floating-point equality in the stage-height assertion: 321.3499755859375 versus 321.3500061035156 CSS pixels after scrolling. Compare to three decimal places instead; this still catches a 0.001px layout change and does not alter head/foot movement thresholds. Re-run the complete focused suite with the corrected test mounted read-only into the same isolated image. The first Linux run is retained as `.cache/hf04-firefox-linux-fractional-height.log`.
 
 Final focused Firefox qualification passed all 10 desktop/narrow cases in the isolated Linux container. Final WebKit passed all 10 desktop/phone cases. Normal/pose/performance reports and recordings are retained under `.cache/hf04-evidence/`. The tracked frontend/root commit gate now requalifies the final staged application and wider Chromium route suite; see `.cache/hf04-commit.log`. Delivery still requires that gate and push verification. No held launch or cameo/audio work is included.
-
 
 HF04 delivery: the tracked frontend/root gate passed on the final staged tree: 186 component tests in 62 files, all 68 Chromium desktop/mobile and global-policy journeys, formatting/types/lint/security rules, contracts and dependency audit, both production builds and budgets, server checks, repository/secret checks, both image scans and non-root/read-only container smoke. Commit `3537aa563c149952e69a84420bcd2e9bc56880f1` was pushed and verified against origin/main. No gate was bypassed. Focused WebKit (10 cases) and isolated Linux Firefox (10 cases) also passed; macOS Firefox direct-launch remains blocked by the documented OS/browser issue.
 
@@ -919,7 +866,6 @@ These are design-artifact checks, not production behavior/security or a human us
 - Verification: 339 layout combinations across 113 views; 555 named state presentation checks; reviewer task-based desktop/Tablet/Phone and actual 390 × 844 checks; JavaScript syntax, formatting, design integrity and 33 route/fixture assertions passed. Root repository policy/secret, contract, workflow and diff checks passed and are enforced by the tracked commit hook. No runtime payment/authentication or production security qualification is implied.
 - No actionable findings remain in the reviewed current scope. Owner acceptance, physical-device/assistive-technology review, unpublished commercial/legal decisions and the existing shop/news downstream design gaps remain explicit limits. Application development, preserved cameo experiments and R10/R11 remain paused.
 
-
 ### 24 September 2026 — separate staff sign-in designs and second complete UX review
 
 - Added independent Admin I09 and Booster I10 sign-in experiences beside customer I01, with role-specific Google/email, mandatory authenticator, enrollment, recovery, errors and same-portal return. Proposed `/admin/login` and `/booster/login` are design routes only. Customer sessions do not imply staff access; no public staff signup. Recorded the future session/challenge boundary in [the sign-in contract](redesign/SEPARATE_PORTAL_SIGN_IN.md) and repository instructions.
@@ -927,7 +873,6 @@ These are design-artifact checks, not production behavior/security or a human us
 - Evidence: all 33 public/game/system and 72 panel entries at three atlas widths and actual 390 × 844; 11 scoped identity contexts at actual 390 × 844 with additional desktop/Tablet/Phone task checks. Public 161 and identity 62 named state presentations checked. No horizontal overflow/duplicate visible H1 in these sweeps. Task checks include role-specific first/second factors, blocked waiting links, recovery, draft returns, conversation audiences/drafts and keyboard/pointer recovery. Reviewer viewport overrides reset and captured console errors empty.
 - Design integrity (115 views, 31 journeys, 55 existing routes, 573 named state inventory), JS syntax/formatting, route/fixture regressions and root repository checks passed. Generated flow-document and atlas shortcuts preserve staff portal context. Tracked hook remains enforced before commit.
 - Design only: no runtime auth, backend, payment or deployment changes. Real session isolation/security qualification, physical-device/assistive-technology testing and owner visual acceptance remain future work. Existing shop/news downstream decisions remain documented. Application development, preserved cameo work and R10/R11 stay held.
-
 
 ### 25 September 2026 — accepted-design implementation roadmap
 
@@ -951,7 +896,6 @@ These are design-artifact checks, not production behavior/security or a human us
 - Senior designer `/root/di01_chrome_review` returned PASS after two rounds. Fixed unreadable enlarged-text shortcut wrapping (DI01-01), wrapped existing motion controls and corrected the new admin footer destination. [Review and limits](redesign/reviews/2026-09-25-di01-shared-chrome.md). Actual 200% browser zoom remains unqualified; the recorded review used 200% root text.
 - Earlier gate attempts correctly failed for an unavailable local test database and stale active antivirus signatures. Restored dedicated local services, reloaded already-verified updated signatures and passed the isolated real storage/scanner test. No checks or scanner freshness requirements were weakened.
 - Static/strict checks, 201 unit/component tests, matching API contracts, dependency audit, both builds/budgets and nine server tests passed. Desktop browser qualification passed; a later mobile attempt exposed a test race between periodic authorization loss and clicking a disappearing refresh button. The regression now waits for automatic revalidation and retains assertions that history and the private draft disappear. The final tracked gate passed all 35 desktop and 35 mobile browser scenarios, both frontend container/security builds and non-root read-only smoke checks. Committed and pushed as `57ec5e25924c87d9ac7906313a7300f05c436736`; remote HEAD verified.
-
 
 ### 25 September 2026 — DI01 persistent game-shell foundation
 
@@ -1066,38 +1010,27 @@ DI05 native checkout senior gate is PASS after three rounds, including independe
 
 DI05 increment B delivered: unchanged full tracked hook passed root checks, live Go security scans, race units and complete TiDB/storage/scanner integration (502.240s), all 29 SQL migrations, 297 local frontend cases (287 tracked plus ten held), 94 browser journeys, application/container checks and isolated TLS outage/recovery/shutdown regression. Senior design gate is PASS after three rounds. Implementation `f9fcd6876fe27f740001ba8403d77049d8e83b11` was pushed directly to origin/main with remote SHA verified. Private intake screenshots and remaining DI05 confirmation/traceability continue before DI06–DI15. R10/R11 remain held; no live merchant calls or funds movement. Receipt: `docs/redesign/DI05_QUALIFICATION.md`.
 
-
 DI05 increment C in progress: optional private screenshot intake, transactional order binding, explicit SQL migration30, customer request confirmation and scoped game retry-focus/contrast corrections. Focused TiDB/storage/scanner race checks passed20.703s;303 local component cases (293 tracked plus ten held), types/lint/builds and root checks pass. Senior review verified upload/confirmation states at1280/768/320 and keyboard child-retry focus; final action-transition verification and unchanged full hook remain pending. Initial test setup/harness and browser contrast failures are recorded in `docs/redesign/DI05_QUALIFICATION.md`; none count as passes. DI06–DI15 continue after this verified increment; R10/R11 remain held.
-
 
 DI05C final scoped preflight passes14 real-API desktop/mobile journeys with accessibility/overflow checks, including six configured games and scanned screenshot submission/revision. Senior design gate is PASS after copy, contrast and focus fixes; see `docs/redesign/reviews/2026-09-27-di05-intake-confirmation.md`. Preparing the full tracked commit hook against a frozen staged tree.
 
-
 DI05C first full hook passed current live Go vulnerability checks, standalone gosec/lint and race units, then stopped during TiDB integration (465.551s). The isolated database exited137 with OOMKilled=true, after accumulating approximately15GB of disposable data across prior runs; subsequent EOF failures were dependency failures, not passing assertions. After verifying stopped state, exact identity, qualification label and absence of mounts, recreated only that container with the same pinned TiDB image,2GiB memory/no swap,4CPUs and localhost14001. New identity: `3d9a6597757eb46557b8439cd508512922b6090ea8ae2394291187e6f9bc2c60`. Development volumes and unrelated services were untouched. No tests/thresholds were relaxed. The second unchanged full hook is required; no commit from the failed attempt.
-
 
 The second unchanged DI05C hook again passed live Go security checks and race units but stopped near the end of integration (502.780s): the fresh isolated TiDB container reached its 2 GiB limit (confirmed OOMKilled=true, exit 137). Increased only that disposable container to 3 GiB memory / 4 GiB memory-plus-swap; the development database remains stopped during qualification and is restored afterward. The third complete hook must pass; neither failed run is delivery evidence.
 
-
 The third unchanged full hook failed during integration after 778.890s with database read/context timeouts. The container remained alive and was not OOM-killed; Docker itself responded slowly under the shared VM load. Recreated only the stopped, mount-free qualification database (identity `8471ba51578c1aba43ad13a3e7cd1ef7fef0faf052fcbb9e4052f1b64f2d8bd9`) with 2.5 GiB/no swap, TiDB server limit 2 GiB, GC trigger 0.65, GOGC 50 and GOMEMLIMIT 1536 MiB. Startup accepted the explicit memory configuration. Reference: [TiDB memory controls](https://docs.pingcap.com/tidb/stable/configure-memory-usage/). No query semantics, test deadlines, assertions or gate scope changed. The fourth complete gate remains required.
 
-
 DI05 delivered: increment C `6a122d7234ff4c15b967b95bf82aae0865c671d2` passed the unchanged complete tracked hook and was pushed to origin/main with remote SHA verified. Complete TiDB race integration passed in 483.808s; 30 migrations, 303 local component cases (293 tracked plus ten held experiments), 106 browser journeys, security/build/container checks and isolated TLS deployment regressions passed. All 19 DI05-owned views have scoped evidence; full journeys remain for DI14/DI15. See `docs/redesign/DI05_QUALIFICATION.md` for failed infrastructure attempts, corrections, all review rounds and qualification limits. DI06–DI15 continue as authorized. Final launch remains held.
-
 
 ### 27 September 2026 — DI06 customer workspaces (in progress)
 
 Implemented persistent order-local sections, separate retained private/shared message drafts, recoverable refresh protection, customer scheduling guidance and the authenticated corner activity surface. Bounded TiDB progress projection requires owned active work and the current settled contract, with no private fulfillment fields. Focused race integration passed8.149s; initial320 local component cases and applied-build real-API journeys are under final requalification with added activity assertions. Shared CSS budget regression was fixed by loading authenticated activity separately, without changing thresholds. Required senior review and unchanged full hook remain pending. See `docs/redesign/DI06_QUALIFICATION.md`; DI07–DI15 continue afterward, final launch remains held.
 
-
 DI06 scoped qualification is PASS: senior designer verified all nine findings resolved, including applied-build scheduling variants and21 sampled axe scans. Final real-API browser rerun passed eight desktop/mobile journeys with activity focus/ownership/sign-out assertions;320 local component cases, types/lint/build budgets, golangci/standalone gosec and root checks pass. The frozen staged tree now enters the unchanged full tracked hook. This is not yet a delivered phase or launch authorization.
-
 
 DI06 first full hook stopped at desktop/mobile sign-in cooldown browser checks after backend integration passed504.895s and all preceding security/build checks passed. Root activity duplicated the protected page's session bootstrap and could consume its429 response. Fixed session ownership: protected customer workspace passes verified identity; public activity respects pending/cooldown checks.322 local component cases, types/lint/builds now pass; targeted real-API and designer requalification precede the full-hook rerun. No failed run is counted as delivery.
 
-
 DI06 recovery qualification passes all 16 focused real-API browser cases (eight desktop/eight mobile), including the original unchanged cooldown assertions. The mounting follow-up found DI06-UX10 (public activity navigation left focus on BODY); first client workspace entry now focuses the destination heading and waits for delayed headings. Three component regressions pass. The designer rechecked public activity to history/support/exact order at 1280x900, 320x800, 320x450 and returned final scoped PASS. Evidence: `/tmp/playora-di06-recovery-browser.log` and `/tmp/di06-review-final-focus.json`. The complete tracked hook is being repeated; no commit is yet claimed.
-
 
 DI06 delivered as `09a0c11b87abaf2754018a62b3609f0a7ce40bdb`: the unchanged complete tracked hook passed, including live Go vulnerability scan, golangci-lint, standalone gosec, race unit/integration tests (TiDB 531.818s),30 SQL migrations,325 local component cases (315 tracked plus ten held experiments),106 browser journeys across desktop/mobile, production builds and container/security/deployment regressions. The required scoped senior designer review is PASS with all ten findings resolved. The commit was pushed directly to origin/main and its remote SHA verified. All eight DI06-owned views have scoped traceability; DI07 continues next. Full 31-journey design acceptance remains DI14/DI15, and final launch stays held. Failed earlier gate attempts remain recorded and are not counted as passes.
 
@@ -1109,7 +1042,6 @@ DI07 scoped review found collapsed standalone history at short heights and clipp
 
 DI07 scoped requalification now passes: all six focused real-API desktop/mobile support/fulfillment/seller journeys, Unicode discovery race checks, and designer round2 PASS with16 clean accessibility samples. Narrow histories retain192px at320x450; recipients remain fully readable. Earlier failures/corrections are retained in the qualification file. Preparing the reviewed tree for the unchanged complete hook; DI07 is not yet delivered.
 
-
 DI07 delivered as `682a74b994ab52e8b0ea24a298f3f0e48113af54`, pushed directly to main and verified against origin/main. The unchanged complete hook passed: security/dependency scans, TiDB race integration (572.972s), 30 migration checks, 330 local component cases (320 tracked plus ten held), 106 desktop/mobile browser journeys, builds and container/TLS deployment regressions. Scoped senior designer round2 is PASS. Seven owned views now have implementation traceability. DI08 continues; DI09–DI15 remain authorized, and final launch stays held.
 
 ### 27 September 2026 — DI08 booster experience (in progress)
@@ -1120,21 +1052,15 @@ DI08 final scoped review is blocked by a Codex usage/approval-execution limit: a
 
 DI08 focused final automated qualification passes: both complete real-API desktop/mobile fulfillment journeys, including the corrected local navigation, permission recovery and availability flow; 341 component cases, types/lint/builds, Go lint/gosec/vet/generated-code checks and focused TiDB race integration. The fourth browser attempt's old Overview completion text was corrected to assert the unchanged local Progress message; all privacy/completion assertions remain. Independent designer round2 is still BLOCKED by usage/approval capacity, so no DI08 commit/full-gate/delivery is claimed. Resume that review first, then the unchanged complete gate and direct-main delivery before DI09–DI15. Final launch remains held.
 
-
 DI08 independent review resumed after execution approval was restored and returned final scoped PASS: all six findings resolved, 33 clean accessibility samples across four viewport sizes, and successful draft/access/navigation/availability retry checks. The earlier approval block is historical. Preparing the frozen reviewed tree for the unchanged full tracked commit hook; DI09–DI15 remain authorized and final launch held.
-
 
 DI08 first full tracked hook passed backend security, race tests and complete TiDB integration (538.612s), 30 migrations and container scans, then stopped at the unchanged frontend route coverage threshold: the new booster homepage route had no route-boundary test. All 341 component cases passed, but coverage did not. Added a route test asserting the booster capability boundary, homepage content and metadata; no thresholds or UI behavior changed. The unchanged complete gate must pass on retry. Docker initially needed restarting before the hook could start; no application failure or completed gate is inferred from that preflight.
 
-
 DI08 second complete hook passed all backend checks (TiDB race integration 548.119s), 342 component cases and restored 100% route coverage, then failed the same outdated booster landing-page text assertion on desktop and mobile. All preceding MFA/portal-denial checks passed; the rendered destination correctly showed the new booster dashboard. Replaced only the obsolete placeholder-text assertion with checks for the actual dashboard heading, next-session region and assignment link; retained every authentication/authorization assertion. Both device suites reported 51 other ordinary journey passes. A focused real-API sign-in rerun and third unchanged complete hook are required; neither failed full hook is a delivery pass.
-
 
 The corrected booster sign-in journey now passes against real isolated APIs on desktop and mobile (2.0s each), including all unchanged MFA and cross-portal denial assertions plus the actual dashboard destination checks. Log: `/tmp/playora-di08-identity-browser.log`. The third complete tracked hook follows; no application/UI change was required for this assertion correction.
 
-
 DI08 delivered as `6aa13d67e9e6b123db62011c5c5ead1887d31f30`, pushed directly to main and verified against origin/main. The third unchanged complete hook passed: live security/dependency scans, standalone gosec/lint, TiDB race integration (564.925s), 30 migrations, 342 local component cases (332 tracked plus ten held), 100% required route coverage, 106 desktop/mobile browser journeys, builds and container/TLS deployment regressions. Final scoped senior designer review is PASS. The earlier route-coverage and obsolete browser assertion failures are retained; no check was bypassed. Five owned views now have scoped traceability. DI09 continues, DI10–DI15 remain authorized, and final launch stays held.
-
 
 ## DI09 — admin workspaces and governance, in progress (27 September 2026)
 
@@ -1142,9 +1068,7 @@ Applied after verified DI08 receipt `b59495b`. Persistent admin order sections, 
 
 Targeted TiDB race integration passed in 30.658s; changed real-API browser journeys passed nine desktop and nine mobile cases. Initial role-validator and obsolete-selector failures were corrected. Browser tracing exposed concurrent anonymous session bootstraps setting competing cookies; portal-scoped in-flight coordination plus session-change invalidation corrects CSRF without caching completed authority. Existing stale-response tests were retained. Independent scoped designer review passed after three correction rounds, including complete phone cards and settled chat navigation. Final complete gate and delivery are pending. R10/R11 remain held.
 
-
 First complete DI09 hook stopped at govulncheck: `https://vuln.go.dev/index/modules.json.gz` returned HTTP 403. The official Google storage mirror returned the same status in an independent access check. Formatting, generated-code checks, vet, golangci-lint and standalone gosec had passed; the remaining full-gate checks are not claimed. No commit was created. Requested network restoration while continuing isolated DI10 preparation. Evidence: `/tmp/playora-di09-resource-gate.log`.
-
 
 ## DI10 independent preparation while DI09 security access is blocked (27 September 2026)
 
@@ -1157,7 +1081,6 @@ Temporary-copy strict types, ESLint, both production builds/public budgets and t
 Senior designer review found five scoped issues (lost review reason, missing source return, outdated directional copy, missing withdrawal confirmation, silent listing draft loss). Desktop1440, phone320 and tablet768 captures, source/queue and finance round trips, withdrawal cancellation, focused leave confirmation, 503 draft recovery and403 clearing were inspected. A subsequent heading-order finding was corrected; its final narrow capture has no axe violations or document overflow and the leave prompt receives focus. The senior designer issued **PASS — no remaining actionable findings in the scoped workspace changes** after re-review. Review records and final scope verdict are retained in the local checkpoint. These fixture checks do not complete DI10 or qualify real backend/financial journeys.
 
 Remaining: restore official vulnerability database access and complete/deliver DI09; apply the hash-checked DI10 increment, finish marketplace/buyer receipt and all DI10 real-API journeys, run its required full stage checks and review; then DI11–DI15. R10/R11 and launch remain held. Do not mark this preparation as delivered or use it to bypass the blocked security scan.
-
 
 DI09 delivered as `dee0d3e691602283af042fccf19965f412f98b28` after network access recovered. Complete tracked hook passed (TiDB race integration593.983s, 357 local component cases, 106 desktop/mobile journeys, security/build/container/TLS checks); pushed main and verified the same SHA on origin/main. [Delivery evidence](redesign/DI09_QUALIFICATION.md). DI10 application work resumes; DI11–DI15 remain authorized; R10/R11 stay held.
 
@@ -1361,7 +1284,6 @@ The first full catalog-seed gate passed backend security/race/integration (998.9
 
 Owner override for this delivery: stop the repeated complete gate and skip it for this bounded migration change. The running repeat was terminated during TiDB integration; it is incomplete, not a pass. Focused migration tests, desktop/mobile editor qualification, senior scoped PASS, and corrected strict types/lint remain the acceptance evidence. The first complete attempt's backend/security/integration pass and subsequent test-type failure remain recorded above. The commit skips the tracked full hook only for this explicitly authorized delivery; normal tracked hook selection and CI are unchanged. All saved running/stopped container states were restored and the task-created Mailpit removed; no development catalog data was modified.
 
-
 ### R10/R11 preparation — 1 October 2026 (in progress)
 
 Owner authorized final launch preparation, one primary host/self-hosted data/mail with off-host backups, and moved heavy real-TiKV/load/restore/full qualification to the eventual server because the workstation has insufficient disk. Added the short `production/OWNER_REQUIREMENTS.md` checklist. Domain/SSH, backup destination/custody/expiry, mail DNS, OAuth, alert recipients, approved launch content and bounded funds authorization are not fabricated. No SSH or external transactions requested/performed yet.
@@ -1387,7 +1309,6 @@ Added optional separate-host HTTPS and fresh primary-monitor checks using a pinn
 ## 1 October2026 — restored-media integrity boundary
 
 Added quarantine-only `recovery-import-media`: complete SQL/index equality before writes, bounded no-follow archive reads, exact checksum/size validation and per-object storage readback. Focused race tests and broad lint passed. SQL/S3 restore, corruption, checkpoint mismatch and repeat-import tests are added to the mandatory server suite, not claimed executed locally. Source data and primary resources were not touched. End-to-end recovery/privacy replay and remaining R10/R11 qualification are still open in `production/LAUNCH_EXECUTION.md`; deployment SSH has not been requested.
-
 
 ## 1 October2026 — coordinated recovery, privacy journal and launch evidence
 
@@ -1472,6 +1393,7 @@ The scanner still runs against the live database and preserves full reports. The
 Local verification passed all56deployment tests and repository/secret/contract/workflow checks. The server `playora-vendors8.service` passed the same preparation checks, merged-policy mutation tests and fresh infrastructure policy evaluation: SeaweedFS4.48 clean;466package-location findings accepted across the six other images, zero unaccepted findings. All five pinned runtime configuration parsers passed, including compact TiDB/TiKV settings. Raw output remains in `vendors8.log` and `production/.cache/infrastructure-audits/`. Fixture startup and the complete gate follow separately; no new commit, full qualification or public activation is yet claimed.
 
 Hydration loading-state visual closeout now passed the required senior review. After the earlier reviewer did not complete the visual follow-up, a fresh reviewer inspected all four server desktop/mobile preparing/ready screenshots and returned **PASS — no actionable scoped findings**. The status/controls are readable without clipping or overlap and Solo appears in both selector and summary. Its behavioral qualification remains the separately passed delayed-script order scenarios; no broader launch verdict is inferred.
+
 ## 2 October 2026 — official image runtime qualification follow-up
 
 The official Restic0.19.1 image passed an isolated encrypted local archive round trip: initialization, compression-enabled backup, full integrity read, wrong-key rejection and exact-byte restore. Network access was disabled. This does not qualify the missing independent off-host destination or coordinated SQL/media recovery.
@@ -1524,7 +1446,6 @@ Focused run26 passed all60deployment units, merged configuration checks, all fiv
 
 Domain handoff: Server.ir exposes only nameserver controls in the owner's panel. The owner has been given a support-ticket draft to confirm DNS hosting and the correct assigned nameservers, without entering the web server IP in nameserver fields. Registry delegation currently names `ns1.ipeserver6.com` and `ns2.ipeserver6.com`. The external contact inbox is stored in a0600file under the server's0700owner-input directory, outside Git; no email was sent. Public-only setup and backup-provider questions are in `production/DOMAIN_SETUP.md`.
 
-
 ## 4 October 2026 — verified DNS/TLS and measured memory correction
 
 Cloudflare delegation, website/mail A records and IPv4 mail forward/PTR agreement passed independent1.1.1.1/8.8.8.8 checks. The isolated bootstrap gateway passed a fresh image audit and configuration validation, then obtained publicly trusted website/mail certificates. External verified HTTPS returns the intended website503 maintenance/mail404. Only80/443 were added alongside SSH; application, database and mail services remain offline. Offline production directory/identity preparation completed; protected keys and the owner contact inbox remain outside Git. Certificate renewal and mail delivery are not yet qualified.
@@ -1539,24 +1460,19 @@ The revised candidate assigns TiKV4GiB (3072MiB soft target) and mail1GiB, retai
 
 Fresh infrastructure audit30 completed scans but correctly failed on eight new HIGH Redis package findings in the unchanged official mail digest. The owner explicitly accepted those eight findings on4October after reviewing their scope. The manifest records the exact delta, preserves the original report hash and references the separately preserved new report. No unrelated finding, scan error, application defect or runtime failure is waived. Repeat policy qualification is pending; see `production/security/MAIL_REVIEW_2026-10-04.md`.
 
-
 Follow-up configuration checks passed all60 deployment units and six pinned runtime parsers, including the isolated maintenance gateway. Review caught that the small mail budget must be merged only for self-hosted mail; a separate conditional overlay now preserves external-SMTP configurations, with both rendered variants checked. This overlay change was tested in a separate configuration directory without altering the active database candidate.
 
 The first corrected-run launcher33 failed Python syntax before any test because shell quoting removed literals; it created no test result. Its replacement34 passed deployment units, all runtime parsers and a fresh infrastructure audit with474exactly accepted findings and zero unaccepted findings. Real-TiKV migration/history, verified TLS, S3/scanner and restart probes passed; the full sustained business run is in progress, not a pass. Read-only resource observation continues separately. No commit/push or final gate completion is claimed.
 
 The supported Rspamd helper's actual-domain public/private key match was verified with OpenSSL and its private signing identity installed offline. Only the public TXT value is documented in `production/MAIL_DNS_SETUP.md`; the owner was asked to add SPF/DKIM in Cloudflare. MX/DMARC, mailbox choices and authorized external delivery tests remain pending. No external message was sent and public SMTP remains closed. The source candidate remains frozen during the sustained test; later documentation and conditional-mail overlay changes require the final normal gate.
 
-
 The owner published SPF/DKIM. Independent1.1.1.1/8.8.8.8 queries each returned exactly one expected TXT record after proper DKIM segment reassembly; its public key matches the installed signing identity. Private receipt `dns-spf-dkim36.json` records the checks. This qualifies publication only, not signed-message alignment or inbox delivery. Sustained database run34 remains active with18top-level scenarios passed and no reported failure at this observation.
-
 
 Actual-domain mail preparation provisioned separate notifications/support accounts and postmaster/abuse aliases, with generated credentials passed through stdin and retained privately. Public-trust SMTP/IMAP TLS, correct/wrong authentication, cleartext-AUTH absence, unauthenticated relay rejection and authenticated sender-spoof rejection passed without sending mail. The signing daemon can read its0600private key. One explicitly approved plain-text test was accepted by local SMTP and then by Gmail's server with250/2.0.0; this does not establish Inbox placement. Its private message-ID/send receipt prevents accidental resend. The owner approved initial DMARC `p=none` without automatic report collection; publication remains pending.
 
 The owner added deliverability/Spam-placement improvement and a support-inbox UI to the launch scope. Acceptance details and primary-source research are recorded in `production/MAIL.md` and retained in `final-launch.md`. UI preference and the actual Gmail placement are requested. No unconditional “never Spam” claim or unapproved test traffic is introduced.
 
-
 Inbound SMTP25 is now enabled for mail qualification, with IMAP993 bound only to loopback and submission587 unpublished. The actual-domain mail service is separate from the maintenance gateway/application; it uses the prepared persistent mailbox state. An external workstation check verified the public certificate/hostname, relay rejection and acceptance of postmaster using a valid null reverse-path, without sending DATA. Its first probe used an intentionally nonexistent sender domain and was correctly rejected450; this was corrected in the test rather than weakening sender-domain validation. MX and the owner-approved initial DMARC record are ready for owner publication. Application checkout remains offline.
-
 
 The owner published MX and initial DMARC. Both1.1.1.1/8.8.8.8 returned exactly `10 mail.playoragames.com.` and `v=DMARC1; p=none`; private receipt `dns-mx-dmarc41.json` preserves publication evidence. The remaining authorized HTML test (with plain-text alternative and the exact approved wording) was submitted once with a private idempotent receipt. Both-message authorization is consumed; no further message may be sent without renewed authorization. Received-message Inbox/Spam and SPF/DKIM/DMARC results remain owner-pending.
 
@@ -1583,7 +1499,6 @@ The owner supplied a Google web-client JSON. Its client/secret fields are presen
 Official Roundcube1.7.4 Apache and Alpine variants were scanned; current maintained tags resolve to the same release digests. The owner explicitly accepted the seven HIGH findings for the exact Alpine digest in `production/security/WEBMAIL_REVIEW_2026-10-04.md`. The complete acceptance manifest retains their fingerprints/report hash; other findings and runtime failures remain blocking. Private webmail uses read-only upstream code, non-root PHP, verified mail TLS and SSH-only browser HTTPS, with remote images blocked. The128MiB candidate addition preserves2GiB host headroom; runtime/load qualification remains pending.
 
 Webmail preparation initially failed at a missing nested configuration mountpoint under the read-only vendor directory; an explicit empty mountpoint corrected it. A subsequent initializer encountered an already-created vendor table; the documented upstream `--update` form completed successfully. A private fixture gateway initially refused host-loopback traffic because it had only an internal Docker network; adding a gateway-only access network corrected reachability without exposing PHP/mail. These failures are retained privately. Desktop/mobile credential-free login rendering then passed with normal TLS verification and zero page/resource errors. Senior UI round1 requested stronger login contrast and clearer username/reset guidance; corrections are being verified with isolated synthetic mailbox flows. No further external email was sent.
-
 
 ### GitHub access and private support UI follow-up — 4 October 2026
 
@@ -1699,7 +1614,6 @@ The deployed release remains99f60bd; this fix is not committed or deployed. The 
 
 The owner subsequently approved both proposed exceptions (“yes do it”): focused verification for this exact login hotfix and the schema-unchanged update before off-host backups, preserving paused payments and the prior signed application for rollback. The four backend files remain bound to passing runs112/113. Use a one-use, exact-staged-source verification hook for this commit; the tracked hook/configuration and strict default release-backup requirement remain unchanged. CI, release scans/signatures and actual deployment checks still apply. This approval does not turn the missing backup or complete repository gate into a pass.
 
-
 ### Google login hotfix deployed — 5 October 2026
 
 The owner-approved focused exception produced commit `2bde066ed9003597f818bc586ed7cd5f91d83561`, verified on origin/main. Exact CI37287055287 and release37288320672 passed. Five scanned immutable images/SBOMs were independently authenticated and signed locally; the server verified the bundle. The one-use commit hook bound the staged source to passing server112/113 evidence and passed repository checks; normal tracked hooks remain unchanged.
@@ -1715,7 +1629,6 @@ Implemented compressed/private-cached interface assets, end-to-end verified tunn
 DOM and 70 deployment unit/configuration checks passed, along with repository/security checks and pinned Caddy/PHP/FPM runtime validation. Headed synthetic desktop/tablet/mobile composer tests passed keyboard use, edits, undo/redo, recipients, attachments, persisted draft reopening and conversion-cancel/network-failure retry without sending email. Earlier tab-order, draft-ID namespacing, nested quoted template and mobile toolbar findings were fixed and rerun. Senior review and production approval/status are recorded in the webmail update report; no deployment or full heavy-gate pass is claimed at this preparation entry. No production mailbox/credential or checkout setting changed.
 
 The owner subsequently approved committing/deploying this exact webmail-only update with the completed focused UI/security/runtime checks and before off-host backups. Retain prior configuration for rollback and briefly restart only private PHP and the shared gateway; mailbox data, application code and financial settings remain unchanged. No standing exception or external mail authorization is created. Deployment evidence remains pending at this entry.
-
 
 ### Private webmail update deployed — 6 October 2026
 
@@ -1778,3 +1691,298 @@ UI136 signed candidate `6c5fdcdf683e3c5845d7d5745b33105efbda673d` subsequently p
 The owner subsequently authorized the exact prepared rollout (“yes deploy now”). Signed UI136 release `6c5fdcdf683e3c5845d7d5745b33105efbda673d` is now deployed at schema40. The normal release flow used a private one-use exact-release backup-deferral receipt and network-isolated gateway validation; tracked strict defaults remain unchanged. Runtime image identities/health, dependency checks, migration history, HTTPS/redirects, all38 mounted configuration hashes and private environment hashes passed. API/worker checkout remains enabled and outgoing payments remain disabled; mail and private webmail remain healthy. Previous signed6ae48bf is retained for compatible application rollback. Temporary registry credentials were removed.
 
 Twenty read-only live Chromium/WebKit checks passed across360px and1440px homepage, terms and all three portal sign-in pages: removed controls absent, no horizontal overflow, old saved motion overrides ignored and live device motion changes respected. The first scratch probe incorrectly expected the general page wrapper on admin sign-in; its failure is retained and the rerun used the actual shared background, with no application change. No published game links were available in the live homepage, so live game-hub checks were not claimed; all six games and authenticated workflows passed the isolated browser gate earlier. No email/invoice/transfer occurred. Off-host recovery is still absent, and physical-device/AT acceptance remains separate. The deployment approval is consumed; see the UI136 review for receipts and limits.
+
+### Staff portal subdomains — 8 October 2026
+
+Prepared admin/pro origin routing across backend, three frontend route graphs and the TLS gateway. The owner confirmed both DNS and Google console updates; both A records resolve to the existing server. Focused identity/security, frontend builds/types/lint, five new server boundary checks, nine legacy server/development checks and desktop/mobile synthetic portal journeys passed. Cross-origin MFA/session database scenarios, full server gate and signed release/cutover are still pending. No production change, payment or external mail was performed. See [scope, evidence and recovery requirements](portal-subdomains-2026-10-08.md).
+
+### Public contact, QR enrollment and support mail — 8 October 2026
+
+Prepared a separate local follow-up while the frozen portal137 full server gate continues. Public `/contact` provides email/account-access help and named social channels; exact social URLs await the owner. General contact discovery no longer enters the protected support route directly, while Chat with support retains sign-in and return context. Enrollment uses the existing authenticated URI for a local QR with optional manual fallback, expiry and real-code verification. Added pinned zero-dependency `qr@0.7.2`; no backend or schema changes.
+
+Local units passed517 tests including10 held untracked tests (507 intended tracked), all 3 builds passed, and Chromium/WebKit passed32 synthetic contact/enrollment journeys across4 widths. Independent macOS Vision decoded24 final rendered QR crops. Senior contact review caught a320px email-wrap issue, corrected with a domain-preserving break; final keyboard/rerender checks and both independent design reviews now pass. Type/lint/format/contracts and repository checks pass. Normal final qualification remains separate, including the new dependency. Support mail investigation found authenticated signed TLS submissions accepted by Gmail and no confirmed SMTP/MIME defect; recipient-side authentication results remain needed. No email/DNS/mailbox change, commit or deployment is claimed. See [implementation/evidence and remaining inputs](contact-and-authenticator-2026-10-08.md).
+
+The owner subsequently supplied WhatsApp and Instagram destinations and confirmed support-email SPF/DKIM/DMARC all pass. Contact links are being completed with a digits-only WhatsApp URL and clean Instagram profile URL; the supplied Discord username URL still needs a numeric user ID or invite. No email was sent and no Inbox-placement guarantee is claimed. Live payment status is being checked read-only; the production callback remains on the customer domain, independent of the staff-host move.
+
+Portal137 full qualification failed at the frontend portal browser fixture: desktop/mobile navigation subtests passed, but the strict final assertion found an unhandled authenticated customer `/api/v1/me/overview` request. Backend qualification and the preceding frontend checks completed, but the overall hook did not pass and no commit was created. Preserve the frozen manifest/log and stopped isolated fixture. The correction adds an explicit bounded response and empty customer-panel assertions; fresh round2 will qualify the portal and separately reviewed contact/QR changes together, without claiming old evidence covers the new source.
+
+The two supplied social destinations now pass six focused contact unit tests, storefront build/budgets, eight Chromium/WebKit responsive keyboard journeys and independent senior review round3. Discord remains pending a valid owner ID/invite. The portal fixture correction passes desktop/mobile in both engines while retaining strict unknown-request failure and adding customer activity-panel assertions. Read-only live finance checks confirmed checkout enabled, outgoing disabled and no published payment policy; exact dashboard IPN instructions are recorded in `docs/payments.md`. No callback, invoice or funds transfer was sent.
+
+The owner supplied Discord ID `1553760636821962832` after combined round2 was frozen. Its exact profile link now passes seven focused contact tests, all eight refreshed Chromium/WebKit responsive keyboard journeys and independent senior review round4. That two-file frontend-only follow-up remains separate from the running immutable full candidate and will receive its normal frontend/repository hook afterward. The owner also confirmed completing NOWPayments dashboard settings with Classic way. Focused unchanged webhook signature/parsing/deduplication tests passed; no live financial test or provider mutation was performed.
+
+The owner narrowed initial payment acceptance to USDT on BNB Smart Chain only. Updated the unpublished local policy draft to `usdtbsc` / `bsc`, with a new date label and matching introduction. An exact semantic comparison confirms all other policy fields and all later text paragraphs are unchanged. The previous three-network draft remains in Git history and private before-change evidence. No live policy, provider wallet or payment was changed.
+
+The owner then explicitly authorized entering and publishing the starter payment policy. Opened the live Finance route in the in-app browser; it correctly requires admin sign-in and MFA. Requested that the owner complete those steps directly on the site. Publication remains pending authentication; no direct database write, credential extraction, provider setting change, invoice or funds action was performed. The separate immutable full qualification continues; its current database phase has no reported failure and healthy available memory/disk.
+
+The owner completed sign-in/MFA in the browser. Saved the exact starter policy as revision2, reviewed its saved customer preview and published revision3, agreement `e1957da6-a9dd-4e66-b78b-4cd2ed4df190`, using only the normal live admin UI. The UI confirms publication and checkout enabled, with outgoing payments still disabled. All observed text/number fields match the intended values; an independent local semantic comparison confirms the submitted policy equals `docs/legal/PAYMENT_POLICY_DRAFT.json`. Private evidence and confirmation screenshot are under `.cache/contact138/payment-policy-published/`. This resolves the missing-policy prerequisite without changing provider wallet settings or executing a payment. Existing accepted agreements remain versioned; owner-led real checkout/callback/funds qualification is still pending. This legitimate admin data change is separate from the isolated immutable source qualification, which continues unaffected.
+
+A subsequent bounded read-only provider merchant-coins check confirms `usdtbsc` is enabled for this merchant. The response does not expose receiving-wallet details, so wallet presence remains unverified rather than absent. No invoice or other provider write was sent. Root repository/security/contracts/workflow checks and both staged/unstaged whitespace checks passed after the publication documentation update; the separate complete source qualification still continues.
+
+### 8 October 2026 — Independent panels and checkout release expansion
+
+Owner confirmed independent customer/admin/booster identities with the same email
+allowed separately. Implementation now includes panel-local account management,
+resend cooldowns, rich win-rate preferences, field-local validation and hosted
+checkout/minimum handling. The obsolete isolated portal137-round2 gate was safely
+cancelled and retained as superseded; no production containers were changed.
+Read-only diagnosis confirmed the USD1 checkout is below the current provider
+minimum, while its earlier invoice response remains uncertain. Focused catalog/
+payment race units and29 checkout/win-rate frontend cases passed. Complete gate,
+migration qualification, rendered senior review and deployment are still pending.
+See [release scope](independent-panels-checkout-2026-10-08.md).
+
+### Panels140 implementation and initial review (8 October 2026)
+
+Independent identity namespaces, staff-local account pages, resend timing,
+win-rate preferences, field-level form guidance and hosted checkout are now a
+combined qualification candidate with the pending portal/contact/QR changes.
+Initial independent senior design review found four actionable issues; all four
+were fixed and rechecked to scoped PASS. See
+`docs/redesign/reviews/PANELS140_INITIAL_DESIGN_2026-10-08.md` for observed flows,
+round trips and fixture limitations. The separate owner-requested broad manual
+review remains pending during the full gate.
+
+Final local frontend unit run passed161 files/665 cases; formatting, contract,
+TypeScript, ESLint, live npm audit (zero findings) and all three production
+frontend builds passed. The isolated built identity harness passed120 checks
+across Chromium/WebKit and four viewports; real authentication is not certified
+by synthetic fixtures. Shared form/WR/policy rendering passed18 responsive
+checks. Focused quote/checkout/refund tests passed42 cases after the senior
+findings. Repository policy/workflow/secret checks passed before candidate
+freeze. Backend focused security/race/code-generation evidence and isolated
+schema41 preservation checks are recorded separately; the complete full gate,
+exact release and deployment have not passed or occurred yet. No published
+policy, live financial setting or production data was changed.
+
+The isolated panels140 focused TiKV run passed17 scenarios and confirmed cleanup
+with no production changes. Final independent payment/WR review found two legacy
+scalar-answer gaps at new-request boundaries. Both were corrected before full
+qualification: create/revise, public validation/estimate/discount and reorder now
+enforce the new WR preference format while historical reads/calculation/replays
+and accepted fulfillment remain compatible. New no-side-effect database
+regressions were compiled but await execution in the full gate. Changed runtime
+race tests, lint, standalone gosec and tagged compilation passed; independent
+code review returned scoped PASS. The original370-file preflight snapshot is
+retained as superseded, not qualified. The corrected source will enter a fresh
+normal full gate; broad parallel manual UX review is still pending.
+
+### Panels140 broad manual review and failed full gate (8 October 2026)
+
+The normal tracked full hook started on the isolated server against the379-file
+candidate tree `f464dcdd90f1f6d508a36b44bb6ddd56d72c2636`. Independent customer/seller
+and staff testers explored actual immutable React builds using separate strict
+synthetic API fixtures, with a senior UI/UX reviewer independently reproducing
+findings and checking corrections. The original gate failed at the valid-upload
+assertion in `TestArtworkHTTPPortalCSRFAndLimits`; no commit was created. Failure
+logs, source manifest and resource observations remain intact. All four isolated
+fixture services were stopped; production was not changed.
+
+The unchanged direct artwork-storage scenario and exact HTTP scenario both passed
+in separate focused diagnostic runs. Initial scanner logs show bundled signatures
+older than seven days being loaded while FreshClam updated on disk; its reload
+notification failed because the daemon socket was not ready. This is strong
+startup-race evidence, not a recovered underlying error from the original500.
+Test-only freshness/readiness hardening passed its bounded policy tests and a
+fresh-volume server proof. It checks the application's unchanged freshness policy
+and clean/EICAR controls before long suites. The scanner report preserves both
+failed and successful diagnostic attempts; application malware protections remain
+fail-closed. See `docs/scanner-fixture-readiness-2026-10-08.md`.
+
+The senior confirmed nineteen UX findings across the completed review waves. Corrections cover admin route
+focus, shop recipient validation, preserved numeric editor drafts and error
+sections, news error-navigation traps, recipient-specific financial wording,
+safe WR draft restoration, chat retry focus, initial seller title guidance,
+booster verification recovery, calendar field validation, distinct financial task
+labels and account-reservation conflict guidance. Later rounds added visible
+one-time recovery-code results, customer/admin verification returns, financial
+retry feedback, handoff-note validation and governance completion/mobile layout.
+All 19 findings passed independent rendered round trips. Final positive
+counterparts for 16/18 found off-screen success confirmations; both now preserve
+explicit action results, move focus into view and distinguish a saved action from
+a failed status refresh. Financial details clear on access denial or record
+change, and polling never moves focus. The final immutable fixes8 snapshot
+passed 48 rendered checkpoints across Chromium 390/1440 and WebKit 320/820 as
+applicable; the senior returned PASS with no remaining actionable scoped findings.
+The latest combined frontend passed 164 unit/component files with 710 cases, full
+format/type/lint checks and all three portal builds. Root repository/security/
+contracts/workflow checks also passed. The newest source has not yet completed
+the full gate.
+
+See the customer/seller, staff and senior `PANELS140_*MANUAL*` reports under
+`docs/redesign/reviews/` for actual actions, browsers, evidence hashes and pending
+branches. The completed 37-journey matrix distinguishes actual UI actions from
+seeded prerequisites and remaining branch variants. Senior PASS is scoped to
+these observed flows and corrections; it is not universal bug-free certification.
+Synthetic UI responses do not qualify actual identity authority, external mail,
+Google, live settlement, physical-device or assistive-technology behavior. No
+external messages, invoices or funds actions were performed. The next complete
+candidate must include all subsequent fixes; the failed frozen run cannot certify
+them. Signed release and deployment remain pending.
+
+The corrected candidate was prepared for a fresh normal complete tracked hook in
+`/srv/playora-qualification/panels140-round2`. It includes all manual corrections
+and scanner-readiness hardening. No check from the failed full run is reused as
+a completed full-gate pass. The production signed schema40 release, published
+payment policy and financial/deletion settings remain unchanged.
+
+### Panels140 second full-gate result and corrected browser candidate
+
+The second full gate failed on frozen tree
+`3a0e36cb82715ae26231eac35281a0c16ff3ac88`. Backend checks, 268 real-database
+scenarios (4,467.020 seconds), frontend static checks, all three frontend builds
+and 700 unit/component cases across 163 files passed. The earlier local 710-case
+total included ten held, untracked cameo cases that were excluded from the
+candidate. Browser results were 140 passed and 16 failed across nine journeys;
+later frontend image/container and production checks were not reached. The
+failed evidence is retained, fixtures stopped, and no commit or deployment
+resulted.
+
+Independent review passed nine test-only corrections for invalid-field focus,
+order access recovery/privacy, staff/customer refund wording, seller validation,
+the independent-portal fixture, hosted payment capture and two compound-journey
+deadlines. Assertions and payment/access safeguards remain; application,
+dependency and migration bytes are unchanged from round2. The corrected focused
+candidate has 418 paths and tree `4a3ad80061474896c64ce97ec06a2af79baa579c`.
+Its real-fixture desktop/mobile rerun and the subsequent fresh complete gate
+are pending. See `docs/independent-panels-checkout-2026-10-08.md` for failure
+details and evidence boundaries. The separate manual senior review still has
+19 resolved findings; it does not certify an unfinished automated gate.
+
+The first focused desktop/mobile rerun subsequently passed 34 of 36 cases,
+including both complete hosted-payment/manual-delivery journeys. Both failures
+were the same later shop-editor validation-summary assertion; the test now
+checks automatic stable-key focus and correction through a newly saved valid
+preview, preserving the immutable-compatibility rule. Independent review and
+11 focused units, types, lint and formatting passed. Its real browser rerun is
+pending in frozen candidate `d28a8c7d781b6e4825d08daaf5798f69d9cfdf15`.
+Failed focused evidence and clean fixture shutdown are retained. The earlier
+prepared round3 source was superseded before its full gate started; production
+and the published payment agreement remain unchanged.
+
+The second focused rerun then passed all 36 desktop/mobile cases on exact tree
+`d28a8c7d781b6e4825d08daaf5798f69d9cfdf15`. This includes the corrected shop
+editor and both complete hosted-payment/manual-delivery journeys. Source
+verification and cleanup passed; the log SHA256 is
+`c3a86103aeff930c0c42815e48695cc26ad60d5d70cb5aae1c4fb50fb320aec7`.
+Round3 complete qualification is next, with identical application/test bytes
+and only these two qualification documents updated. No complete-gate, release,
+live-provider or deployment success is implied by this focused result.
+
+### Panels140 third full-gate failure and fourth candidate
+
+Round3 failed on exact tree `a72b9cebabe6f97ee6e365caab34e044021b556a`.
+Backend checks and 268 database cases passed in 4,503.236 seconds; frontend units
+passed 699 of 700 cases. The failure was the repeated shop quantity-validation
+focus/route assertion. Browser and production stages were not reached. Failed
+logs/source/resources are preserved, fixtures stopped and production is unchanged.
+
+The correction keeps shop validation focus in the selected, visible section.
+A deterministic unit reproduces the previous hidden-field focus call; the
+updated test requires the completed second response, route, visibility, focus,
+retained value and inline error together. The database-backed browser journey
+also covers repeating the invalid quantity from Terms before correction. This
+is a frontend runtime change; earlier focused browser success is not evidence
+for the changed source. Fresh scoped browser review and full round4 qualification
+are required.
+
+The real-TiKV aggregate suite budget also increases from 240 to 360 minutes,
+with its outer deadline derived as five minutes longer and all individual
+operation deadlines/assertions preserved. This preventive change addresses
+limited headroom in the expanded suite, not the actual round3 failure. Five
+fixture-tool units passed independently. The portal guide now clearly records
+schema41's forward-only deployment and separate rollback/recovery limits.
+See `docs/independent-panels-checkout-2026-10-08.md` for exact evidence and scope.
+
+The corrected frontend passed all 700 tracked units in 163 files, ten repeated
+shop-editor unit-file runs, types/lint/format and the changed admin build.
+Production-tool units passed all 77 cases; repository checks passed. Synthetic
+desktop Chromium and mobile WebKit reproduced repeated validation, editable
+Terms, retained drafts, focused inline correction and no unintended writes.
+The scoped senior UI review is recorded in the existing PANELS140 senior report.
+Round4 will run the normal complete tracked hook against a fresh frozen source;
+its outcome, signed release and deployment remain pending.
+
+### Panels140 fourth full-gate result: vendor advisory decision pending
+
+Round4 failed on tree `159d01f9d9762484d29422ec3727940550ae349c` at the
+infrastructure audit. The shop focus correction passed. Backend checks and all
+268 database scenarios (4,446.008 seconds), 700 frontend units, all 156 browser
+cases, application images and isolated production TLS staging passed. The
+production real-TiKV business suite was not reached.
+
+All eight scans completed; the four pinned PingCAP database/backup images each
+have one new HIGH `vim-minimal` finding, `CVE-2026-73073`, outside the earlier
+481 accepted findings. The exact security review is
+`production/security/DATABASE_REVIEW_2026-10-08.md`; no acceptance is assumed,
+and the tracked image/policy configuration is unchanged. Failed logs and full
+scan reports are preserved privately. Fixtures stopped; no commit, deployment,
+external message or financial action occurred. A new owner acceptance or a
+qualified fixed official image is required before the audit can pass. Passing
+earlier checks does not mark this full gate complete or waive later checks.
+
+The owner then explicitly approved only the four documented additional database
+image findings and the rerun. The exact acceptance policy is updated with
+separate review metadata, preserving the original 481 findings and all report
+history. These are accepted risks, not fixes. New findings, scan failures and
+runtime/test failures remain blocking. The fresh round5 complete gate also
+checks the infrastructure audit before the long application suite; the normal
+tracked hook still runs all checks. Its result and deployment remain pending.
+
+## Panels140 round5 catalog focus failure and scoped correction — 9 October 2026
+
+Round5 failed one desktop catalog validation-focus assertion after 700 frontend
+units and 155 other browser cases passed. The isolated desktop-only rerun
+reproduced it. Trace frames show the invalid field receiving focus and the
+catalog section then stealing it about 21 milliseconds later. The owner asked
+to rerun only the failed section, without repeating the complete suite.
+
+The catalog section now preserves focus already within it. Actual-component
+regressions verify both delayed section effects and ordinary navigation; the
+old implementation fails the new regression. Independent senior review approved
+the scoped fix. Failed-run evidence and the original frozen source are retained.
+Correction qualification is limited to focused form/static checks, the admin
+build and desktop/mobile catalog journeys in a separate source snapshot.
+An unsupported query option in the new test was caught by TypeScript and
+removed without weakening exact-name matching or focus assertions. That first
+focused attempt remains recorded as failed before browser execution.
+
+See `docs/independent-panels-checkout-2026-10-08.md` for source/evidence hashes.
+Full production qualification was not reached by round5 and is not counted as
+passed by this scoped retry. Production, published policy and financial settings
+remain unchanged; no commit, deployment, external message or funds action is
+part of this retry.
+
+Scoped correction results: **PASS** for three form regressions, formatting,
+lint, types, the affected admin build and the unchanged catalog journey on
+desktop (1.6 minutes) and mobile (1.5 minutes). Root repository/secret/contract/
+workflow checks passed. The 19-file evidence receipt SHA256 is
+`842a4746beb4e0615c71930eb6514acb7e29fcc3301f0cfa57885fe6fd3b0c6a`.
+Original failure records remain intact; source/build identity and fixture
+cleanup are verified. The complete gate was not restarted and remains
+incomplete beyond this scoped correction.
+
+## Panels140 remaining-only deployment preparation — 9 October 2026
+
+The owner authorized deployment after failed or unrun checks, without another
+complete gate. A separate remaining run passed frontend image builds, current
+image scans and container smoke. The real-TiKV fixture then failed before tests
+because Docker's predefined address pools were exhausted. Nine exact inactive
+panel/portal test networks were removed after checking their labels, empty
+active-endpoint sets and stopped test-only container references. Containers,
+volumes and logs were retained; production networks were unchanged.
+
+An independently reviewed database-only retry now runs separately and retains
+the original failure plus the three exact successful section receipts. No
+application source or assertion changed for this infrastructure repair. The
+long database result, synthetic migration41 compatibility, commit, signed
+release and deployment are pending. Repository policy/secret/contract/workflow
+checks pass. See `docs/panels140-scoped-release-2026-10-09.md` for the combined
+evidence boundaries; historical full attempts remain failed.
+
+### 9 October 2026 — contextual verification release revision (in progress)
+
+The owner superseded the pending scoped retry with a fresh combined full-suite release after further action-verification and visual changes. The old isolated retry was cancelled and its original failure/cleanup receipts retained. Backend protected actions now accept one fresh authenticator/email factor after completed sign-in; email re-verification preserves existing sign-in MFA without granting it to pending sessions. Frontend dialogs resume only explicit freshness-rejected actions once, retain drafts, fence identity/portal/route changes and leave uncertain network failures unreplayed. Standalone Security re-verification links/controls were removed; structured-link styling and distinct service SVGs were improved. Senior scoped review completed its correction rounds. New isolated browser/unit coverage and backend boundary regressions are being qualified before a fresh `panels141` full run. New Go1.27.1 vulnerabilities discovered by the live scan prompted pinned 1.27.2 module/backend/gateway updates. No new commit, full-suite pass or production activation is claimed; payment policy, financial switches and deletion settings remain unchanged.
+
+The first panels141 normal full gate started and failed at Ent generation after the Go security patch exposed an old x/tools export-format incompatibility. The maintained0.51.0 loader now passes unchanged generation, lint, gosec and live vulnerability checks; generated Ent source is unchanged. Original failure/source and test-only cleanup evidence remain. Three independent role testers and the separate senior designer completed broad synthetic reviews and identified local keyboard-outcome and stale-copy corrections. See `docs/redesign/reviews/PANELS141_MANUAL_2026-10-09.md` for actual scope, round trips and limits. The separate replacement full run is being prepared; no deployment or new complete pass is claimed.
+
+Round2 subsequently passed backend checks and the isolated database integration suite, then failed one frontend unit focus assertion (729 passed). The test queried a lazy-loaded input before its opening/focus effects completed; cleanup produced a secondary cancellation rejection. The correction awaits actual focus/open state and handles teardown settlement without changing application code or weakening assertions. Failed evidence is retained. Round3 is being prepared with an early unit precheck followed by the unchanged complete gate; no deployment or complete pass is claimed.

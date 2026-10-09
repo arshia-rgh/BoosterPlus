@@ -30,7 +30,11 @@ func ReplayRecovery(ctx context.Context, client *ent.Client, entries []privacyjo
 		if !validID(entry.User) || !validID(entry.Request) || (entry.Action != "erased" && entry.Action != "hold" && entry.Action != "erase_intent") {
 			return ErrInvalid
 		}
-		states[entry.User] = states[entry.User] || entry.Action == "erased"
+		id, resolveErr := recoveryIdentity(ctx, tx, entry)
+		if resolveErr != nil {
+			return resolveErr
+		}
+		states[id] = states[id] || entry.Action == "erased"
 	}
 	store := New(client, nil, time.Now)
 	for id, erased := range states {
@@ -41,7 +45,7 @@ func ReplayRecovery(ctx context.Context, client *ent.Client, entries []privacyjo
 		if readErr != nil {
 			return readErr
 		}
-		if target.Role != identity.RoleCustomer {
+		if target.Portal != string(identity.PortalCustomer) || target.Role != identity.RoleCustomer {
 			return errors.New("privacy recovery role mismatch; keep quarantine")
 		}
 		if erased && target.DeletedAt == nil {
@@ -66,4 +70,40 @@ func ReplayRecovery(ctx context.Context, client *ent.Client, entries []privacyjo
 		return errors.New("privacy recovery commit failed; keep quarantine")
 	}
 	return nil
+}
+
+// The independent journal is append-only. Historical customer evidence can
+// refer to a staff ID that migration 41 split; resolve only the exact immutable
+// migration mapping, never an email or a current staff account.
+func recoveryIdentity(ctx context.Context, tx *ent.Tx, entry privacyjournal.Entry) (_ string, result error) {
+	rows, err := tx.QueryContext(ctx, "SELECT customer_id FROM identity_namespace_splits WHERE original_id=?", entry.User)
+	if err != nil {
+		return "", err
+	}
+	defer func() { result = errors.Join(result, rows.Close()) }()
+	id := entry.User
+	if rows.Next() {
+		if err = rows.Scan(&id); err != nil {
+			return "", err
+		}
+		expected, deriveErr := identity.LegacyCustomerID(entry.User)
+		if deriveErr != nil || id != expected {
+			return "", errors.New("privacy recovery namespace mapping mismatch; keep quarantine")
+		}
+	}
+	if err = rows.Err(); err != nil {
+		return "", err
+	}
+	// Close the result before issuing another query on this transaction connection.
+	if err = rows.Close(); err != nil {
+		return "", err
+	}
+	request, err := tx.PrivacyRequest.Get(ctx, entry.Request)
+	if err != nil && !ent.IsNotFound(err) {
+		return "", err
+	}
+	if request != nil && request.UserID != id {
+		return "", errors.New("privacy recovery request owner mismatch; keep quarantine")
+	}
+	return id, nil
 }

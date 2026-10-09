@@ -1,6 +1,6 @@
 import type { Location } from "react-router";
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "../portal-router";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { APIError, post, sessionSchema } from "../identity/api";
 import type { Detail } from "../orders/model";

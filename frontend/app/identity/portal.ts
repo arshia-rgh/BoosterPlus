@@ -24,13 +24,13 @@ export function authPath(portal: Portal, action: string): string {
 // third-party path. Query values carry only public selection/local section state.
 const id = "[a-zA-Z0-9_-]{1,128}";
 const customerRoutes = new RegExp(
-  `^/(?:account(?:/(?:settings|security|preferences))?|accounts(?:/${id})?|orders(?:/${id})?|games(?:/${id}(?:/(?:services|packages)/${id}|/reviews|/(?:boost|accounts|shop|news)(?:/${id})?)?)?|support(?:/${id})?|sell(?:/${id})?|privacy|favorites|availability|notifications|reviews(?:/${id})?)$`,
+  `^/(?:account(?:/(?:settings|security|preferences|sessions|recovery))?|accounts(?:/${id})?|orders(?:/${id})?|games(?:/${id}(?:/(?:services|packages)/${id}|/reviews|/(?:boost|accounts|shop|news)(?:/${id})?)?)?|support(?:/${id})?|sell(?:/${id})?|privacy|favorites|availability|notifications|reviews(?:/${id})?)$`,
 );
 const adminRoutes = new RegExp(
-  `^/admin(?:/(?:account(?:/(?:settings|security|preferences))?|customers(?:/${id})?|media|alerts|content|privacy|accounts(?:/${id})?|finance|reports|jobs|reviews(?:/${id})?|catalog(?:/${id})?|shop(?:/${id})?|news(?:/${id})?|coupons|submissions(?:/${id})?|orders(?:/${id})?|support(?:/${id})?|calendar))?$`,
+  `^/admin(?:/(?:account(?:/(?:settings|security|preferences|sessions|recovery))?|customers(?:/${id})?|media|alerts|content|privacy|accounts(?:/${id})?|finance|reports|jobs|reviews(?:/${id})?|catalog(?:/${id})?|shop(?:/${id})?|news(?:/${id})?|coupons|submissions(?:/${id})?|orders(?:/${id})?|support(?:/${id})?|calendar))?$`,
 );
 const boosterRoutes = new RegExp(
-  `^/booster(?:/(?:account(?:/(?:settings|security|preferences))?|orders(?:/${id})?|support/${id}|calendar))?$`,
+  `^/booster(?:/(?:account(?:/(?:settings|security|preferences|sessions|recovery))?|orders(?:/${id})?|support/${id}|calendar))?$`,
 );
 export function portalReturn(
   value: string | null,
@@ -226,14 +226,40 @@ export function portalReturn(
 }
 
 export function activePortal(): Portal {
-  return typeof window === "undefined"
-    ? "customer"
+  if (typeof window === "undefined") return "customer";
+  // SSR emits this value from the host selected by the trusted frontend server.
+  // It is routing context only; the backend independently binds all authority.
+  const portal = document.body.dataset.portal;
+  return portal === "admin" || portal === "booster" || portal === "customer"
+    ? portal
     : portalFromPath(window.location.pathname);
 }
 export const sessionEvent = "boosterplus:session-changed";
-export function notifySession(portal: Portal) {
+export type VerificationReason = "recent_auth_required" | "mfa_required";
+export function notifySession(
+  portal: Portal,
+  verification?: VerificationReason,
+) {
   if (typeof window !== "undefined")
-    window.dispatchEvent(new CustomEvent(sessionEvent, { detail: { portal } }));
+    window.dispatchEvent(
+      new CustomEvent(sessionEvent, { detail: { portal, verification } }),
+    );
+}
+export function sessionVerificationReason(
+  event: Event,
+): VerificationReason | undefined {
+  if (!(event instanceof CustomEvent)) return;
+  const detail: unknown = event.detail;
+  if (
+    typeof detail !== "object" ||
+    detail === null ||
+    !("verification" in detail)
+  )
+    return;
+  return detail.verification === "recent_auth_required" ||
+    detail.verification === "mfa_required"
+    ? detail.verification
+    : undefined;
 }
 export function sessionEventMatches(event: Event, portal: Portal): boolean {
   if (!(event instanceof CustomEvent)) return false;

@@ -94,7 +94,7 @@ func exportRows(ctx context.Context, tx *ent.Tx, userID, section, after string) 
 	}
 }
 func exportUser(ctx context.Context, tx *ent.Tx, userID, after string) ([]map[string]any, error) {
-	fields := []string{"id", "email", "display_name", "email_verified_at", "role", "staff_alias", "terms_version", "terms_accepted_at", "notify_updates", "created_at"}
+	fields := []string{"id", "portal", "email", "display_name", "email_verified_at", "role", "staff_alias", "terms_version", "terms_accepted_at", "notify_updates", "created_at"}
 	q := tx.User.Query().Order(ent.Asc(user.FieldID)).Limit(101)
 	q.Where(user.IDEQ(userID))
 	if after != "" {

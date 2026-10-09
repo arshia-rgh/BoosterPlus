@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { isRouteErrorResponse, Link, useLocation } from "react-router";
+import { isRouteErrorResponse, Link, useLocation } from "../portal-router";
 import { useRetryPending } from "./retry-button";
 import { retryLabel } from "./retry-time";
 import "./feedback.css";
@@ -92,7 +92,7 @@ export default function ErrorPage({
       <p className="system-error-mark" aria-hidden="true">
         {!online ? "↯" : status === 404 ? "404" : "!"}
       </p>
-      <h1>{title}</h1>
+      <h1 tabIndex={-1}>{title}</h1>
       <p role="status">{description}</p>
       <div className="ui-state-actions">
         {canRetry && (

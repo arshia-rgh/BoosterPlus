@@ -233,7 +233,7 @@ const descriptions = new Map([
   ],
   [
     "invoice_uncertain",
-    "Invoice creation is being reconciled. Do not start another payment.",
+    "NOWPayments did not return a confirmed checkout link. We are checking whether an invoice was created. Do not start another payment; ask support here if you need help.",
   ],
 ]);
 export function paymentMessage(state: string, issue = "") {

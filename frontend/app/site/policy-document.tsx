@@ -1,3 +1,4 @@
+import { Anchor } from "../portal-router";
 import type { loadTerms } from "./loaders.server";
 import PolicyText from "./policy-text";
 import "./public-info.css";
@@ -25,28 +26,28 @@ export default function PolicyDocument({
       {requestedVersion && (
         <p className="policy-version">
           You are reading the requested agreement version.{" "}
-          <a href={kind ? `/policies/${kind}` : "/terms"}>
+          <Anchor href={kind ? `/policies/${kind}` : "/terms"}>
             Read the current published version
-          </a>
+          </Anchor>
           . Your accepted agreement is not changed by viewing a newer version.
         </p>
       )}
       {data.sections.length > 0 && (
         <nav aria-label="Policy contents" className="policy-contents">
-          <a
+          <Anchor
             href={`/terms${requestedVersion ? `?version=${encodeURIComponent(requestedVersion)}` : ""}`}
             aria-current={!kind ? "page" : undefined}
           >
             Account terms
-          </a>
+          </Anchor>
           {data.sections.map((section) => (
-            <a
+            <Anchor
               key={section.kind}
               href={`/policies/${section.kind}${requestedVersion ? `?version=${encodeURIComponent(requestedVersion)}` : ""}`}
               aria-current={section.kind === kind ? "page" : undefined}
             >
               {section.title}
-            </a>
+            </Anchor>
           ))}
         </nav>
       )}
@@ -82,8 +83,8 @@ export default function PolicyDocument({
         >
           Print this policy
         </button>
-        <a href="/privacy">Your data & privacy</a>
-        <a href="/support">Ask a question</a>
+        <Anchor href="/privacy">Your data & privacy</Anchor>
+        <Anchor href="/contact">Ask a question</Anchor>
       </div>
     </main>
   );

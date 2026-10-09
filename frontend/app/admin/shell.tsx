@@ -1,8 +1,9 @@
+import { Anchor } from "../portal-router";
 import "./operations.css";
 import { BrandLogo } from "../brand/brand";
 import "../ui/workspace.css";
 import { useId, useRef, useState } from "react";
-import { NavLink, useLocation } from "react-router";
+import { NavLink, useLocation, usePortalDestination } from "../portal-router";
 import type { FrameProps } from "../identity/frame";
 
 const groups = [
@@ -103,12 +104,24 @@ function Navigation({ close, owner }: { close?: () => void; owner: boolean }) {
             ))}
         </div>
       ))}
-      <a className="admin-external" href="/admin/account/security">
-        Profile and security ↗
-      </a>
-      <a className="admin-external" href="/">
+      <div>
+        <p>My admin account</p>
+        <NavLink to="/admin/account/settings" onClick={close}>
+          Profile
+        </NavLink>
+        <NavLink to="/admin/account/security" onClick={close}>
+          Security
+        </NavLink>
+        <NavLink to="/admin/account/sessions" onClick={close}>
+          Sessions
+        </NavLink>
+        <NavLink to="/admin/account/recovery" onClick={close}>
+          Recovery codes
+        </NavLink>
+      </div>
+      <Anchor className="admin-external" href="/">
         View storefront ↗
-      </a>
+      </Anchor>
     </nav>
   );
 }
@@ -116,21 +129,24 @@ export default function AdminShell({ session, title, children }: FrameProps) {
   const drawer = useRef<HTMLDialogElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   const { pathname } = useLocation();
+  const orderSearch = usePortalDestination()("/admin/orders");
   const authorized =
     !!session?.user &&
+    session.portal === "admin" &&
+    session.user.portal === "admin" &&
     !session.mfa_required &&
     session.capabilities.includes("admin");
   return (
     <div className={authorized ? "admin-workspace" : "admin-entry"}>
       {authorized && (
         <aside className="admin-sidebar" aria-label="Staff modules">
-          <a
+          <Anchor
             href="/admin"
             className="brand"
             aria-label="PLAYORA administration"
           >
             <BrandLogo />
-          </a>
+          </Anchor>
           <span className="admin-edition">STAFF CONSOLE</span>
           <Navigation owner={session.user?.role === "owner"} />
           <div className="admin-staff-card">
@@ -175,7 +191,13 @@ export default function AdminShell({ session, title, children }: FrameProps) {
                   {pathname === "/admin" ? "Overview" : title}
                 </span>
               </nav>
-              <form action="/admin/orders" method="get" role="search">
+              <form
+                action={
+                  typeof orderSearch === "string" ? orderSearch : undefined
+                }
+                method="get"
+                role="search"
+              >
                 <label className="sr-only" htmlFor="staff-search">
                   Search orders
                 </label>
@@ -193,10 +215,10 @@ export default function AdminShell({ session, title, children }: FrameProps) {
             </>
           ) : (
             <>
-              <a href="/admin" className="brand">
+              <Anchor href="/admin" className="brand">
                 <BrandLogo />
-              </a>
-              <a href="/">Visit storefront ↗</a>
+              </Anchor>
+              <Anchor href="/">Visit storefront ↗</Anchor>
             </>
           )}
         </header>
@@ -211,11 +233,10 @@ export default function AdminShell({ session, title, children }: FrameProps) {
             <details>
               <summary>Setting up your first owner?</summary>
               <p>
-                First create an account and enroll an authenticator in account
-                security. An operator can then bootstrap that verified account
-                using the backend CLI. Sign in again and complete MFA. Customer
-                signup does not grant staff access. See the repository’s staff
-                onboarding guide.
+                An operator provisions the first owner using the backend CLI.
+                Sign in here with that admin email, then set up this account’s
+                authenticator. Customer signup does not create a staff account.
+                See the repository’s staff onboarding guide.
               </p>
             </details>
           </section>

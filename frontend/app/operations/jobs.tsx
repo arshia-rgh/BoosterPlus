@@ -1,7 +1,7 @@
 import { AttemptHistory } from "./attempts";
 import "../ui/secondary.css";
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams } from "../portal-router";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";
@@ -41,11 +41,8 @@ function Retry({ job, reload }: { job: Job; reload: () => void }) {
       <p>
         Investigate the failure first. Another attempt may resend an email after
         an ambiguous delivery result; the handler checks current eligibility and
-        expired references. Sign in again or refresh both factors in{" "}
-        <a href="/admin/account/security?returnTo=%2Fadmin%2Fjobs">
-          admin account security
-        </a>{" "}
-        if requested.
+        expired references. If this action needs fresh verification, a dialog
+        lets you confirm it without leaving this task.
       </p>
       <ErrorNotice error={error} />
       <fieldset disabled={busy}>

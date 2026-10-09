@@ -1,14 +1,21 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Link,
   useLocation,
   useParams,
   useSearchParams,
   type Location,
-} from "react-router";
+} from "../portal-router";
 import { z } from "../validation";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
-import { sessionEventMatches } from "../identity/portal";
+import {
+  sessionEventMatches,
+  sessionVerificationReason,
+  type VerificationReason,
+} from "../identity/portal";
+import { APIError } from "../identity/api";
+import { VerificationLink } from "../account/return-path";
+import { focusValidationTarget } from "../ui/form-validation";
 import { denied } from "../support/chat-state";
 import Thread from "../support/thread";
 import { useResource } from "../orders/resource";
@@ -320,9 +327,14 @@ function BoosterOrderSession() {
     workSchema,
   );
   const [interrupted, setInterrupted] = useState(false);
+  const [verification, setVerification] = useState<VerificationReason>();
+  const recoveryHeading = useRef<HTMLHeadingElement>(null);
   const [checkingAccess, setCheckingAccess] = useState(false);
   const [saved, setSaved] = useState<Work | null>(null);
   const lost = interrupted || denied(resource.error);
+  useEffect(() => {
+    if (lost && verification) focusValidationTarget(recoveryHeading.current);
+  }, [lost, verification]);
   if (lost && saved) setSaved(null);
   else if (!lost && !checkingAccess && resource.data && saved !== resource.data)
     setSaved(resource.data);
@@ -330,11 +342,15 @@ function BoosterOrderSession() {
   const reload = useCallback(() => {
     if (lost) setCheckingAccess(true);
     setInterrupted(false);
+    setVerification(undefined);
     reloadWork();
   }, [lost, reloadWork]);
   useEffect(() => {
     const changed = (event: Event) => {
-      if (sessionEventMatches(event, "booster")) setInterrupted(true);
+      if (sessionEventMatches(event, "booster")) {
+        setInterrupted(true);
+        setVerification(sessionVerificationReason(event));
+      }
     };
     window.addEventListener("boosterplus:session-changed", changed);
     return () => {
@@ -356,19 +372,38 @@ function BoosterOrderSession() {
   if (checkingAccess && resource.loading)
     return <p role="status">Checking current assignment access…</p>;
   if (checkingAccess && !resource.loading) setCheckingAccess(false);
-  if (lost)
+  if (lost) {
+    const recovery = verification
+      ? Object.assign(
+          new APIError(
+            "Confirm your identity to continue. Private details remain hidden until access is checked again.",
+          ),
+          { code: verification, status: 403 },
+        )
+      : null;
     return (
       <section aria-label="Assignment access removed">
-        <p role="alert">
-          Access changed. Private details and drafts have been cleared. Check
-          assignment access to continue with your current permissions.
-        </p>
-        <Link to={back}>Return to assigned work</Link>
-        <Action disabled={resource.loading} onClick={reload}>
-          Check assignment access
-        </Action>
+        <h2 ref={recoveryHeading} tabIndex={-1}>
+          {recovery ? "Verify to continue" : "Assignment access changed"}
+        </h2>
+        {recovery ? (
+          <p role="alert">{recovery.message}</p>
+        ) : (
+          <p role="alert">
+            Access changed. Private details and drafts have been cleared. Check
+            assignment access to continue with your current permissions.
+          </p>
+        )}
+        <div className="catalog-actions">
+          {recovery && <VerificationLink error={recovery} />}
+          <Link to={back}>Return to assigned work</Link>
+          <Action disabled={resource.loading} onClick={reload}>
+            Check assignment access
+          </Action>
+        </div>
       </section>
     );
+  }
   const work = resource.data ?? saved;
   const suspended = !!resource.error;
   return (

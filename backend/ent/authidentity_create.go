@@ -20,6 +20,20 @@ type AuthIdentityCreate struct {
 	hooks    []Hook
 }
 
+// SetPortal sets the "portal" field.
+func (_c *AuthIdentityCreate) SetPortal(v string) *AuthIdentityCreate {
+	_c.mutation.SetPortal(v)
+	return _c
+}
+
+// SetNillablePortal sets the "portal" field if the given value is not nil.
+func (_c *AuthIdentityCreate) SetNillablePortal(v *string) *AuthIdentityCreate {
+	if v != nil {
+		_c.SetPortal(*v)
+	}
+	return _c
+}
+
 // SetUserID sets the "user_id" field.
 func (_c *AuthIdentityCreate) SetUserID(v string) *AuthIdentityCreate {
 	_c.mutation.SetUserID(v)
@@ -57,6 +71,7 @@ func (_c *AuthIdentityCreate) Mutation() *AuthIdentityMutation {
 
 // Save creates the AuthIdentity in the database.
 func (_c *AuthIdentityCreate) Save(ctx context.Context) (*AuthIdentity, error) {
+	_c.defaults()
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -82,8 +97,24 @@ func (_c *AuthIdentityCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (_c *AuthIdentityCreate) defaults() {
+	if _, ok := _c.mutation.Portal(); !ok {
+		v := authidentity.DefaultPortal
+		_c.mutation.SetPortal(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (_c *AuthIdentityCreate) check() error {
+	if _, ok := _c.mutation.Portal(); !ok {
+		return &ValidationError{Name: "portal", err: errors.New(`ent: missing required field "AuthIdentity.portal"`)}
+	}
+	if v, ok := _c.mutation.Portal(); ok {
+		if err := authidentity.PortalValidator(v); err != nil {
+			return &ValidationError{Name: "portal", err: fmt.Errorf(`ent: validator failed for field "AuthIdentity.portal": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AuthIdentity.user_id"`)}
 	}
@@ -151,6 +182,10 @@ func (_c *AuthIdentityCreate) createSpec() (*AuthIdentity, *sqlgraph.CreateSpec)
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := _c.mutation.Portal(); ok {
+		_spec.SetField(authidentity.FieldPortal, field.TypeString, value)
+		_node.Portal = value
+	}
 	if value, ok := _c.mutation.UserID(); ok {
 		_spec.SetField(authidentity.FieldUserID, field.TypeString, value)
 		_node.UserID = value
@@ -188,6 +223,7 @@ func (_c *AuthIdentityCreateBulk) Save(ctx context.Context) ([]*AuthIdentity, er
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*AuthIdentityMutation)
 				if !ok {

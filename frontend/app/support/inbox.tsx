@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams } from "../portal-router";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { useResource } from "../orders/resource";
 import { conversationsSchema } from "./model";

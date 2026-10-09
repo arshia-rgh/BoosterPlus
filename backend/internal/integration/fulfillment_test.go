@@ -45,11 +45,10 @@ func fulfillmentDB(t *testing.T) *fulfillmentFixture {
 		t.Fatal(err)
 	}
 	staff := func(email string) *identity.Principal {
-		_, p := f.auth.login(t, email)
-		if _, e := f.auth.client.User.UpdateOneID(p.User.ID).SetRole(identity.RoleBooster).SetStaffAlias("Synthetic booster").Save(t.Context()); e != nil {
+		_, p := f.auth.staffLogin(t, email, identity.RoleBooster)
+		if _, e := f.auth.client.User.UpdateOneID(p.User.ID).SetStaffAlias("Synthetic booster").Save(t.Context()); e != nil {
 			t.Fatal(e)
 		}
-		p = f.auth.enterPortal(t, p, identity.PortalBooster)
 		_, _, p = f.auth.enroll(t, p)
 		return p
 	}
@@ -277,8 +276,8 @@ func TestFulfillmentFreshFactorsAndUnsharedHandoff(t *testing.T) {
 	if _, err := f.auth.client.AuthSession.UpdateOneID(f.booster.Session.ID).SetAuthenticatedAt(time.Unix(f.auth.clock.Load(), 0)).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
-	if raw, err := f.work.RevealSecret(ctx, f.booster, v.OrderID, "booster"); !errors.Is(err, identity.ErrMFA) || raw != nil {
-		t.Fatal("old second factor revealed", err)
+	if raw, err := f.work.RevealSecret(ctx, f.booster, v.OrderID, "booster"); err != nil || string(raw) != "synthetic game access" {
+		t.Fatal("fresh primary verification did not reveal", err)
 	}
 	if _, err := f.auth.client.User.UpdateOneID(f.booster.User.ID).SetSuspended(true).Save(ctx); err != nil {
 		t.Fatal(err)

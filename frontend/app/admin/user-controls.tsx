@@ -1,27 +1,30 @@
-import { Link } from "react-router";
-import { useState } from "react";
+import { Link } from "../portal-router";
+import { useState, type Ref } from "react";
 import { z } from "../validation";
 import { Form, value } from "../identity/identity";
 import { get, command, sessionsSchema, type User } from "../identity/api";
-type Refresh = () => Promise<void>;
+type Refresh = (message: string) => Promise<void>;
 export function UserControls({
   user,
   owner,
   refresh,
+  summaryRef,
 }: {
   user: User;
   owner: boolean;
   refresh: Refresh;
+  summaryRef?: Ref<HTMLElement>;
 }) {
   const [sessions, setSessions] = useState<
     z.infer<typeof sessionsSchema>["sessions"]
   >([]);
   return (
     <details className="identity-card staff-person">
-      <summary>
+      <summary ref={summaryRef}>
         <strong>{user.display_name || user.email}</strong>
         <span>
-          {user.role} · {user.suspended ? "Suspended" : "Active"}
+          {user.portal} account · {user.role} ·{" "}
+          {user.suspended ? "Suspended" : "Active"}
         </span>
       </summary>
       <h3>{user.email}</h3>
@@ -34,9 +37,16 @@ export function UserControls({
         {user.email_verified ? "Verified email" : "Unverified email"} ·{" "}
         {user.deleted ? "Profile erased" : "Profile retained"}
       </p>
+      {user.portal === "customer" && (
+        <p>
+          <Link to={"/admin/orders?customer=" + user.id}>Order history</Link> ·{" "}
+          <Link to={"/admin/support?customer=" + user.id}>Support history</Link>
+        </p>
+      )}
       <p>
-        <Link to={"/admin/orders?customer=" + user.id}>Order history</Link> ·{" "}
-        <Link to={"/admin/support?customer=" + user.id}>Support history</Link>
+        This {user.portal} account has its own profile, permissions, sessions
+        and authenticator. A matching email in another workspace is a separate
+        identity.
       </p>
       <Form
         title="Active sessions"
@@ -62,7 +72,7 @@ export function UserControls({
           submit={async () => {
             await command("/admin/users/" + user.id + "/sessions/revoke", {});
             setSessions([]);
-            await refresh();
+            await refresh("All active sessions revoked.");
           }}
         >
           <label className="check">
@@ -72,7 +82,7 @@ export function UserControls({
         </Form>
       )}
 
-      {owner && !user.deleted && (
+      {owner && !user.deleted && user.portal === "admin" && (
         <Form
           title="Change role"
           submit={async (data) => {
@@ -80,14 +90,12 @@ export function UserControls({
               "/admin/users/" + encodeURIComponent(user.id) + "/role",
               { role: value(data, "role") },
             );
-            await refresh();
+            await refresh("Role updated and active sessions revoked.");
           }}
         >
           <label>
             Role
             <select name="role" defaultValue={user.role}>
-              <option value="customer">Customer</option>
-              <option value="booster">Booster</option>
               <option value="administrator">Administrator</option>
               <option value="owner">Owner</option>
             </select>
@@ -106,7 +114,11 @@ export function UserControls({
               "/admin/users/" + encodeURIComponent(user.id) + "/suspension",
               { suspended: !user.suspended },
             );
-            await refresh();
+            await refresh(
+              user.suspended
+                ? "Account access restored."
+                : "Account suspended.",
+            );
           }}
         >
           <label className="check">

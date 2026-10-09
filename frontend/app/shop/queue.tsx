@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams } from "../portal-router";
 import { TableRegion } from "../ui/primitives";
 import "./shop.css";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";

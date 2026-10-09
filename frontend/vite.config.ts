@@ -6,16 +6,19 @@ export default defineConfig(({ mode }) => {
     process.env.API_ORIGIN ?? env.API_ORIGIN ?? "http://127.0.0.1:8080";
   const key = process.env.PROXY_SHARED_KEY ?? env.PROXY_SHARED_KEY ?? "";
   const admin = process.env.FRONTEND_APP === "admin";
+  const booster = process.env.FRONTEND_APP === "booster";
   return {
-    base: admin ? "/admin/" : "/",
-    publicDir: admin ? false : "public",
+    base: admin ? "/admin/" : booster ? "/booster/" : "/",
+    publicDir: booster ? false : "public",
     cacheDir: admin
       ? "node_modules/.vite-admin"
-      : "node_modules/.vite-storefront",
+      : booster
+        ? "node_modules/.vite-booster"
+        : "node_modules/.vite-storefront",
     plugins: [reactRouter()],
     server: {
       host: "127.0.0.1",
-      port: admin ? 5174 : 5173,
+      port: admin ? 5174 : booster ? 5175 : 5173,
       strictPort: true,
       proxy: {
         ...(!admin && process.env.DEV_ADMIN_ORIGIN

@@ -1,7 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { clearConfigurationDraft } from "../catalog/configuration-draft";
 import { sessionEventMatches } from "../identity/portal";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "../portal-router";
 import { get, post, sessionSchema, type Session } from "../identity/api";
 import { Check, ErrorNotice, Action } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";

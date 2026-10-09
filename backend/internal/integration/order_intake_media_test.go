@@ -50,11 +50,7 @@ func TestOrderIntakeMediaPrivateDraftAndAtomicSubmission(t *testing.T) {
 	ctx := t.Context()
 	objects := mediaObjects(t, f.auth.client)
 	store := media.New(f.auth.client, f.auth.service, objects, media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
-	_, booster := f.auth.login(t, "screenshotbooster@example.test")
-	if _, e := f.auth.client.User.UpdateOneID(booster.User.ID).SetRole(identity.RoleBooster).Save(ctx); e != nil {
-		t.Fatal(e)
-	}
-	booster = f.auth.enterPortal(t, booster, identity.PortalBooster)
+	_, booster := f.auth.staffLogin(t, "screenshotbooster@example.test", identity.RoleBooster)
 	_, _, booster = f.auth.enroll(t, booster)
 	input := f.input("custom")
 	data := imageBytes(t)
@@ -210,11 +206,11 @@ func TestOrderIntakeMediaExplicitMigration(t *testing.T) {
 	if err := database.Ready(ctx, db); err == nil {
 		t.Fatal("old schema accepted")
 	}
-	if err := r.Apply(ctx, 0); err != nil {
+	if err := r.Apply(ctx, 30); err != nil {
 		t.Fatal(err)
 	}
-	if err := database.Ready(ctx, db); err != nil {
-		t.Fatal(err)
+	if err := r.Verify(ctx); err != nil {
+		t.Fatal("intake migration journal", err)
 	}
 	var scope string
 	if err := db.QueryRowContext(ctx, "SELECT column_default FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='media_files' AND column_name='intake_key'").Scan(&scope); err != nil || scope != "" {
@@ -226,7 +222,7 @@ func TestOrderIntakeMediaExplicitMigration(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if err := r.Down(ctx, len(r.Files())-29); err != nil {
+	if err := r.Down(ctx, 1); err != nil {
 		t.Fatal(err)
 	}
 	if err := database.Ready(ctx, db); err == nil {
@@ -244,6 +240,9 @@ func TestOrderIntakeMediaExplicitMigration(t *testing.T) {
 	}
 
 	if err := r.Apply(ctx, 0); err != nil {
+		t.Fatal(err)
+	}
+	if err := database.Ready(ctx, db); err != nil {
 		t.Fatal(err)
 	}
 	executeSQL(t, db, "DROP INDEX media_intake_scope ON media_files")

@@ -33,13 +33,13 @@ func TestOperationsRetryAuthorityConcurrencyAndGeneration(t *testing.T) {
 		}
 	}
 	old := time.Unix(f.auth.clock.Load(), 0).Add(-11 * time.Minute)
-	executeSQL(t, f.auth.db, "UPDATE auth_sessions SET authenticated_at=? WHERE id=?", old, f.admin.Session.ID)
+	executeSQL(t, f.auth.db, "UPDATE auth_sessions SET authenticated_at=?,mfa_verified_at=? WHERE id=?", old, old, f.admin.Session.ID)
 	if _, e := s.Retry(ctx, f.admin, id, input); e == nil {
-		t.Fatal("stale primary retry")
+		t.Fatal("two stale factors retried")
 	}
-	executeSQL(t, f.auth.db, "UPDATE auth_sessions SET authenticated_at=?,mfa_verified_at=? WHERE id=?", time.Unix(f.auth.clock.Load(), 0), old, f.admin.Session.ID)
+	executeSQL(t, f.auth.db, "UPDATE auth_sessions SET authenticated_at=?,mfa_verified_at=NULL WHERE id=?", time.Unix(f.auth.clock.Load(), 0), f.admin.Session.ID)
 	if _, e := s.Retry(ctx, f.admin, id, input); e == nil {
-		t.Fatal("stale authenticator retry")
+		t.Fatal("incomplete MFA sign-in retried")
 	}
 	executeSQL(t, f.auth.db, "UPDATE auth_sessions SET mfa_verified_at=? WHERE id=?", time.Unix(f.auth.clock.Load(), 0), f.admin.Session.ID)
 	var winners atomic.Int64

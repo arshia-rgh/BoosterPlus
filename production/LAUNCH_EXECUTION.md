@@ -63,7 +63,7 @@ Local host disk fell below 5 GB during preparation. Owner explicitly moved heavy
 
 ## Input handoff (no secrets in this document)
 
-The owner supplied `playoragames.com` (Server.ir) and an external contact inbox, stored privately. Follow [domain setup](DOMAIN_SETUP.md); DNS management, off-host backup destination, backup/key retention and custodians remain pending. SMTP credentials and Google OAuth client secret go in protected runtime files. The Google web OAuth client must allow these exact HTTPS paths on the chosen origin:
+The owner supplied `playoragames.com` (Server.ir) and an external contact inbox, stored privately. Follow [domain setup](DOMAIN_SETUP.md); DNS management, off-host backup destination, backup/key retention and custodians remain pending. SMTP credentials and Google OAuth client secret go in protected runtime files. The Google web OAuth client must allow these exact HTTPS callback paths, each on its matching configured portal origin (customer, admin and booster); see [the current callback list](GOOGLE_OAUTH_SETUP.md):
 
 - `/api/v1/auth/portals/customer/google/callback`
 - `/api/v1/auth/portals/admin/google/callback`

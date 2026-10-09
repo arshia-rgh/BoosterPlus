@@ -93,3 +93,36 @@ it("reviews explicit exceptions and freezes an ambiguous publication for duplica
     "1 availability window published",
   );
 });
+
+it("focuses incomplete availability and rejects an invalid UTC duration without publication", async () => {
+  render(
+    <AvailabilityEditor base="/booster/calendar" zone="UTC" reload={vi.fn()} />,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Review dates" }));
+  await waitFor(() => {
+    expect(screen.getByLabelText("Window start date")).toHaveFocus();
+  });
+  expect(screen.getByLabelText("Window start date")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  for (const label of ["Window start date", "Window end date"])
+    fireEvent.change(screen.getByLabelText(label), {
+      target: { value: "2099-01-01" },
+    });
+  fireEvent.change(screen.getByLabelText("Window start time"), {
+    target: { value: "12:00" },
+  });
+  fireEvent.change(screen.getByLabelText("Window end time"), {
+    target: { value: "12:05" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Review dates" }));
+  await waitFor(() => {
+    expect(screen.getByLabelText("Window end time")).toHaveFocus();
+  });
+  expect(screen.getByLabelText("Window end time")).toHaveAccessibleDescription(
+    "End the window 15 minutes to 12 hours after its start.",
+  );
+  expect(post).not.toHaveBeenCalled();
+  expect(screen.getByLabelText("Window start time")).toHaveValue("12:00");
+});

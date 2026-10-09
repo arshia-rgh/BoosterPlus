@@ -6,7 +6,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { createPortal } from "react-dom";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "../portal-router";
 import { APIError } from "../identity/api";
 import { useResource } from "../orders/resource";
 import { stateLabel } from "../orders/model";

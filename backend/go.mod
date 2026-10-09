@@ -1,6 +1,6 @@
 module github.com/arshia-rgh/BoosterPlus/backend
 
-go 1.27.1
+go 1.27.2
 
 require (
 	entgo.io/ent v0.14.6
@@ -64,7 +64,7 @@ require (
 	golang.org/x/sync v0.23.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.42.0 // indirect
-	golang.org/x/tools v0.49.0 // indirect
+	golang.org/x/tools v0.51.0 // indirect
 	golang.org/x/tools/go/packages/packagestest v0.1.1-deprecated // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

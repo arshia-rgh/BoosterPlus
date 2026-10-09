@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -18,6 +19,7 @@ import (
 
 // UserView deliberately excludes every stored credential, digest and provider subject.
 type UserView struct {
+	Portal        string `json:"portal"`
 	EmailVerified bool   `json:"email_verified"`
 	Deleted       bool   `json:"deleted"`
 	ID            string `json:"id"`
@@ -31,7 +33,7 @@ type UserView struct {
 }
 
 func userView(account *ent.User) UserView {
-	return UserView{EmailVerified: account.EmailVerifiedAt != nil, Deleted: account.DeletedAt != nil, ID: account.ID, Email: account.Email, DisplayName: account.DisplayName, Role: account.Role, StaffAlias: account.StaffAlias, Suspended: account.Suspended, MFAEnabled: account.MfaEnabled, NotifyUpdates: account.NotifyUpdates}
+	return UserView{Portal: account.Portal, EmailVerified: account.EmailVerifiedAt != nil, Deleted: account.DeletedAt != nil, ID: account.ID, Email: account.Email, DisplayName: account.DisplayName, Role: account.Role, StaffAlias: account.StaffAlias, Suspended: account.Suspended, MFAEnabled: account.MfaEnabled, NotifyUpdates: account.NotifyUpdates}
 }
 
 type requestState struct {
@@ -44,6 +46,7 @@ type endpoint func(http.ResponseWriter, *http.Request, requestState) error
 // Register installs identity routes under the existing API security/logging middleware.
 func (s *Service) Register(mux *http.ServeMux) {
 	routes := map[string]endpoint{
+		"POST /api/v1/admin/staff/invitations":          s.inviteStaff,
 		"GET /api/v1/admin/users/{id}/sessions":         s.staffUserSessions,
 		"POST /api/v1/admin/users/{id}/sessions/revoke": s.staffRevokeSessions,
 		"GET /api/v1/auth/session":                      s.bootstrap,
@@ -96,16 +99,20 @@ func (s *Service) csrf(portal Portal, browser, token string) string {
 }
 
 func (s *Service) handle(next endpoint) http.HandlerFunc {
-	return s.handleLimit(next, 16<<10)
+	return s.handleLimit(next, 16<<10, false)
 }
 
-func (s *Service) handleLimit(next endpoint, bodyLimit int64) http.HandlerFunc {
+func (s *Service) handleLimit(next endpoint, bodyLimit int64, publicRead bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		w.Header().Set("Vary", "Cookie, Origin, X-Playora-Portal")
 		portal, portalErr := requestPortal(r)
 		if portalErr != nil {
 			respondError(w, portalErr)
+			return
+		}
+		if !s.config.requestOriginMatches(r, portal, publicRead) {
+			respondError(w, ErrForbidden)
 			return
 		}
 		state := requestState{portal: portal}
@@ -131,10 +138,7 @@ func (s *Service) handleLimit(next endpoint, bodyLimit int64) http.HandlerFunc {
 		state.ip = clientIP(r, s.config.ProxyKey)
 		if r.Method != http.MethodGet && r.Method != http.MethodHead {
 			origin := r.Header.Get("Origin")
-			allowed := origin == s.config.PublicOrigin
-			for _, candidate := range s.config.AllowedOrigins {
-				allowed = allowed || origin == candidate
-			}
+			allowed := s.config.mutationOriginMatches(origin, portal)
 			if origin == "" || !allowed || !hmac.Equal([]byte(r.Header.Get("X-Csrf-Token")), []byte(s.csrf(state.portal, state.browser, state.token))) {
 				respondError(w, ErrForbidden)
 				return
@@ -208,7 +212,7 @@ func respondError(w http.ResponseWriter, err error) {
 		status, code = http.StatusConflict, "identity_conflict"
 	case errors.Is(err, ErrLimited):
 		status, code = http.StatusTooManyRequests, "rate_limited"
-		w.Header().Set("Retry-After", "60")
+		w.Header().Set("Retry-After", strconv.FormatInt(int64(emailRequestCooldown/time.Second), 10))
 	case errors.Is(err, ErrUnavailable):
 		status, code = http.StatusServiceUnavailable, "unavailable"
 	case ent.IsNotFound(err):
@@ -265,7 +269,7 @@ func (s *Service) requestEmail(w http.ResponseWriter, r *http.Request, state req
 	if err != nil {
 		return err
 	}
-	return respond(w, http.StatusAccepted, map[string]string{"challenge_id": id, "message": "If this request is eligible, a verification code will arrive shortly."})
+	return respond(w, http.StatusAccepted, map[string]any{"challenge_id": id, "message": "If this request is eligible, a verification code will arrive shortly.", "retry_after_seconds": int(emailRequestCooldown / time.Second), "expires_in_seconds": int(emailChallengeTTL / time.Second)})
 }
 func (s *Service) verifyEmail(w http.ResponseWriter, r *http.Request, state requestState) error {
 	var input struct {
@@ -311,11 +315,11 @@ func (s *Service) finishGoogle(w http.ResponseWriter, r *http.Request, state req
 		if errors.Is(err, ErrTerms) {
 			reason = "terms"
 		}
-		http.Redirect(w, r, s.config.PublicOrigin+state.portal.login()+"?error="+reason, http.StatusSeeOther)
+		http.Redirect(w, r, s.config.portalLoginURL(state.portal)+"?error="+reason, http.StatusSeeOther)
 		return nil
 	}
 	s.cookie(w, state.portal, "session", token, 7*24*3600)
-	http.Redirect(w, r, s.config.PublicOrigin+state.portal.home(), http.StatusSeeOther)
+	http.Redirect(w, r, s.config.portalHomeURL(state.portal), http.StatusSeeOther)
 	return nil
 }
 func (s *Service) logout(w http.ResponseWriter, r *http.Request, state requestState) error {
@@ -441,7 +445,7 @@ func (s *Service) unlinkGoogle(w http.ResponseWriter, r *http.Request, state req
 	return nil
 }
 func (s *Service) users(w http.ResponseWriter, r *http.Request, state requestState) error {
-	page, err := s.Directory(r.Context(), state.principal, UserQuery{Role: r.URL.Query().Get("role"), Search: r.URL.Query().Get("search"), State: r.URL.Query().Get("state"), After: r.URL.Query().Get("after")})
+	page, err := s.Directory(r.Context(), state.principal, UserQuery{Portal: r.URL.Query().Get("portal_filter"), Role: r.URL.Query().Get("role"), Search: r.URL.Query().Get("search"), State: r.URL.Query().Get("state"), After: r.URL.Query().Get("after")})
 	if err != nil {
 		return err
 	}
@@ -573,4 +577,16 @@ func (s *Service) staffUserSessions(w http.ResponseWriter, r *http.Request, stat
 		return e
 	}
 	return respond(w, http.StatusOK, map[string]any{"sessions": entries})
+}
+
+func (s *Service) inviteStaff(w http.ResponseWriter, r *http.Request, state requestState) error {
+	var input StaffInvitation
+	if err := decode(r, &input); err != nil {
+		return err
+	}
+	account, err := s.InviteStaff(r.Context(), state.principal, input)
+	if err != nil {
+		return err
+	}
+	return respond(w, http.StatusCreated, userView(account))
 }

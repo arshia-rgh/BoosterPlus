@@ -66,7 +66,7 @@ export function HomeDiscoveryFields({ data }: { data: Content["data"] }) {
           />
         </fieldset>
       ))}
-      <MetricPolicyEditor value={metrics} change={setMetrics} />
+      <MetricPolicyEditor path="metrics" value={metrics} change={setMetrics} />
       <input
         type="hidden"
         name="discovery_content"
@@ -107,6 +107,7 @@ export function PolicyFields({ data }: { data: Content["data"] }) {
         <fieldset key={item.editor_id}>
           <legend>Policy section {index + 1}</legend>
           <Select
+            name={`sections.${String(index)}.kind`}
             label="Policy kind"
             value={item.kind}
             options={options.filter(

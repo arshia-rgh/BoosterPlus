@@ -34,10 +34,10 @@ export default function Deliveries() {
     <section className="catalog-section">
       <h2>Activity email delivery</h2>
       <p>
-        Up to 50 recent pending or failed deliveries. A retry requires recent
-        sign-in and authenticator verification. An email provider may have
-        accepted a delivery before a timeout; retries can produce duplicate
-        emails.
+        Up to 50 recent pending or failed deliveries. If a retry needs
+        confirmation, verify here with an authenticator or email code. An email
+        provider may have accepted a delivery before a timeout; retries can
+        produce duplicate emails.
       </p>
       <Action onClick={resource.reload}>Refresh deliveries</Action>
       <ErrorNotice error={resource.error ?? error} />

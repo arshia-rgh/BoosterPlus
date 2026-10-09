@@ -19,7 +19,7 @@ func (s *Service) StaffJobTransaction(ctx context.Context, actor string, version
 		if err != nil {
 			return err
 		}
-		if user.DeletedAt != nil || user.Suspended || !user.MfaEnabled || user.EmailVerifiedAt == nil || user.AuthVersion != version || (user.Role != RoleAdmin && user.Role != RoleOwner) {
+		if user.Portal != string(PortalAdmin) || user.DeletedAt != nil || user.Suspended || !user.MfaEnabled || user.EmailVerifiedAt == nil || user.AuthVersion != version || (user.Role != RoleAdmin && user.Role != RoleOwner) {
 			return ErrForbidden
 		}
 		return fn(tx)

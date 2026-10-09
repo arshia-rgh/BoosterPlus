@@ -17,7 +17,8 @@ func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").MaxLen(36).DefaultFunc(uuid.NewString).Immutable(),
 		field.Time("deleted_at").Optional().Nillable(),
-		field.String("email").MaxLen(254).Unique().NotEmpty(),
+		field.String("portal").MaxLen(16).Default("customer").Immutable(),
+		field.String("email").MaxLen(254).NotEmpty(),
 		field.String("display_name").MaxLen(100).Default(""),
 		field.Time("email_verified_at").Optional().Nillable(),
 		field.String("role").MaxLen(32).Default("customer"),
@@ -39,5 +40,5 @@ func (User) Fields() []ent.Field {
 
 // Indexes maps the operational report creation-order index.
 func (User) Indexes() []ent.Index {
-	return []ent.Index{index.Fields("created_at", "id").StorageKey("users_report_created")}
+	return []ent.Index{index.Fields("portal", "email").Unique().StorageKey("users_portal_email"), index.Fields("created_at", "id").StorageKey("users_report_created")}
 }

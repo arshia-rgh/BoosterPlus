@@ -1,11 +1,18 @@
 import { mediaReturn } from "../admin/directory-filters";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { Link, useLocation, useParams, type Location } from "react-router";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { Link, useLocation, useParams, type Location } from "../portal-router";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { AuthorizedIdentity } from "../identity/frame";
-import { sessionEventMatches } from "../identity/portal";
+import {
+  sessionEventMatches,
+  sessionVerificationReason,
+  type VerificationReason,
+} from "../identity/portal";
+import { APIError } from "../identity/api";
+import { safeReturnPath, VerificationLink } from "../account/return-path";
+import { focusValidationTarget } from "../ui/form-validation";
 import { denied } from "../support/chat-state";
 import { RecordDraftBoundary } from "../ui/record-drafts";
 import { RecordShell } from "../ui/record-shell";
@@ -288,6 +295,8 @@ function AdminOrderSession() {
   );
   const [saved, setSaved] = useState<Detail | null>(null);
   const [interrupted, setInterrupted] = useState(false);
+  const [verification, setVerification] = useState<VerificationReason>();
+  const recoveryHeading = useRef<HTMLHeadingElement>(null);
   const [checking, setChecking] = useState(false);
   const wrongPortal =
     !!identity &&
@@ -296,6 +305,9 @@ function AdminOrderSession() {
       identity.session.mfa_required ||
       !identity.session.capabilities.includes("admin"));
   const lost = interrupted || wrongPortal || denied(resource.error);
+  useEffect(() => {
+    if (lost) focusValidationTarget(recoveryHeading.current);
+  }, [lost, verification]);
   if (lost && saved) setSaved(null);
   else if (!lost && !checking && resource.data && saved !== resource.data)
     setSaved(resource.data);
@@ -303,11 +315,15 @@ function AdminOrderSession() {
   const reload = useCallback(() => {
     if (lost) setChecking(true);
     setInterrupted(false);
+    setVerification(undefined);
     reloadOrder();
   }, [lost, reloadOrder]);
   useEffect(() => {
     const changed = (event: Event) => {
-      if (sessionEventMatches(event, "admin")) setInterrupted(true);
+      if (sessionEventMatches(event, "admin")) {
+        setInterrupted(true);
+        setVerification(sessionVerificationReason(event));
+      }
     };
     window.addEventListener("boosterplus:session-changed", changed);
     return () => {
@@ -329,23 +345,48 @@ function AdminOrderSession() {
   if (checking && resource.loading)
     return <p role="status">Checking current admin order access…</p>;
   if (checking && !resource.loading) setChecking(false);
-  if (lost)
+  if (lost) {
+    const recovery = verification
+      ? Object.assign(
+          new APIError(
+            "Confirm your identity to continue. Private details and unsent drafts have been cleared; check order access after verification to continue.",
+          ),
+          { code: verification, status: 403 },
+        )
+      : null;
+    const returnTo =
+      safeReturnPath(location.pathname + location.search, "admin") ??
+      "/admin/orders";
     return (
       <section aria-label="Admin order access removed">
+        <h2 ref={recoveryHeading} tabIndex={-1}>
+          {recovery ? "Verify to continue" : "Order access changed"}
+        </h2>
         <p role="alert">
-          Access changed. Private details and unsent drafts have been cleared.
+          {recovery
+            ? recovery.message
+            : "Access changed. Private details and unsent drafts have been cleared. Check order access again or sign in to your admin account."}
         </p>
-        <Link to="/admin/login">Admin sign-in</Link>
-        <Action disabled={resource.loading} onClick={reload}>
-          Check admin order access
-        </Action>
-        <Link to={back}>
-          {back.startsWith("/admin/media")
-            ? "Back to media directory"
-            : "Return to source list"}
-        </Link>
+        <div className="catalog-actions">
+          {recovery ? (
+            <VerificationLink error={recovery} />
+          ) : (
+            <Link to={"/admin/login?returnTo=" + encodeURIComponent(returnTo)}>
+              Admin sign-in
+            </Link>
+          )}
+          <Action disabled={resource.loading} onClick={reload}>
+            Check admin order access
+          </Action>
+          <Link to={back}>
+            {back.startsWith("/admin/media")
+              ? "Back to media directory"
+              : "Return to source list"}
+          </Link>
+        </div>
       </section>
     );
+  }
   const detail = resource.data ?? saved;
   const suspended = !!resource.error;
   return (

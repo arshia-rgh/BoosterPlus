@@ -4,7 +4,7 @@ import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { APIError, post } from "../identity/api";
 import PaymentPolicyEditor from "./policy-editor";
-import { emptyRemedies, type Settings } from "./model";
+import { emptyRemedies, remedyLabels, type Settings } from "./model";
 vi.mock("../identity/api", async (original) => ({
   ...(await original<typeof import("../identity/api")>()),
   post: vi.fn(),
@@ -37,7 +37,16 @@ const settings: Settings = {
   draft: {
     label: "Reviewed terms",
     text: "Explicit payment terms for customers.",
-    remedies: { ...emptyRemedies, dispute_hours: 48 },
+    remedies: {
+      ...emptyRemedies,
+      ...Object.fromEntries(
+        remedyLabels.map(([key]) => [
+          key,
+          "Reviewed synthetic service remedy terms.",
+        ]),
+      ),
+      dispute_hours: 48,
+    },
     currencies: ["USD"],
     routes: [{ code: "usdttrc20", label: "USDT on TRON", network: "trx" }],
     fee_mode: "merchant",
@@ -196,4 +205,47 @@ it("reports an unavailable outgoing status without inferring it from checkout", 
   expect(
     screen.getByText(/Outgoing payments: status unavailable/),
   ).toBeVisible();
+});
+
+it("explains invalid fields before posting, focuses the first error and preserves the policy draft", async () => {
+  mount();
+  fireEvent.change(screen.getByLabelText("Policy title"), {
+    target: { value: "" },
+  });
+  fireEvent.change(screen.getByLabelText("Customer payment policy"), {
+    target: { value: "Retain these full customer-facing policy terms." },
+  });
+  fireEvent.change(screen.getByLabelText("NOWPayments asset code"), {
+    target: { value: "USDT_TRC20" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Save policy draft" }));
+  await waitFor(() => {
+    expect(screen.getByLabelText("Policy title")).toHaveFocus();
+  });
+  expect(post).not.toHaveBeenCalled();
+  expect(screen.getByLabelText("NOWPayments asset code")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  expect(
+    screen.getByLabelText("NOWPayments asset code"),
+  ).toHaveAccessibleDescription(/unique NOWPayments asset code/);
+  expect(screen.getByLabelText("Customer payment policy")).toHaveValue(
+    "Retain these full customer-facing policy terms.",
+  );
+  expect(
+    screen.getByRole("link", {
+      name: /NOWPayments asset code: Enter a unique/,
+    }),
+  ).toBeVisible();
+  fireEvent.change(screen.getByLabelText("Policy title"), {
+    target: { value: "Corrected policy" },
+  });
+  expect(screen.getByLabelText("Policy title")).not.toHaveAttribute(
+    "aria-invalid",
+  );
+  expect(screen.getByLabelText("NOWPayments asset code")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
 });

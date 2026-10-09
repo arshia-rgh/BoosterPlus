@@ -21,34 +21,33 @@ import (
 
 func TestPortalSessionsCoexistAndNeverGrantAnotherAudience(t *testing.T) {
 	f := authDB(t, nil)
-	_, first := f.login(t, "portal-owner@example.test")
-	secret, _, first := f.enroll(t, first)
-	if err := f.service.BootstrapOwner(t.Context(), first.User.ID, "portal-test"); err != nil {
-		t.Fatal(err)
-	}
 	tokens := map[identity.Portal]string{}
 	principals := map[identity.Portal]*identity.Principal{}
+	ids := map[string]bool{}
 	for _, portal := range []identity.Portal{identity.PortalCustomer, identity.PortalAdmin, identity.PortalBooster} {
 		f.clock.Add(61)
-		token, pending := f.login(t, first.User.Email, portal)
-		for _, capability := range []string{"self", "account", "admin", "booster"} {
-			if err := identity.Require(pending, capability); !errors.Is(err, identity.ErrMFA) {
-				t.Fatalf("pending %s granted %s: %v", portal, capability, err)
+		var token string
+		var pending *identity.Principal
+		if portal == identity.PortalCustomer {
+			token, pending = f.login(t, "portal-owner@example.test")
+		} else {
+			role := identity.RoleAdmin
+			if portal == identity.PortalBooster {
+				role = identity.RoleBooster
+			}
+			token, pending = f.staffLogin(t, "portal-owner@example.test", role)
+			if err := identity.Require(pending, "self"); !errors.Is(err, identity.ErrMFA) {
+				t.Fatal("pending staff granted authority", err)
 			}
 		}
-		code, err := totp.GenerateCode(secret, time.Unix(f.clock.Load(), 0))
-		if err != nil {
-			t.Fatal(err)
+		_, _, tokens[portal], principals[portal] = f.enrollToken(t, pending)
+		if _, err := f.service.Authenticate(t.Context(), token, portal); !errors.Is(err, identity.ErrUnauthenticated) {
+			t.Fatal("enrollment retained old token", err)
 		}
-		result, err := f.service.VerifyMFA(t.Context(), pending, code, "127.0.0.1")
-		if err != nil {
-			t.Fatal(err)
-		}
-		if _, err = f.service.Authenticate(t.Context(), token, portal); !errors.Is(err, identity.ErrUnauthenticated) {
-			t.Fatal("MFA rotation retained pending token", err)
-		}
-		tokens[portal] = result.Token
-		principals[portal] = f.principal(t, result.Token, portal)
+		ids[principals[portal].User.ID] = true
+	}
+	if len(ids) != 3 {
+		t.Fatal("portal accounts reused a user ID")
 	}
 	for portal, token := range tokens {
 		for _, target := range []identity.Portal{identity.PortalCustomer, identity.PortalAdmin, identity.PortalBooster} {
@@ -107,8 +106,13 @@ func TestPortalSessionsCoexistAndNeverGrantAnotherAudience(t *testing.T) {
 		t.Fatal(err)
 	}
 	for portal, token := range tokens {
-		if _, err := f.service.Authenticate(t.Context(), token, portal); !errors.Is(err, identity.ErrUnauthenticated) {
-			t.Fatal("revoke-all missed portal", portal, err)
+		_, err := f.service.Authenticate(t.Context(), token, portal)
+		if portal == identity.PortalBooster {
+			if err != nil {
+				t.Fatal("customer revoke-all touched independent booster", err)
+			}
+		} else if !errors.Is(err, identity.ErrUnauthenticated) {
+			t.Fatal("own revocation failed", portal, err)
 		}
 	}
 }
@@ -191,7 +195,7 @@ func TestPortalEmailChallengeIsolationAndNoStaffSignup(t *testing.T) {
 	if count, err := f.client.User.Query().Count(t.Context()); err != nil || count != 1 {
 		t.Fatal("staff signup created account", count, err)
 	}
-	if _, err := f.client.User.Create().SetEmail("portal-staff@example.test").SetRole(identity.RoleAdmin).SetTermsVersion("test-v1").Save(t.Context()); err != nil {
+	if _, err := f.client.User.Create().SetPortal(string(identity.PortalAdmin)).SetEmail("portal-staff@example.test").SetRole(identity.RoleAdmin).SetTermsVersion("test-v1").Save(t.Context()); err != nil {
 		t.Fatal(err)
 	}
 	adminID, adminCode := f.request(t, "portal-staff@example.test", "login", nil, identity.PortalAdmin)
@@ -213,8 +217,8 @@ func TestPortalEmailChallengeIsolationAndNoStaffSignup(t *testing.T) {
 			t.Fatal(e)
 		}
 		p := f.principal(t, result.Token, tc.portal)
-		if !p.NeedsMFA() {
-			t.Fatal("staff login skipped MFA")
+		if p.NeedsMFA() != (tc.portal != identity.PortalCustomer) {
+			t.Fatal("portal-specific MFA policy not applied")
 		}
 	}
 }
@@ -222,11 +226,11 @@ func TestPortalEmailChallengeIsolationAndNoStaffSignup(t *testing.T) {
 func TestPortalGoogleStateAndRecentFirstFactor(t *testing.T) {
 	provider := &googleStub{assertion: identity.GoogleIdentity{Subject: "portal-linked-google", Email: "portal-google@example.test"}}
 	f := authDB(t, provider)
-	account, err := f.client.User.Create().SetEmail(provider.assertion.Email).SetEmailVerifiedAt(time.Unix(f.clock.Load(), 0)).SetRole(identity.RoleAdmin).SetTermsVersion("test-v1").Save(t.Context())
+	account, err := f.client.User.Create().SetPortal(string(identity.PortalAdmin)).SetEmail(provider.assertion.Email).SetEmailVerifiedAt(time.Unix(f.clock.Load(), 0)).SetRole(identity.RoleAdmin).SetTermsVersion("test-v1").Save(t.Context())
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = f.client.AuthIdentity.Create().SetID("portal-google-link").SetUserID(account.ID).SetProvider("google").SetSubject(provider.assertion.Subject).SetCreatedAt(time.Unix(f.clock.Load(), 0)).Save(t.Context()); err != nil {
+	if _, err = f.client.AuthIdentity.Create().SetID("portal-google-link").SetUserID(account.ID).SetPortal(account.Portal).SetProvider("google").SetSubject(provider.assertion.Subject).SetCreatedAt(time.Unix(f.clock.Load(), 0)).Save(t.Context()); err != nil {
 		t.Fatal(err)
 	}
 	start := func() string {
@@ -288,7 +292,7 @@ func TestPortalMigrationInvalidatesLegacyStateAndPreservesFactors(t *testing.T) 
 			t.Fatal(err)
 		}
 	}
-	if err := r.Apply(ctx, 0); err != nil {
+	if err := r.Apply(ctx, 26); err != nil {
 		t.Fatal(err)
 	}
 	var invalidated int
@@ -316,7 +320,7 @@ func TestPortalMigrationInvalidatesLegacyStateAndPreservesFactors(t *testing.T) 
 		t.Fatal(err)
 	}
 	check()
-	if err := r.Apply(ctx, 0); err != nil {
+	if err := r.Apply(ctx, 26); err != nil {
 		t.Fatal(err)
 	}
 	check()
@@ -325,15 +329,17 @@ func TestPortalMigrationInvalidatesLegacyStateAndPreservesFactors(t *testing.T) 
 func TestPortalGoogleOptionalAuthTimePreservesSensitiveStepUp(t *testing.T) {
 	provider := &googleStub{assertion: identity.GoogleIdentity{Subject: "optional-auth-time", Email: "optional-time@example.test"}}
 	f := authDB(t, provider)
-	_, customer := f.login(t, provider.assertion.Email)
-	secret, _, customer := f.enroll(t, customer)
-	if err := f.service.BootstrapOwner(t.Context(), customer.User.ID, "google-optional-time-test"); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := f.client.AuthIdentity.Create().SetID("optional-auth-time-link").SetUserID(customer.User.ID).SetProvider("google").SetSubject(provider.assertion.Subject).SetCreatedAt(time.Unix(f.clock.Load(), 0)).Save(t.Context()); err != nil {
-		t.Fatal(err)
-	}
 	for _, portal := range []identity.Portal{identity.PortalAdmin, identity.PortalBooster} {
+		f.clock.Add(3601)
+		role := identity.RoleAdmin
+		if portal == identity.PortalBooster {
+			role = identity.RoleBooster
+		}
+		_, account := f.staffLogin(t, provider.assertion.Email, role)
+		secret, _, account := f.enroll(t, account)
+		if _, err := f.client.AuthIdentity.Create().SetID("optional-auth-time-link-" + string(portal)).SetUserID(account.User.ID).SetPortal(string(portal)).SetProvider("google").SetSubject(provider.assertion.Subject).SetCreatedAt(time.Unix(f.clock.Load(), 0)).Save(t.Context()); err != nil {
+			t.Fatal(err)
+		}
 		for _, scenario := range []string{"missing", "old", "recent"} {
 			t.Run(string(portal)+"/"+scenario, func(t *testing.T) {
 				f.clock.Add(61)
@@ -377,14 +383,20 @@ func TestPortalGoogleOptionalAuthTimePreservesSensitiveStepUp(t *testing.T) {
 				called := false
 				mutation := func(*ent.Tx, *identity.Principal) error { called = true; return nil }
 				err = f.service.AuthorizedTransaction(t.Context(), p, string(portal), true, mutation)
-				if scenario == "recent" {
-					if err != nil || !called || !p.Session.AuthenticatedAt.Equal(provider.assertion.AuthenticatedAt) {
-						t.Fatal("actual Google credential freshness not preserved", err)
-					}
-					return
+				if err != nil || !called {
+					t.Fatal("fresh authenticator did not authorize action", err)
 				}
-				if !errors.Is(err, identity.ErrRecent) || called {
-					t.Fatal("fresh ID token incorrectly granted sensitive credential freshness", err)
+				if scenario == "recent" && !p.Session.AuthenticatedAt.Equal(provider.assertion.AuthenticatedAt) {
+					t.Fatal("actual Google credential freshness not preserved")
+				}
+				if scenario != "recent" && p.Session.AuthenticatedAt.Add(identity.RecentTTL).After(now) {
+					t.Fatal("provider ID token fabricated primary credential freshness")
+				}
+				mfaAt := *p.Session.MfaVerifiedAt
+				f.clock.Add(int64(identity.RecentTTL.Seconds()) + 1)
+				called = false
+				if err = f.service.AuthorizedTransaction(t.Context(), p, string(portal), true, mutation); !errors.Is(err, identity.ErrRecent) || called {
+					t.Fatal("two stale factors authorized an action", err)
 				}
 				challenge, emailCode := f.request(t, p.User.Email, "reauth", p, portal)
 				result, err := f.service.VerifyEmail(t.Context(), challenge, emailCode, f.browser, "127.0.0.1", p, portal)
@@ -392,22 +404,13 @@ func TestPortalGoogleOptionalAuthTimePreservesSensitiveStepUp(t *testing.T) {
 					t.Fatal(err)
 				}
 				p = f.principal(t, result.Token, portal)
-				if !p.NeedsMFA() {
-					t.Fatal("email step-up retained old second-factor proof")
+				if p.NeedsMFA() || p.Session.MfaVerifiedAt == nil || !p.Session.MfaVerifiedAt.Equal(mfaAt) {
+					t.Fatal("email renewal changed completed sign-in MFA proof")
 				}
-				f.clock.Add(61)
-				code, err = totp.GenerateCode(secret, time.Unix(f.clock.Load(), 0))
-				if err != nil {
-					t.Fatal(err)
-				}
-				verified, err = f.service.VerifyMFA(t.Context(), p, code, "127.0.0.1")
-				if err != nil {
-					t.Fatal(err)
-				}
-				p = f.principal(t, verified.Token, portal)
 				if err = f.service.AuthorizedTransaction(t.Context(), p, string(portal), true, mutation); err != nil || !called {
-					t.Fatal("email and fresh MFA did not unlock sensitive action", err)
+					t.Fatal("email renewal alone did not unlock the action", err)
 				}
+
 			})
 		}
 	}

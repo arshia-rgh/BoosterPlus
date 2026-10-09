@@ -26,7 +26,7 @@ func (s *Store) bookingAllowed(ctx context.Context, n *ent.Notification, account
 	if n.Kind == "booking_customer" && value.UserID != account.ID {
 		return false, nil
 	}
-	if n.Kind == "booking_staff" && (value.AssignedID != account.ID || !account.MfaEnabled || (account.Role != identity.RoleBooster && account.Role != identity.RoleAdmin && account.Role != identity.RoleOwner)) {
+	if n.Kind == "booking_staff" && (value.AssignedID != account.ID || !account.MfaEnabled || (account.Portal != string(identity.PortalBooster) || account.Role != identity.RoleBooster)) {
 		return false, nil
 	}
 	customerOrder, err := s.client.Order.Query().Where(order.IDEQ(value.OrderID), order.UserIDEQ(value.UserID), order.StateIn(order.StateQueued, order.StateInProgress, order.StateOnHold)).Only(ctx)
@@ -51,11 +51,11 @@ func (s *Store) bookingAllowed(ctx context.Context, n *ent.Notification, account
 	if err != nil {
 		return false, err
 	}
-	return !staff.Suspended && staff.MfaEnabled && (staff.Role == identity.RoleBooster || staff.Role == identity.RoleAdmin || staff.Role == identity.RoleOwner), nil
+	return !staff.Suspended && staff.MfaEnabled && (staff.Portal == string(identity.PortalBooster) && staff.Role == identity.RoleBooster), nil
 }
 
 func (s *Store) staffOrderAllowed(ctx context.Context, n *ent.Notification, account *ent.User) (bool, error) {
-	if !account.MfaEnabled || (account.Role != identity.RoleBooster && account.Role != identity.RoleAdmin && account.Role != identity.RoleOwner) {
+	if !account.MfaEnabled || (account.Portal != string(identity.PortalBooster) || account.Role != identity.RoleBooster) {
 		return false, nil
 	}
 	row, err := s.client.Order.Query().Where(order.IDEQ(n.ResourceID), order.StateIn(order.StateQueued, order.StateInProgress, order.StateOnHold)).Only(ctx)

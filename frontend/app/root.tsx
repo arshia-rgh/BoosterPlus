@@ -1,3 +1,4 @@
+import { ActionVerificationDialog } from "./identity/action-verification-dialog";
 import CustomerActivity from "./account/activity";
 import ErrorPage from "./ui/error-page";
 import {
@@ -14,9 +15,14 @@ import type { LoaderFunctionArgs } from "react-router";
 import "./styles.css";
 import { AmbientBackdrop, SiteFooter, SiteHeader } from "./ui/site-chrome";
 import "./ui/design-system.css";
+import { PortalRoutingProvider } from "./portal-router";
+import { routingContext } from "./portal/routing.server";
 
 export function loader({ request }: LoaderFunctionArgs) {
-  return { nonce: request.headers.get("x-csp-nonce") ?? undefined };
+  return {
+    nonce: request.headers.get("x-csp-nonce") ?? undefined,
+    routing: routingContext(request),
+  };
 }
 export function shouldRevalidate() {
   return false;
@@ -41,17 +47,22 @@ export function Layout({ children }: { children: ReactNode }) {
         {workspace && <meta name="robots" content="noindex,nofollow" />}
         <Links />
       </head>
-      <body className="storefront-app">
-        <a className="skip-link" href="#main">
-          Skip to content
-        </a>
-        <AmbientBackdrop />
-        <SiteHeader />
-        {children}
-        <SiteFooter />
-        {!workspace && <CustomerActivity />}
-        <ScrollRestoration nonce={data?.nonce} />
-        <Scripts nonce={data?.nonce} />
+      <body className="storefront-app" data-portal={data?.routing?.portal}>
+        <PortalRoutingProvider routing={data?.routing ?? null}>
+          <a className="skip-link" href="#main">
+            Skip to content
+          </a>
+          <AmbientBackdrop />
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+          <ActionVerificationDialog />
+          {!workspace && data?.routing?.portal !== "booster" && (
+            <CustomerActivity />
+          )}
+          <ScrollRestoration nonce={data?.nonce} />
+          <Scripts nonce={data?.nonce} />
+        </PortalRoutingProvider>
       </body>
     </html>
   );

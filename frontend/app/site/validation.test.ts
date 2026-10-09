@@ -1,7 +1,8 @@
 import { expect, it } from "vitest";
 import { APIError, errorMessage } from "../identity/api";
 import { homeDiscoverySchema, legalSchema } from "./model";
-import { parseContent } from "./validation";
+import { parseContent, validateContentDraft } from "./validation";
+import { defaultHome } from "./model";
 it("turns invalid content into actionable field issues, never an outage", () => {
   try {
     parseContent(homeDiscoverySchema, {
@@ -41,4 +42,37 @@ it("turns invalid content into actionable field issues, never an outage", () => 
       message: "Use at least 20 characters.",
     });
   }
+});
+it("rejects unsafe offering destinations and invalid copy before sending a content draft", () => {
+  expect(() => validateContentDraft("home", defaultHome)).not.toThrow();
+  for (const href of [
+    "https://example.test",
+    "/games//evil",
+    "/games/mlbb?redirect=evil",
+    "/accounts/../admin",
+  ]) {
+    try {
+      validateContentDraft("home", {
+        ...defaultHome,
+        featured: [{ label: "Retained label", href }],
+      });
+      throw new Error("Expected field rejection");
+    } catch (error) {
+      expect(error).toBeInstanceOf(APIError);
+      if (!(error instanceof APIError)) throw error;
+      expect(error.issues).toContainEqual({
+        path: "featured.0.href",
+        message: "Use a supported /games or /accounts destination.",
+      });
+    }
+  }
+  expect(() =>
+    validateContentDraft("notifications", {
+      activity_subject: "Subject\r\nBcc: target",
+      activity_intro: "Message",
+      availability_subject: "Available",
+      availability_intro: "Details",
+      footer: "",
+    }),
+  ).toThrow(APIError);
 });

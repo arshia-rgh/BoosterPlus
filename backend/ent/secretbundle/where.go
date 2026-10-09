@@ -74,6 +74,11 @@ func OwnerID(v string) predicate.SecretBundle {
 	return predicate.SecretBundle(sql.FieldEQ(FieldOwnerID, v))
 }
 
+// CipherOwnerID applies equality check predicate on the "cipher_owner_id" field. It's identical to CipherOwnerIDEQ.
+func CipherOwnerID(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldEQ(FieldCipherOwnerID, v))
+}
+
 // Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
 func Version(v int) predicate.SecretBundle {
 	return predicate.SecretBundle(sql.FieldEQ(FieldVersion, v))
@@ -267,6 +272,71 @@ func OwnerIDEqualFold(v string) predicate.SecretBundle {
 // OwnerIDContainsFold applies the ContainsFold predicate on the "owner_id" field.
 func OwnerIDContainsFold(v string) predicate.SecretBundle {
 	return predicate.SecretBundle(sql.FieldContainsFold(FieldOwnerID, v))
+}
+
+// CipherOwnerIDEQ applies the EQ predicate on the "cipher_owner_id" field.
+func CipherOwnerIDEQ(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldEQ(FieldCipherOwnerID, v))
+}
+
+// CipherOwnerIDNEQ applies the NEQ predicate on the "cipher_owner_id" field.
+func CipherOwnerIDNEQ(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldNEQ(FieldCipherOwnerID, v))
+}
+
+// CipherOwnerIDIn applies the In predicate on the "cipher_owner_id" field.
+func CipherOwnerIDIn(vs ...string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldIn(FieldCipherOwnerID, vs...))
+}
+
+// CipherOwnerIDNotIn applies the NotIn predicate on the "cipher_owner_id" field.
+func CipherOwnerIDNotIn(vs ...string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldNotIn(FieldCipherOwnerID, vs...))
+}
+
+// CipherOwnerIDGT applies the GT predicate on the "cipher_owner_id" field.
+func CipherOwnerIDGT(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldGT(FieldCipherOwnerID, v))
+}
+
+// CipherOwnerIDGTE applies the GTE predicate on the "cipher_owner_id" field.
+func CipherOwnerIDGTE(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldGTE(FieldCipherOwnerID, v))
+}
+
+// CipherOwnerIDLT applies the LT predicate on the "cipher_owner_id" field.
+func CipherOwnerIDLT(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldLT(FieldCipherOwnerID, v))
+}
+
+// CipherOwnerIDLTE applies the LTE predicate on the "cipher_owner_id" field.
+func CipherOwnerIDLTE(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldLTE(FieldCipherOwnerID, v))
+}
+
+// CipherOwnerIDContains applies the Contains predicate on the "cipher_owner_id" field.
+func CipherOwnerIDContains(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldContains(FieldCipherOwnerID, v))
+}
+
+// CipherOwnerIDHasPrefix applies the HasPrefix predicate on the "cipher_owner_id" field.
+func CipherOwnerIDHasPrefix(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldHasPrefix(FieldCipherOwnerID, v))
+}
+
+// CipherOwnerIDHasSuffix applies the HasSuffix predicate on the "cipher_owner_id" field.
+func CipherOwnerIDHasSuffix(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldHasSuffix(FieldCipherOwnerID, v))
+}
+
+// CipherOwnerIDEqualFold applies the EqualFold predicate on the "cipher_owner_id" field.
+func CipherOwnerIDEqualFold(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldEqualFold(FieldCipherOwnerID, v))
+}
+
+// CipherOwnerIDContainsFold applies the ContainsFold predicate on the "cipher_owner_id" field.
+func CipherOwnerIDContainsFold(v string) predicate.SecretBundle {
+	return predicate.SecretBundle(sql.FieldContainsFold(FieldCipherOwnerID, v))
 }
 
 // VersionEQ applies the EQ predicate on the "version" field.

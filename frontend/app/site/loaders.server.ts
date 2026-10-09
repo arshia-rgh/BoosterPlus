@@ -1,3 +1,4 @@
+import { publicAPIHeaders } from "../portal/routing.server";
 import {
   contentSchema,
   defaultHome,
@@ -12,7 +13,12 @@ export async function loadContent(kind: string) {
       "/api/v1/site/" + kind,
       process.env.API_ORIGIN ?? "http://127.0.0.1:8080",
     ),
-    { cache: "no-store", redirect: "error", signal: AbortSignal.timeout(8000) },
+    {
+      cache: "no-store",
+      headers: publicAPIHeaders(),
+      redirect: "error",
+      signal: AbortSignal.timeout(8000),
+    },
   );
   if (!response.ok) throw new Error("Published content unavailable");
   return contentSchema.parse(await response.json());

@@ -16,7 +16,7 @@ import {
   useRouteError,
   useSearchParams,
   useRevalidator,
-} from "react-router";
+} from "../portal-router";
 import { GameDiscovery } from "./game-discovery";
 import { selectedService } from "./public-discovery";
 import { FavoriteButton } from "../orders/favorites";

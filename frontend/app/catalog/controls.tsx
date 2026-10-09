@@ -1,5 +1,15 @@
-import { useId, useContext, useCallback, type ReactNode } from "react";
-import { FieldValidation } from "../ui/form-validation";
+import {
+  useId,
+  useContext,
+  useCallback,
+  useState,
+  type ReactNode,
+} from "react";
+import {
+  FieldValidation,
+  fieldError,
+  ValidationSummary,
+} from "../ui/form-validation";
 import { APIError, errorMessage } from "../identity/api";
 import { VerificationLink } from "../account/return-path";
 import type { Issue, Option, Condition, Field } from "./model";
@@ -12,6 +22,8 @@ export function Text({
   multiline = false,
   type = "text",
   help = "",
+  error: localError,
+  inputMode,
 }: {
   name?: string | undefined;
   label: string;
@@ -20,6 +32,8 @@ export function Text({
   multiline?: boolean;
   type?: string;
   help?: string;
+  error?: string | undefined;
+  inputMode?: "numeric" | "decimal" | undefined;
 }) {
   const id = useId();
   const helpID = id + "-help";
@@ -31,12 +45,7 @@ export function Text({
     },
     [name, id, label, register],
   );
-  const error = name
-    ? validation?.issues
-        .filter((issue) => issue.path === name)
-        .map((issue) => issue.message)
-        .join(" ")
-    : undefined;
+  const error = localError || fieldError(validation, name);
   const described =
     [help ? helpID : "", error ? id + "-error" : ""]
       .filter(Boolean)
@@ -63,6 +72,7 @@ export function Text({
           name={name}
           id={id}
           type={type}
+          inputMode={inputMode}
           value={value}
           onChange={(event) => {
             change(event.target.value);
@@ -97,41 +107,80 @@ export function NumberInput({
   value: number;
   change: (value: number) => void;
 }) {
+  const [draft, setDraft] = useState({
+    value,
+    text: Number.isFinite(value) ? String(value) : "",
+  });
+  if (!Object.is(value, draft.value))
+    setDraft({ value, text: Number.isFinite(value) ? String(value) : "" });
+  const invalid = !Number.isFinite(value);
   return (
     <Text
       name={name}
       label={label}
-      type="number"
-      value={String(value)}
-      change={(v) => {
-        const parsed = Number(v);
-        if (Number.isSafeInteger(parsed)) change(parsed);
+      inputMode="numeric"
+      value={draft.text}
+      error={invalid ? "Enter a whole number before continuing." : undefined}
+      change={(text) => {
+        const parsed =
+          /^-?\d+$/.test(text) && Number.isSafeInteger(Number(text))
+            ? Number(text)
+            : Number.NaN;
+        setDraft({ value: parsed, text });
+        change(parsed);
       }}
     />
   );
 }
+
 export function Check({
+  name,
   label,
   value,
   change,
 }: {
   label: string;
+  name?: string | undefined;
   value: boolean;
   change: (value: boolean) => void;
 }) {
+  const id = useId();
+  const validation = useContext(FieldValidation);
+  const register = validation?.register;
+  const fieldRef = useCallback(
+    (input: HTMLInputElement | null) => {
+      if (input && name && register) return register({ name, id, label });
+    },
+    [name, id, label, register],
+  );
+  const error = fieldError(validation, name);
   return (
-    <label className="catalog-check">
-      <input
-        type="checkbox"
-        checked={value}
-        onChange={(event) => {
-          change(event.target.checked);
-        }}
-      />
-      {label}
-    </label>
+    <div>
+      <label className="catalog-check" htmlFor={id}>
+        <input
+          ref={fieldRef}
+          id={id}
+          name={name}
+          type="checkbox"
+          checked={value}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? id + "-error" : undefined}
+          onChange={(event) => {
+            change(event.target.checked);
+            if (name) validation?.correct(name);
+          }}
+        />
+        {label}
+      </label>
+      {error && (
+        <p className="field-error" id={id + "-error"}>
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
+
 export function Select({
   name,
   label,
@@ -156,12 +205,7 @@ export function Select({
     },
     [name, id, label, register],
   );
-  const error = name
-    ? validation?.issues
-        .filter((issue) => issue.path === name)
-        .map((issue) => issue.message)
-        .join(" ")
-    : undefined;
+  const error = fieldError(validation, name);
   return (
     <div className="catalog-label">
       <label htmlFor={id}>{label}</label>
@@ -193,45 +237,75 @@ export function Select({
   );
 }
 export function Action({
+  name,
   children,
   onClick,
   disabled = false,
 }: {
+  name?: string;
   children: ReactNode;
   onClick: () => void;
   disabled?: boolean;
 }) {
+  const id = useId();
+  const validation = useContext(FieldValidation);
+  const register = validation?.register;
+  const label = typeof children === "string" ? children : "Configuration";
+  const fieldRef = useCallback(
+    (button: HTMLButtonElement | null) => {
+      if (name && register && button) return register({ name, id, label });
+    },
+    [name, register, id, label],
+  );
+  const error = fieldError(validation, name);
   return (
-    <button
-      type="button"
-      className="button compact"
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {children}
-    </button>
+    <>
+      <button
+        id={id}
+        ref={fieldRef}
+        type="button"
+        className="button compact"
+        onClick={onClick}
+        disabled={disabled}
+        aria-describedby={error ? id + "-error" : undefined}
+      >
+        {children}
+      </button>
+      {error && (
+        <p id={id + "-error"} className="field-error">
+          {error}
+        </p>
+      )}
+    </>
   );
 }
 export function Issues({ issues }: { issues: Issue[] }) {
+  const validation = useContext(FieldValidation);
   return issues.length > 0 ? (
     <div role="alert" className="catalog-issues">
-      <p>Resolve these issues before continuing:</p>
-      <ul>
-        {issues.map((issue, index) => (
-          <li key={index}>
-            <strong>{issue.path}</strong>: {issue.message}
-          </li>
-        ))}
-      </ul>
+      <p>Check the highlighted details before continuing:</p>
+      <ValidationSummary
+        issues={issues}
+        fields={validation?.fields ?? []}
+        focus={validation?.focus}
+      />
     </div>
   ) : null;
 }
-export function ErrorNotice({ error }: { error: unknown }) {
+export function ErrorNotice({
+  error,
+  hideIssues = false,
+}: {
+  error: unknown;
+  hideIssues?: boolean;
+}) {
   return error ? (
     <>
       <p role="alert">{errorMessage(error)}</p>
       <VerificationLink error={error} />
-      <Issues issues={error instanceof APIError ? error.issues : []} />
+      {!hideIssues && (
+        <Issues issues={error instanceof APIError ? error.issues : []} />
+      )}
     </>
   ) : null;
 }
@@ -290,12 +364,25 @@ export function Ordering({
   );
 }
 export function OptionsEditor({
+  path = "options",
   options,
   change,
 }: {
+  path?: string;
   options: Option[];
   change: (options: Option[]) => void;
 }) {
+  const id = useId();
+  const validation = useContext(FieldValidation);
+  const register = validation?.register;
+  const groupRef = useCallback(
+    (group: HTMLDivElement | null) => {
+      if (group && register)
+        return register({ name: path, id, label: "Available options" });
+    },
+    [path, id, register],
+  );
+  const error = fieldError(validation, path);
   const update = (i: number, patch: Partial<Option>) => {
     change(
       options.map((option, index) =>
@@ -304,7 +391,7 @@ export function OptionsEditor({
     );
   };
   return (
-    <div>
+    <div ref={groupRef} id={id}>
       <p className="quiet">
         Option order defines rank progression. Represent each division as an
         entry; units are its maximum stars/points.
@@ -314,6 +401,7 @@ export function OptionsEditor({
           <legend>Option {i + 1}</legend>
           <div className="catalog-grid">
             <Text
+              name={`${path}.${String(i)}.key`}
               label="Option key"
               value={option.key}
               change={(key) => {
@@ -321,6 +409,7 @@ export function OptionsEditor({
               }}
             />
             <Text
+              name={`${path}.${String(i)}.label`}
               label="Option label"
               value={option.label}
               change={(label) => {
@@ -328,6 +417,7 @@ export function OptionsEditor({
               }}
             />
             <NumberInput
+              name={`${path}.${String(i)}.units`}
               label="Maximum rank units"
               value={option.units}
               change={(units) => {
@@ -347,6 +437,7 @@ export function OptionsEditor({
           />
         </fieldset>
       ))}
+      {error && <p className="field-error">{error}</p>}
       <Action
         disabled={options.length >= 300}
         onClick={() => {
@@ -362,6 +453,7 @@ export function OptionsEditor({
   );
 }
 export function ConditionEditor({
+  path,
   label,
   value,
   change,
@@ -369,6 +461,7 @@ export function ConditionEditor({
   depth = 0,
 }: {
   label: string;
+  path?: string | undefined;
   value: Condition | undefined;
   change: (value: Condition | undefined) => void;
   fields: Field[];
@@ -384,6 +477,7 @@ export function ConditionEditor({
     <fieldset className="catalog-item">
       <legend>{label}</legend>
       <Check
+        name={path}
         label="Enable condition"
         value={!!value}
         change={(enabled) => {
@@ -393,6 +487,7 @@ export function ConditionEditor({
       {value && (
         <>
           <Select
+            name={path ? `${path}.op` : undefined}
             label="Condition operator"
             value={value.op}
             change={(op) => {
@@ -423,6 +518,7 @@ export function ConditionEditor({
               {value.children.map((child, i) => (
                 <ConditionEditor
                   key={i}
+                  path={path ? `${path}.children.${String(i)}` : undefined}
                   label={`Condition ${String(i + 1)}`}
                   value={child}
                   depth={depth + 1}
@@ -451,6 +547,7 @@ export function ConditionEditor({
           ) : (
             <div className="catalog-grid">
               <Select
+                name={path ? `${path}.field` : undefined}
                 label="Condition field"
                 value={value.field}
                 change={(field) => {
@@ -465,6 +562,7 @@ export function ConditionEditor({
                 ]}
               />
               <Text
+                name={path ? `${path}.values` : undefined}
                 label="Condition values"
                 value={value.values.join(",")}
                 change={(text) => {

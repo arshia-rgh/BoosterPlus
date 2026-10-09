@@ -1,7 +1,7 @@
 import { ArtworkImage } from "../artwork/image";
 import { cardArtwork } from "./artwork";
 import { useCallback, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { defaultHeroLayout, type Listing } from "./model";
 import { serviceNames } from "./public-discovery";
 import "./artwork-framing.css";

@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { post } from "../identity/api";
 import { TransferRecord } from "../payments/refunds";
@@ -8,7 +14,11 @@ vi.mock("../identity/api", async (original) => ({
   ...(await original<typeof import("../identity/api")>()),
   post: vi.fn(),
 }));
-afterEach(() => vi.clearAllMocks());
+afterEach(() => {
+  vi.clearAllMocks();
+  vi.restoreAllMocks();
+  vi.useRealTimers();
+});
 const transfer: Transfer = {
   id: "payout",
   case_id: "",
@@ -113,4 +123,72 @@ it("clears protected input immediately even when storage fails", async () => {
   await waitFor(() => {
     expect(post).toHaveBeenCalled();
   });
+});
+
+it("orients protected-reveal keyboard users without announcing plaintext or stealing passive focus", async () => {
+  vi.spyOn(document, "hasFocus").mockReturnValue(true);
+  vi.mocked(post)
+    .mockResolvedValueOnce({ value: btoa("synthetic handoff only") })
+    .mockResolvedValueOnce({ value: btoa("synthetic handoff only") })
+    .mockRejectedValueOnce(new Error("Unavailable"));
+  render(
+    <>
+      <button>Other task</button>
+      <SecretReveal path="/account-orders/order/secret/reveal" />
+    </>,
+  );
+  const reveal = screen.getByRole("button", {
+    name: "Reveal protected details",
+  });
+  fireEvent.click(reveal);
+  const ready = await screen.findByRole("heading", {
+    name: "Protected details ready",
+  });
+  expect(ready).toHaveFocus();
+  expect(ready).not.toHaveTextContent("synthetic handoff");
+  fireEvent.click(
+    screen.getByRole("button", { name: "Hide protected details" }),
+  );
+  expect(reveal).toHaveFocus();
+  expect(screen.queryByText("synthetic handoff only")).not.toBeInTheDocument();
+  fireEvent.click(reveal);
+  await screen.findByText("synthetic handoff only");
+  const other = screen.getByRole("button", { name: "Other task" });
+  other.focus();
+  fireEvent(window, new Event("blur"));
+  expect(other).toHaveFocus();
+  expect(screen.queryByText("synthetic handoff only")).not.toBeInTheDocument();
+  fireEvent.click(reveal);
+  await screen.findByRole("alert");
+  expect(
+    screen.getByRole("group", { name: "Protected access notice" }),
+  ).toHaveFocus();
+});
+
+it("does not steal focus when protected details expire", async () => {
+  vi.spyOn(document, "hasFocus").mockReturnValue(true);
+  vi.useFakeTimers();
+  vi.mocked(post).mockResolvedValue({ value: btoa("synthetic handoff only") });
+  render(
+    <>
+      <button>Continue reading</button>
+      <SecretReveal path="/account-orders/order/secret/reveal" />
+    </>,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Reveal protected details" }),
+  );
+  await act(async () => {
+    await Promise.resolve();
+  });
+  expect(
+    screen.getByRole("heading", { name: "Protected details ready" }),
+  ).toHaveFocus();
+  const reading = screen.getByRole("button", { name: "Continue reading" });
+  reading.focus();
+  act(() => {
+    vi.advanceTimersByTime(60001);
+  });
+  expect(screen.queryByText("synthetic handoff only")).not.toBeInTheDocument();
+  expect(reading).toHaveFocus();
 });

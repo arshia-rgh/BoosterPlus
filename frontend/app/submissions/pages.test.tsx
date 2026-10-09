@@ -81,3 +81,78 @@ it("retains the selected game and identical draft request after an uncertain res
     Array(3).fill(vi.mocked(post).mock.calls[0]?.[1]),
   );
 });
+
+function renderDraft() {
+  vi.mocked(useResource).mockImplementation((path) => ({
+    data: path.includes("?")
+      ? { games: [], next: "" }
+      : {
+          id: "release",
+          paused: false,
+          configuration: {
+            intake: { name: "Account intake", description: "Private review" },
+          },
+        },
+    loading: false,
+    error: null,
+    reload: vi.fn(),
+  }));
+  return render(
+    <MemoryRouter initialEntries={["/sell/new?slug=review-game"]}>
+      <NewSubmission />
+    </MemoryRouter>,
+  );
+}
+
+it("focuses an invalid draft title, retains it, and permits correction before creating", async () => {
+  renderDraft();
+  const title = screen.getByLabelText("Private account title");
+  const create = screen.getByRole("button", { name: "Create private draft" });
+  fireEvent.click(create);
+  await waitFor(() => expect(title).toHaveFocus());
+  expect(title).toHaveAttribute("aria-invalid", "true");
+  expect(title).toHaveAccessibleDescription(
+    expect.stringContaining("1–120 characters"),
+  );
+  fireEvent.change(title, { target: { value: "x".repeat(130) } });
+  expect(title).not.toHaveAttribute("aria-invalid");
+  create.focus();
+  fireEvent.click(create);
+  await waitFor(() => expect(title).toHaveFocus());
+  expect(title).toHaveValue("x".repeat(130));
+  expect(post).not.toHaveBeenCalled();
+  vi.mocked(post).mockRejectedValueOnce(new APIError("Unavailable"));
+  fireEvent.change(title, { target: { value: "🎮".repeat(120) } });
+  fireEvent.click(create);
+  await waitFor(() => {
+    expect(post).toHaveBeenCalledTimes(1);
+  });
+  expect(vi.mocked(post).mock.calls[0]?.[1]).toMatchObject({
+    title: "🎮".repeat(120),
+  });
+});
+
+it("associates server draft errors with their field and refocuses on an identical retry", async () => {
+  vi.mocked(post).mockRejectedValue(
+    Object.assign(new APIError("Review title"), {
+      status: 422,
+      issues: [{ path: "title", message: "Choose another private title." }],
+    }),
+  );
+  renderDraft();
+  const title = screen.getByLabelText("Private account title");
+  fireEvent.change(title, { target: { value: "My account" } });
+  const create = screen.getByRole("button", { name: "Create private draft" });
+  fireEvent.click(create);
+  await waitFor(() => expect(title).toHaveFocus());
+  expect(title).toHaveAccessibleDescription(
+    expect.stringContaining("Choose another private title."),
+  );
+  expect(title).toHaveValue("My account");
+  create.focus();
+  fireEvent.click(create);
+  await waitFor(() => {
+    expect(post).toHaveBeenCalledTimes(2);
+  });
+  await waitFor(() => expect(title).toHaveFocus());
+});

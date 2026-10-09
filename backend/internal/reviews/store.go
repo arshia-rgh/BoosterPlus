@@ -147,7 +147,9 @@ func (s *Store) Moderate(ctx context.Context, p *identity.Principal, id, action 
 		if err != nil {
 			return err
 		}
-		if row.UserID == current.User.ID {
+		if same, sameErr := sameReviewer(ctx, tx, current.User, row.UserID); sameErr != nil {
+			return sameErr
+		} else if same {
 			return identity.ErrForbidden
 		}
 		purchase, readErr := tx.Order.Get(ctx, row.OrderID)
@@ -159,7 +161,9 @@ func (s *Store) Moderate(ctx context.Context, p *identity.Principal, id, action 
 			if listingErr != nil {
 				return listingErr
 			}
-			if listing.SellerID == current.User.ID {
+			if same, sameErr := sameReviewer(ctx, tx, current.User, listing.SellerID); sameErr != nil {
+				return sameErr
+			} else if same {
 				return identity.ErrForbidden
 			}
 		}
@@ -240,4 +244,13 @@ func (s *Store) record(ctx context.Context, tx *ent.Tx, p *identity.Principal, r
 		return notifications.Enqueue(ctx, tx, row.UserID, row.OrderID, event.ID, "review_customer", now)
 	}
 	return nil
+}
+
+// sameReviewer preserves review conflicts across independent account namespaces.
+func sameReviewer(ctx context.Context, tx *ent.Tx, staff *ent.User, counterpartID string) (bool, error) {
+	counterpart, err := tx.User.Get(ctx, counterpartID)
+	if err != nil {
+		return false, err
+	}
+	return identity.IndependentReviewConflict(ctx, tx, staff, counterpart)
 }

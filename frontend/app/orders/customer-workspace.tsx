@@ -1,6 +1,6 @@
 import type { Location } from "react-router";
 import RequestConfirmation from "./request-confirmation";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "../portal-router";
 import { useState } from "react";
 import { z } from "../validation";
 import type { Session } from "../identity/api";

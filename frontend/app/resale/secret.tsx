@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { useProtectedReveal } from "../identity/protected-reveal";
+import {
+  useProtectedReveal,
+  useProtectedRevealFocus,
+} from "../identity/protected-reveal";
 import { Action, ErrorNotice, Text } from "../catalog/controls";
 import { post } from "../identity/api";
 import { secretSchema } from "./model";
@@ -46,8 +49,8 @@ export function SecretUpload({
       <legend>Protected ownership transfer</legend>
       <p>
         Use this protected field for login and recovery details. Ordinary
-        listing fields and chat must never contain them. A recent sign-in is
-        required.
+        listing fields and chat must never contain them. If confirmation is
+        needed, verify here with an authenticator or email code.
       </p>
       <ErrorNotice error={error} />
       <Text
@@ -72,21 +75,46 @@ export function SecretUpload({
 }
 export function SecretReveal({ path }: { path: string }) {
   const { value, busy, error, reveal, hide } = useProtectedReveal(path, 60000);
+  const {
+    result: resultRef,
+    problem: problemRef,
+    trigger: triggerRef,
+    hideExplicitly,
+  } = useProtectedRevealFocus(Boolean(value), busy, error, path);
   return (
     <section className="catalog-section">
       <h3>Protected access</h3>
       <p>
-        Reveals are audited and require recent sign-in. Details hide after one
-        minute or when this window loses focus.
+        Reveals are audited. If confirmation is needed, verify here with an
+        authenticator or email code. Details hide after one minute or when this
+        window loses focus.
       </p>
-      <ErrorNotice error={error} />
-      <Action disabled={busy} onClick={() => void reveal()}>
-        Reveal protected details
-      </Action>
+      <div
+        ref={problemRef}
+        tabIndex={-1}
+        role="group"
+        aria-label="Protected access notice"
+      >
+        <ErrorNotice error={error} />
+      </div>
+      <div ref={triggerRef}>
+        <Action disabled={busy} onClick={() => void reveal()}>
+          Reveal protected details
+        </Action>
+      </div>
       {value && (
         <>
+          <h4 ref={resultRef} tabIndex={-1}>
+            Protected details ready
+          </h4>
           <pre className="payment-policy">{value}</pre>
-          <Action onClick={hide}>Hide protected details</Action>
+          <Action
+            onClick={() => {
+              hideExplicitly(hide);
+            }}
+          >
+            Hide protected details
+          </Action>
         </>
       )}
     </section>

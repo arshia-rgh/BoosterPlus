@@ -1,3 +1,9 @@
+import {
+  FieldValidation,
+  useFormValidation,
+  type FieldIssue,
+} from "../ui/form-validation";
+import { policyIssues } from "./policy-validation";
 import { useEffect, useRef, useState } from "react";
 import { useBlocker } from "react-router";
 import PolicyPreview from "./policy-preview";
@@ -5,11 +11,12 @@ import {
   Action,
   Check,
   ErrorNotice,
+  Issues,
   NumberInput,
   Select,
   Text,
 } from "../catalog/controls";
-import { post } from "../identity/api";
+import { APIError, post } from "../identity/api";
 import {
   settingsSchema,
   remedyLabels,
@@ -36,6 +43,15 @@ export default function PaymentPolicyEditor({
   const [preview, setPreview] = useState(false);
   const [reviewed, setReviewed] = useState(false);
   const [notice, setNotice] = useState("");
+  const [issues, setIssues] = useState<FieldIssue[]>([]);
+  const validation = useFormValidation(
+    issues,
+    (name) => {
+      setIssues((old) => old.filter((issue) => issue.path !== name));
+    },
+    undefined,
+    active && !busy,
+  );
   const lock = useRef(false);
   const previewPanel = useRef<HTMLElement>(null);
   const leavePanel = useRef<HTMLElement>(null);
@@ -70,6 +86,7 @@ export default function PaymentPolicyEditor({
     setPreview(false);
     setReviewed(false);
     setError(null);
+    setIssues([]);
   }
   if (stale && !dirty && !busy) reset(settings);
   function setData(value: Policy) {
@@ -87,6 +104,9 @@ export default function PaymentPolicyEditor({
       (action === "publish" && (dirty || !preview || !reviewed))
     )
       return;
+    const invalid = policyIssues(data);
+    setIssues(invalid);
+    if (invalid.length) return;
     lock.current = true;
     setBusy(true);
     setError(null);
@@ -106,13 +126,14 @@ export default function PaymentPolicyEditor({
       done();
     } catch (cause) {
       setError(cause);
+      if (cause instanceof APIError) setIssues(cause.issues);
     } finally {
       lock.current = false;
       setBusy(false);
     }
   }
   return (
-    <>
+    <FieldValidation value={validation}>
       {blocker.state === "blocked" && (
         <section
           ref={leavePanel}
@@ -148,7 +169,7 @@ export default function PaymentPolicyEditor({
         <h2>Payment policy</h2>
         <p>
           Publishing preserves previous agreements. Enter approved fees,
-          supported assets and policy text. Recent sign-in and authenticator
+          supported assets and policy text. Recent authenticator or email
           verification are required.
         </p>
         <p>
@@ -187,7 +208,8 @@ export default function PaymentPolicyEditor({
             </Action>
           </section>
         )}
-        <ErrorNotice error={error} />
+        <ErrorNotice error={error} hideIssues />
+        <Issues issues={issues} />
         {!!error && (
           <Action disabled={busy} onClick={done}>
             Check current policy revision
@@ -197,6 +219,7 @@ export default function PaymentPolicyEditor({
         <fieldset disabled={busy || stale || unavailable}>
           <legend>Edit saved revision {saved.version}</legend>
           <Text
+            name="label"
             label="Policy title"
             value={data.label}
             change={(label) => {
@@ -204,6 +227,7 @@ export default function PaymentPolicyEditor({
             }}
           />
           <Text
+            name="text"
             label="Customer payment policy"
             multiline
             value={data.text}
@@ -220,6 +244,7 @@ export default function PaymentPolicyEditor({
             {remedyLabels.map(([key, label]) => (
               <Text
                 key={key}
+                name={`remedies.${key}`}
                 label={label}
                 multiline
                 value={remedyText(remedies, key)}
@@ -237,6 +262,7 @@ export default function PaymentPolicyEditor({
             ).map(([key, label]) => (
               <NumberInput
                 key={key}
+                name={`remedies.${key}`}
                 label={label}
                 value={
                   key === "dispute_hours"
@@ -252,6 +278,7 @@ export default function PaymentPolicyEditor({
             ))}
           </fieldset>
           <Select
+            name="fee_mode"
             label="Processing fees paid by"
             value={data.fee_mode}
             change={(fee_mode) => {
@@ -264,6 +291,7 @@ export default function PaymentPolicyEditor({
             ]}
           />
           <Select
+            name="rate_mode"
             label="Exchange rate policy"
             value={data.rate_mode}
             change={(rate_mode) => {
@@ -276,6 +304,7 @@ export default function PaymentPolicyEditor({
             ]}
           />
           <NumberInput
+            name="window_minutes"
             label="Local checkout window in minutes (15–1440)"
             value={data.window_minutes}
             change={(window_minutes) => {
@@ -287,6 +316,7 @@ export default function PaymentPolicyEditor({
             {["USD", "EUR", "GBP"].map((code) => (
               <Check
                 key={code}
+                name={code === "USD" ? "currencies" : undefined}
                 label={code}
                 value={data.currencies.includes(code)}
                 change={(on) => {
@@ -312,6 +342,7 @@ export default function PaymentPolicyEditor({
               ).map(([key, label]) => (
                 <Text
                   key={key}
+                  name={`routes.${String(index)}.${key}`}
                   label={label}
                   value={
                     key === "code"
@@ -343,6 +374,7 @@ export default function PaymentPolicyEditor({
             </fieldset>
           ))}
           <Action
+            name="routes"
             disabled={data.routes.length >= 20}
             onClick={() => {
               setData({
@@ -394,6 +426,6 @@ export default function PaymentPolicyEditor({
           </section>
         )}
       </section>
-    </>
+    </FieldValidation>
   );
 }

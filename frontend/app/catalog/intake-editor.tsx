@@ -43,6 +43,7 @@ export default function IntakeEditor({
       {form && (
         <>
           <Text
+            name={`intake.name`}
             label="Intake form name"
             value={form.name}
             change={(name) => {
@@ -50,6 +51,7 @@ export default function IntakeEditor({
             }}
           />
           <Text
+            name={`intake.description`}
             label="Intake instructions"
             multiline
             value={form.description}
@@ -61,6 +63,7 @@ export default function IntakeEditor({
             <details key={index} className="catalog-item">
               <summary>Account attribute: {field.label}</summary>
               <FieldEditor
+                path={`intake.fields.${String(index)}`}
                 intake
                 field={field}
                 service={intakeService(form)}
@@ -113,6 +116,7 @@ export default function IntakeEditor({
             <details key={index} className="catalog-item">
               <summary>Account rule: {rule.key}</summary>
               <RuleEditor
+                path={`intake.rules.${String(index)}`}
                 rule={rule}
                 fields={form.fields}
                 change={(patch) => {

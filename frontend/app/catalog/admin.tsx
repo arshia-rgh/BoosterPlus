@@ -1,3 +1,4 @@
+import { FieldValidation, useFormValidation } from "../ui/form-validation";
 import ArtworkUpload from "../artwork/upload";
 import {
   defaultGameArtwork,
@@ -11,9 +12,14 @@ import { useResource } from "../orders/resource";
 import DiscoveryEditor from "./discovery-editor";
 import HeroLayoutEditor from "./hero-layout-editor";
 import { useEffect, useRef, useState } from "react";
-import { Link, useBlocker, useLocation, useSearchParams } from "react-router";
+import {
+  Link,
+  useBlocker,
+  useLocation,
+  useSearchParams,
+} from "../portal-router";
 import { z } from "../validation";
-import { get, post } from "../identity/api";
+import { APIError, get, post } from "../identity/api";
 import {
   Action,
   Check,
@@ -59,7 +65,6 @@ function Preview({ draft, issues }: { draft: Draft; issues: Issue[] }) {
       <p>
         This preview is private. Publication checks use this saved revision.
       </p>
-      <Issues issues={issues} />
       {issues.length === 0 && <p role="status">Publication checks passed.</p>}
       <h3>{draft.configuration.name}</h3>
       <p>{draft.configuration.description}</p>
@@ -180,7 +185,11 @@ function Editor({
   };
   useEffect(() => {
     const target = document.getElementById(section);
-    target?.focus({ preventScroll: true });
+    // Validation may focus a revealed field before this section effect runs.
+    // Preserve that more specific destination while normal navigation focuses
+    // the section when the previous focus remains outside it.
+    if (target && !target.contains(document.activeElement))
+      target.focus({ preventScroll: true });
     if (
       section === "catalog-offers" &&
       target &&
@@ -188,6 +197,22 @@ function Editor({
     )
       target.scrollIntoView({ block: "nearest" });
   }, [section, draft?.id]);
+  const [fieldIssues, setFieldIssues] = useState<Issue[]>([]);
+  const validation = useFormValidation(
+    fieldIssues,
+    (name) => {
+      setFieldIssues((old) =>
+        old.filter(
+          (issue) => issue.path !== name && !name.startsWith(issue.path + "."),
+        ),
+      );
+    },
+    (target) => {
+      const panel = target.closest<HTMLElement>(".catalog-edit-section");
+      if (panel && panel.id !== section) choose(panel.id);
+    },
+    !busy,
+  );
   const generation = useRef(0);
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
@@ -244,12 +269,15 @@ function Editor({
     if (!draft) return;
     const requestGeneration = ++generation.current;
     setBusy(true);
+    setFieldIssues([]);
     setError(null);
     setStatus("");
     try {
       const path = `/admin/catalog/games/${encodeURIComponent(id)}`;
       if (action === "preview") {
-        setPreview(await get(path + "/preview", previewSchema));
+        const result = await get(path + "/preview", previewSchema);
+        setPreview(result);
+        setFieldIssues(result.issues);
         choose("catalog-publish");
       } else if (action === "history" || action === "more-history") {
         const before =
@@ -290,455 +318,469 @@ function Editor({
       }
     } catch (cause) {
       setError(cause);
+      if (cause instanceof APIError) setFieldIssues(cause.issues);
     } finally {
       if (requestGeneration === generation.current) setBusy(false);
     }
   }
   return (
-    <section className="catalog-editor">
-      {blocker.state === "blocked" && (
-        <div className="catalog-issues" role="alert">
-          <p>
-            {busy
-              ? "Wait for the current action to finish before leaving."
-              : "You have unsaved catalog edits."}
-          </p>
-          <Action
-            onClick={() => {
-              blocker.reset();
-            }}
-          >
-            Stay in editor
-          </Action>
-          <Action
-            disabled={busy}
-            onClick={() => {
-              blocker.proceed();
-            }}
-          >
-            Discard edits and leave
-          </Action>
-        </div>
-      )}
-
-      <Action onClick={onBack} disabled={busy || dirty}>
-        ← All catalog drafts
-      </Action>
-      <ErrorNotice error={error} />
-      {!draft ? (
-        <>
-          {!error && <p role="status">Loading draft…</p>}
-          <Action
-            onClick={() => {
-              setReload((v) => v + 1);
-            }}
-          >
-            Retry draft
-          </Action>
-        </>
-      ) : (
-        <>
-          <div className="catalog-heading">
-            <div>
-              <h2>{draft.configuration.name}</h2>
-              <p className="quiet">
-                /{draft.slug} · draft revision {draft.revision} ·{" "}
-                {draft.archived
-                  ? "Archived"
-                  : draft.published
-                    ? "Published"
-                    : "Unpublished"}
-                {draft.paused ? " · Ordering paused" : ""}
-              </p>
-            </div>
-            <p>Admin catalog workspace · private draft</p>
-          </div>
-          <p className="quiet">
-            {dirty
-              ? "Unsaved changes. Save your draft or discard edits before leaving this editor."
-              : "Draft saved. Editing does not change published offerings."}
-          </p>
-          <nav
-            className="admin-view-nav catalog-section-nav"
-            aria-label="Catalog sections"
-          >
-            {tabs.map(([target, label]) => (
-              <Link
-                key={target}
-                state={location.state}
-                to={`?${new URLSearchParams({ ...Object.fromEntries(params), section: target }).toString()}`}
-                preventScrollReset
-                aria-current={section === target ? "page" : undefined}
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
-          <div className="catalog-save-bar">
-            <span role="status">
-              {dirty ? "Unsaved draft changes" : "Draft saved"}
-            </span>
-            <Action disabled={busy} onClick={() => void run("save")}>
-              Save changes
+    <FieldValidation value={validation}>
+      <section className="catalog-editor">
+        {blocker.state === "blocked" && (
+          <div className="catalog-issues" role="alert">
+            <p>
+              {busy
+                ? "Wait for the current action to finish before leaving."
+                : "You have unsaved catalog edits."}
+            </p>
+            <Action
+              onClick={() => {
+                blocker.reset();
+              }}
+            >
+              Stay in editor
             </Action>
             <Action
-              disabled={busy || dirty}
-              onClick={() => void run("preview")}
+              disabled={busy}
+              onClick={() => {
+                blocker.proceed();
+              }}
             >
-              Preview saved changes
+              Discard edits and leave
             </Action>
           </div>
-          {status && <p role="status">{status}</p>}
-          <fieldset disabled={busy} className="catalog-editor-fields">
-            <legend>Catalog configuration</legend>
-            <section
-              id="catalog-basics"
-              hidden={section !== "catalog-basics"}
-              tabIndex={-1}
-              className="catalog-edit-section"
-              aria-label="Game and rank references"
+        )}
+
+        <Action onClick={onBack} disabled={busy || dirty}>
+          ← All catalog drafts
+        </Action>
+        <ErrorNotice error={error} hideIssues />
+        <Issues issues={fieldIssues} />
+        {!draft ? (
+          <>
+            {!error && <p role="status">Loading draft…</p>}
+            <Action
+              onClick={() => {
+                setReload((v) => v + 1);
+              }}
             >
-              <h3>Game and rank references</h3>
-              <div className="catalog-grid">
-                <Text
-                  label="Game name"
-                  value={draft.configuration.name}
-                  change={(name) => {
-                    update({ name });
-                  }}
-                />
-                <ArtworkUpload
-                  purpose="game"
-                  pathLabel="Public asset path"
-                  value={draft.configuration.asset}
-                  defaultAsset={defaultGameArtwork(draft.slug)}
-                  change={(asset) => {
-                    if (asset === defaultGameArtwork(draft.slug)) {
-                      const layout = defaultGameLayout(draft.slug);
-                      update({
-                        asset,
-                        ...(layout ? { hero_layout: layout } : {}),
-                      });
-                    } else if (uploadedArtwork(asset)) {
-                      update({
-                        asset,
-                        hero_layout: {
-                          desktop_x: 50,
-                          desktop_y: 50,
-                          mobile_x: 50,
-                          mobile_y: 50,
-                          copy_side:
-                            draft.configuration.hero_layout?.copy_side ??
-                            "left",
-                        },
-                      });
-                    } else update({ asset });
-                  }}
-                />
-                <Text
-                  label="Image alternative text"
-                  value={draft.configuration.asset_alt}
-                  change={(asset_alt) => {
-                    update({ asset_alt });
-                  }}
-                />
-              </div>
-              <Text
-                label="Game description"
-                multiline
-                value={draft.configuration.description}
-                change={(description) => {
-                  update({ description });
-                }}
-              />
-              <DiscoveryEditor
-                hideOffers
-                config={draft.configuration}
-                slug={draft.slug}
-                change={(discovery) => {
-                  update({ discovery });
-                }}
-              />
-              <HeroLayoutEditor
-                config={draft.configuration}
-                change={(hero_layout) => {
-                  update({ hero_layout });
-                }}
-              />
-              <ReferencesEditor
-                value={draft.configuration.references}
-                change={(references) => {
-                  update({ references });
-                }}
-              />
-            </section>
-            <section
-              id="catalog-offers"
-              hidden={section !== "catalog-offers"}
-              tabIndex={-1}
-              className="catalog-edit-section"
-              aria-label="Featured offers editor"
-            >
-              <DiscoveryEditor
-                offersOnly
-                config={draft.configuration}
-                slug={draft.slug}
-                change={(discovery) => {
-                  update({ discovery });
-                }}
-              />
-            </section>
-            <section
-              id="catalog-intake"
-              hidden={section !== "catalog-intake"}
-              tabIndex={-1}
-              className="catalog-edit-section"
-              aria-label="Seller intake and review policy"
-            >
-              <h3>Seller intake and review policy</h3>
-              <IntakeEditor
-                config={draft.configuration}
-                change={(intake) => {
-                  update({ intake });
-                }}
-              />
-              <ReviewPolicyEditor
-                config={draft.configuration}
-                change={(review_policy) => {
-                  update({ review_policy });
-                }}
-              />
-            </section>
-            <section
-              id="catalog-services"
-              hidden={section !== "catalog-services"}
-              tabIndex={-1}
-              className="catalog-edit-section"
-              aria-label="Boosting form editor"
-            >
-              <ServicesEditor
-                showPricing={false}
-                config={draft.configuration}
-                change={(services) => {
-                  update({ services });
-                }}
-              />
-            </section>
-            <section
-              id="catalog-pricing"
-              hidden={section !== "catalog-pricing"}
-              tabIndex={-1}
-              className="catalog-edit-section"
-              aria-label="Price estimation rules"
-            >
-              <h2>Price estimation rules</h2>
-              <p>
-                Estimates are provisional. Customers accept a staff quote for
-                custom services; package prices use their own configured
-                variants.
-              </p>
-              {draft.configuration.services.length === 0 && (
-                <p>
-                  Add a service in Boosting forms before configuring its
-                  estimate.
+              Retry draft
+            </Action>
+          </>
+        ) : (
+          <>
+            <div className="catalog-heading">
+              <div>
+                <h2>{draft.configuration.name}</h2>
+                <p className="quiet">
+                  /{draft.slug} · draft revision {draft.revision} ·{" "}
+                  {draft.archived
+                    ? "Archived"
+                    : draft.published
+                      ? "Published"
+                      : "Unpublished"}
+                  {draft.paused ? " · Ordering paused" : ""}
                 </p>
-              )}
-              {draft.configuration.services.map((service, index) => (
-                <details key={service.key} className="catalog-section">
-                  <summary>
-                    {service.name} · {service.key}
-                  </summary>
-                  <PricingEditor
-                    service={service}
-                    config={draft.configuration}
-                    change={(patch) => {
-                      update({
-                        services: draft.configuration.services.map(
-                          (current, i) =>
-                            i === index ? { ...current, ...patch } : current,
-                        ),
-                      });
-                    }}
-                  />
-                </details>
-              ))}
-            </section>
-            <section
-              id="catalog-packages"
-              hidden={section !== "catalog-packages"}
-              tabIndex={-1}
-              className="catalog-edit-section"
-              aria-label="Fixed packages editor"
+              </div>
+              <p>Admin catalog workspace · private draft</p>
+            </div>
+            <p className="quiet">
+              {dirty
+                ? "Unsaved changes. Save your draft or discard edits before leaving this editor."
+                : "Draft saved. Editing does not change published offerings."}
+            </p>
+            <nav
+              className="admin-view-nav catalog-section-nav"
+              aria-label="Catalog sections"
             >
-              <PackagesEditor
-                config={draft.configuration}
-                change={(packages) => {
-                  update({ packages });
-                }}
-              />
-            </section>
-            <section
-              id="catalog-faq"
-              hidden={section !== "catalog-faq"}
-              tabIndex={-1}
-              className="catalog-edit-section"
-            >
-              <h2>Frequently asked questions</h2>
-              {draft.configuration.faqs.map((faq, i) => (
-                <fieldset className="catalog-item" key={i}>
-                  <legend>FAQ {i + 1}</legend>
-                  <Text
-                    label="Question"
-                    value={faq.question}
-                    change={(question) => {
-                      update({
-                        faqs: draft.configuration.faqs.map((value, index) =>
-                          index === i ? { ...value, question } : value,
-                        ),
-                      });
-                    }}
-                  />
-                  <Text
-                    label="Answer"
-                    multiline
-                    value={faq.answer}
-                    change={(answer) => {
-                      update({
-                        faqs: draft.configuration.faqs.map((value, index) =>
-                          index === i ? { ...value, answer } : value,
-                        ),
-                      });
-                    }}
-                  />
-                  <Ordering
-                    index={i}
-                    count={draft.configuration.faqs.length}
-                    change={(direction) => {
-                      update({
-                        faqs: move(draft.configuration.faqs, i, direction),
-                      });
-                    }}
-                    remove={() => {
-                      update({
-                        faqs: draft.configuration.faqs.filter(
-                          (_, index) => index !== i,
-                        ),
-                      });
-                    }}
-                  />
-                </fieldset>
+              {tabs.map(([target, label]) => (
+                <Link
+                  key={target}
+                  state={location.state}
+                  to={`?${new URLSearchParams({ ...Object.fromEntries(params), section: target }).toString()}`}
+                  preventScrollReset
+                  aria-current={section === target ? "page" : undefined}
+                >
+                  {label}
+                </Link>
               ))}
-              <Action
-                disabled={draft.configuration.faqs.length >= 20}
-                onClick={() => {
-                  update({
-                    faqs: [
-                      ...draft.configuration.faqs,
-                      { question: "New question", answer: "" },
-                    ],
-                  });
-                }}
-              >
-                Add FAQ
+            </nav>
+            <div className="catalog-save-bar">
+              <span role="status">
+                {dirty ? "Unsaved draft changes" : "Draft saved"}
+              </span>
+              <Action disabled={busy} onClick={() => void run("save")}>
+                Save changes
               </Action>
-            </section>
-            <section
-              id="catalog-publish"
-              hidden={section !== "catalog-publish"}
-              tabIndex={-1}
-              className="catalog-publication catalog-edit-section"
-            >
-              <h2>Review and publication</h2>
-              <Check
-                label="I verified the actual rank/option data, availability, prices and customer promises, including any win-rate terms."
-                value={draft.configuration.reviewed}
-                change={(reviewed) => {
-                  update({ reviewed });
-                }}
-              />
-              <p>
-                Publishing requires recent email/Google verification and an
-                authenticator check. Use Profile and security if asked to verify
-                again.
-              </p>
-              <div className="catalog-actions">
-                <Action onClick={() => void run("save")}>Save draft</Action>
+              <Action
+                disabled={busy || dirty}
+                onClick={() => void run("preview")}
+              >
+                Preview saved changes
+              </Action>
+            </div>
+            {status && <p role="status">{status}</p>}
+            <fieldset disabled={busy} className="catalog-editor-fields">
+              <legend>Catalog configuration</legend>
+              <section
+                id="catalog-basics"
+                hidden={section !== "catalog-basics"}
+                tabIndex={-1}
+                className="catalog-edit-section"
+                aria-label="Game and rank references"
+              >
+                <h3>Game and rank references</h3>
+                <div className="catalog-grid">
+                  <Text
+                    name="name"
+                    label="Game name"
+                    value={draft.configuration.name}
+                    change={(name) => {
+                      update({ name });
+                    }}
+                  />
+                  <ArtworkUpload
+                    purpose="game"
+                    pathLabel="Public asset path"
+                    value={draft.configuration.asset}
+                    defaultAsset={defaultGameArtwork(draft.slug)}
+                    change={(asset) => {
+                      if (asset === defaultGameArtwork(draft.slug)) {
+                        const layout = defaultGameLayout(draft.slug);
+                        update({
+                          asset,
+                          ...(layout ? { hero_layout: layout } : {}),
+                        });
+                      } else if (uploadedArtwork(asset)) {
+                        update({
+                          asset,
+                          hero_layout: {
+                            desktop_x: 50,
+                            desktop_y: 50,
+                            mobile_x: 50,
+                            mobile_y: 50,
+                            copy_side:
+                              draft.configuration.hero_layout?.copy_side ??
+                              "left",
+                          },
+                        });
+                      } else update({ asset });
+                    }}
+                  />
+                  <Text
+                    name="asset_alt"
+                    label="Image alternative text"
+                    value={draft.configuration.asset_alt}
+                    change={(asset_alt) => {
+                      update({ asset_alt });
+                    }}
+                  />
+                </div>
+                <Text
+                  name="description"
+                  label="Game description"
+                  multiline
+                  value={draft.configuration.description}
+                  change={(description) => {
+                    update({ description });
+                  }}
+                />
+                <DiscoveryEditor
+                  hideOffers
+                  config={draft.configuration}
+                  slug={draft.slug}
+                  change={(discovery) => {
+                    update({ discovery });
+                  }}
+                />
+                <HeroLayoutEditor
+                  config={draft.configuration}
+                  change={(hero_layout) => {
+                    update({ hero_layout });
+                  }}
+                />
+                <ReferencesEditor
+                  value={draft.configuration.references}
+                  change={(references) => {
+                    update({ references });
+                  }}
+                />
+              </section>
+              <section
+                id="catalog-offers"
+                hidden={section !== "catalog-offers"}
+                tabIndex={-1}
+                className="catalog-edit-section"
+                aria-label="Featured offers editor"
+              >
+                <DiscoveryEditor
+                  offersOnly
+                  config={draft.configuration}
+                  slug={draft.slug}
+                  change={(discovery) => {
+                    update({ discovery });
+                  }}
+                />
+              </section>
+              <section
+                id="catalog-intake"
+                hidden={section !== "catalog-intake"}
+                tabIndex={-1}
+                className="catalog-edit-section"
+                aria-label="Seller intake and review policy"
+              >
+                <h3>Seller intake and review policy</h3>
+                <IntakeEditor
+                  config={draft.configuration}
+                  change={(intake) => {
+                    update({ intake });
+                  }}
+                />
+                <ReviewPolicyEditor
+                  config={draft.configuration}
+                  change={(review_policy) => {
+                    update({ review_policy });
+                  }}
+                />
+              </section>
+              <section
+                id="catalog-services"
+                hidden={section !== "catalog-services"}
+                tabIndex={-1}
+                className="catalog-edit-section"
+                aria-label="Boosting form editor"
+              >
+                <ServicesEditor
+                  showPricing={false}
+                  config={draft.configuration}
+                  change={(services) => {
+                    update({ services });
+                  }}
+                />
+              </section>
+              <section
+                id="catalog-pricing"
+                hidden={section !== "catalog-pricing"}
+                tabIndex={-1}
+                className="catalog-edit-section"
+                aria-label="Price estimation rules"
+              >
+                <h2>Price estimation rules</h2>
+                <p>
+                  Estimates are provisional. Customers accept a staff quote for
+                  custom services; package prices use their own configured
+                  variants.
+                </p>
+                {draft.configuration.services.length === 0 && (
+                  <p>
+                    Add a service in Boosting forms before configuring its
+                    estimate.
+                  </p>
+                )}
+                {draft.configuration.services.map((service, index) => (
+                  <details key={service.key} className="catalog-section">
+                    <summary>
+                      {service.name} · {service.key}
+                    </summary>
+                    <PricingEditor
+                      path={`services.${String(index)}`}
+                      service={service}
+                      config={draft.configuration}
+                      change={(patch) => {
+                        update({
+                          services: draft.configuration.services.map(
+                            (current, i) =>
+                              i === index ? { ...current, ...patch } : current,
+                          ),
+                        });
+                      }}
+                    />
+                  </details>
+                ))}
+              </section>
+              <section
+                id="catalog-packages"
+                hidden={section !== "catalog-packages"}
+                tabIndex={-1}
+                className="catalog-edit-section"
+                aria-label="Fixed packages editor"
+              >
+                <PackagesEditor
+                  config={draft.configuration}
+                  change={(packages) => {
+                    update({ packages });
+                  }}
+                />
+              </section>
+              <section
+                id="catalog-faq"
+                hidden={section !== "catalog-faq"}
+                tabIndex={-1}
+                className="catalog-edit-section"
+              >
+                <h2>Frequently asked questions</h2>
+                {draft.configuration.faqs.map((faq, i) => (
+                  <fieldset className="catalog-item" key={i}>
+                    <legend>FAQ {i + 1}</legend>
+                    <Text
+                      name={`faqs.${String(i)}.question`}
+                      label="Question"
+                      value={faq.question}
+                      change={(question) => {
+                        update({
+                          faqs: draft.configuration.faqs.map((value, index) =>
+                            index === i ? { ...value, question } : value,
+                          ),
+                        });
+                      }}
+                    />
+                    <Text
+                      name={`faqs.${String(i)}.answer`}
+                      label="Answer"
+                      multiline
+                      value={faq.answer}
+                      change={(answer) => {
+                        update({
+                          faqs: draft.configuration.faqs.map((value, index) =>
+                            index === i ? { ...value, answer } : value,
+                          ),
+                        });
+                      }}
+                    />
+                    <Ordering
+                      index={i}
+                      count={draft.configuration.faqs.length}
+                      change={(direction) => {
+                        update({
+                          faqs: move(draft.configuration.faqs, i, direction),
+                        });
+                      }}
+                      remove={() => {
+                        update({
+                          faqs: draft.configuration.faqs.filter(
+                            (_, index) => index !== i,
+                          ),
+                        });
+                      }}
+                    />
+                  </fieldset>
+                ))}
                 <Action
-                  disabled={!dirty}
+                  disabled={draft.configuration.faqs.length >= 20}
                   onClick={() => {
-                    setReload((v) => v + 1);
-                    setPreview(null);
-                    setStatus("");
+                    update({
+                      faqs: [
+                        ...draft.configuration.faqs,
+                        { question: "New question", answer: "" },
+                      ],
+                    });
                   }}
                 >
-                  Discard unsaved edits
+                  Add FAQ
                 </Action>
-                <Action disabled={dirty} onClick={() => void run("preview")}>
-                  Preview saved draft
-                </Action>
-                <Action
-                  disabled={
-                    dirty ||
-                    draft.archived ||
-                    !draft.configuration.reviewed ||
-                    !preview ||
-                    preview.draft.revision !== draft.revision ||
-                    preview.issues.length > 0
-                  }
-                  onClick={() => void run("publish")}
-                >
-                  Publish catalog
-                </Action>
-                <Action disabled={dirty} onClick={() => void run("history")}>
-                  View release history
-                </Action>
-              </div>
-              <div className="catalog-actions">
-                <Action
-                  disabled={dirty || draft.archived}
-                  onClick={() => void run(draft.paused ? "resume" : "pause")}
-                >
-                  {draft.paused ? "Resume ordering" : "Pause ordering"}
-                </Action>
-                <Action
-                  disabled={dirty}
-                  onClick={() =>
-                    void run(draft.archived ? "restore" : "archive")
-                  }
-                >
-                  {draft.archived ? "Restore as paused" : "Archive game"}
-                </Action>
-              </div>
-              {!draft.current_release && (
-                <>
-                  <Check
-                    label="Delete this unpublished draft permanently"
-                    value={deleteConfirmed}
-                    change={setDeleteConfirmed}
-                  />
+              </section>
+              <section
+                id="catalog-publish"
+                hidden={section !== "catalog-publish"}
+                tabIndex={-1}
+                className="catalog-publication catalog-edit-section"
+              >
+                <h2>Review and publication</h2>
+                <Check
+                  name="reviewed"
+                  label="I verified the actual rank/option data, availability, prices and customer promises, including any win-rate terms."
+                  value={draft.configuration.reviewed}
+                  change={(reviewed) => {
+                    update({ reviewed });
+                  }}
+                />
+                <p>
+                  If publishing needs confirmation, a dialog opens here. Use an
+                  authenticator or email code to continue without leaving this
+                  review.
+                </p>
+                <div className="catalog-actions">
+                  <Action onClick={() => void run("save")}>Save draft</Action>
                   <Action
-                    disabled={!deleteConfirmed || dirty}
-                    onClick={() => void run("delete")}
+                    disabled={!dirty}
+                    onClick={() => {
+                      setReload((v) => v + 1);
+                      setPreview(null);
+                      setStatus("");
+                    }}
                   >
-                    Delete unpublished draft
+                    Discard unsaved edits
                   </Action>
-                </>
-              )}
-            </section>
-          </fieldset>
-          {section === "catalog-publish" && preview && (
-            <Preview
-              key={preview.draft.revision}
-              draft={preview.draft}
-              issues={preview.issues}
-            />
-          )}{" "}
-          {section === "catalog-publish" && history && (
-            <History entries={history} more={() => void run("more-history")} />
-          )}
-        </>
-      )}
-    </section>
+                  <Action disabled={dirty} onClick={() => void run("preview")}>
+                    Preview saved draft
+                  </Action>
+                  <Action
+                    disabled={
+                      dirty ||
+                      draft.archived ||
+                      !draft.configuration.reviewed ||
+                      !preview ||
+                      preview.draft.revision !== draft.revision ||
+                      preview.issues.length > 0
+                    }
+                    onClick={() => void run("publish")}
+                  >
+                    Publish catalog
+                  </Action>
+                  <Action disabled={dirty} onClick={() => void run("history")}>
+                    View release history
+                  </Action>
+                </div>
+                <div className="catalog-actions">
+                  <Action
+                    disabled={dirty || draft.archived}
+                    onClick={() => void run(draft.paused ? "resume" : "pause")}
+                  >
+                    {draft.paused ? "Resume ordering" : "Pause ordering"}
+                  </Action>
+                  <Action
+                    disabled={dirty}
+                    onClick={() =>
+                      void run(draft.archived ? "restore" : "archive")
+                    }
+                  >
+                    {draft.archived ? "Restore as paused" : "Archive game"}
+                  </Action>
+                </div>
+                {!draft.current_release && (
+                  <>
+                    <Check
+                      label="Delete this unpublished draft permanently"
+                      value={deleteConfirmed}
+                      change={setDeleteConfirmed}
+                    />
+                    <Action
+                      disabled={!deleteConfirmed || dirty}
+                      onClick={() => void run("delete")}
+                    >
+                      Delete unpublished draft
+                    </Action>
+                  </>
+                )}
+              </section>
+            </fieldset>
+            {section === "catalog-publish" && preview && (
+              <Preview
+                key={preview.draft.revision}
+                draft={preview.draft}
+                issues={preview.issues}
+              />
+            )}{" "}
+            {section === "catalog-publish" && history && (
+              <History
+                entries={history}
+                more={() => void run("more-history")}
+              />
+            )}
+          </>
+        )}
+      </section>
+    </FieldValidation>
   );
 }
 export default function CatalogAdmin() {

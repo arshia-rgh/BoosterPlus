@@ -20,6 +20,8 @@ const (
 	FieldResourceID = "resource_id"
 	// FieldOwnerID holds the string denoting the owner_id field in the database.
 	FieldOwnerID = "owner_id"
+	// FieldCipherOwnerID holds the string denoting the cipher_owner_id field in the database.
+	FieldCipherOwnerID = "cipher_owner_id"
 	// FieldVersion holds the string denoting the version field in the database.
 	FieldVersion = "version"
 	// FieldKeyVersion holds the string denoting the key_version field in the database.
@@ -50,6 +52,7 @@ var Columns = []string{
 	FieldPurpose,
 	FieldResourceID,
 	FieldOwnerID,
+	FieldCipherOwnerID,
 	FieldVersion,
 	FieldKeyVersion,
 	FieldWrappedKey,
@@ -77,6 +80,10 @@ var (
 	ResourceIDValidator func(string) error
 	// OwnerIDValidator is a validator for the "owner_id" field. It is called by the builders before save.
 	OwnerIDValidator func(string) error
+	// DefaultCipherOwnerID holds the default value on creation for the "cipher_owner_id" field.
+	DefaultCipherOwnerID string
+	// CipherOwnerIDValidator is a validator for the "cipher_owner_id" field. It is called by the builders before save.
+	CipherOwnerIDValidator func(string) error
 	// DefaultVersion holds the default value on creation for the "version" field.
 	DefaultVersion int
 	// KeyVersionValidator is a validator for the "key_version" field. It is called by the builders before save.
@@ -165,6 +172,11 @@ func ByResourceID(opts ...sql.OrderTermOption) OrderOption {
 // ByOwnerID orders the results by the owner_id field.
 func ByOwnerID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOwnerID, opts...).ToFunc()
+}
+
+// ByCipherOwnerID orders the results by the cipher_owner_id field.
+func ByCipherOwnerID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCipherOwnerID, opts...).ToFunc()
 }
 
 // ByVersion orders the results by the version field.

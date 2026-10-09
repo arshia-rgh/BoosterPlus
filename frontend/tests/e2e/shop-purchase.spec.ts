@@ -1,3 +1,4 @@
+import { hostedCheckout } from "./hosted-checkout";
 import { integratedCapture, measuredInteraction } from "./integrated-capture";
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -48,10 +49,14 @@ async function capture(page: Page, name: string, width: number) {
               }),
             ]
           : [
-              page.getByRole("img", {
-                name: "QR code for the payment address",
+              page.getByRole("link", {
+                name: "Continue to NOWPayments",
+                exact: true,
               }),
-              page.getByRole("button", { name: "Copy address", exact: true }),
+              page.getByRole("button", {
+                name: "Refresh payment",
+                exact: true,
+              }),
             ];
       for (const [index, target] of targets.entries()) {
         await target.evaluate((element) => {
@@ -201,23 +206,39 @@ test("@global-policy customer purchases shop item and staff reviews scanned manu
     await buyer
       .getByLabel("I accept this payment policy and the agreed order price")
       .check();
-    await buyer.getByRole("button", { name: "Create secure checkout" }).click();
+    const payment = await hostedCheckout(buyer);
+    const providerLink = buyer.getByRole("link", {
+      name: "Continue to NOWPayments",
+      exact: true,
+    });
+    await expect(providerLink).toHaveAttribute(
+      "href",
+      `https://nowpayments.io/payment/?iid=${payment}`,
+    );
+    await expect(providerLink).toHaveAttribute("rel", "noreferrer");
     await expect(
-      buyer.getByRole("heading", { name: "Send your payment", exact: true }),
-    ).toBeVisible({ timeout: 25000 });
+      buyer.getByRole("img", { name: "QR code for the payment address" }),
+    ).toHaveCount(0);
+    await expect(
+      buyer.getByRole("button", { name: "Copy address", exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      buyer.getByText(
+        "Returning from the provider does not confirm payment. This page updates from verified provider evidence.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(
+      buyer.getByRole("region", { name: "Received funds", exact: true }),
+    ).toContainText(
+      "No received funds recorded. A payment link or provider redirect is not a receipt.",
+    );
     await capture(buyer, "shop-payment", width);
     await integratedCapture(
       buyer,
       `shop-payment-${info.project.name}`,
-      buyer.getByRole("button", { name: "Copy address", exact: true }),
+      providerLink,
     );
-    const history = historySchema.parse(
-      await (
-        await buyer.request.get(`/api/v1/orders/${order}/payments`)
-      ).json(),
-    );
-    const payment = history.attempts[0]?.deposit?.payment_id;
-    expect(payment).toBeTruthy();
     const body = JSON.stringify({
       payment_id: payment,
       payment_status: "finished",

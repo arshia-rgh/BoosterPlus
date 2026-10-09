@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/url"
+	"slices"
 	"strings"
 	"time"
 
@@ -216,7 +217,7 @@ func (s *Store) EmailHandler(sender identity.Sender) jobs.Handler {
 			if !ok {
 				return errors.New("activity kind invalid")
 			}
-			if allowed {
+			if allowed && slices.Contains(portalKinds(identity.Portal(account.Portal)), row.Kind) {
 				action, currentAllowed, actionErr := s.currentAction(ctx, row)
 				if actionErr != nil {
 					return actionErr
@@ -229,7 +230,11 @@ func (s *Store) EmailHandler(sender identity.Sender) jobs.Handler {
 				if copyErr != nil {
 					return copyErr
 				}
-				if err = sender.Send(ctx, activityMessage(account.Email, s.origin, href, row.Kind, action, messageCopy)); err != nil {
+				origin, destination, linkErr := s.emailDestination(row.Kind, href)
+				if linkErr != nil {
+					return linkErr
+				}
+				if err = sender.Send(ctx, activityMessage(account.Email, origin, destination, row.Kind, action, messageCopy)); err != nil {
 					return errors.New("activity email delivery unavailable")
 				}
 				state = notification.EmailStateSent

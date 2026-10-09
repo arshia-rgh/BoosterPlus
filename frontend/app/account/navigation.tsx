@@ -1,5 +1,6 @@
+import { Anchor } from "../portal-router";
 import { useEffect, useRef, type ReactNode } from "react";
-import { NavLink, useLocation } from "react-router";
+import { NavLink, useLocation } from "../portal-router";
 import type { Session } from "../identity/api";
 import "./account.css";
 
@@ -30,6 +31,8 @@ export default function AccountNavigation({
   const booster = pathname.startsWith("/booster");
   const verified =
     !!session.user &&
+    session.portal === (booster ? "booster" : "customer") &&
+    session.user.portal === session.portal &&
     !session.mfa_required &&
     session.capabilities.includes(booster ? "booster" : "account");
   const items = booster
@@ -58,7 +61,12 @@ export default function AccountNavigation({
     <>
       {!booster && links(secondary)}
       {booster && (
-        <NavLink to="/booster/account/settings">Profile and security</NavLink>
+        <>
+          <NavLink to="/booster/account/settings">My profile</NavLink>
+          <NavLink to="/booster/account/security">Security</NavLink>
+          <NavLink to="/booster/account/sessions">Sessions</NavLink>
+          <NavLink to="/booster/account/recovery">Recovery codes</NavLink>
+        </>
       )}
       {!booster && session.capabilities.includes("booster") && (
         <NavLink end to="/booster">
@@ -66,7 +74,7 @@ export default function AccountNavigation({
         </NavLink>
       )}
       {session.capabilities.includes("admin") && (
-        <a href="/admin/">Administration ↗</a>
+        <Anchor href="/admin/">Administration ↗</Anchor>
       )}
     </>
   );

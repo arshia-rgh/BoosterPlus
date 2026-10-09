@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
 import { post, APIError } from "../identity/api";
@@ -44,15 +44,20 @@ it("keeps invalid subjects from submitting and permits correction after a defini
       <NewSupport />
     </MemoryRouter>,
   );
-  expect(
-    screen.getByRole("button", { name: "Start conversation" }),
-  ).toBeDisabled();
+  fireEvent.click(screen.getByRole("button", { name: "Start conversation" }));
+  await waitFor(() =>
+    expect(screen.getByLabelText("Conversation subject")).toHaveFocus(),
+  );
+  expect(screen.getByLabelText("Conversation subject")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  expect(post).not.toHaveBeenCalled();
   fireEvent.change(screen.getByLabelText("Conversation subject"), {
     target: { value: "x".repeat(161) },
   });
-  expect(
-    screen.getByRole("button", { name: "Start conversation" }),
-  ).toBeDisabled();
+  fireEvent.click(screen.getByRole("button", { name: "Start conversation" }));
+  expect(post).not.toHaveBeenCalled();
   fireEvent.change(screen.getByLabelText("Conversation subject"), {
     target: { value: "Valid subject" },
   });

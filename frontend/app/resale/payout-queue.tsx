@@ -1,10 +1,10 @@
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams } from "../portal-router";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { sessionSchema } from "../identity/api";
 import { useResource } from "../orders/resource";
 import { transferSchema } from "../payments/cases-model";
-import { TransferRecord } from "../payments/refunds";
+import { TransferRecord, useRecipientConfirmation } from "../payments/refunds";
 const queueSchema = z.object({
   enabled: z.boolean(),
   items: z.array(
@@ -28,6 +28,11 @@ export default function SellerPayoutQueue() {
       queueSchema,
     ),
     session = useResource("/auth/session", sessionSchema);
+  const confirmation = useRecipientConfirmation(
+    `queue:${after}`,
+    resource.loading,
+    resource.error,
+  );
   return (
     <section className="catalog-section">
       <h2>Seller payout obligations</h2>
@@ -50,6 +55,7 @@ export default function SellerPayoutQueue() {
       </p>
       <Action onClick={resource.reload}>Refresh payout queue</Action>
       <ErrorNotice error={resource.error ?? session.error} />
+      {confirmation.feedback}
       {resource.data?.items.map((item) => (
         <section key={item.transfer.id}>
           <Link
@@ -73,6 +79,7 @@ export default function SellerPayoutQueue() {
             owner={session.data?.user?.role === "owner"}
             reload={resource.reload}
             refreshing={resource.loading}
+            onRecipientSaved={confirmation.recipientSaved}
           />
         </section>
       ))}

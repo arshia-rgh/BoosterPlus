@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { Form, Text, value } from "../identity/identity";
 import { post } from "../identity/api";
 import { listingSchema as gamesSchema } from "../catalog/model";

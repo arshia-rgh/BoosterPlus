@@ -27,25 +27,43 @@ class DeploymentPolicy(unittest.TestCase):
     def test_production_settings_fail_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
             directory = Path(tmp)
-            backend = {"APP_ENV":"production", "PROXY_SHARED_KEY":"a"*64, "PUBLIC_ORIGIN":"https://boost.operator.org", "TERMS_VERSION":"approved-v1", "SMTP_TLS":"required", "MEDIA_S3_ENDPOINT":"https://storage.operator.org", "MEDIA_SCANNER_NETWORK":"unix", "DATABASE_DSN":"runtime:placeholder@tcp(db:4000)/app?tls=true"}
-            frontend = {"APP_ENV":"production", "PROXY_SHARED_KEY":"a"*64, "TERMS_VERSION":"approved-v1", "ACCOUNT_TERMS_TEXT":"Test terms"}
+            backend = {"APP_ENV":"production", "PROXY_SHARED_KEY":"a"*64, "PUBLIC_ORIGIN":"https://boost.operator.org", "ADMIN_PUBLIC_ORIGIN":"https://admin.operator.org", "BOOSTER_PUBLIC_ORIGIN":"https://booster.operator.org", "TERMS_VERSION":"approved-v1", "SMTP_TLS":"required", "MEDIA_S3_ENDPOINT":"https://storage.operator.org", "MEDIA_SCANNER_NETWORK":"unix", "DATABASE_DSN":"runtime:placeholder@tcp(db:4000)/app?tls=true"}
+            frontend = {"PUBLIC_ORIGIN":"https://boost.operator.org", "ADMIN_PUBLIC_ORIGIN":"https://admin.operator.org", "BOOSTER_PUBLIC_ORIGIN":"https://booster.operator.org", "APP_ENV":"production", "PROXY_SHARED_KEY":"a"*64, "TERMS_VERSION":"approved-v1", "ACCOUNT_TERMS_TEXT":"Test terms"}
             migration = {"APP_ENV":"production", "MIGRATION_DATABASE_DSN":"ddl:placeholder@tcp(db:4000)/app?tls=true"}
             for name, values in (("backend", backend), ("frontend", frontend), ("migration", migration)):
                 write(directory/name, values)
-            manifest = {"DEPLOY_PROJECT":"boosterplus-test-policy", "SITE_ADDRESS":"boost.operator.org", "ACME_EMAIL":"ops@operator.org", "EDGE_SUBNET":"172.29.194.0/24", "EDGE_DYNAMIC_RANGE":"172.29.194.128/25", "GATEWAY_IP":"172.29.194.2", **{k: "registry.invalid/app@sha256:" + "b"*64 for k in IMAGE_KEYS}, **{k: str(directory/name) for k,name in (("BACKEND_ENV_FILE","backend"),("FRONTEND_ENV_FILE","frontend"),("MIGRATION_ENV_FILE","migration"))}}
+            manifest = {"DEPLOY_PROJECT":"boosterplus-test-policy", "SITE_ADDRESS":"boost.operator.org", "ADMIN_SITE_ADDRESS":"admin.operator.org", "BOOSTER_SITE_ADDRESS":"booster.operator.org", "ACME_EMAIL":"ops@operator.org", "EDGE_SUBNET":"172.29.194.0/24", "EDGE_DYNAMIC_RANGE":"172.29.194.128/25", "GATEWAY_IP":"172.29.194.2", **{k: "registry.invalid/app@sha256:" + "b"*64 for k in IMAGE_KEYS}, **{k: str(directory/name) for k,name in (("BACKEND_ENV_FILE","backend"),("FRONTEND_ENV_FILE","frontend"),("MIGRATION_ENV_FILE","migration"))}}
             write(directory/"manifest", manifest)
             self.assertEqual(load(directory/"manifest"), manifest)
-            for key,value in (("BACKEND_IMAGE","app:latest"),("GATEWAY_IP","8.8.8.8"),("GATEWAY_IP","172.29.194.130"),("EDGE_DYNAMIC_RANGE","172.29.195.128/25"),("EDGE_SUBNET","0.0.0.0/0"),("SITE_ADDRESS","example.com"),("SITE_ADDRESS",".."),("ACME_EMAIL","bad"),("BACKEND_ENV_FILE","relative.env")):
+            for key,value in (("BACKEND_IMAGE","app:latest"),("GATEWAY_IP","8.8.8.8"),("GATEWAY_IP","172.29.194.130"),("EDGE_DYNAMIC_RANGE","172.29.195.128/25"),("EDGE_SUBNET","0.0.0.0/0"),("SITE_ADDRESS","example.com"),("SITE_ADDRESS",".."),("ADMIN_SITE_ADDRESS",""),("ADMIN_SITE_ADDRESS","boost.operator.org"),("BOOSTER_SITE_ADDRESS","admin.operator.org"),("ADMIN_SITE_ADDRESS","admin.operator.org:443"),("BOOSTER_SITE_ADDRESS","https://booster.operator.org"),("ADMIN_SITE_ADDRESS","admin.localhost"),("ADMIN_SITE_ADDRESS","admin"),("BOOSTER_SITE_ADDRESS","127.0.0.1"),("BOOSTER_SITE_ADDRESS","booster.invalid"),("ACME_EMAIL","bad"),("BACKEND_ENV_FILE","relative.env")):
                 with self.subTest(key=key):
                     write(directory/"manifest", dict(manifest, **{key:value}))
                     with self.assertRaises(ValueError):
                         load(directory/"manifest")
             write(directory/"manifest", manifest)
-            for key,value in (("APP_ENV","development"),("PROXY_SHARED_KEY","wrong"),("AUTH_KEY","must-not-be-in-frontend"),("TERMS_VERSION","development-preview-v1"),("ACCOUNT_TERMS_TEXT","")):
+            for key,value in (("APP_ENV","development"),("PROXY_SHARED_KEY","wrong"),("AUTH_KEY","must-not-be-in-frontend"),("TERMS_VERSION","development-preview-v1"),("ACCOUNT_TERMS_TEXT",""),("PUBLIC_ORIGIN","https://wrong.operator.org"),("ADMIN_PUBLIC_ORIGIN","https://boost.operator.org"),("BOOSTER_PUBLIC_ORIGIN","")):
                 with self.subTest(key=key):
                     write(directory/"frontend", dict(frontend, **{key:value}))
                     with self.assertRaises(ValueError):
                         load(directory/"manifest")
+
+    def test_every_gateway_origin_is_bound_to_both_runtimes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            origins = {"PUBLIC_ORIGIN": "https://boost.operator.org", "ADMIN_PUBLIC_ORIGIN": "https://admin.operator.org", "BOOSTER_PUBLIC_ORIGIN": "https://booster.operator.org"}
+            backend = {"APP_ENV": "production", "PROXY_SHARED_KEY": "a" * 64, **origins, "TERMS_VERSION": "approved-v1", "SMTP_TLS": "required", "MEDIA_S3_ENDPOINT": "https://storage.operator.org", "MEDIA_SCANNER_NETWORK": "unix", "DATABASE_DSN": "runtime:placeholder@tcp(db:4000)/app?tls=true"}
+            frontend = {"APP_ENV": "production", "PROXY_SHARED_KEY": "a" * 64, **origins, "TERMS_VERSION": "approved-v1", "ACCOUNT_TERMS_TEXT": "Test terms"}
+            migration = {"APP_ENV": "production", "MIGRATION_DATABASE_DSN": "ddl:placeholder@tcp(db:4000)/app?tls=true"}
+            manifest = {"DEPLOY_PROJECT": "boosterplus-test-origins", "SITE_ADDRESS": "boost.operator.org", "ADMIN_SITE_ADDRESS": "admin.operator.org", "BOOSTER_SITE_ADDRESS": "booster.operator.org", "ACME_EMAIL": "ops@operator.org", "EDGE_SUBNET": "172.29.194.0/24", "EDGE_DYNAMIC_RANGE": "172.29.194.128/25", "GATEWAY_IP": "172.29.194.2", **{k: "registry.invalid/app@sha256:" + "b" * 64 for k in IMAGE_KEYS}, **{k: str(directory / name) for k, name in (("BACKEND_ENV_FILE", "backend"), ("FRONTEND_ENV_FILE", "frontend"), ("MIGRATION_ENV_FILE", "migration"))}}
+            write(directory / "manifest", manifest)
+            for key in origins:
+                for filename in ("backend", "frontend"):
+                    for value in ("", origins[key] + "/", "http://" + origins[key][8:], "https://foreign.operator.org"):
+                        with self.subTest(runtime=filename, key=key, value=value):
+                            for name, config in (("backend", backend), ("frontend", frontend), ("migration", migration)):
+                                write(directory / name, dict(config, **{key: value}) if name == filename else config)
+                            with self.assertRaisesRegex(ValueError, "portal origins"):
+                                load(directory / "manifest")
 
     def test_compose_boundary_mutations_are_rejected(self):
         service = {"read_only":True,"cap_drop":["ALL"],"mem_limit":100,"networks":{"application":{}}}

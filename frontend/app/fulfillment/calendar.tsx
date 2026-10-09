@@ -1,6 +1,6 @@
 import "../ui/secondary.css";
 import Agenda from "./agenda";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { z } from "../validation";
 import { Action, Check, ErrorNotice, Select, Text } from "../catalog/controls";
 import { post } from "../identity/api";
@@ -13,6 +13,9 @@ import {
   type CalendarProfile,
 } from "./calendar-model";
 import AvailabilityEditor from "./availability-editor";
+import { FieldValidation, ValidationSummary } from "../ui/form-validation";
+import { useActionValidation } from "../ui/action-validation";
+import { profileIssues } from "./validation";
 function ProfileEditor({
   profile,
   base,
@@ -27,77 +30,88 @@ function ProfileEditor({
     [regions, setRegions] = useState(profile.region_tags.join(", ")),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
+  const validation = useActionValidation();
+  const lock = useRef(false);
   async function save() {
+    if (lock.current) return;
+    const input = {
+      ...value,
+      game_tags: games
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      region_tags: regions
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    };
+    setError(null);
+    if (!validation.check(profileIssues(input))) return;
+    lock.current = true;
     setBusy(true);
     setError(null);
     try {
-      await post(
-        base,
-        {
-          ...value,
-          game_tags: games
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-          region_tags: regions
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-        },
-        profileSchema,
-      );
+      await post(base, input, profileSchema);
       reload();
     } catch (cause) {
       setError(cause);
+      validation.server(cause);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
   return (
-    <section className="catalog-section">
-      <h3>Staffing profile</h3>
-      <p>
-        Tags help manual assignment; they do not grant permissions. Resolve
-        confirmed future sessions before pausing the calendar.
-      </p>
-      <ErrorNotice error={error} />
-      <fieldset disabled={busy}>
-        <legend>Declared availability</legend>
-        <Text
-          label="Calendar time zone (IANA)"
-          value={value.timezone}
-          change={(timezone) => {
-            setValue({ ...value, timezone });
+    <FieldValidation value={validation.validation}>
+      <section className="catalog-section">
+        <h3>Staffing profile</h3>
+        <p>
+          Tags help manual assignment; they do not grant permissions. Resolve
+          confirmed future sessions before pausing the calendar.
+        </p>
+        <ErrorNotice error={error} hideIssues />
+        <ValidationSummary {...validation.validation} />
+        <fieldset disabled={busy}>
+          <legend>Declared availability</legend>
+          <Text
+            name="timezone"
+            label="Calendar time zone (IANA)"
+            value={value.timezone}
+            change={(timezone) => {
+              setValue({ ...value, timezone });
+            }}
+            help="For example UTC, Asia/Tehran or Europe/London."
+          />
+          <Check
+            label="Accept new session bookings"
+            value={value.enabled}
+            change={(enabled) => {
+              setValue({ ...value, enabled });
+            }}
+          />
+          <Text
+            name="game_tags"
+            label="Game capabilities (comma separated)"
+            value={games}
+            change={setGames}
+          />
+          <Text
+            name="region_tags"
+            label="Regions (comma separated)"
+            value={regions}
+            change={setRegions}
+          />
+        </fieldset>
+        <Action
+          disabled={busy}
+          onClick={() => {
+            void save();
           }}
-          help="For example UTC, Asia/Tehran or Europe/London."
-        />
-        <Check
-          label="Accept new session bookings"
-          value={value.enabled}
-          change={(enabled) => {
-            setValue({ ...value, enabled });
-          }}
-        />
-        <Text
-          label="Game capabilities (comma separated)"
-          value={games}
-          change={setGames}
-        />
-        <Text
-          label="Regions (comma separated)"
-          value={regions}
-          change={setRegions}
-        />
-      </fieldset>
-      <Action
-        disabled={busy}
-        onClick={() => {
-          void save();
-        }}
-      >
-        Save calendar profile
-      </Action>
-    </section>
+        >
+          Save calendar profile
+        </Action>
+      </section>
+    </FieldValidation>
   );
 }
 function Calendar({ base }: { base: string }) {

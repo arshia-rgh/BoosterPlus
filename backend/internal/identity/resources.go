@@ -18,7 +18,7 @@ func (s *Service) Protect(capability string, next func(http.ResponseWriter, *htt
 			}
 		}
 		return next(w, r, state.principal)
-	}, 256<<10)
+	}, 256<<10, capability == "")
 }
 
 // StaffTransaction fences catalog mutations against role/suspension changes and
@@ -83,7 +83,7 @@ func (s *Service) ProtectRate(capability, scope string, limit int, window time.D
 			}
 		}
 		return next(w, r, state.principal)
-	}, 256<<10)
+	}, 256<<10, capability == "")
 }
 
 // Recheck refreshes a read-only long-lived operation's session/role without
@@ -121,19 +121,14 @@ func (s *Service) ProtectUpload(capability string, next func(http.ResponseWriter
 			}
 		}
 		return next(w, r, state.principal)
-	}, 4<<20)
+	}, 4<<20, false)
 }
 
-// RecentAccountTransaction requires a recent primary factor and, when enrolled, a recent second factor for personal-data operations.
+// RecentAccountTransaction requires completed sign-in and one recent factor for personal-data operations.
 func (s *Service) RecentAccountTransaction(ctx context.Context, p *Principal, fn func(*ent.Tx, *Principal) error) error {
 	return s.AuthorizedTransaction(ctx, p, "self", false, func(tx *ent.Tx, current *Principal) error {
-		if e := s.recent(current); e != nil {
+		if e := s.sensitive(current); e != nil {
 			return e
-		}
-		if current.User.MfaEnabled {
-			if e := s.sensitive(current); e != nil {
-				return e
-			}
 		}
 		return fn(tx, current)
 	})

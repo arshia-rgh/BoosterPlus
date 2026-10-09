@@ -28,6 +28,20 @@ func (_u *SecretBundleUpdate) Where(ps ...predicate.SecretBundle) *SecretBundleU
 	return _u
 }
 
+// SetCipherOwnerID sets the "cipher_owner_id" field.
+func (_u *SecretBundleUpdate) SetCipherOwnerID(v string) *SecretBundleUpdate {
+	_u.mutation.SetCipherOwnerID(v)
+	return _u
+}
+
+// SetNillableCipherOwnerID sets the "cipher_owner_id" field if the given value is not nil.
+func (_u *SecretBundleUpdate) SetNillableCipherOwnerID(v *string) *SecretBundleUpdate {
+	if v != nil {
+		_u.SetCipherOwnerID(*v)
+	}
+	return _u
+}
+
 // SetVersion sets the "version" field.
 func (_u *SecretBundleUpdate) SetVersion(v int) *SecretBundleUpdate {
 	_u.mutation.ResetVersion()
@@ -191,6 +205,11 @@ func (_u *SecretBundleUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *SecretBundleUpdate) check() error {
+	if v, ok := _u.mutation.CipherOwnerID(); ok {
+		if err := secretbundle.CipherOwnerIDValidator(v); err != nil {
+			return &ValidationError{Name: "cipher_owner_id", err: fmt.Errorf(`ent: validator failed for field "SecretBundle.cipher_owner_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.KeyVersion(); ok {
 		if err := secretbundle.KeyVersionValidator(v); err != nil {
 			return &ValidationError{Name: "key_version", err: fmt.Errorf(`ent: validator failed for field "SecretBundle.key_version": %w`, err)}
@@ -225,6 +244,9 @@ func (_u *SecretBundleUpdate) sqlSave(ctx context.Context) (_node int, err error
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.CipherOwnerID(); ok {
+		_spec.SetField(secretbundle.FieldCipherOwnerID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(secretbundle.FieldVersion, field.TypeInt, value)
@@ -280,6 +302,20 @@ type SecretBundleUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *SecretBundleMutation
+}
+
+// SetCipherOwnerID sets the "cipher_owner_id" field.
+func (_u *SecretBundleUpdateOne) SetCipherOwnerID(v string) *SecretBundleUpdateOne {
+	_u.mutation.SetCipherOwnerID(v)
+	return _u
+}
+
+// SetNillableCipherOwnerID sets the "cipher_owner_id" field if the given value is not nil.
+func (_u *SecretBundleUpdateOne) SetNillableCipherOwnerID(v *string) *SecretBundleUpdateOne {
+	if v != nil {
+		_u.SetCipherOwnerID(*v)
+	}
+	return _u
 }
 
 // SetVersion sets the "version" field.
@@ -458,6 +494,11 @@ func (_u *SecretBundleUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *SecretBundleUpdateOne) check() error {
+	if v, ok := _u.mutation.CipherOwnerID(); ok {
+		if err := secretbundle.CipherOwnerIDValidator(v); err != nil {
+			return &ValidationError{Name: "cipher_owner_id", err: fmt.Errorf(`ent: validator failed for field "SecretBundle.cipher_owner_id": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.KeyVersion(); ok {
 		if err := secretbundle.KeyVersionValidator(v); err != nil {
 			return &ValidationError{Name: "key_version", err: fmt.Errorf(`ent: validator failed for field "SecretBundle.key_version": %w`, err)}
@@ -509,6 +550,9 @@ func (_u *SecretBundleUpdateOne) sqlSave(ctx context.Context) (_node *SecretBund
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.CipherOwnerID(); ok {
+		_spec.SetField(secretbundle.FieldCipherOwnerID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(secretbundle.FieldVersion, field.TypeInt, value)

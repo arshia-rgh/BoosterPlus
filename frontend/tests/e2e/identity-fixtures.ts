@@ -1,3 +1,5 @@
+import decodeQR from "qr/decode.js";
+import { authenticatorIssuer } from "../../app/identity/mfa-enrollment";
 import { portalFromPath, authPath } from "../../app/identity/portal";
 import { readFileSync } from "node:fs";
 import { createHmac } from "node:crypto";
@@ -93,7 +95,16 @@ export async function signIn(
   await page.getByRole("button", { name: "Verify email code" }).click();
 }
 export async function accountDestination(page: Page, label: string) {
-  if (["Profile", "Security", "Preferences", "Privacy"].includes(label)) {
+  if (
+    [
+      "Profile",
+      "Security",
+      "Sessions",
+      "Recovery codes",
+      "Preferences",
+      "Privacy",
+    ].includes(label)
+  ) {
     const settings = page.getByRole("navigation", {
       name: "Account settings",
       exact: true,
@@ -156,10 +167,38 @@ export async function enroll(page: Page) {
   const payload = z
     .object({ url: z.string() })
     .parse(await (await enrollment).json());
-  expect(new URL(payload.url).searchParams.get("issuer")).toBe("PLAYORA");
-  const secret = await page.locator(".secret code").textContent();
-  if (!secret) throw new Error("Missing setup key");
-  await page.getByLabel("Authenticator or recovery code").fill(totp(secret));
+  expect(new URL(payload.url).searchParams.get("issuer")).toBe(
+    authenticatorIssuer(portalFromPath(new URL(page.url()).pathname)),
+  );
+  await expect(
+    page.getByRole("img", {
+      name: "Authenticator setup QR code for your PLAYORA account",
+    }),
+  ).toBeVisible();
+  // Decode the actual browser-rasterized SVG: a missing border, wrong label,
+  // or render failure must not be hidden by the response-derived TOTP fixture.
+  const pixels = await page.locator(".mfa-setup-qr").evaluate(async (svg) => {
+    // A local data image respects the application's img-src policy. The test
+    // never relaxes CSP to permit blob URLs or a remote QR service.
+    const image = new Image();
+    image.src =
+      "data:image/svg+xml;charset=utf-8," +
+      encodeURIComponent(new XMLSerializer().serializeToString(svg));
+    await image.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = 576;
+    canvas.height = 576;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Missing fixture canvas");
+    context.drawImage(image, 0, 0, 576, 576);
+    return [...context.getImageData(0, 0, 576, 576).data];
+  });
+  expect(
+    decodeQR({ width: 576, height: 576, data: new Uint8ClampedArray(pixels) }),
+  ).toBe(payload.url);
+  const secret = new URL(payload.url).searchParams.get("secret");
+  if (!secret) throw new Error("Missing fixture setup key");
+  await page.getByLabel("Six-digit authenticator code").fill(totp(secret));
   await page
     .getByRole("button", { name: "Verify authenticator", exact: true })
     .click();

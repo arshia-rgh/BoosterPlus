@@ -38,6 +38,20 @@ func (_c *SecretBundleCreate) SetOwnerID(v string) *SecretBundleCreate {
 	return _c
 }
 
+// SetCipherOwnerID sets the "cipher_owner_id" field.
+func (_c *SecretBundleCreate) SetCipherOwnerID(v string) *SecretBundleCreate {
+	_c.mutation.SetCipherOwnerID(v)
+	return _c
+}
+
+// SetNillableCipherOwnerID sets the "cipher_owner_id" field if the given value is not nil.
+func (_c *SecretBundleCreate) SetNillableCipherOwnerID(v *string) *SecretBundleCreate {
+	if v != nil {
+		_c.SetCipherOwnerID(*v)
+	}
+	return _c
+}
+
 // SetVersion sets the "version" field.
 func (_c *SecretBundleCreate) SetVersion(v int) *SecretBundleCreate {
 	_c.mutation.SetVersion(v)
@@ -179,6 +193,10 @@ func (_c *SecretBundleCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *SecretBundleCreate) defaults() {
+	if _, ok := _c.mutation.CipherOwnerID(); !ok {
+		v := secretbundle.DefaultCipherOwnerID
+		_c.mutation.SetCipherOwnerID(v)
+	}
 	if _, ok := _c.mutation.Version(); !ok {
 		v := secretbundle.DefaultVersion
 		_c.mutation.SetVersion(v)
@@ -225,6 +243,14 @@ func (_c *SecretBundleCreate) check() error {
 	if v, ok := _c.mutation.OwnerID(); ok {
 		if err := secretbundle.OwnerIDValidator(v); err != nil {
 			return &ValidationError{Name: "owner_id", err: fmt.Errorf(`ent: validator failed for field "SecretBundle.owner_id": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.CipherOwnerID(); !ok {
+		return &ValidationError{Name: "cipher_owner_id", err: errors.New(`ent: missing required field "SecretBundle.cipher_owner_id"`)}
+	}
+	if v, ok := _c.mutation.CipherOwnerID(); ok {
+		if err := secretbundle.CipherOwnerIDValidator(v); err != nil {
+			return &ValidationError{Name: "cipher_owner_id", err: fmt.Errorf(`ent: validator failed for field "SecretBundle.cipher_owner_id": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Version(); !ok {
@@ -322,6 +348,10 @@ func (_c *SecretBundleCreate) createSpec() (*SecretBundle, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.OwnerID(); ok {
 		_spec.SetField(secretbundle.FieldOwnerID, field.TypeString, value)
 		_node.OwnerID = value
+	}
+	if value, ok := _c.mutation.CipherOwnerID(); ok {
+		_spec.SetField(secretbundle.FieldCipherOwnerID, field.TypeString, value)
+		_node.CipherOwnerID = value
 	}
 	if value, ok := _c.mutation.Version(); ok {
 		_spec.SetField(secretbundle.FieldVersion, field.TypeInt, value)

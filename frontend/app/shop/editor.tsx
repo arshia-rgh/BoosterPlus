@@ -5,7 +5,7 @@ import {
   useLocation,
   useParams,
   type Location,
-} from "react-router";
+} from "../portal-router";
 import {
   Action,
   Check,
@@ -147,6 +147,7 @@ function Editor({
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
     [preview, setPreview] = useState<Preview | null>(null),
+    [validationAttempt, setValidationAttempt] = useState(0),
     [confirmation, setConfirmation] = useState("");
   const [stockEdits, setStockEdits] = useState(
     new Map<string, { dirty: boolean; busy: boolean }>(),
@@ -207,6 +208,7 @@ function Editor({
   };
   async function act(action: string) {
     if (lock.current || locked || (action !== "draft" && dirty)) return;
+    setValidationAttempt((current) => current + 1);
     lock.current = true;
     setBusy(true);
     setError(null);
@@ -300,6 +302,10 @@ function Editor({
         </section>
       )}
       <div hidden={suspended}>
+        <ShopIssues
+          issues={error instanceof APIError ? error.issues : []}
+          attempt={validationAttempt}
+        />
         <RecordShell
           id={row.id}
           title="Product"
@@ -318,7 +324,15 @@ function Editor({
           }
           back={{ to: back, label: "Shop products" }}
           sections={sections}
-          keepMounted={["stock", "history"]}
+          keepMounted={[
+            "basics",
+            "variants",
+            "recipient",
+            "terms",
+            "promotion",
+            "stock",
+            "history",
+          ]}
         >
           {(section, visible) => (
             <>
@@ -330,9 +344,6 @@ function Editor({
                         ? null
                         : error
                     }
-                  />
-                  <ShopIssues
-                    issues={error instanceof APIError ? error.issues : []}
                   />
                   {stale && (
                     <section role="alert">

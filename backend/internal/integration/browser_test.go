@@ -73,7 +73,7 @@ func TestBrowserEnvironment(t *testing.T) {
 	for _, project := range []string{"desktop", "mobile"} {
 		for _, role := range []string{"operationsadmin", "reportsadmin", "newseditor", "shopmarketing", "shopbuyer", "shopworker", "shopadmin", "contentowner", "resaleseller", "resalebuyer", "payadmin", "paybuyer", "customer", "booster", "administrator", "owner", "target", "catalog", "orders", "orderadmin", "orderother", "supportadmin", "supportbuyer", "supportother", "workadmin", "workbuyer", "workbooster", "workother", "worksecond", "seller", "selleradmin", "sellerother"} {
 			email := strings.ToLower(role + "-" + project + "-" + rand.Text() + "@example.test")
-			account, createErr := f.client.User.Create().SetEmail(email).SetEmailVerifiedAt(time.Now()).SetTermsVersion("test-v1").SetTermsAcceptedAt(time.Now()).SetRole(func() string {
+			accountRole := func() string {
 				if role == "workbooster" || role == "worksecond" {
 					return "booster"
 				}
@@ -87,7 +87,15 @@ func TestBrowserEnvironment(t *testing.T) {
 					return "customer"
 				}
 				return role
-			}()).Save(t.Context())
+			}()
+			portal := identity.PortalCustomer
+			switch accountRole {
+			case identity.RoleBooster:
+				portal = identity.PortalBooster
+			case identity.RoleAdmin, identity.RoleOwner:
+				portal = identity.PortalAdmin
+			}
+			account, createErr := f.client.User.Create().SetPortal(string(portal)).SetEmail(email).SetEmailVerifiedAt(time.Now()).SetTermsVersion("test-v1").SetTermsAcceptedAt(time.Now()).SetRole(accountRole).Save(t.Context())
 			if createErr != nil {
 				t.Fatal(createErr)
 			}

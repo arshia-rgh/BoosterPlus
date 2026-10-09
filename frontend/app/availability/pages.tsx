@@ -1,6 +1,6 @@
 import "../ui/secondary.css";
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams } from "../portal-router";
 import { Action, Check, ErrorNotice } from "../catalog/controls";
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";

@@ -30,14 +30,16 @@ import (
 
 // This provider exists only in integration builds. No runtime endpoint can activate it.
 type paymentProvider struct {
-	mu        sync.Mutex
-	verifier  *nowpayments.Client
-	rows      map[string]nowpayments.Payment
-	calls     int
-	ambiguous bool
-	readError error
-	block     chan struct{}
-	entered   chan struct{}
+	mu             sync.Mutex
+	verifier       *nowpayments.Client
+	rows           map[string]nowpayments.Payment
+	calls          int
+	ambiguous      bool
+	preflightError error
+	legacyNative   bool
+	readError      error
+	block          chan struct{}
+	entered        chan struct{}
 }
 
 const paymentTestSecret = "synthetic-payment-ipn-secret-for-tests"
@@ -49,6 +51,11 @@ func newPaymentProvider(t *testing.T) *paymentProvider {
 		t.Fatal(err)
 	}
 	return &paymentProvider{verifier: verifier, rows: map[string]nowpayments.Payment{}}
+}
+func (p *paymentProvider) CheckInvoice(_ context.Context, _ nowpayments.InvoiceRequest) error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.preflightError
 }
 func (p *paymentProvider) CreateInvoice(_ context.Context, _ nowpayments.InvoiceRequest) (nowpayments.Invoice, error) {
 	p.mu.Lock()
@@ -129,6 +136,12 @@ func (f *paymentFixture) start(t *testing.T, detail orders.Detail) payments.Atte
 	a, err := f.store.Start(t.Context(), f.base.buyer, detail.Order.ID, payments.StartInput{ContractID: detail.Contract.ID, PolicyID: f.policy.ID, Route: "usdttrc20", AcceptPolicy: true})
 	if err != nil {
 		t.Fatal(err)
+	}
+	if f.provider.legacyNative {
+		if _, err := f.base.auth.client.ExecContext(t.Context(), "UPDATE payment_attempts SET native_checkout=TRUE, deposit_claimed=FALSE WHERE id=?", a.ID); err != nil {
+			t.Fatal(err)
+		}
+		a.NativeCheckout = true
 	}
 	return a
 }

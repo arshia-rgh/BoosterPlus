@@ -19,6 +19,9 @@ func (SecretBundle) Fields() []ent.Field {
 		field.Enum("purpose").Values("game_access", "account_transfer").Immutable(),
 		field.String("resource_id").MaxLen(36).Immutable(),
 		field.String("owner_id").MaxLen(36).Immutable(),
+		// Only namespace-migrated envelopes retain their deterministic original owner.
+		// Replacement ciphertext is always authenticated to owner_id and clears this marker.
+		field.String("cipher_owner_id").MaxLen(36).Default(""),
 		field.Int("version").Default(1),
 		field.String("key_version").MaxLen(32),
 		field.Bytes("wrapped_key").Optional().Sensitive(),

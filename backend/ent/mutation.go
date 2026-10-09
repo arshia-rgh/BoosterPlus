@@ -11781,6 +11781,7 @@ type AuthIdentityMutation struct {
 	op            Op
 	typ           string
 	id            *string
+	portal        *string
 	user_id       *string
 	provider      *string
 	subject       *string
@@ -11893,6 +11894,42 @@ func (m *AuthIdentityMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetPortal sets the "portal" field.
+func (m *AuthIdentityMutation) SetPortal(s string) {
+	m.portal = &s
+}
+
+// Portal returns the value of the "portal" field in the mutation.
+func (m *AuthIdentityMutation) Portal() (r string, exists bool) {
+	v := m.portal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPortal returns the old "portal" field's value of the AuthIdentity entity.
+// If the AuthIdentity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AuthIdentityMutation) OldPortal(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPortal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPortal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPortal: %w", err)
+	}
+	return oldValue.Portal, nil
+}
+
+// ResetPortal resets all changes to the "portal" field.
+func (m *AuthIdentityMutation) ResetPortal() {
+	m.portal = nil
 }
 
 // SetUserID sets the "user_id" field.
@@ -12073,7 +12110,10 @@ func (m *AuthIdentityMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AuthIdentityMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
+	if m.portal != nil {
+		fields = append(fields, authidentity.FieldPortal)
+	}
 	if m.user_id != nil {
 		fields = append(fields, authidentity.FieldUserID)
 	}
@@ -12094,6 +12134,8 @@ func (m *AuthIdentityMutation) Fields() []string {
 // schema.
 func (m *AuthIdentityMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case authidentity.FieldPortal:
+		return m.Portal()
 	case authidentity.FieldUserID:
 		return m.UserID()
 	case authidentity.FieldProvider:
@@ -12111,6 +12153,8 @@ func (m *AuthIdentityMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *AuthIdentityMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case authidentity.FieldPortal:
+		return m.OldPortal(ctx)
 	case authidentity.FieldUserID:
 		return m.OldUserID(ctx)
 	case authidentity.FieldProvider:
@@ -12128,6 +12172,13 @@ func (m *AuthIdentityMutation) OldField(ctx context.Context, name string) (ent.V
 // type.
 func (m *AuthIdentityMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case authidentity.FieldPortal:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPortal(v)
+		return nil
 	case authidentity.FieldUserID:
 		v, ok := value.(string)
 		if !ok {
@@ -12205,6 +12256,9 @@ func (m *AuthIdentityMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *AuthIdentityMutation) ResetField(name string) error {
 	switch name {
+	case authidentity.FieldPortal:
+		m.ResetPortal()
+		return nil
 	case authidentity.FieldUserID:
 		m.ResetUserID()
 		return nil
@@ -46741,6 +46795,7 @@ type SecretBundleMutation struct {
 	purpose           *secretbundle.Purpose
 	resource_id       *string
 	owner_id          *string
+	cipher_owner_id   *string
 	version           *int
 	addversion        *int
 	key_version       *string
@@ -46968,6 +47023,42 @@ func (m *SecretBundleMutation) OldOwnerID(ctx context.Context) (v string, err er
 // ResetOwnerID resets all changes to the "owner_id" field.
 func (m *SecretBundleMutation) ResetOwnerID() {
 	m.owner_id = nil
+}
+
+// SetCipherOwnerID sets the "cipher_owner_id" field.
+func (m *SecretBundleMutation) SetCipherOwnerID(s string) {
+	m.cipher_owner_id = &s
+}
+
+// CipherOwnerID returns the value of the "cipher_owner_id" field in the mutation.
+func (m *SecretBundleMutation) CipherOwnerID() (r string, exists bool) {
+	v := m.cipher_owner_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCipherOwnerID returns the old "cipher_owner_id" field's value of the SecretBundle entity.
+// If the SecretBundle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SecretBundleMutation) OldCipherOwnerID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCipherOwnerID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCipherOwnerID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCipherOwnerID: %w", err)
+	}
+	return oldValue.CipherOwnerID, nil
+}
+
+// ResetCipherOwnerID resets all changes to the "cipher_owner_id" field.
+func (m *SecretBundleMutation) ResetCipherOwnerID() {
+	m.cipher_owner_id = nil
 }
 
 // SetVersion sets the "version" field.
@@ -47410,7 +47501,7 @@ func (m *SecretBundleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SecretBundleMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.purpose != nil {
 		fields = append(fields, secretbundle.FieldPurpose)
 	}
@@ -47419,6 +47510,9 @@ func (m *SecretBundleMutation) Fields() []string {
 	}
 	if m.owner_id != nil {
 		fields = append(fields, secretbundle.FieldOwnerID)
+	}
+	if m.cipher_owner_id != nil {
+		fields = append(fields, secretbundle.FieldCipherOwnerID)
 	}
 	if m.version != nil {
 		fields = append(fields, secretbundle.FieldVersion)
@@ -47464,6 +47558,8 @@ func (m *SecretBundleMutation) Field(name string) (ent.Value, bool) {
 		return m.ResourceID()
 	case secretbundle.FieldOwnerID:
 		return m.OwnerID()
+	case secretbundle.FieldCipherOwnerID:
+		return m.CipherOwnerID()
 	case secretbundle.FieldVersion:
 		return m.Version()
 	case secretbundle.FieldKeyVersion:
@@ -47499,6 +47595,8 @@ func (m *SecretBundleMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldResourceID(ctx)
 	case secretbundle.FieldOwnerID:
 		return m.OldOwnerID(ctx)
+	case secretbundle.FieldCipherOwnerID:
+		return m.OldCipherOwnerID(ctx)
 	case secretbundle.FieldVersion:
 		return m.OldVersion(ctx)
 	case secretbundle.FieldKeyVersion:
@@ -47548,6 +47646,13 @@ func (m *SecretBundleMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetOwnerID(v)
+		return nil
+	case secretbundle.FieldCipherOwnerID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCipherOwnerID(v)
 		return nil
 	case secretbundle.FieldVersion:
 		v, ok := value.(int)
@@ -47706,6 +47811,9 @@ func (m *SecretBundleMutation) ResetField(name string) error {
 		return nil
 	case secretbundle.FieldOwnerID:
 		m.ResetOwnerID()
+		return nil
+	case secretbundle.FieldCipherOwnerID:
+		m.ResetCipherOwnerID()
 		return nil
 	case secretbundle.FieldVersion:
 		m.ResetVersion()
@@ -62503,6 +62611,7 @@ type UserMutation struct {
 	typ                       string
 	id                        *string
 	deleted_at                *time.Time
+	portal                    *string
 	email                     *string
 	display_name              *string
 	email_verified_at         *time.Time
@@ -62680,6 +62789,42 @@ func (m *UserMutation) DeletedAtCleared() bool {
 func (m *UserMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, user.FieldDeletedAt)
+}
+
+// SetPortal sets the "portal" field.
+func (m *UserMutation) SetPortal(s string) {
+	m.portal = &s
+}
+
+// Portal returns the value of the "portal" field in the mutation.
+func (m *UserMutation) Portal() (r string, exists bool) {
+	v := m.portal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPortal returns the old "portal" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldPortal(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPortal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPortal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPortal: %w", err)
+	}
+	return oldValue.Portal, nil
+}
+
+// ResetPortal resets all changes to the "portal" field.
+func (m *UserMutation) ResetPortal() {
+	m.portal = nil
 }
 
 // SetEmail sets the "email" field.
@@ -63462,9 +63607,12 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.deleted_at != nil {
 		fields = append(fields, user.FieldDeletedAt)
+	}
+	if m.portal != nil {
+		fields = append(fields, user.FieldPortal)
 	}
 	if m.email != nil {
 		fields = append(fields, user.FieldEmail)
@@ -63527,6 +63675,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case user.FieldDeletedAt:
 		return m.DeletedAt()
+	case user.FieldPortal:
+		return m.Portal()
 	case user.FieldEmail:
 		return m.Email()
 	case user.FieldDisplayName:
@@ -63572,6 +63722,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 	switch name {
 	case user.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case user.FieldPortal:
+		return m.OldPortal(ctx)
 	case user.FieldEmail:
 		return m.OldEmail(ctx)
 	case user.FieldDisplayName:
@@ -63621,6 +63773,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
+		return nil
+	case user.FieldPortal:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPortal(v)
 		return nil
 	case user.FieldEmail:
 		v, ok := value.(string)
@@ -63864,6 +64023,9 @@ func (m *UserMutation) ResetField(name string) error {
 	switch name {
 	case user.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case user.FieldPortal:
+		m.ResetPortal()
 		return nil
 	case user.FieldEmail:
 		m.ResetEmail()

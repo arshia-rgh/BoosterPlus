@@ -15,11 +15,7 @@ func TestAuditDirectoryExactFiltersPaginationAndCurrentAuthority(t *testing.T) {
 	f := orderDB(t)
 	owner := privacyOwner(t, f)
 	ctx := t.Context()
-	_, admin := f.auth.login(t, "audit-admin@example.test")
-	if _, err := f.auth.client.User.UpdateOneID(admin.User.ID).SetRole(identity.RoleAdmin).Save(ctx); err != nil {
-		t.Fatal(err)
-	}
-	admin = f.auth.enterPortal(t, admin, identity.PortalAdmin)
+	_, admin := f.auth.staffLogin(t, "audit-admin@example.test", identity.RoleAdmin)
 	_, _, admin = f.auth.enroll(t, admin)
 	now := time.Unix(f.auth.clock.Load(), 0).UTC()
 	for i := range 105 {

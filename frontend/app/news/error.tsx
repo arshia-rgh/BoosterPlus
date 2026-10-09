@@ -5,7 +5,7 @@ import {
   useRevalidator,
   useRouteError,
   useSearchParams,
-} from "react-router";
+} from "../portal-router";
 import { Action } from "../catalog/controls";
 export function NewsError() {
   const error = useRouteError(),

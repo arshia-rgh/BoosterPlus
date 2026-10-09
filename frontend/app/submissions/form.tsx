@@ -1,5 +1,10 @@
+import {
+  FieldValidation,
+  useFormValidation,
+  type FieldIssue,
+} from "../ui/form-validation";
 import { useRef, useState } from "react";
-import { Action, Check, ErrorNotice, Text } from "../catalog/controls";
+import { Action, Check, ErrorNotice, Issues, Text } from "../catalog/controls";
 import { Input } from "../catalog/dynamic-form";
 import {
   intakeService,
@@ -7,7 +12,7 @@ import {
   visibleAnswers,
   type Answers,
 } from "../catalog/model";
-import { post } from "../identity/api";
+import { APIError, post } from "../identity/api";
 import { submissionSchema, type Submission } from "./model";
 
 export default function SubmissionEditor({
@@ -26,6 +31,15 @@ export default function SubmissionEditor({
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
     form = value.offer.configuration.intake;
+  const [issues, setIssues] = useState<FieldIssue[]>([]);
+  const validation = useFormValidation(
+    issues,
+    (name) => {
+      setIssues((old) => old.filter((issue) => issue.path !== name));
+    },
+    undefined,
+    !busy,
+  );
   const lock = useRef(false);
   function reset(current: Submission) {
     setTitle(current.submission.title);
@@ -35,6 +49,7 @@ export default function SubmissionEditor({
     setBaseVersion(current.submission.version);
     setDirty(false);
     setError(null);
+    setIssues([]);
   }
   const stale = value.submission.version > baseVersion;
   if (stale && !dirty && !busy) reset(value);
@@ -44,6 +59,30 @@ export default function SubmissionEditor({
     values = visibleAnswers(service, answers, "order");
   async function save(submit: boolean) {
     if (lock.current || stale || (submit && dirty)) return;
+    const invalid: FieldIssue[] = [];
+    if (!title.trim() || Array.from(title).length > 120 || title.includes("\0"))
+      invalid.push({
+        path: "title",
+        message: "Enter an account title of 1–120 characters.",
+      });
+    if (
+      Array.from(notes).length > 2000 ||
+      notes.includes("\0") ||
+      (submit && !notes.trim())
+    )
+      invalid.push({
+        path: "ownership_notes",
+        message: submit
+          ? "Describe your ownership using 1–2,000 characters."
+          : "Keep ownership information within 2,000 characters.",
+      });
+    if (submit && !declared)
+      invalid.push({
+        path: "ownership_declared",
+        message: "Confirm your authority to submit this account for review.",
+      });
+    setIssues(invalid);
+    if (invalid.length) return;
     lock.current = true;
     setBusy(true);
     setError(null);
@@ -65,119 +104,127 @@ export default function SubmissionEditor({
       reload();
     } catch (cause) {
       setError(cause);
+      if (cause instanceof APIError) setIssues(cause.issues);
     } finally {
       lock.current = false;
       setBusy(false);
     }
   }
   return (
-    <section className="catalog-section seller-intake">
-      <h3>{form.name}</h3>
-      <p>{form.description}</p>
-      <ErrorNotice error={error} />
-      {stale && dirty && (
-        <section role="alert">
-          <p>
-            This submission changed since you started editing. Your draft is
-            still here; compare it with the latest record before continuing.
-          </p>
-          <Action
-            onClick={() => {
-              reset(value);
-            }}
-          >
-            Discard this draft and load current details
-          </Action>
-        </section>
-      )}
-      <fieldset disabled={busy || stale}>
-        <legend>Private submission details</legend>
-        <h4>1. Describe the account</h4>
-        <div className="seller-intake-fields">
+    <FieldValidation value={validation}>
+      <section className="catalog-section seller-intake">
+        <h3>{form.name}</h3>
+        <p>{form.description}</p>
+        <ErrorNotice error={error} hideIssues />
+        <Issues issues={issues} />
+        {stale && dirty && (
+          <section role="alert">
+            <p>
+              This submission changed since you started editing. Your draft is
+              still here; compare it with the latest record before continuing.
+            </p>
+            <Action
+              onClick={() => {
+                reset(value);
+              }}
+            >
+              Discard this draft and load current details
+            </Action>
+          </section>
+        )}
+        <fieldset disabled={busy || stale}>
+          <legend>Private submission details</legend>
+          <h4>1. Describe the account</h4>
+          <div className="seller-intake-fields">
+            <Text
+              name="title"
+              label="Private account title"
+              value={title}
+              change={(v) => {
+                setTitle(v);
+                setDirty(true);
+              }}
+            />
+            {service.fields
+              .filter((f) => matches(f.visible_when, values, service.fields))
+              .map((field) => (
+                <Input
+                  key={field.key}
+                  config={value.offer.configuration}
+                  field={field}
+                  value={values[field.key]}
+                  required={
+                    field.required ||
+                    (!!field.required_when &&
+                      matches(field.required_when, values, service.fields))
+                  }
+                  error={undefined}
+                  change={(v) => {
+                    setAnswers((current) => {
+                      const next = Object.fromEntries(
+                        Object.entries(current).filter(
+                          ([key]) => key !== field.key,
+                        ),
+                      );
+                      if (v !== undefined) next[field.key] = v;
+                      return next;
+                    });
+                    validation.correct(field.key);
+                    setDirty(true);
+                  }}
+                />
+              ))}
+          </div>
+          <h4>2. Confirm ownership</h4>
           <Text
-            label="Private account title"
-            value={title}
+            name="ownership_notes"
+            label="Ownership and control information"
+            multiline
+            value={notes}
             change={(v) => {
-              setTitle(v);
+              setNotes(v);
+              setDirty(true);
+            }}
+            help="Describe how you obtained and control the account and relevant restrictions. Do not include login or recovery information."
+          />
+          <Check
+            name="ownership_declared"
+            label="I control this account and have authority to submit it for review"
+            value={declared}
+            change={(v) => {
+              setDeclared(v);
               setDirty(true);
             }}
           />
-          {service.fields
-            .filter((f) => matches(f.visible_when, values, service.fields))
-            .map((field) => (
-              <Input
-                key={field.key}
-                config={value.offer.configuration}
-                field={field}
-                value={values[field.key]}
-                required={
-                  field.required ||
-                  (!!field.required_when &&
-                    matches(field.required_when, values, service.fields))
-                }
-                error={undefined}
-                change={(v) => {
-                  setAnswers((current) => {
-                    const next = Object.fromEntries(
-                      Object.entries(current).filter(
-                        ([key]) => key !== field.key,
-                      ),
-                    );
-                    if (v !== undefined) next[field.key] = v;
-                    return next;
-                  });
-                  setDirty(true);
-                }}
-              />
-            ))}
-        </div>
-        <h4>2. Confirm ownership</h4>
-        <Text
-          label="Ownership and control information"
-          multiline
-          value={notes}
-          change={(v) => {
-            setNotes(v);
-            setDirty(true);
-          }}
-          help="Describe how you obtained and control the account and relevant restrictions. Do not include login or recovery information."
-        />
-        <Check
-          label="I control this account and have authority to submit it for review"
-          value={declared}
-          change={(v) => {
-            setDeclared(v);
-            setDirty(true);
-          }}
-        />
-        <h4>3. Save and send for review</h4>
-        <p>
-          Save a private draft first. Submit only when the saved details are
-          ready for the team.
-        </p>
-        <div className="seller-save-actions">
-          <Action
-            onClick={() => {
-              void save(false);
-            }}
-          >
-            Save account draft
-          </Action>
-          <Action
-            disabled={dirty}
-            onClick={() => {
-              void save(true);
-            }}
-          >
-            Submit saved account for review
-          </Action>
-        </div>
-        {dirty && (
-          <p role="status">
-            Save your changes before submitting them for review.
+          <h4>3. Save and send for review</h4>
+          <p>
+            Save a private draft first. Submit only when the saved details are
+            ready for the team.
           </p>
-        )}
-      </fieldset>
-    </section>
+          <div className="seller-save-actions">
+            <Action
+              onClick={() => {
+                void save(false);
+              }}
+            >
+              Save account draft
+            </Action>
+            <Action
+              disabled={dirty}
+              onClick={() => {
+                void save(true);
+              }}
+            >
+              Submit saved account for review
+            </Action>
+          </div>
+          {dirty && (
+            <p role="status">
+              Save your changes before submitting them for review.
+            </p>
+          )}
+        </fieldset>
+      </section>
+    </FieldValidation>
   );
 }

@@ -8,9 +8,9 @@
   },
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "build": "npm run build:storefront && npm run build:admin",
+    "build": "npm run build:storefront && npm run build:admin && npm run build:booster",
     "start": "node --env-file-if-exists=.env server.mjs",
-    "typecheck": "FRONTEND_APP=storefront react-router typegen && FRONTEND_APP=admin react-router typegen && tsc --noEmit",
+    "typecheck": "FRONTEND_APP=storefront react-router typegen && FRONTEND_APP=admin react-router typegen && FRONTEND_APP=booster react-router typegen && tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -18,10 +18,10 @@
     "test:watch": "vitest",
     "test:e2e": "python3 ../scripts/browser-tests.py",
     "security": "npm audit --audit-level=low",
-    "pre-commit": "npm run contract:check && npm run format:check && npm run typecheck && npm run lint && npm run test && npm run security && npm run build && npm run test:server && npm run test:e2e",
+    "pre-commit": "npm run contract:check && npm run format:check && npm run typecheck && npm run lint && npm run test && npm run security && npm run build && npm run test:server && npm run test:portals && npm run test:e2e",
     "contract:generate": "node scripts/contract.mjs --write",
     "contract:check": "node scripts/contract.mjs",
-    "test:server": "node --test tests/server.test.mjs tests/dev.test.mjs",
+    "test:server": "node --test tests/server.test.mjs tests/dev.test.mjs tests/portal-hosts.test.mjs",
     "budget:home": "node scripts/check-home-budget.mjs",
     "dev:storefront": "FRONTEND_APP=storefront react-router dev --host 127.0.0.1",
     "dev:admin": "FRONTEND_APP=admin react-router dev --host 127.0.0.1",
@@ -29,7 +29,9 @@
     "build:admin": "FRONTEND_APP=admin react-router build",
     "start:storefront": "FRONTEND_APP=storefront node --env-file-if-exists=.env server.mjs",
     "start:admin": "FRONTEND_APP=admin node --env-file-if-exists=.env server.mjs",
-    "budget:experience": "node scripts/check-experience-budget.mjs"
+    "budget:experience": "node scripts/check-experience-budget.mjs",
+    "build:booster": "FRONTEND_APP=booster react-router build",
+    "test:portals": "node --test tests/portals/browser.test.mjs"
   },
   "dependencies": {
     "@react-router/express": "8.3.1",
@@ -38,6 +40,7 @@
     "express": "5.2.1",
     "isbot": "5.2.2",
     "openapi-fetch": "0.17.0",
+    "qr": "0.7.2",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-router": "8.3.1",

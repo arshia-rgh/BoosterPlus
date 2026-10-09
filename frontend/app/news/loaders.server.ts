@@ -1,3 +1,4 @@
+import { publicAPIHeaders } from "../portal/routing.server";
 import { redirect } from "react-router";
 import { z } from "../validation";
 import { articlePath, publicPageSchema, publicSchema } from "./model";
@@ -14,6 +15,7 @@ export async function readNews<T>(
       ),
       {
         cache: "no-store",
+        headers: publicAPIHeaders(),
         signal: AbortSignal.timeout(8000),
         redirect: "error",
       },

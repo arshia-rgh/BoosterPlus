@@ -19,11 +19,7 @@ func TestSubmissionScannedEvidencePrivacy(t *testing.T) {
 	ctx := t.Context()
 	v := f.createSubmission(t)
 	// Even fully authenticated boosting staff get no seller-evidence membership.
-	_, staff := f.auth.login(t, "intakebooster@example.test")
-	if _, err := f.auth.client.User.UpdateOneID(staff.User.ID).SetRole("booster").Save(ctx); err != nil {
-		t.Fatal(err)
-	}
-	staff = f.auth.enterPortal(t, staff, identity.PortalBooster)
+	_, staff := f.auth.staffLogin(t, "intakebooster@example.test", identity.RoleBooster)
 	_, _, staff = f.auth.enroll(t, staff)
 	files := media.New(f.auth.client, f.auth.service, mediaObjects(t, f.auth.client), media.Clamd{Network: "tcp", Address: "127.0.0.1:13310"})
 	data := imageBytes(t)

@@ -205,7 +205,7 @@ func (s *Store) Reorder(ctx context.Context, p *identity.Principal, id string) (
 	}
 	copied := catalog.Answers{}
 	for _, field := range release.Configuration.Services[i].Fields {
-		if field.Stage == "fulfillment" || !slices.Contains([]string{"select", "radio", "multiselect", "boolean", "integer", "decimal", "rank"}, field.Type) {
+		if field.Stage == "fulfillment" || !slices.Contains([]string{"select", "radio", "multiselect", "boolean", "integer", "decimal", "win_rate", "rank"}, field.Type) {
 			continue
 		}
 		oldField := slices.IndexFunc(originalOffer.Configuration.Services[oldIndex].Fields, func(f catalog.Field) bool {
@@ -219,7 +219,7 @@ func (s *Store) Reorder(ctx context.Context, p *identity.Principal, id string) (
 	}
 	missing := []catalog.Issue{}
 	for _, field := range originalOffer.Configuration.Services[oldIndex].Fields {
-		if field.Stage != "fulfillment" && slices.Contains([]string{"select", "radio", "multiselect", "boolean", "integer", "decimal", "rank"}, field.Type) {
+		if field.Stage != "fulfillment" && slices.Contains([]string{"select", "radio", "multiselect", "boolean", "integer", "decimal", "win_rate", "rank"}, field.Type) {
 			if _, existed := original[field.Key]; existed {
 				if _, reused := copied[field.Key]; !reused {
 					missing = append(missing, catalog.Issue{Path: field.Key, Message: "This previous selection changed or was removed. Review the current offering before submitting."})
@@ -234,7 +234,7 @@ func (s *Store) Reorder(ctx context.Context, p *identity.Principal, id string) (
 			return ReorderDraft{}, err
 		}
 	}
-	validated := catalog.ValidateAnswers(release.Configuration, row.Service, "order", copied, variant)
+	validated := catalog.ValidateNewAnswers(release.Configuration, row.Service, "order", copied, variant)
 	validated.Issues = append(validated.Issues, missing...)
 	// Invalid choices remain issues requiring correction, but never become defaults
 	// silently. The form renderer can show their absence without reviving removed options.
@@ -243,7 +243,7 @@ func (s *Store) Reorder(ctx context.Context, p *identity.Principal, id string) (
 	}
 	safe := catalog.Answers{}
 	for _, field := range release.Configuration.Services[i].Fields {
-		if field.Stage != "fulfillment" && slices.Contains([]string{"select", "radio", "multiselect", "boolean", "integer", "decimal", "rank"}, field.Type) {
+		if field.Stage != "fulfillment" && slices.Contains([]string{"select", "radio", "multiselect", "boolean", "integer", "decimal", "win_rate", "rank"}, field.Type) {
 			if raw, ok := validated.Answers[field.Key]; ok {
 				safe[field.Key] = slices.Clone(raw)
 			}

@@ -1,3 +1,4 @@
+import { Anchor } from "../portal-router";
 import MarketFilters from "./market-filters";
 import { maximumDisplay } from "./market-price";
 import AccountAlerts from "../availability/accounts";
@@ -11,7 +12,7 @@ import {
   useParams,
   useSearchParams,
   type Location,
-} from "react-router";
+} from "../portal-router";
 import { Action, Check, ErrorNotice } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
 import { get, post, sessionSchema } from "../identity/api";
@@ -490,9 +491,9 @@ function Purchase({
             before delivery. Your reservation has a limited checkout window; the
             order page shows its expiry.
           </p>
-          <a href="/terms" target="_blank" rel="noopener noreferrer">
+          <Anchor href="/terms" target="_blank" rel="noopener noreferrer">
             Read site terms in a new tab
-          </a>
+          </Anchor>
           <Check
             label="I accept this account's price, sale, transfer, dispute and acknowledgement terms and the site terms"
             value={accept}

@@ -5,7 +5,9 @@ import type { MetricPolicy } from "./discovery-model";
 export default function MetricPolicyEditor({
   value,
   change,
+  path = "discovery.metrics",
 }: {
+  path?: string;
   value: MetricPolicy | undefined;
   change: (value: MetricPolicy | undefined) => void;
 }) {
@@ -46,7 +48,7 @@ export default function MetricPolicyEditor({
           </p>
           <div className="catalog-grid">
             <NumberInput
-              name="metrics.window_days"
+              name={`${path}.window_days`}
               label="Reporting period (days)"
               value={value.window_days}
               change={(window_days) => {
@@ -54,7 +56,7 @@ export default function MetricPolicyEditor({
               }}
             />
             <NumberInput
-              name="metrics.minimum_sample"
+              name={`${path}.minimum_sample`}
               label="Minimum eligible records"
               value={value.minimum_sample}
               change={(minimum_sample) => {
@@ -62,7 +64,7 @@ export default function MetricPolicyEditor({
               }}
             />
             <NumberInput
-              name="metrics.maximum_age_seconds"
+              name={`${path}.maximum_age_seconds`}
               label="Maximum age (seconds)"
               value={value.maximum_age_seconds}
               change={(maximum_age_seconds) => {

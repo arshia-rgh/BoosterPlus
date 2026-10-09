@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { Anchor } from "../portal-router";
 import { Action, Check, ErrorNotice, Select } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
-import { post } from "../identity/api";
+import { APIError, post } from "../identity/api";
+import { focusValidationTarget } from "../ui/form-validation";
 import type { Detail } from "../orders/model";
 import { useResource } from "../orders/resource";
 import {
@@ -11,6 +13,7 @@ import {
   remedyLabels,
   remedyText,
 } from "./model";
+import { continueToProvider } from "./provider-navigation";
 import { paymentTitle } from "./presentation";
 import DepositInstructions from "./deposit-instructions";
 import {
@@ -65,6 +68,21 @@ export default function Checkout({
   const consentKey = `${policy?.id ?? ""}:${detail.contract?.id ?? ""}:${route}`;
   const accepted = !!policy && acceptedPolicy === consentKey;
   const lock = useRef(false);
+  const pendingRedirect = useRef<string | null>(null);
+  const pendingFocus = useRef<string | null>(null);
+  const paymentHeading = useRef<HTMLHeadingElement>(null);
+  const feedback = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (error) focusValidationTarget(feedback.current);
+  }, [error]);
+  useEffect(() => {
+    // Only the customer's own newly-created attempt moves focus. Polling and
+    // payment reconciliation updates must not interrupt reading or typing.
+    if (pendingFocus.current && pendingFocus.current === latest?.id) {
+      pendingFocus.current = null;
+      focusValidationTarget(paymentHeading.current);
+    }
+  }, [latest]);
   const selectedRoute = policy?.data.routes.find(
     (value) => value.code === route,
   );
@@ -109,6 +127,22 @@ export default function Checkout({
     )
       changed();
   }, [latest?.state, detail.contract?.payment_state, changed]);
+  useEffect(() => {
+    if (
+      pendingRedirect.current === latest?.id &&
+      latest.checkout_url &&
+      !latest.native_checkout &&
+      latest.state === "awaiting_payment" &&
+      !latest.issue &&
+      !expired &&
+      !unavailable &&
+      !resource.error &&
+      !admin
+    ) {
+      pendingRedirect.current = null;
+      continueToProvider(latest.checkout_url);
+    }
+  }, [latest, expired, unavailable, resource.error, admin]);
   async function start() {
     if (
       lock.current ||
@@ -128,7 +162,7 @@ export default function Checkout({
     setBusy(true);
     setError(null);
     try {
-      await post(
+      const attempt = await post(
         base + "/checkout",
         {
           contract_id: detail.contract.id,
@@ -138,6 +172,8 @@ export default function Checkout({
         },
         attemptSchema,
       );
+      pendingRedirect.current = attempt.id;
+      pendingFocus.current = attempt.id;
       resource.reload();
       changed();
     } catch (cause) {
@@ -153,8 +189,20 @@ export default function Checkout({
       aria-label="Payment and receipts"
     >
       <p className="eyebrow">Direct crypto checkout</p>
-      <h2>Payment and receipts</h2>
-      <ErrorNotice error={resource.error ?? error} />
+      <h2 ref={paymentHeading} tabIndex={-1}>
+        Payment and receipts
+      </h2>
+      <div ref={feedback} tabIndex={-1}>
+        <ErrorNotice error={resource.error ?? error} />
+        {error instanceof APIError &&
+          error.code === "payment_below_minimum" && (
+            <p>
+              <Anchor href={base + "?section=messages"}>
+                Ask support about this order
+              </Anchor>
+            </p>
+          )}
+      </div>
       {!data && resource.loading && (
         <p role="status">Loading payment information…</p>
       )}
@@ -208,6 +256,10 @@ export default function Checkout({
                 {minorDisplay(detail.contract.data.amount_minor)}
               </p>
             )}
+            <p>
+              You’ll continue to NOWPayments to pay securely. Return to this
+              order to see your verified receipt.
+            </p>
             <h3>{policy.data.label}</h3>
             <p className="payment-policy">{policy.data.text}</p>
             {policy.data.remedies && (
@@ -347,15 +399,15 @@ export default function Checkout({
             latest.state === "awaiting_payment" &&
             !expired &&
             !admin && (
-              <a
-                className="button"
-                href={latest.checkout_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Continue to NOWPayments ↗
+              <a className="button" href={latest.checkout_url} rel="noreferrer">
+                Continue to NOWPayments
               </a>
             )}
+          {latest.issue && (
+            <Anchor className="text-link" href={base + "?section=messages"}>
+              Ask support about this payment
+            </Anchor>
+          )}
           <p>
             Returning from the provider does not confirm payment. This page
             updates from verified provider evidence.

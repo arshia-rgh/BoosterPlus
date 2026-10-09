@@ -377,3 +377,155 @@ it("preserves choices but invalidates prior validation when changing to order in
     screen.queryByRole("region", { name: "Submit order" }),
   ).not.toBeInTheDocument();
 });
+
+it("keeps rejected input, labels errors and focuses a radio group without clearing unrelated errors", async () => {
+  const s: Service = {
+    ...service,
+    fields: [
+      {
+        ...emptyField("count"),
+        type: "integer",
+        label: "Requested matches",
+        min: "1",
+        max: "20",
+        step: "1",
+      },
+      {
+        ...emptyField("mode"),
+        type: "radio",
+        label: "Play method",
+        options: [{ key: "together", label: "Play together", units: 0 }],
+      },
+    ],
+  };
+  vi.mocked(post).mockResolvedValueOnce({
+    answers: {},
+    issues: [
+      { path: "mode", message: "Choose a play method." },
+      { path: "count", message: "Enter a whole number." },
+    ],
+  });
+  render(
+    <DynamicForm
+      config={{ ...config, services: [s] }}
+      service={s}
+      slug="test"
+      releaseID="release"
+    />,
+  );
+  fireEvent.change(screen.getByLabelText("Requested matches"), {
+    target: { value: "not a number" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Check selections" }));
+  await waitFor(() => {
+    expect(screen.getByLabelText("Play together")).toHaveFocus();
+  });
+  expect(screen.getByLabelText("Requested matches")).toHaveValue(
+    "not a number",
+  );
+  expect(
+    screen.getByLabelText("Requested matches"),
+  ).toHaveAccessibleDescription(/Enter a whole number/);
+  expect(
+    screen.getByRole("link", { name: "Play method: Choose a play method." }),
+  ).toBeVisible();
+  fireEvent.click(screen.getByLabelText("Play together"));
+  expect(screen.getByLabelText("Requested matches")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+});
+
+it("requires a fresh explicit win-rate preference before a new submission of a legacy request", async () => {
+  const s: Service = {
+    ...service,
+    fields: [
+      {
+        ...emptyField("requested_win_rate"),
+        type: "decimal",
+        label: "Requested win rate",
+        unit: "%",
+        min: "0",
+        max: "100",
+        step: "0.1",
+      },
+    ],
+  };
+  render(
+    <DynamicForm
+      config={{ ...config, services: [s] }}
+      service={s}
+      slug="test"
+      releaseID="release"
+      initialAnswers={{ requested_win_rate: "75" }}
+    />,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Check selections" }));
+  await waitFor(() => {
+    expect(screen.getByLabelText("Win-rate preference")).toHaveFocus();
+  });
+  expect(post).not.toHaveBeenCalled();
+  expect(screen.getByLabelText("Win-rate preference")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+});
+it.each([
+  [
+    "range:80:60",
+    "Upper win rate (%)",
+    "greater than the lower win rate (80%)",
+  ],
+  ["range::60", "Lower win rate (%)", "lower win rate from 0 to 100"],
+  ["range:50:101", "Upper win rate (%)", "upper win rate from 0 to 100"],
+  ["below:0", "Below win rate (%)", "greater than 0"],
+  ["above:100", "Above win rate (%)", "less than 100"],
+])(
+  "focuses the incorrect percentage rather than the selected preference (%s)",
+  async (initial, label, instruction) => {
+    const s: Service = {
+      ...service,
+      fields: [
+        {
+          ...emptyField("requested_win_rate"),
+          type: "win_rate",
+          label: "Requested win rate",
+        },
+      ],
+    };
+    render(
+      <DynamicForm
+        config={{ ...config, services: [s] }}
+        service={s}
+        slug="test"
+        releaseID="release"
+        initialAnswers={{ requested_win_rate: initial }}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Check selections" }));
+    const field = screen.getByLabelText(label);
+    await waitFor(() => expect(field).toHaveFocus());
+    expect(field).toHaveAttribute("aria-invalid", "true");
+    expect(field).toHaveAccessibleDescription(
+      expect.stringContaining(instruction),
+    );
+    expect(screen.getByLabelText("Win-rate preference")).not.toHaveAttribute(
+      "aria-invalid",
+    );
+    expect(post).not.toHaveBeenCalled();
+    // Summary links use the group registration, but resolve its currently invalid bound.
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: /Requested win rate: Choose a win-rate preference/,
+      }),
+    );
+    await waitFor(() => expect(field).toHaveFocus());
+    if (initial === "range:80:60") {
+      expect(screen.getByLabelText("Lower win rate (%)")).toHaveValue("80");
+      expect(screen.getByLabelText("Lower win rate (%)")).not.toHaveAttribute(
+        "aria-invalid",
+      );
+      expect(field).toHaveValue("60");
+    }
+  },
+);

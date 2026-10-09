@@ -96,8 +96,9 @@ export default function ForecastControls({
       <h3>Calculate delivery range</h3>
       <p>
         Review a range from the purchased rules, current assigned queue and
-        confirmed sessions. Apply within ten minutes with recent sign-in and
-        authenticator verification. Changes require a fresh preview.
+        confirmed sessions. Apply within ten minutes. If confirmation is needed,
+        verify here with an authenticator or email code. Changes require a fresh
+        preview.
       </p>
       <ErrorNotice error={error} />
       <Action

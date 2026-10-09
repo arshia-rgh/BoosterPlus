@@ -1,9 +1,11 @@
 import { useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams } from "../portal-router";
 import { z } from "../validation";
-import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
-import { post } from "../identity/api";
+import { Action, ErrorNotice, Issues, Select, Text } from "../catalog/controls";
+import { APIError, post } from "../identity/api";
 import { useResource } from "../orders/resource";
+import { FieldValidation } from "../ui/form-validation";
+import { boundedTextIssue, useEditorValidation } from "../ui/editor-validation";
 const reviewSchema = z.object({
   direction: z.string(),
   payment_id: z.string(),
@@ -60,9 +62,22 @@ export default function Reconciliation({
     setNotice("");
     setError(null);
   }
+  const fields = useEditorValidation();
   const valid = /^[1-9][0-9]{0,31}$/.test(paymentID);
   function inspect() {
-    if (valid) {
+    if (
+      fields.check(
+        valid
+          ? []
+          : [
+              {
+                path: "payment_id",
+                message:
+                  "Enter the provider payment or payout ID using 1–32 digits, starting with a non-zero digit.",
+              },
+            ],
+      )
+    ) {
       setSelected({ direction, id: paymentID });
       setError(null);
       setNotice("");
@@ -73,10 +88,10 @@ export default function Reconciliation({
       lock.current ||
       !selected ||
       selected.id !== paymentID ||
-      selected.direction !== direction ||
-      reason.trim().length < 10
+      selected.direction !== direction
     )
       return;
+    if (!fields.check(boundedTextIssue("reason", reason, 10, 2000))) return;
     lock.current = true;
     setBusy(true);
     setError(null);
@@ -94,20 +109,22 @@ export default function Reconciliation({
       setRevision((value) => value + 1);
     } catch (cause) {
       setError(cause);
+      if (cause instanceof APIError) fields.check(cause.issues);
     } finally {
       lock.current = false;
       setBusy(false);
     }
   }
   return (
-    <>
+    <FieldValidation value={fields.validation}>
       <h2>Inspect and reconcile provider evidence</h2>
       <p>
         A fresh check reads authoritative provider evidence. It cannot approve a
         transfer or manually settle an order. Recent staff verification is
         required to queue a check.
       </p>
-      <ErrorNotice error={error} />
+      <ErrorNotice error={error} hideIssues />
+      <Issues issues={fields.issues} />
       <fieldset disabled={busy}>
         <legend>Find provider record</legend>
         <Select
@@ -125,6 +142,7 @@ export default function Reconciliation({
           ]}
         />
         <Text
+          name="payment_id"
           label="Provider payment ID"
           value={paymentID}
           change={(value) => {
@@ -135,9 +153,7 @@ export default function Reconciliation({
           }}
           help="Use the provider payment or payout ID, not an invoice ID."
         />
-        <Action disabled={!valid} onClick={inspect}>
-          Inspect provider reference
-        </Action>
+        <Action onClick={inspect}>Inspect provider reference</Action>
       </fieldset>
       {selected && (
         <Inspection
@@ -151,7 +167,7 @@ export default function Reconciliation({
         />
       )}
       {notice && <p role="status">{notice}</p>}
-    </>
+    </FieldValidation>
   );
 }
 function Inspection({
@@ -273,14 +289,13 @@ function Inspection({
           >
             <legend>Request a provider read</legend>
             <Text
+              name="reason"
               label="Reason for reconciliation"
               multiline
               value={reason}
               change={setReason}
             />
-            <Action disabled={reason.trim().length < 10} onClick={queue}>
-              Reconcile payment
-            </Action>
+            <Action onClick={queue}>Reconcile payment</Action>
           </fieldset>
         </>
       )}

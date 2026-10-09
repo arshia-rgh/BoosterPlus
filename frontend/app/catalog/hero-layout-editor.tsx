@@ -32,6 +32,7 @@ export default function HeroLayoutEditor({
       </p>
       <Check
         label="Customize game artwork framing"
+        name="hero_layout"
         value={!!layout}
         change={(enabled) => {
           change(enabled ? { ...defaultHeroLayout } : undefined);
@@ -41,6 +42,7 @@ export default function HeroLayoutEditor({
         <>
           <Select
             label="Desktop text placement"
+            name="hero_layout.copy_side"
             value={layout.copy_side}
             options={[
               ["left", "Left side"],

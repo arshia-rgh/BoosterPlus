@@ -139,6 +139,7 @@ export default function PromotionEditor({
           </legend>
           <Text
             label="Offer title"
+            name={`discovery.promotions.${String(i)}.title`}
             value={p.title}
             change={(title) => {
               patch(p.key, { title });
@@ -147,6 +148,7 @@ export default function PromotionEditor({
           <Text
             label="Offer description"
             multiline
+            name={`discovery.promotions.${String(i)}.description`}
             value={p.description}
             change={(description) => {
               patch(p.key, { description });
@@ -154,6 +156,7 @@ export default function PromotionEditor({
           />
           <Select
             label="Offer type"
+            name={`discovery.promotions.${String(i)}.target`}
             value={p.target}
             options={[
               ["package", "Boost package"],
@@ -188,6 +191,7 @@ export default function PromotionEditor({
             <>
               <Select
                 label="Package"
+                name={`discovery.promotions.${String(i)}.package`}
                 value={p.package}
                 options={[
                   ["", "Choose a package"],
@@ -205,6 +209,7 @@ export default function PromotionEditor({
               />
               <Select
                 label="Package variant"
+                name={`discovery.promotions.${String(i)}.variant`}
                 value={p.variant}
                 options={[
                   ["", "Choose a variant"],
@@ -226,6 +231,7 @@ export default function PromotionEditor({
                 </p>
                 <Text
                   label="Coupon code"
+                  name={`discovery.promotions.${String(i)}.coupon_code`}
                   value={p.coupon_code}
                   change={(coupon_code) => {
                     patch(p.key, {
@@ -237,6 +243,7 @@ export default function PromotionEditor({
                 {p.coupon_code && (
                   <NumberInput
                     label="Reviewed coupon version"
+                    name={`discovery.promotions.${String(i)}.coupon_version`}
                     value={p.coupon_version}
                     change={(coupon_version) => {
                       patch(p.key, { coupon_version });
@@ -273,6 +280,7 @@ export default function PromotionEditor({
           <div className="catalog-grid">
             <Text
               label="Starts at (UTC)"
+              name={`discovery.promotions.${String(i)}.starts_at`}
               value={p.starts_at}
               help="Example: 2026-10-01T12:00:00Z"
               change={(starts_at) => {
@@ -281,6 +289,7 @@ export default function PromotionEditor({
             />
             <Text
               label="Ends at (UTC)"
+              name={`discovery.promotions.${String(i)}.ends_at`}
               value={p.ends_at}
               help="Use an explicit Z or timezone offset."
               change={(ends_at) => {
@@ -289,6 +298,7 @@ export default function PromotionEditor({
             />
             <NumberInput
               label="Priority (0–100, highest first)"
+              name={`discovery.promotions.${String(i)}.priority`}
               value={p.priority}
               change={(priority) => {
                 patch(p.key, { priority });
@@ -298,6 +308,7 @@ export default function PromotionEditor({
           {p.target !== "news" && (
             <Check
               label="Show remaining quantity from real inventory"
+              name={`discovery.promotions.${String(i)}.show_quantity`}
               value={p.show_quantity}
               change={(show_quantity) => {
                 patch(p.key, { show_quantity });
@@ -306,6 +317,7 @@ export default function PromotionEditor({
           )}
           <Check
             label="Include this offer when the catalog is published"
+            name={`discovery.promotions.${String(i)}.enabled`}
             value={p.enabled}
             change={(enabled) => {
               patch(p.key, { enabled });

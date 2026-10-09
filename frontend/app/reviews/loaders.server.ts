@@ -1,3 +1,4 @@
+import { publicAPIHeaders } from "../portal/routing.server";
 import { feedSchema } from "./model";
 export async function loadReviews(slug: string | undefined, request: Request) {
   if (!slug || !/^[a-z][a-z0-9-]{0,79}$/.test(slug)) return failure(404);
@@ -15,6 +16,7 @@ export async function loadReviews(slug: string | undefined, request: Request) {
       ),
       {
         cache: "no-store",
+        headers: publicAPIHeaders(),
         redirect: "error",
         signal: AbortSignal.timeout(8000),
       },

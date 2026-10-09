@@ -76,9 +76,18 @@ def load(path, staging=False):
         pattern = r"(?:[a-zA-Z0-9./:_-]+@sha256:|sha256:)[a-f0-9]{64}" if staging else r"[a-zA-Z0-9./:_-]+@sha256:[a-f0-9]{64}"
         if not re.fullmatch(pattern, manifest.get(key, "")):
             raise ValueError("Every deployment image requires an immutable digest")
-    site = manifest.get("SITE_ADDRESS", "")
-    if len(site) > 253 or not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*", site) or (not staging and (site in ("localhost", "example.com") or site.endswith((".test", ".example", ".example.com")))):
-        raise ValueError("Configure the actual DNS hostname")
+    hosts = [manifest.get(key, "") for key in ("SITE_ADDRESS", "ADMIN_SITE_ADDRESS", "BOOSTER_SITE_ADDRESS")]
+    for host in hosts:
+        if len(host) > 253 or not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*", host) or (not staging and ("." not in host or host == "example.com" or host.endswith((".localhost", ".test", ".example", ".example.com", ".invalid")))):
+            raise ValueError("Configure the actual DNS hostname for every portal")
+        try:
+            ipaddress.ip_address(host)
+        except ValueError:
+            pass
+        else:
+            raise ValueError("Portal hostnames cannot be IP addresses")
+    if len(set(hosts)) != 3 or manifest.get("MAIL_HOST") in hosts:
+        raise ValueError("Customer, admin, booster and mail require distinct hostnames")
     if not re.fullmatch(r"[A-Za-z0-9.!#$%&'+/=?^_`{|}~-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", manifest.get("ACME_EMAIL", "")):
         raise ValueError("Configure a certificate contact email")
     if any(not Path(manifest.get(key, "")).is_absolute() for key in FILE_KEYS):
@@ -97,8 +106,10 @@ def load(path, staging=False):
         raise ValueError("Configure matching private proxy keys")
     if not frontend.get("ACCOUNT_TERMS_TEXT", "").strip() or not backend.get("TERMS_VERSION") or backend["TERMS_VERSION"].startswith("development-") or frontend.get("TERMS_VERSION") != backend["TERMS_VERSION"]:
         raise ValueError("Configure matching approved terms and frontend text")
-    if backend.get("PUBLIC_ORIGIN") != "https://" + site + (":" + manifest["STAGING_HTTPS_PORT"] if staging else ""):
-        raise ValueError("Public origin must match the HTTPS gateway")
+    for key, host in zip(("PUBLIC_ORIGIN", "ADMIN_PUBLIC_ORIGIN", "BOOSTER_PUBLIC_ORIGIN"), hosts):
+        origin = "https://" + host + (":" + manifest["STAGING_HTTPS_PORT"] if staging else "")
+        if backend.get(key) != origin or frontend.get(key) != origin:
+            raise ValueError("Backend and frontend portal origins must match their HTTPS gateway hostnames")
     if backend.get("ALLOWED_ORIGINS") or backend.get("SMTP_TLS") != "required" or not backend.get("MEDIA_S3_ENDPOINT", "").startswith("https://") or backend.get("MEDIA_SCANNER_NETWORK") != "unix":
         raise ValueError("Public deployments require exact origins, TLS dependencies and a private scanner socket")
     if any("tls=true" not in cfg.get(key, "") for cfg, key in ((backend, "DATABASE_DSN"), (migration, "MIGRATION_DATABASE_DSN"))):
@@ -336,8 +347,9 @@ def main():
             print(output, end="")
     elif action == "smoke":
         from smoke import public_smoke, redirect_smoke
-        redirect_smoke("http://" + manifest["SITE_ADDRESS"], "https://" + manifest["SITE_ADDRESS"])
-        public_smoke("https://" + manifest["SITE_ADDRESS"])
+        for key in ("SITE_ADDRESS", "ADMIN_SITE_ADDRESS", "BOOSTER_SITE_ADDRESS"):
+            redirect_smoke("http://" + manifest[key], "https://" + manifest[key])
+        public_smoke("https://" + manifest["SITE_ADDRESS"], admin_origin="https://" + manifest["ADMIN_SITE_ADDRESS"], booster_origin="https://" + manifest["BOOSTER_SITE_ADDRESS"])
     else:
         raise ValueError("Unknown deployment operation; run help for the supported commands")
 

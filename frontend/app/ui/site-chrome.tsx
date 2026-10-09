@@ -1,4 +1,4 @@
-import { Link, NavLink, useLocation } from "react-router";
+import { Link, NavLink, useLocation } from "../portal-router";
 import { BrandLogo } from "../brand/brand";
 import { useMotionPreference } from "./motion";
 
@@ -18,7 +18,7 @@ export function SiteHeader() {
       {booster && <span className="workspace-label">Booster workspace</span>}
       {!entry && (
         <nav aria-label="Main navigation">
-          <NavLink to={booster ? "/booster/orders" : "/support"}>
+          <NavLink to={booster ? "/booster/orders" : "/contact"}>
             {booster ? "Assigned work" : "Support"}
           </NavLink>
           <NavLink end to={booster ? "/booster" : "/account"}>
@@ -62,7 +62,7 @@ export function SiteFooter() {
         <span className="footer-label">Here to help</span>
         <Link
           to={
-            staff ? "/admin/support" : booster ? "/booster/orders" : "/support"
+            staff ? "/admin/support" : booster ? "/booster/orders" : "/contact"
           }
         >
           {staff

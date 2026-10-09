@@ -975,6 +975,14 @@
               "type": "string",
               "enum": ["", "customer", "booster", "administrator", "owner"]
             }
+          },
+          {
+            "name": "portal_filter",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["", "customer", "admin", "booster"]
+            }
           }
         ]
       }
@@ -4265,7 +4273,7 @@
     "/api/v1/admin/orders/{id}/quote": {
       "post": {
         "operationId": "issueOrderQuote",
-        "summary": "Requires recent primary and authenticator verification. Creates immutable revision, supersedes prior quote, and requires new customer acceptance.",
+        "summary": "Requires one recent authenticator or email verification after completed sign-in. Creates immutable revision, supersedes prior quote, and requires new customer acceptance.",
         "security": [
           {
             "adminSessionCookie": []
@@ -6573,7 +6581,7 @@
     "/api/v1/admin/notifications/deliveries/{id}/retry": {
       "post": {
         "operationId": "retryActivityEmail",
-        "summary": "Requires recent staff primary and authenticator verification; restarts only failed activity jobs with audit. Running/completed jobs cannot be restarted.",
+        "summary": "Requires a recent staff verification factor after completed sign-in; restarts only failed activity jobs with audit. Running/completed jobs cannot be restarted.",
         "security": [
           {
             "adminSessionCookie": []
@@ -7916,7 +7924,7 @@
     "/api/v1/admin/media/{id}/retry": {
       "post": {
         "operationId": "staffRetryMedia",
-        "summary": "Audited staff maintenance for authorized unbound uploads; recent factors required. Bound evidence cannot be removed.",
+        "summary": "Audited staff maintenance for authorized unbound uploads; one recent verification factor required. Bound evidence cannot be removed.",
         "security": [
           {
             "adminSessionCookie": []
@@ -7988,7 +7996,7 @@
     "/api/v1/admin/media/{id}/remove": {
       "post": {
         "operationId": "staffRemoveMedia",
-        "summary": "Audited staff maintenance for authorized unbound uploads; recent factors required. Bound evidence cannot be removed.",
+        "summary": "Audited staff maintenance for authorized unbound uploads; one recent verification factor required. Bound evidence cannot be removed.",
         "security": [
           {
             "adminSessionCookie": []
@@ -12269,7 +12277,7 @@
     "/api/v1/admin/fulfillment/{id}/conversation": {
       "post": {
         "operationId": "openFulfillmentCoordination",
-        "summary": "Explicitly share a separate paid-order coordination thread after recent staff factors",
+        "summary": "Explicitly share a separate paid-order coordination thread after a recent staff verification factor",
         "security": [
           {
             "adminSessionCookie": []
@@ -12358,7 +12366,7 @@
     "/api/v1/admin/conversations/{id}/sharing": {
       "post": {
         "operationId": "changeBoosterConversationSharing",
-        "summary": "Pause or resume assigned booster sharing with recent staff factors and expected thread version",
+        "summary": "Pause or resume assigned booster sharing with a recent staff verification factor and expected thread version",
         "security": [
           {
             "adminSessionCookie": []
@@ -12539,7 +12547,7 @@
     "/api/v1/admin/fulfillment/{id}/forecast/apply": {
       "post": {
         "operationId": "adminDeliveryForecastApply",
-        "summary": "Apply unchanged reviewed range with recent primary and authenticator verification",
+        "summary": "Apply unchanged reviewed range with one recent authenticator or email verification after completed sign-in",
         "security": [
           {
             "adminSessionCookie": []
@@ -15346,7 +15354,7 @@
     "/api/v1/admin/reports/preview": {
       "post": {
         "operationId": "previewOperationalReport",
-        "summary": "Preview bounded operational metadata or download the exact reviewed page with recent staff factors and a committed audit",
+        "summary": "Preview bounded operational metadata or download the exact reviewed page with a recent staff verification factor and a committed audit",
         "security": [
           {
             "adminSessionCookie": []
@@ -15427,7 +15435,7 @@
     "/api/v1/admin/reports/export": {
       "post": {
         "operationId": "exportOperationalReport",
-        "summary": "Preview bounded operational metadata or download the exact reviewed page with recent staff factors and a committed audit",
+        "summary": "Preview bounded operational metadata or download the exact reviewed page with a recent staff verification factor and a committed audit",
         "security": [
           {
             "adminSessionCookie": []
@@ -16594,7 +16602,7 @@
     "/api/v1/admin/refunds/{id}/approve": {
       "post": {
         "operationId": "postApiV1AdminRefundsIdApprove",
-        "summary": "Owner authorization with recent sign-in and authenticator verification",
+        "summary": "Owner authorization with a recent verification factor after completed sign-in",
         "security": [
           {
             "adminSessionCookie": []
@@ -16655,7 +16663,7 @@
     "/api/v1/admin/refunds/{id}/cancel": {
       "post": {
         "operationId": "postApiV1AdminRefundsIdCancel",
-        "summary": "Owner authorization with recent sign-in and authenticator verification",
+        "summary": "Owner authorization with a recent verification factor after completed sign-in",
         "security": [
           {
             "adminSessionCookie": []
@@ -23756,6 +23764,68 @@
           }
         ]
       }
+    },
+    "/api/v1/admin/staff/invitations": {
+      "post": {
+        "operationId": "inviteStaff",
+        "summary": "Provision an independent staff identity",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Request rejected; stable public error code. No secrets are returned.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Independent staff identity provisioned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffInvitation"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "Owner with completed staff sign-in and one recent verification factor only. Role must match the target portal. Does not convert a customer identity or send an email. Duplicate email within one portal conflicts."
+      }
     }
   },
   "components": {
@@ -23841,6 +23911,11 @@
           },
           "deleted": {
             "type": "boolean"
+          },
+          "portal": {
+            "type": "string",
+            "enum": ["customer", "admin", "booster"],
+            "description": "Independent identity namespace; the same email may have a different user in each portal."
           }
         },
         "required": [
@@ -23851,7 +23926,8 @@
           "staff_alias",
           "suspended",
           "mfa_enabled",
-          "notify_updates"
+          "notify_updates",
+          "portal"
         ]
       },
       "AuthSession": {
@@ -23944,9 +24020,24 @@
           },
           "message": {
             "type": "string"
+          },
+          "retry_after_seconds": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 60
+          },
+          "expires_in_seconds": {
+            "type": "integer",
+            "minimum": 600,
+            "maximum": 600
           }
         },
-        "required": ["challenge_id", "message"]
+        "required": [
+          "challenge_id",
+          "message",
+          "retry_after_seconds",
+          "expires_in_seconds"
+        ]
       },
       "EmailVerification": {
         "type": "object",
@@ -24454,7 +24545,8 @@
               "decimal",
               "short_text",
               "long_text",
-              "attachment"
+              "attachment",
+              "win_rate"
             ]
           },
           "stage": {
@@ -33795,6 +33887,29 @@
             "enum": ["artwork_invalid", "artwork_conflict", "artwork_rejected"]
           }
         }
+      },
+      "StaffInvitation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254
+          },
+          "portal": {
+            "type": "string",
+            "enum": ["admin", "booster"]
+          },
+          "role": {
+            "type": "string",
+            "enum": ["administrator", "booster"]
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": ["email", "portal", "role"]
       }
     },
     "securitySchemes": {

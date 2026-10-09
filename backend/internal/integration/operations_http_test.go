@@ -21,11 +21,7 @@ import (
 func TestOperationsHTTPAuthorityStrictWritesAndContract(t *testing.T) {
 	f := authDB(t, nil)
 	ctx := t.Context()
-	_, p := f.login(t, "operations-http@example.test")
-	if _, err := f.client.User.UpdateOneID(p.User.ID).SetRole(identity.RoleAdmin).Save(ctx); err != nil {
-		t.Fatal(err)
-	}
-	p = f.enterPortal(t, p, identity.PortalAdmin)
+	_, p := f.staffLogin(t, "operations-http@example.test", identity.RoleAdmin)
 	enrollment, err := f.service.EnrollMFA(ctx, p)
 	if err != nil {
 		t.Fatal(err)

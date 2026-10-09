@@ -1,6 +1,11 @@
 import { useEffect, useRef } from "react";
-import { Link, useLocation, type Location } from "react-router";
-import type { FieldIssue } from "../ui/form-validation";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  type Location,
+} from "../portal-router";
+import { focusValidationTarget, type FieldIssue } from "../ui/form-validation";
 export function registerField() {
   return () => {};
 }
@@ -22,15 +27,43 @@ function section(path: string) {
   if (path === "reviewed") return ["publication", "Publication review"];
   return ["basics", "Product details"];
 }
-export function ShopIssues({ issues }: { issues: readonly FieldIssue[] }) {
+export function ShopIssues({
+  issues,
+  attempt = 0,
+}: {
+  issues: readonly FieldIssue[];
+  attempt?: number;
+}) {
   const location: Location<unknown> = useLocation(),
     summary = useRef<HTMLElement>(null);
-  const fingerprint = JSON.stringify(issues);
+  const fingerprint = JSON.stringify([attempt, issues]);
+  const navigate = useNavigate();
+  const attempted = useRef("");
   useEffect(() => {
-    if (fingerprint !== "[]") summary.current?.focus();
-  }, [fingerprint]);
+    if (attempted.current === fingerprint) return;
+    attempted.current = fingerprint;
+    const first = fieldIssues(issues)[0];
+    if (!first) return;
+    const query = new URLSearchParams(location.search);
+    query.set("section", section(first.path)[0] ?? "basics");
+    query.set("field", first.path);
+    void navigate(
+      { pathname: location.pathname, search: query.toString() },
+      { replace: true, preventScrollReset: true, state: location.state },
+    );
+    summary.current?.focus({ preventScroll: true });
+  }, [
+    fingerprint,
+    issues,
+    location.pathname,
+    location.search,
+    location.state,
+    navigate,
+  ]);
   useEffect(() => {
-    const field = new URLSearchParams(location.search).get("field");
+    const query = new URLSearchParams(location.search),
+      field = query.get("field"),
+      selectedSection = query.get("section") ?? "basics";
     if (
       !field ||
       field.length > 100 ||
@@ -39,12 +72,19 @@ export function ShopIssues({ issues }: { issues: readonly FieldIssue[] }) {
       return;
     const frame = requestAnimationFrame(() => {
       const input = document.querySelector<HTMLElement>(`[name="${field}"]`);
-      input?.focus();
+      if (
+        !input ||
+        input.closest("[hidden], [inert]") ||
+        input.closest<HTMLElement>("[data-record-section]")?.dataset
+          .recordSection !== selectedSection
+      )
+        return;
+      focusValidationTarget(input);
     });
     return () => {
       cancelAnimationFrame(frame);
     };
-  }, [location.search]);
+  }, [location.search, fingerprint]);
   if (!issues.length) return null;
   return (
     <section role="alert" tabIndex={-1} ref={summary}>

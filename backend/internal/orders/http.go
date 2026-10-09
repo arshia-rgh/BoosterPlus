@@ -230,7 +230,7 @@ func (s *Store) validateRevision(w http.ResponseWriter, r *http.Request, p *iden
 	if detail.Order.Kind != "custom" || detail.Contract != nil || input.ReleaseID != detail.Offer.ID || input.Service != detail.Order.Service || input.Stage != "order" || input.Package != "" || input.Variant != "" {
 		return ErrConflict
 	}
-	return write(w, catalog.ValidateAnswers(detail.Offer.Configuration, input.Service, "order", input.Answers, nil))
+	return write(w, catalog.ValidateNewAnswers(detail.Offer.Configuration, input.Service, "order", input.Answers, nil))
 }
 
 func (s *Store) recoverRequest(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {

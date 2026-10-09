@@ -229,18 +229,18 @@ func TestCoordinationCreationRaceAndAuditRollback(t *testing.T) {
 		t.Fatal(err)
 	}
 	now := time.Unix(f.auth.clock.Load(), 0)
-	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
+	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now.Add(-11 * time.Minute)).SetMfaVerifiedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = chat.OpenCoordination(ctx, f.admin, v.OrderID, v.Version); !errors.Is(err, identity.ErrRecent) {
-		t.Fatal("stale primary factor shared thread", err)
+		t.Fatal("two stale factors shared thread", err)
 	}
-	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now).SetMfaVerifiedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
+	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now).ClearMfaVerifiedAt().Save(ctx); err != nil {
 		t.Fatal(err)
 	}
 	paused := false
 	if _, err = chat.Change(ctx, f.admin, id, "sharing", conversations.Change{Version: thread.Version, BoosterShared: &paused}); !errors.Is(err, identity.ErrMFA) {
-		t.Fatal("stale authenticator changed sharing", err)
+		t.Fatal("incomplete MFA sign-in changed sharing", err)
 	}
 	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetMfaVerifiedAt(now).Save(ctx); err != nil {
 		t.Fatal(err)
@@ -265,11 +265,7 @@ func TestCoordinationLiveStreamStopsAfterSharingPause(t *testing.T) {
 	f := fulfillmentDB(t)
 	ctx := t.Context()
 	chat := supportStore(f.orderFixture)
-	_, staff := f.auth.login(t, "coordinationstream@example.test")
-	if _, err := f.auth.client.User.UpdateOneID(staff.User.ID).SetRole(identity.RoleBooster).Save(ctx); err != nil {
-		t.Fatal(err)
-	}
-	staff = f.auth.enterPortal(t, staff, identity.PortalBooster)
+	_, staff := f.auth.staffLogin(t, "coordinationstream@example.test", identity.RoleBooster)
 	enrollment, err := f.auth.service.EnrollMFA(ctx, staff)
 	if err != nil {
 		t.Fatal(err)

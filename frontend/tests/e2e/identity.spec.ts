@@ -50,9 +50,9 @@ test("email signup, profile, sessions, MFA enrollment and logout", async ({
   await page
     .getByText("Active sessions and sign-out options", { exact: true })
     .click();
-  await page.getByRole("button", { name: "Load sessions" }).click();
+  await page.getByRole("button", { name: "Refresh sessions" }).click();
   await expect(
-    page.getByRole("heading", { name: "Customer · This session" }),
+    page.getByRole("heading", { name: "This session" }),
   ).toBeVisible();
   await enroll(page);
   await page
@@ -79,6 +79,10 @@ for (const role of ["booster", "administrator", "owner"] as const) {
     page,
     request,
   }, info) => {
+    // The owner also provisions independent staff, checks audit and exercises
+    // customer/admin cookie coexistence. Traced QR capture alone took 14s;
+    // preserve every factor and accessibility check within this scoped budget.
+    if (role === "owner") test.setTimeout(45000);
     const email = fixture(info.project.name, role);
     const portal = role === "booster" ? "booster" : "admin";
     await signIn(page, request, email, `/${portal}/login`);
@@ -158,26 +162,74 @@ for (const role of ["booster", "administrator", "owner"] as const) {
         const card = page.locator(".staff-person").filter({
           has: page.getByRole("heading", { name: target, exact: true }),
         });
-        await card
-          .getByRole("combobox", { name: "Role", exact: true })
-          .selectOption("booster");
-        await card.getByRole("checkbox", { name: /Apply this role/ }).check();
-        await card.getByRole("button", { name: "Change role" }).click();
         await expect(
-          page.locator(".staff-person > summary").getByText(/booster · Active/),
+          card.getByRole("combobox", { name: "Role", exact: true }),
+        ).toHaveCount(0);
+        await expect(card).toContainText("customer account");
+        await page
+          .getByLabel("Staff email address", { exact: true })
+          .fill(target);
+        await page
+          .getByLabel("Display name (optional)", { exact: true })
+          .fill("Independent booster");
+        const invitation = page.getByRole("region", {
+          name: "Create staff access",
+          exact: true,
+        });
+        await invitation
+          .getByRole("combobox", { name: "Workspace", exact: true })
+          .selectOption("booster");
+        await invitation
+          .getByRole("checkbox", {
+            name: "Create this independent staff account",
+            exact: true,
+          })
+          .check();
+        const response = page.waitForResponse(
+          (response) =>
+            response.url().endsWith("/api/v1/admin/staff/invitations") &&
+            response.request().method() === "POST",
+        );
+        await invitation
+          .getByRole("button", { name: "Create staff access", exact: true })
+          .click();
+        const createdResponse = await response;
+        expect(createdResponse.status()).toBe(201);
+        const created = z
+          .object({
+            id: z.string(),
+            portal: z.literal("booster"),
+            role: z.literal("booster"),
+            email: z.literal(target),
+          })
+          .parse(await createdResponse.json());
+        expect(created.id).not.toBe(fixture(info.project.name, "target_id"));
+        await expect(
+          page.getByText(
+            "Staff access created. No invitation email was sent.",
+            { exact: true },
+          ),
+        ).toBeVisible();
+        await expect(
+          page
+            .locator(".staff-person > summary")
+            .getByText(/booster account · booster · Active/),
+        ).toBeVisible();
+        await expect(
+          page
+            .locator(".staff-person > summary")
+            .getByText(/customer account · customer · Active/),
         ).toBeVisible();
         await page
           .getByRole("link", { name: "Audit & recovery review", exact: true })
           .click();
-        await page
-          .getByLabel("Exact target ID")
-          .fill(fixture(info.project.name, "target_id"));
+        await page.getByLabel("Exact target ID").fill(created.id);
         await page.getByRole("button", { name: "Filter audit" }).click();
         await expect(
           page
             .locator(".audit-list li")
-            .filter({ hasText: fixture(info.project.name, "target_id") })
-            .getByText("role.changed"),
+            .filter({ hasText: created.id })
+            .getByText("staff.invited"),
         ).toBeVisible();
       }
     }

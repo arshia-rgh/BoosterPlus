@@ -6,7 +6,7 @@ import {
   useNavigate,
   useSearchParams,
   useNavigationType,
-} from "react-router";
+} from "../portal-router";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
 import { listingSchema } from "../catalog/model";
 import { post } from "../identity/api";

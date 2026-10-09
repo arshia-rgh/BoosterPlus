@@ -4,6 +4,7 @@
 	https_port 8443
 	email {$ACME_EMAIL}
 	servers {
+		strict_sni_host on
 		timeouts {
 			read_header 10s
 			idle 2m
@@ -17,6 +18,7 @@
 	header_up -X-Real-IP
 	header_up -X-Booster-Proxy-Key
 	header_up -X-Booster-Client-IP
+	header_up -X-Playora-Request-Origin
 	header_up X-Forwarded-For {remote_host}
 	header_up X-Forwarded-Proto https
 	header_up X-Forwarded-Host {http.request.hostport}
@@ -26,36 +28,59 @@
 	}
 }
 
-{$SITE_ADDRESS} {
+(portal_headers) {
 	encode zstd gzip
 	request_body {
 		max_size 6MB
 	}
 	header -Server
 	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+}
+
+{$SITE_ADDRESS} {
+	import portal_headers
+	# Customer and legacy staff links reach the host-aware frontend. It redirects
+	# only safe page requests; API callbacks, bodies and cookies are never relayed
+	# to another origin. The private API always remains behind its trusted proxy.
+	reverse_proxy storefront:3000 {
+		import upstream 15s
+	}
+}
+
+{$ADMIN_SITE_ADDRESS} {
+	import portal_headers
+	header X-Robots-Tag "noindex, nofollow"
 	@artworkUpload {
 		method PUT
 		path_regexp artworkUpload ^/api/v1/admin/artwork/[a-f0-9-]{36}/bytes$
 	}
 	handle @artworkUpload {
-		# Retain the trusted storefront proxy and backend admin/CSRF checks.
+		# Retain the trusted admin proxy and backend admin/CSRF checks.
 		# Scanning and fixed derivative generation have a 55-second work budget.
-		reverse_proxy storefront:3000 {
+		reverse_proxy admin:3000 {
 			import upstream 70s
 		}
 	}
-	@admin path /admin /admin/* /admin.data
-	handle @admin {
+	handle {
 		reverse_proxy admin:3000 {
 			import upstream 15s
 		}
 	}
-	handle {
-		# /api stays behind the storefront's trusted proxy, never a direct API bypass.
-		reverse_proxy storefront:3000 {
-			import upstream 15s
-		}
+}
+
+{$BOOSTER_SITE_ADDRESS} {
+	import portal_headers
+	header X-Robots-Tag "noindex, nofollow"
+	# A separate booster route graph shares the storefront process and its
+	# existing resource budget. Host-bound identity and API checks stay mandatory.
+	reverse_proxy storefront:3000 {
+		import upstream 15s
 	}
+}
+
+# Unknown HTTP hosts never inherit an application route or redirect target.
+http://:8080 {
+	respond 421
 }
 
 http://127.0.0.1:8090 {

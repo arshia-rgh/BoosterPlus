@@ -1,3 +1,4 @@
+import { Anchor } from "../portal-router";
 import { articlePath } from "../news/model";
 import { useState } from "react";
 import { Action, ErrorNotice, Select } from "./controls";
@@ -109,13 +110,13 @@ function Selected({
       {r.data && (
         <>
           <h4>{r.data.definition.title}</h4>
-          <a
+          <Anchor
             href={articlePath(slug, r.data.definition.slug)}
             target="_blank"
             rel="noopener noreferrer"
           >
             Read current published article (opens a new tab)
-          </a>
+          </Anchor>
           <p>
             {r.data.definition.author} · {r.data.definition.kind}
           </p>

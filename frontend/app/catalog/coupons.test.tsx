@@ -1,7 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { expect, it, vi } from "vitest";
-import { get, APIError } from "../identity/api";
+import { get, post, APIError } from "../identity/api";
 import Coupons from "./coupons";
 vi.mock("../identity/api", async (original) => ({
   ...(await original<typeof import("../identity/api")>()),
@@ -77,4 +77,26 @@ it("distinguishes load failure from empty and resets visible scope only on expli
   expect(screen.getByLabelText("Eligible service keys")).toHaveValue(
     "current-service",
   );
+});
+it("names invalid coupon fields and preserves raw numbers without sending a stale valid limit", async () => {
+  vi.mocked(get).mockResolvedValue({ coupons: [], next: "" });
+  const router = createMemoryRouter(
+    [{ path: "/admin/coupons", element: <Coupons /> }],
+    { initialEntries: ["/admin/coupons"] },
+  );
+  render(<RouterProvider router={router} />);
+  await screen.findByText("No coupons have been configured.");
+  fireEvent.click(screen.getByRole("button", { name: "New coupon" }));
+  fireEvent.change(screen.getByLabelText("Coupon name"), {
+    target: { value: "Keep my coupon" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Save coupon" }));
+  await waitFor(() =>
+    expect(screen.getByLabelText("Coupon code")).toHaveFocus(),
+  );
+  expect(screen.getByLabelText("Coupon name")).toHaveValue("Keep my coupon");
+  expect(
+    screen.getByRole("link", { name: /Coupon code: Use 3–40/ }),
+  ).toBeVisible();
+  expect(post).not.toHaveBeenCalled();
 });

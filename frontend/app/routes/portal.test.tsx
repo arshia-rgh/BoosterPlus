@@ -17,12 +17,16 @@ for (const [path, title, capability] of [
   ["/account/security", "Account security", "account"],
   ["/account/preferences", "Your preferences", "account"],
   ["/booster", "Booster portal", "booster"],
-  ["/admin/account/settings", "Your profile", "self"],
-  ["/admin/account/security", "Account security", "self"],
-  ["/admin/account/preferences", "Your preferences", "self"],
-  ["/booster/account/settings", "Your profile", "self"],
-  ["/booster/account/security", "Account security", "self"],
-  ["/booster/account/preferences", "Your preferences", "self"],
+  ["/admin/account/sessions", "Your sessions", "admin"],
+  ["/admin/account/recovery", "Recovery codes", "admin"],
+  ["/booster/account/sessions", "Your sessions", "booster"],
+  ["/booster/account/recovery", "Recovery codes", "booster"],
+  ["/admin/account/settings", "Your profile", "admin"],
+  ["/admin/account/security", "Account security", "admin"],
+  ["/admin/account/preferences", "Your preferences", "admin"],
+  ["/booster/account/settings", "Your profile", "booster"],
+  ["/booster/account/security", "Account security", "booster"],
+  ["/booster/account/preferences", "Your preferences", "booster"],
 ] as const) {
   it(`selects the ${path} permission boundary`, () => {
     render(

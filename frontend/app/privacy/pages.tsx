@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { Form, value } from "../identity/identity";
@@ -89,19 +89,13 @@ function Export() {
     >
       <p>
         Download each category in pages of up to 100 records. Shop delivery
-        identifiers are included with your orders. Recent email/Google
-        verification is required, plus a recent authenticator code if enrolled.
+        identifiers are included with your orders. When requested, confirm with
+        an email code or your enrolled authenticator in the verification dialog.
         Exports contain your personal information; store them privately.
         Internal staff notes and authentication secrets are excluded.
       </p>
       <p>
-        <Link
-          target="_blank"
-          rel="noopener noreferrer"
-          to="/account/security?returnTo=%2Fprivacy"
-        >
-          Verify your identity for this export (opens a new tab)
-        </Link>
+        If this action needs fresh verification, confirm it in the dialog here.
       </p>
       <label>
         Data category

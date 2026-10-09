@@ -189,3 +189,54 @@ it("waits for fresh authority before remounting an assignment after a session ev
   ).toBeVisible();
   expect(screen.queryByLabelText("Shared reply")).not.toBeInTheDocument();
 });
+
+it("keeps a panel-local verification return after clearing a sensitive assignment", async () => {
+  vi.mocked(get).mockImplementation((path) =>
+    Promise.resolve(path.includes("/readiness") ? ready : work),
+  );
+  view();
+  await screen.findByLabelText("Customer-visible update");
+  fireEvent.click(screen.getByRole("link", { name: "Game access" }));
+  fireEvent(
+    window,
+    new CustomEvent("boosterplus:session-changed", {
+      detail: { portal: "booster", verification: "recent_auth_required" },
+    }),
+  );
+  expect(
+    screen.queryByText("Synthetic protected reveal"),
+  ).not.toBeInTheDocument();
+  expect(screen.queryByText("Synthetic game")).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("heading", { name: "Verify to continue" }),
+  ).toHaveFocus();
+  expect(
+    screen.getByRole("button", { name: "Verify to continue here" }),
+  ).toBeVisible();
+  fireEvent(
+    window,
+    new CustomEvent("boosterplus:session-changed", {
+      detail: { portal: "admin" },
+    }),
+  );
+  expect(
+    screen.getByRole("button", { name: "Verify to continue here" }),
+  ).toBeVisible();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Check assignment access" }),
+  );
+  await screen.findByText("Synthetic protected reveal");
+  expect(
+    screen.queryByRole("button", { name: "Verify to continue here" }),
+  ).not.toBeInTheDocument();
+  fireEvent(
+    window,
+    new CustomEvent("boosterplus:session-changed", {
+      detail: { portal: "booster" },
+    }),
+  );
+  expect(screen.getByRole("alert")).toHaveTextContent("Access changed");
+  expect(
+    screen.queryByRole("button", { name: "Verify to continue here" }),
+  ).not.toBeInTheDocument();
+});

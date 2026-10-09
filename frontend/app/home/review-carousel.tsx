@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { z } from "../validation";
 import { publicReviewSchema } from "../reviews/model";
 import { useResource } from "../orders/resource";

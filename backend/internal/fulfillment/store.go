@@ -157,7 +157,7 @@ func (s *Store) Assign(ctx context.Context, p *identity.Principal, id string, in
 		if !active(row) || row.Version != input.OrderVersion || row.Version >= 2147483646 {
 			return ErrConflict
 		}
-		target, e := tx.User.Query().Where(user.IDEQ(input.AssignedID), user.RoleIn("booster", "administrator", "owner"), user.SuspendedEQ(false), user.MfaEnabledEQ(true)).Only(ctx)
+		target, e := tx.User.Query().Where(user.IDEQ(input.AssignedID), user.PortalEQ(string(identity.PortalBooster)), user.RoleEQ(identity.RoleBooster), user.SuspendedEQ(false), user.MfaEnabledEQ(true)).Only(ctx)
 		if e != nil {
 			return e
 		}
@@ -226,7 +226,7 @@ type Staff struct {
 func (s *Store) Directory(ctx context.Context, p *identity.Principal) ([]Staff, error) {
 	result := []Staff{}
 	err := s.auth.AuthorizedTransaction(ctx, p, "admin", false, func(tx *ent.Tx, _ *identity.Principal) error {
-		rows, e := tx.User.Query().Where(user.RoleIn("booster", "administrator", "owner"), user.SuspendedEQ(false), user.MfaEnabledEQ(true)).Order(ent.Asc(user.FieldID)).Limit(100).All(ctx)
+		rows, e := tx.User.Query().Where(user.PortalEQ(string(identity.PortalBooster)), user.RoleEQ(identity.RoleBooster), user.SuspendedEQ(false), user.MfaEnabledEQ(true)).Order(ent.Asc(user.FieldID)).Limit(100).All(ctx)
 		if e != nil {
 			return e
 		}

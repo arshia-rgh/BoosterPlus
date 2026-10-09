@@ -1,10 +1,15 @@
 import "../resale/marketplace.css";
 import { useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router";
-import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
+import { Link, useNavigate, useSearchParams } from "../portal-router";
+import { Action, ErrorNotice, Issues, Select, Text } from "../catalog/controls";
 import { listingSchema as gamesSchema, releaseSchema } from "../catalog/model";
 import { uncertain } from "../support/chat-state";
-import { post } from "../identity/api";
+import { APIError, post } from "../identity/api";
+import {
+  FieldValidation,
+  useFormValidation,
+  type FieldIssue,
+} from "../ui/form-validation";
 import { useResource } from "../orders/resource";
 import {
   listingSchema,
@@ -121,8 +126,26 @@ function DraftStart({
     [unknown, setUnknown] = useState(false),
     navigate = useNavigate();
   const lock = useRef(false);
+  const [issues, setIssues] = useState<FieldIssue[]>([]);
+  const validation = useFormValidation(
+    issues,
+    (name) => {
+      setIssues((old) => old.filter((issue) => issue.path !== name));
+    },
+    undefined,
+    !busy && !unknown,
+  );
   async function create() {
     if (!resource.data || lock.current) return;
+    setError(null);
+    const invalid: FieldIssue[] = [];
+    if (!title.trim() || Array.from(title).length > 120 || title.includes("\0"))
+      invalid.push({
+        path: "title",
+        message: "Enter an account title of 1–120 characters.",
+      });
+    setIssues(invalid);
+    if (invalid.length) return;
     lock.current = true;
     lockGame(true);
     setBusy(true);
@@ -136,6 +159,7 @@ function DraftStart({
       void navigate(`/sell/${value.submission.id}`);
     } catch (cause) {
       setError(cause);
+      if (cause instanceof APIError) setIssues([...cause.issues]);
       setUnknown((previous) => previous || uncertain(cause));
       if (!unknown && !uncertain(cause)) lockGame(false);
     } finally {
@@ -144,57 +168,60 @@ function DraftStart({
     }
   }
   return (
-    <section className="catalog-section">
-      <ErrorNotice error={resource.error ?? error} />
-      {resource.loading && <p role="status">Loading intake form…</p>}
-      {!!resource.error && (
-        <Action onClick={resource.reload}>Retry account intake</Action>
-      )}
-      {resource.data && !resource.error && (
-        <>
-          <h3>
-            {resource.data.configuration.intake?.name ??
-              "Account intake unavailable"}
-          </h3>
-          <p>{resource.data.configuration.intake?.description}</p>
-          <fieldset disabled={busy || unknown}>
-            <legend>Private draft title</legend>
-            <Text
-              label="Private account title"
-              value={title}
-              change={setTitle}
-              help="A short label for your submission. Do not enter login or recovery information."
-            />
-          </fieldset>
-          {unknown && (
-            <p role="status">
-              Creation was not confirmed. Keep this page open and retry to
-              recover the same submission. Game selection is locked until the
-              request is recovered.
-            </p>
-          )}
-          <Action
-            disabled={
-              busy ||
-              resource.loading ||
-              !title.trim() ||
-              resource.data.paused ||
-              !resource.data.configuration.intake
-            }
-            onClick={() => {
-              void create();
-            }}
-          >
-            {unknown
-              ? "Check the same submission request"
-              : "Create private draft"}
-          </Action>
-          {resource.data.paused && (
-            <p>This game is not accepting new submissions right now.</p>
-          )}
-        </>
-      )}
-    </section>
+    <FieldValidation value={validation}>
+      <section className="catalog-section">
+        <ErrorNotice error={resource.error ?? error} hideIssues />
+        <Issues issues={issues} />
+        {resource.loading && <p role="status">Loading intake form…</p>}
+        {!!resource.error && (
+          <Action onClick={resource.reload}>Retry account intake</Action>
+        )}
+        {resource.data && !resource.error && (
+          <>
+            <h3>
+              {resource.data.configuration.intake?.name ??
+                "Account intake unavailable"}
+            </h3>
+            <p>{resource.data.configuration.intake?.description}</p>
+            <fieldset disabled={busy || unknown}>
+              <legend>Private draft title</legend>
+              <Text
+                name="title"
+                label="Private account title"
+                value={title}
+                change={setTitle}
+                help="A short label for your submission. Do not enter login or recovery information."
+              />
+            </fieldset>
+            {unknown && (
+              <p role="status">
+                Creation was not confirmed. Keep this page open and retry to
+                recover the same submission. Game selection is locked until the
+                request is recovered.
+              </p>
+            )}
+            <Action
+              disabled={
+                busy ||
+                resource.loading ||
+                resource.data.paused ||
+                !resource.data.configuration.intake
+              }
+              onClick={() => {
+                void create();
+              }}
+            >
+              {unknown
+                ? "Check the same submission request"
+                : "Create private draft"}
+            </Action>
+            {resource.data.paused && (
+              <p>This game is not accepting new submissions right now.</p>
+            )}
+          </>
+        )}
+      </section>
+    </FieldValidation>
   );
 }
 export function NewSubmission() {

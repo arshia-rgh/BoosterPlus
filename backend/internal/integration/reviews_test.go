@@ -287,36 +287,33 @@ func TestReviewsFreshFactorsSelfModerationAndAuditRollback(t *testing.T) {
 	}
 	now := time.Unix(f.auth.clock.Load(), 0)
 	action := reviews.Action{Version: v.Review.Version, PolicyChecked: true, Note: "Documented review decision"}
-	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
+	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now.Add(-11 * time.Minute)).SetMfaVerifiedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = f.reviews.Moderate(ctx, f.admin, v.Review.ID, "publish", action); !errors.Is(err, identity.ErrRecent) {
-		t.Fatal("old primary factor accepted", err)
+		t.Fatal("two stale factors accepted", err)
 	}
-	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now).SetMfaVerifiedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
+	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now).ClearMfaVerifiedAt().Save(ctx); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = f.reviews.Moderate(ctx, f.admin, v.Review.ID, "publish", action); !errors.Is(err, identity.ErrMFA) {
-		t.Fatal("old second factor accepted", err)
+		t.Fatal("incomplete MFA sign-in accepted", err)
 	}
 	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetMfaVerifiedAt(now).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = f.auth.client.User.UpdateOneID(f.buyer.User.ID).SetRole(identity.RoleAdmin).Save(ctx); err != nil {
-		t.Fatal(err)
+	f.auth.clock.Add(61)
+	_, customerStaff := f.auth.staffLogin(t, f.buyer.User.Email, identity.RoleAdmin)
+	_, _, customerStaff = f.auth.enroll(t, customerStaff)
+	if customerStaff.User.ID == f.buyer.User.ID {
+		t.Fatal("staff account reused customer identity")
 	}
-	f.buyer = f.auth.principalFromSession(t, f.buyer)
-	_, _, f.buyer = f.auth.enroll(t, f.buyer)
-	if _, err = f.reviews.Moderate(ctx, f.buyer, v.Review.ID, "publish", action); !errors.Is(err, identity.ErrForbidden) {
-		t.Fatal("self-moderation accepted", err)
+	if _, err = f.reviews.Moderate(ctx, customerStaff, v.Review.ID, "publish", action); !errors.Is(err, identity.ErrForbidden) {
+		t.Fatal("same-email self-moderation accepted", err)
 	}
-	if _, err = f.reviews.Save(ctx, f.buyer, second.Order.ID, f.feedback()); !errors.Is(err, identity.ErrForbidden) {
+	if _, err = f.reviews.Save(ctx, customerStaff, second.Order.ID, f.feedback()); !errors.Is(err, identity.ErrForbidden) {
 		t.Fatal("staff purchase review accepted", err)
 	}
-	if _, err = f.auth.client.User.UpdateOneID(f.buyer.User.ID).SetRole(identity.RoleCustomer).Save(ctx); err != nil {
-		t.Fatal(err)
-	}
-	f.buyer = f.auth.principalFromSession(t, f.buyer)
 	if _, err = f.auth.db.ExecContext(ctx, "DROP TABLE auth_audits"); err != nil {
 		t.Fatal(err)
 	}
@@ -566,5 +563,32 @@ func TestReviewsPaginationFiltersAndRequestKeyScope(t *testing.T) {
 	}
 	if _, err = f.reviews.History(ctx, f.buyer, v.Review.ID, false, -1); !errors.Is(err, reviews.ErrInvalid) {
 		t.Fatal("invalid history offset", err)
+	}
+}
+
+func TestReviewsMigratedUnverifiedCustomerStillConflictsWithStaff(t *testing.T) {
+	f := reviewDB(t)
+	ctx := t.Context()
+	paid := f.completed(t)
+	view, err := f.reviews.Save(ctx, f.buyer, paid.Order.ID, f.feedback())
+	if err != nil {
+		t.Fatal(err)
+	}
+	cloneID, err := identity.LegacyCustomerID(f.admin.User.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	clone, err := f.auth.client.User.Create().SetID(cloneID).SetPortal(string(identity.PortalCustomer)).SetEmail(f.admin.User.Email).Save(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	executeSQL(t, f.auth.db, `INSERT INTO identity_namespace_splits (original_id,customer_id,created_at) VALUES (?,?,UTC_TIMESTAMP(6))`, f.admin.User.ID, clone.ID)
+	// Model ownership as migration 41 records it, before the new customer has
+	// performed any first verification. The immutable agreement stays intact.
+	executeSQL(t, f.auth.db, "UPDATE reviews SET user_id=? WHERE id=?", clone.ID, view.Review.ID)
+	executeSQL(t, f.auth.db, "UPDATE orders SET user_id=? WHERE id=?", clone.ID, paid.Order.ID)
+	action := reviews.Action{Version: view.Review.Version, PolicyChecked: true, Note: "Reviewed feedback"}
+	if _, err = f.reviews.Moderate(ctx, f.admin, view.Review.ID, "publish", action); !errors.Is(err, identity.ErrForbidden) {
+		t.Fatal("original staff moderated its unverified migrated customer's review", err)
 	}
 }

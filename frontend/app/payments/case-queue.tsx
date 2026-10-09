@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams } from "../portal-router";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { useResource } from "../orders/resource";
 import { caseQueueSchema, outgoingQueueSchema } from "./cases-model";

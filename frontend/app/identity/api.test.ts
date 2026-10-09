@@ -135,3 +135,59 @@ it("discards a failed shared session read so a later request can recover", async
   );
   expect(fetcher).toHaveBeenCalledTimes(2);
 });
+
+it("preserves freshness challenges but conceals incomplete sign-in", async () => {
+  const changed = vi.fn();
+  window.addEventListener("boosterplus:session-changed", changed);
+  try {
+    for (const code of ["recent_auth_required", "mfa_required"]) {
+      changed.mockClear();
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(() =>
+          Promise.resolve(
+            new Response(
+              JSON.stringify({ code, private: "sensitive detail" }),
+              { status: 403 },
+            ),
+          ),
+        ),
+      );
+      await expect(
+        get("/booster/fulfillment/work/secret/reveal", z.unknown(), "booster"),
+      ).rejects.toMatchObject({ code, status: 403 });
+      if (code === "recent_auth_required")
+        expect(changed).not.toHaveBeenCalled();
+      else {
+        expect(changed).toHaveBeenCalledTimes(1);
+        expect((changed.mock.calls[0]?.[0] as CustomEvent).detail).toEqual({
+          portal: "booster",
+          verification: code,
+        });
+      }
+    }
+  } finally {
+    window.removeEventListener("boosterplus:session-changed", changed);
+  }
+});
+
+it("explains an account reservation conflict without presenting it as an outage", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() =>
+      Promise.resolve(
+        new Response(JSON.stringify({ code: "resale_conflict" }), {
+          status: 409,
+        }),
+      ),
+    ),
+  );
+  const request = get("/resale/listings/owned", z.unknown());
+  await expect(request).rejects.toMatchObject({
+    status: 409,
+    code: "resale_conflict",
+  });
+  await expect(request).rejects.toThrow(
+    "Refresh the listing and review the current terms",
+  );
+});

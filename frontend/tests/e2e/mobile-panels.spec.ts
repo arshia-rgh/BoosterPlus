@@ -29,6 +29,7 @@ async function panelSession(
               id: "mobile-fixture",
               email: "mobile@example.test",
               display_name: "Mobile reviewer",
+              portal,
               role: portal === "admin" ? "owner" : portal,
               staff_alias: "Reviewer",
               suspended: false,

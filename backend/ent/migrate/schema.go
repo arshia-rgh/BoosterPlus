@@ -428,6 +428,7 @@ var (
 	// AuthIdentitiesColumns holds the columns for the "auth_identities" table.
 	AuthIdentitiesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 64},
+		{Name: "portal", Type: field.TypeString, Size: 16, Default: "customer"},
 		{Name: "user_id", Type: field.TypeString, Size: 36},
 		{Name: "provider", Type: field.TypeString, Size: 16},
 		{Name: "subject", Type: field.TypeString, Size: 255},
@@ -440,14 +441,14 @@ var (
 		PrimaryKey: []*schema.Column{AuthIdentitiesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "authidentity_provider_subject",
+				Name:    "auth_identity_portal_subject",
 				Unique:  true,
-				Columns: []*schema.Column{AuthIdentitiesColumns[2], AuthIdentitiesColumns[3]},
+				Columns: []*schema.Column{AuthIdentitiesColumns[1], AuthIdentitiesColumns[3], AuthIdentitiesColumns[4]},
 			},
 			{
 				Name:    "authidentity_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{AuthIdentitiesColumns[1]},
+				Columns: []*schema.Column{AuthIdentitiesColumns[2]},
 			},
 		},
 	}
@@ -1742,6 +1743,7 @@ var (
 		{Name: "purpose", Type: field.TypeEnum, Enums: []string{"game_access", "account_transfer"}},
 		{Name: "resource_id", Type: field.TypeString, Size: 36},
 		{Name: "owner_id", Type: field.TypeString, Size: 36},
+		{Name: "cipher_owner_id", Type: field.TypeString, Size: 36, Default: ""},
 		{Name: "version", Type: field.TypeInt, Default: 1},
 		{Name: "key_version", Type: field.TypeString, Size: 32},
 		{Name: "wrapped_key", Type: field.TypeBytes, Nullable: true},
@@ -1767,12 +1769,12 @@ var (
 			{
 				Name:    "secret_expiry",
 				Unique:  false,
-				Columns: []*schema.Column{SecretBundlesColumns[8], SecretBundlesColumns[11]},
+				Columns: []*schema.Column{SecretBundlesColumns[9], SecretBundlesColumns[12]},
 			},
 			{
 				Name:    "secret_key_version",
 				Unique:  false,
-				Columns: []*schema.Column{SecretBundlesColumns[5], SecretBundlesColumns[8]},
+				Columns: []*schema.Column{SecretBundlesColumns[6], SecretBundlesColumns[9]},
 			},
 		},
 	}
@@ -2305,7 +2307,8 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "email", Type: field.TypeString, Unique: true, Size: 254},
+		{Name: "portal", Type: field.TypeString, Size: 16, Default: "customer"},
+		{Name: "email", Type: field.TypeString, Size: 254},
 		{Name: "display_name", Type: field.TypeString, Size: 100, Default: ""},
 		{Name: "email_verified_at", Type: field.TypeTime, Nullable: true},
 		{Name: "role", Type: field.TypeString, Size: 32, Default: "customer"},
@@ -2330,9 +2333,14 @@ var (
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "users_portal_email",
+				Unique:  true,
+				Columns: []*schema.Column{UsersColumns[2], UsersColumns[3]},
+			},
+			{
 				Name:    "users_report_created",
 				Unique:  false,
-				Columns: []*schema.Column{UsersColumns[18], UsersColumns[0]},
+				Columns: []*schema.Column{UsersColumns[19], UsersColumns[0]},
 			},
 		},
 	}

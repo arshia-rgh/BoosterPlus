@@ -132,17 +132,20 @@ func TestTiDBMigrationLifecycleAndEntQueries(t *testing.T) {
 	if _, seedErr := db.ExecContext(t.Context(), "INSERT INTO users(id,email,display_name,created_at) VALUES (?,?,'Customer',UTC_TIMESTAMP(6))", legacyID, "customer@example.test"); seedErr != nil {
 		t.Fatal(seedErr)
 	}
-	if err := r.Apply(t.Context(), 0); err != nil {
+	// Exercise the reversible history before the forward-only identity split.
+	if err := r.Apply(t.Context(), 40); err != nil {
 		t.Fatal(err)
 	}
-	if err := r.Apply(t.Context(), 0); err != nil {
+	if err := r.Apply(t.Context(), 40); err != nil {
 		t.Fatal("idempotent up:", err)
 	}
-	user, userErr := client.User.Get(t.Context(), legacyID)
-	if userErr != nil {
-		t.Fatal(userErr)
+	var email string
+	if err := db.QueryRowContext(t.Context(), "SELECT email FROM users WHERE id=?", legacyID).Scan(&email); err != nil {
+		t.Fatal(err)
 	}
-	if _, duplicateErr := client.User.Create().SetEmail(user.Email).Save(t.Context()); !ent.IsConstraintError(duplicateErr) {
+	_, duplicateErr := db.ExecContext(t.Context(), "INSERT INTO users(id,email,display_name,created_at) VALUES ('duplicate',?,'Customer',UTC_TIMESTAMP(6))", email)
+	var duplicate *mysql.MySQLError
+	if !errors.As(duplicateErr, &duplicate) || duplicate.Number != 1062 {
 		t.Fatal("unique constraint not enforced", duplicateErr)
 	}
 	created, createErr := client.Game.Create().SetSlug("migration-fixture").SetName("Mobile Legends").SetConfiguration(map[string]any{"mode": "draft", "regions": []string{"example"}}).Save(t.Context())
@@ -167,7 +170,7 @@ func TestTiDBMigrationLifecycleAndEntQueries(t *testing.T) {
 	if loadErr != nil || loaded.Name != "Mobile Legends" {
 		t.Fatalf("rollback failed: %v", loadErr)
 	}
-	if err := r.Down(t.Context(), len(r.Files())-1); err != nil {
+	if err := r.Down(t.Context(), 40-1); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := client.Game.Query().All(t.Context()); err == nil {
@@ -176,8 +179,11 @@ func TestTiDBMigrationLifecycleAndEntQueries(t *testing.T) {
 	if err := r.Apply(t.Context(), 0); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := client.User.Get(t.Context(), user.ID); err != nil {
+	if _, err := client.User.Get(t.Context(), legacyID); err != nil {
 		t.Fatal("upgrade lost existing user:", err)
+	}
+	if err := database.Ready(t.Context(), db); err != nil {
+		t.Fatal(err)
 	}
 }
 

@@ -297,7 +297,7 @@ footer {
 .identity-card p {
   font-size: 0.95rem;
 }
-.identity-page a:not(.button) {
+.identity-page :is(p, li) > a:not(.button) {
   text-decoration: underline;
   color: #a9d9ff;
 }
@@ -364,7 +364,7 @@ footer {
   max-width: 1360px;
   overflow-wrap: anywhere;
 }
-.catalog-page a:not(.button) {
+.catalog-page :is(p, li) > a:not(.button) {
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
@@ -800,9 +800,8 @@ footer {
 
 .site-header nav a[aria-current] {
   color: #b4e8cb;
-  text-decoration: underline;
-  text-underline-offset: 0.4em;
-  text-decoration-thickness: 2px;
+  background: #254a36;
+  border-radius: 0.5rem;
 }
 @media (max-width: 580px) {
   .site-header nav {

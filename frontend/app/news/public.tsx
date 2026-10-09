@@ -4,7 +4,7 @@ import {
   useLoaderData,
   useParams,
   useSearchParams,
-} from "react-router";
+} from "../portal-router";
 import { useState } from "react";
 import { Action, Select, Text } from "../catalog/controls";
 import { kinds, articlePath } from "./model";

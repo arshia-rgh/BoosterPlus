@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { defaultHome } from "../site/content";
 import type { HomeContent } from "../site/model";
 import type { Listing } from "../catalog/model";

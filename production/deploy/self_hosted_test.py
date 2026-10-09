@@ -16,6 +16,10 @@ from manage import ROOT, check_model, compose, read_env
 from provision import prepare, private_write
 from staging import envfile, prepare as app_fixture
 
+BUSINESS_TEST_TIMEOUT_MINUTES = 360
+TEST_PROCESS_GRACE_SECONDS = 300
+BUSINESS_TEST_OUTER_TIMEOUT_SECONDS = BUSINESS_TEST_TIMEOUT_MINUTES * 60 + TEST_PROCESS_GRACE_SECONDS
+
 
 def call(arguments, environment, input_text=None, must_succeed=True, timeout=300, cwd=None):
     result = subprocess.run(arguments, env=environment, input=input_text, text=True,
@@ -70,7 +74,8 @@ def run_integration(arguments, environment, project):
     print("Running real-TiKV business checks; private per-scenario evidence: " + evidence.name, flush=True)
     with os.fdopen(descriptor, "w") as output:
         result = subprocess.run(arguments, env=environment, cwd=ROOT.parent / "backend",
-                                stdout=output, stderr=subprocess.STDOUT, timeout=14700, check=False)
+                                stdout=output, stderr=subprocess.STDOUT,
+                                timeout=BUSINESS_TEST_OUTER_TIMEOUT_SECONDS, check=False)
     if result.returncode:
         raise RuntimeError("Real-TiKV business checks failed; inspect the private per-scenario evidence")
 
@@ -78,6 +83,14 @@ def run_integration(arguments, environment, project):
 def fixture_cpu_limit(service, available):
     """Hosted private-repository runners can have fewer CPUs than the VPS."""
     return min({"tidb": 2, "tikv": 3}.get(service, 1), max(1, available or 1))
+
+
+def integration_arguments(*, protocol_only=False):
+    minutes = 5 if protocol_only else BUSINESS_TEST_TIMEOUT_MINUTES
+    arguments = ["go", "test", "-race", "-count=1", f"-timeout={minutes}m", "-v", "-failfast", "-tags=integration"]
+    if protocol_only:
+        arguments += ["-run", "^TestPrivateMediaRealStorageScannerAndAudience$"]
+    return arguments + ["./internal/integration/..."]
 
 
 def main(*, protocol_only=False):
@@ -177,17 +190,12 @@ def main(*, protocol_only=False):
                                     TEST_MEDIA_S3_SECRET_KEY=integration_secret, SSL_CERT_FILE=str(installation / "pki/ca.crt"))
             # Run the SAME complete domain/concurrency suite against actual TiKV;
             # fixture storage/scanner keep its existing deterministic boundaries.
-            # Measured compact-host scenarios rebuild the full schema in about
-            # 40-50s each. The 242 top-level tests also include isolated subtests;
-            # 218 completed near the old three-hour aggregate limit. Reserve
-            # bounded headroom without changing individual assertions or SLOs.
-            arguments = ["go", "test", "-race", "-count=1", "-timeout=240m", "-v", "-failfast", "-tags=integration"]
-            if protocol_only:
-                # Fast, explicitly separate diagnostic before the complete gate:
-                # this real case exercises host SQL/TLS, S3 and scanner access.
-                arguments = ["go", "test", "-race", "-count=1", "-timeout=5m", "-v", "-failfast", "-tags=integration",
-                             "-run", "^TestPrivateMediaRealStorageScannerAndAudience$"]
-            run_integration(arguments + ["./internal/integration/..."], test_environment, manifest["DEPLOY_PROJECT"])
+            # The prior 251-case suite took 213.98 minutes; 268 cases plus
+            # schema41 leave little margin under the former 240-minute budget.
+            # Reserve bounded aggregate headroom without changing individual
+            # SQL/network deadlines or assertions. Protocol smoke stays at 5 minutes.
+            run_integration(integration_arguments(protocol_only=protocol_only),
+                            test_environment, manifest["DEPLOY_PROJECT"])
             if protocol_only:
                 print("Focused protocol smoke passed; complete business integration qualification remains REQUIRED")
             else:

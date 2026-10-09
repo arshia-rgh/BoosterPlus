@@ -31,6 +31,33 @@ func Identity(getenv func(string) string, environment string) (identity.Config, 
 		return identity.Config{}, originErr
 	}
 	cfg := identity.Config{Key: key, ProxyKey: proxy, PublicOrigin: origin, SecureCookies: !local, TermsVersion: getenv("TERMS_VERSION"), TermsURL: origin + "/terms", GoogleClientID: getenv("GOOGLE_CLIENT_ID"), GoogleClientSecret: getenv("GOOGLE_CLIENT_SECRET"), SMTPHost: getenv("SMTP_HOST"), SMTPUsername: getenv("SMTP_USERNAME"), SMTPPassword: getenv("SMTP_PASSWORD"), SMTPFrom: getenv("SMTP_FROM")}
+	admin, booster := getenv("ADMIN_PUBLIC_ORIGIN"), getenv("BOOSTER_PUBLIC_ORIGIN")
+	if (admin == "") != (booster == "") {
+		return identity.Config{}, errors.New("ADMIN_PUBLIC_ORIGIN and BOOSTER_PUBLIC_ORIGIN must be configured together")
+	}
+	if admin != "" {
+		cfg.AdminPublicOrigin, originErr = parseOrigin(admin, local)
+		if originErr != nil {
+			return identity.Config{}, errors.New("ADMIN_PUBLIC_ORIGIN must be a valid origin")
+		}
+		cfg.BoosterPublicOrigin, originErr = parseOrigin(booster, local)
+		if originErr != nil {
+			return identity.Config{}, errors.New("BOOSTER_PUBLIC_ORIGIN must be a valid origin")
+		}
+		if cfg.AdminPublicOrigin == origin || cfg.BoosterPublicOrigin == origin || cfg.AdminPublicOrigin == cfg.BoosterPublicOrigin {
+			return identity.Config{}, errors.New("customer, admin and booster origins must be distinct")
+		}
+		if !local {
+			hosts := make(map[string]bool)
+			for _, portalOrigin := range []string{origin, cfg.AdminPublicOrigin, cfg.BoosterPublicOrigin} {
+				parsed, parseErr := url.Parse(portalOrigin)
+				if parseErr != nil || hosts[parsed.Hostname()] {
+					return identity.Config{}, errors.New("production portal origins require distinct hostnames")
+				}
+				hosts[parsed.Hostname()] = true
+			}
+		}
+	}
 	if len(cfg.TermsVersion) == 0 || len(cfg.TermsVersion) > 64 || (!local && strings.HasPrefix(cfg.TermsVersion, "development-")) {
 		return identity.Config{}, errors.New("TERMS_VERSION must identify approved account terms")
 	}
@@ -38,8 +65,8 @@ func Identity(getenv func(string) string, environment string) (identity.Config, 
 		return identity.Config{}, errors.New("google client ID and secret must be configured together")
 	}
 	if raw := getenv("ALLOWED_ORIGINS"); raw != "" {
-		if !local {
-			return identity.Config{}, errors.New("extra origins are restricted to development/test")
+		if !local || admin != "" {
+			return identity.Config{}, errors.New("extra origins are restricted to development/test path-mode")
 		}
 		for _, value := range strings.Split(raw, ",") {
 			allowed, allowedErr := parseOrigin(strings.TrimSpace(value), true)
@@ -74,8 +101,17 @@ func Identity(getenv func(string) string, environment string) (identity.Config, 
 }
 func parseOrigin(value string, local bool) (string, error) {
 	parsed, err := url.Parse(value)
-	if err != nil || parsed.Host == "" || parsed.User != nil || parsed.RawQuery != "" || parsed.Fragment != "" || (parsed.Path != "" && parsed.Path != "/") {
+	if err != nil || parsed.Host == "" || parsed.User != nil || parsed.RawQuery != "" || parsed.ForceQuery || strings.Contains(value, "#") || parsed.Fragment != "" || (parsed.Path != "" && parsed.Path != "/") {
 		return "", errors.New("PUBLIC_ORIGIN must be a single origin")
+	}
+	if parsed.Hostname() == "" || strings.HasSuffix(parsed.Host, ":") {
+		return "", errors.New("public origins require a valid host")
+	}
+	if parsed.Port() != "" {
+		port, portErr := strconv.Atoi(parsed.Port())
+		if portErr != nil || port < 1 || port > 65535 {
+			return "", errors.New("public origin port is invalid")
+		}
 	}
 	if parsed.Scheme != "https" {
 		host := parsed.Hostname()
@@ -83,5 +119,5 @@ func parseOrigin(value string, local bool) (string, error) {
 			return "", errors.New("HTTPS is required for public origins")
 		}
 	}
-	return parsed.Scheme + "://" + parsed.Host, nil
+	return parsed.Scheme + "://" + strings.ToLower(parsed.Host), nil
 }

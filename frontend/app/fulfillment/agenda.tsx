@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./booster.css";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { useResource } from "../orders/resource";

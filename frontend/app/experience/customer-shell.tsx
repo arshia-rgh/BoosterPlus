@@ -1,7 +1,7 @@
 import CustomerActivity from "../account/activity";
 import "../ui/workspace.css";
 import "../account/account.css";
-import { useLocation } from "react-router";
+import { useLocation } from "../portal-router";
 import type { FrameProps } from "../identity/frame";
 export default function CustomerShell({
   session,

@@ -35,10 +35,10 @@ const fixture: Listing = {
     media_ids: [],
     currency: "USD",
     amount_minor: "5000",
-    sale_terms: "Sale terms",
-    transfer_requirements: "Protected delivery",
-    dispute_terms: "Dispute terms",
-    acknowledgement_terms: "Confirm receipt",
+    sale_terms: "Sale terms reviewed for this specific account",
+    transfer_requirements: "Protected account delivery checklist",
+    dispute_terms: "Dispute terms reviewed for this account",
+    acknowledgement_terms: "Confirm receipt after the access checks",
     dispute_hours: 48,
     delivery_min_hours: 1,
     delivery_max_hours: 24,
@@ -180,4 +180,29 @@ it("does not publish unsaved or unpreviewed changes and preserves the original r
   await waitFor(() => {
     expect(post).toHaveBeenCalledOnce();
   });
+});
+
+it("reveals the invalid listing section and preserves the other draft fields", async () => {
+  mount();
+  await screen.findByLabelText("Public account title");
+  fireEvent.change(screen.getByLabelText("Public account title"), {
+    target: { value: "" },
+  });
+  fireEvent.click(screen.getByRole("link", { name: "Buyer terms" }));
+  fireEvent.change(screen.getByLabelText("Buyer sale terms"), {
+    target: { value: "These terms stay while correcting the title." },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Save account listing" }));
+  await waitFor(() => {
+    expect(screen.getByLabelText("Public account title")).toHaveFocus();
+  });
+  expect(screen.getByLabelText("Public account title")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  expect(post).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("link", { name: "Buyer terms" }));
+  expect(screen.getByLabelText("Buyer sale terms")).toHaveValue(
+    "These terms stay while correcting the title.",
+  );
 });

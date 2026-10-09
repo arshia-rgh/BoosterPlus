@@ -208,18 +208,18 @@ func TestSubmissionIdempotencyRacesAndAuthorization(t *testing.T) {
 	}
 	v = f.submit(t, v)
 	now := time.Unix(f.auth.clock.Load(), 0)
-	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
+	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now.Add(-11 * time.Minute)).SetMfaVerifiedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
 	action := submissions.Action{Version: v.Submission.Version, Note: "Review result"}
 	if _, err = f.intake.Transition(ctx, f.admin, v.Submission.ID, true, "reject", action); !errors.Is(err, identity.ErrRecent) {
-		t.Fatal("old primary accepted", err)
+		t.Fatal("two stale factors accepted", err)
 	}
-	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now).SetMfaVerifiedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
+	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now).ClearMfaVerifiedAt().Save(ctx); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = f.intake.Transition(ctx, f.admin, v.Submission.ID, true, "reject", action); !errors.Is(err, identity.ErrMFA) {
-		t.Fatal("old second factor accepted", err)
+		t.Fatal("incomplete MFA sign-in accepted", err)
 	}
 	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetMfaVerifiedAt(now).Save(ctx); err != nil {
 		t.Fatal(err)

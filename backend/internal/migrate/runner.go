@@ -146,6 +146,9 @@ func (r *Runner) Down(ctx context.Context, steps int) error {
 		if int64(steps) > current {
 			return errors.New("rollback exceeds applied migrations")
 		}
+		if current >= 41 && current-int64(steps) < 41 {
+			return errors.New("identity namespaces are forward-only; rollback across schema 41 requires a separately verified pre-migration restore")
+		}
 		for version := current; version > current-int64(steps); version-- {
 			if err := r.applyOne(ctx, provider, version, false); err != nil {
 				return err

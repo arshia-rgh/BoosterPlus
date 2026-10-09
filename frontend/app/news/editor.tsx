@@ -6,7 +6,7 @@ import {
   useLocation,
   useParams,
   type Location,
-} from "react-router";
+} from "../portal-router";
 import { z } from "../validation";
 import { Action, Check, ErrorNotice, Select, Text } from "../catalog/controls";
 import { APIError, post } from "../identity/api";
@@ -142,6 +142,7 @@ function Editor({
     [status, setStatus] = useState(""),
     [at, setAt] = useState(""),
     [confirm, setConfirm] = useState(false);
+  const [validationAttempt, setValidationAttempt] = useState(0);
   const [previewed, setPreviewed] = useState("");
   const [previewIssues, setPreviewIssues] = useState<{
     revision: string;
@@ -191,6 +192,7 @@ function Editor({
   const stale = row.version !== saved.version;
   async function mutate(action: string) {
     if (lock.current || loading || suspended || stale) return;
+    setValidationAttempt((current) => current + 1);
     lock.current = true;
     setBusy(true);
     setError(null);
@@ -272,6 +274,7 @@ function Editor({
         }}
       >
         <div hidden={suspended}>
+          <ArticleIssues issues={issues} attempt={validationAttempt} />
           <RecordShell
             id={row.id}
             title="Article"
@@ -304,7 +307,6 @@ function Editor({
                     Refresh current article
                   </Action>
                 )}
-                <ArticleIssues issues={issues} />
                 {status && <p role="status">{status}</p>}
                 {stale && (
                   <section role="alert">

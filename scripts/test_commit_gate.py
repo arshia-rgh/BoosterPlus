@@ -21,6 +21,9 @@ class GateScopeTest(unittest.TestCase):
     def test_ui(self):
         self.assertEqual(scope(["frontend/app/orders/detail.tsx", "frontend/public/art.webp", "frontend/tests/e2e/orders.spec.ts", "docs/progress.md"]), "frontend")
 
+    def test_booster_ui_uses_frontend_gate(self):
+        self.assertEqual(scope(["frontend/booster-app/root.tsx"]), "frontend")
+
     def test_mixed_and_unknown(self):
         for path in ["backend/internal/orders/store.go", "backend/migration/026.sql", "production/gateway/Dockerfile", "frontend/package-lock.json", "frontend/server/index.mjs", ".githooks/pre-commit", ".github/workflows/ci.yml", "scripts/commit_gate.py", "new-tool.sh"]:
             with self.subTest(path=path):

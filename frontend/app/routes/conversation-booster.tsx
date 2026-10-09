@@ -1,4 +1,4 @@
-import { Link, Navigate, useParams } from "react-router";
+import { Link, Navigate, useParams } from "../portal-router";
 import Identity from "../identity/identity";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { useResource } from "../orders/resource";

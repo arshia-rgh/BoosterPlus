@@ -1,3 +1,4 @@
+import { hostedCheckout } from "./hosted-checkout";
 import { writeFile } from "node:fs/promises";
 import { resaleJourney } from "./resale-journey";
 import { createHmac } from "node:crypto";
@@ -104,35 +105,24 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     await customer
       .getByLabel("I accept this payment policy and the agreed order price")
       .check();
-    await customer
-      .getByRole("button", { name: "Create secure checkout" })
-      .click();
-    await expect(
-      customer.getByRole("heading", { name: "Send your payment", exact: true }),
-    ).toBeVisible({ timeout: 20000 });
-    await expect(
-      customer.getByText("synthetic-browser-address-not-payable", {
-        exact: true,
-      }),
-    ).toBeVisible();
-    await expect(
-      customer.getByRole("link", { name: /Continue to NOWPayments/ }),
-    ).toHaveCount(0);
-    await expect(
-      customer.getByRole("img", { name: "QR code for the payment address" }),
-    ).toBeVisible();
+    const paymentID = await hostedCheckout(customer);
     await customerContext.setOffline(true);
     await expect(
-      customer.getByRole("button", { name: "Copy address", exact: true }),
+      customer.getByRole("link", {
+        name: "Continue to NOWPayments",
+        exact: true,
+      }),
     ).toHaveCount(0);
     await customerContext.setOffline(false);
     await expect(
-      customer.getByRole("button", { name: "Copy address", exact: true }),
+      customer.getByRole("link", {
+        name: "Continue to NOWPayments",
+        exact: true,
+      }),
     ).toBeVisible({ timeout: 15000 });
     await expect(
       customer.getByText("Checkout deadline", { exact: true }),
-    ).toHaveCount(0);
-    await expect(customer.getByText(/Send before/)).toBeVisible();
+    ).toBeVisible();
     await customer.route(`**/api/v1/orders/${id}/payments`, (route) =>
       route.abort("failed"),
     );
@@ -143,7 +133,10 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       customer.getByText(/Payment status cannot be verified right now/),
     ).toBeVisible();
     await expect(
-      customer.getByRole("button", { name: "Copy address", exact: true }),
+      customer.getByRole("link", {
+        name: "Continue to NOWPayments",
+        exact: true,
+      }),
     ).toHaveCount(0);
     await customer.unroute(`**/api/v1/orders/${id}/payments`);
     await customer
@@ -153,11 +146,17 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       })
       .click();
     await expect(
-      customer.getByRole("button", { name: "Copy address", exact: true }),
+      customer.getByRole("link", {
+        name: "Continue to NOWPayments",
+        exact: true,
+      }),
     ).toBeVisible();
     await customer.reload();
     await expect(
-      customer.getByRole("heading", { name: "Send your payment", exact: true }),
+      customer.getByRole("heading", {
+        name: "Ready for your payment",
+        exact: true,
+      }),
     ).toBeVisible();
     // Synthetic browser environment only; private runtime credentials are never captured.
     const reviewFixture: Record<string, unknown> = {};
@@ -195,7 +194,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     );
     expect(invalid.status()).toBe(400);
     const body = JSON.stringify({
-      payment_id: "1",
+      payment_id: paymentID,
       payment_status: "finished",
     });
     const signature = createHmac(
@@ -329,11 +328,18 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       .getByRole("button", { name: "Propose refund", exact: true })
       .click();
     await expect(
-      page.getByText("Your destination is needed", { exact: true }),
+      page.getByText("Waiting for the customer's destination", { exact: true }),
     ).toBeVisible();
+    await expect(page.getByLabel("Refund destination address")).toHaveCount(0);
+    await expect(
+      page.getByText("Your destination is needed", { exact: true }),
+    ).toHaveCount(0);
     await customer
       .getByRole("button", { name: "Refresh refunds", exact: true })
       .click();
+    await expect(
+      customer.getByText("Your destination is needed", { exact: true }),
+    ).toBeVisible();
     await customer
       .getByLabel("Refund destination address")
       .fill("synthetic-browser-recipient");

@@ -15,6 +15,7 @@ import (
 
 // UserQuery defines stable bounded staff directory filters.
 type UserQuery struct {
+	Portal string
 	Search string
 	Role   string
 	State  string
@@ -40,7 +41,13 @@ func (s *Service) Directory(ctx context.Context, p *Principal, input UserQuery) 
 		}
 	}
 	err = s.AuthorizedTransaction(ctx, p, "users.read", false, func(tx *ent.Tx, current *Principal) error {
+		if input.Portal != "" && !Portal(input.Portal).valid() {
+			return ErrInvalid
+		}
 		q := tx.User.Query().Order(ent.Asc(user.FieldID)).Limit(51)
+		if input.Portal != "" {
+			q.Where(user.PortalEQ(input.Portal))
+		}
 		if input.Search != "" {
 			q.Where(user.Or(user.IDEQ(input.Search), user.EmailContains(input.Search), user.DisplayNameContains(input.Search)))
 		}
@@ -64,7 +71,7 @@ func (s *Service) Directory(ctx context.Context, p *Principal, input UserQuery) 
 		if input.After != "" {
 			q.Where(user.IDGT(input.After))
 		}
-		rows, e := q.Select(user.FieldID, user.FieldEmailVerifiedAt, user.FieldDeletedAt, user.FieldEmail, user.FieldDisplayName, user.FieldRole, user.FieldStaffAlias, user.FieldSuspended, user.FieldMfaEnabled, user.FieldNotifyUpdates).All(ctx)
+		rows, e := q.Select(user.FieldPortal, user.FieldID, user.FieldEmailVerifiedAt, user.FieldDeletedAt, user.FieldEmail, user.FieldDisplayName, user.FieldRole, user.FieldStaffAlias, user.FieldSuspended, user.FieldMfaEnabled, user.FieldNotifyUpdates).All(ctx)
 		if e != nil {
 			return e
 		}
@@ -75,7 +82,7 @@ func (s *Service) Directory(ctx context.Context, p *Principal, input UserQuery) 
 		for _, row := range rows {
 			out.Users = append(out.Users, userView(row))
 		}
-		return audit(ctx, tx, s.now(), current.User.ID, "", "users.directory", "", map[string]string{"filter_digest": s.RequestDigest("directory", []byte(input.Search+"|"+input.State+"|"+input.Role+"|"+input.After))})
+		return audit(ctx, tx, s.now(), current.User.ID, "", "users.directory", "", map[string]string{"filter_digest": s.RequestDigest("directory", []byte(input.Search+"|"+input.State+"|"+input.Role+"|"+input.Portal+"|"+input.After))})
 	})
 	return out, err
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
-import { useLocation } from "react-router";
+import { useLocation } from "../portal-router";
 import { useMotionPreference } from "../ui/motion";
 
 export default function Surface({

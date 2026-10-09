@@ -13,9 +13,10 @@ import tempfile
 import time
 import urllib.error
 import urllib.request
+from contextlib import contextmanager
 
 from manage import ROOT, load, run, validate
-from smoke import public_smoke, redirect_smoke
+from smoke import NoRedirect, public_smoke, redirect_smoke
 
 
 def write(path, data, mode=0o600):
@@ -69,6 +70,25 @@ def network_settings():
     }
 
 
+@contextmanager
+def fixture_resolution():
+    """Resolve only disposable portal names locally, preserving Host and TLS SNI.
+
+    Do not depend on wildcard localhost DNS support or change system host files.
+    The staging runner is single-threaded; restore the resolver on every exit.
+    """
+    original = socket.getaddrinfo
+    def resolve(host, *args, **kwargs):
+        if host in ("admin.localhost", "booster.localhost"):
+            host = "127.0.0.1"
+        return original(host, *args, **kwargs)
+    socket.getaddrinfo = resolve
+    try:
+        yield
+    finally:
+        socket.getaddrinfo = original
+
+
 def prepare(directory):
     certs = directory / "certs"
     certs.mkdir()
@@ -77,7 +97,7 @@ def prepare(directory):
         ["req", "-new", "-newkey", "rsa:2048", "-nodes", "-keyout", "server.key", "-out", "server.csr", "-subj", "/CN=localhost"],
         ["x509", "-req", "-in", "server.csr", "-CA", "ca.crt", "-CAkey", "ca.key", "-CAcreateserial", "-out", "server.crt", "-days", "2", "-extfile", "extensions"],
     ]
-    write(certs / "extensions", "subjectAltName=DNS:localhost,DNS:tidb,DNS:storage-tls,DNS:mailpit,IP:127.0.0.1\nextendedKeyUsage=serverAuth\n")
+    write(certs / "extensions", "subjectAltName=DNS:localhost,DNS:admin.localhost,DNS:booster.localhost,DNS:tidb,DNS:storage-tls,DNS:mailpit,IP:127.0.0.1\nextendedKeyUsage=serverAuth\n")
     for args in commands:
         subprocess.run(["openssl", *args], cwd=certs, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     # Disposable read-only bind mounts must work across host/container UIDs,
@@ -91,7 +111,7 @@ def prepare(directory):
     https_port = free_port()
     manifest = {
         "DEPLOY_PROJECT": "boosterplus-stage-" + secrets.token_hex(5),
-        "SITE_ADDRESS": "localhost", "ACME_EMAIL": "staging@example.test",
+        "SITE_ADDRESS": "localhost", "ADMIN_SITE_ADDRESS": "admin.localhost", "BOOSTER_SITE_ADDRESS": "booster.localhost", "ACME_EMAIL": "staging@example.test",
         **network_settings(),
         "STAGING_DIRECTORY": str(directory), "STAGING_HTTP_PORT": str(free_port()), "STAGING_HTTPS_PORT": str(https_port),
         "STAGING_SIGNATURE_VOLUME": "boosterplus-qualification-signatures",
@@ -99,23 +119,27 @@ def prepare(directory):
     }
     for key, name in (("BACKEND_ENV_FILE", "backend.env"), ("FRONTEND_ENV_FILE", "frontend.env"), ("MIGRATION_ENV_FILE", "migration.env")):
         manifest[key] = str(directory / name)
+    origins = {key: "https://" + host + ":" + str(https_port) for key, host in (("PUBLIC_ORIGIN", "localhost"), ("ADMIN_PUBLIC_ORIGIN", "admin.localhost"), ("BOOSTER_PUBLIC_ORIGIN", "booster.localhost"))}
     envfile(directory / "backend.env", {
         "APP_ENV": "staging", "AUTH_KEY": auth, "PROXY_SHARED_KEY": proxy,
         "DATABASE_DSN": f"boosterplus_runtime:{database}@tcp(tidb:4000)/boosterplus?tls=true",
-        "PUBLIC_ORIGIN": f"https://localhost:{https_port}", "TERMS_VERSION": "isolated-qualification-v1",
+        **origins, "TERMS_VERSION": "isolated-qualification-v1",
         "SMTP_HOST": "mailpit", "SMTP_PORT": "1025", "SMTP_FROM": "test@example.test", "SMTP_TLS": "required",
         "VAULT_ACTIVE_KEY": "v1", "VAULT_KEYS": "v1:" + vault,
         "MEDIA_S3_ENDPOINT": "https://storage-tls:8443", "MEDIA_S3_REGION": "us-east-1", "MEDIA_S3_BUCKET": "boosterplus-stage-private",
         "MEDIA_S3_ACCESS_KEY": "boosterplus-stage", "MEDIA_S3_SECRET_KEY": storage,
         "MEDIA_SCANNER_NETWORK": "unix", "MEDIA_SCANNER_ADDRESS": "/run/clamav/clamd.sock",
     })
-    envfile(directory / "frontend.env", {"APP_ENV": "staging", "PROXY_SHARED_KEY": proxy, "TERMS_VERSION": "isolated-qualification-v1", "ACCOUNT_TERMS_TEXT": "Synthetic local qualification terms. No commercial service or public access."})
+    envfile(directory / "frontend.env", {"APP_ENV": "staging", **origins, "PROXY_SHARED_KEY": proxy, "TERMS_VERSION": "isolated-qualification-v1", "ACCOUNT_TERMS_TEXT": "Synthetic local qualification terms. No commercial service or public access."})
     envfile(directory / "migration.env", {"APP_ENV": "staging", "MIGRATION_DATABASE_DSN": f"boosterplus_migration:{database}@tcp(tidb:4000)/boosterplus?tls=true"})
     envfile(directory / "bootstrap.env", {"APP_ENV": "development", "DEV_ADMIN_DATABASE_DSN": "root@tcp(tidb:4000)/mysql?tls=true", "DEV_DATABASE_PASSWORD": database})
     envfile(directory / "storage.env", {"AWS_ACCESS_KEY_ID": "boosterplus-stage", "AWS_SECRET_ACCESS_KEY": storage, "S3_BUCKET": "boosterplus-stage-private"})
     write(directory / "tidb.toml", '[security]\nssl-ca="/certs/ca.crt"\nssl-cert="/certs/server.crt"\nssl-key="/certs/server.key"\n')
-    gateway = (ROOT / "gateway/Caddyfile").read_text().replace("{$SITE_ADDRESS} {", "{$SITE_ADDRESS} {\n\ttls /certs/server.crt /certs/server.key\n\theader X-Robots-Tag \"noindex, nofollow\"")
-    gateway += f"\nhttp://localhost:8080 {{\n redir https://localhost:{https_port}{{uri}} 308\n}}\n"
+    gateway = (ROOT / "gateway/Caddyfile").read_text()
+    for key, host in (("SITE_ADDRESS", "localhost"), ("ADMIN_SITE_ADDRESS", "admin.localhost"), ("BOOSTER_SITE_ADDRESS", "booster.localhost")):
+        label = "{$" + key + "} {"
+        gateway = gateway.replace(label, label + '\n\ttls /certs/server.crt /certs/server.key\n\theader X-Robots-Tag "noindex, nofollow"')
+        gateway += f"\nhttp://{host}:8080 {{\n redir https://{host}:{https_port}{{uri}} 308\n}}\n"
     write(directory / "Caddyfile", gateway, 0o644)
     write(directory / "storage.Caddyfile", "{\n admin off\n persist_config off\n auto_https off\n}\nhttps://storage-tls:8443 {\n tls /certs/server.crt /certs/server.key\n reverse_proxy storage:8333\n}\n", 0o644)
     envfile(directory / "deployment.env", manifest)
@@ -135,7 +159,7 @@ def wait_call(function, timeout=120):
 
 def identity_smoke(manifest, origin, ca):
     jar = http.cookiejar.CookieJar()
-    opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ssl.create_default_context(cafile=ca)), urllib.request.HTTPCookieProcessor(jar))
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=ssl.create_default_context(cafile=ca)), urllib.request.HTTPCookieProcessor(jar))
     def call(path, body=None, csrf="", other_origin=None, portal=None):
         headers = {"Content-Type": "application/json", "Origin": other_origin or origin, "X-CSRF-Token": csrf}
         if portal is not None:
@@ -162,7 +186,7 @@ def identity_smoke(manifest, origin, ca):
             call(path)
             raise RuntimeError("Customer crossed a staff authorization boundary")
         except urllib.error.HTTPError as error:
-            if error.code != 401:
+            if error.code != 403:
                 raise RuntimeError("Unexpected staff authorization response") from None
         try:
             call(path, portal="customer")
@@ -179,10 +203,39 @@ def identity_smoke(manifest, origin, ca):
     print("Real TLS email sign-in, secure cookies, role boundaries and CSRF passed")
 
 
+def gateway_boundary_smoke(manifest, origin, ca):
+    """Adversarial requests only against this disposable loopback deployment."""
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect(),
+                                        urllib.request.HTTPSHandler(context=ssl.create_default_context(cafile=ca)))
+    checks = [
+        (urllib.request.Request("http://localhost:" + manifest["STAGING_HTTP_PORT"] + "/", headers={"Host": "foreign.invalid"}), 421),
+        (urllib.request.Request(origin + "/", headers={"Host": "admin.localhost"}), 421),
+    ]
+    for portal in ("admin", "booster"):
+        checks.extend((
+            (urllib.request.Request(origin + "/" + portal, data=b"", method="POST"), 405),
+            (urllib.request.Request(origin + "/" + portal + ".data"), 409),
+            (urllib.request.Request(origin + "/api/v1/auth/portals/" + portal + "/session", headers={
+                "X-Playora-Portal": portal,
+                "X-Playora-Request-Origin": "https://" + portal + ".localhost:" + manifest["STAGING_HTTPS_PORT"],
+                "X-Forwarded-Host": portal + ".localhost",
+                "X-Booster-Proxy-Key": "forged",
+            }), 403),
+        ))
+    for request, expected in checks:
+        try:
+            opener.open(request, timeout=15)
+            raise RuntimeError("Gateway accepted a prohibited host/method/portal request")
+        except urllib.error.HTTPError as error:
+            if error.code != expected or error.headers.get("Location"):
+                raise RuntimeError("Gateway boundary did not fail closed: expected " + str(expected) + ", got " + str(error.code)) from None
+    print("Unknown hosts, TLS SNI mismatch, unsafe legacy methods/data and spoofed portal headers rejected")
+
+
 def main():
     cache = ROOT / ".cache"
     cache.mkdir(exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="staging-", dir=cache) as temporary:
+    with tempfile.TemporaryDirectory(prefix="staging-", dir=cache) as temporary, fixture_resolution():
         manifest = prepare(Path(temporary))
         subprocess.run(["docker", "volume", "create", "--label", "boosterplus.purpose=qualification-signatures", manifest["STAGING_SIGNATURE_VOLUME"]], check=True, stdout=subprocess.DEVNULL)
         try:
@@ -198,9 +251,12 @@ def main():
             print("TLS data dependencies and explicit migrations passed; starting applications", flush=True)
             run(manifest, ["up", "-d", "--wait", "--wait-timeout", "120", "api", "worker", "storefront", "admin", "gateway"], True)
             origin = "https://localhost:" + manifest["STAGING_HTTPS_PORT"]
+            portals = {"admin_origin": "https://admin.localhost:" + manifest["STAGING_HTTPS_PORT"], "booster_origin": "https://booster.localhost:" + manifest["STAGING_HTTPS_PORT"]}
             ca = str(Path(temporary) / "certs/ca.crt")
-            redirect_smoke("http://localhost:" + manifest["STAGING_HTTP_PORT"], origin)
-            public_smoke(origin, ca)
+            for host in ("localhost", "admin.localhost", "booster.localhost"):
+                redirect_smoke("http://" + host + ":" + manifest["STAGING_HTTP_PORT"], "https://" + host + ":" + manifest["STAGING_HTTPS_PORT"])
+            public_smoke(origin, ca, **portals)
+            gateway_boundary_smoke(manifest, origin, ca)
             identity_smoke(manifest, origin, ca)
             for dependency in ("scanner", "storage-tls"):
                 run(manifest, ["stop", dependency], True)
@@ -219,7 +275,7 @@ def main():
                 pass
             run(manifest, ["start", "tidb"], True)
             wait_call(lambda: run(manifest, ["exec", "-T", "api", "/app/boosterplus", "healthcheck"], True))
-            public_smoke(origin, ca)
+            public_smoke(origin, ca, **portals)
             # The API can recover before the worker's restart backoff elapses.
             # Prove the restarted worker delivers a new queued message before
             # separately asserting graceful termination of the recovered process.

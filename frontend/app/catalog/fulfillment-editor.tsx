@@ -1,9 +1,11 @@
 import { Check, NumberInput, Select, Text } from "./controls";
 import type { Service } from "./model";
 export default function FulfillmentEditor({
+  path = "",
   service,
   change,
 }: {
+  path?: string;
   service: Service;
   change: (patch: Partial<Service>) => void;
 }) {
@@ -17,6 +19,7 @@ export default function FulfillmentEditor({
         order.
       </p>
       <Check
+        name={path}
         label="Configure fulfillment"
         value={!!policy}
         change={(enabled) => {
@@ -37,6 +40,7 @@ export default function FulfillmentEditor({
       {policy && (
         <>
           <Select
+            name={`${path}.mode`}
             label="Delivery mode"
             value={policy.mode}
             options={[
@@ -66,6 +70,7 @@ export default function FulfillmentEditor({
           {policy.mode === "selection" && (
             <>
               <Select
+                name={`${path}.field`}
                 label="Mode selection field"
                 value={policy.field}
                 options={[
@@ -85,6 +90,7 @@ export default function FulfillmentEditor({
                 }}
               />
               <Text
+                name={`${path}.account_value`}
                 label="Play-on-account option key"
                 value={policy.account_value}
                 change={(account_value) => {
@@ -92,6 +98,7 @@ export default function FulfillmentEditor({
                 }}
               />
               <Text
+                name={`${path}.together_value`}
                 label="Play-together option key"
                 value={policy.together_value}
                 change={(together_value) => {
@@ -102,6 +109,7 @@ export default function FulfillmentEditor({
           )}
           {policy.mode !== "together" && (
             <NumberInput
+              name={`${path}.secret_hours`}
               label="Maximum game credential lifetime (hours)"
               value={policy.secret_hours}
               change={(secret_hours) => {
@@ -115,6 +123,7 @@ export default function FulfillmentEditor({
               .filter((f) => f.type !== "attachment")
               .map((field) => (
                 <Check
+                  name={`${path}.share_fields.includes`}
                   key={field.key}
                   label={field.label}
                   value={policy.share_fields.includes(field.key)}

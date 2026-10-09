@@ -29,7 +29,7 @@ type GoogleProvider interface {
 	Exchange(context.Context, string, string, string, Portal) (GoogleIdentity, error)
 }
 type oidcGoogle struct {
-	origin   string
+	origins  Config
 	oauth    oauth2.Config
 	verifier *oidc.IDTokenVerifier
 	client   *http.Client
@@ -47,14 +47,14 @@ func newOIDC(ctx context.Context, issuer string, cfg Config, client *http.Client
 	if err != nil {
 		return nil, errors.New("google discovery unavailable")
 	}
-	return &oidcGoogle{origin: cfg.PublicOrigin, oauth: oauth2.Config{ClientID: cfg.GoogleClientID, ClientSecret: cfg.GoogleClientSecret, Endpoint: provider.Endpoint(), Scopes: []string{oidc.ScopeOpenID, "email"}}, verifier: provider.VerifierContext(oidc.ClientContext(ctx, client), &oidc.Config{ClientID: cfg.GoogleClientID, SupportedSigningAlgs: []string{"RS256"}}), client: client}, nil
+	return &oidcGoogle{origins: Config{PublicOrigin: cfg.PublicOrigin, AdminPublicOrigin: cfg.AdminPublicOrigin, BoosterPublicOrigin: cfg.BoosterPublicOrigin}, oauth: oauth2.Config{ClientID: cfg.GoogleClientID, ClientSecret: cfg.GoogleClientSecret, Endpoint: provider.Endpoint(), Scopes: []string{oidc.ScopeOpenID, "email"}}, verifier: provider.VerifierContext(oidc.ClientContext(ctx, client), &oidc.Config{ClientID: cfg.GoogleClientID, SupportedSigningAlgs: []string{"RS256"}}), client: client}, nil
 }
 func (g *oidcGoogle) AuthorizationURL(state, nonce, verifier string, portal Portal) string {
 	if !portal.valid() {
 		return ""
 	}
 	config := g.oauth
-	config.RedirectURL = g.origin + "/api/v1/auth/portals/" + string(portal) + "/google/callback"
+	config.RedirectURL = g.origins.portalOrigin(portal) + "/api/v1/auth/portals/" + string(portal) + "/google/callback"
 	return config.AuthCodeURL(state, oidc.Nonce(nonce), oauth2.S256ChallengeOption(verifier), oauth2.SetAuthURLParam("prompt", "select_account"), oauth2.SetAuthURLParam("claims", `{"id_token":{"auth_time":{"essential":true}}}`))
 }
 func (g *oidcGoogle) Exchange(ctx context.Context, code, verifier, nonce string, portal Portal) (GoogleIdentity, error) {
@@ -62,7 +62,7 @@ func (g *oidcGoogle) Exchange(ctx context.Context, code, verifier, nonce string,
 		return GoogleIdentity{}, ErrInvalid
 	}
 	config := g.oauth
-	config.RedirectURL = g.origin + "/api/v1/auth/portals/" + string(portal) + "/google/callback"
+	config.RedirectURL = g.origins.portalOrigin(portal) + "/api/v1/auth/portals/" + string(portal) + "/google/callback"
 	token, err := config.Exchange(oidc.ClientContext(ctx, g.client), code, oauth2.VerifierOption(verifier))
 	if err != nil {
 		return GoogleIdentity{}, ErrInvalid
@@ -119,13 +119,8 @@ func (s *Service) StartGoogle(ctx context.Context, p *Principal, browser, ip, pu
 		if err := Require(p, "self"); err != nil {
 			return "", err
 		}
-		if err := s.recent(p); err != nil {
+		if err := s.sensitive(p); err != nil {
 			return "", err
-		}
-		if p.User.MfaEnabled {
-			if err := s.sensitive(p); err != nil {
-				return "", err
-			}
 		}
 	case "reauth":
 		if p == nil {
@@ -234,7 +229,7 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 			}
 			p = fresh
 		}
-		linked, findErr := tx.AuthIdentity.Query().Where(authidentity.ProviderEQ("google"), authidentity.SubjectEQ(assertion.Subject)).Only(ctx)
+		linked, findErr := tx.AuthIdentity.Query().Where(authidentity.PortalEQ(string(portal)), authidentity.ProviderEQ("google"), authidentity.SubjectEQ(assertion.Subject)).Only(ctx)
 		if findErr != nil && !ent.IsNotFound(findErr) {
 			return findErr
 		}
@@ -244,20 +239,15 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 			if err := Require(p, "self"); err != nil {
 				return err
 			}
-			if err := s.recent(p); err != nil {
+			if err := s.sensitive(p); err != nil {
 				return err
-			}
-			if p.User.MfaEnabled {
-				if err := s.sensitive(p); err != nil {
-					return err
-				}
 			}
 			if linked != nil && linked.UserID != p.User.ID {
 				return ErrConflict
 			}
 			account = p.User
 			if linked == nil {
-				if _, createErr := tx.AuthIdentity.Create().SetID(randomToken()).SetUserID(account.ID).SetProvider("google").SetSubject(assertion.Subject).SetCreatedAt(s.now()).Save(ctx); createErr != nil {
+				if _, createErr := tx.AuthIdentity.Create().SetID(randomToken()).SetUserID(account.ID).SetPortal(string(portal)).SetProvider("google").SetSubject(assertion.Subject).SetCreatedAt(s.now()).Save(ctx); createErr != nil {
 					if ent.IsConstraintError(createErr) {
 						return ErrConflict
 					}
@@ -293,36 +283,13 @@ func (s *Service) FinishGoogle(ctx context.Context, p *Principal, browser, state
 					return accountErr
 				}
 			} else {
-				// Staff identities must already be provisioned and explicitly linked.
-				if portal != PortalCustomer {
-					return ErrInvalid
-				}
-				exists, existsErr := tx.User.Query().Where(user.EmailEQ(assertion.Email)).Exist(ctx)
-				if existsErr != nil {
-					return existsErr
-				}
-				if exists {
-					return ErrConflict
-				}
-				if flow.TermsVersion == "" || flow.TermsVersion != currentTerms {
-					return ErrTerms
-				}
-				var createErr error
-				account, createErr = tx.User.Create().SetEmail(assertion.Email).SetEmailVerifiedAt(s.now()).SetTermsVersion(flow.TermsVersion).SetTermsAcceptedAt(s.now()).Save(ctx)
-				if createErr != nil {
-					if ent.IsConstraintError(createErr) {
-						return ErrConflict
-					}
-					return createErr
-				}
-				if _, identityErr := tx.AuthIdentity.Create().SetID(randomToken()).SetUserID(account.ID).SetProvider("google").SetSubject(assertion.Subject).SetCreatedAt(s.now()).Save(ctx); identityErr != nil {
-					if ent.IsConstraintError(identityErr) {
-						return ErrConflict
-					}
-					return identityErr
+				var accountErr error
+				account, accountErr = s.firstGoogleAccount(ctx, tx, assertion, flow, portal, currentTerms)
+				if accountErr != nil {
+					return accountErr
 				}
 			}
-			if !portal.permitsRole(account.Role) {
+			if !portal.permitsUser(account) {
 				return ErrInvalid
 			}
 			if account.TermsVersion != currentTerms {
@@ -373,13 +340,8 @@ func (s *Service) UnlinkGoogle(ctx context.Context, p *Principal) error {
 		if err := Require(actor, "self"); err != nil {
 			return err
 		}
-		if err := s.recent(actor); err != nil {
+		if err := s.sensitive(actor); err != nil {
 			return err
-		}
-		if actor.User.MfaEnabled {
-			if err := s.sensitive(actor); err != nil {
-				return err
-			}
 		}
 		if actor.User.EmailVerifiedAt == nil {
 			return ErrForbidden
@@ -395,4 +357,54 @@ func (s *Service) UnlinkGoogle(ctx context.Context, p *Principal) error {
 		}
 		return audit(ctx, tx, s.now(), actor.User.ID, "", "google.unlinked", actor.User.ID, map[string]string{})
 	})
+}
+
+// A verified Google assertion can activate a pending invited staff account only
+// in its exact namespace or a validated, unverified migration customer clone.
+// Returning email identities must link Google explicitly.
+func (s *Service) firstGoogleAccount(ctx context.Context, tx *ent.Tx, assertion GoogleIdentity, flow *ent.AuthFlow, portal Portal, terms string) (*ent.User, error) {
+	account, err := tx.User.Query().Where(user.PortalEQ(string(portal)), user.EmailEQ(assertion.Email)).Only(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, err
+	}
+	if portal != PortalCustomer {
+		if account == nil || !portal.permitsUser(account) || account.Suspended || account.DeletedAt != nil || account.EmailVerifiedAt != nil {
+			return nil, ErrInvalid
+		}
+		account, err = tx.User.UpdateOne(account).SetEmailVerifiedAt(s.now()).Save(ctx)
+	} else {
+		if flow.TermsVersion == "" || flow.TermsVersion != terms {
+			return nil, ErrTerms
+		}
+		if account == nil {
+			account, err = tx.User.Create().SetPortal(string(portal)).SetEmail(assertion.Email).SetEmailVerifiedAt(s.now()).SetTermsVersion(flow.TermsVersion).SetTermsAcceptedAt(s.now()).Save(ctx)
+		} else {
+			migrated, migrationErr := pendingMigratedCustomer(ctx, tx, account)
+			if migrationErr != nil {
+				return nil, migrationErr
+			}
+			if !migrated {
+				return nil, ErrConflict
+			}
+			linked, linkedErr := tx.AuthIdentity.Query().Where(authidentity.UserIDEQ(account.ID)).Exist(ctx)
+			if linkedErr != nil {
+				return nil, linkedErr
+			}
+			if linked {
+				return nil, ErrConflict
+			}
+			account, err = tx.User.UpdateOne(account).SetEmailVerifiedAt(s.now()).SetTermsVersion(flow.TermsVersion).SetTermsAcceptedAt(s.now()).Save(ctx)
+		}
+	}
+	if err != nil {
+		if ent.IsConstraintError(err) {
+			return nil, ErrConflict
+		}
+		return nil, err
+	}
+	_, err = tx.AuthIdentity.Create().SetID(randomToken()).SetUserID(account.ID).SetPortal(string(portal)).SetProvider("google").SetSubject(assertion.Subject).SetCreatedAt(s.now()).Save(ctx)
+	if ent.IsConstraintError(err) {
+		return nil, ErrConflict
+	}
+	return account, err
 }

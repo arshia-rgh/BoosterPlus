@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useLocation, type Location } from "react-router";
+import { Link, useLocation, type Location } from "../portal-router";
 import { useRecordDraft } from "../ui/record-drafts";
 import { Action, ErrorNotice, Text } from "../catalog/controls";
 import { APIError, post, sessionSchema } from "../identity/api";

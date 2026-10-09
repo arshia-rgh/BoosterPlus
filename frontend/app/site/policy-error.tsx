@@ -1,10 +1,11 @@
+import { Anchor } from "../portal-router";
 import {
   isRouteErrorResponse,
   useLocation,
   useParams,
   useRevalidator,
   useRouteError,
-} from "react-router";
+} from "../portal-router";
 import { policySectionSchema } from "./model";
 import "./public-info.css";
 export function PolicyError() {
@@ -39,9 +40,9 @@ export function PolicyError() {
         >
           Retry this policy
         </button>
-        <a href={current}>Current policy</a>
-        <a href="/terms">All terms & policies</a>
-        <a href="/support">Contact support</a>
+        <Anchor href={current}>Current policy</Anchor>
+        <Anchor href="/terms">All terms & policies</Anchor>
+        <Anchor href="/contact">Contact support</Anchor>
       </div>
     </main>
   );

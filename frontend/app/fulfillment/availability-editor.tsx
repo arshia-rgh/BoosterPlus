@@ -1,3 +1,6 @@
+import { FieldValidation, ValidationSummary } from "../ui/form-validation";
+import { useActionValidation } from "../ui/action-validation";
+import { windowIssues } from "./validation";
 import { useRef, useState } from "react";
 import { z } from "../validation";
 import { Action, Check, ErrorNotice, Text } from "../catalog/controls";
@@ -52,9 +55,20 @@ export default function AvailabilityEditor({
     [error, setError] = useState<unknown>(null),
     [success, setSuccess] = useState(""),
     lock = useRef(false);
+  const validation = useActionValidation();
   function review() {
     setError(null);
     setSuccess("");
+    const issues = windowIssues(start, end, "", true);
+    if (
+      weekly &&
+      (!/^\d+$/.test(count) || Number(count) < 1 || Number(count) > 12)
+    )
+      issues.push({
+        path: "count",
+        message: "Choose between 1 and 12 weekly dates.",
+      });
+    if (!validation.check(issues)) return;
     try {
       setEntries(weeklyDates({ start, end }, weekly ? Number(count) : 1));
       setKey(crypto.randomUUID());
@@ -71,6 +85,19 @@ export default function AvailabilityEditor({
   }
   async function publish() {
     if (lock.current || !entries?.length) return;
+    if (
+      !validation.check(
+        entries.flatMap((entry, index) =>
+          windowIssues(
+            entry.start,
+            entry.end,
+            `windows.${String(index)}.`,
+            true,
+          ),
+        ),
+      )
+    )
+      return;
     lock.current = true;
     setBusy(true);
     setError(null);
@@ -92,6 +119,7 @@ export default function AvailabilityEditor({
       setUnknown(false);
       reload();
     } catch (cause) {
+      validation.server(cause);
       setError(cause);
       setUnknown(uncertain(cause));
     } finally {
@@ -100,107 +128,124 @@ export default function AvailabilityEditor({
     }
   }
   return (
-    <section className="catalog-section" aria-label="Publish availability">
-      <h3>Publish availability</h3>
-      <p>
-        Choose a single date or a weekly series in {zone}. Every window is 15
-        minutes to 12 hours, within the next 90 days. Review each date before
-        publishing; no availability repeats indefinitely.
-      </p>
-      <ErrorNotice error={error} />
-      {success && <p role="status">{success}</p>}
-      {!entries ? (
-        <fieldset disabled={busy}>
-          <legend>First availability window</legend>
-          <TimeInput
-            split
-            label="Window start"
-            value={start}
-            change={setStart}
-          />
-          <TimeInput split label="Window end" value={end} change={setEnd} />
-          <Check label="Repeat weekly" value={weekly} change={setWeekly} />
-          {weekly && (
-            <Text
-              label="Number of weekly dates (1–12)"
-              type="number"
-              value={count}
-              change={setCount}
+    <FieldValidation value={validation.validation}>
+      <section className="catalog-section" aria-label="Publish availability">
+        <h3>Publish availability</h3>
+        <p>
+          Choose a single date or a weekly series in {zone}. Every window is 15
+          minutes to 12 hours, within the next 90 days. Review each date before
+          publishing; no availability repeats indefinitely.
+        </p>
+        <ErrorNotice error={error} />
+        <ValidationSummary
+          issues={validation.validation.issues}
+          fields={validation.validation.fields}
+        />
+        {success && <p role="status">{success}</p>}
+        {!entries ? (
+          <fieldset disabled={busy}>
+            <legend>First availability window</legend>
+            <TimeInput
+              split
+              name="start"
+              label="Window start"
+              value={start}
+              change={setStart}
             />
-          )}
-          <Action disabled={!start.local || !end.local} onClick={review}>
-            Review dates
-          </Action>
-        </fieldset>
-      ) : (
-        <>
-          <fieldset disabled={busy || unknown}>
-            <legend>Review dates and exceptions</legend>
-            <p>
-              Remove a date to make an exception. Adjust a repeated clock hour
-              where daylight saving changes. Publishing checks all dates
-              together; any invalid or overlapping window prevents the entire
-              series.
-            </p>
-            {entries.map((entry, index) => (
-              <section
-                key={index}
-                aria-label={`Availability date ${String(index + 1)}`}
-              >
-                <h4>Date {String(index + 1)}</h4>
-                <TimeInput
-                  split
-                  label={`Date ${String(index + 1)} start`}
-                  value={entry.start}
-                  change={(value) => {
-                    change(index, { ...entry, start: value });
-                  }}
-                />
-                <TimeInput
-                  split
-                  label={`Date ${String(index + 1)} end`}
-                  value={entry.end}
-                  change={(value) => {
-                    change(index, { ...entry, end: value });
-                  }}
-                />
-                <Action
-                  onClick={() => {
-                    setEntries(entries.filter((_, i) => i !== index));
-                    setKey(crypto.randomUUID());
-                  }}
-                >
-                  Remove date {String(index + 1)}
-                </Action>
-              </section>
-            ))}
-            <Action
-              onClick={() => {
-                setEntries(null);
-                setError(null);
-              }}
-            >
-              Back to dates
-            </Action>
+            <TimeInput
+              name="end"
+              split
+              label="Window end"
+              value={end}
+              change={setEnd}
+            />
+            <Check label="Repeat weekly" value={weekly} change={setWeekly} />
+            {weekly && (
+              <Text
+                name="count"
+                label="Number of weekly dates (1–12)"
+                type="number"
+                value={count}
+                change={setCount}
+              />
+            )}
+            <Action onClick={review}>Review dates</Action>
           </fieldset>
-          {unknown && (
-            <p role="alert">
-              Publication could not be confirmed. Your reviewed dates are
-              locked. Retry this same publication safely before making changes.
-            </p>
-          )}
-          <Action
-            disabled={busy || !entries.length}
-            onClick={() => void publish()}
-          >
-            {busy
-              ? "Publishing…"
-              : unknown
-                ? "Retry same publication"
-                : "Publish reviewed availability"}
-          </Action>
-        </>
-      )}
-    </section>
+        ) : (
+          <>
+            <fieldset disabled={busy || unknown}>
+              <legend>Review dates and exceptions</legend>
+              <p>
+                Remove a date to make an exception. Adjust a repeated clock hour
+                where daylight saving changes. Publishing checks all dates
+                together; any invalid or overlapping window prevents the entire
+                series.
+              </p>
+              {entries.map((entry, index) => (
+                <section
+                  key={index}
+                  aria-label={`Availability date ${String(index + 1)}`}
+                >
+                  <h4>Date {String(index + 1)}</h4>
+                  <TimeInput
+                    split
+                    name={`windows.${String(index)}.start`}
+                    label={`Date ${String(index + 1)} start`}
+                    value={entry.start}
+                    change={(value) => {
+                      change(index, { ...entry, start: value });
+                    }}
+                  />
+                  <TimeInput
+                    split
+                    name={`windows.${String(index)}.end`}
+                    label={`Date ${String(index + 1)} end`}
+                    value={entry.end}
+                    change={(value) => {
+                      change(index, { ...entry, end: value });
+                    }}
+                  />
+                  <Action
+                    onClick={() => {
+                      setEntries(entries.filter((_, i) => i !== index));
+                      validation.clear();
+                      setKey(crypto.randomUUID());
+                    }}
+                  >
+                    Remove date {String(index + 1)}
+                  </Action>
+                </section>
+              ))}
+              <Action
+                onClick={() => {
+                  setEntries(null);
+                  validation.clear();
+                  setError(null);
+                }}
+              >
+                Back to dates
+              </Action>
+            </fieldset>
+            {unknown && (
+              <p role="alert">
+                Publication could not be confirmed. Your reviewed dates are
+                locked. Retry this same publication safely before making
+                changes.
+              </p>
+            )}
+            <Action
+              disabled={busy || !entries.length}
+              onClick={() => void publish()}
+            >
+              {busy
+                ? "Publishing…"
+                : unknown
+                  ? "Retry same publication"
+                  : "Publish reviewed availability"}
+            </Action>
+          </>
+        )}
+      </section>
+    </FieldValidation>
   );
 }

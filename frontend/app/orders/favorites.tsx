@@ -1,6 +1,6 @@
 import "../ui/secondary.css";
-import { useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { Link, useSearchParams } from "../portal-router";
 import { command, post } from "../identity/api";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { favoriteSchema, favoritesSchema, type Favorite } from "./model";
@@ -21,6 +21,14 @@ export function FavoriteButton({
   const [saved, setSaved] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
+  const savedRef = useRef<HTMLDivElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (busy || document.hidden || !document.hasFocus()) return;
+    if (error) errorRef.current?.focus();
+    else if (saved)
+      savedRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
+  }, [saved, error, busy]);
   async function save() {
     setBusy(true);
     setError(null);
@@ -53,8 +61,19 @@ export function FavoriteButton({
             ? "Save game to favorites"
             : "Save to favorites"}
       </button>
-      <ErrorNotice error={error} />
-      {saved && <Link to="/favorites">View favorites</Link>}
+      <div
+        ref={errorRef}
+        tabIndex={-1}
+        role="group"
+        aria-label="Favorite could not be saved"
+      >
+        <ErrorNotice error={error} />
+      </div>
+      {saved && (
+        <div ref={savedRef}>
+          <Link to="/favorites">View favorites</Link>
+        </div>
+      )}
     </div>
   );
 }
@@ -76,11 +95,25 @@ export default function Favorites() {
     ),
     [error, setError] = useState<unknown>(null),
     [busy, setBusy] = useState(false);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+  const awaitingRemoval = useRef(false);
+  useEffect(() => {
+    if (busy || resource.loading) return;
+    if (error || resource.error) {
+      awaitingRemoval.current = false;
+      if (!document.hidden && document.hasFocus()) errorRef.current?.focus();
+    } else if (awaitingRemoval.current) {
+      awaitingRemoval.current = false;
+      if (!document.hidden && document.hasFocus()) headingRef.current?.focus();
+    }
+  }, [busy, error, resource.data, resource.error, resource.loading]);
   async function remove(id: string) {
     setBusy(true);
     setError(null);
     try {
       await command(`/me/favorites/${id}/remove`);
+      awaitingRemoval.current = true;
       resource.reload();
     } catch (cause) {
       setError(cause);
@@ -90,12 +123,21 @@ export default function Favorites() {
   }
   return (
     <section>
-      <h2>Your saved offers</h2>
+      <h2 ref={headingRef} tabIndex={-1}>
+        Your saved offers
+      </h2>
       <p>Favorites do not reserve availability or prices.</p>
       <Action disabled={resource.loading} onClick={resource.reload}>
         Refresh favorites
       </Action>
-      <ErrorNotice error={resource.error ?? error} />
+      <div
+        ref={errorRef}
+        tabIndex={-1}
+        role="group"
+        aria-label="Favorites could not be updated"
+      >
+        <ErrorNotice error={resource.error ?? error} />
+      </div>
       {!resource.data ? (
         <p role="status">
           {resource.loading

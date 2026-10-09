@@ -52,3 +52,16 @@ Suggested ParsPack support ticket:
 The implemented recovery tooling expects private HTTPS S3-compatible off-host storage for encrypted archives and TiDB logs. Do not count a provider snapshot as this S3 destination unless that capability is actually supplied. A restore into an isolated target, key recovery and measured timings remain mandatory. Do not restore onto the primary server just to test the backup feature.
 
 Reference: [Cloudflare primary DNS setup](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/).
+
+## Staff portal DNS migration (8 October 2026)
+
+Add two records in **Cloudflare → playoragames.com → DNS → Records**:
+
+| Type | Name | Content | Proxy | TTL |
+| --- | --- | --- | --- | --- |
+| A | `admin` | `195.248.241.192` | DNS only | Auto |
+| A | `pro` | `195.248.241.192` | DNS only | Auto |
+
+Keep the existing website/mail A records, nameservers, MX/TXT records and PTR unchanged. These staff names do not need new PTR records. Do not add an AAAA record without working IPv6. Public DNS resolution and trusted HTTPS must be verified for both names before cutover; saving records alone is not a test pass. Caddy will manage separate certificates for the exact configured hostnames.
+
+The new entry points are `https://admin.playoragames.com/` and `https://pro.playoragames.com/`, with `/login` on each portal. Register the matching callbacks in [GOOGLE_OAUTH_SETUP.md](GOOGLE_OAUTH_SETUP.md) before the release. Staff sessions are not transferred from the customer hostname; sign in again using the correct portal and authenticator.

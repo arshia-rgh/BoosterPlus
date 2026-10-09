@@ -25,11 +25,7 @@ func catalogConfig() catalog.Configuration {
 }
 func catalogAdmin(t *testing.T, f *authFixture) *identity.Principal {
 	t.Helper()
-	_, p := f.login(t, "catalog@example.test")
-	if _, err := f.client.User.UpdateOneID(p.User.ID).SetRole(identity.RoleAdmin).Save(t.Context()); err != nil {
-		t.Fatal(err)
-	}
-	p = f.enterPortal(t, p, identity.PortalAdmin)
+	_, p := f.staffLogin(t, "catalog@example.test", identity.RoleAdmin)
 	_, _, p = f.enroll(t, p)
 	return p
 }
@@ -155,29 +151,47 @@ func TestCatalogPublicationAndConcurrency(t *testing.T) {
 	if err = database.Ready(ctx, f.db); err != nil {
 		t.Fatal(err)
 	}
-	// An explicitly destructive development rollback removes history, but must
-	// never leave a visible game pointing to a release that no longer exists.
-	if err = runner(t, f.db).Down(ctx, database.SchemaVersion-4); err != nil {
-		t.Fatal(err)
-	}
-	if err = runner(t, f.db).Apply(ctx, 0); err != nil {
-		t.Fatal(err)
-	}
-	recovered, err := store.Draft(ctx, p, draft.ID)
-	if err != nil || recovered.Published || recovered.CurrentRelease != "" || recovered.Configuration.Name != c.Name {
-		t.Fatal("rollback lost draft or exposed missing release", err)
-	}
-	if _, err = store.Published(ctx, "synthetic"); !ent.IsNotFound(err) {
-		t.Fatal("rollback left a visible orphan", err)
-	}
-	if err = database.Ready(ctx, f.db); err != nil {
-		t.Fatal(err)
-	}
 	if _, err = f.db.ExecContext(ctx, "ALTER TABLE catalog_releases DROP INDEX catalog_release_revision"); err != nil {
 		t.Fatal(err)
 	}
 	if err = database.Ready(ctx, f.db); err == nil {
 		t.Fatal("missing release constraint was ready")
+	}
+}
+
+func TestCatalogHistoricalRollbackPreservesDraft(t *testing.T) {
+	db := testDB(t)
+	r := runner(t, db)
+	ctx := t.Context()
+	// Catalog rollback remains supported in historical schemas. It must not
+	// attempt to merge the independent identities introduced by migration 41.
+	if err := r.Apply(ctx, 40); err != nil {
+		t.Fatal(err)
+	}
+	configuration, err := json.Marshal(catalogConfig())
+	if err != nil {
+		t.Fatal(err)
+	}
+	executeSQL(t, db, "INSERT INTO games(id,slug,name,configuration,version,published,current_release,created_at) VALUES ('rollback-game','rollback-fixture','Synthetic game',?,2,TRUE,'rollback-release',UTC_TIMESTAMP(6))", string(configuration))
+	executeSQL(t, db, "INSERT INTO catalog_releases(id,game_id,version,configuration,created_by,created_at) VALUES ('rollback-release','rollback-game',2,?,'historic-staff',UTC_TIMESTAMP(6))", string(configuration))
+	// An explicitly destructive development rollback removes history, but must
+	// never leave a visible game pointing to a release that no longer exists.
+	if err = r.Down(ctx, 40-4); err != nil {
+		t.Fatal(err)
+	}
+	if err = r.Apply(ctx, 0); err != nil {
+		t.Fatal(err)
+	}
+	var published bool
+	var currentRelease, name string
+	if err = db.QueryRowContext(ctx, "SELECT published,current_release,JSON_UNQUOTE(JSON_EXTRACT(configuration,'$.name')) FROM games WHERE id='rollback-game'").Scan(&published, &currentRelease, &name); err != nil {
+		t.Fatal(err)
+	}
+	if published || currentRelease != "" || name != catalogConfig().Name {
+		t.Fatal("rollback lost draft or exposed missing release")
+	}
+	if err = database.Ready(ctx, db); err != nil {
+		t.Fatal(err)
 	}
 }
 

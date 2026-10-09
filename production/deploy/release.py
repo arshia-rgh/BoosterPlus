@@ -51,7 +51,7 @@ def execute(manifest, bundle, *, rollback=False, resume=False, runner=None, smok
     from manage import run, validate
     from smoke import public_smoke
     runner = runner or run
-    smoke = smoke or public_smoke
+    smoke = smoke or (lambda origin: public_smoke(origin, admin_origin="https://" + manifest["ADMIN_SITE_ADDRESS"], booster_origin="https://" + manifest["BOOSTER_SITE_ADDRESS"]))
     if manifest.get("DATA_TOPOLOGY") != "self-hosted-single":
         raise ValueError("This release procedure targets the selected self-hosted topology")
     target = verify(bundle, manifest["RELEASE_TRUST_KEY"], manifest["RELEASE_TRUST_KEY_SHA256"])

@@ -41,7 +41,7 @@ func Assigned(ctx context.Context, client *ent.Client, p *identity.Principal, id
 
 // AssignedUser rechecks reference-only notifications without inventing a signed-in session.
 func AssignedUser(ctx context.Context, client *ent.Client, account *ent.User, id, customerID string) error {
-	if account == nil || account.Suspended || !account.MfaEnabled || (account.Role != identity.RoleBooster && account.Role != identity.RoleAdmin && account.Role != identity.RoleOwner) {
+	if account == nil || account.Suspended || !account.MfaEnabled || (account.Portal != string(identity.PortalBooster) || account.Role != identity.RoleBooster) {
 		return identity.ErrForbidden
 	}
 	order, err := client.Order.Get(ctx, id)

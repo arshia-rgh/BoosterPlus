@@ -23,17 +23,16 @@ func TestCapabilityMatrixAndPendingMFA(t *testing.T) {
 	// Explicit grants ensure adding a portal or role cannot silently expand access.
 	grants := map[Portal]map[string][]string{
 		PortalCustomer: {
-			RoleCustomer: {"self", "account"}, RoleBooster: {"self", "account"},
-			RoleAdmin: {"self", "account"}, RoleOwner: {"self", "account"},
+			RoleCustomer: {"self", "account"},
 		},
-		PortalBooster: {RoleBooster: {"self", "booster"}, RoleAdmin: {"self", "booster"}, RoleOwner: {"self", "booster"}},
+		PortalBooster: {RoleBooster: {"self", "booster"}},
 		PortalAdmin:   {RoleAdmin: {"self", "admin", "users.read"}, RoleOwner: {"self", "admin", "users.read", "owner", "audit", "staff.manage", "recovery"}},
 	}
 	for _, portal := range []Portal{PortalCustomer, PortalBooster, PortalAdmin, "", "unknown"} {
 		for _, role := range []string{RoleCustomer, RoleBooster, RoleAdmin, RoleOwner, "unknown"} {
 			for _, verified := range []bool{false, true} {
 				for _, capability := range []string{"self", "account", "booster", "admin", "users.read", "owner", "audit", "staff.manage", "recovery", "unknown"} {
-					p := &Principal{User: &ent.User{Role: role}, Session: &ent.AuthSession{Portal: string(portal)}}
+					p := &Principal{User: &ent.User{Portal: string(portal), Role: role}, Session: &ent.AuthSession{Portal: string(portal)}}
 					if verified {
 						now := time.Now()
 						p.Session.MfaVerifiedAt = &now
@@ -51,7 +50,7 @@ func TestCapabilityMatrixAndPendingMFA(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	p := &Principal{User: &ent.User{Role: RoleCustomer, MfaEnabled: true}, Session: &ent.AuthSession{Portal: string(PortalCustomer)}}
+	p := &Principal{User: &ent.User{Portal: string(PortalCustomer), Role: RoleCustomer, MfaEnabled: true}, Session: &ent.AuthSession{Portal: string(PortalCustomer)}}
 	if err := Require(p, "self"); !errors.Is(err, ErrMFA) {
 		t.Fatal("enrolled customer bypassed MFA", err)
 	}
@@ -109,6 +108,7 @@ func TestGoogleOIDCValidatesSignedProtocol(t *testing.T) {
 	var issuer string
 	verifier := oauth2.GenerateVerifier()
 	var badVerifier atomic.Bool
+	var badRedirect atomic.Bool
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		var payload any
@@ -124,6 +124,9 @@ func TestGoogleOIDCValidatesSignedProtocol(t *testing.T) {
 			if r.Form.Get("code_verifier") != verifier {
 				badVerifier.Store(true)
 			}
+			if r.Form.Get("redirect_uri") != "https://admin.booster.example/api/v1/auth/portals/admin/google/callback" {
+				badRedirect.Store(true)
+			}
 			payload = map[string]any{"access_token": "test-access", "token_type": "Bearer", "id_token": token.Load()}
 		default:
 			w.WriteHeader(http.StatusNotFound)
@@ -135,7 +138,7 @@ func TestGoogleOIDCValidatesSignedProtocol(t *testing.T) {
 	}))
 	defer server.Close()
 	issuer = server.URL
-	provider, err := newOIDC(t.Context(), issuer, Config{GoogleClientID: "test-client", GoogleClientSecret: "test-secret", PublicOrigin: "https://booster.example"}, server.Client())
+	provider, err := newOIDC(t.Context(), issuer, Config{GoogleClientID: "test-client", GoogleClientSecret: "test-secret", PublicOrigin: "https://booster.example", AdminPublicOrigin: "https://admin.booster.example", BoosterPublicOrigin: "https://boost.booster.example"}, server.Client())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -207,7 +210,7 @@ func TestGoogleOIDCValidatesSignedProtocol(t *testing.T) {
 			}
 		})
 	}
-	if badVerifier.Load() {
-		t.Fatal("PKCE verifier not sent to token endpoint")
+	if badVerifier.Load() || badRedirect.Load() {
+		t.Fatal("PKCE verifier or exact portal redirect missing at token endpoint")
 	}
 }

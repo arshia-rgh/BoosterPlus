@@ -17,6 +17,8 @@ type AuthIdentity struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// Portal holds the value of the "portal" field.
+	Portal string `json:"portal,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID string `json:"user_id,omitempty"`
 	// Provider holds the value of the "provider" field.
@@ -33,7 +35,7 @@ func (*AuthIdentity) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case authidentity.FieldID, authidentity.FieldUserID, authidentity.FieldProvider, authidentity.FieldSubject:
+		case authidentity.FieldID, authidentity.FieldPortal, authidentity.FieldUserID, authidentity.FieldProvider, authidentity.FieldSubject:
 			values[i] = new(sql.NullString)
 		case authidentity.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -57,6 +59,12 @@ func (_m *AuthIdentity) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				_m.ID = value.String
+			}
+		case authidentity.FieldPortal:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field portal", values[i])
+			} else if value.Valid {
+				_m.Portal = value.String
 			}
 		case authidentity.FieldUserID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -118,6 +126,9 @@ func (_m *AuthIdentity) String() string {
 	var builder strings.Builder
 	builder.WriteString("AuthIdentity(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("portal=")
+	builder.WriteString(_m.Portal)
+	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(_m.UserID)
 	builder.WriteString(", ")

@@ -1,4 +1,5 @@
 import { z } from "../validation";
+import { isWinRateField, parseWinRate } from "./win-rate";
 import {
   answersSchema,
   optionsFor,
@@ -48,6 +49,14 @@ export function safeConfiguration(
   for (const field of service.fields) {
     if (field.stage !== "estimate") continue;
     const value = answers[field.key];
+    if (isWinRateField(field)) {
+      if (typeof value === "string") {
+        const preference = parseWinRate(value);
+        if (preference.kind !== "invalid" && preference.kind !== "legacy")
+          safe[field.key] = value;
+      }
+      continue;
+    }
     const options = optionsFor(field, config).map((item) => item.key);
     if (
       ["select", "rank", "radio"].includes(field.type) &&

@@ -14,6 +14,7 @@ const session: Session = {
   portal: "customer",
   csrf_token: "x".repeat(48),
   user: {
+    portal: "customer",
     id: "buyer",
     email: "buyer@example.test",
     display_name: "Buyer",

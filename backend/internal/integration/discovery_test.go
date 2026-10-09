@@ -257,14 +257,22 @@ func TestDiscoveryMigrationUpgradeRollbackAndReadiness(t *testing.T) {
 	if err := database.Ready(ctx, db); err == nil {
 		t.Fatal("old schema passed new readiness")
 	}
-	if err := r.Apply(ctx, 0); err != nil {
+	if err := r.Apply(ctx, 27); err != nil {
 		t.Fatal(err)
 	}
-	if err := database.Ready(ctx, db); err != nil {
-		t.Fatal(err)
+	if err := r.Verify(ctx); err != nil {
+		t.Fatal("discovery upgrade journal", err)
+	}
+	const indexesQuery = "SELECT COUNT(DISTINCT index_name) FROM information_schema.statistics WHERE table_schema=DATABASE() AND ((table_name='orders' AND index_name='orders_discovery_game_state') OR (table_name='order_events' AND index_name='order_events_completion_period'))"
+	var indexes int
+	if err := db.QueryRowContext(ctx, indexesQuery).Scan(&indexes); err != nil || indexes != 2 {
+		t.Fatal("discovery indexes missing after upgrade", err)
 	}
 	if err := r.Down(ctx, 1); err != nil {
 		t.Fatal(err)
+	}
+	if err := db.QueryRowContext(ctx, indexesQuery).Scan(&indexes); err != nil || indexes != 0 {
+		t.Fatal("rollback retained discovery indexes", err)
 	}
 	if err := database.Ready(ctx, db); err == nil {
 		t.Fatal("rolled-back indexes passed readiness")
@@ -274,5 +282,9 @@ func TestDiscoveryMigrationUpgradeRollbackAndReadiness(t *testing.T) {
 	}
 	if err := database.Ready(ctx, db); err != nil {
 		t.Fatal(err)
+	}
+	executeSQL(t, db, "DROP INDEX orders_discovery_game_state ON orders")
+	if err := database.Ready(ctx, db); err == nil {
+		t.Fatal("missing discovery index passed readiness")
 	}
 }

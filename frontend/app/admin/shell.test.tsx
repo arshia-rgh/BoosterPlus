@@ -7,6 +7,7 @@ import { sessionSchema } from "../identity/api";
 const base = {
   user: {
     id: "synthetic",
+    portal: "admin",
     email: "staff@example.test",
     display_name: "Test staff",
     staff_alias: "Guide",
@@ -15,7 +16,7 @@ const base = {
     mfa_enabled: true,
     notify_updates: true,
   },
-  portal: "customer",
+  portal: "admin",
   csrf_token: "a".repeat(64),
   google_enabled: false,
   google_linked: false,
@@ -89,4 +90,22 @@ it("finds staff modules without revealing owner-only privacy tools", () => {
   expect(
     screen.getByRole("link", { name: /Catalog editor/ }),
   ).toBeInTheDocument();
+});
+
+it("does not render admin navigation for a different realm with forged capabilities", () => {
+  const session = sessionSchema.parse({
+    ...base,
+    portal: "customer",
+    user: { ...base.user, portal: "customer", role: "customer" },
+  });
+  render(
+    <MemoryRouter>
+      <AdminShell session={session} title="Administration">
+        <main>Content</main>
+      </AdminShell>
+    </MemoryRouter>,
+  );
+  expect(
+    screen.queryByRole("navigation", { name: "Staff navigation" }),
+  ).not.toBeInTheDocument();
 });

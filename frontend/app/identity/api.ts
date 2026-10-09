@@ -1,3 +1,4 @@
+import { actionLabel, actionRoute, verifyAction } from "./action-verification";
 import {
   activePortal,
   portalAPIPath,
@@ -7,11 +8,13 @@ import {
   sessionEventMatches,
   type Portal,
 } from "./portal";
+import { invalidNumericFields } from "../ui/numeric-fields";
 import { retryTime, retryLabel } from "../ui/retry-time";
 import { z } from "../validation";
 import type { components } from "../api/schema";
 
-export const userSchema: z.ZodType<components["schemas"]["User"]> = z.object({
+export const userSchema = z.object({
+  portal: z.enum(["customer", "admin", "booster"]),
   email_verified: z.boolean().default(false),
   deleted: z.boolean().default(false),
   id: z.string(),
@@ -22,10 +25,10 @@ export const userSchema: z.ZodType<components["schemas"]["User"]> = z.object({
   suspended: z.boolean(),
   mfa_enabled: z.boolean(),
   notify_updates: z.boolean(),
-});
+}) satisfies z.ZodType<components["schemas"]["User"]>;
 export type User = z.infer<typeof userSchema>;
-export const sessionSchema: z.ZodType<components["schemas"]["AuthSession"]> =
-  z.object({
+export const sessionSchema: z.ZodType<components["schemas"]["AuthSession"]> = z
+  .object({
     portal: z.enum(["customer", "booster", "admin"]),
     user: userSchema.nullable(),
     csrf_token: z.string().min(40),
@@ -35,6 +38,14 @@ export const sessionSchema: z.ZodType<components["schemas"]["AuthSession"]> =
     capabilities: z.array(z.string()),
     terms_version: z.string(),
     terms_url: z.string(),
+  })
+  .superRefine((value, context) => {
+    if (value.user && value.user.portal !== value.portal)
+      context.addIssue({
+        code: "custom",
+        path: ["user", "portal"],
+        message: "Identity belongs to a different workspace",
+      });
   });
 export type Session = z.infer<typeof sessionSchema>;
 export const codesSchema = z.object({ recovery_codes: z.array(z.string()) });
@@ -75,6 +86,10 @@ export const recoveriesSchema = z.object({
   ),
 });
 const messages = new Map([
+  [
+    "payment_below_minimum",
+    "This order is below NOWPayments’ current minimum for the selected network. No checkout was created. Contact support to review the order amount or choose another available network.",
+  ],
   [
     "article_invalid",
     "Review the article fields and publication requirements.",
@@ -187,6 +202,10 @@ const messages = new Map([
   ],
   ["order_invalid", "Review the highlighted order issues."],
   [
+    "resale_conflict",
+    "This account's availability or purchase terms changed. Refresh the listing and review the current terms before continuing. If your earlier reservation was not confirmed, check that same request first.",
+  ],
+  [
     "catalog_conflict",
     "This catalog changed or is unavailable. Reload it before continuing.",
   ],
@@ -200,7 +219,7 @@ const messages = new Map([
   ["mfa_required", "Verify a fresh authenticator code before continuing."],
   [
     "recent_auth_required",
-    "Verify your email or Google account again, then enter a fresh authenticator code.",
+    "Confirm this action with an authenticator or email code without leaving this page.",
   ],
   ["terms_required", "Accept the current account terms to continue."],
   [
@@ -242,11 +261,6 @@ async function read(
         }),
   });
   if (response.status === 204) return null;
-  if (
-    (response.status === 401 || response.status === 403) &&
-    typeof window !== "undefined"
-  )
-    notifySession(portal);
   // Preserve authority/status even when a proxy returns a non-JSON error page.
   const result: unknown = await response.json().catch(() => null);
   if (!response.ok) {
@@ -275,6 +289,16 @@ async function read(
     if (problem.success) {
       error.issues = problem.data.issues ?? [];
       error.code = problem.data.code;
+    }
+    // A freshness challenge does not revoke the signed-in identity. Preserve
+    // the form while its contextual dialog is open; actual authority loss still
+    // conceals private content, including malformed proxy responses.
+    if (response.status === 401 || response.status === 403) {
+      if (error.code !== "recent_auth_required")
+        notifySession(
+          portal,
+          error.code === "mfa_required" ? error.code : undefined,
+        );
     }
     throw error;
   }
@@ -323,17 +347,94 @@ export async function post<T>(
   body: unknown,
   schema: z.ZodType<T>,
   portal: Portal = activePortal(),
+  canResume?: () => boolean,
 ): Promise<T> {
+  const returnFocus =
+    typeof document !== "undefined" &&
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : undefined;
+  const invalid = invalidNumericFields(body);
+  if (invalid.length) {
+    const error = new APIError(
+      "Correct the highlighted number fields before continuing.",
+    );
+    error.code = "invalid_request";
+    error.status = 400;
+    error.issues = invalid;
+    throw error;
+  }
   // Capture one portal for the whole operation, including its CSRF bootstrap.
   // Navigation during the read cancels the action; it never borrows a new portal.
+  const route = actionRoute();
+  const snapshot: unknown = JSON.parse(JSON.stringify(body));
   const session = await get("/auth/session", sessionSchema, portal);
-  if (activePortal() !== portal)
+  if (activePortal() !== portal || actionRoute() !== route)
     throw new APIError(
       "Your portal changed. Return to the action and review it again.",
     );
-  const result = schema.parse(
-    await read(path, portal, body, session.csrf_token),
-  );
+  let result: T;
+  try {
+    result = schema.parse(
+      await read(path, portal, snapshot, session.csrf_token),
+    );
+  } catch (error) {
+    const enrollment = path === "/auth/mfa/enroll";
+    const verificationEndpoint =
+      path === "/auth/mfa/verify" ||
+      path === "/auth/email/verify" ||
+      (path === "/auth/email/request" &&
+        typeof snapshot === "object" &&
+        snapshot !== null &&
+        "purpose" in snapshot &&
+        snapshot.purpose === "reauth");
+    if (
+      !(error instanceof APIError) ||
+      error.status !== 403 ||
+      error.code !== "recent_auth_required" ||
+      !session.user ||
+      (session.mfa_required && !enrollment) ||
+      verificationEndpoint
+    )
+      throw error;
+    try {
+      await verifyAction({
+        portal,
+        userId: session.user.id,
+        email: session.user.email,
+        authenticator: session.user.mfa_enabled && !enrollment,
+        action: actionLabel(path, snapshot),
+        returnFocus,
+        route,
+      });
+    } catch {
+      const cancelled = new APIError(
+        "Verification was cancelled. Your action was not submitted; your changes are still here.",
+      );
+      cancelled.code = "verification_cancelled";
+      throw cancelled;
+    }
+    const verified = await get("/auth/session", sessionSchema, portal);
+    if (
+      activePortal() !== portal ||
+      actionRoute() !== route ||
+      verified.user?.id !== session.user.id ||
+      (verified.mfa_required && !enrollment)
+    )
+      throw new APIError(
+        "Your sign-in or page changed. Review the action again.",
+      );
+    if (canResume && !canResume())
+      throw new APIError(
+        "Identity confirmed. Select Reveal again to view this information safely.",
+      );
+    // Only an explicit pre-mutation freshness rejection permits one retry.
+    // Network failures, uncertain responses and a second rejection never replay.
+    result = schema.parse(
+      await read(path, portal, snapshot, verified.csrf_token),
+    );
+  }
+
   if (path === "/auth/logout" || path === "/auth/sessions/revoke")
     notifySession(portal);
   return result;
@@ -349,4 +450,49 @@ export function errorMessage(error: unknown): string {
   return error instanceof APIError
     ? error.message
     : "The service is unavailable. Please try again.";
+}
+
+// Protected reads ask only when the user chooses to continue; background polling
+// must never summon a verification dialog or replay a mutation.
+export const actionVerifiedEvent = "playora:action-verified";
+export async function verifyCurrentAction(portal: Portal = activePortal()) {
+  const returnFocus =
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : undefined;
+  const route = actionRoute();
+  const session = await get("/auth/session", sessionSchema, portal);
+  if (
+    !session.user ||
+    session.mfa_required ||
+    activePortal() !== portal ||
+    actionRoute() !== route
+  )
+    throw new APIError("Finish signing in to this workspace first.");
+  try {
+    await verifyAction({
+      portal,
+      route,
+      userId: session.user.id,
+      email: session.user.email,
+      authenticator: session.user.mfa_enabled,
+      action: "Continue viewing protected information",
+      returnFocus,
+    });
+  } catch {
+    throw new APIError(
+      "Verification cancelled. You can continue when you’re ready.",
+    );
+  }
+  const verified = await get("/auth/session", sessionSchema, portal);
+  if (
+    verified.user?.id !== session.user.id ||
+    verified.mfa_required ||
+    activePortal() !== portal ||
+    actionRoute() !== route
+  )
+    throw new APIError("Your sign-in changed. Review this page again.");
+  window.dispatchEvent(
+    new CustomEvent(actionVerifiedEvent, { detail: { portal } }),
+  );
 }

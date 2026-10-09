@@ -1,6 +1,6 @@
 import type { Location } from "react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "../portal-router";
 
 export interface RecordSection {
   id: string;

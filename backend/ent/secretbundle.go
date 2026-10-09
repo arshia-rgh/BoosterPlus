@@ -23,6 +23,8 @@ type SecretBundle struct {
 	ResourceID string `json:"resource_id,omitempty"`
 	// OwnerID holds the value of the "owner_id" field.
 	OwnerID string `json:"owner_id,omitempty"`
+	// CipherOwnerID holds the value of the "cipher_owner_id" field.
+	CipherOwnerID string `json:"cipher_owner_id,omitempty"`
 	// Version holds the value of the "version" field.
 	Version int `json:"version,omitempty"`
 	// KeyVersion holds the value of the "key_version" field.
@@ -55,7 +57,7 @@ func (*SecretBundle) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case secretbundle.FieldVersion:
 			values[i] = new(sql.NullInt64)
-		case secretbundle.FieldID, secretbundle.FieldPurpose, secretbundle.FieldResourceID, secretbundle.FieldOwnerID, secretbundle.FieldKeyVersion, secretbundle.FieldState, secretbundle.FieldRequestKey, secretbundle.FieldRequestHash:
+		case secretbundle.FieldID, secretbundle.FieldPurpose, secretbundle.FieldResourceID, secretbundle.FieldOwnerID, secretbundle.FieldCipherOwnerID, secretbundle.FieldKeyVersion, secretbundle.FieldState, secretbundle.FieldRequestKey, secretbundle.FieldRequestHash:
 			values[i] = new(sql.NullString)
 		case secretbundle.FieldExpiresAt, secretbundle.FieldCreatedAt, secretbundle.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -97,6 +99,12 @@ func (_m *SecretBundle) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field owner_id", values[i])
 			} else if value.Valid {
 				_m.OwnerID = value.String
+			}
+		case secretbundle.FieldCipherOwnerID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field cipher_owner_id", values[i])
+			} else if value.Valid {
+				_m.CipherOwnerID = value.String
 			}
 		case secretbundle.FieldVersion:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -202,6 +210,9 @@ func (_m *SecretBundle) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("owner_id=")
 	builder.WriteString(_m.OwnerID)
+	builder.WriteString(", ")
+	builder.WriteString("cipher_owner_id=")
+	builder.WriteString(_m.CipherOwnerID)
 	builder.WriteString(", ")
 	builder.WriteString("version=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Version))

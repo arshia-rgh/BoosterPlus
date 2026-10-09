@@ -148,3 +148,21 @@ it("publishes only the reviewed saved revision and resets approval afterward", a
     ),
   ).not.toBeChecked();
 });
+it("associates FAQ authoring errors with the visible fields and retains the draft", async () => {
+  setup();
+  fireEvent.click(screen.getByRole("button", { name: "Add question" }));
+  const questions = screen.getAllByLabelText("Question");
+  const question = questions.at(-1);
+  if (!question) throw new Error("Question control missing");
+  fireEvent.change(question, { target: { value: "Retained question" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save private draft" }));
+  const answers = screen.getAllByLabelText("Answer");
+  await waitFor(() =>
+    expect(answers.at(-1)).toHaveAttribute("aria-invalid", "true"),
+  );
+  expect(question).toHaveValue("Retained question");
+  expect(
+    screen.getByRole("link", { name: /Answer: Use 1–2000/ }),
+  ).toBeVisible();
+  expect(post).not.toHaveBeenCalled();
+});

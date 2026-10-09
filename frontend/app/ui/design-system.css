@@ -132,8 +132,7 @@ body {
   min-height: 44px;
   font-size: 0.875rem;
   color: var(--muted);
-  text-decoration: underline;
-  text-underline-offset: 0.3em;
+  text-decoration: none;
 }
 .record-status {
   display: flex;

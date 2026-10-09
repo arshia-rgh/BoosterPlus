@@ -4,7 +4,8 @@
     "tests/**/*",
     "*.ts",
     ".react-router/types/**/*",
-    "admin-app/**/*"
+    "admin-app/**/*",
+    "booster-app/**/*"
   ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2023"],

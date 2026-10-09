@@ -1,8 +1,9 @@
 import { HomeDiscoveryFields, PolicyFields } from "./discovery-fields";
-import { useState, useId } from "react";
-import { Action, Text } from "../catalog/controls";
+import { useState, useId, useContext, useCallback } from "react";
+import { FieldValidation, fieldError } from "../ui/form-validation";
+import { Action, Text, Check } from "../catalog/controls";
 import { value } from "../identity/identity";
-import { parseContent } from "./validation";
+import { parseContent, validateContentDraft } from "./validation";
 import {
   homeDiscoverySchema,
   legalSchema,
@@ -37,35 +38,70 @@ function Field({
   initial = "",
   multiline = false,
   required = true,
+  type = "text",
 }: {
   name: string;
   label: string;
   initial?: string;
   multiline?: boolean;
   required?: boolean;
+  type?: "text" | "number";
 }) {
   const id = useId();
+  const validation = useContext(FieldValidation);
+  const register = validation?.register;
+  const fieldRef = useCallback(
+    (input: HTMLInputElement | HTMLTextAreaElement | null) => {
+      if (input && register) return register({ name, id, label });
+    },
+    [name, id, label, register],
+  );
+  const error = fieldError(validation, name);
+  const common = {
+    ref: fieldRef,
+    id,
+    name,
+    defaultValue: initial,
+    required,
+    "aria-invalid": error ? (true as const) : undefined,
+    "aria-describedby": error ? id + "-error" : undefined,
+    onChange: () => validation?.correct(name),
+  };
   return (
     <div className="catalog-label">
       <label htmlFor={id}>{label}</label>
       {multiline ? (
-        <textarea
-          id={id}
-          name={name}
-          defaultValue={initial}
-          required={required}
-          maxLength={fieldLimits.get(name) ?? 400}
-        />
+        <textarea {...common} maxLength={fieldLimits.get(name) ?? 400} />
       ) : (
         <input
-          id={id}
-          name={name}
-          defaultValue={initial}
-          required={required}
+          {...common}
+          type={type}
+          min={type === "number" ? 0 : undefined}
+          max={type === "number" ? 36500 : undefined}
+          step={type === "number" ? 1 : undefined}
           maxLength={fieldLimits.get(name) ?? 400}
         />
       )}
+      {error && (
+        <p id={id + "-error"} className="field-error">
+          {error}
+        </p>
+      )}
     </div>
+  );
+}
+function Toggle({
+  name,
+  label,
+  initial,
+}: {
+  name: string;
+  label: string;
+  initial: boolean;
+}) {
+  const [checked, setChecked] = useState(initial);
+  return (
+    <Check name={name} label={label} value={checked} change={setChecked} />
   );
 }
 function HomeFields({ data }: { data: Content["data"] }) {
@@ -147,6 +183,7 @@ function HomeFields({ data }: { data: Content["data"] }) {
         <fieldset key={i}>
           <legend>Question {i + 1}</legend>
           <Text
+            name={`faqs.${String(i)}.question`}
             label="Question"
             value={faq.question}
             change={(v) => {
@@ -156,6 +193,7 @@ function HomeFields({ data }: { data: Content["data"] }) {
             }}
           />
           <Text
+            name={`faqs.${String(i)}.answer`}
             label="Answer"
             multiline
             value={faq.answer}
@@ -190,6 +228,7 @@ function HomeFields({ data }: { data: Content["data"] }) {
         <fieldset key={i}>
           <legend>Featured offering {i + 1}</legend>
           <Text
+            name={`featured.${String(i)}.label`}
             label="Offering label"
             value={item.label}
             change={(v) => {
@@ -199,6 +238,7 @@ function HomeFields({ data }: { data: Content["data"] }) {
             }}
           />
           <Text
+            name={`featured.${String(i)}.href`}
             label="Internal offering path"
             value={item.href}
             change={(v) => {
@@ -249,26 +289,21 @@ function RetentionFields({ data }: { data: Content["data"] }) {
           ["grace_days", "Grace period after request"],
         ] as const
       ).map(([name, label]) => (
-        <label key={name}>
-          {label} (days)
-          <input
-            type="number"
-            name={name}
-            min="0"
-            max="36500"
-            step="1"
-            required
-            defaultValue={
-              new Map([
-                ["financial_days", initial?.financial_days],
-                ["dispute_days", initial?.dispute_days],
-                ["audit_days", initial?.audit_days],
-                ["support_days", initial?.support_days],
-                ["grace_days", initial?.grace_days],
-              ]).get(name) ?? ""
-            }
-          />
-        </label>
+        <Field
+          key={name}
+          name={name}
+          label={`${label} (days)`}
+          type="number"
+          initial={String(
+            new Map([
+              ["financial_days", initial?.financial_days],
+              ["dispute_days", initial?.dispute_days],
+              ["audit_days", initial?.audit_days],
+              ["support_days", initial?.support_days],
+              ["grace_days", initial?.grace_days],
+            ]).get(name) ?? "",
+          )}
+        />
       ))}
       <Field
         name="policy_text"
@@ -282,31 +317,20 @@ function RetentionFields({ data }: { data: Content["data"] }) {
         initial={initial?.backup_policy ?? ""}
         multiline
       />
-      <label className="check">
-        <input
-          type="checkbox"
-          name="preserve_evidence"
-          required
-          defaultChecked={initial?.preserve_evidence ?? false}
-        />
-        I approve preserving financial, dispute and audit evidence as described
-        above.
-      </label>
-      <label className="check">
-        <input
-          type="checkbox"
-          name="enabled"
-          defaultChecked={initial?.enabled ?? false}
-        />
-        Enable customer deletion requests under this published policy
-      </label>
+      <Toggle
+        name="preserve_evidence"
+        initial={initial?.preserve_evidence ?? false}
+        label="I approve preserving financial, dispute and audit evidence as described above."
+      />
+      <Toggle
+        name="enabled"
+        initial={initial?.enabled ?? false}
+        label="Enable customer deletion requests under this published policy"
+      />
     </>
   );
 }
-export function contentData(
-  kind: string,
-  data: FormData,
-): Record<string, unknown> {
+function rawContentData(kind: string, data: FormData): Record<string, unknown> {
   if (kind === "legal")
     return parseContent(legalSchema, {
       text: value(data, "text"),
@@ -369,6 +393,13 @@ export function contentData(
     faqs: JSON.parse(value(data, "faqs")) as unknown,
     featured: JSON.parse(value(data, "featured")) as unknown,
   });
+}
+
+export function contentData(
+  kind: string,
+  data: FormData,
+): Record<string, unknown> {
+  return validateContentDraft(kind, rawContentData(kind, data));
 }
 
 export function ContentFields({

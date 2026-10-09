@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import "./characters.css";
 import SceneCharacter from "./scene-character";
 import { scenes, sceneByKey, type SceneKey } from "./scene-catalog";

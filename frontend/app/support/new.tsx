@@ -1,9 +1,14 @@
+import {
+  FieldValidation,
+  useFormValidation,
+  type FieldIssue,
+} from "../ui/form-validation";
 import { uncertain } from "./chat-state";
 import { useRef, useState, type SubmitEvent } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "../portal-router";
 import { z } from "../validation";
-import { post } from "../identity/api";
-import { Action, ErrorNotice, Text } from "../catalog/controls";
+import { APIError, post } from "../identity/api";
+import { Action, ErrorNotice, Issues, Text } from "../catalog/controls";
 import { conversationSchema } from "./model";
 export function OrderSupport({
   id,
@@ -71,10 +76,33 @@ export default function NewSupport() {
     [unknown, setUnknown] = useState(false),
     [error, setError] = useState<unknown>(null),
     lock = useRef(false);
-  const valid = subject.trim().length > 0 && subject.length <= 160;
+  const [issues, setIssues] = useState<FieldIssue[]>([]);
+  const validation = useFormValidation(
+    issues,
+    (name) => {
+      setIssues((old) => old.filter((issue) => issue.path !== name));
+    },
+    undefined,
+    !busy,
+  );
+  const valid =
+    subject.trim().length > 0 &&
+    Array.from(subject).length <= 160 &&
+    !subject.includes("\0");
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (lock.current || !valid) return;
+    if (lock.current) return;
+    setIssues(
+      valid
+        ? []
+        : [
+            {
+              path: "subject",
+              message: "Enter a conversation subject of 1–160 characters.",
+            },
+          ],
+    );
+    if (!valid) return;
     lock.current = true;
     setBusy(true);
     setError(null);
@@ -87,6 +115,7 @@ export default function NewSupport() {
       await navigate("/support/" + result.id);
     } catch (cause) {
       setError(cause);
+      if (cause instanceof APIError) setIssues(cause.issues);
       setUnknown(uncertain(cause));
     } finally {
       lock.current = false;
@@ -94,38 +123,45 @@ export default function NewSupport() {
     }
   }
   return (
-    <form className="catalog-section" onSubmit={(event) => void submit(event)}>
-      <fieldset disabled={busy || unknown}>
-        <legend>Start a private pre-sales conversation</legend>
-        <p>
-          Ask about services before placing an order. Keep passwords and
-          recovery codes out of support messages.
-        </p>
-        <Text
-          label="Conversation subject"
-          value={subject}
-          change={(value) => {
-            setSubject(value);
-            setKey(crypto.randomUUID());
-            setError(null);
-          }}
-          help="Use a clear subject of 1–160 characters. For an existing order, open its Messages section instead."
-        />
-      </fieldset>
-      {unknown && (
-        <p role="status">
-          Creation was not confirmed. Keep this request unchanged and retry to
-          open the same conversation.
-        </p>
-      )}
-      <button className="button" type="submit" disabled={busy || !valid}>
-        {busy
-          ? "Opening…"
-          : unknown
-            ? "Retry same conversation"
-            : "Start conversation"}
-      </button>
-      <ErrorNotice error={error} />
-    </form>
+    <FieldValidation value={validation}>
+      <form
+        className="catalog-section"
+        onSubmit={(event) => void submit(event)}
+      >
+        <fieldset disabled={busy || unknown}>
+          <legend>Start a private pre-sales conversation</legend>
+          <p>
+            Ask about services before placing an order. Keep passwords and
+            recovery codes out of support messages.
+          </p>
+          <Text
+            name="subject"
+            label="Conversation subject"
+            value={subject}
+            change={(value) => {
+              setSubject(value);
+              setKey(crypto.randomUUID());
+              setError(null);
+            }}
+            help="Use a clear subject of 1–160 characters. For an existing order, open its Messages section instead."
+          />
+        </fieldset>
+        {unknown && (
+          <p role="status">
+            Creation was not confirmed. Keep this request unchanged and retry to
+            open the same conversation.
+          </p>
+        )}
+        <button className="button" type="submit" disabled={busy}>
+          {busy
+            ? "Opening…"
+            : unknown
+              ? "Retry same conversation"
+              : "Start conversation"}
+        </button>
+        <ErrorNotice error={error} hideIssues />
+        <Issues issues={issues} />
+      </form>
+    </FieldValidation>
   );
 }

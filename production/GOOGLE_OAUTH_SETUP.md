@@ -11,13 +11,13 @@ these exact Authorized redirect URIs, without trailing slashes:
 
 ```text
 https://playoragames.com/api/v1/auth/portals/customer/google/callback
-https://playoragames.com/api/v1/auth/portals/admin/google/callback
-https://playoragames.com/api/v1/auth/portals/booster/google/callback
+https://admin.playoragames.com/api/v1/auth/portals/admin/google/callback
+https://pro.playoragames.com/api/v1/auth/portals/booster/google/callback
 ```
 
 This implementation redirects through the backend, so a JavaScript origin is
 not required. One client supports all three redirects; portal-bound challenges,
-sessions and required staff MFA remain separate.
+sessions and required staff MFA remain separate. Add the two staff callbacks to the existing client before cutover. Keep the customer callback unchanged; do not rename the path portion or add a trailing slash. Retire the old customer-host staff callbacks only after the new portals are verified. Existing browser cookies are host-only: staff sign in again on their new hostname. Never redirect an old OAuth callback with its code/state to another hostname.
 
 Download the client JSON when creating the client. Keep it outside the repository
 in a private directory, with file permissions 0600. Share only its absolute local

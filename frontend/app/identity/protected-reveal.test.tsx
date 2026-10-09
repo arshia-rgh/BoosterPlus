@@ -118,3 +118,27 @@ it("discards errors from an older reveal after record navigation", async () => {
   });
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 });
+
+it("keeps safe post-verification guidance after blur while refusing to reveal", async () => {
+  let reject!: (cause: Error) => void;
+  vi.mocked(post).mockReturnValue(
+    new Promise((_done, fail) => {
+      reject = fail;
+    }),
+  );
+  render(<Fixture />);
+  fireEvent.click(screen.getByRole("button", { name: "Reveal" }));
+  fireEvent(window, new Event("blur"));
+  const resume = vi.mocked(post).mock.calls[0]?.[4];
+  expect(resume?.()).toBe(false);
+  await act(async () => {
+    reject(
+      new Error(
+        "Identity confirmed. Select Reveal again to view this information safely.",
+      ),
+    );
+    await Promise.resolve();
+  });
+  expect(screen.getByRole("alert")).toHaveTextContent("Select Reveal again");
+  expect(screen.queryByText(plaintext)).not.toBeInTheDocument();
+});

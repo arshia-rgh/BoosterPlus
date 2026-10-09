@@ -52,6 +52,12 @@ func validateValue(field Field, raw json.RawMessage, refs map[string]Reference) 
 	if err := json.Unmarshal(raw, &value); err != nil {
 		return "Use a text or exact decimal value."
 	}
+	if IsWinRateField(field) && (field.Type == "win_rate" || value == "any" || strings.Contains(value, ":")) {
+		if !validWinRate(value) {
+			return "Choose a win-rate option and enter valid percentages from 0 to 100. A range must go from lower to higher."
+		}
+		return ""
+	}
 	switch field.Type {
 	case "select", "radio", "rank":
 		if !slices.ContainsFunc(optionsFor(field, refs), func(o Option) bool { return o.Key == value }) {
@@ -191,6 +197,31 @@ func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submit
 	}
 	if variant != nil && collectionStage != "estimate" && !matches(variant.Eligibility, result.Answers, fields) {
 		add("eligibility", "These selections are not eligible for the chosen package variant.")
+	}
+	return result
+}
+
+// ValidateNewAnswers validates newly selected order preferences. The ordinary
+// validator remains compatible with exact numeric win rates in immutable older
+// orders and published pricing cases. New selections must use an explicit mode;
+// even a legacy scalar default must be reviewed instead of implying a guarantee.
+// Inspecting normalized answers preserves hidden/later-stage field semantics.
+func ValidateNewAnswers(c Configuration, serviceKey, collectionStage string, submitted Answers, variant *Variant) Validation {
+	result := ValidateAnswers(c, serviceKey, collectionStage, submitted, variant)
+	for _, service := range c.Services {
+		if service.Key != serviceKey {
+			continue
+		}
+		for _, field := range service.Fields {
+			raw, present := result.Answers[field.Key]
+			if !present || !IsWinRateField(field) {
+				continue
+			}
+			if !validWinRate(answerString(raw)) {
+				delete(result.Answers, field.Key)
+				result.Issues = append(result.Issues, Issue{Path: field.Key, Message: "Choose no preference, a range, below, above, or exactly 100% for this new request."})
+			}
+		}
 	}
 	return result
 }

@@ -152,17 +152,17 @@ func TestDeliveryForecastSessionsFactorsAndRollback(t *testing.T) {
 	}
 	input := forecastInput(v, preview)
 	now := time.Unix(f.auth.clock.Load(), 0)
-	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
+	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now.Add(-11 * time.Minute)).SetMfaVerifiedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = f.work.ApplyForecast(ctx, f.admin, v.OrderID, input); err == nil {
-		t.Fatal("stale primary accepted")
+		t.Fatal("two stale factors accepted")
 	}
-	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now).SetMfaVerifiedAt(now.Add(-11 * time.Minute)).Save(ctx); err != nil {
+	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetAuthenticatedAt(now).ClearMfaVerifiedAt().Save(ctx); err != nil {
 		t.Fatal(err)
 	}
 	if _, err = f.work.ApplyForecast(ctx, f.admin, v.OrderID, input); err == nil {
-		t.Fatal("stale MFA accepted")
+		t.Fatal("incomplete MFA sign-in accepted")
 	}
 	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetMfaVerifiedAt(now).Save(ctx); err != nil {
 		t.Fatal(err)

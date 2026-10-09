@@ -1,8 +1,13 @@
 import type { Config } from "@react-router/dev/config";
-const admin = process.env.FRONTEND_APP === "admin";
+const application = process.env.FRONTEND_APP ?? "storefront";
 export default {
   ssr: true,
-  appDirectory: admin ? "admin-app" : "app",
-  buildDirectory: admin ? "build/admin" : "build/storefront",
+  appDirectory:
+    application === "admin"
+      ? "admin-app"
+      : application === "booster"
+        ? "booster-app"
+        : "app",
+  buildDirectory: `build/${application}`,
   routeDiscovery: { mode: "initial" },
 } satisfies Config;

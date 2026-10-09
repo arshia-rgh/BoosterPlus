@@ -29,7 +29,7 @@ func (s *Service) Authenticate(ctx context.Context, token string, portal Portal)
 		}
 		return nil, accountErr
 	}
-	if !portal.permitsRole(account.Role) {
+	if !portal.permitsUser(account) {
 		return nil, ErrUnauthenticated
 	}
 	// Avoid treating a MySQL no-op update (same clock tick) as a revoked session.
@@ -52,7 +52,7 @@ func (s *Service) issueSession(ctx context.Context, tx *ent.Tx, account *ent.Use
 
 func (s *Service) issueSessionAt(ctx context.Context, tx *ent.Tx, account *ent.User, oldSession string, portal Portal, authenticatedAt time.Time) (string, error) {
 	now := s.now()
-	if account.Suspended || !portal.permitsRole(account.Role) {
+	if account.Suspended || !portal.permitsUser(account) {
 		return "", ErrUnauthenticated
 	}
 	if oldSession != "" {
@@ -72,12 +72,15 @@ func (s *Service) issueSessionAt(ctx context.Context, tx *ent.Tx, account *ent.U
 func (s *Service) rotate(ctx context.Context, tx *ent.Tx, p *Principal, firstFactor, secondFactor bool) (string, error) {
 	token := randomToken()
 	portal := Portal(p.Session.Portal)
-	if !portal.permitsRole(p.User.Role) {
+	if !portal.permitsUser(p.User) {
 		return "", ErrUnauthenticated
 	}
 	update := tx.AuthSession.Update().Where(authsession.IDEQ(p.Session.ID), authsession.PortalEQ(string(portal)), authsession.UserIDEQ(p.User.ID), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(s.now())).SetTokenHash(s.sessionDigest(portal, token)).SetLastSeenAt(s.now())
 	if firstFactor {
-		update.SetAuthenticatedAt(s.now()).ClearMfaVerifiedAt()
+		// Re-verification renews the primary factor of this same session. Preserve
+		// completed sign-in MFA without refreshing its timestamp or granting it
+		// to a session that has not completed MFA. New sign-ins use issueSession.
+		update.SetAuthenticatedAt(s.now())
 	}
 	if secondFactor {
 		update.SetMfaVerifiedAt(s.now())
@@ -143,7 +146,7 @@ func (s *Service) fresh(ctx context.Context, tx *ent.Tx, p *Principal) (*Princip
 		return nil, accountErr
 	}
 	portal := Portal(p.Session.Portal)
-	if !portal.permitsRole(account.Role) {
+	if !portal.permitsUser(account) {
 		return nil, ErrUnauthenticated
 	}
 	session, sessionErr := tx.AuthSession.Query().Where(authsession.IDEQ(p.Session.ID), authsession.PortalEQ(string(portal)), authsession.TokenHashEQ(p.Session.TokenHash), authsession.UserIDEQ(account.ID), authsession.AuthVersionEQ(account.AuthVersion), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(s.now()), authsession.LastSeenAtGT(s.now().Add(-IdleTTL))).Only(ctx)

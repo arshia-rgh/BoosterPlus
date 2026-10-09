@@ -125,15 +125,26 @@ func (f *authFixture) principal(t *testing.T, token string, portals ...identity.
 	return p
 }
 
-// enterPortal performs a separate first-factor verification after a fixture role grant.
-// It deliberately never edits a stored session's audience.
-func (f *authFixture) enterPortal(t *testing.T, p *identity.Principal, portal identity.Portal) *identity.Principal {
+// staffLogin provisions a namespace-correct synthetic fixture without changing
+// any customer identity. Production provisioning remains owner-authorized.
+func (f *authFixture) staffLogin(t *testing.T, email, role string) (string, *identity.Principal) {
 	t.Helper()
-	f.clock.Add(61)
-	_, current := f.login(t, p.User.Email, portal)
-	return current
+	portal := identity.PortalAdmin
+	if role == identity.RoleBooster {
+		portal = identity.PortalBooster
+	}
+	if _, err := f.client.User.Create().SetPortal(string(portal)).SetEmail(email).SetRole(role).Save(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	return f.login(t, email, portal)
 }
+
 func (f *authFixture) enroll(t *testing.T, p *identity.Principal) (string, []string, *identity.Principal) {
+	t.Helper()
+	secret, codes, _, current := f.enrollToken(t, p)
+	return secret, codes, current
+}
+func (f *authFixture) enrollToken(t *testing.T, p *identity.Principal) (string, []string, string, *identity.Principal) {
 	t.Helper()
 	enrollment, err := f.service.EnrollMFA(t.Context(), p)
 	if err != nil {
@@ -150,7 +161,7 @@ func (f *authFixture) enroll(t *testing.T, p *identity.Principal) (string, []str
 	if len(result.RecoveryCodes) != 10 {
 		t.Fatal("missing one-time recovery codes")
 	}
-	return enrollment.Secret, result.RecoveryCodes, f.principal(t, result.Token, identity.Portal(p.Session.Portal))
+	return enrollment.Secret, result.RecoveryCodes, result.Token, f.principal(t, result.Token, identity.Portal(p.Session.Portal))
 }
 func TestIdentityEmailConsumptionAndPrivacy(t *testing.T) {
 	f := authDB(t, nil)
@@ -280,12 +291,12 @@ func TestIdentityCooldownTermsAndSessionBoundaries(t *testing.T) {
 }
 func TestIdentityStaffMFAAndOwnerControls(t *testing.T) {
 	f := authDB(t, nil)
-	oldToken, customer := f.login(t, "owner@example.test")
+	oldToken, customer := f.staffLogin(t, "owner@example.test", identity.RoleAdmin)
 	if err := f.service.BootstrapOwner(t.Context(), customer.User.ID, "operator-1"); !errors.Is(err, identity.ErrMFA) {
 		t.Fatal("bootstrap without MFA", err)
 	}
 	secret, codes, customer := f.enroll(t, customer)
-	if _, err := f.service.Authenticate(t.Context(), oldToken, identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
+	if _, err := f.service.Authenticate(t.Context(), oldToken, identity.PortalAdmin); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal("enrollment did not revoke old session", err)
 	}
 	if err := f.service.BootstrapOwner(t.Context(), customer.User.ID, "operator-1"); err != nil {
@@ -314,20 +325,21 @@ func TestIdentityStaffMFAAndOwnerControls(t *testing.T) {
 	if _, err = f.service.VerifyMFA(t.Context(), owner, code, "127.0.0.1"); !errors.Is(err, identity.ErrInvalid) {
 		t.Fatal("TOTP replay accepted", err)
 	}
-	if err = f.service.GrantRole(t.Context(), owner, owner.User.ID, identity.RoleCustomer); !errors.Is(err, identity.ErrConflict) {
+	if err = f.service.GrantRole(t.Context(), owner, owner.User.ID, identity.RoleAdmin); !errors.Is(err, identity.ErrConflict) {
 		t.Fatal("last owner removed", err)
 	}
-	targetToken, target := f.login(t, "staff@example.test")
-	if err = f.service.GrantRole(t.Context(), owner, target.User.ID, identity.RoleBooster); err != nil {
+	targetToken, customerTarget := f.login(t, "staff@example.test")
+	target, inviteErr := f.service.InviteStaff(t.Context(), owner, identity.StaffInvitation{Email: customerTarget.User.Email, Portal: identity.PortalBooster, Role: identity.RoleBooster})
+	if inviteErr != nil || target.ID == customerTarget.User.ID {
+		t.Fatal("invitation reused customer identity", inviteErr)
+	}
+	if _, err = f.service.Authenticate(t.Context(), targetToken, identity.PortalCustomer); err != nil {
+		t.Fatal("invitation affected customer session", err)
+	}
+	if err = f.service.Suspend(t.Context(), owner, target.ID, true); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = f.service.Authenticate(t.Context(), targetToken, identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
-		t.Fatal("role change did not revoke sessions", err)
-	}
-	if err = f.service.Suspend(t.Context(), owner, target.User.ID, true); err != nil {
-		t.Fatal(err)
-	}
-	if err = f.service.BootstrapOwner(t.Context(), target.User.ID, "operator-2"); !errors.Is(err, identity.ErrConflict) {
+	if err = f.service.BootstrapOwner(t.Context(), target.ID, "operator-2"); !errors.Is(err, identity.ErrConflict) {
 		t.Fatal("second bootstrap accepted", err)
 	}
 	entries, err := f.service.Audits(t.Context(), owner)
@@ -336,7 +348,7 @@ func TestIdentityStaffMFAAndOwnerControls(t *testing.T) {
 	}
 	found := false
 	for _, entry := range entries {
-		if entry.Action == "role.changed" && entry.ActorID == owner.User.ID {
+		if entry.Action == "staff.invited" && entry.ActorID == owner.User.ID {
 			found = true
 		}
 	}
@@ -352,7 +364,7 @@ func TestIdentityStaffMFAAndOwnerControls(t *testing.T) {
 		t.Fatal("recovery code reused", err)
 	}
 	f.clock.Add(601)
-	if err = f.service.Suspend(t.Context(), owner, target.User.ID, false); !errors.Is(err, identity.ErrRecent) {
+	if err = f.service.Suspend(t.Context(), owner, target.ID, false); !errors.Is(err, identity.ErrRecent) {
 		t.Fatal("stale authentication changed suspension", err)
 	}
 }
@@ -398,6 +410,16 @@ func TestIdentityHTTPBoundary(t *testing.T) {
 			mux.ServeHTTP(out, req)
 			if out.Code != tc.status {
 				t.Fatalf("status %d: %s", out.Code, out.Body.String())
+			}
+			if out.Code == http.StatusAccepted {
+				var timing struct {
+					ID      string `json:"challenge_id"`
+					Retry   int    `json:"retry_after_seconds"`
+					Expires int    `json:"expires_in_seconds"`
+				}
+				if err := json.Unmarshal(out.Body.Bytes(), &timing); err != nil || timing.ID == "" || timing.Retry != 60 || timing.Expires != 600 {
+					t.Fatal("verification response omitted authoritative retry/expiry timing", err)
+				}
 			}
 		})
 	}
@@ -484,7 +506,7 @@ func TestIdentityEmailChangeAndReviewedRecovery(t *testing.T) {
 	if _, err = f.service.Authenticate(t.Context(), "invalid", identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal(err)
 	}
-	_, owner := f.login(t, "reviewer@example.test")
+	_, owner := f.staffLogin(t, "reviewer@example.test", identity.RoleAdmin)
 	secret, _, owner := f.enroll(t, owner)
 	if err = f.service.BootstrapOwner(t.Context(), owner.User.ID, "test-operator"); err != nil {
 		t.Fatal(err)
@@ -588,7 +610,7 @@ func TestIdentityConcurrentOwnersCannotRemoveLastOwner(t *testing.T) {
 	f := authDB(t, nil)
 	principals := make([]*identity.Principal, 2)
 	for i, email := range []string{"first-owner@example.test", "second-owner@example.test"} {
-		if _, err := f.client.User.Create().SetEmail(email).SetRole(identity.RoleOwner).SetEmailVerifiedAt(time.Unix(f.clock.Load(), 0)).SetTermsVersion("test-v1").Save(t.Context()); err != nil {
+		if _, err := f.client.User.Create().SetPortal(string(identity.PortalAdmin)).SetEmail(email).SetRole(identity.RoleOwner).SetEmailVerifiedAt(time.Unix(f.clock.Load(), 0)).SetTermsVersion("test-v1").Save(t.Context()); err != nil {
 			t.Fatal(err)
 		}
 		_, p := f.login(t, email, identity.PortalAdmin)
@@ -600,7 +622,7 @@ func TestIdentityConcurrentOwnersCannotRemoveLastOwner(t *testing.T) {
 	outcomes := make(chan error, 2)
 	for _, p := range principals {
 		wait.Go(func() {
-			err := f.service.GrantRole(t.Context(), p, p.User.ID, identity.RoleCustomer)
+			err := f.service.GrantRole(t.Context(), p, p.User.ID, identity.RoleAdmin)
 			if err == nil {
 				succeeded.Add(1)
 			} else {

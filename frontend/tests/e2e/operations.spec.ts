@@ -3,12 +3,14 @@ import { enroll, fixture, signIn } from "./identity-fixtures";
 import { operationsJourney } from "./operations-journey";
 import { reportsJourney } from "./reports-journey";
 
-// Independent workspaces keep each journey inside the original 30-second
-// budget, without sharing MFA enrollment or mutable job/report state.
+// Independent workspaces avoid sharing MFA enrollment or mutable job/report state.
 test("administrator reviews and retries a failed background task", async ({
   page,
   request,
 }, info) => {
+  // Real QR capture, worker completion and responsive Axe checks exhausted the
+  // 30s compound budget while progressing; keep their individual waits intact.
+  test.setTimeout(45000);
   await signIn(
     page,
     request,

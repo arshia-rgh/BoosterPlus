@@ -741,20 +741,26 @@ func init() {
 	authflow.IDValidator = authflowDescID.Validators[0].(func(string) error)
 	authidentityFields := schema.AuthIdentity{}.Fields()
 	_ = authidentityFields
+	// authidentityDescPortal is the schema descriptor for portal field.
+	authidentityDescPortal := authidentityFields[0].Descriptor()
+	// authidentity.DefaultPortal holds the default value on creation for the portal field.
+	authidentity.DefaultPortal = authidentityDescPortal.Default.(string)
+	// authidentity.PortalValidator is a validator for the "portal" field. It is called by the builders before save.
+	authidentity.PortalValidator = authidentityDescPortal.Validators[0].(func(string) error)
 	// authidentityDescUserID is the schema descriptor for user_id field.
-	authidentityDescUserID := authidentityFields[1].Descriptor()
+	authidentityDescUserID := authidentityFields[2].Descriptor()
 	// authidentity.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	authidentity.UserIDValidator = authidentityDescUserID.Validators[0].(func(string) error)
 	// authidentityDescProvider is the schema descriptor for provider field.
-	authidentityDescProvider := authidentityFields[2].Descriptor()
+	authidentityDescProvider := authidentityFields[3].Descriptor()
 	// authidentity.ProviderValidator is a validator for the "provider" field. It is called by the builders before save.
 	authidentity.ProviderValidator = authidentityDescProvider.Validators[0].(func(string) error)
 	// authidentityDescSubject is the schema descriptor for subject field.
-	authidentityDescSubject := authidentityFields[3].Descriptor()
+	authidentityDescSubject := authidentityFields[4].Descriptor()
 	// authidentity.SubjectValidator is a validator for the "subject" field. It is called by the builders before save.
 	authidentity.SubjectValidator = authidentityDescSubject.Validators[0].(func(string) error)
 	// authidentityDescID is the schema descriptor for id field.
-	authidentityDescID := authidentityFields[0].Descriptor()
+	authidentityDescID := authidentityFields[1].Descriptor()
 	// authidentity.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	authidentity.IDValidator = authidentityDescID.Validators[0].(func(string) error)
 	authmessageFields := schema.AuthMessage{}.Fields()
@@ -2307,28 +2313,34 @@ func init() {
 	secretbundleDescOwnerID := secretbundleFields[3].Descriptor()
 	// secretbundle.OwnerIDValidator is a validator for the "owner_id" field. It is called by the builders before save.
 	secretbundle.OwnerIDValidator = secretbundleDescOwnerID.Validators[0].(func(string) error)
+	// secretbundleDescCipherOwnerID is the schema descriptor for cipher_owner_id field.
+	secretbundleDescCipherOwnerID := secretbundleFields[4].Descriptor()
+	// secretbundle.DefaultCipherOwnerID holds the default value on creation for the cipher_owner_id field.
+	secretbundle.DefaultCipherOwnerID = secretbundleDescCipherOwnerID.Default.(string)
+	// secretbundle.CipherOwnerIDValidator is a validator for the "cipher_owner_id" field. It is called by the builders before save.
+	secretbundle.CipherOwnerIDValidator = secretbundleDescCipherOwnerID.Validators[0].(func(string) error)
 	// secretbundleDescVersion is the schema descriptor for version field.
-	secretbundleDescVersion := secretbundleFields[4].Descriptor()
+	secretbundleDescVersion := secretbundleFields[5].Descriptor()
 	// secretbundle.DefaultVersion holds the default value on creation for the version field.
 	secretbundle.DefaultVersion = secretbundleDescVersion.Default.(int)
 	// secretbundleDescKeyVersion is the schema descriptor for key_version field.
-	secretbundleDescKeyVersion := secretbundleFields[5].Descriptor()
+	secretbundleDescKeyVersion := secretbundleFields[6].Descriptor()
 	// secretbundle.KeyVersionValidator is a validator for the "key_version" field. It is called by the builders before save.
 	secretbundle.KeyVersionValidator = secretbundleDescKeyVersion.Validators[0].(func(string) error)
 	// secretbundleDescRequestKey is the schema descriptor for request_key field.
-	secretbundleDescRequestKey := secretbundleFields[9].Descriptor()
+	secretbundleDescRequestKey := secretbundleFields[10].Descriptor()
 	// secretbundle.RequestKeyValidator is a validator for the "request_key" field. It is called by the builders before save.
 	secretbundle.RequestKeyValidator = secretbundleDescRequestKey.Validators[0].(func(string) error)
 	// secretbundleDescRequestHash is the schema descriptor for request_hash field.
-	secretbundleDescRequestHash := secretbundleFields[10].Descriptor()
+	secretbundleDescRequestHash := secretbundleFields[11].Descriptor()
 	// secretbundle.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
 	secretbundle.RequestHashValidator = secretbundleDescRequestHash.Validators[0].(func(string) error)
 	// secretbundleDescCreatedAt is the schema descriptor for created_at field.
-	secretbundleDescCreatedAt := secretbundleFields[12].Descriptor()
+	secretbundleDescCreatedAt := secretbundleFields[13].Descriptor()
 	// secretbundle.DefaultCreatedAt holds the default value on creation for the created_at field.
 	secretbundle.DefaultCreatedAt = secretbundleDescCreatedAt.Default.(func() time.Time)
 	// secretbundleDescUpdatedAt is the schema descriptor for updated_at field.
-	secretbundleDescUpdatedAt := secretbundleFields[13].Descriptor()
+	secretbundleDescUpdatedAt := secretbundleFields[14].Descriptor()
 	// secretbundle.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	secretbundle.DefaultUpdatedAt = secretbundleDescUpdatedAt.Default.(func() time.Time)
 	// secretbundleDescID is the schema descriptor for id field.
@@ -3033,8 +3045,14 @@ func init() {
 	transferrecord.IDValidator = transferrecordDescID.Validators[0].(func(string) error)
 	userFields := schema.User{}.Fields()
 	_ = userFields
+	// userDescPortal is the schema descriptor for portal field.
+	userDescPortal := userFields[2].Descriptor()
+	// user.DefaultPortal holds the default value on creation for the portal field.
+	user.DefaultPortal = userDescPortal.Default.(string)
+	// user.PortalValidator is a validator for the "portal" field. It is called by the builders before save.
+	user.PortalValidator = userDescPortal.Validators[0].(func(string) error)
 	// userDescEmail is the schema descriptor for email field.
-	userDescEmail := userFields[2].Descriptor()
+	userDescEmail := userFields[3].Descriptor()
 	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	user.EmailValidator = func() func(string) error {
 		validators := userDescEmail.Validators
@@ -3052,51 +3070,51 @@ func init() {
 		}
 	}()
 	// userDescDisplayName is the schema descriptor for display_name field.
-	userDescDisplayName := userFields[3].Descriptor()
+	userDescDisplayName := userFields[4].Descriptor()
 	// user.DefaultDisplayName holds the default value on creation for the display_name field.
 	user.DefaultDisplayName = userDescDisplayName.Default.(string)
 	// user.DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
 	user.DisplayNameValidator = userDescDisplayName.Validators[0].(func(string) error)
 	// userDescRole is the schema descriptor for role field.
-	userDescRole := userFields[5].Descriptor()
+	userDescRole := userFields[6].Descriptor()
 	// user.DefaultRole holds the default value on creation for the role field.
 	user.DefaultRole = userDescRole.Default.(string)
 	// user.RoleValidator is a validator for the "role" field. It is called by the builders before save.
 	user.RoleValidator = userDescRole.Validators[0].(func(string) error)
 	// userDescStaffAlias is the schema descriptor for staff_alias field.
-	userDescStaffAlias := userFields[6].Descriptor()
+	userDescStaffAlias := userFields[7].Descriptor()
 	// user.DefaultStaffAlias holds the default value on creation for the staff_alias field.
 	user.DefaultStaffAlias = userDescStaffAlias.Default.(string)
 	// user.StaffAliasValidator is a validator for the "staff_alias" field. It is called by the builders before save.
 	user.StaffAliasValidator = userDescStaffAlias.Validators[0].(func(string) error)
 	// userDescSuspended is the schema descriptor for suspended field.
-	userDescSuspended := userFields[7].Descriptor()
+	userDescSuspended := userFields[8].Descriptor()
 	// user.DefaultSuspended holds the default value on creation for the suspended field.
 	user.DefaultSuspended = userDescSuspended.Default.(bool)
 	// userDescAuthVersion is the schema descriptor for auth_version field.
-	userDescAuthVersion := userFields[8].Descriptor()
+	userDescAuthVersion := userFields[9].Descriptor()
 	// user.DefaultAuthVersion holds the default value on creation for the auth_version field.
 	user.DefaultAuthVersion = userDescAuthVersion.Default.(int64)
 	// userDescTermsVersion is the schema descriptor for terms_version field.
-	userDescTermsVersion := userFields[9].Descriptor()
+	userDescTermsVersion := userFields[10].Descriptor()
 	// user.DefaultTermsVersion holds the default value on creation for the terms_version field.
 	user.DefaultTermsVersion = userDescTermsVersion.Default.(string)
 	// user.TermsVersionValidator is a validator for the "terms_version" field. It is called by the builders before save.
 	user.TermsVersionValidator = userDescTermsVersion.Validators[0].(func(string) error)
 	// userDescNotifyUpdates is the schema descriptor for notify_updates field.
-	userDescNotifyUpdates := userFields[11].Descriptor()
+	userDescNotifyUpdates := userFields[12].Descriptor()
 	// user.DefaultNotifyUpdates holds the default value on creation for the notify_updates field.
 	user.DefaultNotifyUpdates = userDescNotifyUpdates.Default.(bool)
 	// userDescMfaCounter is the schema descriptor for mfa_counter field.
-	userDescMfaCounter := userFields[15].Descriptor()
+	userDescMfaCounter := userFields[16].Descriptor()
 	// user.DefaultMfaCounter holds the default value on creation for the mfa_counter field.
 	user.DefaultMfaCounter = userDescMfaCounter.Default.(int64)
 	// userDescMfaEnabled is the schema descriptor for mfa_enabled field.
-	userDescMfaEnabled := userFields[16].Descriptor()
+	userDescMfaEnabled := userFields[17].Descriptor()
 	// user.DefaultMfaEnabled holds the default value on creation for the mfa_enabled field.
 	user.DefaultMfaEnabled = userDescMfaEnabled.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[18].Descriptor()
+	userDescCreatedAt := userFields[19].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescID is the schema descriptor for id field.

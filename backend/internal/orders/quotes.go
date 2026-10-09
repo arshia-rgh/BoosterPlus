@@ -291,7 +291,7 @@ func (s *Store) Revise(ctx context.Context, p *identity.Principal, id string, in
 		if readErr != nil {
 			return readErr
 		}
-		validated := catalog.ValidateAnswers(release.Configuration, row.Service, "order", input.Answers, nil)
+		validated := catalog.ValidateNewAnswers(release.Configuration, row.Service, "order", input.Answers, nil)
 		if len(validated.Issues) > 0 {
 			return &Invalid{validated.Issues}
 		}
@@ -300,7 +300,7 @@ func (s *Store) Revise(ctx context.Context, p *identity.Principal, id string, in
 			return readErr
 		}
 		now := s.instant()
-		estimate, readErr := document(catalog.Calculate(release, row.Service, estimateSelections(release.Configuration, row.Service, validated.Answers), now))
+		estimate, readErr := document(catalog.CalculateNew(release, row.Service, estimateSelections(release.Configuration, row.Service, validated.Answers), now))
 		if readErr != nil {
 			return readErr
 		}

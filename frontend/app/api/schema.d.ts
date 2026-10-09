@@ -1065,7 +1065,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Requires recent primary and authenticator verification. Creates immutable revision, supersedes prior quote, and requires new customer acceptance. */
+    /** Requires one recent authenticator or email verification after completed sign-in. Creates immutable revision, supersedes prior quote, and requires new customer acceptance. */
     post: operations["issueOrderQuote"];
     delete?: never;
     options?: never;
@@ -1444,7 +1444,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Requires recent staff primary and authenticator verification; restarts only failed activity jobs with audit. Running/completed jobs cannot be restarted. */
+    /** Requires a recent staff verification factor after completed sign-in; restarts only failed activity jobs with audit. Running/completed jobs cannot be restarted. */
     post: operations["retryActivityEmail"];
     delete?: never;
     options?: never;
@@ -1700,7 +1700,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Audited staff maintenance for authorized unbound uploads; recent factors required. Bound evidence cannot be removed. */
+    /** Audited staff maintenance for authorized unbound uploads; one recent verification factor required. Bound evidence cannot be removed. */
     post: operations["staffRetryMedia"];
     delete?: never;
     options?: never;
@@ -1717,7 +1717,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Audited staff maintenance for authorized unbound uploads; recent factors required. Bound evidence cannot be removed. */
+    /** Audited staff maintenance for authorized unbound uploads; one recent verification factor required. Bound evidence cannot be removed. */
     post: operations["staffRemoveMedia"];
     delete?: never;
     options?: never;
@@ -2520,7 +2520,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Explicitly share a separate paid-order coordination thread after recent staff factors */
+    /** Explicitly share a separate paid-order coordination thread after a recent staff verification factor */
     post: operations["openFulfillmentCoordination"];
     delete?: never;
     options?: never;
@@ -2537,7 +2537,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Pause or resume assigned booster sharing with recent staff factors and expected thread version */
+    /** Pause or resume assigned booster sharing with a recent staff verification factor and expected thread version */
     post: operations["changeBoosterConversationSharing"];
     delete?: never;
     options?: never;
@@ -2571,7 +2571,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Apply unchanged reviewed range with recent primary and authenticator verification */
+    /** Apply unchanged reviewed range with one recent authenticator or email verification after completed sign-in */
     post: operations["adminDeliveryForecastApply"];
     delete?: never;
     options?: never;
@@ -3135,7 +3135,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Preview bounded operational metadata or download the exact reviewed page with recent staff factors and a committed audit */
+    /** Preview bounded operational metadata or download the exact reviewed page with a recent staff verification factor and a committed audit */
     post: operations["previewOperationalReport"];
     delete?: never;
     options?: never;
@@ -3152,7 +3152,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Preview bounded operational metadata or download the exact reviewed page with recent staff factors and a committed audit */
+    /** Preview bounded operational metadata or download the exact reviewed page with a recent staff verification factor and a committed audit */
     post: operations["exportOperationalReport"];
     delete?: never;
     options?: never;
@@ -3478,7 +3478,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Owner authorization with recent sign-in and authenticator verification */
+    /** Owner authorization with a recent verification factor after completed sign-in */
     post: operations["postApiV1AdminRefundsIdApprove"];
     delete?: never;
     options?: never;
@@ -3495,7 +3495,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Owner authorization with recent sign-in and authenticator verification */
+    /** Owner authorization with a recent verification factor after completed sign-in */
     post: operations["postApiV1AdminRefundsIdCancel"];
     delete?: never;
     options?: never;
@@ -5395,6 +5395,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/staff/invitations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Provision an independent staff identity
+     * @description Owner with completed staff sign-in and one recent verification factor only. Role must match the target portal. Does not convert a customer identity or send an email. Duplicate email within one portal conflicts.
+     */
+    post: operations["inviteStaff"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -5428,6 +5448,11 @@ export interface components {
       notify_updates: boolean;
       email_verified?: boolean;
       deleted?: boolean;
+      /**
+       * @description Independent identity namespace; the same email may have a different user in each portal.
+       * @enum {string}
+       */
+      portal: "customer" | "admin" | "booster";
     };
     AuthSession: {
       user: components["schemas"]["User"] | null;
@@ -5452,6 +5477,8 @@ export interface components {
     EmailChallenge: {
       challenge_id: string;
       message: string;
+      retry_after_seconds: number;
+      expires_in_seconds: number;
     };
     EmailVerification: {
       challenge_id: string;
@@ -5604,7 +5631,8 @@ export interface components {
         | "decimal"
         | "short_text"
         | "long_text"
-        | "attachment";
+        | "attachment"
+        | "win_rate";
       /** @enum {string} */
       stage: "estimate" | "order" | "fulfillment";
       required: boolean;
@@ -8101,6 +8129,14 @@ export interface components {
       /** @enum {string} */
       code: "artwork_invalid" | "artwork_conflict" | "artwork_rejected";
     };
+    StaffInvitation: {
+      email: string;
+      /** @enum {string} */
+      portal: "admin" | "booster";
+      /** @enum {string} */
+      role: "administrator" | "booster";
+      display_name?: string;
+    };
   };
   responses: never;
   parameters: never;
@@ -8737,6 +8773,7 @@ export interface operations {
         search?: string;
         state?: string;
         role?: "" | "customer" | "booster" | "administrator" | "owner";
+        portal_filter?: "" | "customer" | "admin" | "booster";
       };
       header?: never;
       path?: never;
@@ -23558,6 +23595,42 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+      /** @description Request rejected; stable public error code. No secrets are returned. */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["Problem"];
+        };
+      };
+    };
+  };
+  inviteStaff: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+        Origin: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StaffInvitation"];
+      };
+    };
+    responses: {
+      /** @description Independent staff identity provisioned */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["User"];
+        };
       };
       /** @description Request rejected; stable public error code. No secrets are returned. */
       default: {

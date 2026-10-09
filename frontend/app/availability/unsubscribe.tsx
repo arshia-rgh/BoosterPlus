@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { Link } from "react-router";
+import { Link } from "../portal-router";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { post } from "../identity/api";
 import { linkSchema, parseLink } from "./model";

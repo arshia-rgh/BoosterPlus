@@ -1,3 +1,4 @@
+import { Anchor } from "../portal-router";
 import {
   activePortal,
   portalHome,
@@ -7,9 +8,15 @@ import {
   portalReturn,
   type Portal,
 } from "../identity/portal";
-import { useEffect } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
-import { APIError } from "../identity/api";
+import { useEffect, useState } from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+  useInRouterContext,
+} from "../portal-router";
+import { APIError, errorMessage, verifyCurrentAction } from "../identity/api";
 
 const key = (portal: Portal) => `playora.google-return.${portal}`;
 export function safeReturnPath(
@@ -101,34 +108,65 @@ export function VerificationReturn() {
   const target = safeReturnPath(params.get("returnTo"), portal);
   return target && target !== portalSecurity(portal) ? (
     <p className="account-return">
-      <Link to={target}>Return to your task ↗</Link> after verification. Review
-      the current details before trying the action again.
+      <Link to={target}>Return to your task ↗</Link> Review the current details
+      before continuing.
     </p>
   ) : null;
 }
 
 export function VerificationLink({ error }: { error: unknown }) {
+  const routed = useInRouterContext();
+  return routed ? (
+    <RoutedVerification error={error} />
+  ) : (
+    <VerificationControl error={error} portal={activePortal()} />
+  );
+}
+function RoutedVerification({ error }: { error: unknown }) {
+  const portal = portalFromPath(useLocation().pathname);
+  return <VerificationControl error={error} portal={portal} />;
+}
+function VerificationControl({
+  error,
+  portal,
+}: {
+  error: unknown;
+  portal: Portal;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [problem, setProblem] = useState("");
   if (
     !(error instanceof APIError) ||
     !["recent_auth_required", "mfa_required"].includes(error.code)
   )
     return null;
-  const target =
-    typeof window === "undefined"
-      ? null
-      : safeReturnPath(window.location.pathname + window.location.search);
+  if (error.code === "mfa_required")
+    return (
+      <Anchor href={portalLogin(portal)}>
+        Finish signing in to this workspace
+      </Anchor>
+    );
   return (
-    <a
-      target={activePortal() === "admin" ? "_blank" : undefined}
-      rel={activePortal() === "admin" ? "noopener noreferrer" : undefined}
-      href={
-        portalSecurity(activePortal()) +
-        (target ? "?returnTo=" + encodeURIComponent(target) : "")
-      }
-    >
-      {activePortal() === "admin"
-        ? "Verify identity in a new tab, then retry here"
-        : "Verify your identity to continue"}
-    </a>
+    <>
+      <button
+        className="button"
+        type="button"
+        disabled={busy}
+        onClick={() => {
+          setBusy(true);
+          setProblem("");
+          void verifyCurrentAction(portal)
+            .catch((cause: unknown) => {
+              setProblem(errorMessage(cause));
+            })
+            .finally(() => {
+              setBusy(false);
+            });
+        }}
+      >
+        {busy ? "Verification open…" : "Verify to continue here"}
+      </button>
+      {problem && <p role="alert">{problem}</p>}
+    </>
   );
 }

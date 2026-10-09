@@ -3,7 +3,6 @@ package vault
 import (
 	"context"
 	"crypto/subtle"
-	"encoding/json"
 	"errors"
 	"time"
 
@@ -97,17 +96,10 @@ func (s *Store) put(ctx context.Context, p *identity.Principal, scope Scope, ver
 	if err != nil || key.String() != requestKey || len(plaintext) == 0 || len(plaintext) > MaxBytes || version < 0 || version >= 2147483646 {
 		return View{}, ErrInvalid
 	}
-	raw, err := json.Marshal(struct {
-		Scope  Scope
-		Key    string
-		Expiry time.Time
-		Data   []byte
-	}{scope, requestKey, expires.UTC(), plaintext})
+	digest, err := s.writeDigest(scope, requestKey, expires, plaintext)
 	if err != nil {
 		return View{}, ErrInvalid
 	}
-	digest := s.auth.RequestDigest("vault-write", raw)
-	clear(raw)
 	var result View
 	err = s.auth.AuthorizedTransaction(ctx, p, capability, sensitive, func(tx *ent.Tx, current *identity.Principal) error {
 		if current.User.ID != scope.OwnerID {
@@ -121,7 +113,11 @@ func (s *Store) put(ctx context.Context, p *identity.Principal, scope Scope, ver
 			return e
 		}
 		if e == nil && row.RequestKey == requestKey {
-			if subtle.ConstantTimeCompare([]byte(row.RequestHash), []byte(digest)) != 1 {
+			storedDigest, digestErr := s.retryDigest(row, scope, requestKey, expires, plaintext)
+			if digestErr != nil {
+				return digestErr
+			}
+			if subtle.ConstantTimeCompare([]byte(row.RequestHash), []byte(storedDigest)) != 1 {
 				return ErrConflict
 			}
 			result = metadata(row)
@@ -147,7 +143,7 @@ func (s *Store) put(ctx context.Context, p *identity.Principal, scope Scope, ver
 		if row == nil {
 			row, e = tx.SecretBundle.Create().SetID(id).SetPurpose(secretbundle.Purpose(scope.Purpose)).SetResourceID(scope.ResourceID).SetOwnerID(scope.OwnerID).SetVersion(1).SetKeyVersion(encrypted.KeyID).SetWrappedKey(encrypted.WrappedKey).SetEncryptedPayload(encrypted.Payload).SetState(secretbundle.StateActive).SetRequestKey(requestKey).SetRequestHash(digest).SetExpiresAt(expires).SetCreatedAt(now).SetUpdatedAt(now).Save(ctx)
 		} else {
-			row, e = tx.SecretBundle.UpdateOneID(id).Where(secretbundle.VersionEQ(version)).AddVersion(1).SetKeyVersion(encrypted.KeyID).SetWrappedKey(encrypted.WrappedKey).SetEncryptedPayload(encrypted.Payload).SetState(secretbundle.StateActive).SetRequestKey(requestKey).SetRequestHash(digest).SetExpiresAt(expires).SetUpdatedAt(now).Save(ctx)
+			row, e = tx.SecretBundle.UpdateOneID(id).Where(secretbundle.VersionEQ(version)).AddVersion(1).SetCipherOwnerID("").SetKeyVersion(encrypted.KeyID).SetWrappedKey(encrypted.WrappedKey).SetEncryptedPayload(encrypted.Payload).SetState(secretbundle.StateActive).SetRequestKey(requestKey).SetRequestHash(digest).SetExpiresAt(expires).SetUpdatedAt(now).Save(ctx)
 		}
 		if ent.IsNotFound(e) {
 			return ErrConflict
@@ -199,7 +195,11 @@ func (s *Store) reveal(ctx context.Context, p *identity.Principal, scope Scope, 
 		if row.State != secretbundle.StateActive || !row.ExpiresAt.After(s.now()) {
 			return ErrUnavailable
 		}
-		raw, e := s.keys.Open(row.ID, scope, envelope(row))
+		storedScope, e := cipherScope(row, scope)
+		if e != nil {
+			return e
+		}
+		raw, e := s.keys.Open(row.ID, storedScope, envelope(row))
 		if ent.IsNotFound(e) {
 			return ErrConflict
 		}

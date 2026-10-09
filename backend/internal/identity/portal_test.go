@@ -55,7 +55,7 @@ func TestPortalSelection(t *testing.T) {
 func TestPortalRoleEligibility(t *testing.T) {
 	for _, portal := range []Portal{PortalCustomer, PortalAdmin, PortalBooster, "", "owner"} {
 		for _, role := range []string{RoleCustomer, RoleBooster, RoleAdmin, RoleOwner, ""} {
-			want := portal == PortalCustomer && role != "" || portal == PortalAdmin && (role == RoleAdmin || role == RoleOwner) || portal == PortalBooster && (role == RoleBooster || role == RoleAdmin || role == RoleOwner)
+			want := portal == PortalCustomer && role == RoleCustomer || portal == PortalAdmin && (role == RoleAdmin || role == RoleOwner) || portal == PortalBooster && role == RoleBooster
 			if portal.permitsRole(role) != want {
 				t.Fatalf("unexpected %s / %s eligibility", portal, role)
 			}
