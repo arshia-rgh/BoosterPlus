@@ -4,9 +4,9 @@ RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@v0.4.7
 WORKDIR /build
 # Preserve the Caddy release while replacing dependencies with security fixes.
 RUN xcaddy build v2.11.4 --output /build/caddy \
-    --replace golang.org/x/crypto=golang.org/x/crypto@v0.55.0 \
-    --replace golang.org/x/net=golang.org/x/net@v0.56.0 \
-    --replace golang.org/x/text=golang.org/x/text@v0.39.0 \
+    --replace golang.org/x/crypto=golang.org/x/crypto@v0.57.0 \
+    --replace golang.org/x/net=golang.org/x/net@v0.60.0 \
+    --replace golang.org/x/text=golang.org/x/text@v0.42.0 \
     --replace google.golang.org/grpc=google.golang.org/grpc@v1.83.2
 FROM caddy:2.11.4-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
 # Curl is unused at runtime. Keep exact patched TLS libraries and no file caps.
