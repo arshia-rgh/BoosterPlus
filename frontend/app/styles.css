@@ -285,6 +285,10 @@ footer {
   width: auto;
   margin-right: 0.6rem;
 }
+.identity-card .check > a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
 .identity-card button,
 .identity-page button {
   cursor: pointer;

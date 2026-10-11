@@ -40,15 +40,27 @@ async function fitsViewport(page: Page) {
 test("shared layouts reflow with long labels, narrow screens and enlarged text", async ({
   page,
 }, info) => {
-  for (const route of ["/account", "/admin"]) {
+  for (const route of ["/account", "/admin", "/booster"]) {
     await page.goto(route);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(
       page.getByRole("textbox", {
-        name: route === "/admin" ? "Work email address" : "Email address",
+        name: route === "/account" ? "Email address" : "Work email address",
         exact: true,
       }),
     ).toBeVisible();
+    const termsLinks = page.getByRole("link", {
+      name: "account terms",
+      exact: true,
+    });
+    await expect(termsLinks).toHaveCount(2);
+    for (const link of await termsLinks.all()) {
+      // Inline consent links must be recognizable without hover or color.
+      await expect(link).toHaveCSS("text-decoration-line", "underline");
+      await link.focus();
+      await expect(link).toBeFocused();
+      await expect(link).toHaveCSS("text-decoration-line", "underline");
+    }
     for (const width of [320, 360, 390, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       await fitsViewport(page);
