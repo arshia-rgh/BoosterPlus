@@ -1,6 +1,6 @@
 # MLBB catalog setup for the service-experience release
 
-Prepared 12 October 2026. Applies to the new editor in the pending release; this document does not change production. Read-only audit source: public Mobile Legends release 200 on 11 October. Recheck the current saved draft before editing; a later owner revision takes precedence.
+Prepared 12 October 2026. Applies to the editor deployed in signed release `72ed594`; this guide does not publish catalog changes. Read-only audit source: public Mobile Legends release 200 on 11 October. Recheck the current saved draft before editing; a later owner revision takes precedence.
 
 ## Why no numeric estimate appears today
 
@@ -50,7 +50,7 @@ For a synthetic service with a USD 10.00 base, USD 2.50 fixed addition and a fol
 - Fully specify each fixed offer. Customer-specific delivery facts do not change its promised scope.
 - Preserve current payment policy and old catalog releases. No payment, email or publication is performed by this guide.
 
-## Fixed packages in the next release
+## Fixed packages in the deployed editor
 
 The current published offer does not declare fixed boost contents. Existing orders retain their original release and agreement. New purchases of that incomplete offer will remain unavailable until an administrator saves and publishes an explicitly reviewed definition.
 

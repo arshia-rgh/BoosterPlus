@@ -1,6 +1,6 @@
 # Service experience release roadmap
 
-Owner request: 11 October 2026. Baseline: `6b2cfb959b169ed89bbd47e133ff552f3fcae976`; deployed application: signed `3a9f694`, schema 41. This is the active scope for the next release and may be extended by the owner. Implementation is authorized. Completed work, pending work and actual qualification must remain distinct.
+Owner request: 11 October 2026. Baseline: `6b2cfb959b169ed89bbd47e133ff552f3fcae976`. Delivered on 12 October as signed `72ed5947fddf5859899d8c3e2b4f9e73c62177d9`, schema 41, replacing `3a9f694`. Implementation and scoped qualification are complete. Live catalog publication, owner-led provider/authentication acceptance and off-host recovery remain separate; see `service144-scoped-continuation.md` and `mlbb-catalog-setup.md`.
 
 ## Product and design decisions
 
@@ -35,7 +35,7 @@ The owner confirmed booster login fails while customer/admin login works, and th
 | SE06  | News cover/body image composition and consistent upload limits | Implemented; senior review and focused real-media checks passed  |
 | SE07  | Seller screenshot flow, listing cover and structured skins     | Implemented; senior review and focused real-media checks passed  |
 | SE08  | Square service grids and persistent custom-boost action        | Implemented; scoped senior review and responsive rechecks passed |
-| SE09  | Integrated review, qualification and release handover          | Broad review, backend and scoped browser qualification passed; remaining production checks running |
+| SE09  | Integrated review, qualification and release handover          | Scoped qualification, signed deployment and live verification passed |
 
 Stages are implementation work packages within one release candidate. Record focused checks as work proceeds; a stage is not qualified/complete merely because its source is edited. Retain the ordinary repository commit/release gates and exact-source evidence. Earlier one-use waivers are consumed.
 
@@ -187,3 +187,8 @@ Stages are implementation work packages within one release candidate. Record foc
 ### Service144 scoped qualification completed
 
 The corrected real-TiKV database run completed successfully. Migration/history, TLS private storage/scanner, restart regression and the business suite passed. Completed aggregate proof SHA256: `93e6ea9f7cac50122545ac8957b08ce6525d3fe251d903ee3ccedbdb728abc45`; business log SHA256: `27f2e78ec7470a6606d5af3b5ae2c43127015dadca09fd30f89c90a6e0acd5f1`. This combines the actual database-retry2 result with unchanged earlier backend/frontend/browser/image/container/staging/configuration/security evidence; original failed attempts remain failed. No previously passed business/browser suite was restarted. The normal tracked commit hook retains fresh repository, lint/gosec/dependency checks and refuses changed or incomplete evidence. Signed release, deployment preflight, recovery decision and live activation remain separate and pending.
+
+
+### Service144 deployed and verified (12 October)
+
+Signed `72ed5947fddf5859899d8c3e2b4f9e73c62177d9` is live at schema 41. All 275 remaining real-TiKV scenarios passed with no failures/skips; previously passed suites were retained. Normal exact-source hook continuation, CI 38254809607, image release 38256446741, signature verification, live server preflight/deployment and 12 Chromium/WebKit public entry cases passed. The owner explicitly approved this release without off-host backup, accepting possible forward-fix recovery; the one-use exception is consumed, and no recovery pass is claimed. All financial/privacy/identity settings and stable mounted configuration remain unchanged. No live email/invoice/funds test or catalog publication occurred. Current manifest: `/srv/playora/releases/72ed594/deployment.env`. See `service144-scoped-continuation.md` for exact evidence and `mlbb-catalog-setup.md` for required admin publication of real prices, linked choices, hours and complete fixed offers. Real provider acceptance and off-host recovery remain outstanding.
