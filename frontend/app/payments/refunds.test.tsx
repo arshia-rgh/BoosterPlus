@@ -108,9 +108,10 @@ it("focuses failed recipient feedback and preserves the exact reviewed retry", a
   fireEvent.click(
     screen.getByRole("button", { name: "Confirm refund recipient" }),
   );
-  expect(
-    await screen.findByRole("region", { name: "Refund action feedback" }),
-  ).toHaveFocus();
+  const feedback = await screen.findByRole("region", {
+    name: "Refund action feedback",
+  });
+  await waitFor(() => expect(feedback).toHaveFocus());
   expect(screen.getByLabelText("Refund destination address")).toHaveValue(
     "synthetic-test-recipient",
   );

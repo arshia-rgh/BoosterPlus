@@ -1,4 +1,5 @@
 import { denied } from "../support/chat-state";
+import { answerText } from "../catalog/model";
 import { RecordShell } from "../ui/record-shell";
 import { RecordDraftBoundary, useRecordDraft } from "../ui/record-drafts";
 import "../ui/secondary.css";
@@ -420,11 +421,7 @@ function ReviewWorkspace({ id, admin }: { id: string; admin: boolean }) {
                         return answer === undefined ? null : (
                           <div key={field.key}>
                             <dt>{field.label}</dt>
-                            <dd>
-                              {Array.isArray(answer)
-                                ? answer.join(", ")
-                                : String(answer)}
-                            </dd>
+                            <dd>{answerText(answer)}</dd>
                           </div>
                         );
                       })}

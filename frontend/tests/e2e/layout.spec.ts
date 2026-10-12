@@ -53,7 +53,14 @@ test("shared layouts reflow with long labels, narrow screens and enlarged text",
       name: "account terms",
       exact: true,
     });
-    await expect(termsLinks).toHaveCount(2);
+    // This real-API fixture intentionally has no Google provider. Its single
+    // offered sign-in method must retain a visible, keyboard-accessible consent.
+    await expect(
+      page.getByText(
+        "Google sign-in is currently unavailable. Continue with email.",
+      ),
+    ).toBeVisible();
+    await expect(termsLinks).toHaveCount(1);
     for (const link of await termsLinks.all()) {
       // Inline consent links must be recognizable without hover or color.
       await expect(link).toHaveCSS("text-decoration-line", "underline");

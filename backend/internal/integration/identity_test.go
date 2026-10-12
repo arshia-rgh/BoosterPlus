@@ -241,8 +241,8 @@ func TestIdentityCooldownTermsAndSessionBoundaries(t *testing.T) {
 	id, code := f.request(t, "cooldown@example.test", "login", nil)
 	f.clock.Add(2)
 	ignored, err := f.service.RequestEmail(t.Context(), identity.EmailRequest{Portal: identity.PortalCustomer, Email: "cooldown@example.test", Purpose: "login", Browser: f.browser, IP: "127.0.0.1", AcceptTerms: true})
-	if err != nil || ignored == id {
-		t.Fatal("non-generic cooldown result", err)
+	if !errors.Is(err, identity.ErrLimited) || ignored != "" {
+		t.Fatal("cooldown did not report that no new code was issued", err)
 	}
 	if _, err = f.client.AuthChallenge.Get(t.Context(), ignored); !ent.IsNotFound(err) {
 		t.Fatal("minute boundary bypassed rolling cooldown", err)
@@ -260,7 +260,7 @@ func TestIdentityCooldownTermsAndSessionBoundaries(t *testing.T) {
 	if _, err = f.service.User(t.Context(), p, victim.User.ID); !errors.Is(err, identity.ErrForbidden) {
 		t.Fatal("customer user lookup allowed", err)
 	}
-	f.clock.Add(61)
+	f.clock.Add(121)
 	reauthID, reauthCode := f.request(t, p.User.Email, "reauth", p)
 	result, err := f.service.VerifyEmail(t.Context(), reauthID, reauthCode, f.browser, "127.0.0.1", p, identity.PortalCustomer)
 	if err != nil {
@@ -302,7 +302,7 @@ func TestIdentityStaffMFAAndOwnerControls(t *testing.T) {
 	if err := f.service.BootstrapOwner(t.Context(), customer.User.ID, "operator-1"); err != nil {
 		t.Fatal(err)
 	}
-	f.clock.Add(61)
+	f.clock.Add(121)
 	_, pending := f.login(t, customer.User.Email, identity.PortalAdmin)
 	if err := identity.Require(pending, "owner"); !errors.Is(err, identity.ErrMFA) {
 		t.Fatal("staff first factor granted privileges", err)
@@ -399,6 +399,7 @@ func TestIdentityHTTPBoundary(t *testing.T) {
 		{"unknown field", "http://localhost", state.CSRF, `{"email":"http@example.test","purpose":"login","role":"owner"}`, 400},
 		{"multiple JSON", "http://localhost", state.CSRF, `{} {}`, 400},
 		{"valid", "http://localhost", state.CSRF, `{"email":"http@example.test","purpose":"login","accept_terms":true}`, 202},
+		{"resend cooldown", "http://localhost", state.CSRF, `{"email":"http@example.test","purpose":"login","accept_terms":true}`, 429},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			req := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/auth/email/request", strings.NewReader(tc.body))
@@ -417,9 +418,15 @@ func TestIdentityHTTPBoundary(t *testing.T) {
 					Retry   int    `json:"retry_after_seconds"`
 					Expires int    `json:"expires_in_seconds"`
 				}
-				if err := json.Unmarshal(out.Body.Bytes(), &timing); err != nil || timing.ID == "" || timing.Retry != 60 || timing.Expires != 600 {
-					t.Fatal("verification response omitted authoritative retry/expiry timing", err)
+				if err := json.Unmarshal(out.Body.Bytes(), &timing); err != nil {
+					t.Fatal("invalid verification response", err)
 				}
+				if timing.ID == "" || timing.Retry != 120 || timing.Expires != 600 {
+					t.Fatalf("verification timing: challenge present=%t, retry=%d, expiry=%d; want true, 120, 600", timing.ID != "", timing.Retry, timing.Expires)
+				}
+			}
+			if out.Code == http.StatusTooManyRequests && out.Header().Get("Retry-After") != "120" {
+				t.Fatal("resend rejection must expose the two-minute retry interval")
 			}
 		})
 	}
@@ -511,7 +518,7 @@ func TestIdentityEmailChangeAndReviewedRecovery(t *testing.T) {
 	if err = f.service.BootstrapOwner(t.Context(), owner.User.ID, "test-operator"); err != nil {
 		t.Fatal(err)
 	}
-	f.clock.Add(61)
+	f.clock.Add(121)
 	_, owner = f.login(t, owner.User.Email, identity.PortalAdmin)
 	factor, factorErr := totp.GenerateCode(secret, time.Unix(f.clock.Load(), 0))
 	if factorErr != nil {

@@ -47,6 +47,18 @@ export default function SubmitOrder({
   const location = useLocation();
   const [params, setParams] = useSearchParams();
   const lock = useRef(false);
+  const reviewHeading = useRef<HTMLHeadingElement>(null);
+  const focusedReview = useRef(false);
+  useEffect(() => {
+    if (!variant || focusedReview.current) return;
+    focusedReview.current = true;
+    reviewHeading.current?.focus({ preventScroll: true });
+    if (typeof reviewHeading.current?.scrollIntoView === "function")
+      reviewHeading.current.scrollIntoView({
+        block: "center",
+        behavior: "instant",
+      });
+  }, [variant]);
   const submitting = useContext(RequestSubmission);
   const [session, setSession] = useState<Session | null>(null),
     [error, setError] = useState<unknown>(null),
@@ -148,7 +160,7 @@ export default function SubmitOrder({
   }
   return (
     <section aria-label="Submit order" className="catalog-section">
-      <h2>
+      <h2 ref={reviewHeading} tabIndex={-1}>
         {variant ? "Review fixed package" : "Request an administrator’s quote"}
       </h2>
       {variant && (

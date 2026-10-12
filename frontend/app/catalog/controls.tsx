@@ -396,6 +396,11 @@ export function OptionsEditor({
         Option order defines rank progression. Represent each division as an
         entry; units are its maximum stars/points.
       </p>
+      <p className="quiet">
+        Keys may match labels, including spaces and capital letters. Keep an
+        existing key when changing its label so saved rules and mappings still
+        refer to the same option.
+      </p>
       {options.map((option, i) => (
         <fieldset className="catalog-item" key={i}>
           <legend>Option {i + 1}</legend>
@@ -425,6 +430,28 @@ export function OptionsEditor({
               }}
             />
           </div>
+          <Action
+            disabled={
+              !option.label.trim() ||
+              option.key === option.label ||
+              options.some(
+                (other, index) => index !== i && other.key === option.label,
+              )
+            }
+            onClick={() => {
+              update(i, { key: option.label });
+            }}
+          >
+            Use label as option key
+          </Action>
+          {options.some(
+            (other, index) => index !== i && other.key === option.label,
+          ) && (
+            <p className="field-error">
+              Another option already uses this label as its key. Choose a unique
+              value.
+            </p>
+          )}
           <Ordering
             index={i}
             count={options.length}
@@ -561,18 +588,61 @@ export function ConditionEditor({
                   ),
                 ]}
               />
-              <Text
-                name={path ? `${path}.values` : undefined}
-                label="Condition values"
-                value={value.values.join(",")}
-                change={(text) => {
-                  change({
-                    ...value,
-                    values: text.split(",").map((v) => v.trim()),
-                  });
-                }}
-                help="Stable option keys, true/false, or exact numbers. Separate membership values with commas."
-              />
+              <div>
+                {(value.values.length ? value.values : [""]).map(
+                  (entry, index) => (
+                    <div key={index}>
+                      <Text
+                        name={
+                          path ? `${path}.values.${String(index)}` : undefined
+                        }
+                        label={
+                          index === 0
+                            ? "Condition values"
+                            : `Condition value ${String(index + 1)}`
+                        }
+                        value={entry}
+                        change={(text) => {
+                          const values = value.values.length
+                            ? value.values
+                            : [""];
+                          change({
+                            ...value,
+                            values: values.map((v, i) =>
+                              i === index ? text : v,
+                            ),
+                          });
+                        }}
+                        help="One exact option value, true/false, or number per input. Spaces, case and commas are preserved."
+                      />
+                      {value.op === "in" && value.values.length > 1 && (
+                        <Action
+                          onClick={() => {
+                            change({
+                              ...value,
+                              values: value.values.filter(
+                                (_, i) => i !== index,
+                              ),
+                            });
+                          }}
+                        >
+                          Remove condition value {index + 1}
+                        </Action>
+                      )}
+                    </div>
+                  ),
+                )}
+                {value.op === "in" && (
+                  <Action
+                    disabled={value.values.length >= 30}
+                    onClick={() => {
+                      change({ ...value, values: [...value.values, ""] });
+                    }}
+                  >
+                    Add condition value
+                  </Action>
+                )}
+              </div>
             </div>
           )}
         </>

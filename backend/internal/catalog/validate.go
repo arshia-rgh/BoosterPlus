@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/artwork"
@@ -93,6 +94,7 @@ func ValidateConfiguration(c Configuration, publish bool) []Issue {
 		validatePricing(service, refs, path+".pricing", publish, add)
 		validateFulfillment(service, refs, path, add)
 		validateDelivery(service, refs, path+".delivery", add)
+		validateDeliveryRequest(service, path+".delivery_request", add)
 	}
 	packageKeys := map[string]bool{}
 	for i, pack := range c.Packages {
@@ -101,6 +103,15 @@ func ValidateConfiguration(c Configuration, publish bool) []Issue {
 			add(path, "Use a unique package key, name and 1–20 variants.")
 		}
 		packageKeys[pack.Key] = true
+		if pack.Asset != "" && !artwork.ValidPath(pack.Asset) {
+			add(path+".asset", "Choose bundled or checked package artwork.")
+		}
+		if pack.Asset != "" && !validText(pack.AssetAlt, 1, 160) {
+			add(path+".asset_alt", "Describe the package artwork in 1–160 characters.")
+		}
+		if !validText(pack.AssetSource, 0, 1000) {
+			add(path+".asset_source", "Keep artwork attribution within 1,000 characters.")
+		}
 		service, found := services[pack.Service]
 		if publish && !found {
 			add(path+".service", "Choose an existing service to define eligibility and required information.")
@@ -126,6 +137,7 @@ func ValidateConfiguration(c Configuration, publish bool) []Issue {
 				add(vp, "Too many required fields.")
 			}
 			seen := map[string]bool{}
+			validatePackageScope(variant, service, refs, vp, publish, add)
 			for _, key := range variant.RequiredFields {
 				field, ok := fields[key]
 				if publish && (!ok || seen[key] || field.Stage == "fulfillment" || field.Type == "attachment") {
@@ -159,11 +171,16 @@ func validateOptions(options []Option, path string, publish bool, add func(strin
 	}
 	keys := map[string]bool{}
 	for _, option := range options {
-		if keys[option.Key] || !keyPattern.MatchString(option.Key) || !validText(option.Label, 1, 120) || option.Units < 0 || option.Units > 1000000 {
+		if keys[option.Key] || !validOptionKey(option.Key) || !validText(option.Label, 1, 120) || option.Units < 0 || option.Units > 1000000 {
 			add(path, "Options require unique stable keys, labels and unit bounds between 0 and 1,000,000.")
 		}
 		keys[option.Key] = true
 	}
+}
+
+func validOptionKey(value string) bool {
+	return validText(value, 1, 120) && value == strings.TrimSpace(value) &&
+		!strings.ContainsFunc(value, func(r rune) bool { return unicode.IsControl(r) || unicode.Is(unicode.Cf, r) })
 }
 
 func fieldMap(fields []Field) map[string]Field {
@@ -193,7 +210,7 @@ func validateForm(service ServiceDefinition, refs map[string]Reference, path str
 			add(fp, "Use a unique field key, label and bounded help/unit text.")
 		}
 		seen[field.Key] = true
-		if !slices.Contains([]string{"select", "radio", "multiselect", "boolean", "integer", "decimal", "win_rate", "short_text", "long_text", "rank", "attachment"}, field.Type) || stage(field.Stage) < 0 {
+		if !slices.Contains([]string{"select", "radio", "multiselect", "boolean", "integer", "decimal", "win_rate", "short_text", "long_text", "rank", "attachment", "cosmetics"}, field.Type) || stage(field.Stage) < 0 {
 			add(fp, "Choose a supported field type and collection stage.")
 		}
 		if len(field.Options) > 300 || field.MinLength < 0 || field.MaxLength < field.MinLength || field.MaxLength > 4000 || field.MinSelections < 0 || field.MaxSelections < field.MinSelections || field.MaxSelections > 300 {
@@ -224,16 +241,19 @@ func validateForm(service ServiceDefinition, refs map[string]Reference, path str
 				}
 			}
 		}
+		if field.Type == "cosmetics" && (path != "intake" || field.Stage != "order" || len(field.Default) > 0) {
+			add(fp, "Skin collections belong only to seller intake and cannot have default private answers.")
+		}
 		if !publish {
 			continue
 		}
 		if field.Reference != "" {
 			ref, ok := refs[field.Reference]
-			if !ok || len(field.Options) != 0 || (field.Type == "rank" && ref.Kind != "rank") || !slices.Contains([]string{"select", "radio", "rank", "multiselect"}, field.Type) {
+			if !ok || len(field.Options) != 0 || (field.Type == "rank" && ref.Kind != "rank") || !slices.Contains([]string{"select", "radio", "rank", "multiselect", "cosmetics"}, field.Type) {
 				add(fp+".reference", "Use one existing compatible reference catalog without inline options.")
 			}
 		}
-		if slices.Contains([]string{"select", "radio", "rank", "multiselect"}, field.Type) {
+		if slices.Contains([]string{"select", "radio", "rank", "multiselect", "cosmetics"}, field.Type) {
 			validateOptions(optionsFor(field, refs), fp+".options", true, add)
 		}
 		if field.Type == "rank" && field.Reference == "" {
@@ -269,6 +289,10 @@ func validateForm(service ServiceDefinition, refs map[string]Reference, path str
 		if !validConditionShape(rule.When) {
 			add(path, "Condition structure exceeds supported bounds.")
 		}
+		if len(rule.Links) > 300 || slices.ContainsFunc(rule.Links, func(link ChoiceLink) bool { return len(link.Children) > 300 }) {
+			add(path+".rules", "Choice mappings support at most 300 parents and 300 children per parent.")
+			return
+		}
 	}
 	if !publish {
 		return
@@ -302,6 +326,7 @@ func validateForm(service ServiceDefinition, refs map[string]Reference, path str
 		}
 	}
 	ruleKeys := map[string]bool{}
+	linkedFields := map[string]bool{}
 	for i, rule := range service.Rules {
 		rp := fmt.Sprintf("%s.rules.%d", path, i)
 		if ruleKeys[rule.Key] || !keyPattern.MatchString(rule.Key) || !validText(rule.Message, 1, 300) {
@@ -312,6 +337,12 @@ func validateForm(service ServiceDefinition, refs map[string]Reference, path str
 		from, fromOK := fields[rule.From]
 		to, toOK := fields[rule.To]
 		switch rule.Kind {
+		case "ordered_numbers":
+			if !fromOK || !toOK || rule.From == rule.To || !slices.Contains([]string{"integer", "decimal"}, from.Type) || !slices.Contains([]string{"integer", "decimal"}, to.Type) || from.Stage != to.Stage || rule.FromUnits != "" || rule.ToUnits != "" {
+				add(rp, "Choose two distinct numeric fields collected at the same stage for minimum and maximum.")
+			}
+		case "linked_choices":
+			validateChoiceLinks(rule, fields, refs, rp, linkedFields, add)
 		case "reject":
 			if rule.When == nil {
 				add(rp, "A rejection rule requires a condition.")

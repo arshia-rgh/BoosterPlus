@@ -28,6 +28,7 @@ func winRateOrderDB(t *testing.T) *orderFixture {
 		catalog.Field{Key: "requested_win_rate", Label: "Legacy declared win rate", Type: "decimal", Stage: "estimate", Unit: "%", Min: "0", Max: "100", Step: "0.1"},
 		catalog.Field{Key: "win_rate_preference", Label: "Win rate preference", Type: "win_rate", Stage: "estimate"},
 	)
+	c.Packages[0].Variants[0].ExcludedFields = append(c.Packages[0].Variants[0].ExcludedFields, winRateOrderFields...)
 	var err error
 	f.game, err = f.catalog.Mutate(t.Context(), f.admin, f.game.ID, "save", catalog.Change{Revision: f.game.Revision, Configuration: c})
 	if err != nil {
@@ -116,10 +117,8 @@ func TestWinRateNewOrdersRevisionsAndReorder(t *testing.T) {
 		if preference == "exact:100" {
 			fixed := f.input("package")
 			fixed.Answers = input.Answers
-			purchased, createErr := f.store.Create(ctx, f.buyer, fixed)
-			if createErr != nil || purchased.Contract == nil || purchased.Contract.Data.AmountMinor != "1234" || purchased.Order.State != "awaiting_payment" {
-				t.Fatal("valid preference changed fixed commercial terms", createErr)
-			}
+			_, createErr := f.store.Create(ctx, f.buyer, fixed)
+			requireWinRateOrderError(t, createErr, "requested_win_rate")
 		}
 	}
 }
@@ -290,10 +289,10 @@ func TestWinRatePublicValidationEstimateAndCouponBoundaries(t *testing.T) {
 			}
 		}
 	}
-	valid := catalog.CouponCheck{ReleaseID: f.game.CurrentRelease, Service: "boost", Package: "pack", Variant: "basic", Code: policy.Code, Stage: "order", Answers: catalog.Answers{"mode": json.RawMessage(`"solo"`), "requested_win_rate": json.RawMessage(`"any"`), "win_rate_preference": json.RawMessage(`"exact:100"`)}}
+	valid := catalog.CouponCheck{ReleaseID: f.game.CurrentRelease, Service: "boost", Package: "pack", Variant: "basic", Code: policy.Code, Stage: "order", Answers: f.input("package").Answers}
 	discounted, err := f.catalog.CheckCoupon(ctx, f.buyer, f.game.Slug, valid)
 	if err != nil || len(discounted.Issues) != 0 || discounted.Outcome != "estimated" || discounted.AmountMinor != "617" || discounted.Discount == nil || discounted.Discount.AmountMinor != "617" {
-		t.Fatal("rich preference could not receive the published fixed-package discount", err, discounted)
+		t.Fatal("fixed contents could not receive the published package discount", err, discounted)
 	}
 	if count, err := f.auth.client.CouponClaim.Query().Count(ctx); err != nil || count != 0 {
 		t.Fatal("public preview reserved a coupon", count, err)

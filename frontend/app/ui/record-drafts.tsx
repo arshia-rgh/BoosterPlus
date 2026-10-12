@@ -18,10 +18,12 @@ export function RecordDraftBoundary({
   children,
   record = "order",
   description = "Order sections keep unsent messages and delivery updates. Leaving this order discards them.",
+  pendingDescription = "An action is still pending. Stay here to wait for its result or follow its recovery instructions before leaving.",
 }: {
   children: ReactNode;
   record?: string;
   description?: string;
+  pendingDescription?: string;
 }) {
   const [drafts, setDrafts] = useState<
     Record<string, { dirty: boolean; busy: boolean }>
@@ -70,6 +72,7 @@ export function RecordDraftBoundary({
         >
           <h2>Keep your {record} drafts?</h2>
           <p>{description}</p>
+          {busy && <p>{pendingDescription}</p>}
           <div className="catalog-actions">
             <Action
               onClick={() => {

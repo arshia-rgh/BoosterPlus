@@ -202,6 +202,8 @@ func respondError(w http.ResponseWriter, err error) {
 		status, code = http.StatusUnauthorized, "sign_in_required"
 	case errors.Is(err, ErrForbidden):
 		status, code = http.StatusForbidden, "permission_denied"
+	case errors.Is(err, ErrStaffAccess):
+		status, code = http.StatusForbidden, "staff_access_required"
 	case errors.Is(err, ErrMFA):
 		status, code = http.StatusForbidden, "mfa_required"
 	case errors.Is(err, ErrRecent):
@@ -314,6 +316,9 @@ func (s *Service) finishGoogle(w http.ResponseWriter, r *http.Request, state req
 		}
 		if errors.Is(err, ErrTerms) {
 			reason = "terms"
+		}
+		if errors.Is(err, ErrStaffAccess) {
+			reason = "staff_access"
 		}
 		http.Redirect(w, r, s.config.portalLoginURL(state.portal)+"?error="+reason, http.StatusSeeOther)
 		return nil

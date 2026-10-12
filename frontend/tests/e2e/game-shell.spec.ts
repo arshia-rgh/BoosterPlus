@@ -18,7 +18,11 @@ test("game identity persists through service, package, review and missing-option
     .filter({ hasText: "Boosting" })
     .click();
   await expect(page).toHaveURL(`/games/${slug}?service=boost`);
-  const custom = page.locator(`a[href="/games/${slug}/services/boost"]`);
+  const custom = page.getByRole("link", {
+    name: "Configure custom boost",
+    exact: true,
+  });
+  await expect(custom).toHaveAttribute("href", `/games/${slug}/services/boost`);
   await measuredInteraction(
     page,
     `game-service-${info.project.name}`,

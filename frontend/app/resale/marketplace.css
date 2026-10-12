@@ -339,3 +339,28 @@
   font-size: 0.85rem;
   max-width: 100%;
 }
+
+.reviewed-account-image img {
+  display: block;
+  max-width: 100%;
+  max-height: 24rem;
+  height: auto;
+  object-fit: contain;
+}
+.account-cover-editor .catalog-item {
+  min-width: 0;
+}
+.seller-image-step > fieldset {
+  display: grid;
+  gap: 1rem;
+}
+.service-tiles.private-account-card-preview,
+.experience
+  .service-tiles.private-account-card-preview.private-account-card-preview {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 24rem;
+  margin-block: 1rem;
+}
+.cosmetic-collection {
+  min-width: 0;
+}

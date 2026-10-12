@@ -1,5 +1,6 @@
 import { z } from "../validation";
 import { isWinRateField, parseWinRate } from "./win-rate";
+import { restoredAutomaticParents } from "./linked-choices";
 import {
   answersSchema,
   optionsFor,
@@ -16,6 +17,7 @@ const draftSchema = z.object({
   variant: z.string().max(100),
   expires: z.number(),
   answers: answersSchema,
+  automatic_parents: z.array(z.string().max(100)).max(100).optional(),
 });
 export function draftSnapshot() {
   try {
@@ -89,6 +91,7 @@ export function saveConfigurationDraft(
   pack: string,
   variant: string,
   answers: Answers,
+  automaticParents: ReadonlySet<string> = new Set(),
 ) {
   try {
     sessionStorage.setItem(
@@ -100,10 +103,33 @@ export function saveConfigurationDraft(
         variant,
         expires: Date.now() + 15 * 60_000,
         answers: safeConfiguration(service, config, answers),
+        automatic_parents: [...automaticParents].filter((key) =>
+          restoredAutomaticParents(
+            service,
+            safeConfiguration(service, config, answers),
+          ).has(key),
+        ),
       }),
     );
   } catch {
     /* Sign-in still works without persistence. */
+  }
+}
+
+/** Call only with answers returned by restoreConfiguration for this same draft. */
+export function restoreDraftParents(
+  raw: string,
+  service: Service,
+  answers: Answers,
+) {
+  const candidates = restoredAutomaticParents(service, answers);
+  try {
+    const saved = draftSchema.parse(JSON.parse(raw)).automatic_parents;
+    return saved
+      ? new Set(saved.filter((key) => candidates.has(key)))
+      : candidates;
+  } catch {
+    return candidates;
   }
 }
 export function restoreConfiguration(

@@ -1,3 +1,6 @@
+import { RecordDraftBoundary } from "../ui/record-drafts";
+import { selectedLabel } from "../experience/selection-summary";
+import { optionsFor } from "../catalog/model";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Link, useLocation, useParams, type Location } from "../portal-router";
 import { z } from "../validation";
@@ -146,9 +149,10 @@ function Workspace({
                           <div key={field.key}>
                             <dt>{field.label}</dt>
                             <dd>
-                              {Array.isArray(answer)
-                                ? answer.join(", ")
-                                : String(answer)}
+                              {selectedLabel(
+                                answer,
+                                optionsFor(field, value.offer.configuration),
+                              )}
                             </dd>
                           </div>
                         );
@@ -311,9 +315,13 @@ export default function SubmissionWorkspace({
 }) {
   const { id } = useParams();
   return (
-    <Session
+    <RecordDraftBoundary
+      pendingDescription="An upload, safety check or send is still pending. Stay on this account sale to check the result. For an uncertain screenshot send, use Retry sending these screenshots; for an unfinished image upload, retry or remove that attachment when its controls become available."
       key={(admin ? "admin:" : "customer:") + (id ?? "")}
-      admin={admin}
-    />
+      record="submission"
+      description="Submission sections keep your account details and unsent screenshots. Leaving discards unsaved work."
+    >
+      <Session admin={admin} />
+    </RecordDraftBoundary>
   );
 }

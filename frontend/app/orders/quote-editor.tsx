@@ -1,4 +1,8 @@
 import {
+  agreedDeliveryClock,
+  requestedDelivery,
+} from "../catalog/delivery-hours";
+import {
   FieldValidation,
   useFormValidation,
   focusValidationTarget,
@@ -241,6 +245,23 @@ export default function QuoteEditor({
               value={hours}
               change={setHours}
             />
+          </div>
+          <div className="quote-delivery-basis">
+            <h3>Delivery agreement</h3>
+            <p>
+              {agreedDeliveryClock} This start condition will be included in the
+              customer’s quote and accepted agreement.
+            </p>
+            <p>
+              {requestedDelivery(
+                detail.offer.configuration.services.find(
+                  (service) => service.key === detail.order.service,
+                ),
+                detail.answers,
+              ) ?? "No structured delivery-hours range was supplied."}{" "}
+              The requested range is a preference; review it before setting the
+              quote’s commitment above.
+            </p>
           </div>
           <Text
             name="scope"

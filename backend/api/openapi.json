@@ -2657,7 +2657,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CatalogEstimateInput"
+                "$ref": "#/components/schemas/CatalogEstimatePreviewInput"
               }
             }
           }
@@ -19710,7 +19710,7 @@
             }
           }
         ],
-        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access."
       }
     },
     "/api/v1/auth/portals/{portal}/email/request": {
@@ -19776,7 +19776,7 @@
             }
           }
         ],
-        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access."
       }
     },
     "/api/v1/auth/portals/{portal}/email/verify": {
@@ -19842,7 +19842,7 @@
             }
           }
         ],
-        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access."
       }
     },
     "/api/v1/auth/portals/{portal}/google/start": {
@@ -19908,7 +19908,7 @@
             }
           }
         ],
-        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access."
       }
     },
     "/api/v1/auth/portals/{portal}/google/callback": {
@@ -19957,7 +19957,7 @@
             }
           }
         ],
-        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access."
       }
     },
     "/api/v1/auth/portals/{portal}/logout": {
@@ -20016,7 +20016,7 @@
             }
           }
         ],
-        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access."
       }
     },
     "/api/v1/auth/portals/{portal}/mfa/disable": {
@@ -20075,7 +20075,7 @@
             }
           }
         ],
-        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access."
       }
     },
     "/api/v1/auth/portals/{portal}/sessions/revoke": {
@@ -20144,7 +20144,7 @@
             }
           }
         ],
-        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access."
       }
     },
     "/api/v1/auth/portals/{portal}/mfa/enroll": {
@@ -20210,7 +20210,7 @@
             }
           }
         ],
-        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access."
       }
     },
     "/api/v1/auth/portals/{portal}/mfa/verify": {
@@ -20286,7 +20286,7 @@
             }
           }
         ],
-        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access."
       }
     },
     "/api/v1/auth/portals/{portal}/mfa/recovery-codes": {
@@ -20352,7 +20352,7 @@
             }
           }
         ],
-        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin."
+        "description": "Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access."
       }
     },
     "/api/v1/catalog/games/{slug}/discovery": {
@@ -24023,8 +24023,8 @@
           },
           "retry_after_seconds": {
             "type": "integer",
-            "minimum": 60,
-            "maximum": 60
+            "minimum": 120,
+            "maximum": 120
           },
           "expires_in_seconds": {
             "type": "integer",
@@ -24462,7 +24462,10 @@
         "additionalProperties": false,
         "properties": {
           "key": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "description": "Stable opaque option value; may equal its label, including spaces, case and Unicode. No control characters or leading/trailing whitespace. Structural field keys keep their separate identifier syntax."
           },
           "label": {
             "type": "string"
@@ -24509,6 +24512,23 @@
           },
           "delivery": {
             "$ref": "#/components/schemas/DeliveryPolicy"
+          },
+          "delivery_request": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "minimum": {
+                "type": "string"
+              },
+              "maximum": {
+                "type": "string"
+              },
+              "basis": {
+                "type": "string",
+                "enum": ["payment_and_access_v1"]
+              }
+            },
+            "required": ["minimum", "maximum", "basis"]
           }
         },
         "required": [
@@ -24546,7 +24566,8 @@
               "short_text",
               "long_text",
               "attachment",
-              "win_rate"
+              "win_rate",
+              "cosmetics"
             ]
           },
           "stage": {
@@ -24683,6 +24704,35 @@
           },
           "to_units": {
             "type": "string"
+          },
+          "link_mode": {
+            "type": "string",
+            "enum": ["single_parent", "shared_parent"]
+          },
+          "links": {
+            "type": "array",
+            "maxItems": 300,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "parent": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "children": {
+                  "type": "array",
+                  "maxItems": 300,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  }
+                }
+              },
+              "required": ["parent", "children"]
+            }
           }
         },
         "required": [
@@ -24716,6 +24766,15 @@
             "items": {
               "$ref": "#/components/schemas/CatalogVariant"
             }
+          },
+          "asset": {
+            "type": "string"
+          },
+          "asset_alt": {
+            "type": "string"
+          },
+          "asset_source": {
+            "type": "string"
           }
         },
         "required": ["key", "name", "description", "service", "variants"]
@@ -24753,6 +24812,31 @@
           },
           "eligibility": {
             "$ref": "#/components/schemas/CatalogCondition"
+          },
+          "preset_answers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          },
+          "excluded_fields": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -24810,6 +24894,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -25039,6 +25126,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -25127,6 +25217,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -25223,6 +25316,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -25330,6 +25426,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -25388,6 +25487,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -25571,6 +25673,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -25692,6 +25797,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -25880,6 +25988,9 @@
           "expires_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "delivery_basis": {
+            "type": "string"
           }
         }
       },
@@ -25951,6 +26062,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -26103,6 +26217,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -26215,6 +26332,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -27079,6 +27199,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -27798,6 +27921,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -27937,6 +28063,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -28101,6 +28230,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -28187,6 +28319,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -28278,6 +28413,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
                 }
               ]
             }
@@ -30159,6 +30297,10 @@
           },
           "delivery_max_hours": {
             "type": "integer"
+          },
+          "cover_media_id": {
+            "type": "string",
+            "description": "Explicit reviewed cover; must be a selected media_id for new publication. Omitted in older releases and blank in public projections."
           }
         },
         "required": [
@@ -33201,7 +33343,8 @@
               "link",
               "image",
               "list",
-              "table"
+              "table",
+              "gallery"
             ]
           },
           "text": {
@@ -33273,6 +33416,33 @@
                 "type": "null"
               }
             ]
+          },
+          "images": {
+            "type": "array",
+            "maxItems": 4,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "alt": {
+                  "type": "string",
+                  "maxLength": 300
+                },
+                "source": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "caption": {
+                  "type": "string",
+                  "maxLength": 1000
+                }
+              },
+              "required": ["url", "alt", "source", "caption"]
+            }
           }
         },
         "required": [
@@ -33910,6 +34080,78 @@
           }
         },
         "required": ["email", "portal", "role"]
+      },
+      "CatalogEstimatePreviewInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "release_id": {
+            "type": "string"
+          },
+          "service": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "$ref": "#/components/schemas/CatalogCosmetics"
+                }
+              ]
+            }
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/CatalogConfiguration",
+            "description": "Optional unsaved working configuration. Admin-only, validated without storing or publishing; the saved revision must still match."
+          }
+        },
+        "required": ["release_id", "service", "answers"]
+      },
+      "CatalogCosmetics": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "groups": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "category": {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                "count": {
+                  "type": "string"
+                },
+                "names": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 120
+                  }
+                }
+              },
+              "required": ["category", "count", "names"]
+            }
+          }
+        },
+        "required": ["groups"]
       }
     },
     "securitySchemes": {

@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/orders"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
@@ -35,6 +36,11 @@ func write(w http.ResponseWriter, value any) error {
 	return json.NewEncoder(w).Encode(value)
 }
 func problem(w http.ResponseWriter, err error) error {
+	var invalid *catalog.Invalid
+	if errors.As(err, &invalid) {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return write(w, map[string]any{"code": "resale_invalid", "issues": invalid.Issues})
+	}
 	switch {
 	case errors.Is(err, ErrInvalid), errors.Is(err, vault.ErrInvalid):
 		w.WriteHeader(http.StatusUnprocessableEntity)

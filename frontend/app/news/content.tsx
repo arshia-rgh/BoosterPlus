@@ -103,6 +103,24 @@ function ContentBlock({ value: b, index }: { value: Block; index: number }) {
           </figcaption>
         </figure>
       );
+    case "gallery":
+      return (
+        <div
+          className="news-image-row"
+          role="group"
+          aria-label={b.text || "Article images"}
+        >
+          {b.images?.map((image, i) => (
+            <figure key={i}>
+              <ShopArtwork source={image.url} alt={image.alt} lazy />
+              <figcaption>
+                {image.caption}
+                {image.source && ` · ${image.source}`}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      );
     case "table":
       return (
         <div

@@ -1,3 +1,5 @@
+import { useRecordDraft } from "../ui/record-drafts";
+import SellerImages from "./images";
 import {
   FieldValidation,
   useFormValidation,
@@ -6,6 +8,11 @@ import {
 import { useRef, useState } from "react";
 import { Action, Check, ErrorNotice, Issues, Text } from "../catalog/controls";
 import { Input } from "../catalog/dynamic-form";
+import {
+  changeLinkedChoice,
+  linkedChoiceState,
+  restoredAutomaticParents,
+} from "../catalog/linked-choices";
 import {
   intakeService,
   matches,
@@ -31,6 +38,21 @@ export default function SubmissionEditor({
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
     form = value.offer.configuration.intake;
+  const restoreParents = (current: Submission) =>
+    current.offer.configuration.intake
+      ? restoredAutomaticParents(
+          intakeService(current.offer.configuration.intake),
+          current.answers,
+        )
+      : new Set<string>();
+  const [automaticParents, setAutomaticParents] = useState<ReadonlySet<string>>(
+    () => restoreParents(value),
+  );
+  const [choiceNotice, setChoiceNotice] = useState(() =>
+    restoreParents(value).size
+      ? "Saved categories match your choices. All choices remain available; use the limit button to narrow them."
+      : "",
+  );
   const [issues, setIssues] = useState<FieldIssue[]>([]);
   const validation = useFormValidation(
     issues,
@@ -41,9 +63,16 @@ export default function SubmissionEditor({
     !busy,
   );
   const lock = useRef(false);
+  useRecordDraft(dirty, busy);
   function reset(current: Submission) {
     setTitle(current.submission.title);
     setAnswers(current.answers);
+    setAutomaticParents(restoreParents(current));
+    setChoiceNotice(
+      restoreParents(current).size
+        ? "Saved categories match your choices. All choices remain available; use the limit button to narrow them."
+        : "",
+    );
     setNotes(current.ownership_notes);
     setDeclared(current.ownership_declared);
     setBaseVersion(current.submission.version);
@@ -135,6 +164,7 @@ export default function SubmissionEditor({
         <fieldset disabled={busy || stale}>
           <legend>Private submission details</legend>
           <h4>1. Describe the account</h4>
+          {choiceNotice && <p role="status">{choiceNotice}</p>}
           <div className="seller-intake-fields">
             <Text
               name="title"
@@ -159,16 +189,24 @@ export default function SubmissionEditor({
                       matches(field.required_when, values, service.fields))
                   }
                   error={undefined}
+                  choiceState={linkedChoiceState(
+                    service,
+                    value.offer.configuration,
+                    field,
+                    values,
+                    automaticParents,
+                  )}
                   change={(v) => {
-                    setAnswers((current) => {
-                      const next = Object.fromEntries(
-                        Object.entries(current).filter(
-                          ([key]) => key !== field.key,
-                        ),
-                      );
-                      if (v !== undefined) next[field.key] = v;
-                      return next;
-                    });
+                    const next = changeLinkedChoice(
+                      service,
+                      answers,
+                      field.key,
+                      v,
+                      automaticParents,
+                    );
+                    setAnswers(visibleAnswers(service, next.answers, "order"));
+                    setAutomaticParents(next.automatic);
+                    setChoiceNotice(next.notice);
                     validation.correct(field.key);
                     setDirty(true);
                   }}
@@ -195,6 +233,10 @@ export default function SubmissionEditor({
               setDeclared(v);
               setDirty(true);
             }}
+          />
+          <SellerImages
+            key={value.conversation_id}
+            conversation={value.conversation_id}
           />
           <h4>3. Save and send for review</h4>
           <p>

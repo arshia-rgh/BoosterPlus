@@ -1,4 +1,15 @@
+import CosmeticsInput from "./cosmetics-input";
+import {
+  packageAnswers,
+  packageChoiceState,
+  packageService,
+} from "./package-fields";
 import WinRateInput from "./win-rate-input";
+import {
+  changeLinkedChoice,
+  linkedChoiceState,
+  restoredAutomaticParents,
+} from "./linked-choices";
 import { isWinRateField, parseWinRate } from "./win-rate";
 import {
   FieldValidation,
@@ -24,6 +35,7 @@ import {
   draftSnapshot,
   subscribeDraft,
   restoreConfiguration,
+  restoreDraftParents,
   saveConfigurationDraft,
 } from "./configuration-draft";
 import "./discovery.css";
@@ -59,6 +71,8 @@ export function Input({
   required,
   error: suppliedError,
   intake,
+  choiceState,
+  validationName,
 }: {
   field: Field;
   config: Configuration;
@@ -66,12 +80,15 @@ export function Input({
   change: (value: Answers[string] | undefined) => void;
   required: boolean;
   error: string | undefined;
+  choiceState?: ReturnType<typeof linkedChoiceState> | undefined;
+  validationName?: string;
   intake?:
     | { scope: string; pending: (busy: boolean) => void; onSignIn: () => void }
     | undefined;
 }) {
   const validation = useContext(FieldValidation);
-  const error = suppliedError || fieldError(validation, field.key);
+  const name = validationName ?? field.key;
+  const error = suppliedError || fieldError(validation, name);
   const id = useId(),
     helpId = id + "-help",
     errorId = id + "-error";
@@ -80,14 +97,17 @@ export function Input({
     (node: HTMLDivElement | null) => {
       if (node && register)
         return register({
-          name: field.key,
+          name,
           id: id + "-field",
           label: field.label,
         });
     },
-    [field.key, field.label, id, register],
+    [name, field.label, id, register],
   );
-  const description = [field.help ? helpId : "", error ? errorId : ""]
+  const description = [
+    field.help || choiceState?.hint ? helpId : "",
+    error ? errorId : "",
+  ]
     .filter(Boolean)
     .join(" ");
   const label = field.label + (required ? " (required)" : "");
@@ -95,11 +115,25 @@ export function Input({
     id,
     "aria-describedby": description || undefined,
     "aria-invalid": error ? true : undefined,
+    disabled: choiceState?.disabled,
   };
-  const options = optionsFor(field, config);
+  const options = choiceState?.options ?? optionsFor(field, config);
   const scalar = typeof value === "string" ? value : "";
   let control;
-  if (isWinRateField(field))
+  if (field.type === "cosmetics")
+    control = (
+      <CosmeticsInput
+        field={field}
+        config={config}
+        value={value}
+        change={change}
+        name={name}
+        label={label}
+        describedBy={description || undefined}
+        invalid={!!error}
+      />
+    );
+  else if (isWinRateField(field))
     control = (
       <WinRateInput
         id={id}
@@ -114,6 +148,7 @@ export function Input({
     control = (
       <fieldset
         className="catalog-choices"
+        disabled={choiceState?.disabled}
         aria-describedby={description || undefined}
       >
         <legend>{label}</legend>
@@ -261,9 +296,18 @@ export function Input({
   return (
     <div ref={fieldRef} id={id + "-field"} className="catalog-input">
       {control}
-      {field.help && (
+      {choiceState?.restriction && (
+        <Action
+          onClick={() => {
+            change(choiceState.restriction?.value);
+          }}
+        >
+          {choiceState.restriction.label}
+        </Action>
+      )}
+      {(field.help || choiceState?.hint) && (
         <p id={helpId} className="quiet">
-          {field.help}
+          {field.help} {choiceState?.hint}
         </p>
       )}
       {error && !isWinRateField(field) && (
@@ -286,6 +330,7 @@ function ConfigurationForm({
   previewPath,
   validationPath,
   initialAnswers = {},
+  initialAutomaticParents,
   initialCoupon = "",
   onCommit,
   journey,
@@ -302,6 +347,7 @@ function ConfigurationForm({
   previewPath?: string;
   validationPath?: string;
   initialAnswers?: Answers;
+  initialAutomaticParents?: ReadonlySet<string> | undefined;
   initialCoupon?: string;
   onCommit?: (answers: Answers, coupon: string) => Promise<void>;
   intakeScope?: string;
@@ -327,6 +373,17 @@ function ConfigurationForm({
     [estimate, setEstimate] = useState<Estimate | null>(null),
     [coupon, setCoupon] = useState(initialCoupon);
   const [changed, setChanged] = useState(false);
+  const [automaticParents, setAutomaticParents] = useState<ReadonlySet<string>>(
+    () =>
+      initialAutomaticParents ??
+      restoredAutomaticParents(service, initialAnswers),
+  );
+  const [choiceNotice, setChoiceNotice] = useState(() =>
+    initialAutomaticParents === undefined &&
+    restoredAutomaticParents(service, initialAnswers).size
+      ? "Saved categories match your choices. All choices remain available; use the limit button to narrow them."
+      : "",
+  );
   useEffect(() => {
     const changed = (event: Event) => {
       if (!sessionEventMatches(event, "customer")) return;
@@ -384,8 +441,15 @@ function ConfigurationForm({
     [couponID, register],
   );
   const couponError = fieldError(validation, "code");
-  const values = visibleAnswers(service, raw, stage);
-  const unavailable = paused || variant?.capacity === 0;
+  const values = visibleAnswers(
+    service,
+    variant ? packageAnswers(raw, variant) : raw,
+    stage,
+  );
+  const unavailable =
+    paused ||
+    variant?.capacity === 0 ||
+    (!!variant && variant.preset_answers === undefined);
   const uploadPending = service.fields.some(
     (field) =>
       stageIndex(field.stage) <= stageIndex(stage) &&
@@ -516,7 +580,12 @@ function ConfigurationForm({
         </noscript>
         <div className="configuration-layout">
           <fieldset disabled={!hydrated || busy || unavailable}>
-            <legend>{service.name} selections</legend>
+            <legend>
+              {variant
+                ? "Your delivery information"
+                : `${service.name} selections`}
+            </legend>
+            {choiceNotice && <p role="status">{choiceNotice}</p>}
             {service.fulfillment && (
               <details className="configuration-privacy">
                 <summary>How your information is shared</summary>
@@ -570,6 +639,7 @@ function ConfigurationForm({
                 ...group,
                 fields: group.fields.filter(
                   (field) =>
+                    (!variant || variant.required_fields.includes(field.key)) &&
                     stageIndex(field.stage) <= stageIndex(stage) &&
                     (!journey ||
                       stage !== "order" ||
@@ -604,6 +674,7 @@ function ConfigurationForm({
                                     pack,
                                     variant?.key ?? "",
                                     values,
+                                    automaticParents,
                                   );
                                 },
                                 pending: (pending) => {
@@ -617,6 +688,14 @@ function ConfigurationForm({
                             : undefined
                         }
                         config={config}
+                        choiceState={packageChoiceState(
+                          service,
+                          config,
+                          field,
+                          values,
+                          automaticParents,
+                          variant,
+                        )}
                         value={values[field.key]}
                         required={
                           field.required ||
@@ -630,12 +709,16 @@ function ConfigurationForm({
                             false)
                         }
                         change={(value) => {
-                          const next: Answers = Object.fromEntries(
-                            Object.entries(values).filter(
-                              ([key]) => key !== field.key,
-                            ),
+                          const linked = changeLinkedChoice(
+                            service,
+                            values,
+                            field.key,
+                            value,
+                            automaticParents,
                           );
-                          if (value !== undefined) next[field.key] = value;
+                          const next = linked.answers;
+                          setAutomaticParents(linked.automatic);
+                          setChoiceNotice(linked.notice);
                           setRaw(
                             retainOrderDetails(
                               visibleAnswers(service, next, stage),
@@ -728,7 +811,11 @@ function ConfigurationForm({
                 type="submit"
                 disabled={uploadPending}
               >
-                {busy ? "Checking…" : "Check selections"}
+                {busy
+                  ? "Checking…"
+                  : variant
+                    ? "Continue with this package"
+                    : "Check selections"}
               </button>
               {journey && stage === "estimate" && (
                 <button
@@ -781,7 +868,7 @@ function ConfigurationForm({
           <p role="status">
             Selections are valid. No order has been created.{" "}
             {variant
-              ? "This variant has a fixed price."
+              ? "Your delivery information is ready. This package has a fixed price."
               : "A custom order will require an administrator’s final quote."}
           </p>
         )}
@@ -854,6 +941,7 @@ function ConfigurationForm({
                   pack,
                   variant?.key ?? "",
                   values,
+                  automaticParents,
                 );
               }}
               slug={slug}
@@ -913,10 +1001,20 @@ export default function DynamicForm(
       )}
       <ConfigurationForm
         {...props}
+        service={
+          props.variant
+            ? packageService(props.service, props.variant)
+            : props.service
+        }
         // An unrelated or expired saved draft must not remount this form and
         // discard current input when the client storage snapshot becomes ready.
         key={restoredKey ?? "fresh"}
         initialAnswers={props.initialAnswers ?? restored ?? {}}
+        initialAutomaticParents={
+          restored && raw
+            ? restoreDraftParents(raw, props.service, restored)
+            : props.initialAutomaticParents
+        }
       />
     </>
   );

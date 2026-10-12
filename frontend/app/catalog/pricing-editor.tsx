@@ -8,6 +8,16 @@ import {
   nextKey,
 } from "./controls";
 import { Input } from "./dynamic-form";
+import MoneyInput, { minorToMajor } from "./money-input";
+import PricingPreview, { type PricingPreviewContext } from "./pricing-preview";
+import { useContext, useState } from "react";
+import { FieldValidation } from "../ui/form-validation";
+import { isWinRateField } from "./win-rate";
+import {
+  changeLinkedChoice,
+  linkedChoiceState,
+  restoredAutomaticParents,
+} from "./linked-choices";
 import {
   matches,
   visibleAnswers,
@@ -16,6 +26,7 @@ import {
   type PricePlan,
   type PriceRule,
   type Service,
+  type Issue,
 } from "./model";
 
 export function PricingEditor({
@@ -23,20 +34,40 @@ export function PricingEditor({
   service,
   config,
   change,
+  preview,
+  onIssues,
 }: {
   path?: string;
   service: Service;
   config: Configuration;
   change: (patch: Partial<Service>) => void;
+  preview?: PricingPreviewContext;
+  onIssues?: (issues: Issue[]) => void;
 }) {
+  const validation = useContext(FieldValidation);
+  const [caseParents, setCaseParents] = useState(
+    new Map<string, ReadonlySet<string>>(),
+  );
   const plan = service.pricing;
   const update = (patch: Partial<PricePlan>) => {
     if (plan) change({ pricing: { ...plan, ...patch } });
   };
   const fields = service.fields.filter((f) => f.stage === "estimate");
-  const choices: [[string, string], ...[string, string][]] = [
+  const choices = (
+    types: string[],
+    reference?: string,
+    exclude?: string,
+  ): [string, string][] => [
     ["", "Choose field"],
-    ...fields.map((f) => [f.key, f.label] as [string, string]),
+    ...fields
+      .filter(
+        (f) =>
+          types.includes(f.type) &&
+          !isWinRateField(f) &&
+          f.key !== exclude &&
+          (reference === undefined || f.reference === reference),
+      )
+      .map((f) => [f.key, f.label] as [string, string]),
   ];
   return (
     <section className="catalog-item">
@@ -87,25 +118,30 @@ export function PricingEditor({
                 ["GBP", "GBP"],
               ]}
             />
-            <Text
+            <MoneyInput
+              currency={plan.currency}
               name={`${path}.pricing.base_minor`}
-              label="Base amount in minor units"
+              label="Base price"
               value={plan.base_minor}
               change={(base_minor) => {
                 update({ base_minor });
               }}
             />
-            <Text
+            <MoneyInput
+              currency={plan.currency}
+              precision={2}
               name={`${path}.pricing.minimum_minor`}
-              label="Minimum estimate in minor units"
+              label="Minimum estimate"
               value={plan.minimum_minor}
               change={(minimum_minor) => {
                 update({ minimum_minor });
               }}
             />
-            <Text
+            <MoneyInput
+              currency={plan.currency}
+              precision={2}
               name={`${path}.pricing.maximum_minor`}
-              label="Maximum estimate in minor units"
+              label="Maximum estimate"
               value={plan.maximum_minor}
               change={(maximum_minor) => {
                 update({ maximum_minor });
@@ -113,9 +149,10 @@ export function PricingEditor({
             />
           </div>
           <p className="quiet">
-            Rules run in this order. Decimal minor units are supported for
-            intermediate amounts; the total rounds half up once, after the
-            configured bounds.
+            Start with the base price, then apply these rules in order. The
+            limits apply to the result, and the total rounds once to cents.
+            Changing currency changes its label, not the numeric prices; review
+            every amount.
           </p>
           {plan.rules.map((rule, i) => {
             const patch = (value: Partial<PriceRule>) => {
@@ -135,6 +172,19 @@ export function PricingEditor({
                 <summary>
                   {rule.label} · {rule.kind}
                 </summary>
+                <p className="quiet">
+                  {rule.kind === "fixed"
+                    ? `Add ${plan.currency} ${minorToMajor(rule.value)}`
+                    : rule.kind === "per_unit"
+                      ? `Add ${plan.currency} ${minorToMajor(rule.value)} for each unit of ${fields.find((f) => f.key === rule.field)?.label ?? "the selected quantity"}`
+                      : rule.kind === "percentage"
+                        ? `Adjust the running subtotal by ${rule.value}%`
+                        : rule.kind === "multiplier"
+                          ? `Multiply the running subtotal by ${rule.value}`
+                          : rule.kind === "rank_interval"
+                            ? "Add the configured prices for the ranks crossed, including partial progress where configured."
+                            : "Stop the automatic estimate and ask for a staff quote when this condition matches."}
+                </p>
                 <Text
                   name={`${path}.pricing.rules.${String(i)}.key`}
                   label="Pricing rule key"
@@ -156,7 +206,16 @@ export function PricingEditor({
                   label="Price operation"
                   value={rule.kind}
                   change={(kind) => {
-                    patch({ kind });
+                    patch({
+                      kind,
+                      value: "",
+                      field: "",
+                      from: "",
+                      to: "",
+                      from_units: "",
+                      to_units: "",
+                      intervals: [],
+                    });
                   }}
                   options={[
                     ["fixed", "Fixed surcharge"],
@@ -167,7 +226,20 @@ export function PricingEditor({
                     ["manual_review", "Require manual review"],
                   ]}
                 />
-                {!["rank_interval", "manual_review"].includes(rule.kind) && (
+                {["fixed", "per_unit"].includes(rule.kind) && (
+                  <MoneyInput
+                    currency={plan.currency}
+                    name={`${path}.pricing.rules.${String(i)}.value`}
+                    label={
+                      rule.kind === "fixed" ? "Amount to add" : "Price per unit"
+                    }
+                    value={rule.value}
+                    change={(value) => {
+                      patch({ value });
+                    }}
+                  />
+                )}
+                {["percentage", "multiplier"].includes(rule.kind) && (
                   <Text
                     name={`${path}.pricing.rules.${String(i)}.value`}
                     label="Operation value"
@@ -192,7 +264,7 @@ export function PricingEditor({
                     change={(field) => {
                       patch({ field });
                     }}
-                    options={choices}
+                    options={choices(["integer", "decimal"])}
                   />
                 )}
                 {rule.kind === "rank_interval" && (
@@ -202,9 +274,9 @@ export function PricingEditor({
                       label="Price starting rank field"
                       value={rule.from}
                       change={(from) => {
-                        patch({ from, intervals: [] });
+                        patch({ from, to: "", intervals: [] });
                       }}
-                      options={choices}
+                      options={choices(["rank"])}
                     />
                     <Select
                       name={`${path}.pricing.rules.${String(i)}.to`}
@@ -213,7 +285,12 @@ export function PricingEditor({
                       change={(to) => {
                         patch({ to });
                       }}
-                      options={choices}
+                      options={choices(
+                        ["rank"],
+                        fields.find((field) => field.key === rule.from)
+                          ?.reference ?? "",
+                        rule.from,
+                      )}
                     />
                     <Select
                       name={`${path}.pricing.rules.${String(i)}.from_units`}
@@ -222,7 +299,7 @@ export function PricingEditor({
                       change={(from_units) => {
                         patch({ from_units });
                       }}
-                      options={choices}
+                      options={choices(["integer"], undefined, rule.to_units)}
                     />
                     <Select
                       name={`${path}.pricing.rules.${String(i)}.to_units`}
@@ -231,16 +308,44 @@ export function PricingEditor({
                       change={(to_units) => {
                         patch({ to_units });
                       }}
-                      options={choices}
+                      options={choices(["integer"], undefined, rule.from_units)}
                     />
                     <p>
                       Enter the full price to advance through each rank. With
                       unit fields, the server prorates partial ranks using the
                       catalog’s unit bounds.
                     </p>
-                    {ranks.map((rank) => (
-                      <Text
-                        name={`${path}.pricing.rules.${String(i)}.intervals`}
+                    {rule.intervals.map(
+                      (interval, index) =>
+                        (!ranks.some((rank) => rank.key === interval.rank) ||
+                          rule.intervals.findIndex(
+                            (value) => value.rank === interval.rank,
+                          ) !== index) && (
+                          <div key={index}>
+                            <p>
+                              Unavailable or duplicate interval: {interval.rank}
+                              . Remove it and set the price on the current rank
+                              below.
+                            </p>
+                            <Action
+                              name={`${path}.pricing.rules.${String(i)}.intervals.${String(index)}.rank`}
+                              onClick={() => {
+                                patch({
+                                  intervals: rule.intervals.filter(
+                                    (_, j) => j !== index,
+                                  ),
+                                });
+                              }}
+                            >
+                              Remove invalid interval {index + 1}
+                            </Action>
+                          </div>
+                        ),
+                    )}
+                    {ranks.map((rank, rankIndex) => (
+                      <MoneyInput
+                        currency={plan.currency}
+                        name={`${path}.pricing.rules.${String(i)}.${rule.intervals.some((r) => r.rank === rank.key) ? `intervals.${String(rule.intervals.findIndex((r) => r.rank === rank.key))}.amount_minor` : `missing_intervals.${String(rankIndex)}`}`}
                         key={rank.key}
                         label={`${rank.label} interval price`}
                         value={
@@ -321,6 +426,9 @@ export function PricingEditor({
               });
             };
             const values = visibleAnswers(service, example.answers, "estimate");
+            const parents =
+              caseParents.get(example.key) ??
+              restoredAutomaticParents(service, values);
             return (
               <details key={i} className="catalog-section" data-price-case={i}>
                 <summary>{example.key}</summary>
@@ -345,9 +453,11 @@ export function PricingEditor({
                   ]}
                 />
                 {example.outcome === "estimated" && (
-                  <Text
+                  <MoneyInput
+                    currency={plan.currency}
+                    precision={2}
                     name={`${path}.pricing.cases.${String(i)}.amount_minor`}
-                    label="Expected amount in minor units"
+                    label="Expected total"
                     value={example.amount_minor}
                     change={(amount_minor) => {
                       patch({ amount_minor });
@@ -361,24 +471,53 @@ export function PricingEditor({
                   .map((field) => (
                     <Input
                       key={field.key}
+                      validationName={`${path}.pricing.cases.${String(i)}.answers.${field.key}`}
                       field={field}
                       config={config}
                       value={values[field.key]}
                       required={field.required}
                       error={undefined}
+                      choiceState={linkedChoiceState(
+                        service,
+                        config,
+                        field,
+                        values,
+                        parents,
+                      )}
                       change={(value) => {
-                        const next = Object.fromEntries(
-                          Object.entries(values).filter(
-                            ([key]) => key !== field.key,
-                          ),
+                        validation?.correct(
+                          `${path}.pricing.cases.${String(i)}.answers.${field.key}`,
                         );
-                        if (value !== undefined) next[field.key] = value;
+                        const next = changeLinkedChoice(
+                          service,
+                          values,
+                          field.key,
+                          value,
+                          parents,
+                        );
+                        setCaseParents((old) =>
+                          new Map(old).set(example.key, next.automatic),
+                        );
                         patch({
-                          answers: visibleAnswers(service, next, "estimate"),
+                          answers: visibleAnswers(
+                            service,
+                            next.answers,
+                            "estimate",
+                          ),
                         });
                       }}
                     />
                   ))}
+                {preview && (
+                  <PricingPreview
+                    path={`${path}.pricing.cases.${String(i)}`}
+                    onIssues={onIssues}
+                    context={preview}
+                    config={config}
+                    service={service}
+                    example={example}
+                  />
+                )}
                 <Action
                   onClick={() => {
                     update({ cases: plan.cases.filter((_, j) => i !== j) });
@@ -390,6 +529,7 @@ export function PricingEditor({
             );
           })}
           <Action
+            name={`${path}.pricing.cases`}
             disabled={plan.cases.length >= 30}
             onClick={() => {
               update({

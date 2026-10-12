@@ -368,8 +368,11 @@ func (s *Service) firstGoogleAccount(ctx context.Context, tx *ent.Tx, assertion 
 		return nil, err
 	}
 	if portal != PortalCustomer {
-		if account == nil || !portal.permitsUser(account) || account.Suspended || account.DeletedAt != nil || account.EmailVerifiedAt != nil {
-			return nil, ErrInvalid
+		if account == nil || !portal.permitsUser(account) || account.Suspended || account.DeletedAt != nil {
+			return nil, ErrStaffAccess
+		}
+		if account.EmailVerifiedAt != nil {
+			return nil, ErrConflict
 		}
 		account, err = tx.User.UpdateOne(account).SetEmailVerifiedAt(s.now()).Save(ctx)
 	} else {

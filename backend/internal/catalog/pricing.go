@@ -290,19 +290,31 @@ func validatePricing(service ServiceDefinition, refs map[string]Reference, path 
 	lower, a := decimal(plan.MinimumMinor)
 	upper, b := decimal(plan.MaximumMinor)
 	base, d := decimal(plan.BaseMinor)
-	if !a || !b || !d || lower.Sign() <= 0 || !lower.IsInt() || !upper.IsInt() || lower.Cmp(upper) > 0 || base.Sign() < 0 || !slices.Contains([]string{"USD", "EUR", "GBP"}, plan.Currency) {
-		add(path, "Choose a currency, nonnegative base, and positive ordered whole-minor-unit bounds.")
+	if !slices.Contains([]string{"USD", "EUR", "GBP"}, plan.Currency) {
+		add(path+".currency", "Choose USD, EUR or GBP for these estimates.")
+	}
+	if !d || base.Sign() < 0 {
+		add(path+".base_minor", "Enter a nonnegative base price.")
+	}
+	if !a || lower.Sign() <= 0 || !lower.IsInt() {
+		add(path+".minimum_minor", "Enter a positive minimum price with no more than two currency decimal places.")
+	}
+	if !b || upper.Sign() <= 0 || !upper.IsInt() || a && lower.Cmp(upper) > 0 {
+		add(path+".maximum_minor", "Enter a positive maximum price of at least the minimum, with no more than two currency decimal places.")
 	}
 	fields := fieldMap(service.Fields)
 	keys := map[string]bool{"base": true, "bounds": true}
 	for i, rule := range plan.Rules {
 		rp := fmt.Sprintf("%s.rules.%d", path, i)
-		if keys[rule.Key] || !keyPattern.MatchString(rule.Key) || !validText(rule.Label, 1, 120) {
-			add(rp, "Use a unique pricing key and a customer-safe label.")
+		if keys[rule.Key] || !keyPattern.MatchString(rule.Key) {
+			add(rp+".key", "Use a unique pricing rule key.")
+		}
+		if !validText(rule.Label, 1, 120) {
+			add(rp+".label", "Use a customer-safe price breakdown label of 1–120 characters.")
 		}
 		keys[rule.Key] = true
 		if !validConditionShape(rule.When) {
-			add(rp, "Pricing condition exceeds supported bounds.")
+			add(rp+".when", "Pricing condition exceeds supported bounds.")
 			continue
 		}
 		validateCondition(rule.When, fields, refs, rp+".when", 0, add)
@@ -310,25 +322,33 @@ func validatePricing(service ServiceDefinition, refs map[string]Reference, path 
 		switch rule.Kind {
 		case "fixed", "per_unit", "percentage", "multiplier":
 			if !ok || (rule.Kind != "percentage" && value.Sign() < 0) || (rule.Kind == "percentage" && (value.Cmp(big.NewRat(-100, 1)) < 0 || value.Cmp(big.NewRat(10000, 1)) > 0)) || (rule.Kind == "multiplier" && (value.Sign() <= 0 || value.Cmp(big.NewRat(100, 1)) > 0)) {
-				add(rp, "Use a bounded exact amount, percentage (-100–10,000), or multiplier (greater than zero, at most 100).")
+				add(rp+".value", "Use a bounded exact amount, percentage (-100–10,000), or multiplier (greater than zero, at most 100).")
 			}
 			if rule.Kind == "per_unit" {
 				field, exists := fields[rule.Field]
-				if !exists || field.Stage != "estimate" || !slices.Contains([]string{"integer", "decimal"}, field.Type) {
-					add(rp, "Per-unit pricing requires an estimate-stage numeric field.")
+				if !exists || field.Stage != "estimate" || IsWinRateField(field) || !slices.Contains([]string{"integer", "decimal"}, field.Type) {
+					add(rp+".field", "Per-unit pricing requires an estimate-stage numeric quantity, not a win-rate preference.")
 				}
 			}
 		case "rank_interval":
 			from, to := fields[rule.From], fields[rule.To]
-			if from.Type != "rank" || to.Type != "rank" || from.Reference != to.Reference || from.Stage != "estimate" || to.Stage != "estimate" {
-				add(rp, "Rank pricing needs two estimate ranks from the same catalog.")
+			if from.Type != "rank" || from.Stage != "estimate" {
+				add(rp+".from", "Choose an estimate-stage starting rank.")
+			}
+			if to.Type != "rank" || from.Reference != to.Reference || to.Stage != "estimate" || rule.From == rule.To {
+				add(rp+".to", "Choose a distinct estimate-stage target rank from the same catalog.")
 			}
 			if (rule.FromUnits == "") != (rule.ToUnits == "") || (rule.FromUnits != "" && rule.FromUnits == rule.ToUnits) {
-				add(rp, "Configure two distinct unit fields or neither.")
+				field := ".to_units"
+				if rule.FromUnits == "" {
+					field = ".from_units"
+				}
+				add(rp+field, "Configure two distinct unit fields or neither.")
 			}
-			for _, key := range []string{rule.FromUnits, rule.ToUnits} {
+			for _, part := range []struct{ suffix, key string }{{".from_units", rule.FromUnits}, {".to_units", rule.ToUnits}} {
+				suffix, key := part.suffix, part.key
 				if key != "" && (fields[key].Type != "integer" || fields[key].Stage != "estimate") {
-					add(rp, "Rank units require estimate-stage integer fields.")
+					add(rp+suffix, "Rank units require estimate-stage integer fields.")
 				}
 			}
 			options := refs[from.Reference].Options
@@ -337,27 +357,31 @@ func validatePricing(service ServiceDefinition, refs map[string]Reference, path 
 				add(rp, "Too many rank intervals.")
 				continue
 			}
-			for _, interval := range rule.Intervals {
+			for j, interval := range rule.Intervals {
+				ip := fmt.Sprintf("%s.intervals.%d", rp, j)
 				price, valid := decimal(interval.AmountMinor)
-				if seen[interval.Rank] || !valid || price.Sign() < 0 || !slices.ContainsFunc(options, func(o Option) bool { return o.Key == interval.Rank }) {
-					add(rp, "Provide one nonnegative price per known rank interval.")
+				if !valid || price.Sign() < 0 {
+					add(ip+".amount_minor", "Enter a nonnegative price for this rank interval.")
+				}
+				if seen[interval.Rank] || !slices.ContainsFunc(options, func(o Option) bool { return o.Key == interval.Rank }) {
+					add(ip+".rank", "Remove this duplicate or unavailable rank interval.")
 				}
 				seen[interval.Rank] = true
 			}
 			for j, option := range options {
 				if (j < len(options)-1 || rule.FromUnits != "") && !seen[option.Key] {
-					add(rp, "Every selectable rank interval needs a price.")
+					add(fmt.Sprintf("%s.missing_intervals.%d", rp, j), "Enter a price for this selectable rank interval.")
 				}
 				if rule.FromUnits != "" && option.Units <= 0 {
-					add(rp, "Unit pricing requires positive units for every rank.")
+					add(rp+".from_units", "Unit pricing requires positive units for every rank in the selected rank catalog. Review that catalog first.")
 				}
 			}
 		case "manual_review":
 			if rule.When == nil {
-				add(rp, "Manual review requires an explicit condition.")
+				add(rp+".when", "Manual review requires an explicit condition.")
 			}
 		default:
-			add(rp, "Unsupported pricing operation.")
+			add(rp+".kind", "Unsupported pricing operation.")
 		}
 	}
 	if len(plan.Cases) == 0 {
@@ -374,17 +398,21 @@ func validatePriceCases(c Configuration, add func(string, string)) {
 		for j, example := range service.Pricing.Cases {
 			path := fmt.Sprintf("services.%d.pricing.cases.%d", i, j)
 			if keys[example.Key] || !keyPattern.MatchString(example.Key) {
-				add(path, "Saved cases require unique keys.")
+				add(path+".key", "Saved cases require unique keys.")
 			}
 			keys[example.Key] = true
 			validated := ValidateAnswers(c, service.Key, "estimate", example.Answers, nil)
 			if len(validated.Issues) > 0 {
-				add(path, "Saved selections must satisfy the current form.")
+				for _, issue := range validated.Issues {
+					add(path+".answers."+issue.Path, issue.Message)
+				}
 				continue
 			}
 			outcome, _, amount, _, _ := evaluatePrice(c, service, validated.Answers)
-			if example.Outcome != outcome || example.AmountMinor != amount {
-				add(path, "Expected result differs from the current pricing rules.")
+			if example.Outcome != outcome {
+				add(path+".outcome", "Expected outcome differs from the current pricing rules.")
+			} else if example.AmountMinor != amount {
+				add(path+".amount_minor", "Expected total differs from the current pricing rules.")
 			}
 		}
 	}

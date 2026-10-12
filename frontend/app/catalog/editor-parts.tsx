@@ -1,6 +1,14 @@
+import ArtworkUpload from "../artwork/upload";
+import MoneyInput from "./money-input";
+import PackageScopeEditor from "./package-scope";
+import DeliveryRequestEditor from "./delivery-request-editor";
 import FulfillmentEditor from "./fulfillment-editor";
+import LinkedChoicesEditor from "./linked-choices-editor";
 import DeliveryEditor from "./delivery-editor";
+import { withDeliveryHours } from "./delivery-hours";
 import { PricingEditor } from "./pricing-editor";
+import { Input } from "./dynamic-form";
+import { useRef } from "react";
 import {
   Action,
   Check,
@@ -16,6 +24,7 @@ import {
 import {
   emptyField,
   emptyVariant,
+  optionsFor,
   type Configuration,
   type Field,
   type Service,
@@ -127,13 +136,29 @@ function DefaultEditor({
   path = "",
   field,
   change,
+  config,
 }: {
   path?: string;
   field: Field;
   change: (patch: Partial<Field>) => void;
+  config: Configuration;
 }) {
+  const group = useRef<HTMLFieldSetElement>(null);
+  const removeDefault = (value: Field["default"]) => {
+    change({ default: value });
+    requestAnimationFrame(() => {
+      group.current
+        ?.querySelector<HTMLInputElement>('input[type="checkbox"]')
+        ?.focus();
+    });
+  };
+  const missingScalar =
+    ["select", "rank", "radio"].includes(field.type) &&
+    typeof field.default === "string" &&
+    field.default !== "" &&
+    !optionsFor(field, config).some((option) => option.key === field.default);
   return (
-    <fieldset className="catalog-item">
+    <fieldset ref={group} className="catalog-item">
       <legend>Default answer</legend>
       <Check
         label="Use a default"
@@ -161,27 +186,65 @@ function DefaultEditor({
             }}
           />
         ) : (
-          <Text
-            label="Default value"
-            value={
-              Array.isArray(field.default)
-                ? field.default.join(",")
-                : String(field.default)
-            }
-            change={(value) => {
-              change({
-                default:
-                  field.type === "multiselect"
-                    ? value
-                        .split(",")
-                        .map((v) => v.trim())
-                        .filter(Boolean)
-                    : value,
-              });
+          <Input
+            validationName={`${path}.default`}
+            field={{
+              ...field,
+              label: "Default value",
+              help: "Choose or enter the exact default answer. Option names keep their spaces, case and punctuation.",
             }}
-            help="Use stable option keys. Multiselect values are comma-separated; numeric defaults use exact decimal text."
+            config={config}
+            value={field.default}
+            required={false}
+            error={undefined}
+            change={(value) => {
+              change({ default: value });
+            }}
           />
         ))}
+      {missingScalar && (
+        <div>
+          <p>
+            Unavailable default:{" "}
+            {typeof field.default === "string" ? field.default : ""}. This
+            option is no longer in the field’s choices.
+          </p>
+          <Action
+            onClick={() => {
+              removeDefault(undefined);
+            }}
+          >
+            Remove unavailable default{" "}
+            {typeof field.default === "string" ? field.default : ""}
+          </Action>
+        </div>
+      )}
+      {field.type === "multiselect" &&
+        Array.isArray(field.default) &&
+        field.default
+          .filter(
+            (value) =>
+              !optionsFor(field, config).some((option) => option.key === value),
+          )
+          .map((value) => (
+            <div key={value}>
+              <p>
+                Unavailable default: {value}. This option is no longer in the
+                field’s choices.
+              </p>
+              <Action
+                onClick={() => {
+                  removeDefault(
+                    Array.isArray(field.default)
+                      ? field.default.filter((current) => current !== value)
+                      : [],
+                  );
+                }}
+              >
+                Remove unavailable default {value}
+              </Action>
+            </div>
+          ))}
     </fieldset>
   );
 }
@@ -200,9 +263,13 @@ export function FieldEditor({
   service: Service;
   config: Configuration;
 }) {
-  const choice = ["select", "radio", "rank", "multiselect"].includes(
-      field.type,
-    ),
+  const choice = [
+      "select",
+      "radio",
+      "rank",
+      "multiselect",
+      "cosmetics",
+    ].includes(field.type),
     number = ["integer", "decimal"].includes(field.type),
     text = ["short_text", "long_text"].includes(field.type);
   return (
@@ -242,6 +309,7 @@ export function FieldEditor({
                 "short_text",
                 "long_text",
                 "attachment",
+                "cosmetics",
               ] as const
             ).find((candidate) => candidate === type);
             if (parsed)
@@ -264,11 +332,18 @@ export function FieldEditor({
             "short_text",
             "long_text",
             "attachment",
+            "cosmetics",
           ]
-            .filter((type) => !intake || type !== "attachment")
+            .filter((type) =>
+              intake ? type !== "attachment" : type !== "cosmetics",
+            )
             .map((type) => [
               type,
-              type === "win_rate" ? "Win-rate preference" : type,
+              type === "win_rate"
+                ? "Win-rate preference"
+                : type === "cosmetics"
+                  ? "Skin collection · category, quantity and names"
+                  : type,
             ])}
         />
         <Select
@@ -418,7 +493,15 @@ export function FieldEditor({
           />
         </div>
       )}
-      {field.type === "attachment" ? (
+      {field.type === "cosmetics" ? (
+        <p>
+          Options define this game’s skin categories. Sellers add quantity and
+          names for each category. Names can identify the skin or associated
+          hero; one entry per item, up to 20 categories and 200 named items.
+          These answers are private until staff explicitly adds reviewed details
+          to a public listing.
+        </p>
+      ) : field.type === "attachment" ? (
         <p>
           Optional order screenshots use private upload and safety checks.
           Choose the order collection stage for screenshots. Later evidence
@@ -426,7 +509,12 @@ export function FieldEditor({
           references.
         </p>
       ) : (
-        <DefaultEditor path={path} field={field} change={change} />
+        <DefaultEditor
+          path={path}
+          field={field}
+          config={config}
+          change={change}
+        />
       )}
       <ConditionEditor
         path={`${path}.visible_when`}
@@ -454,11 +542,13 @@ export function RuleEditor({
   rule,
   change,
   fields,
+  config,
 }: {
   path?: string;
   rule: Rule;
   change: (patch: Partial<Rule>) => void;
   fields: Field[];
+  config: Configuration;
 }) {
   const options = [
     ["", "No field"],
@@ -480,12 +570,22 @@ export function RuleEditor({
           label="Rule kind"
           value={rule.kind}
           change={(kind) => {
-            change({ kind });
+            change({
+              kind,
+              when: undefined,
+              from_units: "",
+              to_units: "",
+              link_mode:
+                kind === "linked_choices" ? "single_parent" : undefined,
+              links: undefined,
+            });
           }}
           options={[
             ["reject", "Reject matching answers"],
             ["progression", "Target rank must advance"],
             ["disjoint", "Selections must not overlap"],
+            ["linked_choices", "Link choices (regions/servers, roles/heroes)"],
+            ["ordered_numbers", "Minimum must not exceed maximum"],
           ]}
         />
       </div>
@@ -501,7 +601,11 @@ export function RuleEditor({
         <div className="catalog-grid">
           <Select
             name={`${path}.from`}
-            label="Starting field"
+            label={
+              rule.kind === "linked_choices"
+                ? "Parent field (region or role)"
+                : "Starting field"
+            }
             value={rule.from}
             change={(from) => {
               change({ from });
@@ -510,7 +614,11 @@ export function RuleEditor({
           />
           <Select
             name={`${path}.to`}
-            label="Target field"
+            label={
+              rule.kind === "linked_choices"
+                ? "Child field (server or heroes)"
+                : "Target field"
+            }
             value={rule.to}
             change={(to) => {
               change({ to });
@@ -541,15 +649,25 @@ export function RuleEditor({
           )}
         </div>
       )}
-      <ConditionEditor
-        path={`${path}.when`}
-        label="Apply rule when"
-        value={rule.when}
-        change={(when) => {
-          change({ when });
-        }}
-        fields={fields}
-      />
+      {rule.kind === "linked_choices" ? (
+        <LinkedChoicesEditor
+          rule={rule}
+          fields={fields}
+          config={config}
+          path={path}
+          change={change}
+        />
+      ) : (
+        <ConditionEditor
+          path={`${path}.when`}
+          label="Apply rule when"
+          value={rule.when}
+          change={(when) => {
+            change({ when });
+          }}
+          fields={fields}
+        />
+      )}
     </>
   );
 }
@@ -678,7 +796,27 @@ export function ServicesEditor({
           >
             Add field
           </Action>
+          <Action
+            disabled={!withDeliveryHours(service).fields}
+            onClick={() => {
+              update(i, withDeliveryHours(service));
+            }}
+          >
+            Add requested delivery-hours range
+          </Action>
+          <p className="quiet">
+            Adds an editable 1–720 hour request range and validation rule to
+            this draft. Review the bounds and remove any old priority selector
+            yourself before publishing.
+          </p>
           <h3>Combination rules</h3>
+          <DeliveryRequestEditor
+            service={service}
+            path={`services.${String(i)}.delivery_request`}
+            change={(patch) => {
+              update(i, patch);
+            }}
+          />
           {service.rules.map((rule, j) => (
             <details key={j} className="catalog-section">
               <summary>{rule.key}</summary>
@@ -686,6 +824,7 @@ export function ServicesEditor({
                 path={`services.${String(i)}.rules.${String(j)}`}
                 rule={rule}
                 fields={service.fields}
+                config={config}
                 change={(patch) => {
                   update(i, {
                     rules: service.rules.map((r, index) =>
@@ -780,8 +919,9 @@ export function PackagesEditor({
     <section>
       <h2>Fixed packages</h2>
       <p>
-        Every variant has its own exact price. Capacity here describes
-        availability; reservations are implemented with checkout.
+        Every offer has fixed contents, an exact price and a delivery
+        commitment. Customers provide delivery information only. Capacity is
+        checked when they order.
       </p>
       {config.packages.map((pack, i) => (
         <details data-catalog-package={i} key={i} className="catalog-section">
@@ -825,6 +965,32 @@ export function PackagesEditor({
             value={pack.description}
             change={(description) => {
               update(i, { description });
+            }}
+          />
+          <ArtworkUpload
+            name={`packages.${String(i)}.asset`}
+            label="Package cover"
+            purpose="product"
+            pathLabel="Approved package artwork path"
+            value={pack.asset ?? ""}
+            change={(asset) => {
+              update(i, { asset });
+            }}
+          />
+          <Text
+            name={`packages.${String(i)}.asset_alt`}
+            label="Package cover alternative text"
+            value={pack.asset_alt ?? ""}
+            change={(asset_alt) => {
+              update(i, { asset_alt });
+            }}
+          />
+          <Text
+            name={`packages.${String(i)}.asset_source`}
+            label="Package artwork source and permission"
+            value={pack.asset_source ?? ""}
+            change={(asset_source) => {
+              update(i, { asset_source });
             }}
           />
           {pack.variants.map((variant, j) => {
@@ -871,14 +1037,15 @@ export function PackagesEditor({
                       ["GBP", "GBP"],
                     ]}
                   />
-                  <Text
+                  <MoneyInput
                     name={`packages.${String(i)}.variants.${String(j)}.amount_minor`}
-                    label="Price in minor units"
+                    label="Package price"
+                    currency={variant.currency}
+                    precision={2}
                     value={variant.amount_minor}
                     change={(amount_minor) => {
                       patch({ amount_minor });
                     }}
-                    help="Whole minor units only, e.g. 1234 represents 12.34. Enter your approved price."
                   />
                   <NumberInput
                     name={`packages.${String(i)}.variants.${String(j)}.delivery_min_hours`}
@@ -914,31 +1081,13 @@ export function PackagesEditor({
                     }}
                   />
                 )}
-                <fieldset className="catalog-item">
-                  <legend>Required package information</legend>
-                  {fields
-                    .filter(
-                      (f) =>
-                        f.stage !== "fulfillment" && f.type !== "attachment",
-                    )
-                    .map((field) => (
-                      <Check
-                        name={`packages.${String(i)}.variants.${String(j)}.required_fields`}
-                        key={field.key}
-                        label={field.label}
-                        value={variant.required_fields.includes(field.key)}
-                        change={(selected) => {
-                          patch({
-                            required_fields: selected
-                              ? [...variant.required_fields, field.key]
-                              : variant.required_fields.filter(
-                                  (key) => key !== field.key,
-                                ),
-                          });
-                        }}
-                      />
-                    ))}
-                </fieldset>
+                <PackageScopeEditor
+                  service={config.services.find((s) => s.key === pack.service)}
+                  config={config}
+                  variant={variant}
+                  path={`packages.${String(i)}.variants.${String(j)}`}
+                  change={patch}
+                />
                 <ConditionEditor
                   path={`packages.${String(i)}.variants.${String(j)}.eligibility`}
                   label="Variant eligibility"

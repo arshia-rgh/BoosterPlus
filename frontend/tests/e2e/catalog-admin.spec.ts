@@ -329,6 +329,10 @@ test("staff builds, previews, publishes and archives another game through the ge
   await matches.getByLabel("Required field", { exact: true }).check();
   await matches.getByLabel("Minimum value", { exact: true }).fill("1");
   await matches.getByLabel("Maximum value", { exact: true }).fill("5");
+  const server = await addField("server", "Delivery server", "select");
+  await server.getByLabel("Collection stage").selectOption("order");
+  await option(server, 0, "alpha", "Alpha server");
+  await option(server, 1, "beta", "Beta server");
   await section("Packages");
   await page.getByRole("button", { name: "Add package", exact: true }).click();
   const pack = page.locator('[data-catalog-package="0"]');
@@ -340,16 +344,34 @@ test("staff builds, previews, publishes and archives another game through the ge
   await variant.getByLabel("Variant key", { exact: true }).fill("standard");
   await variant.getByLabel("Variant name", { exact: true }).fill("Standard");
   await variant.getByLabel("Pricing currency").selectOption("USD");
-  await variant.getByLabel("Price in minor units").fill("1234");
+  await variant
+    .getByLabel("Package price (USD)", { exact: true })
+    .fill("12.34");
   await variant.getByLabel("Minimum delivery hours").fill("1");
   await variant.getByLabel("Maximum delivery hours").fill("3");
   await variant.getByLabel("Limit capacity").check();
   await variant.getByLabel("Available capacity").fill("2");
+  for (const label of ["Play mode", "Single hero", "Matches"])
+    await variant
+      .getByLabel(`${label} — source`, { exact: true })
+      .selectOption("fixed");
   await variant
-    .getByRole("group", { name: "Required package information", exact: true })
-    .getByLabel("Play mode", { exact: true })
-    .check();
-  await condition(variant, "Variant eligibility", "mode", "solo");
+    .getByLabel("Play mode — fixed value (required)", { exact: true })
+    .selectOption("solo");
+  await variant
+    .getByLabel("Single hero — fixed value (required)", { exact: true })
+    .selectOption("false");
+  await variant
+    .getByLabel("Matches — fixed value (required)", { exact: true })
+    .fill("2");
+  for (const label of ["Hero", "Requested win rate"])
+    await variant
+      .getByLabel(`${label} — source`, { exact: true })
+      .selectOption("excluded");
+  await variant
+    .getByLabel("Delivery server — source", { exact: true })
+    .selectOption("customer");
+  await condition(variant, "Variant eligibility", "server", "alpha");
   await section("Game & ranks");
   // DI11 implements shop; availability is now publishable independently of boost.
   await expect(
@@ -520,10 +542,8 @@ test("staff builds, previews, publishes and archives another game through the ge
   await pricing.locator("summary").first().click();
   await pricing.getByLabel("Price evaluator").selectOption("pricing-v1");
   await pricing.getByLabel("Estimate currency").selectOption("USD");
-  await pricing
-    .getByLabel("Base amount in minor units", { exact: true })
-    .fill("100.25");
-  await pricing.getByLabel("Maximum estimate in minor units").fill("999999");
+  await pricing.getByLabel("Base price (USD)", { exact: true }).fill("1.0025");
+  await pricing.getByLabel("Maximum estimate (USD)").fill("9999.99");
   await pricing
     .getByRole("button", { name: "Add price operation", exact: true })
     .click();
@@ -532,7 +552,7 @@ test("staff builds, previews, publishes and archives another game through the ge
   await priceRule
     .getByLabel("Price operation", { exact: true })
     .selectOption("per_unit");
-  await priceRule.getByLabel("Operation value").fill("100.25");
+  await priceRule.getByLabel("Price per unit (USD)").fill("1.0025");
   await priceRule.getByLabel("Quantity field").selectOption("matches");
   await pricing
     .getByRole("button", { name: "Add price example", exact: true })
@@ -541,7 +561,7 @@ test("staff builds, previews, publishes and archives another game through the ge
   await priceCase.locator("summary").click();
   await priceCase.getByLabel("Play mode (required)").selectOption("solo");
   await priceCase.getByLabel("Matches (required)").fill("2");
-  await priceCase.getByLabel("Expected amount in minor units").fill("300");
+  await priceCase.getByLabel("Expected total (USD)").fill("3.00");
   await section("Review & publish");
   await page.getByLabel(/I verified the actual/).check();
   await page.getByRole("button", { name: "Save draft", exact: true }).click();
@@ -558,11 +578,11 @@ test("staff builds, previews, publishes and archives another game through the ge
   ).toBeDisabled();
   await expect(
     page.getByRole("link", {
-      name: /Expected result differs from the current pricing rules/,
+      name: /Expected total differs from the current pricing rules/,
     }),
   ).toBeVisible();
   await section("Price estimation");
-  await priceCase.getByLabel("Expected amount in minor units").fill("301");
+  await priceCase.getByLabel("Expected total (USD)").fill("3.01");
   await section("Review & publish");
   await page.getByLabel(/I verified the actual/).check();
   await page.getByRole("button", { name: "Save draft", exact: true }).click();
@@ -758,29 +778,37 @@ test("staff builds, previews, publishes and archives another game through the ge
 
     await customer.goto(`http://127.0.0.1:4173/games/${slug}/packages/starter`);
     await expect(customer.locator(".package-price")).toHaveText("USD 12.34");
-    await customer.getByLabel("Play mode (required)").selectOption("duo");
-    await customer.getByLabel("Matches (required)").fill("2");
+    await expect(customer.getByLabel("Play mode (required)")).toHaveCount(0);
+    await expect(customer.getByLabel("Matches (required)")).toHaveCount(0);
+    await expect(
+      customer.getByRole("region", { name: "Included in this package" }),
+    ).toContainText("Solo");
     await customer
-      .getByRole("button", { name: "Check selections", exact: true })
+      .getByLabel("Delivery server (required)")
+      .selectOption("beta");
+    await customer
+      .getByRole("button", { name: "Continue with this package", exact: true })
       .click();
     await expect(
       customer.getByText(/not eligible for the chosen package variant/),
     ).toBeVisible();
-    await customer.getByLabel("Play mode (required)").selectOption("solo");
     await customer
-      .getByRole("button", { name: "Check selections", exact: true })
+      .getByLabel("Delivery server (required)")
+      .selectOption("alpha");
+    await customer
+      .getByRole("button", { name: "Continue with this package", exact: true })
       .click();
     await expect(customer.getByText(/Selections are valid/)).toBeVisible();
     await customer.getByLabel("Coupon code (optional)").fill("UNKNOWN-COUPON");
     await customer
-      .getByRole("button", { name: "Check selections", exact: true })
+      .getByRole("button", { name: "Continue with this package", exact: true })
       .click();
     await expect(
       customer.getByText(/This code is unavailable for these selections/),
     ).toBeVisible();
     await customer.getByLabel("Coupon code (optional)").fill(couponCode);
     await customer
-      .getByRole("button", { name: "Check selections", exact: true })
+      .getByRole("button", { name: "Continue with this package", exact: true })
       .click();
     await expect(
       customer.getByRole("heading", {
@@ -802,7 +830,7 @@ test("staff builds, previews, publishes and archives another game through the ge
     ).toBe(true);
     await section("Packages");
     await pack.locator("summary").first().click();
-    await page.getByLabel("Price in minor units").fill("1500");
+    await page.getByLabel("Package price (USD)", { exact: true }).fill("15.00");
     await section("Review & publish");
     await page.getByLabel(/I verified the actual/).check();
     await page.getByRole("button", { name: "Save draft", exact: true }).click();
@@ -821,10 +849,11 @@ test("staff builds, previews, publishes and archives another game through the ge
       page.getByText("Catalog published.", { exact: true }),
     ).toBeVisible();
     // The already-open old configuration fails with a conflict instead of mixing prices.
-    await customer.getByLabel("Play mode (required)").selectOption("solo");
-    await customer.getByLabel("Matches (required)").fill("2");
     await customer
-      .getByRole("button", { name: "Check selections", exact: true })
+      .getByLabel("Delivery server (required)")
+      .selectOption("alpha");
+    await customer
+      .getByRole("button", { name: "Continue with this package", exact: true })
       .click();
     await expect(
       customer.getByText(/This catalog changed or is unavailable/),
@@ -862,7 +891,10 @@ test("staff builds, previews, publishes and archives another game through the ge
     ).toBeVisible();
     await customer.reload();
     await expect(
-      customer.getByRole("button", { name: "Check selections", exact: true }),
+      customer.getByRole("button", {
+        name: "Continue with this package",
+        exact: true,
+      }),
     ).toBeDisabled();
     await page
       .getByRole("button", { name: "Archive game", exact: true })

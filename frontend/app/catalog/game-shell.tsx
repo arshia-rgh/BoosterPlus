@@ -1,3 +1,5 @@
+import CustomBoostAction from "./custom-boost-action";
+import "./service-tiles.css";
 import { ArtworkImage } from "../artwork/image";
 import {
   createContext,
@@ -146,29 +148,31 @@ export function GameShell({
       <GameDiscovery
         release={release}
         selected={selectedService(pathname, query)}
-      />
-      <div ref={localContent} className="game-local-content">
-        <RetryFocus
-          value={() => {
-            retryFocus.current = true;
-          }}
-        >
-          {children}
-        </RetryFocus>
-      </div>
-      {release.configuration.faqs.length > 0 && (
-        <section className="game-faq" aria-labelledby="game-faq-title">
-          <h2 id="game-faq-title">
-            Questions about {release.configuration.name}
-          </h2>
-          {release.configuration.faqs.map((faq, i) => (
-            <details key={i}>
-              <summary>{faq.question}</summary>
-              <p>{faq.answer}</p>
-            </details>
-          ))}
-        </section>
-      )}
+        action={<CustomBoostAction key={focusPath} release={release} />}
+      >
+        <div ref={localContent} className="game-local-content">
+          <RetryFocus
+            value={() => {
+              retryFocus.current = true;
+            }}
+          >
+            {children}
+          </RetryFocus>
+        </div>
+        {release.configuration.faqs.length > 0 && (
+          <section className="game-faq" aria-labelledby="game-faq-title">
+            <h2 id="game-faq-title">
+              Questions about {release.configuration.name}
+            </h2>
+            {release.configuration.faqs.map((faq, i) => (
+              <details key={i}>
+                <summary>{faq.question}</summary>
+                <p>{faq.answer}</p>
+              </details>
+            ))}
+          </section>
+        )}
+      </GameDiscovery>
     </main>
   );
 }

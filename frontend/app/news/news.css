@@ -168,3 +168,32 @@
   min-width: 0;
   box-sizing: border-box;
 }
+
+.news-image-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem;
+  align-items: start;
+  margin-block: 1.5rem;
+}
+.news-image-row figure {
+  margin: 0;
+}
+.news-image-row .shop-artwork {
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+.news-image-row-editor {
+  display: grid;
+  gap: 1rem;
+}
+.news-row-image {
+  min-width: 0;
+}
+@media (max-width: 600px) {
+  .news-image-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

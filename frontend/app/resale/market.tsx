@@ -1,9 +1,10 @@
+import "../catalog/service-tiles.css";
 import { Anchor } from "../portal-router";
 import MarketFilters from "./market-filters";
 import { maximumDisplay } from "./market-price";
 import AccountAlerts from "../availability/accounts";
 import { FavoriteButton } from "../orders/favorites";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { z } from "../validation";
 import {
   Link,
@@ -32,7 +33,13 @@ import {
 
 import AccountGallery, { AccountImage } from "./gallery";
 import "./marketplace.css";
-export function ProductTerms({ listing }: { listing: PublicListing }) {
+export function ProductTerms({
+  listing,
+  gallery,
+}: {
+  listing: PublicListing;
+  gallery?: ReactNode;
+}) {
   const p = listing.product;
   return (
     <section className="catalog-section">
@@ -46,7 +53,7 @@ export function ProductTerms({ listing }: { listing: PublicListing }) {
           : "Price awaiting review"}
       </p>
       <p className="payment-policy">{p.description}</p>
-      <AccountGallery images={listing.images} title={p.title} />
+      {gallery ?? <AccountGallery images={listing.images} title={p.title} />}
       <dl className="account-attributes">
         {p.attributes.map((a) => (
           <div key={a.label}>
@@ -232,7 +239,7 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
             {resource.data.items.length} accounts in this view
             {resource.data.next ? " · More available" : ""}
           </p>
-          <div className="package-grid market-cards">
+          <div className="package-grid market-cards service-tiles">
             {resource.data.items.map((row) => (
               <article className="catalog-section market-card" key={row.id}>
                 {row.images[0] ? (

@@ -144,7 +144,7 @@ it("orients protected-reveal keyboard users without announcing plaintext or stea
   const ready = await screen.findByRole("heading", {
     name: "Protected details ready",
   });
-  expect(ready).toHaveFocus();
+  await waitFor(() => expect(ready).toHaveFocus());
   expect(ready).not.toHaveTextContent("synthetic handoff");
   fireEvent.click(
     screen.getByRole("button", { name: "Hide protected details" }),
@@ -160,9 +160,11 @@ it("orients protected-reveal keyboard users without announcing plaintext or stea
   expect(screen.queryByText("synthetic handoff only")).not.toBeInTheDocument();
   fireEvent.click(reveal);
   await screen.findByRole("alert");
-  expect(
-    screen.getByRole("group", { name: "Protected access notice" }),
-  ).toHaveFocus();
+  await waitFor(() =>
+    expect(
+      screen.getByRole("group", { name: "Protected access notice" }),
+    ).toHaveFocus(),
+  );
 });
 
 it("does not steal focus when protected details expire", async () => {

@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { z } from "../validation";
 import { APIError, command, get, post, sessionSchema } from "../identity/api";
 import { Action, ErrorNotice } from "../catalog/controls";
+import "./attachment.css";
 
 const mediaSchema = z.object({
   id: z.string(),
@@ -31,6 +32,7 @@ export function UploadImage({
   label = "Image attachment",
   describedBy,
   invalid,
+  operationPending,
 }: {
   conversation: string;
   admin: boolean;
@@ -41,6 +43,7 @@ export function UploadImage({
   label?: string;
   describedBy?: string | undefined;
   invalid?: boolean | undefined;
+  operationPending?: (pending: boolean) => void;
 }) {
   const guidance = useId();
   const base = (admin ? "/admin" : "") + "/media";
@@ -52,11 +55,48 @@ export function UploadImage({
     };
   }, []);
   const inputRef = useRef<HTMLInputElement>(null);
+  const rootRef = useRef<HTMLElement>(null),
+    outcomeRef = useRef<HTMLDivElement>(null),
+    uploadRef = useRef<HTMLButtonElement>(null),
+    focusTarget = useRef<"input" | "status" | "upload" | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [key, setKey] = useState(() => crypto.randomUUID());
   const [item, setItem] = useState<Media | null>(null);
   const [busy, setBusy] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [removalPending, setRemovalPending] = useState(false);
   const [error, setError] = useState<unknown>(null);
+  useEffect(() => {
+    // Selecting a local file is a discardable draft. Once a reservation starts,
+    // protect navigation until its upload/scan resolves or removal is confirmed.
+    operationPending?.(
+      busy ||
+        removalPending ||
+        (started &&
+          (!item || ["pending", "uploaded", "queued"].includes(item.state))),
+    );
+  }, [busy, started, item, removalPending, operationPending]);
+  useEffect(() => {
+    if (busy || !focusTarget.current) return;
+    const target =
+      focusTarget.current === "input"
+        ? inputRef.current
+        : focusTarget.current === "upload"
+          ? uploadRef.current
+          : outcomeRef.current;
+    focusTarget.current = null;
+    // Safari may fall back to the focusable record ancestor when a busy control
+    // disappears. Repair that fallback too, but never steal another field's focus.
+    if (
+      document.activeElement === document.body ||
+      rootRef.current?.contains(document.activeElement) ||
+      (rootRef.current && document.activeElement?.contains(rootRef.current))
+    ) {
+      target?.focus({ preventScroll: true });
+      if (target && typeof target.scrollIntoView === "function")
+        target.scrollIntoView({ block: "center" });
+    }
+  }, [busy, file, item, error]);
   const [preview, setPreview] = useState<{ file: File; url: string } | null>(
     null,
   );
@@ -80,7 +120,7 @@ export function UploadImage({
     };
   }, [file]);
   useEffect(() => {
-    if (item?.state !== "queued") return;
+    if (item?.state !== "queued" || removalPending) return;
     let active = true;
     const timer = setInterval(() => {
       void get(base + "/" + item.id, mediaSchema)
@@ -97,9 +137,10 @@ export function UploadImage({
       active = false;
       clearInterval(timer);
     };
-  }, [item, base, change]);
+  }, [item, base, change, removalPending]);
   async function upload() {
     if (!file) return;
+    focusTarget.current = "status";
     const portal = activePortal();
     const active = () => mounted.current && activePortal() === portal;
     setBusy(true);
@@ -112,13 +153,14 @@ export function UploadImage({
         !["image/png", "image/jpeg", "image/webp"].includes(file.type)
       )
         throw new APIError(
-          "Choose a JPEG, PNG, or WebP image no larger than 4 MiB.",
+          "Choose a JPEG, PNG, or WebP image no larger than 4 MB (4,194,304 bytes).",
         );
       const bytes = await file.arrayBuffer();
       const digest = await crypto.subtle.digest("SHA-256", bytes);
       const checksum = Array.from(new Uint8Array(digest), (v) =>
         v.toString(16).padStart(2, "0"),
       ).join("");
+      setStarted(true);
       const created =
         item ??
         (await post(
@@ -182,23 +224,30 @@ export function UploadImage({
     }
   }
   async function remove() {
+    focusTarget.current = "input";
     setBusy(true);
     setError(null);
+    setRemovalPending(true);
+    change("", true);
     try {
       if (item) await command(base + "/" + item.id + "/remove");
       setItem(null);
+      setStarted(false);
+      setRemovalPending(false);
       setFile(null);
       if (inputRef.current) inputRef.current.value = "";
       setKey(crypto.randomUUID());
       if (mounted.current) change("", false);
     } catch (cause) {
       setError(cause);
+      focusTarget.current = "status";
     } finally {
       setBusy(false);
     }
   }
   async function retryScan() {
     if (!item) return;
+    focusTarget.current = "status";
     setBusy(true);
     setError(null);
     try {
@@ -213,13 +262,15 @@ export function UploadImage({
   }
   return (
     <section
+      ref={rootRef}
       aria-label={label === "Image attachment" ? label : `${label} upload`}
       className={compact ? "chat-attachment" : undefined}
     >
       {!compact && label === "Image attachment" && <h3>Attach an image</h3>}
       <p id={guidance}>
-        JPEG, PNG, or WebP, up to 4 MiB and 4 million pixels. Remove personal
-        information before uploading. Do not upload game credentials.
+        JPEG, PNG, or WebP, up to 4 MB (4,194,304 bytes) and 4 million pixels.
+        Remove personal information before uploading. Do not upload game
+        credentials.
       </p>
       {
         <label>
@@ -235,6 +286,7 @@ export function UploadImage({
             disabled={busy || file !== null}
             onChange={(event) => {
               const selected = event.target.files?.[0] ?? null;
+              focusTarget.current = selected ? "upload" : "input";
               setFile(selected);
               change("", selected !== null);
               setKey(crypto.randomUUID());
@@ -254,37 +306,76 @@ export function UploadImage({
           </figcaption>
         </figure>
       )}
-      {busy && <progress aria-label="Image upload progress" />}
-      {file &&
-        (!item || item.state === "pending" || item.state === "uploaded") && (
-          <Action disabled={busy} onClick={() => void upload()}>
-            {busy ? "Uploading…" : "Upload image"}
-          </Action>
-        )}
-      {item && (
-        <p role="status">
-          {item.state === "ready"
-            ? "Image checked and ready to send."
-            : item.state === "queued"
-              ? "Checking image safety…"
-              : item.state === "rejected"
-                ? "This image could not be accepted. Remove this attachment, then choose a different JPEG, PNG, or WebP."
-                : item.state === "scan_failed"
-                  ? "Safety checks are unavailable. Retry when the service recovers."
-                  : "Upload not yet ready."}
-        </p>
+      {busy && (
+        <progress
+          className="attachment-upload-progress"
+          aria-label="Image upload progress"
+        />
       )}
-      {item?.state === "scan_failed" && (
-        <Action disabled={busy} onClick={() => void retryScan()}>
+      {file &&
+        !removalPending &&
+        (!item || item.state === "pending" || item.state === "uploaded") && (
+          <button
+            ref={uploadRef}
+            className="button"
+            type="button"
+            disabled={busy}
+            onClick={(event) => {
+              event.currentTarget.focus();
+              void upload();
+            }}
+          >
+            {busy ? "Uploading…" : "Upload image"}
+          </button>
+        )}
+      <div ref={outcomeRef} tabIndex={-1}>
+        {removalPending && !busy && (
+          <p role="status">
+            Removal is not confirmed. Retry Remove attachment before sending
+            these screenshots or leaving this draft.
+          </p>
+        )}
+        {item && !removalPending && (
+          <p role="status">
+            {item.state === "ready"
+              ? "Image checked and ready to send."
+              : item.state === "queued"
+                ? "Checking image safety…"
+                : item.state === "rejected"
+                  ? "This image could not be accepted. Remove this attachment, then choose a different JPEG, PNG, or WebP."
+                  : item.state === "scan_failed"
+                    ? "Safety checks are unavailable. Retry when the service recovers."
+                    : "Upload not yet ready."}
+          </p>
+        )}
+        <ErrorNotice error={error} />
+      </div>
+      {item?.state === "scan_failed" && !removalPending && (
+        <button
+          type="button"
+          className="button"
+          disabled={busy}
+          onClick={(event) => {
+            event.currentTarget.focus();
+            void retryScan();
+          }}
+        >
           Retry safety check
-        </Action>
+        </button>
       )}
       {file && (
-        <Action disabled={busy} onClick={() => void remove()}>
+        <button
+          type="button"
+          className="button"
+          disabled={busy}
+          onClick={(event) => {
+            event.currentTarget.focus();
+            void remove();
+          }}
+        >
           Remove attachment
-        </Action>
+        </button>
       )}
-      <ErrorNotice error={error} />
     </section>
   );
 }

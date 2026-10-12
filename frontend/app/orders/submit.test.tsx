@@ -64,6 +64,9 @@ it("requires explicit price acceptance and reuses the idempotency key after an u
     name: "Create package order",
   });
   expect(submit).toBeDisabled();
+  expect(
+    screen.getByRole("heading", { name: "Review fixed package" }),
+  ).toHaveFocus();
   expect(post).not.toHaveBeenCalled();
   fireEvent.click(
     screen.getByLabelText("I accept the terms and fixed package price"),

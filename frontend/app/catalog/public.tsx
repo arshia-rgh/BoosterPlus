@@ -1,3 +1,6 @@
+import { PackageContents } from "./package-scope";
+import ShopArtwork from "../shop/artwork";
+import { ArtworkImage } from "../artwork/image";
 import { ServiceIcon } from "../ui/service-icon";
 import { GameShop } from "../shop/public";
 import { CursorPagination, filterQuery } from "../ui/list-navigation";
@@ -255,6 +258,49 @@ export function Offerings({
   const config = release.configuration;
   return (
     <>
+      {path !== "custom" && (
+        <section>
+          <h2>Fixed packages</h2>
+          {config.packages.length === 0 && (
+            <p>No fixed packages are published yet.</p>
+          )}
+          <div className="catalog-cards service-tiles package-tiles">
+            {config.packages.map((pack) => (
+              <article className="game-card" key={pack.key}>
+                <ShopArtwork
+                  className="package-card-artwork"
+                  source={pack.asset || config.asset}
+                  alt={pack.asset ? (pack.asset_alt ?? "") : config.asset_alt}
+                  placement="card"
+                  lazy
+                />
+                <span className="status">Fixed scope · fixed price</span>
+                <h3>{pack.name}</h3>
+                <p>{pack.description}</p>
+                <ul>
+                  {pack.variants.map((variant) => (
+                    <li key={variant.key}>
+                      {variant.name} · {price(variant)}
+                      {variant.preset_answers === undefined
+                        ? " · Being reviewed"
+                        : variant.capacity === 0
+                          ? " · Unavailable"
+                          : ""}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  preventScrollReset
+                  className="button"
+                  to={`/games/${release.slug}/packages/${pack.key}`}
+                >
+                  View {pack.name}
+                </Link>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
       {path !== "packages" && (
         <section>
           <h2>Custom boosting</h2>
@@ -276,38 +322,6 @@ export function Offerings({
                   to={`/games/${release.slug}/services/${service.key}`}
                 >
                   Configure {service.name}
-                </Link>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
-      {path !== "custom" && (
-        <section>
-          <h2>Fixed packages</h2>
-          {config.packages.length === 0 && (
-            <p>No fixed packages are published yet.</p>
-          )}
-          <div className="catalog-cards">
-            {config.packages.map((pack) => (
-              <article className="game-card" key={pack.key}>
-                <span className="status">Fixed scope · fixed price</span>
-                <h3>{pack.name}</h3>
-                <p>{pack.description}</p>
-                <ul>
-                  {pack.variants.map((variant) => (
-                    <li key={variant.key}>
-                      {variant.name} · {price(variant)}
-                      {variant.capacity === 0 ? " · Unavailable" : ""}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  preventScrollReset
-                  className="button"
-                  to={`/games/${release.slug}/packages/${pack.key}`}
-                >
-                  View {pack.name}
                 </Link>
               </article>
             ))}
@@ -456,6 +470,14 @@ function PackageDetails({
       <h2>{pack.name}</h2>
       <FavoriteButton kind="package" slug={release.slug} pack={pack.key} />
       <p>{pack.description}</p>
+      {pack.asset && (
+        <ArtworkImage
+          className="package-detail-artwork"
+          source={pack.asset}
+          alt={pack.asset_alt ?? ""}
+          loading="lazy"
+        />
+      )}
       <Select
         label="Package variant"
         value={key}
@@ -479,15 +501,19 @@ function PackageDetails({
             <span className="status">{variant.name}</span>
             <p className="package-price">{price(variant)}</p>
             <p>
-              Delivery estimate: {variant.delivery_min_hours}–
-              {variant.delivery_max_hours} hours after fulfillment can start.
+              Delivery commitment: {variant.delivery_min_hours}–
+              {variant.delivery_max_hours} elapsed calendar hours after payment
+              is verified and the required delivery information and access are
+              ready.
             </p>
             <p>
-              {variant.capacity === undefined
-                ? "Available to order."
-                : variant.capacity === 0
-                  ? "Currently unavailable."
-                  : "Availability is checked when you order."}{" "}
+              {variant.preset_answers === undefined
+                ? "This offer is being reviewed. New orders are not yet available."
+                : variant.capacity === undefined
+                  ? "Available to order."
+                  : variant.capacity === 0
+                    ? "Currently unavailable."
+                    : "Availability is checked when you order."}{" "}
               Availability is not a reservation.
             </p>
             <p>
@@ -504,7 +530,14 @@ function PackageDetails({
               variant={variant.key}
             />
           )}
-          {service && (
+          {service && variant.preset_answers !== undefined && (
+            <PackageContents
+              config={release.configuration}
+              service={service}
+              variant={variant}
+            />
+          )}
+          {service && variant.preset_answers !== undefined && (
             <DynamicForm
               key={release.id + pack.key + variant.key}
               config={release.configuration}

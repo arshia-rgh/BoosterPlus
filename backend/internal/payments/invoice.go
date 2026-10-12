@@ -84,10 +84,21 @@ func (s *Store) issue(ctx context.Context, id string) error {
 			if *row.InvoiceID != invoice.ID {
 				return ErrConflict
 			}
-			return nil
+			// A verified observation may arrive before the invoice POST response.
+			// Keep its financial decision, but do not discard a ready hosted link.
+			if href := hostedLink(row, invoice.ID, s.instant()); href != "" {
+				_, e = tx.PaymentAttempt.UpdateOneID(id).SetCheckoutURL(href).SetUpdatedAt(s.instant()).Save(ctx)
+			}
+			return e
 		}
 		if row.State != "creating" && row.State != "uncertain" {
 			return nil
+		}
+		if row.ActiveContractID == nil || !row.ExpiresAt.After(s.instant()) {
+			if _, e = tx.PaymentAttempt.UpdateOneID(id).SetInvoiceID(invoice.ID).Save(ctx); e != nil {
+				return e
+			}
+			return s.retire(ctx, tx, row, "local_expiry")
 		}
 		checkoutURL := invoice.URL
 		if row.NativeCheckout {

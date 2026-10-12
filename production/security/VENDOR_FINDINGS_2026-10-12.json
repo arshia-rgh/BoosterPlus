@@ -1,0 +1,414 @@
+{
+  "schema": 1,
+  "status": "unaccepted",
+  "source_commit": "6b2cfb959b169ed89bbd47e133ff552f3fcae976",
+  "images": {
+    "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d": {
+      "report_sha256": "55afe140b054a6e9a1deaecb797070c0304d443ecd2e7e4723a8ec4f83c466d4",
+      "total": 4,
+      "unaccepted": [
+        {
+          "Target": "usr/bin/weed",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "golang.org/x/net",
+          "InstalledVersion": "v0.58.0",
+          "FixedVersion": "0.60.0",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "usr/bin/weed",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78667",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.8",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "usr/bin/weed",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.8",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "usr/bin/weed",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-97031",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.8",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        }
+      ]
+    },
+    "ghcr.io/docker-mailserver/docker-mailserver:16.0.1@sha256:d0fe7668defe157aad57ea31b1707ad1e2fb57d7a91bdf17cbdf876549946c86": {
+      "report_sha256": "16b098fbbedfcdbfb1adbe1ea638717ec9073a7bcc973d4a033438b8b4eda626",
+      "total": 202,
+      "unaccepted": [
+        {
+          "Target": "usr/bin/step-cli",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "golang.org/x/net",
+          "InstalledVersion": "v0.55.0",
+          "FixedVersion": "0.60.0",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "usr/bin/step-cli",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78667",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.4",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "usr/bin/step-cli",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.4",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "usr/bin/step-cli",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-97031",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.4",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        }
+      ]
+    },
+    "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45": {
+      "report_sha256": "f5fcf517f0fb32480f4269386d8d86f076e865106d96e3e1d4b956a3982895aa",
+      "total": 66,
+      "unaccepted": [
+        {
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-84782",
+          "PkgName": "openssl",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "FixedVersion": "1:3.5.8-2.el9_8",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pingcap/br:v8.5.8@sha256:15beb655d3276fe64aa6a353f9bf3d828d34272d2470abdf5026457b754f1c45 (rocky 9.8)",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-84782",
+          "PkgName": "openssl-libs",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "FixedVersion": "1:3.5.8-2.el9_8",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "br",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "golang.org/x/net",
+          "InstalledVersion": "v0.56.0",
+          "FixedVersion": "0.60.0",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "br",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78667",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "br",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "br",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-97031",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        }
+      ]
+    },
+    "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef": {
+      "report_sha256": "e0709bf6446835a66ed534a5baf79377d53373e04d7c6ba8b5ce88ec5ad9dcb7",
+      "total": 94,
+      "unaccepted": [
+        {
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-84782",
+          "PkgName": "openssl",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "FixedVersion": "1:3.5.8-2.el9_8",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pingcap/pd:v8.5.8@sha256:424e896800e42e1b7eb585b604c8daa3454110d0f0df5ab41f7c5f49164d3aef (rocky 9.8)",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-84782",
+          "PkgName": "openssl-libs",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "FixedVersion": "1:3.5.8-2.el9_8",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-ctl",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "golang.org/x/net",
+          "InstalledVersion": "v0.56.0",
+          "FixedVersion": "0.60.0",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-ctl",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78667",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-ctl",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-ctl",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-97031",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-recover",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "golang.org/x/net",
+          "InstalledVersion": "v0.56.0",
+          "FixedVersion": "0.60.0",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-recover",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78667",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-recover",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-recover",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-97031",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-server",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "golang.org/x/net",
+          "InstalledVersion": "v0.56.0",
+          "FixedVersion": "0.60.0",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-server",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78667",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-server",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pd-server",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-97031",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        }
+      ]
+    },
+    "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5": {
+      "report_sha256": "cc3531e95352e9972d9cbbc79f70bcbccd3682acd1346d3406e800de36c6bde0",
+      "total": 66,
+      "unaccepted": [
+        {
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-84782",
+          "PkgName": "openssl",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "FixedVersion": "1:3.5.8-2.el9_8",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pingcap/tidb:v8.5.8@sha256:df168c764bf2dfdb166dc37a5c3b0e210d29d5f3ab2d33317fd0fdf7b32037f5 (rocky 9.8)",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-84782",
+          "PkgName": "openssl-libs",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "FixedVersion": "1:3.5.8-2.el9_8",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "tidb-server",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "golang.org/x/net",
+          "InstalledVersion": "v0.56.0",
+          "FixedVersion": "0.60.0",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "tidb-server",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78667",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "tidb-server",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "tidb-server",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-97031",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.25.12",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        }
+      ]
+    },
+    "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69": {
+      "report_sha256": "d371a864b1789bf271300d766674ecb35bce28a961f2a9b01e735b207fd972c8",
+      "total": 51,
+      "unaccepted": [
+        {
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-84782",
+          "PkgName": "openssl",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "FixedVersion": "1:3.5.8-2.el9_8",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "pingcap/tikv:v8.5.8@sha256:ab84580b6795868940231aa778a34b082d19e4417e6d66f755c609bebdbbfd69 (rocky 9.8)",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-84782",
+          "PkgName": "openssl-libs",
+          "InstalledVersion": "1:3.5.5-6.el9_8",
+          "FixedVersion": "1:3.5.8-2.el9_8",
+          "Severity": "HIGH"
+        }
+      ]
+    },
+    "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510": {
+      "report_sha256": "b95972bdb84a58beca5f2831042492bf9bb666ec0920647f6cd636473a2f39d7",
+      "total": 32,
+      "unaccepted": [
+        {
+          "Target": "usr/bin/restic",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "golang.org/x/net",
+          "InstalledVersion": "v0.55.0",
+          "FixedVersion": "0.60.0",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "usr/bin/restic",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78667",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.4",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "usr/bin/restic",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.4",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        },
+        {
+          "Target": "usr/bin/restic",
+          "PkgPath": "",
+          "VulnerabilityID": "CVE-2026-97031",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.4",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Severity": "HIGH"
+        }
+      ]
+    },
+    "roundcube/roundcubemail:1.7.4-fpm-alpine@sha256:cced4c7d40c21ec138b3622be13cadd2bbe7467eacd17029340b8650d7237ecf": {
+      "report_sha256": "db4a6f9f0a2c7406c9e8e7f5528ae262e0232b085359abd5fffaedbd72e662e8",
+      "total": 4,
+      "unaccepted": []
+    }
+  }
+}

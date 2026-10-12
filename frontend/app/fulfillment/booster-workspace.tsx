@@ -333,7 +333,7 @@ function BoosterOrderSession() {
   const [saved, setSaved] = useState<Work | null>(null);
   const lost = interrupted || denied(resource.error);
   useEffect(() => {
-    if (lost && verification) focusValidationTarget(recoveryHeading.current);
+    if (lost) focusValidationTarget(recoveryHeading.current);
   }, [lost, verification]);
   if (lost && saved) setSaved(null);
   else if (!lost && !checkingAccess && resource.data && saved !== resource.data)

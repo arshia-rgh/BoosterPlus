@@ -156,7 +156,7 @@ func (s *Store) History(ctx context.Context, p *identity.Principal, id string, a
 		if e != nil {
 			return result, e
 		}
-		if row.Account != s.account || !row.ExpiresAt.After(s.instant()) || row.State != "awaiting_payment" {
+		if row.InvoiceID == nil || row.Account != s.account || hostedLink(row, *row.InvoiceID, s.instant()) == "" {
 			view.CheckoutURL = ""
 		}
 		s.projectDeposit(row, &view)

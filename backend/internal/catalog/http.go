@@ -243,12 +243,16 @@ func (s *Store) validatePreview(w http.ResponseWriter, r *http.Request, p *ident
 func (s *Store) estimate(preview bool) func(http.ResponseWriter, *http.Request, *identity.Principal) error {
 	return func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 		var input struct {
-			ReleaseID string  `json:"release_id"`
-			Service   string  `json:"service"`
-			Answers   Answers `json:"answers"`
+			ReleaseID     string         `json:"release_id"`
+			Service       string         `json:"service"`
+			Answers       Answers        `json:"answers"`
+			Configuration *Configuration `json:"configuration,omitempty"`
 		}
 		if err := read(r, &input); err != nil {
 			return err
+		}
+		if !preview && input.Configuration != nil {
+			return &Invalid{[]Issue{{"configuration", "Working configurations are only accepted in the private administrator preview."}}}
 		}
 		var release Release
 		if preview {
@@ -260,6 +264,9 @@ func (s *Store) estimate(preview bool) func(http.ResponseWriter, *http.Request, 
 				return ErrConflict
 			}
 			release = Release{ID: input.ReleaseID, Version: draft.Revision, Configuration: draft.Configuration}
+			if input.Configuration != nil {
+				release.Configuration = *input.Configuration
+			}
 			c := release.Configuration
 			c.Reviewed = true
 			// Saved expectations may be unfinished during preview; all other publication

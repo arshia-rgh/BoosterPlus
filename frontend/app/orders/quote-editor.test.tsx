@@ -2,6 +2,11 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
 import { APIError, get, post } from "../identity/api";
+import {
+  agreedDeliveryClock,
+  withDeliveryHours,
+} from "../catalog/delivery-hours";
+import { Agreement } from "./parts";
 import { emptyConfiguration } from "../catalog/model";
 import { detailSchema } from "./model";
 import QuoteEditor from "./quote-editor";
@@ -180,4 +185,42 @@ it("puts quote errors next to their fields and focuses the first without discard
     "Preserve this draft scope",
   );
   expect(post).not.toHaveBeenCalled();
+});
+
+it("shows the requested hours and preserves old agreement clock wording", () => {
+  const copy = structuredClone(detail);
+  const service = {
+    key: "boost",
+    name: "Boost",
+    description: "",
+    evaluator: "manual-review-v1",
+    fields: [],
+    rules: [],
+  };
+  copy.offer.configuration.services = [
+    { ...service, ...withDeliveryHours(service) },
+  ];
+  copy.answers = { delivery_min_hours: "12", delivery_max_hours: "18" };
+  const view = render(
+    <MemoryRouter>
+      <QuoteEditor detail={copy} done={vi.fn()} />
+    </MemoryRouter>,
+  );
+  expect(screen.getByText(/12–18 hours requested/)).toBeVisible();
+  expect(screen.getByText(agreedDeliveryClock, { exact: false })).toBeVisible();
+  view.rerender(
+    <MemoryRouter>
+      <Agreement data={preview.data} />
+    </MemoryRouter>,
+  );
+  expect(screen.getByText(/hours after fulfillment can start/)).toBeVisible();
+  expect(screen.queryByText(/Elapsed calendar hours/)).toBeNull();
+  view.rerender(
+    <MemoryRouter>
+      <Agreement
+        data={{ ...preview.data, delivery_basis: "payment_and_access_v1" }}
+      />
+    </MemoryRouter>,
+  );
+  expect(screen.getByText(/Elapsed calendar hours/)).toBeVisible();
 });

@@ -94,6 +94,7 @@ type Commercial struct {
 	Reason           string              `json:"reason"`
 	DeliveryMinHours int                 `json:"delivery_min_hours"`
 	DeliveryMaxHours int                 `json:"delivery_max_hours"`
+	DeliveryBasis    string              `json:"delivery_basis,omitempty"`
 	ExpiresAt        time.Time           `json:"expires_at"`
 	TermsVersion     string              `json:"terms_version"`
 }

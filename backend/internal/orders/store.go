@@ -310,6 +310,9 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, input CreateI
 		}
 		now := s.instant()
 		estimate := catalog.CalculateNew(release, input.Service, estimateSelections(release.Configuration, input.Service, validated.Answers), now)
+		if variant != nil {
+			estimate = catalog.Estimate{ReleaseID: release.ID, Version: release.Version, Evaluator: "fixed-package-v1", ExpiresAt: now.Add(15 * time.Minute), Outcome: "estimated", Currency: variant.Currency, AmountMinor: variant.AmountMinor, Answers: validated.Answers, Issues: []catalog.Issue{}, Lines: []catalog.PriceLine{{Key: "package", Label: variant.Name, AmountMinor: variant.AmountMinor}}}
+		}
 		answerData, readErr := document(validated.Answers)
 		if readErr != nil {
 			return readErr
@@ -341,7 +344,7 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, input CreateI
 			if total != input.ExpectedAmount || couponVersion != input.ExpectedCouponVersion {
 				return ErrConflict
 			}
-			data := Commercial{Currency: variant.Currency, SubtotalMinor: variant.AmountMinor, AmountMinor: total, Discount: discount, Lines: []catalog.PriceLine{{Key: "package", Label: variant.Name, AmountMinor: variant.AmountMinor}}, Scope: release.Configuration.Name + " / " + variant.Name, Reason: "Published fixed package", DeliveryMinHours: variant.DeliveryMinHours, DeliveryMaxHours: variant.DeliveryMaxHours, ExpiresAt: now.Add(48 * time.Hour), TermsVersion: input.TermsVersion}
+			data := Commercial{Currency: variant.Currency, SubtotalMinor: variant.AmountMinor, AmountMinor: total, Discount: discount, Lines: []catalog.PriceLine{{Key: "package", Label: variant.Name, AmountMinor: variant.AmountMinor}}, Scope: release.Configuration.Name + " / " + variant.Name, Reason: "Published fixed package", DeliveryMinHours: variant.DeliveryMinHours, DeliveryMaxHours: variant.DeliveryMaxHours, DeliveryBasis: catalog.DeliveryBasis, ExpiresAt: now.Add(48 * time.Hour), TermsVersion: input.TermsVersion}
 			if discount != nil {
 				data.Lines = append(data.Lines, catalog.PriceLine{Key: "coupon", Label: "Coupon " + discount.Code, AmountMinor: "-" + discount.AmountMinor})
 			}

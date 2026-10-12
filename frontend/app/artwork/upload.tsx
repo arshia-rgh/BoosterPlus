@@ -26,16 +26,20 @@ export default function ArtworkUpload({
   purpose,
   pathLabel,
   defaultAsset,
+  name,
+  label,
 }: {
   value: string;
   change: (asset: string) => void;
   purpose: Purpose;
   pathLabel: string;
   defaultAsset?: string | undefined;
+  name?: string;
+  label?: string;
 }) {
   const id = useId();
   const validation = useContext(FieldValidation);
-  const fieldName = purpose === "inline" ? undefined : "asset";
+  const fieldName = name ?? (purpose === "inline" ? undefined : "asset");
   const fieldMessage = fieldError(validation, fieldName);
   const invalid = !!fieldMessage;
   const [pathOpen, setPathOpen] = useState(false);
@@ -103,7 +107,7 @@ export default function ArtworkUpload({
       file.size > 4194304
     ) {
       setError(
-        "Choose a JPEG, PNG or WebP image up to 4 MiB. SVG and animated formats are not supported.",
+        "Choose a JPEG, PNG or WebP image up to 4 MB (4,194,304 bytes). SVG and animated formats are not supported.",
       );
       return;
     }
@@ -230,11 +234,12 @@ export default function ArtworkUpload({
       data-purpose={purpose}
       aria-describedby={guidanceID}
     >
-      <legend>{info.label}</legend>
+      <legend>{label ?? info.label}</legend>
       <div id={guidanceID}>
         <p>{info.recommendation}</p>
         <p className="quiet">
-          {info.details} JPEG, PNG or WebP · up to 4 MiB and 4 megapixels.
+          {info.details} JPEG, PNG or WebP · up to 4 MB (4,194,304 bytes) and 4
+          megapixels.
         </p>
       </div>
       {value && validArtwork(value) && currentFailed !== value && (

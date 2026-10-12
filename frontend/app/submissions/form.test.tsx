@@ -51,6 +51,80 @@ function fixture(): Submission {
     conversation_id: "thread",
   };
 }
+
+it("applies configured server/region relationships to seller drafts before saving", async () => {
+  const value = fixture();
+  value.offer.configuration.intake = {
+    name: "Account region",
+    description: "",
+    fields: [
+      {
+        ...emptyField("region"),
+        label: "Region",
+        stage: "order",
+        options: [
+          { key: "Europe", label: "Europe", units: 0 },
+          { key: "Asia", label: "Asia", units: 0 },
+        ],
+      },
+      {
+        ...emptyField("server"),
+        label: "Server",
+        stage: "order",
+        options: [
+          { key: "EU 1", label: "EU 1", units: 0 },
+          { key: "Asia 1", label: "Asia 1", units: 0 },
+        ],
+      },
+    ],
+    rules: [
+      {
+        key: "regions",
+        kind: "linked_choices",
+        from: "region",
+        to: "server",
+        from_units: "",
+        to_units: "",
+        link_mode: "single_parent",
+        message: "Choose the correct region",
+        links: [
+          { parent: "Europe", children: ["EU 1"] },
+          { parent: "Asia", children: ["Asia 1"] },
+        ],
+      },
+    ],
+  };
+  vi.mocked(post).mockResolvedValue({
+    ...value,
+    answers: { region: "Europe", server: "EU 1" },
+  });
+  render(<SubmissionEditor value={value} reload={vi.fn()} />);
+  fireEvent.change(screen.getByLabelText("Server"), {
+    target: { value: "EU 1" },
+  });
+  expect(screen.getByLabelText("Region")).toHaveValue("Europe");
+  fireEvent.click(screen.getByRole("button", { name: "Save account draft" }));
+  await waitFor(() => {
+    expect(post).toHaveBeenCalledWith(
+      "/submissions/submission/edit",
+      expect.objectContaining({
+        answers: { region: "Europe", server: "EU 1" },
+      }),
+      expect.anything(),
+    );
+  });
+  await waitFor(() => expect(screen.getByLabelText("Region")).toBeEnabled());
+  fireEvent.change(screen.getByLabelText("Region"), {
+    target: { value: "Asia" },
+  });
+  expect(screen.getByLabelText("Server")).toHaveValue("");
+  expect(
+    screen.queryByRole("option", { name: "EU 1" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByText(/Incompatible selections were removed/),
+  ).toHaveAttribute("role", "status");
+});
 it("keeps edits private until explicitly saved and forbids submitting unsaved changes", async () => {
   const value = fixture(),
     reload = vi.fn();

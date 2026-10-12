@@ -44,6 +44,7 @@ func orderDB(t *testing.T) *orderFixture {
 	cat := catalog.New(f.client, f.service)
 	c := catalogConfig()
 	c.Services[0].Fields = append(c.Services[0].Fields, catalog.Field{Key: "note", Label: "Ordinary instructions", Type: "short_text", Stage: "order", MaxLength: 100})
+	c.Packages[0].Variants[0].RequiredFields = []string{"mode", "note"}
 	capacity := 2
 	c.Packages[0].Variants[0].Capacity = &capacity
 	d, err := cat.Create(t.Context(), p, "orders-game", c)
@@ -620,6 +621,7 @@ func TestOrderStageCouponValidation(t *testing.T) {
 	d := couponGame(t, store, p)
 	c := d.Configuration
 	c.Services[0].Fields = append(c.Services[0].Fields, catalog.Field{Key: "note", Label: "Note", Type: "short_text", Stage: "order", Required: true, MaxLength: 100})
+	c.Packages[0].Variants[0].RequiredFields = []string{"mode", "note"}
 	d, err := store.Mutate(ctx, p, d.ID, "save", catalog.Change{Revision: d.Revision, Configuration: c})
 	if err != nil {
 		t.Fatal(err)

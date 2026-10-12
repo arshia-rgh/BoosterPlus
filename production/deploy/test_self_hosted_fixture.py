@@ -7,7 +7,50 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from self_hosted_test import fixture_cpu_limit, host_test_access, integration_arguments, run_integration
+from self_hosted_test import fixture_cpu_limit, fixture_ddl_initialization, host_test_access, integration_arguments, run_integration
+
+
+class FixtureDDL(unittest.TestCase):
+    def test_small_fixture_uses_standard_backfill_without_editing_production_sql(self):
+        with tempfile.TemporaryDirectory() as directory:
+            installation = Path(directory).resolve()
+            (installation / "secrets").mkdir()
+            source = installation / "secrets/initialize.sql"
+            original = "SET GLOBAL tidb_redact_log = ON;\nCREATE DATABASE playora;\n"
+            source.write_text(original)
+            model = {"services": {"tidb": {"volumes": [
+                {"source": str(source), "target": "/secrets/initialize.sql", "read_only": True},
+                {"source": "/unchanged", "target": "/data"},
+            ]}}}
+            fixture_ddl_initialization(model, installation)
+            mounted = Path(model["services"]["tidb"]["volumes"][0]["source"])
+            self.assertEqual(source.read_text(), original)
+            self.assertEqual(mounted.read_text(), original
+                             + "SET GLOBAL tidb_enable_dist_task = OFF;\n"
+                             + "SET GLOBAL tidb_ddl_enable_fast_reorg = OFF;\n")
+            self.assertEqual(mounted.stat().st_mode & 0o777, 0o600)
+            self.assertTrue(model["services"]["tidb"]["volumes"][0]["read_only"])
+            self.assertEqual(model["services"]["tidb"]["volumes"][1], {"source": "/unchanged", "target": "/data"})
+            with self.assertRaises(ValueError):
+                fixture_ddl_initialization(model, installation)
+
+    def test_unexpected_mount_or_symlink_cannot_rewrite_configuration(self):
+        with tempfile.TemporaryDirectory() as directory:
+            installation = Path(directory).resolve()
+            (installation / "secrets").mkdir()
+            source = installation / "secrets/initialize.sql"
+            original = installation / "original.sql"
+            original.write_text("unchanged")
+            source.symlink_to(original)
+            mount = {"source": str(source), "target": "/secrets/initialize.sql"}
+            for mounts in ([], [mount, mount], [dict(mount, source=str(original))], [mount]):
+                model = {"services": {"tidb": {"volumes": mounts}}}
+                before = copy.deepcopy(model)
+                with self.subTest(mounts=mounts), self.assertRaises(ValueError):
+                    fixture_ddl_initialization(model, installation)
+                self.assertEqual(model, before)
+                self.assertEqual(original.read_text(), "unchanged")
+                self.assertFalse((installation / "secrets/initialize-fixture.sql").exists())
 
 
 class FixturePorts(unittest.TestCase):

@@ -21,7 +21,7 @@ import (
 )
 
 func catalogConfig() catalog.Configuration {
-	return catalog.Configuration{SchemaVersion: 1, Name: "Synthetic game", Reviewed: true, References: []catalog.Reference{}, Services: []catalog.ServiceDefinition{{Key: "boost", Name: "Synthetic boost", Evaluator: "manual-review-v1", Fields: []catalog.Field{{Key: "mode", Label: "Mode", Type: "select", Stage: "estimate", Required: true, Options: []catalog.Option{{Key: "solo", Label: "Solo"}, {Key: "duo", Label: "Duo"}}}}, Rules: []catalog.Rule{}}}, Packages: []catalog.Package{{Key: "pack", Name: "Synthetic package", Service: "boost", Variants: []catalog.Variant{{Key: "basic", Name: "Synthetic variant", Currency: "USD", AmountMinor: "1234", DeliveryMinHours: 1, DeliveryMaxHours: 2, RequiredFields: []string{"mode"}}}}}, FAQs: []catalog.FAQ{}}
+	return catalog.Configuration{SchemaVersion: 1, Name: "Synthetic game", Reviewed: true, References: []catalog.Reference{}, Services: []catalog.ServiceDefinition{{Key: "boost", Name: "Synthetic boost", Evaluator: "manual-review-v1", Fields: []catalog.Field{{Key: "mode", Label: "Mode", Type: "select", Stage: "estimate", Required: true, Options: []catalog.Option{{Key: "solo", Label: "Solo"}, {Key: "duo", Label: "Duo"}}}}, Rules: []catalog.Rule{}}}, Packages: []catalog.Package{{Key: "pack", Name: "Synthetic package", Service: "boost", Variants: []catalog.Variant{{Key: "basic", Name: "Synthetic variant", Currency: "USD", AmountMinor: "1234", DeliveryMinHours: 1, DeliveryMaxHours: 2, RequiredFields: []string{"mode"}, PresetAnswers: &catalog.Answers{}}}}}, FAQs: []catalog.FAQ{}}
 }
 func catalogAdmin(t *testing.T, f *authFixture) *identity.Principal {
 	t.Helper()

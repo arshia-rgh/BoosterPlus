@@ -7,6 +7,10 @@ import {
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
+import {
+  withDeliveryHours,
+  agreedDeliveryClock,
+} from "../catalog/delivery-hours";
 import { emptyConfiguration } from "../catalog/model";
 import { APIError, get, post, type Session } from "../identity/api";
 import { detailSchema, states, type Commercial, type Detail } from "./model";
@@ -446,4 +450,52 @@ it("keeps unpaid progress unavailable and reopens checkout from a fresh mount", 
   await waitFor(() => {
     expect(get).toHaveBeenCalled();
   });
+});
+
+it("distinguishes requested timing from the new agreed quote clock", async () => {
+  const current = {
+    ...detail("quoted"),
+    quote: {
+      id: "quote",
+      state: "offered",
+      data: { ...price, delivery_basis: "payment_and_access_v1" },
+    },
+  };
+  const service = {
+    key: "boost",
+    name: "Boost",
+    description: "",
+    evaluator: "manual-review-v1",
+    fields: [],
+    rules: [],
+  };
+  current.offer.configuration.services = [
+    { ...service, ...withDeliveryHours(service) },
+  ];
+  current.answers = { delivery_min_hours: "12", delivery_max_hours: "18" };
+  vi.mocked(get).mockImplementation((path) =>
+    Promise.resolve(
+      path.includes("/events") ? { events: [] } : { quotes: [current.quote] },
+    ),
+  );
+  render(
+    <MemoryRouter>
+      <CustomerWorkspace
+        detail={current}
+        session={session}
+        refreshing={false}
+        reload={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  fireEvent.click(
+    screen.getByText("What changed from the previous price?", { exact: true }),
+  );
+  const comparison = await screen.findByRole("table");
+  expect(within(comparison).getByText("12–18 hours requested")).toBeVisible();
+  expect(within(comparison).getByText(agreedDeliveryClock)).toBeVisible();
+  expect(
+    within(comparison).getByText(/Requested only; not yet an agreement/),
+  ).toBeVisible();
+  expect(post).not.toHaveBeenCalled();
 });

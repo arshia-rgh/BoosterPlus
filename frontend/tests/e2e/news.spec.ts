@@ -102,12 +102,12 @@ test("staff article draft, exact preview, publication, game reading, correction 
     .click();
   await cover.getByText("Existing artwork path", { exact: true }).click();
   const artworkPath = await cover
-    .getByLabel("Hero image path (optional)")
+    .getByLabel("Cover image path (optional)")
     .inputValue();
   expect(artworkPath).toMatch(/^\/api\/v1\/artwork\/[a-f0-9-]{36}\/wide$/);
   expect((await request.get(artworkPath)).status()).toBe(404);
   await page
-    .getByLabel("Hero image description", { exact: true })
+    .getByLabel("Cover image description", { exact: true })
     .fill("Synthetic browser artwork");
   await page
     .getByLabel(

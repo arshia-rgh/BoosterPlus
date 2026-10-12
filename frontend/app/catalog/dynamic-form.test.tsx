@@ -221,7 +221,7 @@ it("prevents validation for paused or exhausted offerings", () => {
     />,
   );
   expect(
-    screen.getByRole("button", { name: "Check selections" }),
+    screen.getByRole("button", { name: "Continue with this package" }),
   ).toBeDisabled();
   expect(post).not.toHaveBeenCalled();
 });

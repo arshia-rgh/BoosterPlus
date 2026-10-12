@@ -25,7 +25,7 @@ func TestPortalSessionsCoexistAndNeverGrantAnotherAudience(t *testing.T) {
 	principals := map[identity.Portal]*identity.Principal{}
 	ids := map[string]bool{}
 	for _, portal := range []identity.Portal{identity.PortalCustomer, identity.PortalAdmin, identity.PortalBooster} {
-		f.clock.Add(61)
+		f.clock.Add(121)
 		var token string
 		var pending *identity.Principal
 		if portal == identity.PortalCustomer {
@@ -182,10 +182,10 @@ func TestPortalEmailChallengeIsolationAndNoStaffSignup(t *testing.T) {
 	_, customer := f.login(t, "portal-buyer@example.test")
 	for _, portal := range []identity.Portal{identity.PortalAdmin, identity.PortalBooster} {
 		for _, email := range []string{"unprovisioned-" + string(portal) + "@example.test", customer.User.Email} {
-			f.clock.Add(61)
+			f.clock.Add(121)
 			id, err := f.service.RequestEmail(t.Context(), identity.EmailRequest{Portal: portal, Email: email, Purpose: "login", Browser: f.browser, IP: "127.0.0.1", AcceptTerms: true})
-			if err != nil || id == "" {
-				t.Fatal("eligibility response enumerates account", err)
+			if !errors.Is(err, identity.ErrStaffAccess) {
+				t.Fatal("missing staff invitation did not explain unavailable access", err)
 			}
 			if _, err = f.client.AuthChallenge.Get(t.Context(), id); !ent.IsNotFound(err) {
 				t.Fatal("ineligible staff challenge created", err)
@@ -199,7 +199,7 @@ func TestPortalEmailChallengeIsolationAndNoStaffSignup(t *testing.T) {
 		t.Fatal(err)
 	}
 	adminID, adminCode := f.request(t, "portal-staff@example.test", "login", nil, identity.PortalAdmin)
-	f.clock.Add(61)
+	f.clock.Add(121)
 	customerID, customerCode := f.request(t, "portal-staff@example.test", "login", nil, identity.PortalCustomer)
 	if _, err := f.service.VerifyEmail(t.Context(), adminID, adminCode, f.browser, "127.0.0.1", nil, identity.PortalCustomer); !errors.Is(err, identity.ErrInvalid) {
 		t.Fatal("challenge swapped", err)
@@ -267,8 +267,19 @@ func TestPortalGoogleStateAndRecentFirstFactor(t *testing.T) {
 		t.Fatal("Google state replayed", err)
 	}
 	provider.assertion.Subject = "unlinked-staff-subject"
-	if _, err = f.service.FinishGoogle(t.Context(), nil, f.browser, start(), "code", identity.PortalAdmin); !errors.Is(err, identity.ErrInvalid) {
-		t.Fatal("Google email auto-linked staff", err)
+	conflictingState := start()
+	if token, err = f.service.FinishGoogle(t.Context(), nil, f.browser, conflictingState, "code", identity.PortalAdmin); !errors.Is(err, identity.ErrConflict) || token != "" {
+		t.Fatal("conflicting Google subject was not rejected without a session", err)
+	}
+	links, err := f.client.AuthIdentity.Query().All(t.Context())
+	if err != nil || len(links) != 1 || links[0].UserID != account.ID || links[0].Subject != "portal-linked-google" {
+		t.Fatal("conflicting Google subject changed the existing staff link", err)
+	}
+	if count, countErr := f.client.AuthSession.Query().Count(t.Context()); countErr != nil || count != 1 {
+		t.Fatal("conflicting Google subject created another session", count, countErr)
+	}
+	if _, err = f.service.FinishGoogle(t.Context(), nil, f.browser, conflictingState, "code", identity.PortalAdmin); !errors.Is(err, identity.ErrInvalid) {
+		t.Fatal("rejected Google flow could be replayed", err)
 	}
 }
 
@@ -342,7 +353,7 @@ func TestPortalGoogleOptionalAuthTimePreservesSensitiveStepUp(t *testing.T) {
 		}
 		for _, scenario := range []string{"missing", "old", "recent"} {
 			t.Run(string(portal)+"/"+scenario, func(t *testing.T) {
-				f.clock.Add(61)
+				f.clock.Add(121)
 				now := time.Unix(f.clock.Load(), 0)
 				provider.assertion.IssuedAt = now
 				provider.assertion.AuthenticatedAt = time.Time{}

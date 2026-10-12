@@ -65,7 +65,7 @@ func validateCondition(c *Condition, fields map[string]Field, refs map[string]Re
 			return
 		}
 		field, ok := fields[node.Field]
-		if !ok || stage(field.Stage) > maxStage || field.Type == "attachment" {
+		if !ok || stage(field.Stage) > maxStage || (field.Type == "attachment" || field.Type == "cosmetics") {
 			add(path, "Condition references an unknown, later-stage or unsupported field.")
 			valid = false
 			return

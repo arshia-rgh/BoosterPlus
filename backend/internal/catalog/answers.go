@@ -97,16 +97,20 @@ func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submit
 	}
 	service := c.Services[index]
 	fields := fieldMap(service.Fields)
+	submitted = packageAnswers(variant, submitted, fields, collectionStage, add)
 	refs := map[string]Reference{}
 	for _, ref := range c.References {
 		refs[ref.Key] = ref
 	}
 	for key := range submitted {
 		field, ok := fields[key]
-		if !ok {
+		switch {
+		case !ok:
 			add("form", "An unknown field was submitted.")
-		} else if stage(field.Stage) > stage(collectionStage) {
+		case stage(field.Stage) > stage(collectionStage):
 			add(key, "This information belongs to a later collection stage.")
+		case field.Stage != "fulfillment" && !packageField(variant, key):
+			add(key, "This field is not part of this fixed package's delivery information.")
 		}
 	}
 	visiting, done := map[string]bool{}, map[string]bool{}
@@ -120,6 +124,10 @@ func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submit
 		if !ok || stage(field.Stage) > stage(collectionStage) {
 			return
 		}
+		if field.Stage != "fulfillment" && !packageField(variant, key) {
+			done[key] = true
+			return
+		}
 		for _, condition := range []*Condition{field.VisibleWhen, field.RequiredWhen} {
 			for _, dependency := range conditionFields(condition) {
 				normalize(dependency)
@@ -130,7 +138,7 @@ func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submit
 			return
 		}
 		raw := submitted[key]
-		if len(raw) == 0 {
+		if len(raw) == 0 && (variant == nil || variant.PresetAnswers == nil || field.Stage == "fulfillment") {
 			raw = field.Default
 		}
 		required := field.Required || (field.RequiredWhen != nil && matches(field.RequiredWhen, result.Answers, fields)) || (variant != nil && slices.Contains(variant.RequiredFields, key))
@@ -138,6 +146,15 @@ func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submit
 			if required {
 				add(key, "This field is required.")
 			}
+			return
+		}
+		if field.Type == "cosmetics" {
+			issues := validateCosmetics(field, raw, refs, required)
+			if len(issues) > 0 {
+				result.Issues = append(result.Issues, issues...)
+				return
+			}
+			result.Answers[key] = slices.Clone(raw)
 			return
 		}
 		if message := validateValue(field, raw, refs); message != "" {
@@ -170,6 +187,9 @@ func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submit
 			if key != "" && stage(fields[key].Stage) > stage(collectionStage) {
 				pending = true
 			}
+			if key != "" && fields[key].Stage != "fulfillment" && !packageField(variant, key) {
+				pending = true
+			}
 		}
 		if pending {
 			continue
@@ -179,6 +199,19 @@ func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submit
 		}
 		bad := false
 		switch rule.Kind {
+		case "ordered_numbers":
+			lower, lowerOK := decimal(answerString(result.Answers[rule.From]))
+			upper, upperOK := decimal(answerString(result.Answers[rule.To]))
+			if lowerOK && upperOK && lower.Cmp(upper) > 0 {
+				add(rule.To, rule.Message)
+			}
+		case "linked_choices":
+			if !matches(fields[rule.From].VisibleWhen, result.Answers, fields) || !matches(fields[rule.To].VisibleWhen, result.Answers, fields) {
+				continue
+			}
+			if invalidLinkedChoices(rule, result.Answers) {
+				add(rule.To, rule.Message)
+			}
 		case "reject":
 			bad = true
 		case "disjoint":
@@ -198,6 +231,13 @@ func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submit
 	if variant != nil && collectionStage != "estimate" && !matches(variant.Eligibility, result.Answers, fields) {
 		add("eligibility", "These selections are not eligible for the chosen package variant.")
 	}
+	if request := service.DeliveryRequest; request != nil {
+		lower, lok := decimal(answerString(result.Answers[request.Minimum]))
+		upper, hik := decimal(answerString(result.Answers[request.Maximum]))
+		if lok && hik && lower.Cmp(upper) > 0 && !slices.ContainsFunc(result.Issues, func(issue Issue) bool { return issue.Path == request.Maximum }) {
+			add(request.Maximum, "Maximum delivery hours must be at least the minimum hours you requested.")
+		}
+	}
 	return result
 }
 
@@ -207,6 +247,9 @@ func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submit
 // even a legacy scalar default must be reviewed instead of implying a guarantee.
 // Inspecting normalized answers preserves hidden/later-stage field semantics.
 func ValidateNewAnswers(c Configuration, serviceKey, collectionStage string, submitted Answers, variant *Variant) Validation {
+	if variant != nil && variant.PresetAnswers == nil {
+		return Validation{Answers: Answers{}, Issues: []Issue{{Path: "package", Message: "This package is being reviewed by staff. Please choose another offer or request a custom boost."}}}
+	}
 	result := ValidateAnswers(c, serviceKey, collectionStage, submitted, variant)
 	for _, service := range c.Services {
 		if service.Key != serviceKey {

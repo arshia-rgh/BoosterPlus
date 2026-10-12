@@ -70,7 +70,7 @@ export function sellerIssues(
     });
   return issues;
 }
-export function productIssues(product: Product): FieldIssue[] {
+export function productIssues(product: Product, publish = false): FieldIssue[] {
   const issues: FieldIssue[] = [];
   const add = (path: string, message: string) => {
     issues.push({ path: `product.${path}`, message });
@@ -124,5 +124,14 @@ export function productIssues(product: Product): FieldIssue[] {
     new Set(product.media_ids).size !== product.media_ids.length
   )
     add("media_ids", "Choose at most eight different reviewed images.");
+  if (
+    (product.cover_media_id &&
+      !product.media_ids.includes(product.cover_media_id)) ||
+    (publish && product.media_ids.length > 0 && !product.cover_media_id)
+  )
+    add(
+      "cover_media_id",
+      "Choose a title image from the reviewed public images before publishing.",
+    );
   return issues;
 }

@@ -1,3 +1,7 @@
+import {
+  agreedDeliveryClock,
+  requestedDelivery,
+} from "../catalog/delivery-hours";
 import type { Location } from "react-router";
 import RequestConfirmation from "./request-confirmation";
 import { Link, useLocation } from "../portal-router";
@@ -29,6 +33,12 @@ function QuoteComparison({ detail }: { detail: Detail }) {
     (quote) => quote.id !== detail.quote?.id,
   );
   const current = detail.quote?.data;
+  const requested = requestedDelivery(
+    detail.offer.configuration.services.find(
+      (service) => service.key === detail.order.service,
+    ),
+    detail.answers,
+  );
   if (!current) return null;
   return (
     <details className="quote-comparison">
@@ -75,15 +85,32 @@ function QuoteComparison({ detail }: { detail: Detail }) {
                 <td>{current.scope}</td>
               </tr>
               <tr>
-                <th scope="row">Estimated delivery</th>
+                <th scope="row">Delivery timing</th>
                 <td>
                   {previous
                     ? `${String(previous.data.delivery_min_hours)}–${String(previous.data.delivery_max_hours)} hours`
-                    : "Set after review"}
+                    : (requested ?? "Not specified in the original request")}
                 </td>
                 <td>
                   {current.delivery_min_hours}–{current.delivery_max_hours}{" "}
                   hours
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Delivery clock starts</th>
+                <td>
+                  {previous
+                    ? previous.data.delivery_basis === "payment_and_access_v1"
+                      ? agreedDeliveryClock
+                      : "After fulfillment can start (original quote wording)."
+                    : requested
+                      ? `${agreedDeliveryClock} Requested only; not yet an agreement.`
+                      : "Not specified in the original request"}
+                </td>
+                <td>
+                  {current.delivery_basis === "payment_and_access_v1"
+                    ? agreedDeliveryClock
+                    : "After fulfillment can start (original quote wording)."}
                 </td>
               </tr>
               <tr>
@@ -124,6 +151,9 @@ export default function CustomerWorkspace({
       ? "?" + new URLSearchParams(source.data.orderListSearch).toString()
       : "");
   const [copied, setCopied] = useState("");
+  // Keep continuation through a temporary access refresh or section remount.
+  // It lives only in this authorized record; loss of access clears the workspace.
+  const [checkoutIntent, setCheckoutIntent] = useState<string | null>(null);
   const state = detail.order.state,
     contract = detail.contract,
     paid = contract?.payment_state === "settled",
@@ -387,7 +417,15 @@ export default function CustomerWorkspace({
               {section === "payment" &&
                 !suspended &&
                 (contract ? (
-                  <Checkout detail={detail} admin={false} changed={reload} />
+                  <Checkout
+                    detail={detail}
+                    admin={false}
+                    changed={reload}
+                    redirectIntent={{
+                      id: checkoutIntent,
+                      set: setCheckoutIntent,
+                    }}
+                  />
                 ) : (
                   <section className="catalog-section">
                     <h2>No payment due</h2>

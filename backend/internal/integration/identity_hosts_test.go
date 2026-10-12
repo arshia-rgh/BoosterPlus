@@ -150,7 +150,7 @@ func TestAuthenticatedPortalHostsRejectSiblingSessions(t *testing.T) {
 	origins := map[identity.Portal]string{identity.PortalCustomer: f.cfg.PublicOrigin, identity.PortalAdmin: f.cfg.AdminPublicOrigin, identity.PortalBooster: f.cfg.BoosterPublicOrigin}
 	tokens := map[identity.Portal]string{}
 	for portal := range origins {
-		f.clock.Add(61)
+		f.clock.Add(121)
 		var pending *identity.Principal
 		if portal == identity.PortalCustomer {
 			_, pending = f.login(t, "host-isolated-owner@example.test")

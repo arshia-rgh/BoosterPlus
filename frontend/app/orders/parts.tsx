@@ -1,3 +1,4 @@
+import { agreedDeliveryClock } from "../catalog/delivery-hours";
 import "../ui/secondary.css";
 import { DownloadImage } from "../media/attachment";
 import { useEffect, useRef, useState } from "react";
@@ -59,8 +60,13 @@ export function Agreement({ data }: { data: Commercial }) {
         ))}
       </ul>
       <p>
-        Delivery estimate: {price.delivery_min_hours}–{price.delivery_max_hours}{" "}
-        hours after fulfillment can start.
+        {price.delivery_basis === "payment_and_access_v1"
+          ? "Agreed delivery: "
+          : "Delivery estimate: "}
+        {price.delivery_min_hours}–{price.delivery_max_hours}{" "}
+        {price.delivery_basis === "payment_and_access_v1"
+          ? "hours. " + agreedDeliveryClock
+          : "hours after fulfillment can start."}
       </p>
       <p>
         Quote acceptance deadline{" "}

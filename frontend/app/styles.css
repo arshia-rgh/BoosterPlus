@@ -420,6 +420,11 @@ footer {
   border-radius: 6px;
   font: inherit;
 }
+.catalog-label select {
+  /* WebKit must not extend the page to fit a native option's intrinsic text. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .catalog-label textarea,
 .catalog-input textarea {
   min-height: 7rem;

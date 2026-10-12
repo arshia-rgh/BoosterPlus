@@ -176,6 +176,7 @@ func TestArtworkNewsShopVisibilityAndPurpose(t *testing.T) {
 	saveArtworkGame(t, f, c, true)
 	cover := uploadArtwork(t, f, s, "cover")
 	inline := uploadArtwork(t, f, s, "inline")
+	gallery := uploadArtwork(t, f, s, "inline")
 	product := uploadArtwork(t, f, s, "product")
 	bad := c
 	bad.Asset = cover.Asset
@@ -189,18 +190,21 @@ func TestArtworkNewsShopVisibilityAndPurpose(t *testing.T) {
 	d.AssetAlt = "Test cover"
 	d.AssetSource = "Synthetic test artwork"
 	d.Blocks = append(d.Blocks, news.Block{Kind: "image", URL: inline.Asset, Alt: "Test inline", Source: "Synthetic test artwork"})
+	d.Blocks = append(d.Blocks, news.Block{Kind: "gallery", Images: []news.InlineImage{{URL: gallery.Asset, Alt: "Gallery example", Source: "Synthetic test artwork", Caption: "Screenshot"}}})
 	row, err := articles.Create(ctx, f.admin, f.game.ID, d)
 	if err != nil {
 		t.Fatal(err)
 	}
 	assertArtworkVisible(t, s, cover, false)
 	assertArtworkVisible(t, s, inline, false)
+	assertArtworkVisible(t, s, gallery, false)
 	row, err = articles.Change(ctx, f.admin, row.ID, "publish", news.Change{Version: row.Version, RevisionID: row.RevisionID})
 	if err != nil {
 		t.Fatal(err)
 	}
 	assertArtworkVisible(t, s, cover, true)
 	assertArtworkVisible(t, s, inline, true)
+	assertArtworkVisible(t, s, gallery, true)
 	next := uploadArtwork(t, f, s, "cover")
 	d.Asset = next.Asset
 	row, err = articles.Save(ctx, f.admin, row.ID, row.Version, d)
@@ -219,10 +223,29 @@ func TestArtworkNewsShopVisibilityAndPurpose(t *testing.T) {
 	}
 	assertArtworkVisible(t, s, cover, false)
 	assertArtworkVisible(t, s, inline, false)
+	assertArtworkVisible(t, s, gallery, false)
 	d.Asset = product.Asset
 	if _, err = articles.Save(ctx, f.admin, row.ID, row.Version, d); err == nil {
 		t.Fatal("wrong purpose editorial asset")
 	}
+	d.Asset = next.Asset
+	d.Blocks[len(d.Blocks)-1].Images[0].URL = product.Asset
+	if _, err = articles.Save(ctx, f.admin, row.ID, row.Version, d); err == nil {
+		t.Fatal("product artwork used inside news gallery")
+	}
+	// Package covers are authorized only by the current published catalog.
+	c.Packages[0].Asset = product.Asset
+	c.Packages[0].AssetAlt = "Package cover"
+	c.Packages[0].AssetSource = "Synthetic test artwork"
+	saveArtworkGame(t, f, c, false)
+	assertArtworkVisible(t, s, product, false)
+	saveArtworkGame(t, f, c, true)
+	assertArtworkVisible(t, s, product, true)
+	c.Packages[0].Asset, c.Packages[0].AssetAlt, c.Packages[0].AssetSource = "", "", ""
+	saveArtworkGame(t, f, c, false)
+	assertArtworkVisible(t, s, product, true)
+	saveArtworkGame(t, f, c, true)
+	assertArtworkVisible(t, s, product, false)
 	products := shopStore(f)
 	item := shopDefinition()
 	item.Asset = product.Asset

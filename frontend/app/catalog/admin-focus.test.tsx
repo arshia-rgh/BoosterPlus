@@ -134,3 +134,88 @@ it("focuses the newly selected section during ordinary catalog navigation", asyn
   });
   expect(post).not.toHaveBeenCalled();
 });
+
+it("keeps invalid preview on the field instead of switching to publication", async () => {
+  const draft: Draft = {
+    id,
+    slug: "synthetic-game",
+    revision: 1,
+    published: false,
+    paused: false,
+    archived: false,
+    current_release: "",
+    configuration: emptyConfiguration(""),
+  };
+  vi.mocked(get).mockImplementation((path) =>
+    Promise.resolve(
+      path.endsWith("/preview")
+        ? { draft, issues: [{ path: "name", message: "Enter a game name." }] }
+        : draft,
+    ),
+  );
+  const router = mount();
+  const name = await screen.findByLabelText("Game name");
+  fireEvent.click(screen.getByRole("link", { name: "FAQ" }));
+  await waitFor(() => expect(name).not.toBeVisible());
+  fireEvent.click(
+    screen.getByRole("button", { name: "Preview saved changes" }),
+  );
+  await waitFor(() => {
+    expect(router.state.location.search).toContain("section=catalog-basics");
+    expect(name).toBeVisible();
+    expect(name).toHaveFocus();
+    expect(name).toHaveAccessibleDescription("Enter a game name.");
+  });
+  expect(post).not.toHaveBeenCalled();
+});
+
+it("focuses a failed save result while retaining the exact section and draft", async () => {
+  vi.mocked(post).mockRejectedValue(
+    Object.assign(new APIError("Save is unavailable. Please retry."), {
+      status: 503,
+    }),
+  );
+  const router = mount();
+  fireEvent.change(await screen.findByLabelText("Game name"), {
+    target: { value: "Retain this draft" },
+  });
+  fireEvent.click(screen.getByRole("link", { name: "Price estimation" }));
+  const save = screen.getByRole("button", { name: "Save changes" });
+  save.focus();
+  fireEvent.click(save);
+  await waitFor(() => {
+    expect(
+      screen.getByRole("group", { name: "Catalog action result" }),
+    ).toHaveFocus();
+    expect(screen.getByRole("alert")).toHaveTextContent("Save is unavailable");
+  });
+  expect(router.state.location.search).toContain("section=catalog-pricing");
+  expect(screen.getByLabelText("Game name")).toHaveValue("Retain this draft");
+  expect(screen.getByText("Unsaved draft changes")).toBeVisible();
+  expect(save).toBeEnabled();
+  expect(post).toHaveBeenCalledOnce();
+});
+
+it("does not pull focus away from later navigation when a save fails", async () => {
+  let reject: (error: Error) => void = () => {};
+  vi.mocked(post).mockReturnValue(
+    new Promise((_, fail) => {
+      reject = fail;
+    }),
+  );
+  mount();
+  await screen.findByLabelText("Game name");
+  const save = screen.getByRole("button", { name: "Save changes" });
+  save.focus();
+  fireEvent.click(save);
+  fireEvent.click(screen.getByRole("link", { name: "FAQ" }));
+  await waitFor(() =>
+    expect(document.getElementById("catalog-faq")).toHaveFocus(),
+  );
+  await act(async () => {
+    reject(new APIError("Unavailable"));
+    await Promise.resolve();
+  });
+  expect(document.getElementById("catalog-faq")).toHaveFocus();
+  expect(screen.getByRole("alert")).toHaveTextContent("Unavailable");
+});

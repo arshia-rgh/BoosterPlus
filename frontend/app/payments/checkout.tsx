@@ -26,10 +26,12 @@ export default function Checkout({
   detail,
   admin,
   changed,
+  redirectIntent,
 }: {
   detail: Detail;
   admin: boolean;
   changed: () => void;
+  redirectIntent?: { id: string | null; set: (id: string | null) => void };
 }) {
   const base = (admin ? "/admin/orders/" : "/orders/") + detail.order.id;
   const resource = useResource(base + "/payments", historySchema);
@@ -68,7 +70,10 @@ export default function Checkout({
   const consentKey = `${policy?.id ?? ""}:${detail.contract?.id ?? ""}:${route}`;
   const accepted = !!policy && acceptedPolicy === consentKey;
   const lock = useRef(false);
-  const pendingRedirect = useRef<string | null>(null);
+  const [localRedirect, setLocalRedirect] = useState<string | null>(null);
+  const pendingRedirect = redirectIntent ? redirectIntent.id : localRedirect;
+  const setPendingRedirect = redirectIntent?.set ?? setLocalRedirect;
+  const lastRedirect = useRef<string | null>(null);
   const pendingFocus = useRef<string | null>(null);
   const paymentHeading = useRef<HTMLHeadingElement>(null);
   const feedback = useRef<HTMLDivElement>(null);
@@ -129,7 +134,10 @@ export default function Checkout({
   }, [latest?.state, detail.contract?.payment_state, changed]);
   useEffect(() => {
     if (
-      pendingRedirect.current === latest?.id &&
+      latest &&
+      pendingRedirect &&
+      pendingRedirect === latest.id &&
+      lastRedirect.current !== latest.id &&
       latest.checkout_url &&
       !latest.native_checkout &&
       latest.state === "awaiting_payment" &&
@@ -139,10 +147,19 @@ export default function Checkout({
       !resource.error &&
       !admin
     ) {
-      pendingRedirect.current = null;
+      lastRedirect.current = latest.id;
+      setPendingRedirect(null);
       continueToProvider(latest.checkout_url);
     }
-  }, [latest, expired, unavailable, resource.error, admin]);
+  }, [
+    latest,
+    expired,
+    unavailable,
+    resource.error,
+    admin,
+    pendingRedirect,
+    setPendingRedirect,
+  ]);
   async function start() {
     if (
       lock.current ||
@@ -172,7 +189,7 @@ export default function Checkout({
         },
         attemptSchema,
       );
-      pendingRedirect.current = attempt.id;
+      setPendingRedirect(attempt.id);
       pendingFocus.current = attempt.id;
       resource.reload();
       changed();
@@ -394,6 +411,7 @@ export default function Checkout({
           )}
           {latest.checkout_url &&
             !latest.native_checkout &&
+            !latest.issue &&
             !unavailable &&
             !resource.error &&
             latest.state === "awaiting_payment" &&
@@ -402,6 +420,25 @@ export default function Checkout({
               <a className="button" href={latest.checkout_url} rel="noreferrer">
                 Continue to NOWPayments
               </a>
+            )}
+          {!latest.native_checkout &&
+            !latest.checkout_url &&
+            latest.state === "awaiting_payment" &&
+            !latest.issue &&
+            !expired && (
+              <div>
+                <p role="status">
+                  Your checkout exists, but its payment link is still being
+                  recovered.{" "}
+                  {unavailable || resource.error
+                    ? "Reconnect, then refresh payment information."
+                    : "We’re checking it automatically."}{" "}
+                  Do not create another payment.
+                </p>
+                <Anchor className="text-link" href={base + "?section=messages"}>
+                  Ask support about this checkout
+                </Anchor>
+              </div>
             )}
           {latest.issue && (
             <Anchor className="text-link" href={base + "?section=messages"}>

@@ -432,3 +432,36 @@ func TestSubmissionUnicodeAndInvalidDraftBounds(t *testing.T) {
 		t.Fatal("bounded Unicode notes rejected", err)
 	}
 }
+
+func TestSellerCosmeticsPinnedPrivateRoundTrip(t *testing.T) {
+	f := submissionDB(t)
+	ctx := t.Context()
+	c := f.game.Configuration
+	c.Intake.Fields = append(c.Intake.Fields, catalog.Field{Key: "skins", Label: "Skin collection", Type: "cosmetics", Stage: "order", Required: true, Options: []catalog.Option{{Key: "Collector", Label: "Collector"}}})
+	saveArtworkGame(t, f.orderFixture, c, true)
+	f.input.ReleaseID = f.game.CurrentRelease
+	row := f.createSubmission(t)
+	edit := submissionEdit(row)
+	edit.Answers["skins"] = json.RawMessage(`{"groups":[{"category":"Collector","count":"2","names":["Aldous","Yu Zhong"]}]}`)
+	saved, err := f.intake.Edit(ctx, f.buyer, row.Submission.ID, edit)
+	if err != nil {
+		t.Fatal(err)
+	}
+	read, err := f.intake.Get(ctx, f.admin, row.Submission.ID, true)
+	if err != nil || string(read.Answers["skins"]) != string(saved.Answers["skins"]) {
+		t.Fatal("structured private data changed", err)
+	}
+	bad := submissionEdit(saved)
+	bad.Answers["skins"] = json.RawMessage(`{"groups":[{"category":"Collector","count":"3","names":["Aldous","Yu Zhong"]}]}`)
+	if _, err = f.intake.Edit(ctx, f.buyer, row.Submission.ID, bad); err == nil {
+		t.Fatal("mismatching quantity accepted")
+	}
+	c.Intake.Fields[1].Options = []catalog.Option{{Key: "Epic", Label: "Epic"}}
+	saveArtworkGame(t, f.orderFixture, c, true)
+	if _, err = f.intake.Transition(ctx, f.buyer, row.Submission.ID, false, "submit", submissions.Action{Version: saved.Submission.Version}); err != nil {
+		t.Fatal("later categories rewrote pinned submission", err)
+	}
+	if _, err = f.intake.Get(ctx, f.other, row.Submission.ID, false); !ent.IsNotFound(err) {
+		t.Fatal("another customer read cosmetics", err)
+	}
+}

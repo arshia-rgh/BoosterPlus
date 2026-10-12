@@ -32,6 +32,7 @@ export const productSchema = z.object({
   rank: z.string(),
   attributes: z.array(z.object({ label: z.string(), value: z.string() })),
   media_ids: z.array(z.string()),
+  cover_media_id: z.string().optional(),
   currency: z.string(),
   amount_minor: z.string(),
   sale_terms: z.string(),

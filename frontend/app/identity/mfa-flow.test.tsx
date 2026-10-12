@@ -145,9 +145,10 @@ it.each(["customer", "admin", "booster"] as const)(
     ).not.toBeInTheDocument();
     fixture.allowVerification();
     submit("Verify authenticator");
-    expect(
-      await screen.findByRole("heading", { name: "Save your recovery codes" }),
-    ).toHaveFocus();
+    const recovery = await screen.findByRole("heading", {
+      name: "Save your recovery codes",
+    });
+    await waitFor(() => expect(recovery).toHaveFocus());
     expect(screen.queryByRole("img", { name: qrName })).not.toBeInTheDocument();
     expect(fixture.container.innerHTML).not.toContain(secret);
   },

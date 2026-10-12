@@ -26,6 +26,7 @@ var (
 	ErrTerms           = errors.New("accept the current account terms")
 	ErrUnavailable     = errors.New("sign-in service is unavailable")
 	ErrLimited         = errors.New("too many attempts; try again later")
+	ErrStaffAccess     = errors.New("staff access is not available in this workspace")
 )
 
 // Roles and session policy constants are server authority, never self-selected by clients.

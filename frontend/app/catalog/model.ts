@@ -25,13 +25,36 @@ export const optionSchema = z.object({
   label: z.string(),
   units: z.number().int(),
 });
+export const cosmeticsSchema = z.object({
+  groups: z.array(
+    z.object({
+      category: z.string(),
+      count: z.string(),
+      names: z.array(z.string()),
+    }),
+  ),
+});
+export type Cosmetics = z.infer<typeof cosmeticsSchema>;
 export const answerSchema = z.union([
   z.string(),
   z.boolean(),
   z.array(z.string()),
+  cosmeticsSchema,
 ]);
 export const answersSchema = z.record(z.string(), answerSchema);
 export type Answers = z.infer<typeof answersSchema>;
+/** Text-only fallback for immutable answers without a catalog label map. */
+export function answerText(value: Answers[string]): string {
+  if (Array.isArray(value)) return value.join(", ");
+  if (typeof value === "object")
+    return value.groups
+      .map(
+        (group) =>
+          `${group.category} · ${group.count}: ${group.names.join(", ")}`,
+      )
+      .join("; ");
+  return String(value);
+}
 export const fieldSchema = z.object({
   key: z.string(),
   label: z.string(),
@@ -48,6 +71,7 @@ export const fieldSchema = z.object({
     "long_text",
     "rank",
     "attachment",
+    "cosmetics",
   ]),
   stage: z.enum(["estimate", "order", "fulfillment"]),
   required: z.boolean(),
@@ -74,6 +98,10 @@ export const ruleSchema = z.object({
   to: z.string(),
   from_units: z.string(),
   to_units: z.string(),
+  link_mode: z.enum(["single_parent", "shared_parent"]).optional(),
+  links: z
+    .array(z.object({ parent: z.string(), children: z.array(z.string()) }))
+    .optional(),
 });
 export const priceRuleSchema = z.object({
   key: z.string(),
@@ -148,6 +176,13 @@ export const serviceSchema = z.object({
   pricing: pricePlanSchema.optional(),
   fulfillment: fulfillmentPolicySchema.optional(),
   delivery: deliveryPolicySchema.optional(),
+  delivery_request: z
+    .object({
+      minimum: z.string(),
+      maximum: z.string(),
+      basis: z.literal("payment_and_access_v1"),
+    })
+    .optional(),
 });
 export const variantSchema = z.object({
   key: z.string(),
@@ -158,12 +193,17 @@ export const variantSchema = z.object({
   delivery_min_hours: z.number().int(),
   delivery_max_hours: z.number().int(),
   required_fields: list(z.string()),
+  preset_answers: answersSchema.optional(),
+  excluded_fields: list(z.string()).optional(),
   eligibility: conditionSchema.optional(),
 });
 export const packageSchema = z.object({
   key: z.string(),
   name: z.string(),
   description: z.string(),
+  asset: z.string().optional(),
+  asset_alt: z.string().optional(),
+  asset_source: z.string().optional(),
   service: z.string(),
   variants: list(variantSchema),
 });
@@ -333,6 +373,8 @@ export function emptyVariant(key: string): Variant {
     delivery_min_hours: 0,
     delivery_max_hours: 0,
     required_fields: [],
+    preset_answers: {},
+    excluded_fields: [],
   };
 }
 export function optionsFor(field: Field, config: Configuration): Option[] {
@@ -404,6 +446,7 @@ export function matches(
     }
   }
   return (
+    typeof value !== "object" &&
     (condition.op === "eq" || condition.op === "in") &&
     condition.values.includes(String(value))
   );

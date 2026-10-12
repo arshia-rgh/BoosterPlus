@@ -434,3 +434,67 @@ it("brings a failed checkout into view and links minimum errors to this order's 
   expect(changed).not.toHaveBeenCalled();
   expect(continueToProvider).not.toHaveBeenCalled();
 });
+
+it("gives missing-link recovery its own support path and honest connection feedback", () => {
+  const { data, reload, changed } = setup();
+  const result = {
+    data: {
+      ...data,
+      server_time: new Date().toISOString(),
+      attempts: [
+        {
+          id: "recovering",
+          order_id: "order",
+          native_checkout: false,
+          state: "awaiting_payment",
+          issue: "",
+          currency: "USD",
+          amount_minor: "1234",
+          route: policy.data.routes[0],
+          policy,
+          checkout_url: "",
+          created_at: new Date().toISOString(),
+          expires_at: new Date(Date.now() + 600000).toISOString(),
+        },
+      ],
+    },
+    loading: false,
+    error: null,
+    reload,
+    requestedAt: performance.now(),
+  };
+  vi.mocked(useResource).mockReturnValue(result);
+  const view = render(
+    <Checkout detail={detail} admin={false} changed={changed} />,
+  );
+  expect(screen.getByText(/We’re checking it automatically/)).toBeVisible();
+  expect(
+    screen.getByRole("link", { name: "Ask support about this checkout" }),
+  ).toHaveAttribute("href", "/orders/order?section=messages");
+  vi.mocked(useResource).mockReturnValue({
+    ...result,
+    error: new Error("offline"),
+  });
+  view.rerender(<Checkout detail={detail} admin={false} changed={changed} />);
+  expect(
+    screen.queryByText(/We’re checking it automatically/),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByText(/Reconnect, then refresh payment information/),
+  ).toBeVisible();
+  expect(
+    screen.queryByRole("link", { name: "Continue to NOWPayments" }),
+  ).not.toBeInTheDocument();
+  const waiting = result.data.attempts[0];
+  if (!waiting) throw new Error("Missing test attempt");
+  waiting.checkout_url = "https://nowpayments.io/payment/?iid=123";
+  vi.mocked(useResource).mockReturnValue(result);
+  view.rerender(<Checkout detail={detail} admin={false} changed={changed} />);
+  expect(
+    screen.queryByText(/payment link is still being recovered/),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: "Continue to NOWPayments" }),
+  ).toBeVisible();
+  expect(continueToProvider).not.toHaveBeenCalled();
+});

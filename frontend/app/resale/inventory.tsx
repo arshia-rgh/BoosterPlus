@@ -1,3 +1,4 @@
+import CoverEditor, { ReviewedImage } from "./cover-editor";
 import { FieldValidation, ValidationSummary } from "../ui/form-validation";
 import { useActionValidation } from "../ui/action-validation";
 import { productIssues } from "./validation";
@@ -25,7 +26,7 @@ import { denied } from "../support/chat-state";
 import { RecordShell } from "../ui/record-shell";
 import "../orders/admin-workspace.css";
 import { post } from "../identity/api";
-import { DownloadImage } from "../media/attachment";
+import ListingPreview from "./listing-preview";
 import { useResource } from "../orders/resource";
 import { submissionSchema } from "../submissions/model";
 import { messagesSchema } from "../support/model";
@@ -35,7 +36,6 @@ import {
   type Listing,
   type Product,
 } from "./model";
-import { ProductTerms } from "./market";
 
 function Images({
   conversation,
@@ -66,7 +66,10 @@ function Images({
           <div key={m.id}>
             {m.attachments?.map((id, i) => (
               <div key={id}>
-                <DownloadImage id={id} admin />
+                <ReviewedImage
+                  id={id}
+                  label={`Source image ${String(i + 1)} from message ${String(m.sequence)}`}
+                />
                 <Check
                   label={`Publish image ${String(i + 1)} from message ${String(m.sequence)}`}
                   value={selected.includes(id)}
@@ -217,7 +220,10 @@ function Editor({
   }
   async function act(action: string) {
     if (lock.current || stale || loading || suspended) return;
-    if (action !== "withdraw" && !validation.check(productIssues(product)))
+    if (
+      action !== "withdraw" &&
+      !validation.check(productIssues(product, action === "publish"))
+    )
       return;
     lock.current = true;
     setBusy(true);
@@ -487,6 +493,17 @@ function Editor({
                     Add account characteristic
                   </Action>
                 </div>
+                <div hidden={section !== "images"} data-editor-section="images">
+                  <CoverEditor
+                    product={product}
+                    change={(patch) => {
+                      setProduct((old) => ({ ...old, ...patch }));
+                      setDirty(true);
+                      setReviewed(false);
+                      setPreview(false);
+                    }}
+                  />
+                </div>
                 {section === "images" && (
                   <>
                     <h3>Public image selection</h3>
@@ -503,7 +520,14 @@ function Editor({
                     conversation={submission.data.conversation_id}
                     selected={product.media_ids}
                     change={(ids) => {
-                      if (ids.length <= 8) edit("media_ids", ids);
+                      if (ids.length <= 8) {
+                        edit("media_ids", ids);
+                        if (
+                          product.cover_media_id &&
+                          !ids.includes(product.cover_media_id)
+                        )
+                          edit("cover_media_id", "");
+                      }
                     }}
                   />
                 )}
@@ -545,23 +569,21 @@ function Editor({
                 )}
               </fieldset>
               {section === "publication" && preview && (
-                <section aria-label="Private staff listing preview">
-                  <h3>Customer preview · private draft</h3>
-                  <ProductTerms
-                    listing={{
-                      id: row.id,
-                      release_id: row.release_id,
-                      game: row.game,
-                      slug: row.slug,
-                      state: row.state,
-                      product,
-                      images: [],
-                    }}
-                  />
-                  {product.media_ids.map((id) => (
-                    <DownloadImage key={id} id={id} admin />
-                  ))}
-                </section>
+                <ListingPreview
+                  key={JSON.stringify([
+                    product.media_ids,
+                    product.cover_media_id,
+                  ])}
+                  listing={{
+                    id: row.id,
+                    release_id: row.release_id,
+                    game: row.game,
+                    slug: row.slug,
+                    state: row.state,
+                    product,
+                    images: [],
+                  }}
+                />
               )}
               {["reserved", "sold"].includes(row.state) && (
                 <p>

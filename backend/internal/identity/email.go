@@ -19,7 +19,7 @@ import (
 
 const (
 	emailChallengeTTL    = 10 * time.Minute
-	emailRequestCooldown = time.Minute
+	emailRequestCooldown = 2 * time.Minute
 )
 
 // EmailRequest binds a challenge to its browser, purpose, and current session where applicable.
@@ -55,7 +55,8 @@ func (s *Service) Throttle(ctx context.Context, scope, identity string, limit in
 	return allowed, err
 }
 
-// RequestEmail returns an opaque challenge ID even when issuance is throttled or an account is unavailable.
+// RequestEmail issues a browser-bound challenge. Staff entry explicitly reports
+// missing workspace access; customer registration and recovery stay independent.
 func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string, error) {
 	id := randomToken()
 	if !input.Portal.valid() {
@@ -115,7 +116,7 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 			return "", limitErr
 		}
 		if !allowed {
-			return id, nil
+			return "", ErrLimited
 		}
 	}
 	allowed, cooldownErr := s.cooldown(ctx, email)
@@ -123,7 +124,7 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 		return "", cooldownErr
 	}
 	if !allowed {
-		return id, nil
+		return "", ErrLimited
 	}
 	code, codeErr := newCode()
 	if codeErr != nil {
@@ -136,13 +137,13 @@ func (s *Service) RequestEmail(ctx context.Context, input EmailRequest) (string,
 		if input.Purpose == "login" && input.Portal != PortalCustomer {
 			account, findErr := tx.User.Query().Where(user.PortalEQ(string(input.Portal)), user.EmailEQ(email), user.SuspendedEQ(false), user.DeletedAtIsNil()).Only(ctx)
 			if ent.IsNotFound(findErr) {
-				return nil
+				return ErrStaffAccess
 			}
 			if findErr != nil {
 				return findErr
 			}
 			if !input.Portal.permitsUser(account) {
-				return nil
+				return ErrStaffAccess
 			}
 		}
 		// A newly issued code invalidates previous codes for the same destination/purpose.

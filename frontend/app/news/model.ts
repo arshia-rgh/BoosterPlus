@@ -11,6 +11,7 @@ export const blockKinds = [
   "code",
   "link",
   "image",
+  "gallery",
   "list",
   "table",
 ] as const;
@@ -24,6 +25,16 @@ export const blockSchema = z.object({
   items: z.array(z.string()).nullable(),
   headers: z.array(z.string()).nullable(),
   rows: z.array(z.array(z.string())).nullable(),
+  images: z
+    .array(
+      z.object({
+        url: z.string(),
+        alt: z.string(),
+        source: z.string(),
+        caption: z.string(),
+      }),
+    )
+    .optional(),
 });
 export const definitionSchema = z.object({
   title: z.string(),
@@ -130,6 +141,9 @@ export function emptyBlock(kind: Block["kind"]): Block {
     items: [],
     headers: [],
     rows: [],
+    ...(kind === "gallery"
+      ? { images: [{ url: "", alt: "", source: "", caption: "" }] }
+      : {}),
   };
 }
 export function articlePath(game: string, slug: string) {

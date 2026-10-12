@@ -91,7 +91,7 @@ class VendorAcceptance(unittest.TestCase):
         self.assertEqual(len(current), 8)
         for image, entry in policy['images'].items():
             self.assertIn('@sha256:', image)
-            self.assertIn(entry['reviewed_on'], ('2026-10-02', '2026-10-04'))
+            self.assertIn(entry['reviewed_on'], ('2026-10-02', '2026-10-04', '2026-10-12'))
             self.assertTrue(entry['findings'])
             self.assertEqual(len(entry['source_report_sha256']), 64)
 

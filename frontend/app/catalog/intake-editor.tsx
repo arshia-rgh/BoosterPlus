@@ -116,6 +116,7 @@ export default function IntakeEditor({
             <details key={index} className="catalog-item">
               <summary>Account rule: {rule.key}</summary>
               <RuleEditor
+                config={config}
                 path={`intake.rules.${String(index)}`}
                 rule={rule}
                 fields={form.fields}

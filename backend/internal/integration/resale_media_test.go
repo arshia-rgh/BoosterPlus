@@ -5,6 +5,7 @@ package integration
 import (
 	"bytes"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -35,14 +36,27 @@ func TestResalePublicationRequiresSanitizedReviewedSubmissionImages(t *testing.T
 		t.Fatal(err)
 	}
 	scanJob(t, files, file.ID)
+	second, err := files.Create(ctx, f.base.other, false, mediaIntent(submission.ConversationID, "public", data))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = files.Upload(ctx, f.base.other, second.ID, false, data); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = files.Finalize(ctx, f.base.other, second.ID, false); err != nil {
+		t.Fatal(err)
+	}
+	scanJob(t, files, second.ID)
+
 	product := resaleProduct()
-	product.MediaIDs = []string{file.ID}
+	product.MediaIDs = []string{file.ID, second.ID}
+	product.CoverMediaID = second.ID
 	input := resale.ListingInput{Version: f.listing.Version, Product: product, PublicReviewed: true}
 	if _, err = f.resale.ChangeListing(ctx, f.base.admin, f.listing.ID, "publish", input); err == nil {
 		t.Fatal("unbound private draft image published")
 	}
 	chat := supportStore(f.base)
-	if _, err = chat.Send(ctx, f.base.other, submission.ConversationID, false, conversations.SendInput{RequestKey: uuid.NewString(), Body: "Synthetic screenshot cleared for public review.", Visibility: "public", Attachments: []string{file.ID}}); err != nil {
+	if _, err = chat.Send(ctx, f.base.other, submission.ConversationID, false, conversations.SendInput{RequestKey: uuid.NewString(), Body: "Synthetic screenshot cleared for public review.", Visibility: "public", Attachments: []string{file.ID, second.ID}}); err != nil {
 		t.Fatal(err)
 	}
 	input.PublicReviewed = false
@@ -50,6 +64,11 @@ func TestResalePublicationRequiresSanitizedReviewedSubmissionImages(t *testing.T
 		t.Fatal("image published without explicit public review")
 	}
 	input.PublicReviewed = true
+	input.Product.CoverMediaID = ""
+	if _, err = f.resale.ChangeListing(ctx, f.base.admin, f.listing.ID, "publish", input); err == nil {
+		t.Fatal("implicit cover published without staff choice")
+	}
+	input.Product.CoverMediaID = second.ID
 	f.listing, err = f.resale.ChangeListing(ctx, f.base.admin, f.listing.ID, "publish", input)
 	if err != nil {
 		t.Fatal(err)
@@ -58,11 +77,14 @@ func TestResalePublicationRequiresSanitizedReviewedSubmissionImages(t *testing.T
 	if err != nil {
 		t.Fatal(err)
 	}
+	if len(listing.Images) != 2 || !strings.Contains(listing.Images[0], "/images/1?") || !strings.Contains(listing.Images[1], "/images/0?") {
+		t.Fatal("explicit cover does not lead the public gallery")
+	}
 	public, err := json.Marshal(listing)
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, private := range []string{file.ID, f.offer.ID, f.offer.SubmissionID, f.base.other.User.ID, "seller-origin"} {
+	for _, private := range []string{file.ID, second.ID, f.offer.ID, f.offer.SubmissionID, f.base.other.User.ID, "seller-origin"} {
 		if bytes.Contains(public, []byte(private)) {
 			t.Fatal("private identifier in public listing")
 		}
@@ -71,7 +93,7 @@ func TestResalePublicationRequiresSanitizedReviewedSubmissionImages(t *testing.T
 	if err != nil || kind != "image/png" || bytes.Contains(clean, []byte("metadata")) {
 		t.Fatal("unsanitized public image", err)
 	}
-	if _, _, err = files.ListingImageContent(ctx, f.listing.ID, 1, f.listing.ReleaseID); err == nil {
+	if _, _, err = files.ListingImageContent(ctx, f.listing.ID, 2, f.listing.ReleaseID); err == nil {
 		t.Fatal("unpublished image slot available")
 	}
 	if _, _, err = files.ListingImageContent(ctx, f.listing.ID, 0, uuid.NewString()); err == nil {

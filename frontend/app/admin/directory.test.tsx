@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -138,16 +139,24 @@ it.each([
     expect(
       screen.getByRole("heading", { name: "Customers & staff" }),
     ).not.toHaveFocus();
-    if (!completeRead) throw new Error("Directory was not refreshed");
-    completeRead({
-      users: [
-        {
-          ...directoryUser,
-          role: action === "Change role" ? "owner" : directoryUser.role,
-          suspended: action === "Suspend account",
-        },
-      ],
-      next: "",
+    // The loading render precedes useResource's passive request effect.
+    // Await the request itself before releasing its deliberately held response.
+    await waitFor(() => {
+      expect(completeRead).toBeTypeOf("function");
+    });
+    await act(async () => {
+      if (!completeRead) throw new Error("Directory was not refreshed");
+      completeRead({
+        users: [
+          {
+            ...directoryUser,
+            role: action === "Change role" ? "owner" : directoryUser.role,
+            suspended: action === "Suspend account",
+          },
+        ],
+        next: "",
+      });
+      await Promise.resolve();
     });
     await waitFor(() => {
       expect(

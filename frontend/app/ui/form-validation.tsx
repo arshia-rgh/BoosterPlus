@@ -179,6 +179,7 @@ export function TextField({
   inputMode,
   pattern,
   help,
+  defaultValue,
 }: {
   name: string;
   label: string;
@@ -189,6 +190,7 @@ export function TextField({
   inputMode?: "numeric" | "text";
   pattern?: string;
   help?: ReactNode;
+  defaultValue?: string | undefined;
 }) {
   const id = useId();
   const validation = useContext(FieldValidation);
@@ -211,6 +213,7 @@ export function TextField({
         ref={fieldRef}
         id={id}
         name={name}
+        defaultValue={defaultValue}
         type={type}
         required={required}
         autoComplete={autoComplete}

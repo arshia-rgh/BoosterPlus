@@ -57,6 +57,7 @@ export const commercialSchema = z.object({
   reason: z.string(),
   delivery_min_hours: z.number(),
   delivery_max_hours: z.number(),
+  delivery_basis: z.string().optional(),
   expires_at: z.string(),
   terms_version: z.string(),
 });

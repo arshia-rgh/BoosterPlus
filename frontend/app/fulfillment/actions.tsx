@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Action,
   ErrorNotice,
@@ -9,6 +9,7 @@ import {
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";
 import { active, staffSchema, workSchema, type Work } from "./model";
+import { focusValidationTarget } from "../ui/form-validation";
 export function Assignment({
   id,
   orderVersion,
@@ -95,12 +96,35 @@ export function ExecutionActions({
     [start, setStart] = useState(""),
     [finish, setFinish] = useState(""),
     [busy, setBusy] = useState(false),
+    [notice, setNotice] = useState(""),
     [error, setError] = useState<unknown>(null);
+  const root = useRef<HTMLElement>(null),
+    feedback = useRef<HTMLDivElement>(null),
+    focusPending = useRef(false),
+    origin = useRef<Element | null>(null),
+    lock = useRef(false);
+  useEffect(() => {
+    if (busy || !focusPending.current || (!notice && !error)) return;
+    focusPending.current = false;
+    const current = document.activeElement;
+    if (
+      !root.current?.closest("[hidden]") &&
+      (current === origin.current ||
+        current === document.body ||
+        (current && root.current && current.contains(root.current)))
+    )
+      focusValidationTarget(feedback.current);
+  }, [busy, notice, error]);
   async function apply(action: string) {
+    if (lock.current) return;
+    lock.current = true;
+    origin.current = document.activeElement;
+    focusPending.current = true;
     setBusy(true);
     setError(null);
+    setNotice("");
     try {
-      await post(
+      const saved = await post(
         `/${admin ? "admin" : "booster"}/fulfillment/${work.order_id}/${action}`,
         {
           version: work.version,
@@ -114,15 +138,25 @@ export function ExecutionActions({
         },
         workSchema,
       );
+      setNotice(
+        action === "progress"
+          ? `Progress saved: ${String(saved.progress)}%. Your update is visible to the customer. Add proof in the assignment conversation when needed.`
+          : action === "submit_completion"
+            ? "Completion submitted for administrator review."
+            : action === "estimate"
+              ? "Delivery estimate saved."
+              : "Fulfillment update saved. The assignment is refreshing.",
+      );
       setNote("");
       reload();
     } catch (cause) {
       setError(cause);
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   }
-  if (!active(work)) return null;
+  if (!active(work) && !notice && !error) return null;
   const action = (key: string, label: string, allowed = true) => (
     <Action
       disabled={busy || !note.trim() || !allowed}
@@ -134,65 +168,86 @@ export function ExecutionActions({
     </Action>
   );
   return (
-    <section className="catalog-section">
+    <section ref={root} className="catalog-section">
       <h3>Update fulfillment</h3>
-      <ErrorNotice error={error} />
-      <Text
-        label="Customer-visible update"
-        value={note}
-        change={setNote}
-        multiline
-        help="Describe progress or the reason for this change. Do not enter credentials."
-      />
-      <div className="catalog-actions">
-        {work.state === "queued" && action("start", "Start work", startAllowed)}
-        {work.state === "on_hold" &&
-          action("resume", "Resume work", startAllowed)}
-        {work.state !== "on_hold" && action("hold", "Put on hold")}
+      <div
+        ref={feedback}
+        tabIndex={-1}
+        role="group"
+        aria-label="Fulfillment update result"
+      >
+        <ErrorNotice error={error} />
+        {notice && <p role="status">{notice}</p>}
       </div>
-      {work.state === "in_progress" && !work.completion_pending && (
+      {active(work) && (
         <>
-          <NumberInput
-            label="Progress percent (0–99)"
-            value={progress}
-            change={setProgress}
+          <Text
+            label="Customer-visible update"
+            value={note}
+            change={setNote}
+            multiline
+            help="Describe progress or the reason for this change. Do not enter credentials."
           />
-          {action("progress", "Save progress", progress >= 0 && progress <= 99)}{" "}
-          {action("submit_completion", "Submit completion for review")}
-        </>
-      )}
-      {work.completion_pending && (
-        <>
-          <p>Completion is awaiting administrator review.</p>
+          <div className="catalog-actions">
+            {work.state === "queued" &&
+              action("start", "Start work", startAllowed)}
+            {work.state === "on_hold" &&
+              action("resume", "Resume work", startAllowed)}
+            {work.state !== "on_hold" && action("hold", "Put on hold")}
+          </div>
+          {work.state === "in_progress" && !work.completion_pending && (
+            <>
+              <NumberInput
+                label="Progress percent (0–99)"
+                value={progress}
+                change={setProgress}
+              />
+              {action(
+                "progress",
+                "Save progress",
+                progress >= 0 && progress <= 99,
+              )}{" "}
+              {action("submit_completion", "Submit completion for review")}
+            </>
+          )}
+          {work.completion_pending && (
+            <>
+              <p>Completion is awaiting administrator review.</p>
+              {admin && (
+                <div className="catalog-actions">
+                  {action("approve_completion", "Approve completion")}
+                  {action("return_completion", "Return for more work")}
+                </div>
+              )}
+            </>
+          )}
           {admin && (
-            <div className="catalog-actions">
-              {action("approve_completion", "Approve completion")}
-              {action("return_completion", "Return for more work")}
-            </div>
+            <details>
+              <summary>Update delivery estimate</summary>
+              <p>
+                Enter your local date and time. These are estimates; the
+                accepted agreement stays in the order history.
+              </p>
+              <Text
+                type="datetime-local"
+                label="Estimated start"
+                value={start}
+                change={setStart}
+              />
+              <Text
+                type="datetime-local"
+                label="Estimated finish"
+                value={finish}
+                change={setFinish}
+              />
+              {action(
+                "estimate",
+                "Save delivery estimate",
+                !!start && !!finish,
+              )}
+            </details>
           )}
         </>
-      )}
-      {admin && (
-        <details>
-          <summary>Update delivery estimate</summary>
-          <p>
-            Enter your local date and time. These are estimates; the accepted
-            agreement stays in the order history.
-          </p>
-          <Text
-            type="datetime-local"
-            label="Estimated start"
-            value={start}
-            change={setStart}
-          />
-          <Text
-            type="datetime-local"
-            label="Estimated finish"
-            value={finish}
-            change={setFinish}
-          />
-          {action("estimate", "Save delivery estimate", !!start && !!finish)}
-        </details>
       )}
     </section>
   );

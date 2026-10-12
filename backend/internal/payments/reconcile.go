@@ -190,7 +190,7 @@ func (s *Store) observe(ctx context.Context, tx *ent.Tx, record *ent.PaymentReco
 			return "", "", "", err
 		}
 	}
-	if issue != "" && state != "settled" {
+	if issue != "" && state != "settled" && state != "closed" {
 		state = "exception"
 	}
 	// A later pending observation cannot erase a settled/reversed decision.
@@ -201,6 +201,18 @@ func (s *Store) observe(ctx context.Context, tx *ent.Tx, record *ent.PaymentReco
 		}
 	}
 	update := tx.PaymentAttempt.UpdateOneID(attempt.ID).SetState(state).SetIssue(issue).SetUpdatedAt(s.instant()).ClearDepositData()
+	if !attempt.NativeCheckout && issue == "" && state == "awaiting_payment" {
+		// Recover a lost invoice response from matched authenticated evidence.
+		// This is a read recovery, never another create-invoice request.
+		ready := *attempt
+		ready.State, ready.Issue = state, issue
+		if href := hostedLink(&ready, p.InvoiceID, s.instant()); href != "" {
+			update.SetCheckoutURL(href)
+			if _, err = tx.OrderContract.Update().Where(ordercontract.IDEQ(attempt.ContractID), ordercontract.PaymentStateEQ(ordercontract.PaymentStateInvoicePending)).SetPaymentState(ordercontract.PaymentStateAwaitingPayment).Save(ctx); err != nil {
+				return "", "", "", err
+			}
+		}
+	}
 	if attempt.NativeCheckout && issue == "" {
 		deposit, e := depositView(attempt, p, s.instant())
 		if e != nil {
@@ -255,6 +267,15 @@ func (s *Store) decision(ctx context.Context, tx *ent.Tx, attempt *ent.PaymentAt
 		_, err := tx.OrderContract.Update().Where(ordercontract.IDEQ(attempt.ContractID), ordercontract.PaymentStateNEQ(ordercontract.PaymentStateSettled), ordercontract.PaymentStateNEQ(ordercontract.PaymentStateRetired)).SetPaymentState(ordercontract.PaymentStateFundsDetected).Save(ctx)
 		return "confirming", "", err
 	case "waiting":
+		if attempt.FundsDetectedAt != nil {
+			return "confirming", "", nil
+		}
+		if attempt.ActiveContractID == nil {
+			return "closed", attempt.Issue, nil
+		}
+		if !attempt.ExpiresAt.After(s.instant()) {
+			return "closed", "local_expiry", s.retire(ctx, tx, attempt, "local_expiry")
+		}
 		return "awaiting_payment", "", nil
 	default:
 		return "exception", "invalid_evidence", nil

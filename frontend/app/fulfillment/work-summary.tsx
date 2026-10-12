@@ -1,6 +1,7 @@
 import { workNextStep, customerWorkNextStep } from "./work-presentation";
 import { ForecastRange } from "./forecast";
 import type { Work } from "./model";
+import { answerText } from "../catalog/model";
 export function WorkSummary({
   work,
   staff = true,
@@ -59,11 +60,7 @@ export function WorkSummary({
           {work.shared.map((field) => (
             <div key={field.key}>
               <dt>{field.label}</dt>
-              <dd>
-                {Array.isArray(field.value)
-                  ? field.value.join(", ")
-                  : String(field.value)}
-              </dd>
+              <dd>{answerText(field.value)}</dd>
             </div>
           ))}
         </dl>

@@ -24,7 +24,7 @@ it("moves from the disabled save action to the saved destination", async () => {
   );
   fireEvent.click(screen.getByRole("button", { name: "Save to favorites" }));
   const link = await screen.findByRole("link", { name: "View favorites" });
-  expect(link).toHaveFocus();
+  await waitFor(() => expect(link).toHaveFocus());
   expect(
     screen.getByRole("button", { name: "Saved to favorites" }),
   ).toBeDisabled();
@@ -39,9 +39,11 @@ it("focuses the local failed-save notice and leaves retry available", async () =
   );
   fireEvent.click(screen.getByRole("button", { name: "Save to favorites" }));
   await screen.findByRole("alert");
-  expect(
-    screen.getByRole("group", { name: "Favorite could not be saved" }),
-  ).toHaveFocus();
+  await waitFor(() =>
+    expect(
+      screen.getByRole("group", { name: "Favorite could not be saved" }),
+    ).toHaveFocus(),
+  );
   expect(
     screen.getByRole("button", { name: "Save to favorites" }),
   ).toBeEnabled();
@@ -80,7 +82,9 @@ it("keeps keyboard context after removing a saved row", async () => {
   await waitFor(() => {
     expect(reload).toHaveBeenCalledOnce();
   });
-  expect(
-    screen.getByRole("heading", { name: "Your saved offers" }),
-  ).toHaveFocus();
+  await waitFor(() =>
+    expect(
+      screen.getByRole("heading", { name: "Your saved offers" }),
+    ).toHaveFocus(),
+  );
 });

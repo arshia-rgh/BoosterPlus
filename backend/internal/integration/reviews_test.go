@@ -302,7 +302,7 @@ func TestReviewsFreshFactorsSelfModerationAndAuditRollback(t *testing.T) {
 	if _, err = f.auth.client.AuthSession.UpdateOneID(f.admin.Session.ID).SetMfaVerifiedAt(now).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
-	f.auth.clock.Add(61)
+	f.auth.clock.Add(121)
 	_, customerStaff := f.auth.staffLogin(t, f.buyer.User.Email, identity.RoleAdmin)
 	_, _, customerStaff = f.auth.enroll(t, customerStaff)
 	if customerStaff.User.ID == f.buyer.User.ID {

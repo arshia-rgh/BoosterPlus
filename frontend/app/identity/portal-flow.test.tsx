@@ -131,7 +131,7 @@ it("moves focus from email verification into the staff authenticator step", asyn
   });
   submit("Send verification code");
   const code = await screen.findByLabelText("Email verification code");
-  expect(code).toHaveFocus();
+  await waitFor(() => expect(code).toHaveFocus());
   fireEvent.change(code, { target: { value: "123456" } });
   submit("Verify email code");
   const heading = await screen.findByRole("heading", {

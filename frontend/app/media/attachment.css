@@ -1,0 +1,5 @@
+.attachment-upload-progress {
+  display: block;
+  width: 100%;
+  max-width: 16rem;
+}

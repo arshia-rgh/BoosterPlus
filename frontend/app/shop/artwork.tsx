@@ -7,11 +7,13 @@ export default function ShopArtwork({
   alt,
   lazy = false,
   placement = "content",
+  className = "",
 }: {
   source: string;
   alt: string;
   lazy?: boolean;
   placement?: "card" | "content";
+  className?: string;
 }) {
   const [failed, setFailed] = useState<string | null>(null);
   const ready = useCallback(
@@ -23,7 +25,8 @@ export default function ShopArtwork({
   if (!validArtwork(source) || failed === source)
     return (
       <div
-        className="shop-artwork shop-artwork-unavailable"
+        className={`shop-artwork shop-artwork-unavailable ${className}`}
+        data-placement={placement}
         role="img"
         aria-label={
           alt ? `${alt} — artwork unavailable` : "Artwork unavailable"
@@ -35,7 +38,7 @@ export default function ShopArtwork({
   return (
     <ArtworkImage
       ref={ready}
-      className="shop-artwork"
+      className={`shop-artwork ${className}`}
       source={source}
       placement={placement}
       data-placement={placement}

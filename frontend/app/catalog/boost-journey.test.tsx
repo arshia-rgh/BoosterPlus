@@ -204,7 +204,9 @@ it("retired variants require an explicit current selection and preserve history"
   render(<RouterProvider router={router} />);
   const choice = await screen.findByLabelText("Package variant");
   expect(choice).toHaveValue("");
-  expect(screen.queryByRole("button", { name: "Check selections" })).toBeNull();
+  expect(
+    screen.queryByRole("button", { name: "Continue with this package" }),
+  ).toBeNull();
   fireEvent.change(choice, { target: { value: "duo" } });
   await waitFor(() => {
     expect(router.state.location.search).toBe("?variant=duo&coupon=SAVE");
@@ -214,5 +216,7 @@ it("retired variants require an explicit current selection and preserve history"
     await router.navigate(-1);
   });
   expect(choice).toHaveValue("");
-  expect(screen.queryByRole("button", { name: "Check selections" })).toBeNull();
+  expect(
+    screen.queryByRole("button", { name: "Continue with this package" }),
+  ).toBeNull();
 });

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { post } from "../identity/api";
 import { StaffSecret } from "./secrets";
@@ -46,7 +46,7 @@ it.each([true, false])(
     const ready = await screen.findByRole("heading", {
       name: "Game access ready",
     });
-    expect(ready).toHaveFocus();
+    await waitFor(() => expect(ready).toHaveFocus());
     expect(ready).not.toHaveTextContent("synthetic protected access");
     fireEvent.click(screen.getByRole("button", { name: "Hide game access" }));
     const reveal = screen.getByRole("button", { name: "Reveal game access" });
@@ -56,8 +56,10 @@ it.each([true, false])(
     ).not.toBeInTheDocument();
     fireEvent.click(reveal);
     await screen.findByRole("alert");
-    expect(
-      screen.getByRole("group", { name: "Game access notice" }),
-    ).toHaveFocus();
+    await waitFor(() =>
+      expect(
+        screen.getByRole("group", { name: "Game access notice" }),
+      ).toHaveFocus(),
+    );
   },
 );

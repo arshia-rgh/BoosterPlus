@@ -24,7 +24,7 @@ func fixture() Configuration {
 			{Key: "player", Label: "Player", Type: "short_text", Stage: "fulfillment", MaxLength: 100, Required: true},
 			{Key: "screenshot", Label: "Screenshot", Type: "attachment", Stage: "order"},
 		}, Rules: []Rule{{Key: "forward", Kind: "progression", Message: "Target must advance within rank limits.", From: "from", To: "to", FromUnits: "start_units", ToUnits: "end_units"}, {Key: "overlap", Kind: "disjoint", Message: "Heroes cannot overlap.", From: "allowed", To: "excluded"}}}},
-		Packages: []Package{{Key: "pack", Name: "Test pack", Service: "boost", Variants: []Variant{{Key: "basic", Name: "Test variant", Currency: "USD", AmountMinor: "1234", DeliveryMinHours: 1, DeliveryMaxHours: 5, Eligibility: leaf("mode", "eq", "solo"), RequiredFields: []string{"mode"}}}}}}
+		Packages: []Package{{Key: "pack", Name: "Test pack", Service: "boost", Variants: []Variant{{Key: "basic", Name: "Test variant", Currency: "USD", AmountMinor: "1234", DeliveryMinHours: 1, DeliveryMaxHours: 5, Eligibility: leaf("mode", "eq", "solo"), RequiredFields: []string{"mode"}, PresetAnswers: &Answers{"from": json.RawMessage(`"bronze"`), "to": json.RawMessage(`"silver"`), "start_units": json.RawMessage(`"0"`), "end_units": json.RawMessage(`"0"`)}, ExcludedFields: []string{"rate", "one", "hero", "allowed", "excluded", "note", "screenshot"}}}}}}
 }
 func leaf(field, op string, values ...string) *Condition {
 	return &Condition{Field: field, Op: op, Values: values}

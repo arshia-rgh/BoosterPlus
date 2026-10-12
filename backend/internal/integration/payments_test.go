@@ -40,6 +40,8 @@ type paymentProvider struct {
 	readError      error
 	block          chan struct{}
 	entered        chan struct{}
+	invoiceBlock   chan struct{}
+	invoiceEntered chan struct{}
 }
 
 const paymentTestSecret = "synthetic-payment-ipn-secret-for-tests"
@@ -57,12 +59,24 @@ func (p *paymentProvider) CheckInvoice(_ context.Context, _ nowpayments.InvoiceR
 	defer p.mu.Unlock()
 	return p.preflightError
 }
-func (p *paymentProvider) CreateInvoice(_ context.Context, _ nowpayments.InvoiceRequest) (nowpayments.Invoice, error) {
+func (p *paymentProvider) CreateInvoice(ctx context.Context, _ nowpayments.InvoiceRequest) (nowpayments.Invoice, error) {
 	p.mu.Lock()
-	defer p.mu.Unlock()
 	p.calls++
 	id := fmt.Sprint(p.calls)
-	if p.ambiguous {
+	ambiguous, block, entered := p.ambiguous, p.invoiceBlock, p.invoiceEntered
+	p.invoiceBlock, p.invoiceEntered = nil, nil
+	p.mu.Unlock()
+	if entered != nil {
+		close(entered)
+	}
+	if block != nil {
+		select {
+		case <-ctx.Done():
+			return nowpayments.Invoice{}, ctx.Err()
+		case <-block:
+		}
+	}
+	if ambiguous {
 		return nowpayments.Invoice{}, nowpayments.ErrAmbiguous
 	}
 	return nowpayments.Invoice{ID: id, URL: "https://nowpayments.io/payment/?iid=" + id}, nil

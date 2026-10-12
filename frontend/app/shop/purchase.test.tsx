@@ -148,9 +148,11 @@ it("locks an uncertain reservation and retries exactly once with its original ke
     screen.getByRole("button", { name: "Reserve and continue to payment" }),
   );
   await screen.findByRole("button", { name: "Retry reservation" });
-  expect(
-    screen.getByRole("region", { name: "Reservation recovery" }),
-  ).toHaveFocus();
+  await waitFor(() =>
+    expect(
+      screen.getByRole("region", { name: "Reservation recovery" }),
+    ).toHaveFocus(),
+  );
   expect(post).toHaveBeenCalledTimes(1);
   expect(screen.getByRole("button", { name: "Edit recipient" })).toBeDisabled();
   expect(screen.queryByText("private-recipient")).not.toBeInTheDocument();

@@ -41,15 +41,24 @@ type Definition struct {
 
 // Block is a typed plain-text document element; HTML and embedded scripts are not supported.
 type Block struct {
-	Kind    string     `json:"kind"`
-	Text    string     `json:"text"`
-	Level   int        `json:"level"`
-	URL     string     `json:"url"`
-	Alt     string     `json:"alt"`
-	Source  string     `json:"source"`
-	Items   []string   `json:"items"`
-	Headers []string   `json:"headers"`
-	Rows    [][]string `json:"rows"`
+	Kind    string        `json:"kind"`
+	Text    string        `json:"text"`
+	Level   int           `json:"level"`
+	URL     string        `json:"url"`
+	Alt     string        `json:"alt"`
+	Source  string        `json:"source"`
+	Items   []string      `json:"items"`
+	Headers []string      `json:"headers"`
+	Rows    [][]string    `json:"rows"`
+	Images  []InlineImage `json:"images,omitempty"`
+}
+
+// InlineImage uses the same checked artwork pipeline as a single-image block.
+type InlineImage struct {
+	URL     string `json:"url"`
+	Alt     string `json:"alt"`
+	Source  string `json:"source"`
+	Caption string `json:"caption"`
 }
 
 // Issue identifies a field without echoing untrusted editor content.
@@ -123,9 +132,12 @@ func Validate(d Definition, publish bool) []Issue {
 	return out
 }
 func validateBlock(b Block, path string, add func(string, string)) {
-	if !text(b.Text, 0, 10000) || !text(b.Alt, 0, 300) || !text(b.Source, 0, 1000) || len(b.Items) > 50 || len(b.Headers) > 10 || len(b.Rows) > 100 {
+	if !text(b.Text, 0, 10000) || !text(b.Alt, 0, 300) || !text(b.Source, 0, 1000) || len(b.Items) > 50 || len(b.Headers) > 10 || len(b.Rows) > 100 || len(b.Images) > 4 {
 		add(path, "Block exceeds its supported content limits.")
 		return
+	}
+	if b.Kind != "gallery" && len(b.Images) > 0 {
+		add(path+".images", "Image rows belong to gallery blocks only.")
 	}
 	if b.Kind != "heading" && b.Level != 0 || b.Kind != "link" && b.Kind != "image" && b.URL != "" || b.Kind != "image" && (b.Alt != "" || b.Source != "") || b.Kind != "list" && len(b.Items) > 0 || b.Kind != "table" && (len(b.Headers) > 0 || len(b.Rows) > 0) {
 		add(path, "Remove fields that do not belong to this block type.")
@@ -146,6 +158,25 @@ func validateBlock(b Block, path string, add func(string, string)) {
 	case "image":
 		if !artwork.ValidPath(b.URL) || !text(b.Alt, 1, 300) || !text(b.Source, 1, 1000) {
 			add(path, "Images need bundled or checked uploaded artwork, alt text and attribution.")
+		}
+	case "gallery":
+		if len(b.Images) == 0 {
+			add(path+".images", "Add 1–4 checked images to this row.")
+		}
+		for i, image := range b.Images {
+			p := fmt.Sprintf("%s.images.%d", path, i)
+			if !artwork.ValidPath(image.URL) {
+				add(p+".url", "Upload a checked image or choose bundled artwork.")
+			}
+			if !text(image.Alt, 1, 300) {
+				add(p+".alt", "Describe this image in 1–300 characters.")
+			}
+			if !text(image.Source, 1, 1000) {
+				add(p+".source", "State the image attribution and rights within 1,000 characters.")
+			}
+			if !text(image.Caption, 0, 1000) {
+				add(p+".caption", "Keep the caption within 1,000 characters.")
+			}
 		}
 	case "list":
 		if len(b.Items) == 0 {

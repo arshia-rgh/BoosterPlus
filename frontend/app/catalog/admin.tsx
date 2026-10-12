@@ -1,4 +1,8 @@
-import { FieldValidation, useFormValidation } from "../ui/form-validation";
+import {
+  FieldValidation,
+  focusValidationTarget,
+  useFormValidation,
+} from "../ui/form-validation";
 import ArtworkUpload from "../artwork/upload";
 import {
   defaultGameArtwork,
@@ -214,6 +218,23 @@ function Editor({
     !busy,
   );
   const generation = useRef(0);
+  const actionFeedback = useRef<HTMLDivElement>(null),
+    focusActionError = useRef(false),
+    actionOrigin = useRef<Element | null>(null),
+    actionSection = useRef(section);
+  useEffect(() => {
+    if (busy || !focusActionError.current || !error) return;
+    focusActionError.current = false;
+    // Field validation owns its more specific destination. Generic failures
+    // return to a visible result without stealing a later section navigation.
+    if (
+      fieldIssues.length === 0 &&
+      section === actionSection.current &&
+      (document.activeElement === document.body ||
+        document.activeElement === actionOrigin.current)
+    )
+      focusValidationTarget(actionFeedback.current);
+  }, [busy, error, fieldIssues.length, section]);
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       (dirty || busy) &&
@@ -268,6 +289,9 @@ function Editor({
   async function run(action: string) {
     if (!draft) return;
     const requestGeneration = ++generation.current;
+    focusActionError.current = true;
+    actionOrigin.current = document.activeElement;
+    actionSection.current = section;
     setBusy(true);
     setFieldIssues([]);
     setError(null);
@@ -278,7 +302,7 @@ function Editor({
         const result = await get(path + "/preview", previewSchema);
         setPreview(result);
         setFieldIssues(result.issues);
-        choose("catalog-publish");
+        if (result.issues.length === 0) choose("catalog-publish");
       } else if (action === "history" || action === "more-history") {
         const before =
           action === "more-history" ? history?.at(-1)?.version : undefined;
@@ -354,8 +378,15 @@ function Editor({
         <Action onClick={onBack} disabled={busy || dirty}>
           ← All catalog drafts
         </Action>
-        <ErrorNotice error={error} hideIssues />
-        <Issues issues={fieldIssues} />
+        <div
+          ref={actionFeedback}
+          tabIndex={-1}
+          role="group"
+          aria-label="Catalog action result"
+        >
+          <ErrorNotice error={error} hideIssues />
+          <Issues issues={fieldIssues} />
+        </div>
         {!draft ? (
           <>
             {!error && <p role="status">Loading draft…</p>}
@@ -583,6 +614,8 @@ function Editor({
                       {service.name} · {service.key}
                     </summary>
                     <PricingEditor
+                      onIssues={setFieldIssues}
+                      preview={{ gameID: draft.id, revision: draft.revision }}
                       path={`services.${String(index)}`}
                       service={service}
                       config={draft.configuration}

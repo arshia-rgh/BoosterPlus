@@ -414,9 +414,15 @@ function Editor({
                         update({ game_version });
                       }}
                     />
+                    <h3>Article cover</h3>
+                    <p>
+                      This title image appears on news cards and at the start of
+                      the article. Add separate images inside the article body
+                      below.
+                    </p>
                     <ArtworkUpload
                       purpose="cover"
-                      pathLabel="Hero image path (optional)"
+                      pathLabel="Cover image path (optional)"
                       value={value.asset}
                       change={(asset) => {
                         update({ asset });
@@ -424,7 +430,7 @@ function Editor({
                     />
                     <Text
                       name="asset_alt"
-                      label="Hero image description"
+                      label="Cover image description"
                       value={value.asset_alt}
                       change={(asset_alt) => {
                         update({ asset_alt });
@@ -432,7 +438,7 @@ function Editor({
                     />
                     <Text
                       name="asset_source"
-                      label="Hero image attribution / rights"
+                      label="Cover image attribution / rights"
                       value={value.asset_source}
                       change={(asset_source) => {
                         update({ asset_source });

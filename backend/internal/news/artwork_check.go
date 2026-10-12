@@ -27,6 +27,13 @@ func checkArtwork(ctx context.Context, c *ent.Client, value Definition) error {
 				return err
 			}
 		}
+		if b.Kind == "gallery" {
+			for j, image := range b.Images {
+				if err := checkImage(ctx, c, image.URL, "inline", fmt.Sprintf("blocks.%d.images.%d.url", i, j)); err != nil {
+					return err
+				}
+			}
+		}
 	}
 	return nil
 }

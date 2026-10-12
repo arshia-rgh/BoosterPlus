@@ -93,6 +93,28 @@ def integration_arguments(*, protocol_only=False):
     return arguments + ["./internal/integration/..."]
 
 
+def fixture_ddl_initialization(model, installation):
+    """Use normal index backfill only in this newly provisioned small fixture.
+
+    Fast reorganization requires at least 100 GiB of free local scratch disk.
+    Its minimum quota cannot be lowered. Keep SQL migrations, constraints and
+    real TiKV coverage intact; this fixture is not a DDL capacity benchmark.
+    Production initialization and its bind mount remain unchanged on disk.
+    """
+    source = installation / "secrets/initialize.sql"
+    mounts = [volume for volume in model["services"]["tidb"]["volumes"]
+              if volume["target"] == "/secrets/initialize.sql"]
+    if len(mounts) != 1 or mounts[0]["source"] != str(source) or source.resolve() != source:
+        raise ValueError("Unexpected fixture SQL initialization mount")
+    target = installation / "secrets/initialize-fixture.sql"
+    # Distributed ADD INDEX requires fast reorganization in TiDB 8.5. Disable
+    # its scheduler first so the ordinary transactional path is valid.
+    private_write(target, source.read_text()
+                  + "SET GLOBAL tidb_enable_dist_task = OFF;\n"
+                  + "SET GLOBAL tidb_ddl_enable_fast_reorg = OFF;\n")
+    mounts[0]["source"] = str(target)
+
+
 def main(*, protocol_only=False):
     with tempfile.TemporaryDirectory(prefix="playora-tikv-qualification-") as name:
         directory = Path(name)
@@ -115,6 +137,7 @@ def main(*, protocol_only=False):
         # CI may use UID 1001; deployment uses the production UID 1000.
         if os.getuid() == 0:
             raise ValueError("Run isolated data qualification as a non-root operator")
+        fixture_ddl_initialization(model, installation)
         fixture_user = f"{os.getuid()}:{os.getgid()}"
         for service, memory in (("pd", 384 << 20), ("tikv", 4 << 30), ("tidb", 2 << 30), ("storage", 384 << 20), ("object-gateway", 128 << 20)):
             # Match the selected small-host SQL/KV CPU ceilings; the full

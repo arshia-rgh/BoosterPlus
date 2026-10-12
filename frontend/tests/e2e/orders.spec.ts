@@ -25,7 +25,9 @@ async function api(page: Page, path: string, body: unknown) {
       "X-CSRF-Token": session.csrf_token,
     },
   });
-  expect(response.ok()).toBe(true);
+  expect(response.ok(), `${path}: HTTP ${String(response.status())}`).toBe(
+    true,
+  );
   return response.json() as Promise<unknown>;
 }
 async function accessible(page: Page) {
@@ -120,7 +122,9 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
           capacity: 2,
           delivery_min_hours: 1,
           delivery_max_hours: 24,
-          required_fields: ["mode"],
+          preset_answers: { mode: "solo" },
+          required_fields: ["note"],
+          excluded_fields: ["screenshot"],
         },
       ],
     },
@@ -490,9 +494,15 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       await buyer.goto(`/games/${slug}/packages/starter`, {
         waitUntil: "commit",
       });
-      await expect(buyer.getByLabel("Play mode (required)")).toBeDisabled();
       await expect(
-        buyer.getByRole("button", { name: "Check selections", exact: true }),
+        buyer.getByLabel("Ordinary instructions (required)"),
+      ).toBeDisabled();
+      await expect(buyer.getByLabel("Play mode (required)")).toHaveCount(0);
+      await expect(
+        buyer.getByRole("button", {
+          name: "Continue with this package",
+          exact: true,
+        }),
       ).toBeDisabled();
       await buyer
         .locator(".dynamic-form")
@@ -500,9 +510,17 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
     } finally {
       resumeScripts();
     }
-    await expect(buyer.getByLabel("Play mode (required)")).toBeEnabled();
+    await expect(
+      buyer.getByLabel("Ordinary instructions (required)"),
+    ).toBeEnabled();
     await buyer.unroute("**/assets/*.js", holdScripts);
-    await buyer.getByLabel("Play mode (required)").selectOption("solo");
+    await buyer
+      .getByLabel("Ordinary instructions (required)")
+      .fill("Synthetic delivery instructions");
+    await expect(buyer.getByLabel("Play mode (required)")).toHaveCount(0);
+    await expect(
+      buyer.getByRole("region", { name: "Included in this package" }),
+    ).toContainText("Solo");
     await expect(
       buyer.getByRole("complementary", { name: "Selection summary" }),
     ).toContainText("Solo");
@@ -510,7 +528,7 @@ test("customers submit, revise, accept, cancel and reorder; staff issues immutab
       .locator(".dynamic-form")
       .screenshot({ path: info.outputPath("package-ready.png") });
     await buyer
-      .getByRole("button", { name: "Check selections", exact: true })
+      .getByRole("button", { name: "Continue with this package", exact: true })
       .click();
     await buyer
       .getByLabel("I accept the terms and fixed package price")

@@ -22,6 +22,13 @@ export function selectedLabel(
     return value
       .map((key) => options.find((option) => option.key === key)?.label ?? key)
       .join(", ");
+  if (typeof value === "object")
+    return value.groups
+      .map(
+        (group) =>
+          `${options.find((option) => option.key === group.category)?.label ?? group.category}: ${group.count} · ${group.names.join(", ")}`,
+      )
+      .join("; ");
   return options.find((option) => option.key === value)?.label ?? value;
 }
 export default function SelectionSummary({
@@ -77,8 +84,10 @@ export default function SelectionSummary({
   );
   return (
     <aside className="selection-summary" aria-label="Selection summary">
-      <p className="eyebrow">YOUR CONFIGURATION</p>
-      <h2>{fixed ? "Make it yours." : "Build your next climb."}</h2>
+      <p className="eyebrow">{fixed ? "YOUR PACKAGE" : "YOUR CONFIGURATION"}</p>
+      <h2>
+        {fixed ? "Fixed contents, clear delivery." : "Build your next climb."}
+      </h2>
       <p>
         {chosen} of {fields.length} visible fields answered. This is a
         completion guide, not validation.

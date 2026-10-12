@@ -10,7 +10,7 @@ function submit(label: string) {
   fireEvent.submit(form);
 }
 
-const timings = { retry_after_seconds: 75, expires_in_seconds: 180 };
+const timings = { retry_after_seconds: 120, expires_in_seconds: 180 };
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
@@ -77,7 +77,7 @@ it.each(["customer", "admin", "booster"] as const)(
     const fixture = await open(portal);
     expect(screen.getByLabelText("Email verification code")).toHaveFocus();
     expect(
-      screen.getByRole("button", { name: "Resend code in 1:15" }),
+      screen.getByRole("button", { name: "Resend code in 2:00" }),
     ).toBeDisabled();
     expect(
       screen.getByRole("button", { name: "Verify email code" }),
@@ -87,7 +87,7 @@ it.each(["customer", "admin", "booster"] as const)(
       target: { value: "123456" },
     });
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(75000);
+      await vi.advanceTimersByTimeAsync(120000);
     });
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: "Resend code" }));
@@ -97,7 +97,7 @@ it.each(["customer", "admin", "booster"] as const)(
     expect(fixture.bodies[1]).toEqual(fixture.bodies[0]);
     expect(screen.getByLabelText("Email verification code")).toHaveValue("");
     expect(
-      screen.getByRole("button", { name: "Resend code in 1:15" }),
+      screen.getByRole("button", { name: "Resend code in 2:00" }),
     ).toBeDisabled();
     expect(screen.getByText(/Another code was requested/)).toBeVisible();
     expect(
@@ -123,7 +123,7 @@ it("uses the rate-limit response deadline for failed resends", async () => {
     ),
   );
   await act(async () => {
-    await vi.advanceTimersByTimeAsync(75000);
+    await vi.advanceTimersByTimeAsync(120000);
   });
   await act(async () => {
     fireEvent.click(screen.getByRole("button", { name: "Resend code" }));
@@ -137,6 +137,41 @@ it("uses the rate-limit response deadline for failed resends", async () => {
   expect(fixture.count()).toBe(2);
 });
 
+it.each(["admin", "booster"] as const)(
+  "returns %s to its retained email entry when staff access is removed before resend",
+  async (portal) => {
+    await open(portal, () =>
+      Promise.resolve(
+        Response.json({ code: "staff_access_required" }, { status: 403 }),
+      ),
+    );
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(120000);
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Resend code" }));
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    expect(screen.getByLabelText("Work email address")).toHaveValue(
+      "same@example.test",
+    );
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "No verification code was sent",
+    );
+    expect(screen.getByRole("alert")).toHaveFocus();
+    expect(
+      screen.queryByLabelText("Email verification code"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Check your inbox")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Resend code/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Send verification code" }),
+    ).toBeEnabled();
+  },
+);
+
 it("guards concurrent resends and handles a lost connection without inventing success", async () => {
   let reject: ((error: Error) => void) | undefined;
   const fixture = await open(
@@ -147,7 +182,7 @@ it("guards concurrent resends and handles a lost connection without inventing su
       }),
   );
   await act(async () => {
-    await vi.advanceTimersByTimeAsync(75000);
+    await vi.advanceTimersByTimeAsync(120000);
   });
   await act(async () => {
     const button = screen.getByRole("button", {
@@ -199,7 +234,7 @@ it("does not bypass the current cooldown by changing the email form", async () =
   expect(
     screen.getByRole("button", { name: "Send verification code" }),
   ).toBeDisabled();
-  expect(screen.getByText("Request another code in 1:15.")).toBeVisible();
+  expect(screen.getByText("Request another code in 2:00.")).toBeVisible();
   submit("Send verification code");
   expect(fixture.count()).toBe(1);
 });
@@ -214,7 +249,7 @@ it("does not replace a working challenge when resend timing is missing", async (
     target: { value: "123456" },
   });
   await act(async () => {
-    await vi.advanceTimersByTimeAsync(75000);
+    await vi.advanceTimersByTimeAsync(120000);
   });
   await act(async () => {
     fireEvent.click(screen.getByRole("button", { name: "Resend code" }));

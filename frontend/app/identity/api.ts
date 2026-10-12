@@ -216,6 +216,10 @@ const messages = new Map([
   ],
   ["sign_in_required", "Your session ended. Sign in again."],
   ["permission_denied", "You do not have permission for this action."],
+  [
+    "staff_access_required",
+    "Staff access is not available for this email in this workspace. Ask the owner to add or restore your account here. No verification code was sent.",
+  ],
   ["mfa_required", "Verify a fresh authenticator code before continuing."],
   [
     "recent_auth_required",

@@ -1,5 +1,6 @@
 import { Link, useLoaderData, useSearchParams } from "../portal-router";
 import type { Feed } from "./model";
+import { answerText } from "../catalog/model";
 export default function PublicReviews() {
   const feed = useLoaderData<Feed>(),
     [params] = useSearchParams(),
@@ -97,11 +98,7 @@ export default function PublicReviews() {
               {item.feedback.map((field, index) => (
                 <div key={index}>
                   <dt>{field.label}</dt>
-                  <dd>
-                    {Array.isArray(field.value)
-                      ? field.value.join(", ")
-                      : String(field.value)}
-                  </dd>
+                  <dd>{answerText(field.value)}</dd>
                 </div>
               ))}
             </dl>

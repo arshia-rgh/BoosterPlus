@@ -1,3 +1,4 @@
+import "../catalog/service-tiles.css";
 import ShopArtwork from "./artwork";
 import { useEffect, useState, useRef } from "react";
 import {
@@ -113,7 +114,7 @@ function ShopBrowse({ slug }: { slug: string }) {
                 </p>
               </div>
             ) : (
-              <div className="shop-grid">
+              <div className="shop-grid service-tiles">
                 {resource.data.items.map((p) => (
                   <article key={p.id} className="shop-card">
                     <ShopArtwork

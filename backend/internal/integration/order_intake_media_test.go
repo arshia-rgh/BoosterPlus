@@ -26,6 +26,7 @@ func intakeOrderDB(t *testing.T) *orderFixture {
 	f := orderDB(t)
 	c := f.game.Configuration
 	c.Services[0].Fields = append(c.Services[0].Fields, catalog.Field{Key: "screenshot", Label: "Rank screenshot", Type: "attachment", Stage: "order"})
+	c.Packages[0].Variants[0].ExcludedFields = append(c.Packages[0].Variants[0].ExcludedFields, "screenshot")
 	var err error
 	f.game, err = f.catalog.Mutate(t.Context(), f.admin, f.game.ID, "save", catalog.Change{Revision: f.game.Revision, Configuration: c})
 	if err != nil {

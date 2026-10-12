@@ -270,9 +270,13 @@ function EmailFormFields({
   const expiresSeconds = useCountdown(expiresAt);
   const expired = expiresAt !== undefined && expiresSeconds === 0;
   const codeContainer = useRef<HTMLDivElement>(null);
+  const entryFeedback = useRef<HTMLParagraphElement>(null);
   useEffect(() => {
     if (challenge) codeContainer.current?.querySelector("input")?.focus();
   }, [challenge]);
+  useEffect(() => {
+    if (!challenge && resendProblem) entryFeedback.current?.focus();
+  }, [challenge, resendProblem]);
   async function requestCode(body: EmailRequest) {
     const startedAt = Date.now();
     const result = await post("/auth/email/request", body, challengeSchema);
@@ -294,6 +298,12 @@ function EmailFormFields({
       setResent(true);
     } catch (error) {
       setResendProblem(error);
+      if (error instanceof APIError && error.code === "staff_access_required") {
+        setChallenge("");
+        setDone(false);
+        setRetryAt(undefined);
+        setExpiresAt(undefined);
+      }
       if (error instanceof APIError && error.retryAt !== undefined) {
         setRetryAt(error.retryAt);
         entry?.setRetryAt(error.retryAt);
@@ -313,6 +323,11 @@ function EmailFormFields({
     ]).get(purpose) ?? "Verify email";
   return (
     <section className="identity-section">
+      {!challenge && resendProblem !== null && (
+        <p role="alert" ref={entryFeedback} tabIndex={-1}>
+          {errorMessage(resendProblem)}
+        </p>
+      )}
       {!challenge && (
         <Form
           title={title}
@@ -364,6 +379,7 @@ function EmailFormFields({
               }
               type="email"
               autoComplete="email"
+              defaultValue={request?.email}
             />
           )}
           {purpose === "login" && (
@@ -1095,6 +1111,10 @@ function PortalIdentity({
   const googleError = new Map([
     ["verification", "Google verification failed. Start again or use email."],
     [
+      "staff_access",
+      `${portal === "booster" ? "Booster" : "Admin"} access is not available for this Google account. Ask the owner to add or restore your account in this workspace.`,
+    ],
+    [
       "link_conflict",
       "Sign in to your existing account with email, then link Google from account security.",
     ],
@@ -1294,8 +1314,10 @@ function PortalIdentity({
                 </p>
                 {portal !== "customer" && (
                   <p className="quiet">
-                    Access is managed by PLAYORA. This page does not create
-                    staff accounts.
+                    Ask the owner to add your email in Customers & staff and
+                    select the {portal === "booster" ? "Booster" : "Admin"}{" "}
+                    workspace first. An account in another workspace does not
+                    give access here.
                   </p>
                 )}
                 <AuthEntryProgress>

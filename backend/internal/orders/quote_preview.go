@@ -75,5 +75,5 @@ func (s *Store) quoteCommercial(ctx context.Context, tx *ent.Tx, row *ent.Order,
 	if err != nil {
 		return Commercial{}, err
 	}
-	return Commercial{Revision: row.QuoteCount + 1, Currency: input.Currency, SubtotalMinor: input.AmountMinor, AmountMinor: total, Discount: discount, Lines: lines, Scope: input.Scope, Reason: input.Reason, DeliveryMinHours: input.DeliveryMinHours, DeliveryMaxHours: input.DeliveryMaxHours, ExpiresAt: input.ExpiresAt.UTC().Truncate(time.Microsecond), TermsVersion: terms}, nil
+	return Commercial{Revision: row.QuoteCount + 1, Currency: input.Currency, SubtotalMinor: input.AmountMinor, AmountMinor: total, Discount: discount, Lines: lines, Scope: input.Scope, Reason: input.Reason, DeliveryMinHours: input.DeliveryMinHours, DeliveryMaxHours: input.DeliveryMaxHours, DeliveryBasis: catalog.DeliveryBasis, ExpiresAt: input.ExpiresAt.UTC().Truncate(time.Microsecond), TermsVersion: terms}, nil
 }

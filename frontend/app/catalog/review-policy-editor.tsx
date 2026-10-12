@@ -97,6 +97,7 @@ export default function ReviewPolicyEditor({
             <details key={index} className="catalog-item">
               <summary>Feedback rule: {rule.key}</summary>
               <RuleEditor
+                config={config}
                 rule={rule}
                 fields={policy.fields}
                 change={(patch) => {

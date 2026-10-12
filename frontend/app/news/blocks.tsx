@@ -1,4 +1,5 @@
 import ArtworkUpload from "../artwork/upload";
+import ImageRowEditor from "./image-row-editor";
 import { useState, useRef, useContext } from "react";
 import { FieldValidation } from "../ui/form-validation";
 import { Action, Select, Text } from "../catalog/controls";
@@ -16,17 +17,26 @@ export function BlocksEditor({
   const container = useRef<HTMLElement>(null);
   const focus = (i: number) => {
     requestAnimationFrame(() => {
-      container.current
-        ?.querySelector<HTMLElement>(
+      (
+        container.current?.querySelector<HTMLElement>(
           `[data-block-index="${String(i)}"] input, [data-block-index="${String(i)}"] textarea, [data-block-index="${String(i)}"] button`,
-        )
-        ?.focus();
+        ) ??
+        container.current?.querySelector<HTMLElement>('[name="new_block_kind"]')
+      )?.focus();
     });
   };
   const [kind, setKind] = useState<Block["kind"]>("paragraph");
   const update = (index: number, patch: Partial<Block>) => {
     change(value.map((b, i) => (i === index ? { ...b, ...patch } : b)));
   };
+  function insert(index: number) {
+    if (value.length >= 100) return;
+    const key = String(nextKey.current++);
+    setKeys((old) => [...old.slice(0, index), key, ...old.slice(index)]);
+    change([...value.slice(0, index), emptyBlock(kind), ...value.slice(index)]);
+    focus(index);
+  }
+  const label = kind === "gallery" ? "image row" : `${kind} block`;
   return (
     <section
       ref={container}
@@ -39,6 +49,19 @@ export function BlocksEditor({
         Use structured blocks. Text is rendered literally; HTML, scripts and
         embedded widgets are not supported.
       </p>
+      <Select
+        name="new_block_kind"
+        label="New block type"
+        value={kind}
+        options={blockKinds.map((v) => [
+          v,
+          v === "gallery" ? "Image row · up to 4 images" : v,
+        ])}
+        change={(v) => {
+          const selected = blockKinds.find((b) => b === v);
+          if (selected) setKind(selected);
+        }}
+      />
       {value.map((b, i) => (
         <fieldset
           className="news-block"
@@ -59,14 +82,17 @@ export function BlocksEditor({
           </legend>
           {!["list", "image"].includes(b.kind) && (
             <Text
+              name={`blocks.${String(i)}.text`}
               label={
-                b.kind === "table"
-                  ? "Table caption"
-                  : b.kind === "heading"
-                    ? "Heading"
-                    : b.kind === "link"
-                      ? "Link text"
-                      : "Text"
+                b.kind === "gallery"
+                  ? "Image row description (optional)"
+                  : b.kind === "table"
+                    ? "Table caption"
+                    : b.kind === "heading"
+                      ? "Heading"
+                      : b.kind === "link"
+                        ? "Link text"
+                        : "Text"
               }
               value={b.text}
               multiline={["paragraph", "quote", "code"].includes(b.kind)}
@@ -101,6 +127,7 @@ export function BlocksEditor({
             <>
               <ArtworkUpload
                 purpose="inline"
+                name={`blocks.${String(i)}.url`}
                 pathLabel="Local image path"
                 value={b.url}
                 change={(url) => {
@@ -108,6 +135,7 @@ export function BlocksEditor({
                 }}
               />
               <Text
+                name={`blocks.${String(i)}.alt`}
                 label="Image description"
                 value={b.alt}
                 change={(alt) => {
@@ -115,6 +143,7 @@ export function BlocksEditor({
                 }}
               />
               <Text
+                name={`blocks.${String(i)}.source`}
                 label="Image attribution / rights"
                 value={b.source}
                 change={(source) => {
@@ -122,6 +151,7 @@ export function BlocksEditor({
                 }}
               />
               <Text
+                name={`blocks.${String(i)}.text`}
                 label="Caption"
                 value={b.text}
                 change={(text) => {
@@ -129,6 +159,15 @@ export function BlocksEditor({
                 }}
               />
             </>
+          )}
+          {b.kind === "gallery" && (
+            <ImageRowEditor
+              images={b.images ?? []}
+              path={`blocks.${String(i)}.images`}
+              change={(images) => {
+                update(i, { images });
+              }}
+            />
           )}
           {b.kind === "list" && (
             <Text
@@ -164,6 +203,22 @@ export function BlocksEditor({
             </>
           )}
           <div className="catalog-actions">
+            <Action
+              disabled={value.length >= 100}
+              onClick={() => {
+                insert(i);
+              }}
+            >
+              Insert {label} before block {i + 1}
+            </Action>
+            <Action
+              disabled={value.length >= 100}
+              onClick={() => {
+                insert(i + 1);
+              }}
+            >
+              Insert {label} after block {i + 1}
+            </Action>
             <Action
               disabled={i === 0}
               onClick={() => {
@@ -226,25 +281,13 @@ export function BlocksEditor({
           </div>
         </fieldset>
       ))}
-      <Select
-        label="New block type"
-        value={kind}
-        options={blockKinds.map((v) => [v, v])}
-        change={(v) => {
-          const selected = blockKinds.find((b) => b === v);
-          if (selected) setKind(selected);
-        }}
-      />
       <Action
         disabled={value.length >= 100}
         onClick={() => {
-          const key = String(nextKey.current++);
-          setKeys((old) => [...old, key]);
-          change([...value, emptyBlock(kind)]);
-          focus(value.length);
+          insert(value.length);
         }}
       >
-        Add {kind} block
+        Add {label}
       </Action>
     </section>
   );

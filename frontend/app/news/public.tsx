@@ -1,3 +1,4 @@
+import "../catalog/service-tiles.css";
 import {
   useRevalidator,
   Link,
@@ -69,17 +70,15 @@ export function NewsIndex() {
           </Action>
         </section>
       )}
-      <div className="news-cards">
+      <div className="news-cards service-tiles">
         {page.items.map((v) => (
           <article className="news-card" key={v.id}>
-            {v.definition.asset && (
-              <ShopArtwork
-                placement="card"
-                source={v.definition.asset}
-                alt={v.definition.asset_alt}
-                lazy
-              />
-            )}
+            <ShopArtwork
+              placement="card"
+              source={v.definition.asset}
+              alt={v.definition.asset_alt}
+              lazy
+            />
             <p className="eyebrow">{v.definition.kind}</p>
             <h3>
               <Link
@@ -177,7 +176,7 @@ export function NewsArticle() {
       {related.length > 0 && (
         <section>
           <h3>Related reading</h3>
-          <div className="news-cards">
+          <div className="news-cards service-tiles">
             {related.map((v) => (
               <article className="news-card" key={v.id}>
                 <h4>

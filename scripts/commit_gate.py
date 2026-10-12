@@ -60,6 +60,9 @@ def main():
     paths = [item.decode() for item in raw.split(b"\0") if item]
     selected = scope(paths)
     if selected == "full":
+        from service144_resume import run_if_available as service144_continuation
+        if service144_continuation():
+            return
         from mobile_resume import run_if_available as mobile_continuation
         if mobile_continuation():
             return

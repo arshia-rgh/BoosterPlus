@@ -1,0 +1,162 @@
+/* Shared released-product tiles. Square media never forces text to clip. */
+.service-tiles.service-tiles,
+.experience .service-tiles.service-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: stretch;
+}
+.service-tiles > article {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.service-tiles :is(.shop-artwork, .account-image-placeholder),
+.service-tiles .market-card > img,
+.service-tiles .shop-card img,
+.experience .service-tiles .game-card img.package-card-artwork {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+.service-tiles .market-card > :is(img, .account-image-placeholder) {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  margin: 0;
+  border-radius: 0.6rem;
+}
+.service-tiles .news-card,
+.service-tiles .game-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.service-tiles .game-card > .button:last-child {
+  margin-top: auto;
+  align-self: start;
+}
+.game-post-statistics {
+  position: relative;
+}
+.custom-boost-action {
+  position: sticky;
+  top: 0;
+  z-index: 12;
+  padding: 0.65rem clamp(1rem, 5vw, 5rem);
+  background: #0c241bf5;
+  border-block: 1px solid #639d754f;
+  box-shadow: 0 0.5rem 1.5rem #0002;
+}
+.custom-boost-action-inner {
+  position: relative;
+  max-width: 1280px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.custom-boost-action .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  white-space: normal;
+  text-align: center;
+}
+.custom-boost-action .button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+.custom-boost-label {
+  min-width: 0;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.custom-boost-choices {
+  position: absolute;
+  top: calc(100% + 0.65rem);
+  right: 0;
+  width: min(100%, 30rem);
+  max-height: 65dvh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem;
+  background: #122d20;
+  border: 1px solid #5e916f;
+  border-radius: 0 0 1rem 1rem;
+  box-shadow: 0 1rem 2rem #0005;
+}
+.custom-boost-choices h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+.custom-boost-action[data-choices-flow="true"] {
+  position: static;
+}
+.custom-boost-action[data-choices-flow="true"] .custom-boost-action-inner {
+  flex-direction: column;
+  align-items: stretch;
+}
+.custom-boost-action[data-choices-flow="true"] .custom-boost-choices {
+  position: static;
+  width: 100%;
+  max-height: none;
+}
+.game-post-statistics:has(.custom-boost-action)
+  :is(h2, input, select, textarea, button, a) {
+  scroll-margin-top: 7rem;
+}
+.game-post-statistics:has(.custom-boost-action)
+  .custom-boost-choices
+  :is(button, a) {
+  scroll-margin: 0;
+}
+@media (max-width: 1100px) {
+  .service-tiles.service-tiles,
+  .experience .service-tiles.service-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 650px) {
+  .service-tiles.service-tiles,
+  .experience .service-tiles.service-tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .custom-boost-prompt {
+    display: none;
+  }
+  .custom-boost-action-inner > .button {
+    width: 100%;
+  }
+  .custom-boost-action {
+    padding-top: max(0.5rem, env(safe-area-inset-top));
+  }
+}
+@media (max-width: 400px) {
+  .custom-boost-action-inner > .button {
+    padding-inline: 0.75rem;
+  }
+  .custom-boost-action-inner > .button svg {
+    display: none;
+  }
+}
+@media (max-width: 1000px) and (min-height: 601px) {
+  .storefront-app:has(#customer-activity-slot .customer-activity)
+    .custom-boost-action {
+    top: var(--activity-header-height, 120px);
+  }
+}
+/* Short/zoomed viewports leave room for the content and the software keyboard. */
+@media (max-height: 600px) {
+  .custom-boost-action {
+    position: static;
+  }
+}

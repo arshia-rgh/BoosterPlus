@@ -232,3 +232,32 @@
 .win-rate-preference .catalog-grid {
   margin-top: 0.8rem;
 }
+
+.experience .game-card img.package-card-artwork {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 1rem;
+  background: var(--surface, #10291f);
+}
+.package-detail-artwork {
+  display: block;
+  width: min(100%, 32rem);
+  height: auto;
+  max-height: 32rem;
+  object-fit: contain;
+  border-radius: 1rem;
+}
+.package-specifications {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1rem;
+}
+.package-specifications dt {
+  font-weight: 650;
+}
+.package-specifications dd {
+  margin: 0.25rem 0 0;
+  overflow-wrap: anywhere;
+}

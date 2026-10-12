@@ -39,15 +39,16 @@ type Option struct {
 
 // ServiceDefinition pins its form, catalogs and evaluator in the same release.
 type ServiceDefinition struct {
-	Key         string             `json:"key"`
-	Name        string             `json:"name"`
-	Description string             `json:"description"`
-	Evaluator   string             `json:"evaluator"`
-	Fields      []Field            `json:"fields"`
-	Rules       []Rule             `json:"rules"`
-	Pricing     *PricePlan         `json:"pricing,omitempty"`
-	Fulfillment *FulfillmentPolicy `json:"fulfillment,omitempty"`
-	Delivery    *DeliveryPolicy    `json:"delivery,omitempty"`
+	Key             string             `json:"key"`
+	Name            string             `json:"name"`
+	Description     string             `json:"description"`
+	Evaluator       string             `json:"evaluator"`
+	Fields          []Field            `json:"fields"`
+	Rules           []Rule             `json:"rules"`
+	Pricing         *PricePlan         `json:"pricing,omitempty"`
+	Fulfillment     *FulfillmentPolicy `json:"fulfillment,omitempty"`
+	Delivery        *DeliveryPolicy    `json:"delivery,omitempty"`
+	DeliveryRequest *DeliveryRequest   `json:"delivery_request,omitempty"`
 }
 
 // Field is declarative. Numeric answers and bounds use exact decimal strings.
@@ -83,14 +84,23 @@ type Condition struct {
 
 // Rule rejects combinations or compares configured rank positions/unit counts.
 type Rule struct {
-	Key       string     `json:"key"`
-	Kind      string     `json:"kind"`
-	Message   string     `json:"message"`
-	When      *Condition `json:"when,omitempty"`
-	From      string     `json:"from"`
-	To        string     `json:"to"`
-	FromUnits string     `json:"from_units"`
-	ToUnits   string     `json:"to_units"`
+	Key       string       `json:"key"`
+	Kind      string       `json:"kind"`
+	Message   string       `json:"message"`
+	When      *Condition   `json:"when,omitempty"`
+	From      string       `json:"from"`
+	To        string       `json:"to"`
+	FromUnits string       `json:"from_units"`
+	ToUnits   string       `json:"to_units"`
+	LinkMode  string       `json:"link_mode,omitempty"`
+	Links     []ChoiceLink `json:"links,omitempty"`
+}
+
+// ChoiceLink explicitly maps a parent option to its allowed children.
+// Display names carry no inferred region, server, role or hero semantics.
+type ChoiceLink struct {
+	Parent   string   `json:"parent"`
+	Children []string `json:"children"`
 }
 
 // Package variants carry exact positive amounts, never floating-point money.
@@ -98,21 +108,27 @@ type Package struct {
 	Key         string    `json:"key"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
+	Asset       string    `json:"asset,omitempty"`
+	AssetAlt    string    `json:"asset_alt,omitempty"`
+	AssetSource string    `json:"asset_source,omitempty"`
 	Service     string    `json:"service"`
 	Variants    []Variant `json:"variants"`
 }
 
 // Variant eligibility uses the referenced service's ordinary nonsecret answers.
 type Variant struct {
-	Key              string     `json:"key"`
-	Name             string     `json:"name"`
-	Currency         string     `json:"currency"`
-	AmountMinor      string     `json:"amount_minor"`
-	Capacity         *int       `json:"capacity,omitempty"`
-	DeliveryMinHours int        `json:"delivery_min_hours"`
-	DeliveryMaxHours int        `json:"delivery_max_hours"`
-	RequiredFields   []string   `json:"required_fields"`
-	Eligibility      *Condition `json:"eligibility,omitempty"`
+	Key              string   `json:"key"`
+	Name             string   `json:"name"`
+	Currency         string   `json:"currency"`
+	AmountMinor      string   `json:"amount_minor"`
+	Capacity         *int     `json:"capacity,omitempty"`
+	DeliveryMinHours int      `json:"delivery_min_hours"`
+	DeliveryMaxHours int      `json:"delivery_max_hours"`
+	RequiredFields   []string `json:"required_fields"`
+	// Nil identifies legacy offers which have not had their fixed scope reviewed.
+	PresetAnswers  *Answers   `json:"preset_answers,omitempty"`
+	ExcludedFields []string   `json:"excluded_fields,omitempty"`
+	Eligibility    *Condition `json:"eligibility,omitempty"`
 }
 
 // FAQ is plain text, rendered without HTML interpretation.

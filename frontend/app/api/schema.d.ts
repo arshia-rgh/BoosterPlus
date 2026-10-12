@@ -4281,7 +4281,7 @@ export interface paths {
     };
     /**
      * getAuthSession
-     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access.
      */
     get: operations["portalGetAuthSession"];
     put?: never;
@@ -4303,7 +4303,7 @@ export interface paths {
     put?: never;
     /**
      * requestEmailCode
-     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access.
      */
     post: operations["portalRequestEmailCode"];
     delete?: never;
@@ -4323,7 +4323,7 @@ export interface paths {
     put?: never;
     /**
      * verifyEmailCode
-     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access.
      */
     post: operations["portalVerifyEmailCode"];
     delete?: never;
@@ -4343,7 +4343,7 @@ export interface paths {
     put?: never;
     /**
      * startGoogle
-     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access.
      */
     post: operations["portalStartGoogle"];
     delete?: never;
@@ -4361,7 +4361,7 @@ export interface paths {
     };
     /**
      * finishGoogle
-     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access.
      */
     get: operations["portalFinishGoogle"];
     put?: never;
@@ -4383,7 +4383,7 @@ export interface paths {
     put?: never;
     /**
      * logout
-     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access.
      */
     post: operations["portalLogout"];
     delete?: never;
@@ -4403,7 +4403,7 @@ export interface paths {
     put?: never;
     /**
      * disableMFA
-     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access.
      */
     post: operations["portalDisableMFA"];
     delete?: never;
@@ -4423,7 +4423,7 @@ export interface paths {
     put?: never;
     /**
      * revokeSessions
-     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access.
      */
     post: operations["portalRevokeSessions"];
     delete?: never;
@@ -4443,7 +4443,7 @@ export interface paths {
     put?: never;
     /**
      * enrollMFA
-     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access.
      */
     post: operations["portalEnrollMFA"];
     delete?: never;
@@ -4463,7 +4463,7 @@ export interface paths {
     put?: never;
     /**
      * verifyMFA
-     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access.
      */
     post: operations["portalVerifyMFA"];
     delete?: never;
@@ -4483,7 +4483,7 @@ export interface paths {
     put?: never;
     /**
      * regenerateRecoveryCodes
-     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Google callbacks return to the same portal on the trusted configured origin.
+     * @description Explicit portal authentication. Challenges, cookies, CSRF, Google state/nonce/PKCE and MFA are isolated by audience. Staff sign-in requires an existing eligible account; no staff signup. Missing or inactive staff access returns staff_access_required (403), without sending a code. Resend waits 120 seconds; throttled requests return rate_limited (429), not code-sent success. Google callbacks return to the same portal on the trusted configured origin, with error=staff_access for unavailable workspace access.
      */
     post: operations["portalRegenerateRecoveryCodes"];
     delete?: never;
@@ -5601,6 +5601,7 @@ export interface components {
       options: components["schemas"]["CatalogOption"][] | null;
     };
     CatalogOption: {
+      /** @description Stable opaque option value; may equal its label, including spaces, case and Unicode. No control characters or leading/trailing whitespace. Structural field keys keep their separate identifier syntax. */
       key: string;
       label: string;
       units: number;
@@ -5615,6 +5616,12 @@ export interface components {
       pricing?: components["schemas"]["CatalogPricePlan"];
       fulfillment?: components["schemas"]["FulfillmentPolicy"];
       delivery?: components["schemas"]["DeliveryPolicy"];
+      delivery_request?: {
+        minimum: string;
+        maximum: string;
+        /** @enum {string} */
+        basis: "payment_and_access_v1";
+      };
     };
     CatalogField: {
       key: string;
@@ -5632,7 +5639,8 @@ export interface components {
         | "short_text"
         | "long_text"
         | "attachment"
-        | "win_rate";
+        | "win_rate"
+        | "cosmetics";
       /** @enum {string} */
       stage: "estimate" | "order" | "fulfillment";
       required: boolean;
@@ -5665,6 +5673,12 @@ export interface components {
       to: string;
       from_units: string;
       to_units: string;
+      /** @enum {string} */
+      link_mode?: "single_parent" | "shared_parent";
+      links?: {
+        parent: string;
+        children: string[];
+      }[];
     };
     CatalogPackage: {
       key: string;
@@ -5672,6 +5686,9 @@ export interface components {
       description: string;
       service: string;
       variants: components["schemas"]["CatalogVariant"][] | null;
+      asset?: string;
+      asset_alt?: string;
+      asset_source?: string;
     };
     CatalogVariant: {
       key: string;
@@ -5683,6 +5700,10 @@ export interface components {
       delivery_max_hours: number;
       required_fields: string[] | null;
       eligibility?: components["schemas"]["CatalogCondition"];
+      preset_answers?: {
+        [key: string]: string | boolean | string[];
+      };
+      excluded_fields?: string[] | null;
     };
     CatalogFAQ: {
       question: string;
@@ -5694,7 +5715,11 @@ export interface components {
     };
     CatalogValidation: {
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       issues: components["schemas"]["CatalogIssue"][] | null;
     };
@@ -5753,7 +5778,11 @@ export interface components {
       package?: string;
       variant?: string;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
     };
     CatalogProblem: {
@@ -5776,7 +5805,11 @@ export interface components {
       package?: string;
       variant?: string;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
     };
     CatalogRankPrice: {
@@ -5799,7 +5832,11 @@ export interface components {
     CatalogPriceCase: {
       key: string;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       outcome: string;
       amount_minor: string;
@@ -5826,7 +5863,11 @@ export interface components {
       amount_minor: string;
       version: number;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       lines: components["schemas"]["CatalogPriceLine"][] | null;
       issues: components["schemas"]["CatalogIssue"][] | null;
@@ -5836,7 +5877,11 @@ export interface components {
       release_id: string;
       service: string;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
     };
     CouponDefinition: {
@@ -5880,7 +5925,11 @@ export interface components {
       variant: string;
       code: string;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       /**
        * @description Defaults to estimate; package validation always requires order fields.
@@ -5911,7 +5960,11 @@ export interface components {
       /** @enum {string} */
       kind: "custom" | "package";
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       coupon_code: string;
       accept_terms: boolean;
@@ -5975,6 +6028,7 @@ export interface components {
       delivery_max_hours: number;
       /** Format: date-time */
       expires_at: string;
+      delivery_basis?: string;
     };
     OrderQuote: {
       id: string;
@@ -6001,7 +6055,11 @@ export interface components {
       order: components["schemas"]["OrderSummary"];
       offer: components["schemas"]["CatalogRelease"];
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       estimate: components["schemas"]["CatalogEstimate"];
       coupon_code: string;
@@ -6037,7 +6095,11 @@ export interface components {
     OrderRevision: {
       version: number;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       coupon_code: string;
     };
@@ -6063,7 +6125,11 @@ export interface components {
       variant: string;
       kind: string;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       issues: components["schemas"]["CatalogIssue"][];
     };
@@ -6313,7 +6379,11 @@ export interface components {
       version: number;
       order_version: number;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
     };
     FulfillmentSecretInput: {
@@ -6521,7 +6591,11 @@ export interface components {
       submission: components["schemas"]["SubmissionSummary"];
       offer: components["schemas"]["CatalogRelease"];
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       ownership_notes: string;
       ownership_declared: boolean;
@@ -6561,7 +6635,11 @@ export interface components {
       version: number;
       title: string;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       ownership_notes: string;
       ownership_declared: boolean;
@@ -6603,7 +6681,11 @@ export interface components {
       review: components["schemas"]["PurchaseReviewSummary"];
       body: string;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       policy: components["schemas"]["ReviewPolicySnapshot"];
       response: string;
@@ -6623,7 +6705,11 @@ export interface components {
       rating: number;
       body: string;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       accept_policy: boolean;
     };
@@ -6645,7 +6731,11 @@ export interface components {
       rating: number;
       body: string;
       answers: {
-        [key: string]: string | boolean | string[];
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
       };
       policy: components["schemas"]["ReviewPolicySnapshot"];
       response: string;
@@ -7154,6 +7244,8 @@ export interface components {
       dispute_hours: number;
       delivery_min_hours: number;
       delivery_max_hours: number;
+      /** @description Explicit reviewed cover; must be a selected media_id for new publication. Omitted in older releases and blank in public projections. */
+      cover_media_id?: string;
     };
     AccountListing: {
       id: string;
@@ -7963,7 +8055,8 @@ export interface components {
         | "link"
         | "image"
         | "list"
-        | "table";
+        | "table"
+        | "gallery";
       text: string;
       level: number;
       url: string;
@@ -7972,6 +8065,12 @@ export interface components {
       items: string[] | null;
       headers: string[] | null;
       rows: string[][] | null;
+      images?: {
+        url: string;
+        alt: string;
+        source: string;
+        caption: string;
+      }[];
     };
     ArticleDefinition: {
       title: string;
@@ -8136,6 +8235,26 @@ export interface components {
       /** @enum {string} */
       role: "administrator" | "booster";
       display_name?: string;
+    };
+    CatalogEstimatePreviewInput: {
+      release_id: string;
+      service: string;
+      answers: {
+        [key: string]:
+          | string
+          | boolean
+          | string[]
+          | components["schemas"]["CatalogCosmetics"];
+      };
+      /** @description Optional unsaved working configuration. Admin-only, validated without storing or publishing; the saved revision must still match. */
+      configuration?: components["schemas"]["CatalogConfiguration"];
+    };
+    CatalogCosmetics: {
+      groups: {
+        category: string;
+        count: string;
+        names: string[];
+      }[];
     };
   };
   responses: never;
@@ -9917,7 +10036,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CatalogEstimateInput"];
+        "application/json": components["schemas"]["CatalogEstimatePreviewInput"];
       };
     };
     responses: {

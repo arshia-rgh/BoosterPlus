@@ -109,9 +109,13 @@ it("retains customer wording and focuses the local notice after a stale-version 
   expect(screen.getByLabelText("Purchase feedback")).toHaveValue(
     "Keep my unsaved feedback",
   );
-  expect(
-    screen.getByRole("group", { name: "Review could not be submitted" }),
-  ).toHaveFocus();
+  // The notice renders before React's focus effect; await the user-visible
+  // outcome rather than depending on this machine's effect scheduling.
+  await waitFor(() =>
+    expect(
+      screen.getByRole("group", { name: "Review could not be submitted" }),
+    ).toHaveFocus(),
+  );
   expect(reload).not.toHaveBeenCalled();
   expect(post).toHaveBeenCalledTimes(1);
 });

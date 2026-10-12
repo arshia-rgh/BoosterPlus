@@ -114,11 +114,15 @@ it("blocks validation until scanning completes, submits only the reference, and 
   fireEvent.change(await screen.findByLabelText("Choose rank screenshot"), {
     target: { files: [image()] },
   });
+  expect(screen.getByRole("button", { name: "Upload image" })).toHaveFocus();
   expect(
     screen.getByRole("button", { name: "Check selections" }),
   ).toBeDisabled();
   fireEvent.click(screen.getByRole("button", { name: "Upload image" }));
   await screen.findByText("Checking image safety…");
+  await waitFor(() => {
+    expect(document.activeElement).toHaveTextContent("Checking image safety…");
+  });
   expect(
     screen.queryByRole("button", { name: "Save revised request" }),
   ).not.toBeInTheDocument();
@@ -190,6 +194,7 @@ it("removes rejected drafts without making them ready or submitting their refere
   await waitFor(() => {
     expect(command).toHaveBeenCalledWith(`/media/${id}/remove`);
     expect(pending).toHaveBeenLastCalledWith(false);
+    expect(screen.getByLabelText("Choose rank screenshot")).toHaveFocus();
   });
 });
 it("retries access failures without posting private data", async () => {

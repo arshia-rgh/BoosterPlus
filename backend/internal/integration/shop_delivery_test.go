@@ -374,7 +374,7 @@ func TestShopDeliveryAssignmentAndPortalBoundaries(t *testing.T) {
 	other := staff("shop-staff@example.test", identity.RoleAdmin)
 	owner := staff("shop-owner@example.test", identity.RoleOwner)
 	booster := staff("shop-booster@example.test", identity.RoleBooster)
-	f.base.auth.clock.Add(61)
+	f.base.auth.clock.Add(121)
 	_, customerOwner := f.base.auth.login(t, owner.User.Email)
 	if customerOwner.User.ID == owner.User.ID || customerOwner.User.MfaEnabled {
 		t.Fatal("customer inherited staff identity or factor")

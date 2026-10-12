@@ -164,6 +164,9 @@ func (s *Store) ChangeListing(ctx context.Context, p *identity.Principal, id, ac
 						return ErrConflict
 					}
 				}
+				if len(input.Product.MediaIDs) > 0 && input.Product.CoverMediaID == "" {
+					return &catalog.Invalid{Issues: []catalog.Issue{{Path: "product.cover_media_id", Message: "Choose a title image from the reviewed public images before publishing."}}}
+				}
 				if !input.PublicReviewed {
 					return ErrInvalid
 				}
@@ -275,10 +278,16 @@ func publicListing(ctx context.Context, client *ent.Client, row *ent.AccountList
 		return PublicListing{}, err
 	}
 	images := []string{}
-	for i := range data.MediaIDs {
-		images = append(images, "/api/v1/accounts/"+row.ID+"/images/"+strconv.Itoa(i)+"?release="+release.ID)
+	for i, id := range data.MediaIDs {
+		path := "/api/v1/accounts/" + row.ID + "/images/" + strconv.Itoa(i) + "?release=" + release.ID
+		if id == data.CoverMediaID {
+			images = append([]string{path}, images...)
+		} else {
+			images = append(images, path)
+		}
 	}
 	data.MediaIDs = []string{}
+	data.CoverMediaID = "" // Private media IDs never leave the reviewed public projection.
 	state := row.State
 	if state == "published" {
 		game, e := client.Game.Get(ctx, row.GameID)

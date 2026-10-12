@@ -146,6 +146,7 @@ type Product struct {
 	Rank                 string      `json:"rank"`
 	Attributes           []Attribute `json:"attributes"`
 	MediaIDs             []string    `json:"media_ids"`
+	CoverMediaID         string      `json:"cover_media_id,omitempty"`
 	Currency             string      `json:"currency"`
 	AmountMinor          string      `json:"amount_minor"`
 	SaleTerms            string      `json:"sale_terms"`
@@ -185,6 +186,9 @@ func validateProduct(v Product) error {
 			return ErrInvalid
 		}
 		media[id] = true
+	}
+	if v.CoverMediaID != "" && !media[v.CoverMediaID] {
+		return ErrInvalid
 	}
 	return nil
 }

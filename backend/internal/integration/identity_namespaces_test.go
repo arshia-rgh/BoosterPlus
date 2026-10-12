@@ -43,7 +43,7 @@ func TestIndependentAccountsInvitationsProfilesSessionsAndEmail(t *testing.T) {
 		if _, err = f.service.InviteStaff(ctx, owner, input); !errors.Is(err, identity.ErrConflict) {
 			t.Fatal("duplicate namespace invitation accepted", err)
 		}
-		f.clock.Add(61)
+		f.clock.Add(121)
 		_, pending := f.login(t, input.Email, portal)
 		if err = identity.Require(pending, "self"); !errors.Is(err, identity.ErrMFA) {
 			t.Fatal("invited staff bypassed own authenticator", err)
@@ -174,7 +174,7 @@ func TestOwnerPreparationRequiresOwnAdminVerificationAndMFA(t *testing.T) {
 	if err = f.service.BootstrapOwner(ctx, prepared.ID, "fixture-operator"); !errors.Is(err, identity.ErrMFA) {
 		t.Fatal("unverified admin bootstrap succeeded", err)
 	}
-	f.clock.Add(61)
+	f.clock.Add(121)
 	_, pending := f.login(t, customer.User.Email, identity.PortalAdmin)
 	_, _, admin := f.enroll(t, pending)
 	if err = f.service.BootstrapOwner(ctx, admin.User.ID, "fixture-operator"); err != nil {

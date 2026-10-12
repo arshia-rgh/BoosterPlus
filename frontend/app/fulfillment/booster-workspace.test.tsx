@@ -126,6 +126,11 @@ it("conceals recoverable drafts and clears them after access is removed", async 
   status = 403;
   fireEvent.click(screen.getByRole("button", { name: "Refresh assignment" }));
   await screen.findByRole("region", { name: "Assignment access removed" });
+  await waitFor(() =>
+    expect(
+      screen.getByRole("heading", { name: "Assignment access changed" }),
+    ).toHaveFocus(),
+  );
   expect(
     screen.queryByLabelText("Customer-visible update"),
   ).not.toBeInTheDocument();
