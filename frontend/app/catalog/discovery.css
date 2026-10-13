@@ -213,6 +213,143 @@
 .experience .guided-configuration .selection-summary dd {
   margin: 0;
 }
+.selection-summary .configuration-price {
+  padding-block: 0.5rem;
+  border-block: 1px solid #466751;
+  margin-block: 1rem;
+}
+.selection-summary .configuration-price-amount {
+  color: #dcf0c6;
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+  margin: 0.5rem 0;
+  overflow-wrap: anywhere;
+}
+.configuration-price-amount > span {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  color: #c5dccd;
+}
+.selection-summary
+  :is(.selection-choices, .configuration-price-details)
+  > summary {
+  min-height: 44px;
+  align-content: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.configuration-price-details ul {
+  padding-left: 1.2rem;
+}
+.configuration-price-details li {
+  overflow-wrap: anywhere;
+}
+.selection-summary-live .configuration-price-status {
+  min-height: 5rem;
+  display: grid;
+  align-content: center;
+}
+.selection-summary-live .configuration-price-status > p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.selection-summary-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+}
+.experience .guided-configuration .selection-summary-actions > .button {
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  min-height: 44px;
+  margin: 0;
+  white-space: nowrap;
+}
+.selection-details-dialog {
+  width: min(36rem, calc(100vw - 2rem));
+  max-height: calc(100svh - 2rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: #10271b;
+  color: #e4ecdc;
+  border: 1px solid #739065;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+.selection-details-dialog::backdrop {
+  background: #06100de6;
+}
+body:has(.selection-details-dialog[open]) {
+  overflow: hidden;
+}
+.selection-details-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.selection-details-heading > .button {
+  flex: 0 0 auto;
+}
+.experience .selection-summary .configuration-price-details {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+}
+@media (max-width: 900px) {
+  .experience .guided-configuration .selection-summary.selection-summary-live {
+    grid-column: 1;
+    grid-row: 1;
+    position: sticky;
+    top: 0.5rem;
+    z-index: 4;
+    padding: 0.75rem 1rem;
+    max-height: none;
+    overflow: visible;
+    box-shadow: 0 8px 24px #07161155;
+  }
+  .experience .configuration-layout:has(.selection-summary-live) > fieldset {
+    grid-row: 2;
+  }
+  .selection-summary-live > .eyebrow {
+    display: none;
+  }
+  .experience .guided-configuration .selection-summary-live h2 {
+    font-size: 1rem;
+    margin: 0 0 0.4rem;
+  }
+  .selection-summary-live .configuration-price {
+    margin-block: 0.25rem;
+    padding-block: 0;
+    border-top: 0;
+  }
+  .selection-summary-live .configuration-price-amount {
+    font-size: 1.5rem;
+    margin-block: 0.4rem;
+  }
+  .selection-summary-live .configuration-price-note {
+    margin-block: 0.4rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+  .configuration-layout:has(.selection-summary-live)
+    .catalog-input
+    :is(input, select, textarea, button) {
+    scroll-margin-top: calc(45svh + 1rem);
+  }
+}
+@media (max-width: 900px) and (max-height: 550px) {
+  .experience .guided-configuration .selection-summary.selection-summary-live {
+    position: static;
+    max-height: none;
+  }
+}
 .experience .guided-configuration > [aria-label="Price estimate"] {
   background: #183324;
   color: #e4ecdc;

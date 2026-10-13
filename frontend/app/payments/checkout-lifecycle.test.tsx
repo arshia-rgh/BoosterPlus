@@ -173,16 +173,12 @@ it("keeps checkout continuation through the real workspace's temporary access su
       "https://nowpayments.io/payment/?iid=123",
     );
   });
-  expect(
-    screen.getByRole("link", { name: "Continue to NOWPayments" }),
-  ).toBeVisible();
+  expect(screen.getByRole("link", { name: "Go to payment" })).toBeVisible();
   view.rerender(content(false));
   expect(continueToProvider).toHaveBeenCalledOnce();
   // Returning later offers a deliberate continuation, never another auto-redirect.
   view.unmount();
   render(content(false));
-  expect(
-    screen.getByRole("link", { name: "Continue to NOWPayments" }),
-  ).toBeVisible();
+  expect(screen.getByRole("link", { name: "Go to payment" })).toBeVisible();
   expect(continueToProvider).toHaveBeenCalledOnce();
 });

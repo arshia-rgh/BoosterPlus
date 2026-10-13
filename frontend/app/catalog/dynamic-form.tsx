@@ -1,4 +1,7 @@
 import ChoiceInput from "./choice-input";
+import PriceEstimate from "./price-estimate";
+import { useLiveEstimate } from "./live-estimate";
+export { minorDisplay } from "./price-estimate";
 import { rankUnitsField, rankUnitsError, isRankGoalField } from "./rank-units";
 import CosmeticsInput from "./cosmetics-input";
 import {
@@ -446,6 +449,76 @@ function ConfigurationForm({
       matches(field.visible_when, values, service.fields) &&
       uploads[field.key],
   );
+  const liveSummary = !!journey && !variant && !previewPath && !onCommit;
+  const estimateAnswers = visibleAnswers(service, raw, "estimate");
+  const complete = service.fields
+    .filter(
+      (field) =>
+        field.stage === "estimate" &&
+        matches(field.visible_when, estimateAnswers, service.fields),
+    )
+    .every((field) => {
+      const value = estimateAnswers[field.key];
+      const required =
+        field.required ||
+        (!!field.required_when &&
+          matches(field.required_when, estimateAnswers, service.fields));
+      if (
+        required &&
+        (value === undefined ||
+          value === "" ||
+          (Array.isArray(value) && value.length === 0))
+      )
+        return false;
+      if (
+        isWinRateField(field) &&
+        typeof value === "string" &&
+        ["invalid", "legacy"].includes(parseWinRate(value).kind)
+      )
+        return false;
+      return !rankUnitsError(service, config, field, estimateAnswers);
+    });
+  const live = useLiveEstimate({
+    enabled:
+      liveSummary &&
+      stage === "estimate" &&
+      hydrated &&
+      !unavailable &&
+      !busy &&
+      !valid,
+    complete,
+    slug,
+    releaseID,
+    service: service.key,
+    answers: estimateAnswers,
+    coupon,
+  });
+  const shownEstimate =
+    estimate ?? (!issues.length && !error && !busy ? live.estimate : undefined);
+  const priceState = unavailable
+    ? "unavailable"
+    : busy
+      ? "checking"
+      : issues.length
+        ? "invalid"
+        : live.state;
+  const retryEstimate =
+    !unavailable &&
+    !busy &&
+    !issues.length &&
+    ["error", "expired"].includes(live.state)
+      ? live.retry
+      : undefined;
+  const priceView = (liveSummary || estimate) && (
+    <PriceEstimate
+      estimate={shownEstimate}
+      fixed={!!variant}
+      compact={liveSummary}
+      state={priceState}
+      message={live.message}
+      retry={retryEstimate}
+    />
+  );
   function retainOrderDetails(next: Answers): Answers {
     if (!journey || stage !== "estimate") return next;
     const details = Object.fromEntries(
@@ -833,6 +906,19 @@ function ConfigurationForm({
               values={values}
               stage={stage}
               fixed={!!variant}
+              compact={liveSummary}
+              price={priceView}
+              priceDetails={
+                liveSummary && (
+                  <PriceEstimate
+                    estimate={shownEstimate}
+                    state={priceState}
+                    message={live.message}
+                    retry={retryEstimate}
+                  />
+                )
+              }
+              retry={liveSummary ? retryEstimate : undefined}
               state={
                 unavailable
                   ? "unavailable"
@@ -842,15 +928,21 @@ function ConfigurationForm({
                       ? "error"
                       : issues.length
                         ? "invalid"
-                        : estimate?.outcome === "manual_review"
+                        : shownEstimate?.outcome === "manual_review"
                           ? "manual"
-                          : estimate?.outcome === "estimated"
+                          : shownEstimate?.outcome === "estimated"
                             ? "estimated"
                             : valid
                               ? "valid"
-                              : changed
-                                ? "changed"
-                                : "unchecked"
+                              : liveSummary && live.state === "checking"
+                                ? "checking"
+                                : liveSummary && live.state === "error"
+                                  ? "error"
+                                  : liveSummary && live.state === "invalid"
+                                    ? "invalid"
+                                    : changed
+                                      ? "changed"
+                                      : "unchecked"
               }
             />
           )}
@@ -870,42 +962,7 @@ function ConfigurationForm({
               : "A custom order will require an administrator’s final quote."}
           </p>
         )}
-        {estimate && (
-          <section aria-label="Price estimate" aria-live="polite">
-            {estimate.outcome === "estimated" ? (
-              <>
-                <h2>
-                  Estimated price: {estimate.currency}{" "}
-                  {minorDisplay(estimate.amount_minor)}
-                </h2>
-                <ul>
-                  {estimate.lines.map((line) => (
-                    <li key={line.key}>
-                      {line.label}: {estimate.currency}{" "}
-                      {minorDisplay(line.amount_minor)}
-                    </li>
-                  ))}
-                </ul>
-                <p>
-                  {variant
-                    ? "Package discount is provisional until checkout."
-                    : "Final price requires an administrator’s quote."}{" "}
-                  This estimate expires{" "}
-                  {new Date(estimate.expires_at).toLocaleTimeString()}.
-                </p>
-                {estimate.discount && (
-                  <p>
-                    Coupon checks do not reserve a use. Personal limits apply
-                    when signed in; eligibility is checked again when the order
-                    becomes payable.
-                  </p>
-                )}
-              </>
-            ) : estimate.outcome === "manual_review" ? (
-              <p>Your selections need a manual price review.</p>
-            ) : null}
-          </section>
-        )}
+        {(previewPath || onCommit) && priceView}
         {valid &&
           !uploadPending &&
           stage === "order" &&
@@ -962,13 +1019,6 @@ function ConfigurationForm({
       </form>
     </FieldValidation>
   );
-}
-
-export function minorDisplay(value: string): string {
-  const amount = BigInt(value),
-    negative = amount < 0n,
-    absolute = negative ? -amount : amount;
-  return `${negative ? "−" : ""}${String(absolute / 100n)}.${String(absolute % 100n).padStart(2, "0")}`;
 }
 
 export default function DynamicForm(

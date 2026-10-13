@@ -1,6 +1,6 @@
 # Account commissions and approved policy release
 
-Owner authorization: 13 October 2026, after approval of the full researched policy package in `docs/legal/2026-10-13`. Base source: `963523d57b8b59be8fd480b6de59e82e9969b4ff`. Status: implementation and scoped review completed; full qualification, deployment and publication pending.
+Owner authorization: 13 October 2026, after approval of the full researched policy package in `docs/legal/2026-10-13`. Base source: `963523d57b8b59be8fd480b6de59e82e9969b4ff`. Status: signed commission release deployed and verified on 14 October under the superseding focused-check policy; normal authenticated policy publication is in progress.
 
 ## Scope and acceptance
 
@@ -43,3 +43,13 @@ The final combined candidate will use a fresh `service148/full2` source and the 
 ## Superseding 14 October qualification direction
 
 The owner stopped full2 during its final production database stage and requested lightweight/focused checks for deployments until further notice. The run is cancelled, not a complete pass; completed results and original logs are retained. Continue this release under the updated tracked-hook policy, with unchanged application bytes and senior review plus new checks for the gate-policy delta. See `focused-deployments-2026-10-14.md` for exact cancellation evidence and the separately requested next release. Policy publication follows the signed deployment through normal owner verification.
+
+## Deployment and publication, 14 October
+
+Release `b0d7a9908f89ea782555438f0000f83c913cc3f5` passed the normal focused hook, exact CI38470902804 and five-image release38472694237. Signed manifest SHA256: `ff9407fe15f5a20353e72d39bae0cbf4db436a4d15408f8633afb7c05ac8ea0d`. The owner then approved this exact release without off-host backup, accepting possible forward-fix recovery after new commission data. That one-use deployment exception is consumed.
+
+Server preflight and activation verification passed at schema41. `/srv/playora/releases/b0d7a99/deployment.env` is current; deployment state is `passed`, activation is confirmed, and the release state is `deployed_verified`. All three public hosts, service health, unchanged migration version and protected configuration hashes were checked. Stable99f60bd runtime files and private webmail remain unchanged. Checkout is enabled; outgoing transfers and customer deletion remain disabled. No real invoice, transfer or external test message was created.
+
+Through the normal signed-in admin editor, legal draft1's complete combined text and all eight structured pages matched the approved payload. Its reviewed publication is waiting for the owner's normal authenticator confirmation. The retention draft1 also matches the approved730/730/365/365-day periods,30-day grace and evidence preservation, with customer deletion disabled; its normal publication remains pending.
+
+The owner's MLBB edits were preserved: the current editor export is revision250 (SHA256 `db6cd1399abd46c62bbeba841b3a534e0427accd53de0c671286687b58799ba6`). Its review policy matches the approved revision246 draft exactly, as does the currently public version249. Therefore no catalog overwrite or publication of unrelated newer draft changes is required. Actual seller offers still need real base prices and fixed crypto conversion quotes; policy publication does not create those facts or activate transfers.

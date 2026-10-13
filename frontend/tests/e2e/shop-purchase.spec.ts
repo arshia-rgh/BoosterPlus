@@ -50,7 +50,7 @@ async function capture(page: Page, name: string, width: number) {
             ]
           : [
               page.getByRole("link", {
-                name: "Continue to NOWPayments",
+                name: "Go to payment",
                 exact: true,
               }),
               page.getByRole("button", {
@@ -208,7 +208,7 @@ test("@global-policy customer purchases shop item and staff reviews scanned manu
       .check();
     const payment = await hostedCheckout(buyer);
     const providerLink = buyer.getByRole("link", {
-      name: "Continue to NOWPayments",
+      name: "Go to payment",
       exact: true,
     });
     await expect(providerLink).toHaveAttribute(

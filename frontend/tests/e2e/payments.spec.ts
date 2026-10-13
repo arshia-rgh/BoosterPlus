@@ -109,14 +109,14 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     await customerContext.setOffline(true);
     await expect(
       customer.getByRole("link", {
-        name: "Continue to NOWPayments",
+        name: "Go to payment",
         exact: true,
       }),
     ).toHaveCount(0);
     await customerContext.setOffline(false);
     await expect(
       customer.getByRole("link", {
-        name: "Continue to NOWPayments",
+        name: "Go to payment",
         exact: true,
       }),
     ).toBeVisible({ timeout: 15000 });
@@ -134,7 +134,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
     ).toBeVisible();
     await expect(
       customer.getByRole("link", {
-        name: "Continue to NOWPayments",
+        name: "Go to payment",
         exact: true,
       }),
     ).toHaveCount(0);
@@ -147,7 +147,7 @@ test("staff publishes policy and verifies customer payment, dispute and refund",
       .click();
     await expect(
       customer.getByRole("link", {
-        name: "Continue to NOWPayments",
+        name: "Go to payment",
         exact: true,
       }),
     ).toBeVisible();

@@ -418,7 +418,7 @@ export default function Checkout({
             !expired &&
             !admin && (
               <a className="button" href={latest.checkout_url} rel="noreferrer">
-                Continue to NOWPayments
+                Go to payment
               </a>
             )}
           {!latest.native_checkout &&

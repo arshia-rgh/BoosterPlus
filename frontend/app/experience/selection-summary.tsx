@@ -1,3 +1,4 @@
+import { useId, useRef, type ReactNode } from "react";
 import { formatWinRate, isWinRateField } from "../catalog/win-rate";
 import {
   matches,
@@ -38,12 +39,20 @@ export default function SelectionSummary({
   stage,
   fixed,
   state = "unchecked",
+  compact = false,
+  price,
+  priceDetails,
+  retry,
 }: {
   config: Configuration;
   service: Service;
   values: Answers;
   stage: string;
   fixed: boolean;
+  compact?: boolean;
+  price?: ReactNode;
+  priceDetails?: ReactNode;
+  retry?: (() => void) | undefined;
   state?:
     | "unchecked"
     | "checking"
@@ -55,6 +64,8 @@ export default function SelectionSummary({
     | "unavailable"
     | "error";
 }) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const detailsTitle = useId();
   const fields = service.fields.filter(
     (field) =>
       stageIndex(field.stage) <= stageIndex(stage) &&
@@ -82,12 +93,8 @@ export default function SelectionSummary({
         "win_rate",
       ].includes(field.type) && field.stage === "estimate",
   );
-  return (
-    <aside className="selection-summary" aria-label="Selection summary">
-      <p className="eyebrow">{fixed ? "YOUR PACKAGE" : "YOUR CONFIGURATION"}</p>
-      <h2>
-        {fixed ? "Fixed contents, clear delivery." : "Build your next climb."}
-      </h2>
+  const choices = (
+    <>
       <p>
         {chosen} of {fields.length} visible fields answered. This is a
         completion guide, not validation.
@@ -130,8 +137,8 @@ export default function SelectionSummary({
                     ? "These selections need a manual price review. Continue to request a quote from our team."
                     : state === "estimated"
                       ? fixed
-                        ? "Your provisional package discount is below. Eligibility is checked again at checkout."
-                        : "Your provisional estimate is below. Our team confirms the final quote before you pay."
+                        ? "Your provisional package discount is shown here. Eligibility is checked again at checkout."
+                        : "Your provisional estimate is shown here. Our team confirms the final quote before you pay."
                       : state === "valid"
                         ? "Your selections are checked. Review the request and consent below before submitting."
                         : fixed
@@ -142,6 +149,82 @@ export default function SelectionSummary({
         Private order details stay in the form. Selected non-private choices can
         be restored after sign-in.
       </p>
+    </>
+  );
+  return (
+    <aside
+      className={`selection-summary${compact ? " selection-summary-live" : ""}`}
+      aria-label="Selection summary"
+    >
+      <p className="eyebrow">{fixed ? "YOUR PACKAGE" : "YOUR CONFIGURATION"}</p>
+      <h2>
+        {fixed ? "Fixed contents, clear delivery." : "Build your next climb."}
+      </h2>
+      {price}
+      {compact ? (
+        <>
+          <div className="selection-summary-actions">
+            <button
+              className="button secondary compact"
+              type="button"
+              aria-haspopup="dialog"
+              onClick={(event) => {
+                event.currentTarget.focus();
+                dialog.current?.showModal();
+              }}
+            >
+              Price &amp; selections
+            </button>
+            {retry && (
+              <button
+                className="button secondary compact"
+                type="button"
+                aria-label="Refresh estimate"
+                onClick={retry}
+              >
+                Refresh
+              </button>
+            )}
+          </div>
+          <dialog
+            ref={dialog}
+            className="selection-details-dialog"
+            aria-labelledby={detailsTitle}
+            onKeyDown={(event) => {
+              if (event.key !== "Tab") return;
+              const controls = Array.from(
+                event.currentTarget.querySelectorAll<HTMLElement>(
+                  "button:not(:disabled), summary, a[href], [tabindex='0']",
+                ),
+              ).filter((element) => element.getClientRects().length > 0);
+              const first = controls[0],
+                last = controls.at(-1);
+              if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last?.focus();
+              } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first?.focus();
+              }
+            }}
+          >
+            <div className="selection-details-heading">
+              <h2 id={detailsTitle}>Price &amp; selections</h2>
+              <button
+                className="button secondary compact"
+                type="button"
+                onClick={() => dialog.current?.close()}
+              >
+                Close details
+              </button>
+            </div>
+            {priceDetails}
+            {choices}
+          </dialog>
+        </>
+      ) : (
+        choices
+      )}
     </aside>
   );
 }

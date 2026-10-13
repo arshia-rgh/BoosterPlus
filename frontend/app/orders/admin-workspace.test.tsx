@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
@@ -80,6 +81,65 @@ const detail = detailSchema.parse({
     lines: [],
     issues: [],
   },
+});
+
+it("shows the saved customer estimate in Overview and beside a newer accepted quote", async () => {
+  const saved = detailSchema.parse({
+    ...detail,
+    estimate: {
+      ...detail.estimate,
+      outcome: "estimated",
+      currency: "USD",
+      amount_minor: "4999",
+      expires_at: "2026-01-01T00:00:00Z",
+      lines: [
+        { key: "base", label: "Original rank climb", amount_minor: "4999" },
+      ],
+    },
+    contract: {
+      id: "contract",
+      payment_state: "unpaid",
+      data: {
+        quote_id: "quote",
+        revision: 2,
+        currency: "USD",
+        subtotal_minor: "5500",
+        amount_minor: "5500",
+        lines: [],
+        scope: "Agreed scope",
+        reason: "Reviewed",
+        delivery_min_hours: 1,
+        delivery_max_hours: 24,
+        expires_at: "2099-01-01T00:00:00Z",
+        terms_version: "terms-v1",
+      },
+    },
+  });
+  vi.mocked(get).mockResolvedValue(saved);
+  mount("overview");
+  const original = await screen.findByRole("region", {
+    name: "Customer’s original estimate",
+  });
+  expect(original).toHaveTextContent("USD 49.99");
+  expect(original).toHaveTextContent("provisional estimate");
+  fireEvent.click(within(original).getByText("View original price breakdown"));
+  expect(within(original).getByText("Original rank climb")).toBeVisible();
+  fireEvent.click(screen.getByRole("link", { name: "Quote & agreement" }));
+  expect(
+    screen.getByRole("region", { name: "Customer’s original estimate" }),
+  ).toHaveTextContent("USD 49.99");
+  expect(
+    screen.getByRole("region", { name: "Accepted agreement" }),
+  ).toHaveTextContent("USD 55.00");
+});
+
+it("labels a manually reviewed custom order without inventing a numeric estimate", async () => {
+  vi.mocked(get).mockResolvedValue(detail);
+  mount("overview");
+  expect(
+    await screen.findByRole("region", { name: "Customer’s original estimate" }),
+  ).toHaveTextContent("No numeric estimate was provided");
+  expect(screen.queryByText("USD 0.00")).toBeNull();
 });
 
 function mount(

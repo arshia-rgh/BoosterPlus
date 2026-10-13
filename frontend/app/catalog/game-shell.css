@@ -7,6 +7,7 @@
   padding: 0;
 }
 .game-shell {
+  --game-gutter: clamp(1.5rem, 5vw, 5rem);
   position: relative;
 }
 .game-backdrop {
@@ -99,7 +100,7 @@
   min-width: 0;
   max-width: 1440px;
   margin: auto;
-  padding: clamp(2rem, 5vw, 5rem);
+  padding: clamp(2rem, 5vw, 5rem) var(--game-gutter);
 }
 .game-content-error {
   padding: 1.5rem;
@@ -119,6 +120,9 @@
   }
 }
 @media (max-width: 700px) {
+  .game-shell {
+    --game-gutter: 1rem;
+  }
   .game-backdrop {
     bottom: auto;
     height: 100lvh;
@@ -159,7 +163,7 @@
     width: 100%;
     max-width: none;
     margin: 0;
-    padding: clamp(180px, 49vw, 260px) 1.25rem 1.5rem;
+    padding: clamp(180px, 49vw, 260px) var(--game-gutter) 1.5rem;
   }
   .experience .game-stage-copy h1 {
     font-size: clamp(2.125rem, 8vw, 3rem);
@@ -168,7 +172,7 @@
     padding-top: 2rem;
   }
   .game-local-content {
-    padding: 1.5rem 1rem 3rem;
+    padding: 1.5rem var(--game-gutter) 3rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -180,7 +184,7 @@
 .game-faq {
   max-width: 1440px;
   margin: auto;
-  padding: 0 clamp(1rem, 5vw, 5rem);
+  padding: 0 var(--game-gutter);
 }
 .game-faq {
   padding-bottom: 5rem;

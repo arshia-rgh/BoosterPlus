@@ -255,7 +255,7 @@ it("renders a server estimate and clears it when selections change", async () =>
   ).toBeVisible();
   expect(
     screen.getByRole("complementary", { name: "Selection summary" }),
-  ).toHaveTextContent("Your provisional estimate is below");
+  ).toHaveTextContent("Your provisional estimate is shown here");
   expect(post).toHaveBeenLastCalledWith(
     "/catalog/games/test/estimate",
     { release_id: "release", service: "boost", answers: { one: false } },

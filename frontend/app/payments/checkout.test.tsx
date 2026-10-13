@@ -223,7 +223,7 @@ it.each(["uncertain", "confirming", "settled", "closed", "exception"])(
     });
     render(<Checkout detail={detail} admin={false} changed={changed} />);
     expect(
-      screen.queryByRole("link", { name: /Continue to NOWPayments/ }),
+      screen.queryByRole("link", { name: /Go to payment/ }),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Create secure checkout" }),
@@ -261,7 +261,7 @@ it("hides an expired link without fabricating provider failure or settlement", (
     screen.getByRole("heading", { name: "Checkout window ended" }),
   ).toBeVisible();
   expect(
-    screen.queryByRole("link", { name: /Continue to NOWPayments/ }),
+    screen.queryByRole("link", { name: /Go to payment/ }),
   ).not.toBeInTheDocument();
   expect(changed).not.toHaveBeenCalled();
 });
@@ -399,9 +399,10 @@ it("continues a newly requested hosted checkout once, with a visible fallback", 
       attempt.checkout_url,
     );
   });
-  expect(
-    screen.getByRole("link", { name: "Continue to NOWPayments" }),
-  ).toHaveAttribute("href", attempt.checkout_url);
+  expect(screen.getByRole("link", { name: "Go to payment" })).toHaveAttribute(
+    "href",
+    attempt.checkout_url,
+  );
   view.rerender(<Checkout detail={detail} admin={false} changed={changed} />);
   expect(continueToProvider).toHaveBeenCalledOnce();
 });
@@ -483,7 +484,7 @@ it("gives missing-link recovery its own support path and honest connection feedb
     screen.getByText(/Reconnect, then refresh payment information/),
   ).toBeVisible();
   expect(
-    screen.queryByRole("link", { name: "Continue to NOWPayments" }),
+    screen.queryByRole("link", { name: "Go to payment" }),
   ).not.toBeInTheDocument();
   const waiting = result.data.attempts[0];
   if (!waiting) throw new Error("Missing test attempt");
@@ -493,8 +494,6 @@ it("gives missing-link recovery its own support path and honest connection feedb
   expect(
     screen.queryByText(/payment link is still being recovered/),
   ).not.toBeInTheDocument();
-  expect(
-    screen.getByRole("link", { name: "Continue to NOWPayments" }),
-  ).toBeVisible();
+  expect(screen.getByRole("link", { name: "Go to payment" })).toBeVisible();
   expect(continueToProvider).not.toHaveBeenCalled();
 });

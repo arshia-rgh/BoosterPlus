@@ -18,6 +18,32 @@
   margin: 0;
   min-width: 0;
 }
+.admin-customer-estimate {
+  margin-block: 1.25rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid #517d5c;
+  border-radius: 1rem;
+  background: #163024;
+}
+.admin-customer-estimate .admin-estimate-amount {
+  margin-block: 0.5rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  color: #c9eeb6;
+  font-variant-numeric: tabular-nums;
+}
+.admin-customer-estimate summary {
+  min-height: 44px;
+  align-content: center;
+  cursor: pointer;
+}
+.admin-customer-estimate dl > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
 .admin-order-workspace .record-heading h2 {
   font-size: clamp(1.3rem, 3vw, 2rem);
   overflow-wrap: anywhere;

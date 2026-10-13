@@ -33,9 +33,7 @@ export async function hostedCheckout(page: Page): Promise<string> {
   const paymentID = new URL(page.url()).searchParams.get("iid");
   if (!paymentID) throw new Error("Missing synthetic provider reference");
   await page.goto(returnURL);
-  await expect(
-    page.getByRole("link", { name: "Continue to NOWPayments" }),
-  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Go to payment" })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Payment verified", exact: true }),
   ).toHaveCount(0);

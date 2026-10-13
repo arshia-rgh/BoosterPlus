@@ -42,16 +42,20 @@ test("legacy boosting intent survives the game directory, reload and back; form 
   await page
     .getByRole("button", { name: "Check selections", exact: true })
     .click();
-  await expect(summary).toContainText("Some selections need attention");
+  await expect(summary).toContainText(
+    "Check your selections to update the estimate",
+  );
   await page.getByLabel("Mode (required)").selectOption("duo");
-  await expect(summary).toContainText("Your selections have changed");
+  await expect(
+    summary.getByText("Updating your estimate…", { exact: true }),
+  ).toBeVisible();
   await page
     .getByRole("button", { name: "Check selections", exact: true })
     .click();
   const result = page.getByRole("region", { name: "Price estimate" });
   await expect(result).toContainText("manual price review");
   await expect(summary).toContainText(
-    "These selections need a manual price review",
+    "Your selections need a manual price review",
   );
   await result.scrollIntoViewIfNeeded();
   const bounds = await page.locator(".dynamic-form").evaluate((form) => {
@@ -62,9 +66,15 @@ test("legacy boosting intent survives the game directory, reload and back; form 
       .querySelector('[aria-label="Price estimate"]')
       ?.getBoundingClientRect();
     if (!summary || !result) throw new Error("Missing summary or result");
-    return { bottom: summary.bottom, top: result.top };
+    return {
+      bottom: summary.bottom,
+      top: summary.top,
+      priceTop: result.top,
+      priceBottom: result.bottom,
+    };
   });
-  expect(bounds.bottom).toBeLessThanOrEqual(bounds.top);
+  expect(bounds.priceTop).toBeGreaterThanOrEqual(bounds.top);
+  expect(bounds.priceBottom).toBeLessThanOrEqual(bounds.bottom);
   await page.screenshot({
     path: `.cache/hf02a-form-${info.project.name}.png`,
     fullPage: true,

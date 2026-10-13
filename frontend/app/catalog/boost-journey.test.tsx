@@ -90,6 +90,56 @@ beforeEach(() => {
   vi.resetAllMocks();
   sessionStorage.clear();
 });
+it("updates the price beside the choices without changing focus or advancing the request", async () => {
+  vi.mocked(post).mockImplementation((path, data) => {
+    const input = data as { answers: { mode: string } };
+    if (path.endsWith("/validate"))
+      return Promise.resolve({ answers: input.answers, issues: [] });
+    return Promise.resolve({
+      release_id: "r",
+      version: 1,
+      evaluator: "pricing-v1",
+      outcome: "estimated",
+      currency: "USD",
+      amount_minor: input.answers.mode === "solo" ? "2500" : "3000",
+      expires_at: new Date(Date.now() + 60_000).toISOString(),
+      answers: input.answers,
+      lines: [],
+      issues: [],
+    });
+  });
+  const router = await setup();
+  const choice = screen.getByLabelText("Play mode (required)");
+  choice.focus();
+  fireEvent.change(choice, { target: { value: "duo" } });
+  expect(
+    await screen.findByRole("heading", { name: "Estimated price: USD 30.00" }),
+  ).toBeVisible();
+  expect(
+    screen.getByRole("complementary", { name: "Selection summary" }),
+  ).toHaveTextContent("USD 30.00");
+  expect(choice).toHaveFocus();
+  expect(router.state.location.search).toBe("");
+  expect(screen.queryByLabelText("Instructions")).toBeNull();
+  fireEvent.change(choice, { target: { value: "solo" } });
+  expect(
+    screen.queryByRole("heading", { name: "Estimated price: USD 30.00" }),
+  ).toBeNull();
+  expect(
+    await screen.findByRole("heading", { name: "Estimated price: USD 25.00" }),
+  ).toBeVisible();
+  expect(choice).toHaveFocus();
+  fireEvent.click(button());
+  await screen.findByLabelText("Instructions");
+  expect(post).toHaveBeenCalledWith(
+    "/catalog/games/game/validate",
+    expect.objectContaining({ answers: { mode: "solo" } }),
+    expect.anything(),
+  );
+  expect(
+    screen.getByRole("region", { name: "Price estimate" }),
+  ).toHaveTextContent("USD 25.00");
+});
 it("requires validation before review and preserves private in-memory details through editing", async () => {
   const router = await setup();
   vi.mocked(post).mockResolvedValueOnce({

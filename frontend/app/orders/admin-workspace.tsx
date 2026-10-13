@@ -38,6 +38,49 @@ const sections = [
   { id: "payment", label: "Payment & cases" },
   { id: "history", label: "Activity" },
 ];
+function CustomerEstimate({ detail }: { detail: Detail }) {
+  if (detail.order.kind !== "custom") return null;
+  const estimate = detail.estimate;
+  return (
+    <section
+      className="admin-customer-estimate"
+      aria-label="Customer’s original estimate"
+    >
+      <p className="eyebrow">CUSTOMER’S ORIGINAL ESTIMATE</p>
+      {estimate.outcome === "estimated" ? (
+        <>
+          <p className="admin-estimate-amount">
+            {estimate.currency} {minorDisplay(estimate.amount_minor)}
+          </p>
+          <p>
+            Saved with the customer’s request. This was a provisional estimate;
+            review the requested scope before deciding the final quote.
+          </p>
+          {estimate.lines.length > 0 && (
+            <details>
+              <summary>View original price breakdown</summary>
+              <dl>
+                {estimate.lines.map((line) => (
+                  <div key={line.key}>
+                    <dt>{line.label}</dt>
+                    <dd>
+                      {estimate.currency} {minorDisplay(line.amount_minor)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </details>
+          )}
+        </>
+      ) : (
+        <p>
+          No numeric estimate was provided. The customer requested a manual
+          price review.
+        </p>
+      )}
+    </section>
+  );
+}
 function Workspace({
   detail,
   back,
@@ -133,6 +176,7 @@ function Workspace({
                         "No accepted agreement"}
                     </dd>
                   </dl>
+                  <CustomerEstimate detail={detail} />
                   <div className="catalog-actions">
                     {canQuote
                       ? local("quote", "Prepare customer quote")
@@ -171,6 +215,7 @@ function Workspace({
               {section === "quote" && (
                 <>
                   <h3>Quote & agreement</h3>
+                  <CustomerEstimate detail={detail} />
                   {agreement ? (
                     <section
                       aria-label={
@@ -185,12 +230,7 @@ function Workspace({
                       <Agreement data={agreement} />
                     </section>
                   ) : (
-                    <p>
-                      {detail.estimate.outcome === "estimated"
-                        ? `Original estimate: ${detail.estimate.currency} ${minorDisplay(detail.estimate.amount_minor)}. `
-                        : ""}
-                      No final quote has been issued.
-                    </p>
+                    <p>No final quote has been issued.</p>
                   )}
                   {canQuote && <QuoteEditor detail={detail} done={reload} />}
                 </>
