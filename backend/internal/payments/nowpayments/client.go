@@ -161,8 +161,19 @@ func (c *Client) CreateInvoice(ctx context.Context, input InvoiceRequest) (Invoi
 	if orderID, exists := value["order_id"]; exists && orderID != input.AttemptID {
 		return Invoice{}, ErrAmbiguous
 	}
-	if currency, exists := value["price_currency"]; exists && currency != strings.ToLower(input.Currency) {
-		return Invoice{}, ErrAmbiguous
+	if currency, exists := value["price_currency"]; exists {
+		// Live invoice responses use uppercase codes even for lowercase input.
+		// Only normalize ASCII case; whitespace, other assets and types still fail.
+		code, valid := currency.(string)
+		if !valid || strings.ToLower(code) != payload.Currency {
+			return Invoice{}, ErrAmbiguous
+		}
+	}
+	if currency, exists := value["pay_currency"]; exists && input.PayCurrency != "" {
+		code, valid := currency.(string)
+		if !valid || strings.ToLower(code) != input.PayCurrency {
+			return Invoice{}, ErrAmbiguous
+		}
 	}
 	if responseAmount, exists := value["price_amount"]; exists {
 		observed, e := decimal(responseAmount)

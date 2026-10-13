@@ -198,6 +198,8 @@ func TestConcurrentReadsAndSignalsRemainIndependent(t *testing.T) {
 func TestInvoiceEchoMustMatchPersistedCommercialInput(t *testing.T) {
 	for _, value := range []map[string]any{
 		{"price_amount": "123.44"}, {"price_currency": "eur"}, {"price_amount": "not-a-number"}, {"order_id": "different"},
+		{"price_currency": " USD"}, {"price_currency": nil}, {"price_currency": 123},
+		{"pay_currency": "USDTBSC"}, {"pay_currency": "usdttrc20 "}, {"pay_currency": nil}, {"pay_currency": true},
 	} {
 		c := testClient(t)
 		value["id"] = "1"
@@ -206,5 +208,31 @@ func TestInvoiceEchoMustMatchPersistedCommercialInput(t *testing.T) {
 		if _, err := c.CreateInvoice(t.Context(), sampleRequest()); !errors.Is(err, ErrAmbiguous) {
 			t.Fatal("changed commercial echo accepted", err)
 		}
+	}
+}
+
+// The owner-approved 13 October live diagnostic returned uppercase currency
+// echoes and an integer-looking decimal string. IDs below are synthetic.
+func TestInvoiceLiveResponseCurrencyCase(t *testing.T) {
+	for _, currency := range []string{"USD", "usd", "Usd"} {
+		t.Run(currency, func(t *testing.T) {
+			c := testClient(t)
+			input := sampleRequest()
+			input.AmountMinor, input.PayCurrency = "5000", "usdtbsc"
+			calls := 0
+			attach(t, c, func(w http.ResponseWriter, _ *http.Request) {
+				calls++
+				respond(t, w, map[string]any{
+					"id": "1234567890", "invoice_url": "https://nowpayments.io/payment/?iid=1234567890",
+					"order_id": input.AttemptID, "price_amount": "50", "price_currency": currency,
+					"pay_currency": "USDTBSC", "customer_email": nil, "payout_currency": nil,
+					"source": nil, "collect_user_data": false, "is_fixed_rate": true, "is_fee_paid_by_user": false,
+				})
+			})
+			invoice, err := c.CreateInvoice(t.Context(), input)
+			if err != nil || invoice.ID != "1234567890" || invoice.URL != "https://nowpayments.io/payment/?iid=1234567890" || calls != 1 {
+				t.Fatal("valid live-format invoice must retain a hosted link without repeating the POST", invoice, err, calls)
+			}
+		})
 	}
 }
