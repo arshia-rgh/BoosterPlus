@@ -1,5 +1,9 @@
 # PLAYORA policy review package
 
+## New policy revision for review
+
+The complete [13 October 2026 policy package](2026-10-13/README.md) adds the owner-selected account commissions (seller 10%, buyer 5%) and supplies seller/buyer agreements, shop/review/delivery policies and updated privacy/cookie/retention drafts. It is unpublished and preserves the approved files below unchanged. Read its review index for proposed defaults, editor text and implementation gaps. The remaining sections of this file describe the earlier October review snapshot.
+
 Revised 4 October 2026. **Drafts only: not published, not installed as production terms, and not a launch approval.**
 
 The owner subsequently approved this wording for launch preparation on 4 October 2026. See [the exact approved snapshot and future editing rules](APPROVAL.md). Publication and the implementation/disclosure requirements below remain separate.

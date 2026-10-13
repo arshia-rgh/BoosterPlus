@@ -1,5 +1,9 @@
 # Implementation progress
 
+### Complete policy draft package (13 October 2026)
+
+Prepared `legal/2026-10-13/README.md` and its complete terms, seller/buyer, crypto, refund/compensation, boosting/delivery, shop, review/content, contact/complaint, privacy/cookie and retention drafts after primary-source competitor/provider/regulator research. The owner-selected account fees use seller 10% and buyer 5% on the base, with full buyer-fee refund protection. Added bounded admin field copy and a local eight-section plain-text editorial export. Proposed timings and retention remain distinguishable from confirmed decisions; fee implementation, legal operator facts, per-account amounts and activation are not fabricated. Prior approved snapshots remain unchanged. Documentation-only checks passed: three immutable approved-source hashes, four fee examples, internal document links, 16 bounded editor texts, eight unique legal sections, serialized size limits and the normal repository gate. No runtime, policy publication, financial or deletion action is performed.
+
 ### Service147 delivered (13 October 2026)
 
 The combined MLBB catalog/payment release `b248493` is live at schema41. Exact lightweight CI, immutable image scans/signatures and deployment/runtime checks passed under the owner's one-use full-test waiver and explicit exact-release recovery approval. The full suite was not rerun or relabeled passed. Normal authenticated catalog publication, completed by the owner's fresh authenticator, published MLBB version244 (editor revision245). The public configuration and three package covers match the approved prepared content; four offers are visible. Existing finance/privacy settings are preserved, and no extra live invoice, funds or mail action occurred. Off-host recovery and owner-led real payment acceptance remain outstanding. See `service147-combined-release.md` for precise evidence and limitations.
