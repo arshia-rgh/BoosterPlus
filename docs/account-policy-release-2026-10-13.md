@@ -1,6 +1,6 @@
 # Account commissions and approved policy release
 
-Owner authorization: 13 October 2026, after approval of the full researched policy package in `docs/legal/2026-10-13`. Base source: `963523d57b8b59be8fd480b6de59e82e9969b4ff`. Status: signed commission release deployed and verified on 14 October under the superseding focused-check policy; normal authenticated policy publication is in progress.
+Owner authorization: 13 October 2026, after approval of the full researched policy package in `docs/legal/2026-10-13`. Base source: `963523d57b8b59be8fd480b6de59e82e9969b4ff`. Status: signed commission release deployed and verified on 14 October under the superseding focused-check policy; approved legal and disabled-retention policies published and verified.
 
 ## Scope and acceptance
 
@@ -50,6 +50,6 @@ Release `b0d7a9908f89ea782555438f0000f83c913cc3f5` passed the normal focused hoo
 
 Server preflight and activation verification passed at schema41. `/srv/playora/releases/b0d7a99/deployment.env` is current; deployment state is `passed`, activation is confirmed, and the release state is `deployed_verified`. All three public hosts, service health, unchanged migration version and protected configuration hashes were checked. Stable99f60bd runtime files and private webmail remain unchanged. Checkout is enabled; outgoing transfers and customer deletion remain disabled. No real invoice, transfer or external test message was created.
 
-Through the normal signed-in admin editor, legal draft1's complete combined text and all eight structured pages matched the approved payload. Its reviewed publication is waiting for the owner's normal authenticator confirmation. The retention draft1 also matches the approved730/730/365/365-day periods,30-day grace and evidence preservation, with customer deletion disabled; its normal publication remains pending.
+Through the normal signed-in admin editor, legal draft1's complete combined text and all eight structured pages matched the approved payload. After the owner completed normal authenticator verification, legal release `62c96fe3-abc0-4f8c-a6db-7ae24b7f5c29` was published as `playora-policy-2026-10-13-v1`, revision2. The public endpoint's complete payload equals the approved JSON. The retention draft1 also matches the approved730/730/365/365-day periods,30-day grace and evidence preservation, with customer deletion disabled; it was published as `playora-retention-2026-10-13-v1`, revision2, release `f92734f1-c7e5-4a7b-a116-4b4f729cc997`, and the public response confirms disabled deletion.
 
 The owner's MLBB edits were preserved: the current editor export is revision250 (SHA256 `db6cd1399abd46c62bbeba841b3a534e0427accd53de0c671286687b58799ba6`). Its review policy matches the approved revision246 draft exactly, as does the currently public version249. Therefore no catalog overwrite or publication of unrelated newer draft changes is required. Actual seller offers still need real base prices and fixed crypto conversion quotes; policy publication does not create those facts or activate transfers.

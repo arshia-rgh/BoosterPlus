@@ -2127,3 +2127,10 @@ Signed `72ed5947fddf5859899d8c3e2b4f9e73c62177d9` is live at schema 41. All 275 
 ### 14 October 2026 — focused deployment policy
 
 Owner stopped automatic complete qualification and requested lightweight/focused checks until explicitly restored. Service148/full2 was cancelled after 243 production database scenarios passed; its prior 280 backend database scenarios and 170 browser cases passed. Preserve original interruption evidence; no complete-suite pass is claimed. The tracked hook now uses lightweight checks, with full qualification retained on explicit request. Commission/policy delivery continues first; admin estimate visibility, shared responsive layout, plain payment CTA and live custom estimates are queued for the following deployment. See `focused-deployments-2026-10-14.md`.
+
+
+## 14 October 2026 — commissions delivered; live-estimate UI qualified
+
+Signed b0d7a99 is deployed and verified at schema41 after focused checks, CI38470902804, release38472694237 and the exact owner recovery-risk approval. Normal authenticated legal and disabled-retention publication completed; public payloads match the approved package. The existing public MLBB249 seller-review policy already matches, and newer draft250 was preserved. Checkout remains enabled; outgoing transfers and deletion remain disabled. No new live invoice, transfer or external test email was sent. Full2 was cancelled, not passed; off-host recovery remains absent.
+
+The following UI implementation048d1b7 passed the normal focused hook:186 files /838 component tests, static/security/type/contracts/build/budget and14 server tests. Changed browser cases passed Chromium and WebKit at320/390/768/1280, including stale/expired/error/manual estimates, stable mobile layout, keyboard details and shared FAQ alignment. Senior scoped review passed after fixes. Real mobile keyboards and authenticated production acceptance remain owner-led. See `live-estimate-ui-2026-10-14.md` and `account-policy-release-2026-10-13.md`. No full suite restarted.
