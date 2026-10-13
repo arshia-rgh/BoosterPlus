@@ -16,6 +16,49 @@ vi.mock("./secret", () => ({
 vi.mock("./market", () => ({ ProductTerms: () => <p>Accepted terms</p> }));
 afterEach(() => vi.clearAllMocks());
 it.each([false, true])(
+  "uses the accepted agreement to explain inspection (admin=%s)",
+  (admin) => {
+    const data = {
+      state: "acknowledged",
+      version: 2,
+      secret: { state: "active", version: 1 },
+      instructions: "Verify access",
+      dispute_until: "2026-10-20T12:00:00Z",
+      listing: {
+        product: { commission: { version: "account_commission_v1" } },
+      },
+    };
+    vi.mocked(useResource).mockReturnValue({
+      data,
+      loading: false,
+      error: null,
+      reload: vi.fn(),
+    });
+    const renderView = () => (
+      <MemoryRouter>
+        <AccountDelivery id="order" admin={admin} paid changed={vi.fn()} />
+      </MemoryRouter>
+    );
+    const view = render(renderView());
+    expect(screen.getByText(/Initial inspection ends:/)).toBeVisible();
+    expect(
+      screen.getByText(/Your protected refund and support rights continue/),
+    ).toBeVisible();
+    expect(screen.queryByText(/Dispute deadline:/)).not.toBeInTheDocument();
+    vi.mocked(useResource).mockReturnValue({
+      data: { ...data, listing: { product: {} } },
+      loading: false,
+      error: null,
+      reload: vi.fn(),
+    });
+    view.rerender(renderView());
+    expect(screen.getByText(/Dispute deadline:/)).toBeVisible();
+    expect(
+      screen.queryByText(/Initial inspection ends:/),
+    ).not.toBeInTheDocument();
+  },
+);
+it.each([false, true])(
   "focuses an explicit handoff success after its refresh, without moving focus on later reads (admin=%s)",
   async (admin) => {
     let loading = false;

@@ -5,14 +5,24 @@ const terms: SellerTerms = {
   model: "consignment",
   currency: "usdtbsc",
   network: "bsc",
-  amount: "10.00001",
+  amount: "9.000000",
+  commission: {
+    version: "account_commission_v1",
+    base_minor: "1000",
+    fee_minor: "100",
+    net_minor: "900",
+    rate: "1",
+    rate_source: "Synthetic quote",
+    quoted_at: "2026-10-08T00:00:00Z",
+    net_amount: "9.000000",
+  },
   proceeds_basis: "The exact agreed net proceeds",
   fees: "The agreed fees are described here",
   transfer_requirements: "Complete protected ownership transfer",
   dispute_terms: "The agreed dispute review procedure",
   withdrawal_terms: "The agreed withdrawal procedure",
   payout_delay_hours: 0,
-  payout_deadline_hours: 24,
+  payout_deadline_hours: 48,
 };
 const product: Product = {
   title: "Reviewed account",
@@ -20,7 +30,13 @@ const product: Product = {
   region: "Europe",
   rank: "Advanced",
   currency: "USD",
-  amount_minor: "1000",
+  amount_minor: "1050",
+  commission: {
+    version: "account_commission_v1",
+    base_minor: "1000",
+    fee_minor: "50",
+    total_minor: "1050",
+  },
   attributes: [],
   media_ids: [],
   sale_terms: terms.proceeds_basis,
@@ -35,7 +51,11 @@ it("validates exact provider decimals and order of payout obligations", () => {
   const now = Date.parse("2026-10-08T00:00:00Z"),
     expires = "2026-10-09T00:00:00Z";
   expect(sellerIssues(terms, expires, now)).toEqual([]);
-  expect(sellerIssues({ ...terms, amount: "1e-8" }, expires, now)).toEqual([]);
+  expect(sellerIssues({ ...terms, amount: "1e-8" }, expires, now)).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ path: "terms.commission.base_minor" }),
+    ]),
+  );
   for (const amount of [
     "0",
     "0e5",
@@ -47,11 +67,11 @@ it("validates exact provider decimals and order of payout obligations", () => {
   ])
     expect(sellerIssues({ ...terms, amount }, expires, now)).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ path: "terms.amount" }),
+        expect.objectContaining({ path: "terms.commission.base_minor" }),
       ]),
     );
   expect(
-    sellerIssues({ ...terms, payout_delay_hours: 24 }, expires, now),
+    sellerIssues({ ...terms, payout_delay_hours: 48 }, expires, now),
   ).toEqual(
     expect.arrayContaining([
       expect.objectContaining({ path: "terms.payout_deadline_hours" }),
@@ -78,7 +98,7 @@ it("validates listing bounds, duplicate labels and Unicode using server code-poi
     expect.arrayContaining([
       "product.delivery_max_hours",
       "product.dispute_hours",
-      "product.amount_minor",
+      "product.commission.base_minor",
       "product.attributes.1.label",
     ]),
   );

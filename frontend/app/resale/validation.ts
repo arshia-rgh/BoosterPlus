@@ -1,3 +1,8 @@
+import {
+  buyerCommission,
+  sellerCommission,
+  validConversionRate,
+} from "./commissions";
 import type { FieldIssue } from "../ui/form-validation";
 import type { Product, SellerTerms } from "./model";
 const text = (value: string, min: number, max: number) =>
@@ -6,18 +11,6 @@ const text = (value: string, min: number, max: number) =>
   !value.includes("\0");
 const whole = (value: number, min: number, max: number) =>
   Number.isSafeInteger(value) && value >= min && value <= max;
-function positiveDecimal(value: string) {
-  const [mantissa = "", exponent, ...extra] = value.split(/[eE]/);
-  const [integer = "", fraction, ...extraDecimal] = mantissa.split(".");
-  return (
-    extra.length === 0 &&
-    extraDecimal.length === 0 &&
-    /^(0|[1-9][0-9]{0,39})$/.test(integer) &&
-    (fraction === undefined || /^[0-9]{1,40}$/.test(fraction)) &&
-    (exponent === undefined || /^[+-]?[0-9]{1,2}$/.test(exponent)) &&
-    Number(value) > 0
-  );
-}
 export function sellerIssues(
   terms: SellerTerms,
   expires: string,
@@ -34,11 +27,6 @@ export function sellerIssues(
     );
   if (!text(terms.network, 1, 64))
     add("network", "Enter the payout network, up to 64 characters.");
-  if (!positiveDecimal(terms.amount))
-    add(
-      "amount",
-      "Enter an exact positive crypto amount using the provider’s supported decimal format.",
-    );
   for (const [field, value] of [
     ["proceeds_basis", terms.proceeds_basis],
     ["fees", terms.fees],
@@ -58,15 +46,80 @@ export function sellerIssues(
       "payout_deadline_hours",
       "Enter 1–8,760 hours, later than the payout delay.",
     );
+  const quote = terms.commission;
+  if (!quote || !/^[1-9][0-9]{0,11}$/.test(quote.base_minor))
+    add(
+      "commission.base_minor",
+      "Enter a positive USD base price with at most two decimal places.",
+    );
+  if (!quote || !validConversionRate(quote.rate) || Number(quote.rate) <= 0)
+    add(
+      "commission.rate",
+      "Enter a positive quoted number of crypto units per USD.",
+    );
+  if (
+    !quote ||
+    !text(quote.rate_source, 3, 200) ||
+    quote.rate_source.trim() !== quote.rate_source
+  )
+    add(
+      "commission.rate_source",
+      "Enter the actual conversion source, 3–200 characters.",
+    );
+  const quotedAt = Date.parse(quote?.quoted_at ?? "");
+  if (
+    !Number.isFinite(quotedAt) ||
+    quotedAt > now + 60000 ||
+    quotedAt < now - 86400000
+  )
+    add(
+      "commission.quoted_at",
+      "Use a conversion quote from the past 24 hours.",
+    );
+  if (quote) {
+    const expected = sellerCommission(
+      quote.base_minor,
+      quote.rate,
+      quote.rate_source,
+      quote.quoted_at,
+    );
+    if (
+      /^[1-9][0-9]{0,11}$/.test(quote.base_minor) &&
+      terms.model === "consignment" &&
+      !buyerCommission(quote.base_minor)
+    )
+      add(
+        "commission.base_minor",
+        "Use a lower base price within the supported buyer-total limit.",
+      );
+    if (
+      expected &&
+      (expected.net_amount !== terms.amount ||
+        expected.fee_minor !== quote.fee_minor ||
+        expected.net_minor !== quote.net_minor ||
+        expected.net_amount !== quote.net_amount)
+    )
+      add(
+        "commission.base_minor",
+        "Recalculate the price and conversion quote before proposing this agreement.",
+      );
+  }
+  if (terms.payout_delay_hours !== 0)
+    add(
+      "payout_delay_hours",
+      "The approved terms have no extra delay after eligibility.",
+    );
+  if (terms.payout_deadline_hours !== 48)
+    add("payout_deadline_hours", "Use the approved 48-hour initiation target.");
   const expiry = Date.parse(expires);
   if (
     !Number.isFinite(expiry) ||
     expiry <= now ||
-    expiry > now + 30 * 24 * 60 * 60 * 1000
+    expiry > now + 7 * 24 * 60 * 60 * 1000
   )
     issues.push({
       path: "expires_at",
-      message: "Choose a future expiry within 30 days.",
+      message: "Choose a future expiry within seven days.",
     });
   return issues;
 }
@@ -87,13 +140,6 @@ export function productIssues(product: Product, publish = false): FieldIssue[] {
   ] as const)
     if (!text(value, min, max))
       add(field, `Enter ${String(min)}–${String(max)} characters.`);
-  if (!/^[A-Z]{3}$/.test(product.currency))
-    add("currency", "Enter a three-letter uppercase currency code.");
-  if (!/^[1-9]\d{0,11}$/.test(product.amount_minor))
-    add(
-      "amount_minor",
-      "Enter a positive whole amount in minor units, up to 12 digits.",
-    );
   if (!whole(product.dispute_hours, 1, 720))
     add("dispute_hours", "Enter 1–720 whole hours.");
   if (!whole(product.delivery_min_hours, 1, 720))
@@ -105,6 +151,20 @@ export function productIssues(product: Product, publish = false): FieldIssue[] {
     add(
       "delivery_max_hours",
       "Enter 1–720 whole hours, at least the earliest delivery time.",
+    );
+  const commission = product.commission;
+  const expected = buyerCommission(commission?.base_minor ?? "");
+  if (
+    !commission ||
+    !expected ||
+    product.currency !== "USD" ||
+    commission.total_minor !== expected.total_minor ||
+    commission.fee_minor !== expected.fee_minor ||
+    product.amount_minor !== expected.total_minor
+  )
+    add(
+      "commission.base_minor",
+      "Enter the USD base price to calculate the 5% buyer commission and total.",
     );
   const labels = new Set<string>();
   product.attributes.forEach((item, index) => {

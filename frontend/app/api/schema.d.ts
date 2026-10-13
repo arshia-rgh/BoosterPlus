@@ -5415,6 +5415,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/account-agreement-defaults": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Owner-approved reusable agreement wording; requires staff access */
+    get: operations["accountAgreementDefaults"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -6031,6 +6048,7 @@ export interface components {
       /** Format: date-time */
       expires_at: string;
       delivery_basis?: string;
+      account_price?: components["schemas"]["AccountBuyerCommission"];
     };
     OrderQuote: {
       id: string;
@@ -7196,6 +7214,7 @@ export interface components {
       model: "consignment" | "buy_first";
       payout_delay_hours: number;
       payout_deadline_hours: number;
+      commission?: components["schemas"]["AccountSellerCommission"];
     };
     SellerOffer: {
       id: string;
@@ -7248,6 +7267,7 @@ export interface components {
       delivery_max_hours: number;
       /** @description Explicit reviewed cover; must be a selected media_id for new publication. Omitted in older releases and blank in public projections. */
       cover_media_id?: string;
+      commission?: components["schemas"]["AccountBuyerCommission"];
     };
     AccountListing: {
       id: string;
@@ -8257,6 +8277,35 @@ export interface components {
         count: string;
         names: string[];
       }[];
+    };
+    AccountBuyerCommission: {
+      /** @enum {string} */
+      version: "account_commission_v1";
+      base_minor: string;
+      fee_minor: string;
+      total_minor: string;
+    };
+    AccountSellerCommission: {
+      /** @enum {string} */
+      version: "account_commission_v1";
+      base_minor: string;
+      fee_minor: string;
+      net_minor: string;
+      rate: string;
+      rate_source: string;
+      /** Format: date-time */
+      quoted_at: string;
+      net_amount: string;
+    };
+    AccountAgreementDefaults: {
+      seller_consignment: components["schemas"]["SellerTerms"];
+      seller_buy_first: components["schemas"]["SellerTerms"];
+      buyer: components["schemas"]["AccountProduct"];
+      shop: {
+        [key: string]: string;
+      };
+      review_policy: string;
+      boost_terms: string;
     };
   };
   responses: never;
@@ -23761,6 +23810,40 @@ export interface operations {
         content: {
           "application/problem+json": components["schemas"]["Problem"];
         };
+      };
+    };
+  };
+  accountAgreementDefaults: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Approved wording; transaction facts must be supplied separately */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AccountAgreementDefaults"];
+        };
+      };
+      /** @description Sign in required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Staff permission required */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

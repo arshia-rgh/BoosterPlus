@@ -213,9 +213,20 @@ export default function AccountDelivery({
               </details>
             )}
             {row.dispute_until && (
-              <p>
-                Dispute deadline: {new Date(row.dispute_until).toLocaleString()}
-              </p>
+              <>
+                <p>
+                  {row.listing.product.commission
+                    ? "Initial inspection ends"
+                    : "Dispute deadline"}
+                  : {new Date(row.dispute_until).toLocaleString()}
+                </p>
+                {row.listing.product.commission && (
+                  <p>
+                    Your protected refund and support rights continue under your
+                    accepted terms after this initial inspection period.
+                  </p>
+                )}
+              </>
             )}
             {visible &&
               !resource.loading &&

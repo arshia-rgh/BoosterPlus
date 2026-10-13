@@ -73,7 +73,7 @@ func (s *Store) CreateListing(ctx context.Context, p *identity.Principal, offerI
 		if e != nil {
 			return e
 		}
-		row, e := tx.AccountListing.Create().SetSubmissionID(parent.ID).SetOfferID(offer.ID).SetSellerID(offer.SellerID).SetGameID(parent.GameID).SetGameName(parent.GameName).SetSlug(parent.Slug).SetDraft(map[string]any{}).SetCreatedAt(s.instant()).SetUpdatedAt(s.instant()).Save(ctx)
+		row, e := tx.AccountListing.Create().SetSubmissionID(parent.ID).SetOfferID(offer.ID).SetSellerID(offer.SellerID).SetGameID(parent.GameID).SetGameName(parent.GameName).SetSlug(parent.Slug).SetDraft(initialListing(offer.Data)).SetCreatedAt(s.instant()).SetUpdatedAt(s.instant()).Save(ctx)
 		if e != nil {
 			return e
 		}
@@ -145,6 +145,9 @@ func (s *Store) ChangeListing(ctx context.Context, p *identity.Principal, id, ac
 		update := tx.AccountListing.UpdateOneID(id).AddVersion(1).SetUpdatedAt(s.instant())
 		switch action {
 		case "save", "publish":
+			if err := listingCommission(input.Product, offer.Data); err != nil {
+				return err
+			}
 			data, dataErr := document(input.Product)
 			if dataErr != nil {
 				return dataErr

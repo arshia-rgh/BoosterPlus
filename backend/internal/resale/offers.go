@@ -107,6 +107,9 @@ func (s *Store) ProposeOffer(ctx context.Context, p *identity.Principal, id stri
 			result, e = offerView(old)
 			return e
 		}
+		if e = validateNewCommission(input.Terms, input.ExpiresAt, s.instant()); e != nil {
+			return e
+		}
 		if parent.Version != input.SubmissionVersion || parent.State != accountsubmission.StateApprovedPendingTerms || parent.UserID == current.User.ID {
 			return ErrConflict
 		}

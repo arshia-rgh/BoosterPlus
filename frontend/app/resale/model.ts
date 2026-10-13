@@ -1,6 +1,8 @@
 import { z } from "../validation";
+import { buyerCommissionSchema, sellerCommissionSchema } from "./commissions";
 
 export const sellerTermsSchema = z.object({
+  commission: sellerCommissionSchema.optional(),
   model: z.enum(["consignment", "buy_first"]),
   currency: z.string(),
   network: z.string(),
@@ -26,6 +28,7 @@ export const offerSchema = z.object({
 });
 export const offersSchema = z.object({ offers: z.array(offerSchema) });
 export const productSchema = z.object({
+  commission: buyerCommissionSchema.optional(),
   title: z.string(),
   description: z.string(),
   region: z.string(),
@@ -98,3 +101,12 @@ export type Offer = z.infer<typeof offerSchema>;
 export type Product = z.infer<typeof productSchema>;
 export type Listing = z.infer<typeof listingSchema>;
 export type PublicListing = z.infer<typeof publicListingSchema>;
+
+export const agreementDefaultsSchema = z.object({
+  seller_consignment: sellerTermsSchema,
+  seller_buy_first: sellerTermsSchema,
+  buyer: productSchema,
+  shop: z.record(z.string(), z.string()),
+  review_policy: z.string(),
+  boost_terms: z.string(),
+});

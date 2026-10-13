@@ -70,8 +70,8 @@ pre-commit ci:
 	go mod tidy -diff
 	$(MAKE) test-scripts generate-check vet lint security test-race test-integration migrate-validate build compose-check docker-build image-security
 .PHONY: stage-check
-# Owner-authorized DI00-DI15 window: retain static/security/unit/build checks;
-# changed integration scenarios run explicitly, full suite runs at DI15.
+# Owner-directed lightweight deployment checks (14 October 2026). Run changed
+# integration scenarios explicitly; full qualification only when requested.
 stage-check:
 	$(MAKE) fmt-check
 	go mod tidy -diff

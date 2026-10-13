@@ -1,3 +1,4 @@
+import { BuyerBreakdown } from "./commission-fields";
 import "../catalog/service-tiles.css";
 import { Anchor } from "../portal-router";
 import MarketFilters from "./market-filters";
@@ -52,6 +53,7 @@ export function ProductTerms({
           ? `${p.currency} ${minorDisplay(p.amount_minor)}`
           : "Price awaiting review"}
       </p>
+      {p.commission && <BuyerBreakdown price={p.commission} />}
       <p className="payment-policy">{p.description}</p>
       {gallery ?? <AccountGallery images={listing.images} title={p.title} />}
       <dl className="account-attributes">
@@ -73,7 +75,11 @@ export function ProductTerms({
         </p>
         <h3>Disputes and acknowledgement</h3>
         <p className="payment-policy">{p.dispute_terms}</p>
-        <p>Dispute window: {p.dispute_hours} hours from delivery.</p>
+        <p>
+          Initial inspection: {p.dispute_hours} hours after you acknowledge
+          delivery. This period does not end your protected refund or support
+          rights.
+        </p>
         <p className="payment-policy">{p.acknowledgement_terms}</p>
       </section>
     </section>
@@ -267,6 +273,9 @@ function MarketResults({ gameSlug }: { gameSlug?: string | undefined }) {
                 <p className="package-price">
                   {row.product.currency}{" "}
                   {minorDisplay(row.product.amount_minor)}
+                  {row.product.commission && (
+                    <small>Includes 5% buyer commission</small>
+                  )}
                 </p>
                 <Link
                   className="button compact"
@@ -468,9 +477,14 @@ function Purchase({
       <p>
         {listing.game} · {listing.product.region} · {listing.product.rank}
       </p>
-      <p className="package-price">
-        {listing.product.currency} {minorDisplay(listing.product.amount_minor)}
-      </p>
+      {listing.product.commission ? (
+        <BuyerBreakdown price={listing.product.commission} />
+      ) : (
+        <p className="package-price">
+          {listing.product.currency}{" "}
+          {minorDisplay(listing.product.amount_minor)}
+        </p>
+      )}
       <p>
         One unique account. A reservation is confirmed only after the server
         accepts this request.

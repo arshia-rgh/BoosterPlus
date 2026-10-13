@@ -15,6 +15,7 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/authmessage"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/accountpricing"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
@@ -34,10 +35,12 @@ type resaleFixture struct {
 }
 
 func resaleTerms(model string) resale.SellerTerms {
-	return resale.SellerTerms{Model: model, Currency: "usdttrc20", Network: "trx", Amount: "10.00000001", ProceedsBasis: "Synthetic fixed proceeds; no assumed exchange conversion.", Fees: "Synthetic amount is net of the explicitly agreed fees.", TransferRequirements: "Synthetic ownership verification before control transfer.", DisputeTerms: "Synthetic review of ownership and transfer disputes.", WithdrawalTerms: "Synthetic withdrawal requires a new mutually accepted agreement.", PayoutDelayHours: 0, PayoutDeadlineHours: 72}
+	price := accountpricing.Seller{Version: accountpricing.Version, BaseMinor: "1175", FeeMinor: "118", NetMinor: "1057", Rate: "1", RateSource: "synthetic fixture quote", QuotedAt: time.Now().UTC().Add(-time.Minute), NetAmount: "10.570000"}
+	return resale.SellerTerms{Commission: &price, Model: model, Currency: "usdttrc20", Network: "trx", Amount: "10.570000", ProceedsBasis: "Synthetic fixed proceeds; no assumed exchange conversion.", Fees: "Synthetic amount is net of the explicitly agreed fees.", TransferRequirements: "Synthetic ownership verification before control transfer.", DisputeTerms: "Synthetic review of ownership and transfer disputes.", WithdrawalTerms: "Synthetic withdrawal requires a new mutually accepted agreement.", PayoutDelayHours: 0, PayoutDeadlineHours: 48}
 }
 func resaleProduct() resale.Product {
-	return resale.Product{Title: "Synthetic reviewed account", Description: "Synthetic public listing without private seller information.", Region: "Synthetic region", Rank: "Synthetic rank", Attributes: []resale.Attribute{}, MediaIDs: []string{}, Currency: "USD", AmountMinor: "1234", SaleTerms: "Synthetic account sale terms explicitly accepted by the buyer.", TransferRequirements: "Synthetic buyer must complete the ownership checklist.", DisputeTerms: "Synthetic buyer may dispute this handoff during the stated window.", AcknowledgementTerms: "Synthetic acknowledgement confirms access was received and tested.", DisputeHours: 48, DeliveryMinHours: 1, DeliveryMaxHours: 24}
+	price := accountpricing.Buyer{Version: accountpricing.Version, BaseMinor: "1175", FeeMinor: "59", TotalMinor: "1234"}
+	return resale.Product{Commission: &price, Title: "Synthetic reviewed account", Description: "Synthetic public listing without private seller information.", Region: "Synthetic region", Rank: "Synthetic rank", Attributes: []resale.Attribute{}, MediaIDs: []string{}, Currency: "USD", AmountMinor: "1234", SaleTerms: "Synthetic account sale terms explicitly accepted by the buyer.", TransferRequirements: "Synthetic buyer must complete the ownership checklist.", DisputeTerms: "Synthetic buyer may dispute this handoff during the stated window.", AcknowledgementTerms: "Synthetic acknowledgement confirms access was received and tested.", DisputeHours: 168, DeliveryMinHours: 1, DeliveryMaxHours: 24}
 }
 func resaleDB(t *testing.T, model string) *resaleFixture {
 	t.Helper()
@@ -320,7 +323,7 @@ func TestResalePaidDeliveryUsesDistinctBuyerSecret(t *testing.T) {
 	if err != nil {
 		t.Fatal("account completion dispute rejected", err)
 	}
-	if serviceCase.Policy == nil || serviceCase.Policy.DisputeHours != 48 || serviceCase.AccountTerms == nil || serviceCase.AccountTerms.Title != resaleProduct().Title {
+	if serviceCase.Policy == nil || serviceCase.Policy.DisputeHours != 168 || serviceCase.AccountTerms == nil || serviceCase.AccountTerms.Title != resaleProduct().Title {
 		t.Fatal("case did not preserve accepted account terms")
 	}
 	if _, err = f.resale.RevealDelivery(ctx, f.base.buyer, d.Order.ID); err == nil {
@@ -372,7 +375,7 @@ func TestResaleBuyFirstRequiresActualSellerPayment(t *testing.T) {
 	if err != nil || len(rows) != 1 {
 		t.Fatal("seller debt not idempotent", err)
 	}
-	if rows[0].Amount != "10.00000001" || rows[0].State != "recipient_pending" {
+	if rows[0].Amount != "10.570000" || rows[0].State != "recipient_pending" {
 		t.Fatal("accepted exact seller obligation changed", rows[0].State)
 	}
 	if _, err = f.store.SellerPayouts(ctx, f.base.buyer, f.offer.SubmissionID, false); !ent.IsNotFound(err) {
@@ -400,7 +403,7 @@ func TestResaleBuyFirstRequiresActualSellerPayment(t *testing.T) {
 	if provider.creates != 1 {
 		t.Fatal("seller payout submitted more than once")
 	}
-	if provider.row.Amount != "10.00000001" || provider.row.Recipient.Address != "synthetic-seller-destination" {
+	if provider.row.Amount != "10.570000" || provider.row.Recipient.Address != "synthetic-seller-destination" {
 		t.Fatal("seller payout changed accepted amount or recipient")
 	}
 	shared.read(t)

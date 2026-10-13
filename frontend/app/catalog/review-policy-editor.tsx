@@ -1,3 +1,4 @@
+import { AgreementTemplate } from "../resale/agreement-template";
 import { Action, Check, Ordering, Text, move, nextKey } from "./controls";
 import { FieldEditor, RuleEditor } from "./editor-parts";
 import {
@@ -31,6 +32,12 @@ export default function ReviewPolicyEditor({
       />
       {policy && (
         <>
+          <AgreementTemplate
+            label="Replace with approved review rules"
+            apply={(defaults) => {
+              change({ ...policy, content: defaults.review_policy });
+            }}
+          />
           <Text
             name={`review_policy.content`}
             label="Review publication policy"

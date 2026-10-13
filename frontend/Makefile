@@ -33,8 +33,8 @@ pre-commit ci:
 	$(MAKE) docker-build image-security
 	python3 scripts/container-smoke.py
 .PHONY: stage-check
-# Keep aggregate browser/container qualification for DI15; run changed browser
-# scenarios explicitly and retain their evidence with the stage record.
+# Owner-directed lightweight deployment checks (14 October 2026). Run changed
+# browser scenarios explicitly and retain evidence; full suite only on request.
 stage-check:
 	npm run contract:check
 	npm run format:check

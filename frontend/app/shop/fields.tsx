@@ -1,3 +1,4 @@
+import { AgreementTemplate } from "../resale/agreement-template";
 import ArtworkUpload from "../artwork/upload";
 import {
   Action,
@@ -270,6 +271,22 @@ export function ProductFields({
               }}
             />
           </div>
+          <AgreementTemplate
+            label="Replace policy text with approved shop terms"
+            apply={(defaults) => {
+              policy({
+                delivery_terms: defaults.shop.delivery_terms ?? "",
+                cancellation_terms: defaults.shop.cancellation_terms ?? "",
+                refund_terms: defaults.shop.refund_terms ?? "",
+                fees: defaults.shop.fees ?? "",
+                review_terms: defaults.shop.review_terms ?? "",
+              });
+            }}
+          />
+          <p>
+            Confirm this product’s actual availability, delivery range and
+            recipient requirements before publishing.
+          </p>
           <Text
             name="policy.delivery_terms"
             label="Delivery terms"

@@ -24,6 +24,7 @@ func seedBrowseListing(t *testing.T, f *resaleFixture, n int, currency, state st
 	ctx := t.Context()
 	client := f.base.auth.client
 	product := resaleProduct()
+	product.Commission = nil // Existing legacy prices remain browseable without invented fees.
 	product.Title = fmt.Sprintf("Browse sample %02d %%_", n)
 	product.Currency = currency
 	product.AmountMinor = strconv.Itoa(1000 + (n/4)*50)

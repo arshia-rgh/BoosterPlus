@@ -92,6 +92,9 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 		if e != nil {
 			return e
 		}
+		if product.Product.Commission != nil && !product.Product.Commission.Valid(product.Product.Currency, product.Product.AmountMinor) {
+			return ErrConflict
+		}
 		if product.Product.AmountMinor != input.ExpectedAmount || product.Product.Currency != input.Currency {
 			return ErrConflict
 		}
@@ -131,7 +134,7 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 		if e != nil {
 			return e
 		}
-		estimated, e := document(catalog.Estimate{ReleaseID: input.ReleaseID, Version: row.Version, Evaluator: "fixed_account_price", ExpiresAt: expires, Outcome: "estimated", Currency: input.Currency, AmountMinor: input.ExpectedAmount, Answers: catalog.Answers{}, Lines: []catalog.PriceLine{}, Issues: []catalog.Issue{}})
+		estimated, e := document(catalog.Estimate{ReleaseID: input.ReleaseID, Version: row.Version, Evaluator: "fixed_account_price", ExpiresAt: expires, Outcome: "estimated", Currency: input.Currency, AmountMinor: input.ExpectedAmount, Answers: catalog.Answers{}, Lines: accountPriceLines(product.Product), Issues: []catalog.Issue{}})
 		if e != nil {
 			return e
 		}
@@ -139,7 +142,7 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 		if e != nil {
 			return e
 		}
-		data, e := document(orders.Commercial{Revision: row.Version, Currency: input.Currency, SubtotalMinor: input.ExpectedAmount, AmountMinor: input.ExpectedAmount, Lines: []catalog.PriceLine{}, Scope: product.Product.Title, Reason: product.Product.SaleTerms, DeliveryMinHours: product.Product.DeliveryMinHours, DeliveryMaxHours: product.Product.DeliveryMaxHours, ExpiresAt: expires, TermsVersion: input.TermsVersion})
+		data, e := document(orders.Commercial{AccountPrice: product.Product.Commission, Revision: row.Version, Currency: input.Currency, SubtotalMinor: input.ExpectedAmount, AmountMinor: input.ExpectedAmount, Lines: accountPriceLines(product.Product), Scope: product.Product.Title, Reason: product.Product.SaleTerms, DeliveryMinHours: product.Product.DeliveryMinHours, DeliveryMaxHours: product.Product.DeliveryMaxHours, ExpiresAt: expires, TermsVersion: input.TermsVersion})
 		if e != nil {
 			return e
 		}

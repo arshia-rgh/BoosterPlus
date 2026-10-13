@@ -34,7 +34,13 @@ const fixture: Listing = {
     attributes: [],
     media_ids: [],
     currency: "USD",
-    amount_minor: "5000",
+    amount_minor: "5250",
+    commission: {
+      version: "account_commission_v1",
+      base_minor: "5000",
+      fee_minor: "250",
+      total_minor: "5250",
+    },
     sale_terms: "Sale terms reviewed for this specific account",
     transfer_requirements: "Protected account delivery checklist",
     dispute_terms: "Dispute terms reviewed for this account",
@@ -80,6 +86,38 @@ function mount() {
   );
   return { ...render(<RouterProvider router={router} />), router };
 }
+it("keeps the edited base and one validation summary when the server rejects a consignment reprice", async () => {
+  row.draft.dispute_hours = 168;
+  vi.mocked(post).mockRejectedValueOnce(
+    Object.assign(
+      new APIError("Review the highlighted account details before continuing."),
+      {
+        status: 422,
+        code: "resale_invalid",
+        issues: [
+          {
+            path: "product.commission.base_minor",
+            message: "Use the accepted seller base.",
+          },
+        ],
+      },
+    ),
+  );
+  mount();
+  const input = await screen.findByLabelText("Account base price (USD)");
+  fireEvent.change(input, { target: { value: "60" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save account listing" }));
+  await waitFor(() => expect(input).toHaveFocus());
+  expect(input).toHaveValue("60");
+  expect(input).toHaveAccessibleDescription(/Use the accepted seller base/);
+  expect(
+    screen.getAllByRole("link", { name: /Use the accepted seller base/ }),
+  ).toHaveLength(1);
+  expect(
+    screen.queryByText(/The service is unavailable/),
+  ).not.toBeInTheDocument();
+  expect(post).toHaveBeenCalledOnce();
+});
 it("keeps local listing drafts and requires an explicit choice before leaving the record", async () => {
   const { router } = mount();
   fireEvent.change(screen.getByLabelText("Public account title"), {

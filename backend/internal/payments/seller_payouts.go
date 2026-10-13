@@ -52,6 +52,9 @@ func (s *Store) SellerObligationHandler() jobs.Handler {
 			if err != nil {
 				return err
 			}
+			if terms.Commission != nil && !terms.Commission.Valid(terms.Amount) {
+				return ErrConflict
+			}
 			if _, err = refundAmount(terms.Amount); err != nil {
 				return err
 			}
@@ -134,6 +137,9 @@ func (s *Store) sellerEligible(ctx context.Context, tx *ent.Tx, row *ent.MoneyTr
 	terms, err := decode[resale.SellerTerms](offer.Data)
 	if err != nil {
 		return time.Time{}, err
+	}
+	if terms.Commission != nil && !terms.Commission.Valid(terms.Amount) {
+		return time.Time{}, ErrConflict
 	}
 	if terms.Amount != row.Amount || terms.Currency != row.Currency || terms.Network != row.Network {
 		return time.Time{}, ErrConflict

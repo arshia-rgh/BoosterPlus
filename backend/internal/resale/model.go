@@ -12,6 +12,8 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/accountpricing"
+
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
@@ -76,17 +78,18 @@ func (s *Store) audit(ctx context.Context, tx *ent.Tx, p *identity.Principal, ac
 
 // SellerTerms explicitly price a direct crypto obligation; no wallet balance or assumed exchange rate.
 type SellerTerms struct {
-	Model                string `json:"model"`
-	Currency             string `json:"currency"`
-	Network              string `json:"network"`
-	Amount               string `json:"amount"`
-	ProceedsBasis        string `json:"proceeds_basis"`
-	Fees                 string `json:"fees"`
-	TransferRequirements string `json:"transfer_requirements"`
-	DisputeTerms         string `json:"dispute_terms"`
-	WithdrawalTerms      string `json:"withdrawal_terms"`
-	PayoutDelayHours     int    `json:"payout_delay_hours"`
-	PayoutDeadlineHours  int    `json:"payout_deadline_hours"`
+	Commission           *accountpricing.Seller `json:"commission,omitempty"`
+	Model                string                 `json:"model"`
+	Currency             string                 `json:"currency"`
+	Network              string                 `json:"network"`
+	Amount               string                 `json:"amount"`
+	ProceedsBasis        string                 `json:"proceeds_basis"`
+	Fees                 string                 `json:"fees"`
+	TransferRequirements string                 `json:"transfer_requirements"`
+	DisputeTerms         string                 `json:"dispute_terms"`
+	WithdrawalTerms      string                 `json:"withdrawal_terms"`
+	PayoutDelayHours     int                    `json:"payout_delay_hours"`
+	PayoutDeadlineHours  int                    `json:"payout_deadline_hours"`
 }
 
 func validateTerms(v SellerTerms) error {
@@ -140,22 +143,23 @@ func offerView(row *ent.SellerOffer) (OfferView, error) {
 
 // Product contains only material explicitly reviewed for public account resale.
 type Product struct {
-	Title                string      `json:"title"`
-	Description          string      `json:"description"`
-	Region               string      `json:"region"`
-	Rank                 string      `json:"rank"`
-	Attributes           []Attribute `json:"attributes"`
-	MediaIDs             []string    `json:"media_ids"`
-	CoverMediaID         string      `json:"cover_media_id,omitempty"`
-	Currency             string      `json:"currency"`
-	AmountMinor          string      `json:"amount_minor"`
-	SaleTerms            string      `json:"sale_terms"`
-	TransferRequirements string      `json:"transfer_requirements"`
-	DisputeTerms         string      `json:"dispute_terms"`
-	AcknowledgementTerms string      `json:"acknowledgement_terms"`
-	DisputeHours         int         `json:"dispute_hours"`
-	DeliveryMinHours     int         `json:"delivery_min_hours"`
-	DeliveryMaxHours     int         `json:"delivery_max_hours"`
+	Commission           *accountpricing.Buyer `json:"commission,omitempty"`
+	Title                string                `json:"title"`
+	Description          string                `json:"description"`
+	Region               string                `json:"region"`
+	Rank                 string                `json:"rank"`
+	Attributes           []Attribute           `json:"attributes"`
+	MediaIDs             []string              `json:"media_ids"`
+	CoverMediaID         string                `json:"cover_media_id,omitempty"`
+	Currency             string                `json:"currency"`
+	AmountMinor          string                `json:"amount_minor"`
+	SaleTerms            string                `json:"sale_terms"`
+	TransferRequirements string                `json:"transfer_requirements"`
+	DisputeTerms         string                `json:"dispute_terms"`
+	AcknowledgementTerms string                `json:"acknowledgement_terms"`
+	DisputeHours         int                   `json:"dispute_hours"`
+	DeliveryMinHours     int                   `json:"delivery_min_hours"`
+	DeliveryMaxHours     int                   `json:"delivery_max_hours"`
 }
 
 // Attribute is an explicitly published account characteristic.

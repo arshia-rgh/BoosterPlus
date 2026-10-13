@@ -295,13 +295,15 @@ export function Issues({ issues }: { issues: Issue[] }) {
 export function ErrorNotice({
   error,
   hideIssues = false,
+  message,
 }: {
   error: unknown;
   hideIssues?: boolean;
+  message?: string | undefined;
 }) {
   return error ? (
     <>
-      <p role="alert">{errorMessage(error)}</p>
+      <p role="alert">{message ?? errorMessage(error)}</p>
       <VerificationLink error={error} />
       {!hideIssues && (
         <Issues issues={error instanceof APIError ? error.issues : []} />

@@ -1,3 +1,4 @@
+import { SellerPriceInput, SellerBreakdown } from "./commission-fields";
 import { FieldValidation, ValidationSummary } from "../ui/form-validation";
 import { useActionValidation } from "../ui/action-validation";
 import { sellerIssues } from "./validation";
@@ -18,11 +19,12 @@ import {
   Select,
   Text,
 } from "../catalog/controls";
-import { post, sessionSchema } from "../identity/api";
+import { APIError, post, sessionSchema } from "../identity/api";
 import { useResource } from "../orders/resource";
 import { TransferRecord, useRecipientConfirmation } from "../payments/refunds";
 import { transfersSchema } from "../payments/cases-model";
 import {
+  agreementDefaultsSchema,
   listingSchema,
   offerSchema,
   offersSchema,
@@ -34,6 +36,25 @@ import { denied } from "../support/chat-state";
 import { SecretReveal, SecretUpload } from "./secret";
 
 import "./marketplace.css";
+function SellerOfferError({
+  error,
+  hideIssues = false,
+}: {
+  error: unknown;
+  hideIssues?: boolean;
+}) {
+  return (
+    <ErrorNotice
+      error={error}
+      hideIssues={hideIssues}
+      message={
+        error instanceof APIError && error.code === "resale_conflict"
+          ? "This seller agreement or submission changed. Refresh seller agreements and review the current offer before deciding again."
+          : undefined
+      }
+    />
+  );
+}
 export const termFields = [
   ["proceeds_basis", "Seller proceeds basis"],
   ["fees", "Fees and deductions"],
@@ -75,19 +96,79 @@ function Proposal({
       dispute_terms: "",
       withdrawal_terms: "",
       payout_delay_hours: 0,
-      payout_deadline_hours: 0,
+      payout_deadline_hours: 48,
     }),
     [expires, setExpires] = useState(""),
     [key, setKey] = useState(() => crypto.randomUUID()),
     [error, setError] = useState<unknown>(null),
+    [arrangementReviewed, setArrangementReviewed] = useState(true),
+    [arrangementNeedsReview, setArrangementNeedsReview] = useState(false),
     [busy, setBusy] = useState(false);
   const validation = useActionValidation();
+  const defaults = useResource(
+    "/admin/account-agreement-defaults",
+    agreementDefaultsSchema,
+  );
   function edit<K extends keyof SellerTerms>(field: K, value: SellerTerms[K]) {
     setTerms((v) => ({ ...v, [field]: value }));
     setKey(crypto.randomUUID());
   }
+  function changeArrangement(model: SellerTerms["model"]) {
+    const previous =
+      terms.model === "buy_first"
+        ? defaults.data?.seller_buy_first
+        : defaults.data?.seller_consignment;
+    const next =
+      model === "buy_first"
+        ? defaults.data?.seller_buy_first
+        : defaults.data?.seller_consignment;
+    const unchanged =
+      previous &&
+      next &&
+      termFields.every(
+        ([field]) => sellerTerm(terms, field) === sellerTerm(previous, field),
+      );
+    setTerms((value) => ({
+      ...value,
+      model,
+      ...(unchanged
+        ? Object.fromEntries(
+            termFields.map(([field]) => [field, sellerTerm(next, field)]),
+          )
+        : {}),
+    }));
+    const needsReview =
+      !unchanged && termFields.some(([field]) => !!sellerTerm(terms, field));
+    setArrangementNeedsReview(needsReview);
+    setArrangementReviewed(!needsReview);
+    setKey(crypto.randomUUID());
+  }
+  function changeRoute(field: "currency" | "network", value: string) {
+    setTerms((terms) => ({
+      ...terms,
+      [field]: value,
+      amount: "",
+      commission: terms.commission
+        ? {
+            ...terms.commission,
+            rate: "",
+            rate_source: "",
+            quoted_at: "",
+            net_amount: "",
+          }
+        : undefined,
+    }));
+    setKey(crypto.randomUUID());
+  }
   async function propose() {
-    if (busy || !validation.check(sellerIssues(terms, expires))) return;
+    const issues = sellerIssues(terms, expires);
+    if (!arrangementReviewed)
+      issues.unshift({
+        path: "arrangement_reviewed",
+        message:
+          "Review the edited wording for this arrangement, or apply its approved terms.",
+      });
+    if (busy || !validation.check(issues)) return;
     setBusy(true);
     setError(null);
     try {
@@ -114,11 +195,12 @@ function Proposal({
       <fieldset disabled={busy}>
         <legend>Owner: propose seller agreement</legend>
         <p>
-          Choose the arrangement per offer. Enter the exact net crypto
-          obligation and all commercial terms. The seller must explicitly
-          accept; acceptance does not itself move funds.
+          Choose the arrangement per offer. Enter the account base price and a
+          real conversion quote. Review the resulting net crypto obligation and
+          commercial terms. The seller must explicitly accept; acceptance does
+          not itself move funds.
         </p>
-        <ErrorNotice error={error} />
+        <SellerOfferError error={error} hideIssues />
         <ValidationSummary
           issues={validation.validation.issues}
           fields={validation.validation.fields}
@@ -128,10 +210,10 @@ function Proposal({
           label="Seller payment arrangement"
           value={terms.model}
           change={(v) => {
-            edit("model", v === "buy_first" ? "buy_first" : "consignment");
+            changeArrangement(v === "buy_first" ? "buy_first" : "consignment");
           }}
           options={[
-            ["consignment", "Pay after buyer delivery and dispute window"],
+            ["consignment", "Pay after buyer delivery and initial inspection"],
             ["buy_first", "Pay seller before publishing for resale"],
           ]}
         />
@@ -140,7 +222,7 @@ function Proposal({
           label="Seller payout asset code"
           value={terms.currency}
           change={(v) => {
-            edit("currency", v);
+            changeRoute("currency", v);
           }}
         />
         <Text
@@ -148,17 +230,59 @@ function Proposal({
           label="Seller payout network"
           value={terms.network}
           change={(v) => {
-            edit("network", v);
+            changeRoute("network", v);
           }}
         />
-        <Text
-          name="terms.amount"
-          label="Exact net seller crypto amount"
-          value={terms.amount}
-          change={(v) => {
-            edit("amount", v);
+        <SellerPriceInput
+          key={`${terms.currency}/${terms.network}`}
+          price={terms.commission}
+          asset={terms.currency}
+          change={(commission) => {
+            setTerms((v) => ({
+              ...v,
+              commission,
+              amount: commission.net_amount,
+            }));
+            setKey(crypto.randomUUID());
           }}
         />
+        <Action
+          disabled={!defaults.data || !!defaults.error}
+          onClick={() => {
+            if (!defaults.data) return;
+            const standard =
+              terms.model === "buy_first"
+                ? defaults.data.seller_buy_first
+                : defaults.data.seller_consignment;
+            setTerms((v) => ({
+              ...standard,
+              currency: v.currency || standard.currency,
+              network: v.network || standard.network,
+              commission: v.commission,
+              amount: v.amount,
+            }));
+            setArrangementReviewed(true);
+            setArrangementNeedsReview(false);
+            const until = new Date(
+              Date.now() + 7 * 24 * 60 * 60 * 1000 - 60000,
+            );
+            until.setMinutes(until.getMinutes() - until.getTimezoneOffset());
+            setExpires(until.toISOString().slice(0, 16));
+            setKey(crypto.randomUUID());
+          }}
+        >
+          Use approved{" "}
+          {terms.model === "buy_first" ? "buy-first" : "consignment"} terms
+        </Action>
+        <ErrorNotice error={defaults.error} />
+        {arrangementNeedsReview && (
+          <Check
+            name="arrangement_reviewed"
+            label="I reviewed the custom wording for the selected payment arrangement"
+            value={arrangementReviewed}
+            change={setArrangementReviewed}
+          />
+        )}
         {termFields.map(([key, label]) => (
           <Text
             key={key}
@@ -181,7 +305,7 @@ function Proposal({
         />
         <NumberInput
           name="terms.payout_deadline_hours"
-          label="Payout deadline hours after eligibility"
+          label="Payout initiation target (hours after eligibility)"
           value={terms.payout_deadline_hours}
           change={(v) => {
             edit("payout_deadline_hours", v);
@@ -197,6 +321,11 @@ function Proposal({
             setKey(crypto.randomUUID());
           }}
         />
+        <p>
+          Before offering, confirm the payout route’s current minimum, funding
+          and sender-paid network fees. The seller must receive the full
+          accepted crypto amount.
+        </p>
         <Action disabled={busy} onClick={() => void propose()}>
           Propose exact seller terms
         </Action>
@@ -378,6 +507,12 @@ function OfferRecord({
             {offer.terms.amount} {offer.terms.currency.toUpperCase()} ·{" "}
             {offer.terms.network}
           </p>
+          {offer.terms.commission && (
+            <SellerBreakdown
+              price={offer.terms.commission}
+              asset={offer.terms.currency}
+            />
+          )}
           <dl className="seller-term-list">
             {termFields.map(([key, label]) => (
               <div key={key}>
@@ -389,11 +524,11 @@ function OfferRecord({
             ))}
           </dl>
           <p>
-            Payout delay {offer.terms.payout_delay_hours} hours; deadline{" "}
-            {offer.terms.payout_deadline_hours} hours after{" "}
+            Extra payout delay {offer.terms.payout_delay_hours} hours;
+            initiation target {offer.terms.payout_deadline_hours} hours after{" "}
             {offer.terms.model === "buy_first"
               ? "verified ownership control"
-              : "buyer acknowledgement and the delivery dispute window"}
+              : "buyer acknowledgement and the initial inspection period"}
             .
           </p>
           <p>
@@ -404,7 +539,7 @@ function OfferRecord({
           </p>
         </>
       )}
-      <ErrorNotice error={error} />
+      <SellerOfferError error={error} />
       {((view !== "handover" &&
         offer.state === "offered" &&
         (!admin || owner)) ||

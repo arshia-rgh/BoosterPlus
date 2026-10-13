@@ -66,7 +66,7 @@ func TestResaleConsignmentHoldsAndResolvedRefundPreserveExactSellerDebt(t *testi
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.base.auth.clock.Add(int64(49 * time.Hour / time.Second))
+	f.base.auth.clock.Add(int64(169 * time.Hour / time.Second))
 	now = time.Unix(f.base.auth.clock.Load(), 0)
 	// Time travel expires staff sessions too. This fixture represents a new
 	// two-factor staff sign-in; the actual sign-in flow is independently qualified.
@@ -106,7 +106,7 @@ func TestResaleConsignmentHoldsAndResolvedRefundPreserveExactSellerDebt(t *testi
 		t.Fatal(err)
 	}
 	payout, err = f.store.ApproveSellerPayout(ctx, f.base.admin, payout.ID, approve)
-	if err != nil || payout.State != "approved" || payout.Amount != "10.00000001" {
+	if err != nil || payout.State != "approved" || payout.Amount != "10.570000" {
 		t.Fatal("resolved refund changed or stranded accepted seller proceeds", err)
 	}
 }

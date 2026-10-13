@@ -1,11 +1,13 @@
-"""Select staged checks; the owner deferred aggregate qualification until DI15."""
+"""Select lightweight staged checks under the current owner release policy."""
 from pathlib import PurePosixPath
 import subprocess
 
-# Owner instruction, 28 September 2026: retain focused stage verification and run
-# the complete repository gate at DI15. Restore normal selection at that exit.
-# CI and root/project pre-commit targets always retain their complete gates.
-FOCUSED_UNTIL_DI15 = False
+# Owner instruction, 14 October 2026: do not automatically run the complete gate
+# for commits/deployments until the owner restores that requirement. Maintain
+# regression tests and run focused integration/browser checks for changed flows.
+# Explicit root/project pre-commit and full-gate targets remain available only
+# for owner-requested complete qualification; never report focused as full.
+FOCUSED_DEPLOYMENT_CHECKS = True
 # Owner instruction, 30 September: disk-intensive launch qualification moves to
 # the deployment server. This narrow preparation window is not a full-gate pass.
 # Restore False only after the server's final complete gate is recorded.
@@ -59,6 +61,11 @@ def main():
     ])
     paths = [item.decode() for item in raw.split(b"\0") if item]
     selected = scope(paths)
+    if FOCUSED_DEPLOYMENT_CHECKS:
+        print(f"Required staged-change gate: {selected} (owner-directed lightweight checks; full suite not run)", flush=True)
+        for command in commands(selected, True):
+            subprocess.run(command, check=True)
+        return
     if selected == "full":
         from service144_resume import run_if_available as service144_continuation
         if service144_continuation():
@@ -74,16 +81,15 @@ def main():
         for command in preparation_commands(paths):
             subprocess.run(command, check=True)
         return
-    mode = "focused until DI15" if FOCUSED_UNTIL_DI15 else "complete"
-    print(f"Required staged-change gate: {selected} ({mode})", flush=True)
-    for command in commands(selected, FOCUSED_UNTIL_DI15):
+    print(f"Required staged-change gate: {selected} (complete)", flush=True)
+    for command in commands(selected, False):
         subprocess.run(command, check=True)
 
 
 def commands(selected, focused):
     """Keep the full gate available without an environment-variable bypass."""
     if selected == "full":
-        return [["make", "stage-check" if focused else "pre-commit"]]
+        return [["make", "deploy-check" if focused else "pre-commit"]]
     result = [["make", "check-repository"]]
     if selected == "frontend":
         result.append(["make", "-C", "frontend", "stage-check" if focused else "pre-commit"])

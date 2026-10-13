@@ -1,3 +1,5 @@
+import { AgreementTemplate } from "./agreement-template";
+import { BuyerPriceInput } from "./commission-fields";
 import CoverEditor, { ReviewedImage } from "./cover-editor";
 import { FieldValidation, ValidationSummary } from "../ui/form-validation";
 import { useActionValidation } from "../ui/action-validation";
@@ -109,8 +111,6 @@ const textFields = [
   ["description", "Public account description"],
   ["region", "Public region"],
   ["rank", "Public rank"],
-  ["currency", "Price currency"],
-  ["amount_minor", "Exact price in minor units"],
   ["sale_terms", "Buyer sale terms"],
   ["transfer_requirements", "Buyer transfer requirements"],
   ["dispute_terms", "Buyer dispute terms"],
@@ -126,10 +126,6 @@ function productText(product: Product, key: (typeof textFields)[number][0]) {
       return product.region;
     case "rank":
       return product.rank;
-    case "currency":
-      return product.currency;
-    case "amount_minor":
-      return product.amount_minor;
     case "sale_terms":
       return product.sale_terms;
     case "transfer_requirements":
@@ -328,7 +324,7 @@ function Editor({
               >
                 Private seller agreement and ownership review
               </Link>
-              <ErrorNotice error={error} />
+              <ErrorNotice error={error} hideIssues />
               <ValidationSummary
                 issues={validation.validation.issues}
                 fields={validation.validation.fields}
@@ -358,6 +354,34 @@ function Editor({
                 }
               >
                 <legend>Account listing editor</legend>
+                <div
+                  hidden={section !== "details"}
+                  data-editor-section="details"
+                >
+                  {!product.commission && (
+                    <p>
+                      This saved listing uses its earlier price. Enter an
+                      explicit base below to apply the new 5% buyer commission
+                      on its next release. Existing orders keep their agreed
+                      total.
+                    </p>
+                  )}
+                  <BuyerPriceInput
+                    key={baseVersion}
+                    price={product.commission}
+                    change={(commission) => {
+                      setProduct((p) => ({
+                        ...p,
+                        commission,
+                        currency: "USD",
+                        amount_minor: commission.total_minor,
+                      }));
+                      setDirty(true);
+                      setReviewed(false);
+                      setPreview(false);
+                    }}
+                  />
+                </div>
                 {textFields.map(([key, label]) => (
                   <div
                     key={key}
@@ -401,18 +425,31 @@ function Editor({
                         "dispute_terms",
                         "acknowledgement_terms",
                       ].includes(key)}
-                      help={
-                        key === "amount_minor"
-                          ? "For a two-decimal currency, 1234 means 12.34."
-                          : ""
-                      }
                     />
                   </div>
                 ))}
                 <div hidden={section !== "terms"} data-editor-section="terms">
+                  <AgreementTemplate
+                    label="Replace with approved buyer terms"
+                    apply={(defaults) => {
+                      setProduct((p) => ({
+                        ...p,
+                        sale_terms: defaults.buyer.sale_terms,
+                        transfer_requirements:
+                          defaults.buyer.transfer_requirements,
+                        dispute_terms: defaults.buyer.dispute_terms,
+                        acknowledgement_terms:
+                          defaults.buyer.acknowledgement_terms,
+                        dispute_hours: 168,
+                      }));
+                      setDirty(true);
+                      setReviewed(false);
+                      setPreview(false);
+                    }}
+                  />
                   <NumberInput
                     name="product.dispute_hours"
-                    label="Buyer dispute window hours"
+                    label="Initial buyer inspection hours"
                     value={product.dispute_hours}
                     change={(v) => {
                       edit("dispute_hours", v);

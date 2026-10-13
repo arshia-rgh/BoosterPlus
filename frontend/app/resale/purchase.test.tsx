@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { get, post } from "../identity/api";
@@ -55,9 +61,9 @@ beforeEach(() => {
   );
 });
 afterEach(() => vi.clearAllMocks());
-function mount() {
+function mount(search = "") {
   render(
-    <MemoryRouter initialEntries={["/accounts/" + listing.id]}>
+    <MemoryRouter initialEntries={["/accounts/" + listing.id + search]}>
       <Routes>
         <Route path="/accounts/:id" element={<AccountProduct />} />
         <Route path="/orders/:id" element={<h1>Saved order</h1>} />
@@ -92,6 +98,56 @@ it("separates inspection from explicit purchase acceptance without creating an o
     screen.getByRole("button", { name: "Review this account purchase" }),
   ).toHaveFocus();
   expect(post).not.toHaveBeenCalled();
+});
+it.each([false, true])(
+  "discloses the complete buyer price before consent (direct=%s)",
+  (direct) => {
+    const priced = structuredClone(listing);
+    priced.product.amount_minor = "5249";
+    priced.product.commission = {
+      version: "account_commission_v1",
+      base_minor: "4999",
+      fee_minor: "250",
+      total_minor: "5249",
+    };
+    vi.mocked(useResource).mockImplementation((path) => ({
+      data: path === "/auth/session" ? session : priced,
+      error: null,
+      loading: false,
+      reload: vi.fn(),
+    }));
+    mount(direct ? "?step=review" : "");
+    if (!direct)
+      fireEvent.click(
+        screen.getByRole("button", { name: "Review this account purchase" }),
+      );
+    const review = screen.getByRole("region", {
+      name: "Account purchase review",
+    });
+    const breakdown = within(review).getAllByLabelText(
+      "Account price breakdown",
+    )[0];
+    expect(breakdown).toBeVisible();
+    expect(breakdown).toHaveTextContent("Account priceUSD 49.99");
+    expect(breakdown).toHaveTextContent("Buyer commission (5%)USD 2.50");
+    expect(breakdown).toHaveTextContent("Total to payUSD 52.49");
+    expect(
+      within(review).getByRole("button", {
+        name: "Reserve and continue to payment",
+      }),
+    ).toBeDisabled();
+    expect(post).not.toHaveBeenCalled();
+  },
+);
+it("keeps a historical purchase total without inventing a commission", () => {
+  mount("?step=review");
+  const review = screen.getByRole("region", {
+    name: "Account purchase review",
+  });
+  expect(
+    within(review).queryByLabelText("Account price breakdown"),
+  ).not.toBeInTheDocument();
+  expect(within(review).getAllByText("USD 50.00")[0]).toBeVisible();
 });
 it("recovers a saved purchase after a lost response instead of creating a second reservation", async () => {
   let saved = false;

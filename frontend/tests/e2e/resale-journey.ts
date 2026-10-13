@@ -135,7 +135,14 @@ export async function resaleJourney(
       .selectOption("consignment");
     await page.getByLabel("Seller payout asset code").fill("usdttrc20");
     await page.getByLabel("Seller payout network", { exact: true }).fill("trx");
-    await page.getByLabel("Exact net seller crypto amount").fill("10.00000001");
+    await page.getByLabel("Agreed account base price (USD)").fill("11.75");
+    await page.getByLabel("Crypto units per USD").fill("1");
+    await page
+      .getByLabel("Conversion quote source")
+      .fill("Synthetic browser quotation");
+    await page
+      .getByLabel("Conversion quote time")
+      .fill(new Date(Date.now() - 60000).toISOString().slice(0, 16));
     for (const label of [
       "Seller proceeds basis",
       "Fees and deductions",
@@ -148,7 +155,9 @@ export async function resaleJourney(
         .fill(
           `Synthetic explicit ${label.toLowerCase()} accepted for browser qualification.`,
         );
-    await page.getByLabel("Payout deadline hours after eligibility").fill("72");
+    await page
+      .getByLabel("Payout initiation target (hours after eligibility)")
+      .fill("48");
     await page
       .getByLabel("Seller offer expires")
       .fill(new Date(Date.now() + 86400000).toISOString().slice(0, 16));
@@ -244,8 +253,7 @@ export async function resaleJourney(
       ],
       ["Public region", "Synthetic region"],
       ["Public rank", "Mythic"],
-      ["Price currency", "USD"],
-      ["Exact price in minor units", "1234"],
+      ["Account base price (USD)", "11.75"],
     ] as const)
       await page.getByLabel(label, { exact: true }).fill(value);
     await page.getByRole("link", { name: "Buyer terms", exact: true }).click();
@@ -260,7 +268,7 @@ export async function resaleJourney(
         .fill(
           `Synthetic explicit ${label.toLowerCase()} displayed for this account.`,
         );
-    await page.getByLabel("Buyer dispute window hours").fill("48");
+    await page.getByLabel("Initial buyer inspection hours").fill("168");
     await page.getByLabel("Earliest delivery hours").fill("1");
     await page.getByLabel("Latest delivery hours").fill("24");
     const savedListing = page.waitForResponse(

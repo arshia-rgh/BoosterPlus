@@ -1,6 +1,6 @@
 import "../ui/secondary.css";
 import Agenda from "./agenda";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "../validation";
 import { Action, Check, ErrorNotice, Select, Text } from "../catalog/controls";
 import { post } from "../identity/api";
@@ -20,10 +20,14 @@ function ProfileEditor({
   profile,
   base,
   reload,
+  saving,
+  saved,
 }: {
   profile: CalendarProfile;
   base: string;
   reload: () => void;
+  saving: () => void;
+  saved: (restoreFocus: boolean) => void;
 }) {
   const [value, setValue] = useState(profile),
     [games, setGames] = useState(profile.game_tags.join(", ")),
@@ -31,9 +35,11 @@ function ProfileEditor({
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null);
   const validation = useActionValidation();
-  const lock = useRef(false);
+  const lock = useRef(false),
+    editor = useRef<HTMLElement>(null);
   async function save() {
     if (lock.current) return;
+    saving();
     const input = {
       ...value,
       game_tags: games
@@ -47,11 +53,18 @@ function ProfileEditor({
     };
     setError(null);
     if (!validation.check(profileIssues(input))) return;
+    const restoreFocus =
+      editor.current?.contains(document.activeElement) ?? false;
     lock.current = true;
     setBusy(true);
     setError(null);
     try {
       await post(base, input, profileSchema);
+      saved(
+        restoreFocus &&
+          (document.activeElement === document.body ||
+            !!editor.current?.contains(document.activeElement)),
+      );
       reload();
     } catch (cause) {
       setError(cause);
@@ -63,7 +76,7 @@ function ProfileEditor({
   }
   return (
     <FieldValidation value={validation.validation}>
-      <section className="catalog-section">
+      <section className="catalog-section" ref={editor}>
         <h3>Staffing profile</h3>
         <p>
           Tags help manual assignment; they do not grant permissions. Resolve
@@ -102,20 +115,24 @@ function ProfileEditor({
             change={setRegions}
           />
         </fieldset>
-        <Action
-          disabled={busy}
+        <button
+          type="button"
+          className="button compact"
+          aria-disabled={busy}
+          aria-busy={busy}
           onClick={() => {
             void save();
           }}
         >
           Save calendar profile
-        </Action>
+        </button>
       </section>
     </FieldValidation>
   );
 }
 function Calendar({ base }: { base: string }) {
   const [after, setAfter] = useState(""),
+    [profileSaved, setProfileSaved] = useState(false),
     [error, setError] = useState<unknown>(null),
     [busy, setBusy] = useState(false),
     resource = useResource(
@@ -123,6 +140,16 @@ function Calendar({ base }: { base: string }) {
       calendarSchema,
     ),
     data = resource.error ? null : resource.data;
+  const saveResult = useRef<HTMLElement>(null),
+    focusSaved = useRef(false);
+  useEffect(() => {
+    if (profileSaved && !resource.loading && focusSaved.current) {
+      focusSaved.current = false;
+      // A refresh remounts the saved editor. Restore lost focus only; a person
+      // who moved to another control while waiting keeps that position.
+      if (document.activeElement === document.body) saveResult.current?.focus();
+    }
+  }, [profileSaved, resource.loading]);
   async function remove(id: string, version: number) {
     setBusy(true);
     setError(null);
@@ -147,6 +174,21 @@ function Calendar({ base }: { base: string }) {
       </Action>
       {resource.loading && <p role="status">Checking calendar…</p>}
       <ErrorNotice error={resource.error ?? error} />
+      {profileSaved && (
+        <section
+          ref={saveResult}
+          tabIndex={-1}
+          aria-label="Calendar profile result"
+        >
+          <p role="status">Calendar profile saved.</p>
+          {!!resource.error && (
+            <p>
+              The save succeeded, but the refreshed calendar is unavailable.
+              Refresh the calendar to check its latest details.
+            </p>
+          )}
+        </section>
+      )}
       {data && (
         <fieldset disabled={resource.loading || busy}>
           <legend>Calendar controls</legend>
@@ -155,6 +197,14 @@ function Calendar({ base }: { base: string }) {
             base={base}
             profile={data.profile}
             reload={resource.reload}
+            saving={() => {
+              focusSaved.current = false;
+              setProfileSaved(false);
+            }}
+            saved={(restoreFocus) => {
+              focusSaved.current = restoreFocus;
+              setProfileSaved(true);
+            }}
           />
           {data.profile.enabled && (
             <AvailabilityEditor

@@ -202,6 +202,10 @@ const messages = new Map([
   ],
   ["order_invalid", "Review the highlighted order issues."],
   [
+    "resale_invalid",
+    "Review the highlighted account details before continuing.",
+  ],
+  [
     "resale_conflict",
     "This account's availability or purchase terms changed. Refresh the listing and review the current terms before continuing. If your earlier reservation was not confirmed, check that same request first.",
   ],

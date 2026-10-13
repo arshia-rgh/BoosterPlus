@@ -11,6 +11,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/accountpricing"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 )
 
@@ -83,20 +84,21 @@ type QuoteInput struct {
 
 // Commercial is immutable once issued; acceptance copies it into a contract.
 type Commercial struct {
-	QuoteID          string              `json:"quote_id"`
-	Revision         int                 `json:"revision"`
-	Currency         string              `json:"currency"`
-	SubtotalMinor    string              `json:"subtotal_minor"`
-	AmountMinor      string              `json:"amount_minor"`
-	Discount         *catalog.Discount   `json:"discount,omitempty"`
-	Lines            []catalog.PriceLine `json:"lines"`
-	Scope            string              `json:"scope"`
-	Reason           string              `json:"reason"`
-	DeliveryMinHours int                 `json:"delivery_min_hours"`
-	DeliveryMaxHours int                 `json:"delivery_max_hours"`
-	DeliveryBasis    string              `json:"delivery_basis,omitempty"`
-	ExpiresAt        time.Time           `json:"expires_at"`
-	TermsVersion     string              `json:"terms_version"`
+	AccountPrice     *accountpricing.Buyer `json:"account_price,omitempty"`
+	QuoteID          string                `json:"quote_id"`
+	Revision         int                   `json:"revision"`
+	Currency         string                `json:"currency"`
+	SubtotalMinor    string                `json:"subtotal_minor"`
+	AmountMinor      string                `json:"amount_minor"`
+	Discount         *catalog.Discount     `json:"discount,omitempty"`
+	Lines            []catalog.PriceLine   `json:"lines"`
+	Scope            string                `json:"scope"`
+	Reason           string                `json:"reason"`
+	DeliveryMinHours int                   `json:"delivery_min_hours"`
+	DeliveryMaxHours int                   `json:"delivery_max_hours"`
+	DeliveryBasis    string                `json:"delivery_basis,omitempty"`
+	ExpiresAt        time.Time             `json:"expires_at"`
+	TermsVersion     string                `json:"terms_version"`
 }
 
 // ListPrice contains only the immutable accepted amount, never an estimate or provider data.

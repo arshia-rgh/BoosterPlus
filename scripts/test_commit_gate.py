@@ -2,7 +2,7 @@
 import unittest
 import hashlib
 from unittest.mock import patch
-from commit_gate import commands, launch_preparation_only, preparation_commands, scope
+from commit_gate import commands, launch_preparation_only, main, preparation_commands, scope
 from launch_resume import checked_evidence, remaining_commands, validate_changes
 
 
@@ -32,10 +32,16 @@ class GateScopeTest(unittest.TestCase):
     def test_deleted_backend_path_still_requires_full(self):
         self.assertEqual(scope(["backend/removed.go", "docs/removed-code.md"]), "full")
 
-    def test_owner_authorized_di15_window_preserves_scoped_checks(self):
-        self.assertEqual(commands("full", True), [["make", "stage-check"]])
+    def test_owner_authorized_lightweight_policy_preserves_scoped_checks(self):
+        self.assertEqual(commands("full", True), [["make", "deploy-check"]])
         self.assertEqual(commands("frontend", True), [["make", "check-repository"], ["make", "-C", "frontend", "stage-check"]])
         self.assertEqual(commands("repository", True), [["make", "check-repository"]])
+
+    def test_default_hook_does_not_start_full_or_legacy_continuation(self):
+        with patch("commit_gate.subprocess.check_output", return_value=b"backend/internal/resale/offers.go\0"), \
+                patch("commit_gate.subprocess.run") as run:
+            main()
+        run.assert_called_once_with(["make", "deploy-check"], check=True)
 
     def test_full_qualification_remains_available(self):
         self.assertEqual(commands("full", False), [["make", "pre-commit"]])

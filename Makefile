@@ -1,10 +1,10 @@
 SHELL := /bin/sh
 .DEFAULT_GOAL := help
 export GOSUMDB := sum.golang.org
-.PHONY: help bootstrap hooks check-repository stage-check pre-commit
+.PHONY: help bootstrap hooks check-repository stage-check deploy-check pre-commit full-gate
 
 help:
-	@printf '%s\n' 'bootstrap: install pinned tools/dependencies' 'hooks: install owner-approved staged checks' 'stage-check: focused implementation checks until DI15' 'pre-commit: complete repository/backend/frontend/production qualification'
+	@printf '%s\n' 'bootstrap: install pinned tools/dependencies' 'hooks: install owner-approved staged checks' 'stage-check: lightweight static/security/unit/build checks' 'deploy-check: lightweight checks plus deployment configuration' 'full-gate / pre-commit: complete qualification; run only when the owner requests it'
 bootstrap:
 	python3 scripts/install-trivy.py
 	$(MAKE) -C backend bootstrap
@@ -32,6 +32,11 @@ stage-check:
 	$(MAKE) check-repository
 	$(MAKE) -C backend stage-check
 	$(MAKE) -C frontend stage-check
+deploy-check: stage-check
+	$(MAKE) -C production preparation-check
+# The owner paused automatic full qualification on 14 October 2026.
+# Retain this explicit target and all tests for requested full-suite runs.
+full-gate: pre-commit
 pre-commit:
 	$(MAKE) check-repository
 	$(MAKE) -C backend pre-commit

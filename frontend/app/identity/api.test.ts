@@ -1,9 +1,45 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { z } from "../validation";
-import { APIError, get, sessionSchema } from "./api";
+import { APIError, errorMessage, get, sessionSchema } from "./api";
 
 afterEach(() => {
   vi.unstubAllGlobals();
+});
+it("distinguishes account validation from unavailable service without exposing raw details", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            code: "resale_invalid",
+            message: "private database reason",
+            issues: [
+              {
+                path: "product.commission.base_minor",
+                message: "Use the accepted seller base.",
+              },
+            ],
+          }),
+          { status: 422 },
+        ),
+      ),
+    ),
+  );
+  await expect(get("/accounts/example", z.unknown())).rejects.toMatchObject({
+    status: 422,
+    code: "resale_invalid",
+    message: "Review the highlighted account details before continuing.",
+    issues: [
+      {
+        path: "product.commission.base_minor",
+        message: "Use the accepted seller base.",
+      },
+    ],
+  });
+  expect(errorMessage(new Error("private connection detail"))).toBe(
+    "The service is unavailable. Please try again.",
+  );
 });
 it("preserves access denial and notifies the session boundary for malformed proxy responses", async () => {
   const changed = vi.fn();

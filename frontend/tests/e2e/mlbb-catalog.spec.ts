@@ -27,54 +27,62 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
   await server.close();
 });
-test("MLBB linked choices, actual stars and catalog artwork remain usable", async ({
-  page,
-}, info) => {
-  await page.goto(origin);
-  const hero = page.getByRole("group", {
-    name: "Preferred heroes",
-    exact: true,
-  });
-  const search = hero.getByRole("searchbox");
-  await search.fill("Kagura");
-  await hero.getByRole("checkbox", { name: "Kagura", exact: true }).check();
-  await expect(page.getByLabel("Preferred lane", { exact: true })).toHaveValue(
-    "option_3",
-  );
-  await search.fill("Miya");
-  await hero.getByRole("checkbox", { name: "Miya", exact: true }).check();
-  await expect(
-    page.getByLabel("Preferred lane", { exact: true }),
-  ).toBeDisabled();
-  await hero.getByRole("button", { name: "Remove Miya", exact: true }).click();
-  await expect(search).toBeFocused();
-  await hero.getByRole("button", { name: "Clear search", exact: true }).click();
-  await expect(hero.getByText(/1 selected/)).toBeVisible();
-  await page
-    .getByLabel("Server / usual play location (required)", { exact: true })
-    .selectOption("option_13");
-  await expect(
-    page.getByLabel("Region (required)", { exact: true }),
-  ).toHaveValue("option_4");
-  await page
-    .getByLabel("Starting rank / division (required)", { exact: true })
-    .selectOption("option_27");
-  const stars = page.getByLabel("Current stars (required) · stars", {
-    exact: true,
-  });
-  await expect(
-    page
-      .getByRole("region", { name: "Your goal", exact: true })
-      .getByLabel("Current stars (required) · stars", { exact: true }),
-  ).toBeVisible();
-  await stars.fill("6");
-  await expect(stars).not.toHaveAttribute("aria-invalid", "true");
-  await stars.press("Tab");
-  await expect(stars).toHaveAttribute("aria-invalid", "true");
-  await stars.fill("62");
-  await stars.press("Tab");
-  await expect(stars).not.toHaveAttribute("aria-invalid", "true");
-  for (const width of [320, 768, 1280]) {
+// Keep each viewport independently bounded: six axe scans and full-page
+// screenshots in one journey can exceed the default budget on the shared host.
+// Each case retains the complete linked-choice, rank, artwork and a11y checks.
+for (const width of [320, 768, 1280]) {
+  test(`MLBB linked choices, actual stars and artwork remain usable at ${String(width)}px`, async ({
+    page,
+  }, info) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(origin);
+    const hero = page.getByRole("group", {
+      name: "Preferred heroes",
+      exact: true,
+    });
+    const search = hero.getByRole("searchbox");
+    await search.fill("Kagura");
+    await hero.getByRole("checkbox", { name: "Kagura", exact: true }).check();
+    await expect(
+      page.getByLabel("Preferred lane", { exact: true }),
+    ).toHaveValue("option_3");
+    await search.fill("Miya");
+    await hero.getByRole("checkbox", { name: "Miya", exact: true }).check();
+    await expect(
+      page.getByLabel("Preferred lane", { exact: true }),
+    ).toBeDisabled();
+    await hero
+      .getByRole("button", { name: "Remove Miya", exact: true })
+      .click();
+    await expect(search).toBeFocused();
+    await hero
+      .getByRole("button", { name: "Clear search", exact: true })
+      .click();
+    await expect(hero.getByText(/1 selected/)).toBeVisible();
+    await page
+      .getByLabel("Server / usual play location (required)", { exact: true })
+      .selectOption("option_13");
+    await expect(
+      page.getByLabel("Region (required)", { exact: true }),
+    ).toHaveValue("option_4");
+    await page
+      .getByLabel("Starting rank / division (required)", { exact: true })
+      .selectOption("option_27");
+    const stars = page.getByLabel("Current stars (required) · stars", {
+      exact: true,
+    });
+    await expect(
+      page
+        .getByRole("region", { name: "Your goal", exact: true })
+        .getByLabel("Current stars (required) · stars", { exact: true }),
+    ).toBeVisible();
+    await stars.fill("6");
+    await expect(stars).not.toHaveAttribute("aria-invalid", "true");
+    await stars.press("Tab");
+    await expect(stars).toHaveAttribute("aria-invalid", "true");
+    await stars.fill("62");
+    await stars.press("Tab");
+    await expect(stars).not.toHaveAttribute("aria-invalid", "true");
     await page.setViewportSize({ width, height: 900 });
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),
@@ -101,16 +109,16 @@ test("MLBB linked choices, actual stars and catalog artwork remain usable", asyn
       path: info.outputPath(`mlbb-form-${String(width)}.png`),
       fullPage: true,
     });
-  }
-  await page.getByRole("link", { name: "Fixed packages", exact: true }).click();
-  await expect(page.locator("img.package-card-artwork")).toHaveCount(4);
-  for (const image of await page.locator("img.package-card-artwork").all()) {
-    await image.scrollIntoViewIfNeeded();
-    await expect
-      .poll(() => image.evaluate((e) => (e as HTMLImageElement).naturalWidth))
-      .toBeGreaterThan(0);
-  }
-  for (const width of [320, 768, 1280]) {
+    await page
+      .getByRole("link", { name: "Fixed packages", exact: true })
+      .click();
+    await expect(page.locator("img.package-card-artwork")).toHaveCount(4);
+    for (const image of await page.locator("img.package-card-artwork").all()) {
+      await image.scrollIntoViewIfNeeded();
+      await expect
+        .poll(() => image.evaluate((e) => (e as HTMLImageElement).naturalWidth))
+        .toBeGreaterThan(0);
+    }
     await page.setViewportSize({ width, height: 900 });
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),
@@ -120,8 +128,8 @@ test("MLBB linked choices, actual stars and catalog artwork remain usable", asyn
       path: info.outputPath(`mlbb-packages-${String(width)}.png`),
       fullPage: true,
     });
-  }
-});
+  });
+}
 test("prepared admin imports reject stale sources and preserve the publication boundary", async ({
   page,
 }, info) => {

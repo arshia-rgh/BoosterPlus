@@ -1,3 +1,4 @@
+import { buyerCommissionSchema } from "../resale/commissions";
 import { z } from "../validation";
 import {
   releaseSchema,
@@ -44,6 +45,7 @@ export const summarySchema = z.object({
   updated_at: z.string(),
 });
 export const commercialSchema = z.object({
+  account_price: buyerCommissionSchema.optional(),
   quote_id: z.string(),
   revision: z.number().int(),
   currency: z.string(),

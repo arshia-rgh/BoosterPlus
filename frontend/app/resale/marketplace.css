@@ -364,3 +364,36 @@
 .cosmetic-collection {
   min-width: 0;
 }
+
+.account-price-breakdown {
+  display: grid;
+  gap: 0.65rem;
+  margin-block: 1rem;
+  max-width: 40rem;
+}
+.account-price-breakdown > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.account-price-breakdown dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.account-price-breakdown > div:last-child {
+  border-top: 1px solid currentColor;
+  padding-top: 0.65rem;
+}
+.account-commission-editor {
+  min-width: 0;
+}
+
+.market-card .package-price small {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-weight: 400;
+}

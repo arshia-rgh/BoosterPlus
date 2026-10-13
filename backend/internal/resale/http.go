@@ -112,6 +112,9 @@ func (s *Store) Register(mux *http.ServeMux) {
 			return problem(w, fn(w, r, p))
 		}))
 	}
+	register("GET /api/v1/admin/account-agreement-defaults", "admin", func(w http.ResponseWriter, _ *http.Request, _ *identity.Principal) error {
+		return write(w, agreementDefaults)
+	})
 	register("GET /api/v1/accounts", "", func(w http.ResponseWriter, r *http.Request, _ *identity.Principal) error {
 		q := r.URL.Query()
 		rows, next, err := s.BrowseFiltered(r.Context(), BrowseFilters{After: q.Get("after"), Slug: q.Get("slug"), Region: q.Get("region"), Rank: q.Get("rank"), Search: q.Get("search"), Currency: q.Get("currency"), MaxMinor: q.Get("max_minor"), Sort: q.Get("sort")})
