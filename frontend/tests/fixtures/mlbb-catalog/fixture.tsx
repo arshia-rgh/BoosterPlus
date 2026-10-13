@@ -7,7 +7,7 @@ import {
   Link,
   useSearchParams,
 } from "react-router";
-import prepared from "../../../../docs/catalog/MLBB_PREPARED_DRAFT.json";
+import prepared from "./configuration.json";
 import { configurationSchema, type Release } from "../../../app/catalog/model";
 import DynamicForm from "../../../app/catalog/dynamic-form";
 import ConfigurationImport from "../../../app/catalog/configuration-import";

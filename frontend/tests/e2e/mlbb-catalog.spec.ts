@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { createServer, type ViteDevServer } from "vite";
 import { fileURLToPath } from "node:url";
-import prepared from "../../../docs/catalog/MLBB_PREPARED_DRAFT.json" with { type: "json" };
+import prepared from "../fixtures/mlbb-catalog/configuration.json" with { type: "json" };
 let server: ViteDevServer;
 let origin: string;
 test.beforeAll(async () => {
