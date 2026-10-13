@@ -94,6 +94,7 @@ export function ReferencesEditor({
             />
           </div>
           <OptionsEditor
+            ranks={reference.kind === "rank"}
             path={`references.${String(i)}.options`}
             options={reference.options}
             change={(options) => {

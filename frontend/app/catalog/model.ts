@@ -24,6 +24,7 @@ export const optionSchema = z.object({
   key: z.string(),
   label: z.string(),
   units: z.number().int(),
+  unit_start: z.number().int().min(0).optional(),
 });
 export const cosmeticsSchema = z.object({
   groups: z.array(

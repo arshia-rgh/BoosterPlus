@@ -1,3 +1,5 @@
+import ChoiceInput from "./choice-input";
+import { rankUnitsField, rankUnitsError, isRankGoalField } from "./rank-units";
 import CosmeticsInput from "./cosmetics-input";
 import {
   packageAnswers,
@@ -70,6 +72,7 @@ export function Input({
   change,
   required,
   error: suppliedError,
+  rangeError,
   intake,
   choiceState,
   validationName,
@@ -80,6 +83,7 @@ export function Input({
   change: (value: Answers[string] | undefined) => void;
   required: boolean;
   error: string | undefined;
+  rangeError?: string | undefined;
   choiceState?: ReturnType<typeof linkedChoiceState> | undefined;
   validationName?: string;
   intake?:
@@ -88,7 +92,11 @@ export function Input({
 }) {
   const validation = useContext(FieldValidation);
   const name = validationName ?? field.key;
-  const error = suppliedError || fieldError(validation, name);
+  const [editing, setEditing] = useState(false);
+  const error =
+    suppliedError ||
+    fieldError(validation, name) ||
+    (!editing ? rangeError : undefined);
   const id = useId(),
     helpId = id + "-help",
     errorId = id + "-error";
@@ -146,41 +154,17 @@ export function Input({
     );
   else if (field.type === "radio" || field.type === "multiselect")
     control = (
-      <fieldset
-        className="catalog-choices"
+      <ChoiceInput
+        field={field}
+        options={options}
+        value={value}
+        change={change}
+        id={id}
+        label={label}
+        describedBy={description || undefined}
+        invalid={!!error}
         disabled={choiceState?.disabled}
-        aria-describedby={description || undefined}
-      >
-        <legend>{label}</legend>
-        {options.map((option) => (
-          <label key={option.key}>
-            <input
-              type={field.type === "radio" ? "radio" : "checkbox"}
-              name={id}
-              aria-invalid={error ? true : undefined}
-              aria-describedby={description || undefined}
-              value={option.key}
-              checked={
-                field.type === "radio"
-                  ? value === option.key
-                  : Array.isArray(value) && value.includes(option.key)
-              }
-              onChange={(event) => {
-                if (field.type === "radio") change(option.key);
-                else {
-                  const existing = Array.isArray(value) ? value : [];
-                  change(
-                    event.target.checked
-                      ? [...existing, option.key]
-                      : existing.filter((v) => v !== option.key),
-                  );
-                }
-              }}
-            />
-            {option.label}
-          </label>
-        ))}
-      </fieldset>
+      />
     );
   else if (field.type === "boolean")
     control = (
@@ -273,6 +257,12 @@ export function Input({
         <input
           {...common}
           value={scalar}
+          onFocus={() => {
+            setEditing(true);
+          }}
+          onBlur={() => {
+            setEditing(false);
+          }}
           type="text"
           inputMode={
             field.type === "integer"
@@ -606,13 +596,15 @@ function ConfigurationForm({
             {[
               {
                 title: "Your goal",
-                fields: service.fields.filter((field) => field.type === "rank"),
+                fields: service.fields.filter((field) =>
+                  isRankGoalField(service, field),
+                ),
               },
               {
                 title: "Play mode",
                 fields: service.fields.filter(
                   (field) =>
-                    field.type !== "rank" &&
+                    !isRankGoalField(service, field) &&
                     service.fulfillment?.field === field.key,
                 ),
               },
@@ -620,7 +612,7 @@ function ConfigurationForm({
                 title: "Your preferences",
                 fields: service.fields.filter(
                   (field) =>
-                    field.type !== "rank" &&
+                    !isRankGoalField(service, field) &&
                     service.fulfillment?.field !== field.key &&
                     field.stage === "estimate",
                 ),
@@ -629,7 +621,7 @@ function ConfigurationForm({
                 title: "Order details",
                 fields: service.fields.filter(
                   (field) =>
-                    field.type !== "rank" &&
+                    !isRankGoalField(service, field) &&
                     service.fulfillment?.field !== field.key &&
                     field.stage !== "estimate",
                 ),
@@ -659,7 +651,7 @@ function ConfigurationForm({
                     {group.fields.map((field) => (
                       <Input
                         key={`${field.key}:${String(uploadEpoch)}`}
-                        field={field}
+                        field={rankUnitsField(service, config, field, values)}
                         intake={
                           !previewPath &&
                           field.type === "attachment" &&
@@ -749,6 +741,12 @@ function ConfigurationForm({
                           if (!journey || stage === "estimate")
                             setEstimate(null);
                         }}
+                        rangeError={rankUnitsError(
+                          service,
+                          config,
+                          field,
+                          values,
+                        )}
                         error={
                           issues.find((issue) => issue.path === field.key)
                             ?.message

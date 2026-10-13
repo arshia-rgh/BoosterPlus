@@ -175,6 +175,9 @@ func validateOptions(options []Option, path string, publish bool, add func(strin
 			add(path, "Options require unique stable keys, labels and unit bounds between 0 and 1,000,000.")
 		}
 		keys[option.Key] = true
+		if option.UnitStart != nil && (*option.UnitStart < 0 || *option.UnitStart > 1000000 || option.Units < 1 || option.Units > 1000000-*option.UnitStart) {
+			add(path, "Absolute rank ranges need a nonnegative starting value and positive width, ending at or below 1,000,000.")
+		}
 	}
 }
 

@@ -1,5 +1,11 @@
 # Implementation progress
 
+### Service145 preparation (13 October 2026)
+
+Research and a complete proposed MLBB configuration are in `catalog/MLBB_RESEARCH_2026-10-13.md` and `catalog/MLBB_PREPARED_DRAFT.json`: linked heroes/lanes and play locations/regions, actual Mythic stars, requested hours, explicit win-rate preferences, 16 price examples and three generated fixed-offer covers. Revision0 deliberately prevents importing over the owner's newer saved revision243 before comparison/merge. Live catalog publication is pending.
+
+Exactly one owner-approved unpaid USD50/usdtbsc diagnostic invoice returned HTTP200. Its uppercase currency echoes identified the hosted redirect failure. The adapter correction passes isolated provider and catalog tests; no extra invoice, message or funds action was performed. The permission is consumed. Scoped rendered senior review found and corrected a hero-selector grid collision, small import buttons and dense package cards; focused browser/axe checks pass after those changes. Normal complete qualification and signed release/deployment remain pending; see `service145-mlbb-checkout.md`. The new isolated server checkout is prepared with37GiB free after removing only regenerable Go build cache. Production remains72ed594/schema41 with financial/privacy settings unchanged.
+
 Updated: 10 September 2026.
 
 ## Repository policy

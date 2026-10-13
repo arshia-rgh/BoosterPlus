@@ -15,6 +15,7 @@ import "./admin-workspace.css";
 import { useResource } from "../orders/resource";
 import DiscoveryEditor from "./discovery-editor";
 import HeroLayoutEditor from "./hero-layout-editor";
+import ConfigurationImport from "./configuration-import";
 import { useEffect, useRef, useState } from "react";
 import {
   Link,
@@ -461,6 +462,13 @@ function Editor({
                 aria-label="Game and rank references"
               >
                 <h3>Game and rank references</h3>
+                <ConfigurationImport
+                  slug={draft.slug}
+                  revision={draft.revision}
+                  current={draft.configuration}
+                  dirty={dirty}
+                  change={update}
+                />
                 <div className="catalog-grid">
                   <Text
                     name="name"

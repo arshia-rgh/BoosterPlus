@@ -356,7 +356,8 @@
   display: grid;
   gap: 0.6rem;
 }
-.experience .catalog-choices label {
+.experience .catalog-choices:not(.catalog-choice-control) label,
+.experience .catalog-choice-control .catalog-choice-options > label {
   border: 1px solid #466348;
   border-radius: 0.6rem;
   padding: 0.9rem;
@@ -365,7 +366,13 @@
   gap: 0.7rem;
   cursor: pointer;
 }
-.experience .catalog-choices label:has(input:checked) {
+.experience
+  .catalog-choices:not(.catalog-choice-control)
+  label:has(input:checked),
+.experience
+  .catalog-choice-control
+  .catalog-choice-options
+  > label:has(input:checked) {
   background: #34522e;
   border-color: #b7dc92;
 }

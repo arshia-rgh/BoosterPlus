@@ -35,6 +35,9 @@ type Option struct {
 	Key   string `json:"key"`
 	Label string `json:"label"`
 	Units int    `json:"units"`
+	// UnitStart opts a rank into absolute, half-open star ranges. Nil keeps
+	// historical zero-based inclusive bounds unchanged for existing orders.
+	UnitStart *int `json:"unit_start,omitempty"`
 }
 
 // ServiceDefinition pins its form, catalogs and evaluator in the same release.

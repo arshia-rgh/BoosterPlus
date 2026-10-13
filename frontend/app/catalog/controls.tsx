@@ -365,10 +365,12 @@ export function Ordering({
 }
 export function OptionsEditor({
   path = "options",
+  ranks = false,
   options,
   change,
 }: {
   path?: string;
+  ranks?: boolean;
   options: Option[];
   change: (options: Option[]) => void;
 }) {
@@ -392,10 +394,14 @@ export function OptionsEditor({
   };
   return (
     <div ref={groupRef} id={id}>
-      <p className="quiet">
-        Option order defines rank progression. Represent each division as an
-        entry; units are its maximum stars/points.
-      </p>
+      {ranks && (
+        <p className="quiet">
+          Option order defines rank progression. Represent each division as an
+          entry; units are the stars/points needed to cross that interval. An
+          absolute starting value lets customers enter total stars (for example,
+          Honor starts at 25 and spans 25 stars, so customers enter 25–49).
+        </p>
+      )}
       <p className="quiet">
         Keys may match labels, including spaces and capital letters. Keep an
         existing key when changing its label so saved rules and mappings still
@@ -429,6 +435,27 @@ export function OptionsEditor({
                 update(i, { units });
               }}
             />
+            {ranks && (
+              <Text
+                name={`${path}.${String(i)}.unit_start`}
+                label="Absolute starting stars (optional)"
+                value={
+                  option.unit_start === undefined
+                    ? ""
+                    : String(option.unit_start)
+                }
+                change={(value) => {
+                  if (value === "") {
+                    const rest = { ...option };
+                    delete rest.unit_start;
+                    change(
+                      options.map((item, index) => (index === i ? rest : item)),
+                    );
+                  } else if (/^\d{1,7}$/.test(value))
+                    update(i, { unit_start: Number(value) });
+                }}
+              />
+            )}
           </div>
           <Action
             disabled={

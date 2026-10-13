@@ -283,7 +283,7 @@ func invalidProgression(rule Rule, fields map[string]Field, refs map[string]Refe
 	if start < 0 || end < 0 {
 		return true
 	}
-	units := func(key string, limit int) (*big.Rat, bool) {
+	units := func(key string, option Option) (*big.Rat, bool) {
 		if key == "" {
 			return new(big.Rat), true
 		}
@@ -292,9 +292,14 @@ func invalidProgression(rule Rule, fields map[string]Field, refs map[string]Refe
 			return nil, false
 		}
 		number, ok := decimal(value)
-		return number, ok && number.IsInt() && number.Sign() >= 0 && number.Cmp(new(big.Rat).SetInt64(int64(limit))) <= 0
+		unitStart, limit := 0, option.Units
+		if option.UnitStart != nil {
+			unitStart = *option.UnitStart
+			limit += unitStart - 1
+		}
+		return number, ok && number.IsInt() && number.Cmp(new(big.Rat).SetInt64(int64(unitStart))) >= 0 && number.Cmp(new(big.Rat).SetInt64(int64(limit))) <= 0
 	}
-	left, a := units(rule.FromUnits, options[start].Units)
-	right, b := units(rule.ToUnits, options[end].Units)
+	left, a := units(rule.FromUnits, options[start])
+	right, b := units(rule.ToUnits, options[end])
 	return !a || !b || start > end || (start == end && left.Cmp(right) >= 0)
 }

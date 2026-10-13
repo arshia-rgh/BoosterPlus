@@ -24472,6 +24472,12 @@
           },
           "units": {
             "type": "integer"
+          },
+          "unit_start": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000,
+            "description": "Optional absolute start of a rank interval. Values run from unit_start through unit_start + units - 1. Omission preserves historical zero-based inclusive bounds."
           }
         },
         "required": ["key", "label", "units"]

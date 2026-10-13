@@ -276,19 +276,29 @@ export function Offerings({
                 />
                 <span className="status">Fixed scope · fixed price</span>
                 <h3>{pack.name}</h3>
-                <p>{pack.description}</p>
-                <ul>
+                <ul className="package-card-prices">
                   {pack.variants.map((variant) => (
                     <li key={variant.key}>
-                      {variant.name} · {price(variant)}
-                      {variant.preset_answers === undefined
-                        ? " · Being reviewed"
-                        : variant.capacity === 0
-                          ? " · Unavailable"
-                          : ""}
+                      <strong className="package-card-price">
+                        {price(variant)}
+                      </strong>
+                      <span>
+                        {variant.name}
+                        {variant.preset_answers === undefined
+                          ? " · Being reviewed"
+                          : variant.capacity === 0
+                            ? " · Unavailable"
+                            : ""}
+                      </span>
+                      <small>
+                        {variant.delivery_min_hours}–
+                        {variant.delivery_max_hours} hours after payment and
+                        access are ready
+                      </small>
                     </li>
                   ))}
                 </ul>
+                <p className="package-card-excerpt">{pack.description}</p>
                 <Link
                   preventScrollReset
                   className="button"

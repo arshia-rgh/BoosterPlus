@@ -5605,6 +5605,8 @@ export interface components {
       key: string;
       label: string;
       units: number;
+      /** @description Optional absolute start of a rank interval. Values run from unit_start through unit_start + units - 1. Omission preserves historical zero-based inclusive bounds. */
+      unit_start?: number;
     };
     CatalogServiceDefinition: {
       key: string;

@@ -218,6 +218,17 @@ func rankAmount(c Configuration, fields map[string]Field, rule PriceRule, answer
 		}
 		target.Set(n)
 	}
+	for _, position := range []struct {
+		option Option
+		units  *big.Rat
+	}{{options[start], startUnits}, {options[end], endUnits}} {
+		if position.option.UnitStart != nil && rule.FromUnits != "" {
+			position.units.Sub(position.units, big.NewRat(int64(*position.option.UnitStart), 1))
+			if position.units.Sign() < 0 || position.units.Cmp(big.NewRat(int64(position.option.Units), 1)) >= 0 {
+				return nil, false
+			}
+		}
+	}
 	if startUnits.Cmp(big.NewRat(int64(options[start].Units), 1)) > 0 || endUnits.Cmp(big.NewRat(int64(options[end].Units), 1)) > 0 {
 		return nil, false
 	}
