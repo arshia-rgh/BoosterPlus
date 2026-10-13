@@ -1,5 +1,9 @@
 # Implementation progress
 
+### Service147 delivered (13 October 2026)
+
+The combined MLBB catalog/payment release `b248493` is live at schema41. Exact lightweight CI, immutable image scans/signatures and deployment/runtime checks passed under the owner's one-use full-test waiver and explicit exact-release recovery approval. The full suite was not rerun or relabeled passed. Normal authenticated catalog publication, completed by the owner's fresh authenticator, published MLBB version244 (editor revision245). The public configuration and three package covers match the approved prepared content; four offers are visible. Existing finance/privacy settings are preserved, and no extra live invoice, funds or mail action occurred. Off-host recovery and owner-led real payment acceptance remain outstanding. See `service147-combined-release.md` for precise evidence and limitations.
+
 ### Service145 preparation (13 October 2026)
 
 Research and a complete proposed MLBB configuration are in `catalog/MLBB_RESEARCH_2026-10-13.md` and `catalog/MLBB_PREPARED_DRAFT.json`: linked heroes/lanes and play locations/regions, actual Mythic stars, requested hours, explicit win-rate preferences, 16 price examples and three generated fixed-offer covers. Revision0 deliberately prevents importing over the owner's newer saved revision243 before comparison/merge. Live catalog publication is pending.

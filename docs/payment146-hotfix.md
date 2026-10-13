@@ -1,6 +1,6 @@
 # Payment146 — hosted NOWPayments redirect hotfix
 
-13 October 2026. This is a payment-only release, separate from the unpublished MLBB catalog revision.
+13 October 2026. Historical payment-only preparation, superseded by the owner-authorized combined Service147 release. Commit6305c2f was retained, but no separate payment-only image dispatch or deployment occurred. The fix is now deployed as signed b248493 together with the published MLBB catalog; see `service147-combined-release.md`. The following records the earlier plan and its evidence.
 
 ## Cause and correction
 
