@@ -49,15 +49,16 @@ export default function SellerPayoutQueue() {
             : "off — manual seller payouts"
           : "status unavailable"}
         . PLAYORA records completed external payouts; manual recording never
-        sends crypto. Eligibility and owner verification still apply.
+        sends crypto. Eligibility and the owner's security confirmation still
+        apply.
       </p>
       {resource.loading && <p role="status">Checking payout obligations…</p>}
       <p>
-        Each amount belongs to an accepted seller offer. Buy-first offers
-        require verified ownership control; consignment requires buyer
-        acknowledgement, settled payment and the end of the dispute window.
-        Active disputes or unresolved refunds hold consignment payouts for
-        review.
+        Each amount belongs to an accepted seller offer. Both arrangements
+        require secure account handover and a confirmed payout destination.
+        Consignment also requires settled buyer payment, acknowledged delivery
+        and completed inspection. Active disputes or unresolved refunds hold
+        consignment payouts for review.
       </p>
       <Action onClick={resource.reload}>Refresh payout queue</Action>
       <ErrorNotice error={resource.error ?? session.error} />

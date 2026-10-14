@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router";
 import SubmissionWorkspace from "../../../app/submissions/workspace";
 import { SubmissionList, NewSubmission } from "../../../app/submissions/pages";
 import { InventoryDetail } from "../../../app/resale/inventory";
+import SellerPayoutQueue from "../../../app/resale/payout-queue";
 import { AuthorizedIdentity } from "../../../app/identity/frame";
 import {
   fixtureSession,
@@ -248,6 +249,8 @@ window.fetch = async (input, init) => {
       ? send({ code: "internal_error" }, 503)
       : send(progress);
   if (path.endsWith("/finance/policy")) return send(fixturePolicy);
+  if (path.endsWith("/finance/payouts"))
+    return send({ enabled: false, items: [], next: "" });
   if (path.endsWith("/account-agreement-defaults"))
     return send(fixtureDefaults);
   if (path.endsWith("/offers"))
@@ -377,6 +380,7 @@ const router = createBrowserRouter([
       { path: "/sell/:id", element: <SubmissionWorkspace /> },
       { path: "/admin/accounts/:id", element: <InventoryDetail /> },
       { path: "/admin/submissions", element: <SubmissionList admin /> },
+      { path: "/admin/payout-review", element: <SellerPayoutQueue /> },
       { path: "/sell", element: <SubmissionList /> },
       { path: "/sell/new", element: <NewSubmission /> },
       { path: "*", element: <p>Review destination</p> },
