@@ -219,9 +219,9 @@ export async function resaleJourney(
     await seller
       .getByRole("button", { name: "Store protected transfer" })
       .click();
-    await expect(seller.getByLabel("Protected transfer details")).toHaveValue(
-      "",
-    );
+    await expect(
+      seller.getByText("Secure account details received.", { exact: true }),
+    ).toBeVisible();
     await page.goto(`/admin/submissions/${id}?section=handover`);
     await page
       .getByRole("button", { name: "Reveal protected details" })
@@ -232,16 +232,12 @@ export async function resaleJourney(
       }),
     ).toBeVisible();
     await page.getByRole("button", { name: "Hide protected details" }).click();
+    await expect(
+      page.getByRole("button", { name: "Verify ownership control" }),
+    ).toHaveCount(0);
     await page
-      .getByLabel("Seller agreement decision note")
-      .fill("Verified synthetic ownership control independently.");
-    await page
-      .getByLabel("I confirm these exact terms and this decision")
-      .check();
-    await page
-      .getByRole("button", { name: "Verify ownership control" })
+      .getByRole("button", { name: "Prepare listing", exact: true })
       .click();
-    await page.getByRole("button", { name: "Open inventory listing" }).click();
     await expect(page).toHaveURL(
       /\/admin\/accounts\/[a-f0-9-]+\?section=details$/,
     );

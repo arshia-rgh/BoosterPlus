@@ -189,7 +189,7 @@ it.each(["buy_first", "consignment"])(
     expect(
       screen.getByText(
         model === "buy_first"
-          ? /after verified ownership control/
+          ? /after receipt of secure account details/
           : /after buyer acknowledgement/,
       ),
     ).toBeVisible();

@@ -17513,7 +17513,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["withdraw", "verify_control"]
+              "enum": ["withdraw"]
             }
           },
           {
@@ -23911,6 +23911,92 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ManualPayoutInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/submissions/{id}/selling-progress": {
+      "get": {
+        "operationId": "getSellerSellingProgress",
+        "summary": "Private account sale next steps and publication blockers; no credential or payout destination data",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellingProgress"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/submissions/{id}/selling-progress": {
+      "get": {
+        "operationId": "getAdminSellingProgress",
+        "summary": "Private account sale next steps and publication blockers; no credential or payout destination data",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SellingProgress"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
               }
             }
           }
@@ -34454,6 +34540,67 @@
           "confirm": {
             "type": "boolean",
             "enum": [true]
+          }
+        }
+      },
+      "SellingProgress": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "submission_state",
+          "offer_state",
+          "offer_id",
+          "arrangement",
+          "listing_id",
+          "listing_state",
+          "payout_state",
+          "blockers",
+          "handover"
+        ],
+        "properties": {
+          "submission_state": {
+            "type": "string"
+          },
+          "offer_state": {
+            "type": "string"
+          },
+          "offer_id": {
+            "type": "string"
+          },
+          "arrangement": {
+            "type": "string"
+          },
+          "listing_id": {
+            "type": "string"
+          },
+          "listing_state": {
+            "type": "string"
+          },
+          "payout_state": {
+            "type": "string"
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "handover": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["state", "locked", "received_at"],
+            "properties": {
+              "state": {
+                "type": "string"
+              },
+              "locked": {
+                "type": "boolean"
+              },
+              "received_at": {
+                "type": ["string", "null"],
+                "format": "date-time"
+              }
+            }
           }
         }
       }

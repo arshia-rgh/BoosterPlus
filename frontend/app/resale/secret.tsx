@@ -46,7 +46,7 @@ export function SecretUpload({
   }
   return (
     <fieldset disabled={busy}>
-      <legend>Protected ownership transfer</legend>
+      <legend>Protected account details</legend>
       <p>
         Use this protected field for login and recovery details. Ordinary
         listing fields and chat must never contain them. If confirmation is

@@ -54,7 +54,7 @@ export function stateLabel(state: z.infer<typeof stateSchema>) {
     case "needs_information":
       return "More information requested";
     case "approved_pending_terms":
-      return "Review approved · commercial terms pending";
+      return "Review approved · agreement pending";
     case "accepted":
       return "Seller agreement accepted";
     case "rejected":

@@ -1,9 +1,16 @@
+import { SaleProgress, useSellingProgress } from "./selling-progress";
 import { Loading } from "../ui/loading";
 import { RecordDraftBoundary } from "../ui/record-drafts";
 import { selectedLabel } from "../experience/selection-summary";
 import { optionsFor } from "../catalog/model";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Link, useLocation, useParams, type Location } from "../portal-router";
+import {
+  Link,
+  useLocation,
+  useParams,
+  useNavigate,
+  type Location,
+} from "../portal-router";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { AuthorizedIdentity } from "../identity/frame";
@@ -21,7 +28,7 @@ import "../orders/admin-workspace.css";
 const sections = [
   { id: "overview", label: "Overview" },
   { id: "details", label: "Account details" },
-  { id: "messages", label: "Messages & evidence" },
+  { id: "messages", label: "Messages & photos" },
   { id: "agreement", label: "Sale agreement" },
   { id: "handover", label: "Secure handover" },
   { id: "payout", label: "Payout" },
@@ -43,20 +50,26 @@ function Workspace({
   reload: () => void;
 }) {
   const row = value.submission;
+  const navigate = useNavigate();
   const location: Location<unknown> = useLocation();
-  const local = (section: string, label: string) => (
-    <Link to={"?section=" + section} state={location.state} preventScrollReset>
-      {label}
-    </Link>
-  );
+  const identity = useContext(AuthorizedIdentity);
+  const progress = useSellingProgress(row.id, admin, row.version);
+  const refresh = () => {
+    reload();
+    progress.reload();
+  };
   return (
     <div className="sale-workspace admin-order-workspace">
       <RecordShell
         id={row.id}
-        title="Submission"
+        title="Account sale"
         headingLevel={2}
         compactReference
-        stickyStatus={stateLabel(row.state)}
+        stickyStatus={
+          progress.data?.listing_state === "published"
+            ? "Live for sale"
+            : stateLabel(row.state)
+        }
         workspace={admin ? "Admin workspace" : "My account"}
         back={{
           to: back,
@@ -99,48 +112,42 @@ function Workspace({
             </legend>
             {section === "overview" && (
               <>
-                <h3>Your account sale at a glance</h3>
-                <p>
-                  {value.note ||
-                    "Keep ownership information, the agreed terms and direct payout attached to this submission."}
-                </p>
-                <p>
-                  {row.state === "accepted"
-                    ? "An agreement has been accepted. Review protected handover and its recorded payout conditions."
-                    : row.state === "approved_pending_terms"
-                      ? "Review is approved. A separate commercial agreement still requires explicit acceptance."
-                      : row.state === "needs_information"
-                        ? "The team needs more information before review can continue."
-                        : row.state === "submitted"
-                          ? "Your submission is waiting for private staff review."
-                          : row.state === "draft"
-                            ? "Complete your private account details and submit them for review."
-                            : "This submission is closed. Its records remain available below."}
-                </p>
-                <div className="catalog-actions">
-                  {local(
-                    ["draft", "needs_information"].includes(row.state)
-                      ? "details"
-                      : row.state === "accepted"
-                        ? "handover"
-                        : "agreement",
-                    row.state === "accepted"
-                      ? "Review secure handover"
-                      : ["draft", "needs_information"].includes(row.state)
-                        ? "Complete account details"
-                        : "Review sale agreement",
-                  )}
-                  {local("messages", "Contact the review team")}
-                </div>
-                <ReviewActions value={value} admin={admin} reload={reload} />
+                <SaleProgress
+                  id={row.id}
+                  admin={admin}
+                  owner={identity?.session.user?.role === "owner"}
+                  resource={progress}
+                />
+                {row.state === "needs_information" && value.note && (
+                  <section className="catalog-section">
+                    <h3>Requested changes</h3>
+                    <p>{value.note}</p>
+                  </section>
+                )}
+                <ReviewActions value={value} admin={admin} reload={refresh} />
               </>
             )}
             {section === "details" && (
               <>
                 <h3>Private account details</h3>
+                {row.state === "needs_information" && value.note && (
+                  <section className="catalog-section">
+                    <h3>Requested changes</h3>
+                    <p>{value.note}</p>
+                  </section>
+                )}
                 {!admin &&
                 ["draft", "needs_information"].includes(row.state) ? (
-                  <SubmissionEditor value={value} reload={reload} />
+                  <SubmissionEditor
+                    value={value}
+                    reload={refresh}
+                    submitted={() => {
+                      void navigate("?section=overview", {
+                        state: location.state,
+                        preventScrollReset: true,
+                      });
+                    }}
+                  />
                 ) : (
                   <section>
                     <dl>
@@ -159,7 +166,7 @@ function Workspace({
                         );
                       })}
                     </dl>
-                    <h4>Ownership and control</h4>
+                    <h4>Seller notes</h4>
                     <p>{value.ownership_notes || "Not provided"}</p>
                     <p>
                       {value.ownership_declared
@@ -168,11 +175,14 @@ function Workspace({
                     </p>
                   </section>
                 )}
+                {admin && (
+                  <ReviewActions value={value} admin reload={refresh} />
+                )}
               </>
             )}
             {section === "messages" && (
               <>
-                <h3>Messages & ownership evidence</h3>
+                <h3>Messages & photos</h3>
                 <p>
                   Private to the seller and administrators. Buyer support and
                   booster coordination are separate. Use Secure handover for
@@ -188,11 +198,12 @@ function Workspace({
             )}
             {["agreement", "handover", "payout"].includes(section) && (
               <SellerOffers
+                progress={progress}
                 id={row.id}
                 version={row.version}
                 state={row.state}
                 admin={admin}
-                changed={reload}
+                changed={refresh}
                 view={
                   section === "handover"
                     ? "handover"

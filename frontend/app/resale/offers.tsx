@@ -1,3 +1,8 @@
+import {
+  PrepareListing,
+  type useSellingProgress,
+} from "../submissions/selling-progress";
+import { Loading } from "../ui/loading";
 import { useManualPayoutConfirmation } from "../payments/manual-payout";
 import { SellerPriceInput, SellerBreakdown } from "./commission-fields";
 import {
@@ -12,12 +17,7 @@ import { sellerIssues } from "./validation";
 import { Button } from "../ui/primitives";
 import { useEffect, useRef, useState } from "react";
 import { z } from "../validation";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  type Location,
-} from "../portal-router";
+import { Link, useLocation, type Location } from "../portal-router";
 import {
   Action,
   Check,
@@ -32,7 +32,6 @@ import { TransferRecord, useRecipientConfirmation } from "../payments/refunds";
 import { transfersSchema } from "../payments/cases-model";
 import {
   agreementDefaultsSchema,
-  listingSchema,
   offerSchema,
   offersSchema,
   secretSchema,
@@ -72,7 +71,7 @@ function SellerOfferError({
 export const termFields = [
   ["proceeds_basis", "Seller proceeds basis"],
   ["fees", "Fees and deductions"],
-  ["transfer_requirements", "Seller ownership requirements"],
+  ["transfer_requirements", "Account handover requirements"],
   ["dispute_terms", "Seller dispute terms"],
   ["withdrawal_terms", "Seller withdrawal terms"],
 ] as const;
@@ -360,7 +359,7 @@ function Proposal({
     </FieldValidation>
   );
 }
-function SellerBundle({ id }: { id: string }) {
+function SellerBundle({ id, changed }: { id: string; changed: () => void }) {
   const resource = useResource(`/seller-offers/${id}/secret`, secretSchema);
   return (
     <>
@@ -369,7 +368,10 @@ function SellerBundle({ id }: { id: string }) {
         <SecretUpload
           path={`/seller-offers/${id}/secret`}
           version={resource.data.version}
-          changed={resource.reload}
+          changed={() => {
+            resource.reload();
+            changed();
+          }}
         />
       )}
     </>
@@ -429,6 +431,7 @@ function OfferHistory({ id, admin }: { id: string; admin: boolean }) {
   );
 }
 function OfferRecord({
+  progress,
   offer,
   admin,
   owner,
@@ -436,6 +439,7 @@ function OfferRecord({
   view = "all",
   visible = true,
 }: {
+  progress?: ReturnType<typeof useSellingProgress> | undefined;
   view?: "all" | "agreement" | "handover";
   visible?: boolean;
   offer: Offer;
@@ -447,8 +451,7 @@ function OfferRecord({
     [accept, setAccept] = useState(false),
     [error, setError] = useState<unknown>(null),
     [busy, setBusy] = useState(false),
-    [history, setHistory] = useState(false),
-    navigate = useNavigate();
+    [history, setHistory] = useState(false);
   const lock = useRef(false);
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -488,27 +491,6 @@ function OfferRecord({
       setBusy(false);
     }
   }
-  async function listing() {
-    if (lock.current) return;
-    lock.current = true;
-    setBusy(true);
-    setError(null);
-    try {
-      const row = await post(
-        `/admin/seller-offers/${offer.id}/listing`,
-        {},
-        listingSchema,
-      );
-      void navigate(`/admin/accounts/${row.id}?section=details`, {
-        state: { submissionID: offer.submission_id },
-      });
-    } catch (cause) {
-      setError(cause);
-    } finally {
-      lock.current = false;
-      setBusy(false);
-    }
-  }
   return (
     <article className="catalog-section seller-offer">
       <h3>
@@ -517,17 +499,17 @@ function OfferRecord({
           : "Consignment after buyer delivery"}
       </h3>
       <p role="status">Offer: {offer.state}</p>
-      <p className="seller-next-step">
-        {offer.state === "offered"
-          ? expired
-            ? "This offer has expired. Ask the team for updated terms before accepting."
-            : "Review the exact amount, fees and timing below before making your decision."
-          : offer.state === "accepted"
-            ? offer.control_verified_at
-              ? "Ownership control is verified. Review the accepted payout terms and current eligibility."
-              : "Your agreement is accepted. Complete protected ownership transfer; do not send access details in chat."
-            : "This offer is no longer open for acceptance. Its terms remain available for your records."}
-      </p>
+      {view !== "handover" && (
+        <p className="seller-next-step">
+          {offer.state === "offered"
+            ? expired
+              ? "This offer has expired. Ask the team for updated terms before accepting."
+              : "Review the exact amount, fees and timing below before making your decision."
+            : offer.state === "accepted"
+              ? "Agreement accepted. Follow Overview for the current next step and publication status."
+              : "This offer is no longer open for acceptance. Its terms remain available for your records."}
+        </p>
+      )}
       {view !== "handover" && (
         <>
           <p className="package-price">
@@ -540,21 +522,30 @@ function OfferRecord({
               asset={offer.terms.currency}
             />
           )}
-          <dl className="seller-term-list">
-            {termFields.map(([key, label]) => (
-              <div key={key}>
-                <dt>{label}</dt>
-                <dd className="payment-policy">
-                  {sellerTerm(offer.terms, key)}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <details open={offer.state === "offered" ? true : undefined}>
+            <summary>
+              {offer.state === "accepted"
+                ? "Read the accepted terms"
+                : "Read proposal terms"}
+            </summary>
+            <dl className="seller-term-list">
+              {termFields.map(([key, label]) => (
+                <div key={key}>
+                  <dt>{label}</dt>
+                  <dd className="payment-policy">
+                    {sellerTerm(offer.terms, key)}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </details>
           <p>
             Extra payout delay {offer.terms.payout_delay_hours} hours;
             initiation target {offer.terms.payout_deadline_hours} hours after{" "}
             {offer.terms.model === "buy_first"
-              ? "verified ownership control"
+              ? offer.control_verified_at
+                ? "the previously recorded handover milestone"
+                : "receipt of secure account details and satisfaction of the accepted payout conditions"
               : "buyer acknowledgement and the initial inspection period"}
             .
           </p>
@@ -567,98 +558,131 @@ function OfferRecord({
         </>
       )}
       <SellerOfferError error={error} />
-      {((view !== "handover" &&
+      {view !== "handover" &&
         offer.state === "offered" &&
-        (!admin || owner)) ||
-        (view !== "agreement" &&
-          offer.state === "accepted" &&
-          owner &&
-          !offer.control_verified_at)) && (
-        <fieldset disabled={busy}>
-          <legend>Commercial decision</legend>
-          <Text
-            label="Seller agreement decision note"
-            help="Enter 10–2,000 characters explaining this decision, then confirm the terms below."
-            error={
-              note &&
-              (Array.from(note.trim()).length < 10 ||
-                Array.from(note).length > 2000)
-                ? "Enter a decision note of 10–2,000 characters."
-                : undefined
-            }
-            value={note}
-            change={setNote}
-            multiline
-          />
-          <Check
-            label="I confirm these exact terms and this decision"
-            value={accept}
-            change={setAccept}
-          />
-          {offer.state === "offered" ? (
-            <div className="ui-state-actions">
-              {!admin && (
-                <Action
+        (!admin || owner) && (
+          <fieldset disabled={busy}>
+            <legend>Commercial decision</legend>
+            <Text
+              label="Seller agreement decision note"
+              help="Enter 10–2,000 characters explaining this decision, then confirm the terms below."
+              error={
+                note &&
+                (Array.from(note.trim()).length < 10 ||
+                  Array.from(note).length > 2000)
+                  ? "Enter a decision note of 10–2,000 characters."
+                  : undefined
+              }
+              value={note}
+              change={setNote}
+              multiline
+            />
+            <Check
+              label="I confirm these exact terms and this decision"
+              value={accept}
+              change={setAccept}
+            />
+            {
+              <div className="ui-state-actions">
+                {!admin && (
+                  <Action
+                    disabled={
+                      expired ||
+                      !accept ||
+                      note.trim().length < 10 ||
+                      Array.from(note).length > 2000
+                    }
+                    onClick={() => void act("accept")}
+                  >
+                    Accept seller agreement
+                  </Action>
+                )}
+                <Button
+                  variant="secondary"
+                  className="button compact"
                   disabled={
-                    expired ||
                     !accept ||
                     note.trim().length < 10 ||
                     Array.from(note).length > 2000
                   }
-                  onClick={() => void act("accept")}
+                  onClick={() => void act(admin ? "withdraw" : "decline")}
                 >
-                  Accept seller agreement
-                </Action>
-              )}
-              <Button
-                variant="secondary"
-                className="button compact"
-                disabled={
-                  !accept ||
-                  note.trim().length < 10 ||
-                  Array.from(note).length > 2000
-                }
-                onClick={() => void act(admin ? "withdraw" : "decline")}
-              >
-                {admin
-                  ? "Withdraw unaccepted offer"
-                  : "Decline seller agreement"}
-              </Button>
-            </div>
-          ) : (
-            <Action
-              disabled={
-                !accept ||
-                note.trim().length < 10 ||
-                Array.from(note).length > 2000
-              }
-              onClick={() => void act("verify_control")}
-            >
-              Verify ownership control
-            </Action>
-          )}
-        </fieldset>
-      )}
+                  {admin
+                    ? "Withdraw unaccepted offer"
+                    : "Decline seller agreement"}
+                </Button>
+              </div>
+            }
+          </fieldset>
+        )}
       {offer.state === "accepted" && view !== "agreement" && (
         <>
-          {visible && !admin && !offer.control_verified_at && (
-            <SellerBundle id={offer.id} />
-          )}{" "}
-          {visible && owner && (
-            <SecretReveal
-              path={`/admin/seller-offers/${offer.id}/secret/reveal`}
-            />
-          )}{" "}
-          {offer.control_verified_at && (
-            <p>
-              Ownership control verified:{" "}
-              {new Date(offer.control_verified_at).toLocaleString()}
-            </p>
-          )}
-          {admin && offer.control_verified_at && (
-            <Action disabled={busy} onClick={() => void listing()}>
-              Open inventory listing
-            </Action>
+          {progress?.error ? (
+            <>
+              <ErrorNotice error={progress.error} />
+              <Action onClick={progress.reload}>Retry handover status</Action>
+            </>
+          ) : !progress?.data ? (
+            <Loading compact label="Loading secure handover status" />
+          ) : (
+            <>
+              <p role="status">
+                {progress.data.handover.state === "received"
+                  ? "Secure account details received."
+                  : progress.data.handover.state === "expired"
+                    ? "The protected details expired. Share current details again before publication."
+                    : progress.data.handover.state === "refresh_required"
+                      ? "This account was returned from a previous sale. Share updated account details before relisting."
+                      : admin
+                        ? "Waiting for the seller to share account access securely."
+                        : "Share the account access included in your agreement using the protected field below."}
+              </p>
+              {progress.data.handover.locked && (
+                <p>
+                  These details are locked while the listing or payout is
+                  active. Contact the team if access changes.
+                </p>
+              )}
+              {visible &&
+                !admin &&
+                !progress.data.handover.locked &&
+                (progress.data.handover.state === "received" ? (
+                  <details>
+                    <summary>Update shared account details</summary>
+                    <SellerBundle id={offer.id} changed={changed} />
+                  </details>
+                ) : (
+                  <SellerBundle id={offer.id} changed={changed} />
+                ))}
+              {visible &&
+                owner &&
+                progress.data.handover.state === "received" && (
+                  <SecretReveal
+                    path={`/admin/seller-offers/${offer.id}/secret/reveal`}
+                  />
+                )}
+              {admin && !owner && (
+                <p>Only the owner can reveal protected account details.</p>
+              )}
+              {admin &&
+                (progress.data.listing_id ? (
+                  <Link
+                    className="button compact"
+                    to={`/admin/accounts/${progress.data.listing_id}?section=details`}
+                    state={{
+                      submissionID: offer.submission_id,
+                      submissionSection: "handover",
+                    }}
+                  >
+                    Continue listing
+                  </Link>
+                ) : (
+                  <PrepareListing
+                    offerID={offer.id}
+                    submissionID={offer.submission_id}
+                  />
+                ))}
+            </>
           )}
         </>
       )}
@@ -725,6 +749,7 @@ export function SellerPayouts({
   );
 }
 export default function SellerOffers({
+  progress,
   id,
   version,
   state,
@@ -738,6 +763,7 @@ export default function SellerOffers({
   id: string;
   version: number;
   state: string;
+  progress?: ReturnType<typeof useSellingProgress> | undefined;
   admin: boolean;
   changed: () => void;
 }) {
@@ -797,12 +823,6 @@ export default function SellerOffers({
       <h2>
         {view === "handover" ? "Secure account handover" : "Seller agreements"}
       </h2>
-      {view === "handover" && (
-        <p>
-          Only an accepted agreement allows protected ownership transfer. Login
-          and recovery details belong only in the protected field.
-        </p>
-      )}
       {view !== "all" &&
         current?.offers.some((offer) => offer.state === "accepted") && (
           <p>
@@ -831,7 +851,9 @@ export default function SellerOffers({
       <Action disabled={resource.loading} onClick={resource.reload}>
         Refresh seller agreements
       </Action>
-      {resource.loading && <p role="status">Checking seller agreements…</p>}
+      {resource.loading && (
+        <Loading compact label="Loading seller agreements" />
+      )}
       <ErrorNotice error={resource.error} />
       {current && (
         <fieldset
@@ -913,6 +935,7 @@ export default function SellerOffers({
             )
             .map((offer) => (
               <OfferRecord
+                progress={progress}
                 key={`${offer.id}:${String(offer.version)}`}
                 offer={offer}
                 view={view}
@@ -934,6 +957,7 @@ export default function SellerOffers({
                   )
                   .map((offer) => (
                     <OfferRecord
+                      progress={progress}
                       key={`${offer.id}:${String(offer.version)}`}
                       offer={offer}
                       admin={admin}

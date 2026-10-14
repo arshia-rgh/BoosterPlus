@@ -25,9 +25,11 @@ import { submissionSchema, type Submission } from "./model";
 export default function SubmissionEditor({
   value,
   reload,
+  submitted,
 }: {
   value: Submission;
   reload: () => void;
+  submitted?: (() => void) | undefined;
 }) {
   const [title, setTitle] = useState(value.submission.title),
     [answers, setAnswers] = useState<Answers>(value.answers),
@@ -62,6 +64,7 @@ export default function SubmissionEditor({
     undefined,
     !busy,
   );
+  const [photosPending, setPhotosPending] = useState(false);
   const lock = useRef(false);
   useRecordDraft(dirty, busy);
   function reset(current: Submission) {
@@ -87,23 +90,17 @@ export default function SubmissionEditor({
   const service = intakeService(form),
     values = visibleAnswers(service, answers, "order");
   async function save(submit: boolean) {
-    if (lock.current || stale || (submit && dirty)) return;
+    if (lock.current || stale || (submit && photosPending)) return;
     const invalid: FieldIssue[] = [];
     if (!title.trim() || Array.from(title).length > 120 || title.includes("\0"))
       invalid.push({
         path: "title",
         message: "Enter an account title of 1–120 characters.",
       });
-    if (
-      Array.from(notes).length > 2000 ||
-      notes.includes("\0") ||
-      (submit && !notes.trim())
-    )
+    if (Array.from(notes).length > 2000 || notes.includes("\0"))
       invalid.push({
         path: "ownership_notes",
-        message: submit
-          ? "Describe your ownership using 1–2,000 characters."
-          : "Keep ownership information within 2,000 characters.",
+        message: "Keep account notes within 2,000 characters.",
       });
     if (submit && !declared)
       invalid.push({
@@ -116,21 +113,32 @@ export default function SubmissionEditor({
     setBusy(true);
     setError(null);
     try {
-      const saved = await post(
-        `/submissions/${value.submission.id}/${submit ? "submit" : "edit"}`,
-        submit
-          ? { version: baseVersion, note: "" }
-          : {
-              version: baseVersion,
-              title,
-              answers: values,
-              ownership_notes: notes,
-              ownership_declared: declared,
-            },
-        submissionSchema,
-      );
+      let saved = value;
+      let version = baseVersion;
+      if (dirty || !submit) {
+        saved = await post(
+          `/submissions/${value.submission.id}/edit`,
+          {
+            version,
+            title,
+            answers: values,
+            ownership_notes: notes,
+            ownership_declared: declared,
+          },
+          submissionSchema,
+        );
+        version = saved.submission.version;
+        reset(saved);
+      }
+      if (submit)
+        saved = await post(
+          `/submissions/${value.submission.id}/submit`,
+          { version, note: "" },
+          submissionSchema,
+        );
       reset(saved);
       reload();
+      if (submit) submitted?.();
     } catch (cause) {
       setError(cause);
       if (cause instanceof APIError) setIssues(cause.issues);
@@ -142,8 +150,16 @@ export default function SubmissionEditor({
   return (
     <FieldValidation value={validation}>
       <section className="catalog-section seller-intake">
-        <h3>{form.name}</h3>
-        <p>{form.description}</p>
+        <p>
+          Add the account details, attach photos if helpful, then send it for
+          review.
+        </p>
+        {form.description && (
+          <details>
+            <summary>Game-specific selling help</summary>
+            <p>{form.description}</p>
+          </details>
+        )}
         <ErrorNotice error={error} hideIssues />
         <Issues issues={issues} />
         {stale && dirty && (
@@ -213,17 +229,23 @@ export default function SubmissionEditor({
                 />
               ))}
           </div>
-          <h4>2. Confirm ownership</h4>
+          <h4>2. Photos</h4>
+          <SellerImages
+            key={value.conversation_id}
+            conversation={value.conversation_id}
+            onPendingChange={setPhotosPending}
+          />
+          <h4>3. Permission to sell</h4>
           <Text
             name="ownership_notes"
-            label="Ownership and control information"
+            label="Account notes (optional)"
             multiline
             value={notes}
             change={(v) => {
               setNotes(v);
               setDirty(true);
             }}
-            help="Describe how you obtained and control the account and relevant restrictions. Do not include login or recovery information."
+            help="Mention restrictions or anything the buyer should know. Keep login and recovery details out of this form."
           />
           <Check
             name="ownership_declared"
@@ -234,15 +256,7 @@ export default function SubmissionEditor({
               setDirty(true);
             }}
           />
-          <SellerImages
-            key={value.conversation_id}
-            conversation={value.conversation_id}
-          />
-          <h4>3. Save and send for review</h4>
-          <p>
-            Save a private draft first. Submit only when the saved details are
-            ready for the team.
-          </p>
+
           <div className="seller-save-actions">
             <Action
               onClick={() => {
@@ -252,17 +266,24 @@ export default function SubmissionEditor({
               Save account draft
             </Action>
             <Action
-              disabled={dirty}
+              disabled={photosPending}
               onClick={() => {
                 void save(true);
               }}
             >
-              Submit saved account for review
+              Save and submit for review
             </Action>
           </div>
+          {photosPending && (
+            <p role="status">
+              Send or remove the selected screenshots before submitting. Your
+              account draft can still be saved.
+            </p>
+          )}
           {dirty && (
             <p role="status">
-              Save your changes before submitting them for review.
+              Your changes will be saved when you submit. You can also save a
+              draft and finish later.
             </p>
           )}
         </fieldset>

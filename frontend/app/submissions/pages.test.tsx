@@ -61,13 +61,15 @@ it("retains the selected game and identical draft request after an uncertain res
   fireEvent.change(screen.getByLabelText("Private account title"), {
     target: { value: "Private review title" },
   });
-  fireEvent.click(screen.getByRole("button", { name: "Create private draft" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Continue to account details" }),
+  );
   const retry = await screen.findByRole("button", {
     name: "Check the same submission request",
   });
   expect(screen.getByLabelText("Private account title")).toBeDisabled();
   expect(
-    screen.getByRole("button", { name: "Submit Other game account" }),
+    screen.getByRole("button", { name: "Choose Other game" }),
   ).toBeDisabled();
   fireEvent.click(retry);
   await waitFor(() => {
@@ -107,7 +109,9 @@ function renderDraft() {
 it("focuses an invalid draft title, retains it, and permits correction before creating", async () => {
   renderDraft();
   const title = screen.getByLabelText("Private account title");
-  const create = screen.getByRole("button", { name: "Create private draft" });
+  const create = screen.getByRole("button", {
+    name: "Continue to account details",
+  });
   fireEvent.click(create);
   await waitFor(() => expect(title).toHaveFocus());
   expect(title).toHaveAttribute("aria-invalid", "true");
@@ -142,7 +146,9 @@ it("associates server draft errors with their field and refocuses on an identica
   renderDraft();
   const title = screen.getByLabelText("Private account title");
   fireEvent.change(title, { target: { value: "My account" } });
-  const create = screen.getByRole("button", { name: "Create private draft" });
+  const create = screen.getByRole("button", {
+    name: "Continue to account details",
+  });
   fireEvent.click(create);
   await waitFor(() => expect(title).toHaveFocus());
   expect(title).toHaveAccessibleDescription(

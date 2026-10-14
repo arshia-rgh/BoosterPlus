@@ -85,7 +85,7 @@ func (s *Store) Reserve(ctx context.Context, p *identity.Principal, id string, i
 		if e != nil {
 			return e
 		}
-		if offer.State != "accepted" || offer.ControlVerifiedAt == nil {
+		if offer.State != "accepted" {
 			return ErrConflict
 		}
 		product, e := publicListing(ctx, tx.Client(), row)

@@ -1,5 +1,9 @@
 # Implementation progress
 
+## Seller153 — clearer selling flow, preparing combined release (15 October 2026)
+
+Reworked customer submission and sale/admin listing workspaces around one next step and explicit publication blockers. Removed separate ownership verification while retaining secure handover, historical agreements, commissions, buyer protection and actual seller payment requirements. Combines the pending seller152 payout-route fix. Nine scoped TiDB scenarios plus the retained manual-payout case passed; focused component/browser checks and independent senior review passed. Final normal focused hook and signed deployment remain pending, with full qualification intentionally not run. See [release record](selling-flow-2026-10-15.md) and [design review](redesign/reviews/SELLER153_2026-10-15.md).
+
 ## Loading151 delivered — 14 October 2026
 
 Shared branded loading states replace visible access-checking text across workspace/form contexts without changing authorization. Pending/failed account purchases no longer flash sign-in/reservation controls. 29 focused component cases, type checking, eight Chromium/WebKit cases and independent senior design review passed. The normal focused hook (859 component tests), exact CI 38541554923, image release 38543376954, signatures, server preflight, eight-service runtime verification and six live-host browser cases passed. Signed `84b10e3` is live at schema 42 under the owner's exact “Deploy 84b10e3 UI update without an off-host backup” approval; that exception is consumed. Prior signed `0c39963` is retained for compatible application rollback; off-host recovery remains absent. The full suite was not run. See [release record](loading-transitions-2026-10-14.md). Supplier automation remains research only.

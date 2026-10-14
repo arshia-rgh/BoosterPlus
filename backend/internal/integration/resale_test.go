@@ -44,6 +44,10 @@ func resaleProduct() resale.Product {
 }
 func resaleDB(t *testing.T, model string) *resaleFixture {
 	t.Helper()
+	return resaleDraftDB(t, model, true)
+}
+func resaleDraftDB(t *testing.T, model string, handover bool) *resaleFixture {
+	t.Helper()
 	f := paymentDB(t)
 	ctx := t.Context()
 	if _, err := f.base.auth.client.User.UpdateOneID(f.base.admin.User.ID).SetRole(identity.RoleOwner).Save(ctx); err != nil {
@@ -85,12 +89,10 @@ func resaleDB(t *testing.T, model string) *resaleFixture {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = store.SubmitSellerSecret(ctx, base.buyer, offer.ID, resale.SecretInput{RequestKey: uuid.NewString(), Value: []byte("synthetic seller-origin credential"), ExpiresAt: now().Add(72 * time.Hour)}); err != nil {
-		t.Fatal(err)
-	}
-	offer, err = store.ChangeOffer(ctx, base.admin, offer.ID, "verify_control", true, resale.OfferChange{Version: offer.Version, Accept: true, Note: "Synthetic independent ownership control verified."})
-	if err != nil {
-		t.Fatal(err)
+	if handover {
+		if _, err = store.SubmitSellerSecret(ctx, base.buyer, offer.ID, resale.SecretInput{RequestKey: uuid.NewString(), Value: []byte("synthetic seller-origin credential"), ExpiresAt: now().Add(72 * time.Hour)}); err != nil {
+			t.Fatal(err)
+		}
 	}
 	listing, err := store.CreateListing(ctx, base.admin, offer.ID)
 	if err != nil {
@@ -173,7 +175,7 @@ func TestResalePrivateOffersAndUniqueReservations(t *testing.T) {
 		t.Fatal("buyer read private agreement history", err)
 	}
 	events, err := f.resale.OfferHistory(ctx, f.base.other, f.offer.ID, false, 0)
-	if err != nil || len(events) != 3 || events[1].Role != "seller" || events[2].Role != "staff" {
+	if err != nil || len(events) != 2 || events[1].Role != "seller" {
 		t.Fatal("missing agreement decision history", err)
 	}
 	if _, err = f.resale.OfferHistory(ctx, f.base.other, f.offer.ID, false, -1); err == nil {
@@ -182,8 +184,8 @@ func TestResalePrivateOffersAndUniqueReservations(t *testing.T) {
 	if _, err = f.resale.RevealSellerSecret(ctx, f.base.buyer, f.offer.ID); !errors.Is(err, identity.ErrForbidden) {
 		t.Fatal("buyer read seller credentials", err)
 	}
-	if _, err = f.resale.SubmitSellerSecret(ctx, f.base.other, f.offer.ID, resale.SecretInput{Version: 1, RequestKey: uuid.NewString(), Value: []byte("changed after verified control"), ExpiresAt: time.Unix(f.base.auth.clock.Load(), 0).Add(72 * time.Hour)}); err == nil {
-		t.Fatal("verified ownership silently replaced")
+	if _, err = f.resale.SubmitSellerSecret(ctx, f.base.other, f.offer.ID, resale.SecretInput{Version: 1, RequestKey: uuid.NewString(), Value: []byte("changed after publication"), ExpiresAt: time.Unix(f.base.auth.clock.Load(), 0).Add(72 * time.Hour)}); err == nil {
+		t.Fatal("published account handover silently replaced")
 	}
 	if _, err = f.resale.Reserve(ctx, f.base.other, f.listing.ID, f.reserveInput()); err == nil {
 		t.Fatal("seller bought own listing")

@@ -38,6 +38,9 @@ export function relatedRecord(
         .enum(["details", "images", "terms", "publication"])
         .optional(),
       submissionID: z.uuid().optional(),
+      submissionSection: z
+        .enum(["overview", "agreement", "handover", "payout"])
+        .optional(),
     })
     .safeParse(state);
   if (!result.success) return null;
@@ -46,6 +49,6 @@ export function relatedRecord(
   return id
     ? key === "inventoryID"
       ? `/admin/accounts/${id}?section=${result.data.inventorySection ?? "details"}`
-      : `/admin/submissions/${id}?section=handover`
+      : `/admin/submissions/${id}?section=${result.data.submissionSection ?? "handover"}`
     : null;
 }

@@ -131,7 +131,7 @@ it("keeps local listing drafts and requires an explicit choice before leaving th
   );
   fireEvent.click(
     screen.getByRole("link", {
-      name: "Private seller agreement and ownership review",
+      name: "Seller agreement and sale progress",
     }),
   );
   expect(await screen.findByRole("alert")).toHaveFocus();
@@ -142,7 +142,7 @@ it("keeps local listing drafts and requires an explicit choice before leaving th
   );
   fireEvent.click(
     screen.getByRole("link", {
-      name: "Private seller agreement and ownership review",
+      name: "Seller agreement and sale progress",
     }),
   );
   fireEvent.click(

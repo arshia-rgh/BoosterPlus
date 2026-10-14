@@ -135,7 +135,7 @@ func (s *Store) sellerEligible(ctx context.Context, tx *ent.Tx, row *ent.MoneyTr
 	if err != nil {
 		return time.Time{}, err
 	}
-	if offer.State != "accepted" || offer.ControlVerifiedAt == nil || offer.SellerID != row.UserID {
+	if offer.State != "accepted" || offer.SellerID != row.UserID {
 		return time.Time{}, ErrConflict
 	}
 	terms, err := decode[resale.SellerTerms](offer.Data)
@@ -148,7 +148,14 @@ func (s *Store) sellerEligible(ctx context.Context, tx *ent.Tx, row *ent.MoneyTr
 	if terms.Amount != row.Amount || terms.Currency != row.Currency || terms.Network != row.Network {
 		return time.Time{}, ErrConflict
 	}
-	anchor := *offer.ControlVerifiedAt
+	handover, err := resale.SellerHandover(ctx, tx, offer, s.instant())
+	if err != nil {
+		return time.Time{}, err
+	}
+	if handover.State != "received" || handover.ReceivedAt == nil {
+		return time.Time{}, ErrConflict
+	}
+	anchor := *handover.ReceivedAt
 	switch terms.Model {
 	case "buy_first":
 	case "consignment":

@@ -1,0 +1,121 @@
+.sale-progress {
+  margin-block: 1rem 1.5rem;
+  border: 1px solid #385a4c;
+  border-radius: 1.2rem;
+  background: #102b21ed;
+  overflow: hidden;
+}
+.sale-progress > .sale-next,
+.sale-progress > .sale-blockers {
+  padding: clamp(1rem, 3vw, 1.6rem);
+}
+.sale-next h3 {
+  margin: 0.25rem 0 0.6rem;
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+}
+.sale-next > p:not(.eyebrow) {
+  color: #c2d2c7;
+  max-width: 65ch;
+  margin-bottom: 1.2rem;
+}
+.sale-milestones {
+  list-style: none;
+  padding: 1rem;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+  border-bottom: 1px solid #385a4c;
+}
+.sale-milestones li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.85rem;
+  color: #b5c6bc;
+}
+.sale-milestones li > span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 1.7rem;
+  height: 1.7rem;
+  border: 1px solid #5a7969;
+  border-radius: 50%;
+}
+.sale-milestones [aria-current] {
+  color: #e6f8ed;
+  font-weight: 700;
+}
+.sale-milestones [aria-current] > span {
+  background: #b9e287;
+  color: #12331f;
+  border-color: #b9e287;
+}
+.sale-milestones [data-complete="true"] > span {
+  color: #b9e287;
+}
+.sale-blockers {
+  border-top: 1px solid #385a4c;
+}
+.sale-blockers h4 {
+  margin: 0 0 0.65rem;
+}
+.sale-blockers ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.sale-blockers li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #294738;
+}
+.sale-blockers li:last-child {
+  border-bottom: 0;
+}
+.sale-blockers small {
+  flex-shrink: 0;
+  color: #c2d2c7;
+}
+.sale-refresh {
+  margin: 0 1rem 1rem;
+  padding: 0.5rem 0.75rem;
+  color: #c5e2cf;
+  border: 1px solid #4a6b57;
+  border-radius: 0.5rem;
+  background: transparent;
+  min-height: 44px;
+}
+.sale-refresh:hover {
+  background: #244936;
+}
+.sale-progress a:not(.button) {
+  text-decoration: none;
+}
+.sale-progress a:not(.button):hover {
+  text-decoration: underline;
+}
+.sale-progress :focus-visible {
+  outline: 2px solid #d0f29e;
+  outline-offset: 4px;
+}
+@media (max-width: 600px) {
+  .sale-milestones {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sale-blockers li {
+    gap: 0.5rem;
+  }
+  .sale-blockers li > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.sale-progress-error {
+  padding: clamp(1rem, 3vw, 1.6rem);
+}

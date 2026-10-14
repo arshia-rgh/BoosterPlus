@@ -144,6 +144,13 @@ func (s *Store) Register(mux *http.ServeMux) {
 			prefix += "/admin"
 			capability = "admin"
 		}
+		register("GET "+prefix+"/submissions/{id}/selling-progress", capability, func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
+			value, err := s.Progress(r.Context(), p, r.PathValue("id"), admin)
+			if err != nil {
+				return err
+			}
+			return write(w, value)
+		})
 		register("GET "+prefix+"/submissions/{id}/offers", capability, func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 			values, err := s.Offers(r.Context(), p, r.PathValue("id"), admin)
 			if err != nil {

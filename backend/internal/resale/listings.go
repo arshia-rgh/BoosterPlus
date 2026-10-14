@@ -58,7 +58,7 @@ func (s *Store) CreateListing(ctx context.Context, p *identity.Principal, offerI
 		if e != nil {
 			return e
 		}
-		if offer.State != "accepted" || offer.ControlVerifiedAt == nil {
+		if offer.State != "accepted" {
 			return ErrConflict
 		}
 		old, e := tx.AccountListing.Query().Where(accountlisting.SubmissionIDEQ(offer.SubmissionID)).Only(ctx)
@@ -116,8 +116,10 @@ func (s *Store) ChangeListing(ctx context.Context, p *identity.Principal, id, ac
 	if !validID(id) || !version(input.Version) {
 		return ListingView{}, ErrInvalid
 	}
-	if action != "withdraw" && validateProduct(input.Product) != nil {
-		return ListingView{}, ErrInvalid
+	if action != "withdraw" {
+		if issues := productIssues(input.Product); len(issues) > 0 {
+			return ListingView{}, &catalog.Invalid{Issues: issues}
+		}
 	}
 	var result ListingView
 	err := s.auth.AuthorizedTransaction(ctx, p, "admin", true, func(tx *ent.Tx, current *identity.Principal) error {
@@ -139,7 +141,7 @@ func (s *Store) ChangeListing(ctx context.Context, p *identity.Principal, id, ac
 		if e != nil {
 			return e
 		}
-		if offer.State != "accepted" || offer.ControlVerifiedAt == nil {
+		if offer.State != "accepted" {
 			return ErrConflict
 		}
 		update := tx.AccountListing.UpdateOneID(id).AddVersion(1).SetUpdatedAt(s.instant())
@@ -154,6 +156,20 @@ func (s *Store) ChangeListing(ctx context.Context, p *identity.Principal, id, ac
 			}
 			update.SetDraft(data)
 			if action == "publish" {
+				if e = requireSellerHandover(ctx, tx, offer, s.instant()); e != nil {
+					return e
+				}
+				game, gameErr := tx.Game.Get(ctx, row.GameID)
+				if gameErr != nil {
+					return gameErr
+				}
+				available, gameErr := catalog.GameAvailable(ctx, tx.Client(), game, "accounts")
+				if gameErr != nil {
+					return gameErr
+				}
+				if !available {
+					return ErrConflict
+				}
 				terms, termsErr := decode[SellerTerms](offer.Data)
 				if termsErr != nil {
 					return termsErr

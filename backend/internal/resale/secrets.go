@@ -50,7 +50,11 @@ func (s *Store) sellerSecretPolicy(ctx context.Context, tx *ent.Tx, p *identity.
 		return nil
 	}
 	if operation == vault.Write || operation == vault.Revoke {
-		if p.User.ID != offer.SellerID || offer.ControlVerifiedAt != nil {
+		state, e := SellerHandover(ctx, tx, offer, s.instant())
+		if e != nil {
+			return e
+		}
+		if p.User.ID != offer.SellerID || state.Locked {
 			return identity.ErrForbidden
 		}
 		if !p.Session.AuthenticatedAt.Add(identity.RecentTTL).After(s.instant()) {
@@ -80,7 +84,7 @@ func (s *Store) SellerSecretStatus(ctx context.Context, p *identity.Principal, i
 	return secretView(result), err
 }
 
-// SubmitSellerSecret uses recent seller identity and forbids replacing verified control silently.
+// SubmitSellerSecret uses recent seller identity and forbids replacing published or payout-committed handovers silently.
 func (s *Store) SubmitSellerSecret(ctx context.Context, p *identity.Principal, id string, input SecretInput) (SecretView, error) {
 	defer clear(input.Value)
 	if err := identity.Require(p, "account"); err != nil {

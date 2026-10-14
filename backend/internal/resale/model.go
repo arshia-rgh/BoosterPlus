@@ -15,6 +15,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/accountpricing"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/vault"
@@ -168,31 +169,58 @@ type Attribute struct {
 	Value string `json:"value"`
 }
 
-func validateProduct(v Product) error {
-	if !text(v.Title, 1, 120) || !text(v.Description, 20, 4000) || !text(v.Region, 1, 80) || !text(v.Rank, 1, 80) || !currencyCode.MatchString(v.Currency) || !minorAmount.MatchString(v.AmountMinor) || v.DisputeHours < 1 || v.DisputeHours > 720 || v.DeliveryMinHours < 1 || v.DeliveryMaxHours < v.DeliveryMinHours || v.DeliveryMaxHours > 720 || len(v.Attributes) > 30 || len(v.MediaIDs) > 8 {
-		return ErrInvalid
+func productIssues(v Product) []catalog.Issue {
+	issues := []catalog.Issue{}
+	add := func(field, message string) {
+		issues = append(issues, catalog.Issue{Path: "product." + field, Message: message})
 	}
-	for _, value := range []string{v.SaleTerms, v.TransferRequirements, v.DisputeTerms, v.AcknowledgementTerms} {
-		if !text(value, 20, 2000) {
-			return ErrInvalid
+	for _, field := range []struct {
+		key, value string
+		min, max   int
+	}{
+		{"title", v.Title, 1, 120}, {"description", v.Description, 20, 4000}, {"region", v.Region, 1, 80}, {"rank", v.Rank, 1, 80},
+		{"sale_terms", v.SaleTerms, 20, 2000}, {"transfer_requirements", v.TransferRequirements, 20, 2000}, {"dispute_terms", v.DisputeTerms, 20, 2000}, {"acknowledgement_terms", v.AcknowledgementTerms, 20, 2000},
+	} {
+		if !text(field.value, field.min, field.max) {
+			add(field.key, "Complete this listing field within its stated length.")
 		}
+	}
+	if !currencyCode.MatchString(v.Currency) {
+		add("currency", "Choose the listing currency.")
+	}
+	if !minorAmount.MatchString(v.AmountMinor) {
+		add("amount_minor", "Enter a valid listing price.")
+	}
+	if v.DisputeHours < 1 || v.DisputeHours > 720 {
+		add("dispute_hours", "Enter 1–720 inspection hours.")
+	}
+	if v.DeliveryMinHours < 1 || v.DeliveryMaxHours < v.DeliveryMinHours || v.DeliveryMaxHours > 720 {
+		add("delivery_max_hours", "Complete a valid delivery range of 1–720 hours.")
+	}
+	if len(v.Attributes) > 30 {
+		add("attributes", "Keep at most 30 account characteristics.")
 	}
 	labels := map[string]bool{}
 	for _, item := range v.Attributes {
 		if !text(item.Label, 1, 80) || !text(item.Value, 1, 300) || labels[item.Label] {
-			return ErrInvalid
+			add("attributes", "Check characteristic names and values; names must be unique.")
+			break
 		}
 		labels[item.Label] = true
+	}
+	if len(v.MediaIDs) > 8 {
+		add("media_ids", "Choose at most eight reviewed images.")
 	}
 	media := map[string]bool{}
 	for _, id := range v.MediaIDs {
 		if !validID(id) || media[id] {
-			return ErrInvalid
+			add("media_ids", "Choose valid, distinct reviewed images.")
+			break
 		}
 		media[id] = true
 	}
 	if v.CoverMediaID != "" && !media[v.CoverMediaID] {
-		return ErrInvalid
+		add("cover_media_id", "Choose a title image from the selected gallery.")
 	}
-	return nil
+	return issues
 }

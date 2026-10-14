@@ -7,7 +7,6 @@ import (
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/accountsubmission"
-	"github.com/arshia-rgh/BoosterPlus/backend/ent/secretbundle"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/selleroffer"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/jobs"
@@ -220,21 +219,6 @@ func (s *Store) ChangeOffer(ctx context.Context, p *identity.Principal, id, acti
 				return ErrConflict
 			}
 			update.SetState("withdrawn").ClearActiveSubmissionID()
-		case "verify_control":
-			if !admin || !input.Accept {
-				return identity.ErrForbidden
-			}
-			if row.State != "accepted" || parent.State != accountsubmission.StateAccepted || row.ControlVerifiedAt != nil {
-				return ErrConflict
-			}
-			bundle, bundleErr := tx.SecretBundle.Query().Where(secretbundle.PurposeEQ(secretbundle.PurposeAccountTransfer), secretbundle.ResourceIDEQ(id), secretbundle.OwnerIDEQ(row.SellerID), secretbundle.StateEQ(secretbundle.StateActive), secretbundle.ExpiresAtGT(s.instant())).Only(ctx)
-			if bundleErr != nil {
-				return bundleErr
-			}
-			if bundle.Version < 1 {
-				return ErrConflict
-			}
-			update.SetControlVerifiedAt(s.instant()).SetControlVerifiedBy(current.User.ID).SetControlEvidence(input.Note)
 		default:
 			return ErrInvalid
 		}

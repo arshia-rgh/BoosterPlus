@@ -125,18 +125,18 @@ it("applies configured server/region relationships to seller drafts before savin
     screen.getByText(/Incompatible selections were removed/),
   ).toHaveAttribute("role", "status");
 });
-it("keeps edits private until explicitly saved and forbids submitting unsaved changes", async () => {
+it("keeps edits private until an explicit save or submit action", async () => {
   const value = fixture(),
     reload = vi.fn();
   vi.mocked(post).mockResolvedValue(value);
   render(<SubmissionEditor value={value} reload={reload} />);
   const submit = screen.getByRole("button", {
-    name: "Submit saved account for review",
+    name: "Save and submit for review",
   });
   fireEvent.change(screen.getByLabelText("Private account title"), {
     target: { value: "Edited private title" },
   });
-  expect(submit).toBeDisabled();
+  expect(submit).toBeEnabled();
   expect(post).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "Save account draft" }));
   await waitFor(() => {
@@ -158,16 +158,16 @@ it("retains unsaved input on a conflict and never retries with an invented versi
     new APIError("Refresh the changed submission."),
   );
   render(<SubmissionEditor value={fixture()} reload={reload} />);
-  fireEvent.change(screen.getByLabelText("Ownership and control information"), {
+  fireEvent.change(screen.getByLabelText("Account notes (optional)"), {
     target: { value: "Private control explanation" },
   });
   fireEvent.click(screen.getByRole("button", { name: "Save account draft" }));
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Refresh the changed submission.",
   );
-  expect(
-    screen.getByLabelText("Ownership and control information"),
-  ).toHaveValue("Private control explanation");
+  expect(screen.getByLabelText("Account notes (optional)")).toHaveValue(
+    "Private control explanation",
+  );
   expect(reload).not.toHaveBeenCalled();
   expect(post).toHaveBeenCalledOnce();
 });
@@ -225,21 +225,21 @@ it("submits only the acknowledged saved revision without waiting for a parent re
   fireEvent.change(screen.getByLabelText("Private account title"), {
     target: { value: "Saved title" },
   });
-  fireEvent.change(screen.getByLabelText("Ownership and control information"), {
+  fireEvent.change(screen.getByLabelText("Account notes (optional)"), {
     target: { value: saved.ownership_notes },
   });
   fireEvent.click(screen.getByRole("checkbox"));
   fireEvent.click(screen.getByRole("button", { name: "Save account draft" }));
   await waitFor(() => {
     expect(
-      screen.getByRole("button", { name: "Submit saved account for review" }),
+      screen.getByRole("button", { name: "Save and submit for review" }),
     ).toBeEnabled();
   });
   expect(screen.getByLabelText("Private account title")).toHaveValue(
     "Saved title",
   );
   fireEvent.click(
-    screen.getByRole("button", { name: "Submit saved account for review" }),
+    screen.getByRole("button", { name: "Save and submit for review" }),
   );
   await waitFor(() => {
     expect(post).toHaveBeenLastCalledWith(
@@ -265,5 +265,86 @@ it("updates an untouched form when current details change", () => {
   );
   expect(screen.getByLabelText("Private account title")).toHaveValue(
     "Fresh record",
+  );
+});
+
+it("saves and submits in one action using the returned revision, with optional notes", async () => {
+  const value = fixture(),
+    saved = {
+      ...value,
+      ownership_declared: true,
+      submission: { ...value.submission, version: 5, title: "New title" },
+    };
+  vi.mocked(post)
+    .mockResolvedValueOnce(saved)
+    .mockResolvedValueOnce({
+      ...saved,
+      submission: { ...saved.submission, version: 6, state: "submitted" },
+    });
+  const reload = vi.fn();
+  render(<SubmissionEditor value={value} reload={reload} />);
+  fireEvent.change(screen.getByLabelText("Private account title"), {
+    target: { value: "New title" },
+  });
+  fireEvent.click(screen.getByRole("checkbox"));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Save and submit for review" }),
+  );
+  await waitFor(() => {
+    expect(reload).toHaveBeenCalledOnce();
+  });
+  expect(post).toHaveBeenNthCalledWith(
+    1,
+    "/submissions/submission/edit",
+    expect.objectContaining({
+      version: 4,
+      title: "New title",
+      ownership_notes: "",
+      ownership_declared: true,
+    }),
+    expect.anything(),
+  );
+  expect(post).toHaveBeenNthCalledWith(
+    2,
+    "/submissions/submission/submit",
+    { version: 5, note: "" },
+    expect.anything(),
+  );
+});
+it("retains saved input and its actual revision when submission validation fails", async () => {
+  const value = fixture(),
+    saved = {
+      ...value,
+      ownership_declared: true,
+      submission: { ...value.submission, version: 5, title: "New title" },
+    };
+  vi.mocked(post)
+    .mockResolvedValueOnce(saved)
+    .mockRejectedValueOnce(new APIError("Complete required game details."));
+  render(<SubmissionEditor value={value} reload={vi.fn()} />);
+  fireEvent.change(screen.getByLabelText("Private account title"), {
+    target: { value: "New title" },
+  });
+  fireEvent.click(screen.getByRole("checkbox"));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Save and submit for review" }),
+  );
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Complete required game details.",
+  );
+  expect(screen.getByLabelText("Private account title")).toHaveValue(
+    "New title",
+  );
+  vi.mocked(post).mockResolvedValue(saved);
+  fireEvent.click(
+    screen.getByRole("button", { name: "Save and submit for review" }),
+  );
+  await waitFor(() => {
+    expect(post).toHaveBeenCalledTimes(3);
+  });
+  expect(post).toHaveBeenLastCalledWith(
+    "/submissions/submission/submit",
+    { version: 5, note: "" },
+    expect.anything(),
   );
 });

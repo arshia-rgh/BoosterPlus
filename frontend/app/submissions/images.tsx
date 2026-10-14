@@ -19,8 +19,10 @@ const emptySlot = (): ImageSlot => ({
 });
 export default function SellerImages({
   conversation,
+  onPendingChange,
 }: {
   conversation: string;
+  onPendingChange?: ((pending: boolean) => void) | undefined;
 }) {
   const [slots, setSlots] = useState<ImageSlot[]>(() => [emptySlot()]),
     [busy, setBusy] = useState(false),
@@ -47,6 +49,10 @@ export default function SellerImages({
   const pending = slots.some((slot) => slot.pending),
     ids = slots.map((slot) => slot.id).filter(Boolean);
   const working = slots.some((slot) => slot.working);
+  const unfinished = pending || ids.length > 0 || unknown || busy || working;
+  useEffect(() => {
+    onPendingChange?.(unfinished);
+  }, [onPendingChange, unfinished]);
   useRecordDraft(
     pending || ids.length > 0 || unknown,
     busy || working || unknown,
@@ -84,7 +90,7 @@ export default function SellerImages({
       setUnknown(false);
       setSlots([emptySlot()]);
       setNotice(
-        "Screenshots sent privately to the review team. You can see them in Messages & evidence. They are not public account-listing images.",
+        "Screenshots sent privately to the review team. You can see them in Messages & photos. They are not public account-listing images.",
       );
     } catch (cause) {
       setError(cause);
@@ -98,10 +104,8 @@ export default function SellerImages({
     <section className="seller-image-step">
       <h4>Account screenshots</h4>
       <p>
-        Add up to four screenshots at a time, 4 MB each. Remove email addresses,
-        player identifiers and private information. Uploading prepares them;
-        Send screenshots attaches them to this account’s private review. Staff
-        separately chooses any public listing images.
+        Optional: up to four screenshots per batch, 4 MB each. Remove private
+        details, then select Send screenshots to attach them for review.
       </p>
       <fieldset disabled={busy || unknown}>
         <legend>Images for this submission</legend>

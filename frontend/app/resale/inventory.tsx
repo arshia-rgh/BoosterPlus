@@ -1,3 +1,7 @@
+import {
+  ListingReadiness,
+  useSellingProgress,
+} from "../submissions/selling-progress";
 import { Loading } from "../ui/loading";
 import { AgreementTemplate } from "./agreement-template";
 import { BuyerPriceInput } from "./commission-fields";
@@ -161,6 +165,7 @@ function Editor({
       `/admin/submissions/${row.submission_id}`,
       submissionSchema,
     );
+  const progress = useSellingProgress(row.submission_id, true, row.version);
   const [params, setParams] = useSearchParams();
   const location: Location<unknown> = useLocation();
   const validation = useActionValidation((target) => {
@@ -233,6 +238,7 @@ function Editor({
       );
       reset(saved);
       changed();
+      progress.reload();
     } catch (cause) {
       validation.server(cause);
       setError(cause);
@@ -284,7 +290,7 @@ function Editor({
             to: back,
             state: location.state,
             label: back.startsWith("/admin/submissions/")
-              ? "Seller agreement"
+              ? "Account sale"
               : "Account inventory",
           }}
           sections={[
@@ -323,7 +329,7 @@ function Editor({
                     "details",
                 }}
               >
-                Private seller agreement and ownership review
+                Seller agreement and sale progress
               </Link>
               <ErrorNotice error={error} hideIssues />
               <ValidationSummary
@@ -570,7 +576,26 @@ function Editor({
                   />
                 )}
                 <div hidden={section !== "publication"}>
-                  <h3>Staff preview and publication</h3>
+                  <h3>Preview & publication</h3>
+                  <ListingReadiness
+                    resource={progress}
+                    submissionID={row.submission_id}
+                    dirty={dirty}
+                    reviewed={reviewed}
+                    preview={preview}
+                  />
+                  {progress.data?.listing_state === "published" && (
+                    <p role="status">
+                      This account is live. Publishing again replaces its public
+                      version; existing orders keep their accepted terms.
+                    </p>
+                  )}
+                  {progress.data?.listing_state === "withdrawn" && (
+                    <p role="status">
+                      This listing is paused. Complete the steps below to
+                      publish it again.
+                    </p>
+                  )}
                   <p>
                     Preview the saved listing before publishing. Draft changes
                     are private until publication.
@@ -588,15 +613,46 @@ function Editor({
                     {preview ? "Hide" : "Show"} listing preview
                   </Action>
                   <Action
-                    disabled={!reviewed || dirty || !preview}
+                    disabled={
+                      !reviewed ||
+                      dirty ||
+                      !preview ||
+                      progress.loading ||
+                      !!progress.error ||
+                      !progress.data ||
+                      progress.data.blockers.some((code) =>
+                        [
+                          "handover",
+                          "seller_payment",
+                          "game_unavailable",
+                        ].includes(code),
+                      )
+                    }
                     onClick={() => void act("publish")}
                   >
                     Publish account listing
                   </Action>
-                  <Action onClick={() => void act("withdraw")}>
-                    Withdraw account listing
-                  </Action>
+                  {row.state === "published" && (
+                    <Action onClick={() => void act("withdraw")}>
+                      Pause public listing
+                    </Action>
+                  )}
                 </div>
+                {section !== "publication" && (
+                  <Link
+                    className="button compact"
+                    to={`?section=${section === "details" ? "images" : section === "images" ? "terms" : "publication"}`}
+                    state={location.state}
+                    preventScrollReset
+                  >
+                    Continue to{" "}
+                    {section === "details"
+                      ? "images"
+                      : section === "images"
+                        ? "buyer terms"
+                        : "preview & publication"}
+                  </Link>
+                )}
                 <Action disabled={!dirty} onClick={() => void act("save")}>
                   Save account listing
                 </Action>

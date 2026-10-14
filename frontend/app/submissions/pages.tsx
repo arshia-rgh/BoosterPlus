@@ -34,17 +34,15 @@ export function SubmissionList({ admin = false }: { admin?: boolean }) {
   );
   return (
     <section>
-      <h2>
-        {admin ? "Private account review queue" : "Your account submissions"}
-      </h2>
+      <h2>{admin ? "Account sales queue" : "Your account sales"}</h2>
       {!admin && (
         <>
           <p>
-            Submit an account you control for private review. A review approval
-            does not create a purchase, listing or payout agreement.
+            Send your account details, agree your payout, then let PLAYORA
+            prepare the listing.
           </p>
           <Link className="button compact" to="/sell/new">
-            Start an account submission
+            Sell an account
           </Link>
         </>
       )}
@@ -156,7 +154,7 @@ function DraftStart({
         { request_key: requestKey, slug, release_id: resource.data.id, title },
         submissionSchema,
       );
-      void navigate(`/sell/${value.submission.id}`);
+      void navigate(`/sell/${value.submission.id}?section=details`);
     } catch (cause) {
       setError(cause);
       if (cause instanceof APIError) setIssues([...cause.issues]);
@@ -213,7 +211,7 @@ function DraftStart({
             >
               {unknown
                 ? "Check the same submission request"
-                : "Create private draft"}
+                : "Continue to account details"}
             </Action>
             {resource.data.paused && (
               <p>This game is not accepting new submissions right now.</p>
@@ -238,11 +236,11 @@ export function NewSubmission() {
     );
   return (
     <section>
-      <Link to="/sell">← Your submissions</Link>
-      <h2>Choose an account game</h2>
+      <Link to="/sell">← Your account sales</Link>
+      <h2>Sell your account</h2>
       <p>
-        Only games with a published intake form accept submissions. Your
-        evidence and review conversation stay private to you and administrators.
+        Choose your game to get started. Your details stay private during
+        review.
       </p>
       <ErrorNotice error={resource.error} />
       {!resource.error && resource.data && (
@@ -258,7 +256,7 @@ export function NewSubmission() {
                       setSlug(game.slug);
                     }}
                   >
-                    Submit {game.name} account
+                    Choose {game.name}
                   </Action>
                 </li>
               ))}

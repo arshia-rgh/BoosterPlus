@@ -176,8 +176,8 @@ func (s *Store) Transition(ctx context.Context, p *identity.Principal, id string
 				if len(validated.Issues) > 0 {
 					return &catalog.Invalid{Issues: validated.Issues}
 				}
-				if !row.OwnershipDeclared || !text(row.OwnershipNotes, 1, 2000) {
-					return &catalog.Invalid{Issues: []catalog.Issue{{Path: "ownership", Message: "Describe your ownership/control and confirm your authority to submit this account. Do not include credentials."}}}
+				if !row.OwnershipDeclared {
+					return &catalog.Invalid{Issues: []catalog.Issue{{Path: "ownership_declared", Message: "Confirm your authority to submit this account for sale."}}}
 				}
 				next, note = accountsubmission.StateSubmitted, "Account submitted for private review. No purchase or payout agreement exists yet."
 			case "withdraw":
