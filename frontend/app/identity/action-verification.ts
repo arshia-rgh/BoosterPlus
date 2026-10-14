@@ -66,6 +66,8 @@ export function actionLabel(path: string, body?: unknown) {
       ? "seller payout"
       : null;
   if (financial) {
+    if (path.endsWith("/manual"))
+      return "Record this completed external seller payout";
     if (path.endsWith("/approve")) return `Approve this ${financial}`;
     if (path.endsWith("/verify")) return `Verify this ${financial} transfer`;
     if (path.endsWith("/cancel")) return `Cancel this ${financial}`;

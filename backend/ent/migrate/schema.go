@@ -1074,6 +1074,37 @@ var (
 			},
 		},
 	}
+	// ManualPayoutsColumns holds the columns for the "manual_payouts" table.
+	ManualPayoutsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 36},
+		{Name: "transfer_id", Type: field.TypeString, Size: 36},
+		{Name: "request_hash", Type: field.TypeString, Size: 64},
+		{Name: "network", Type: field.TypeString, Size: 64},
+		{Name: "transaction_hash", Type: field.TypeString, Size: 128},
+		{Name: "snapshot", Type: field.TypeJSON},
+		{Name: "recorded_by", Type: field.TypeString, Size: 36},
+		{Name: "reason", Type: field.TypeString, Size: 2000},
+		{Name: "completed_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// ManualPayoutsTable holds the schema information for the "manual_payouts" table.
+	ManualPayoutsTable = &schema.Table{
+		Name:       "manual_payouts",
+		Columns:    ManualPayoutsColumns,
+		PrimaryKey: []*schema.Column{ManualPayoutsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "manual_payout_transfer",
+				Unique:  true,
+				Columns: []*schema.Column{ManualPayoutsColumns[1]},
+			},
+			{
+				Name:    "manual_payout_transaction",
+				Unique:  true,
+				Columns: []*schema.Column{ManualPayoutsColumns[3], ManualPayoutsColumns[4]},
+			},
+		},
+	}
 	// MediaFilesColumns holds the columns for the "media_files" table.
 	MediaFilesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 36},
@@ -2381,6 +2412,7 @@ var (
 		FavoritesTable,
 		FulfillmentsTable,
 		GamesTable,
+		ManualPayoutsTable,
 		MediaFilesTable,
 		MoneyTransfersTable,
 		NotificationsTable,

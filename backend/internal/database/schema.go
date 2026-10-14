@@ -8,7 +8,7 @@ import (
 )
 
 // SchemaVersion is the runtime's expected forward-compatible schema version.
-const SchemaVersion = 41
+const SchemaVersion = 42
 
 // Ready validates version state and critical schema shape without DDL or repair.
 func Ready(ctx context.Context, db *sql.DB) error {
@@ -47,6 +47,7 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"manual_payouts.snapshot": "json", "manual_payouts.transaction_hash": "varchar", "manual_payouts.request_hash": "varchar", "manual_payouts.completed_at": "datetime",
 		"identity_namespace_splits.original_id": "varchar", "identity_namespace_splits.customer_id": "varchar", "identity_namespace_splits.booster_id": "varchar",
 		"users.portal": "varchar", "auth_identities.portal": "varchar", "secret_bundles.cipher_owner_id": "varchar",
 		"artworks.variants": "json", "artworks.state": "varchar", "artworks.request_hash": "varchar",
@@ -107,6 +108,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 
 func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"manual_payouts.manual_payout_transfer": "transfer_id", "manual_payouts.manual_payout_transaction": "network,transaction_hash",
 		"identity_namespace_splits.PRIMARY": "original_id", "identity_namespace_splits.identity_split_customer": "customer_id", "identity_namespace_splits.identity_split_booster": "booster_id",
 		"job_attempts.PRIMARY":                     "job_id,retry_generation,attempt",
 		"shop_deliveries.shop_order_delivery":      "order_id",

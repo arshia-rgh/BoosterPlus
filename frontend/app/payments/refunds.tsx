@@ -14,6 +14,11 @@ import { transferSchema, transfersSchema, type Transfer } from "./cases-model";
 import { historySchema } from "./model";
 
 import TransferHistory from "./transfer-history";
+import {
+  ManualPayoutEvidence,
+  ManualPayoutForm,
+  type ManualPayoutControls,
+} from "./manual-payout";
 import { transferPresentation } from "./presentation";
 import "./workspace.css";
 import { FieldValidation, focusValidationTarget } from "../ui/form-validation";
@@ -92,13 +97,17 @@ export function TransferRecord({
   reload,
   refreshing,
   onRecipientSaved,
-}: {
+  onManualSaved,
+  pendingManual,
+  onManualPending,
+}: ManualPayoutControls & {
   record: Transfer;
   admin: boolean;
   owner: boolean;
   reload: () => void;
   refreshing: boolean;
   onRecipientSaved?: (record: Transfer) => void;
+  onManualSaved?: (record: Transfer) => void;
 }) {
   const [address, setAddress] = useState(record.recipient.address),
     [memo, setMemo] = useState(record.recipient.memo),
@@ -122,10 +131,25 @@ export function TransferRecord({
       focusValidationTarget(failurePanel.current);
     }
   }, [busy, error]);
-  const status = transferPresentation(
-    record.state,
-    admin ? (seller ? "seller" : "customer") : "you",
-  );
+  const status = record.manual_receipt
+    ? {
+        title: "Completed payout recorded by staff",
+        description:
+          "An external transfer was recorded. It was not automatically verified by the provider or blockchain.",
+      }
+    : seller &&
+        record.manual_recording &&
+        record.manual_recording.reason !== "automatic_enabled" &&
+        record.state === "verified"
+      ? {
+          title: "Awaiting manual payout",
+          description:
+            "The seller destination is confirmed. Staff handle this payout externally; no completed transfer has been recorded yet.",
+        }
+      : transferPresentation(
+          record.state,
+          admin ? (seller ? "seller" : "customer") : "you",
+        );
   async function recipient() {
     if (lock.current || refreshing || !accepted) return;
     if (!fields.check(recipientIssues(address, memo))) return;
@@ -263,7 +287,7 @@ export function TransferRecord({
             {record.recipient.memo ? ` · Memo: ${record.recipient.memo}` : ""}
           </p>
         )}
-        {record.state === "confirmed" && (
+        {record.state === "confirmed" && !record.manual_receipt && (
           <p>
             The provider confirmed this outgoing transfer. The original
             agreement and payment history remain available separately.
@@ -315,62 +339,88 @@ export function TransferRecord({
             </Action>
           </fieldset>
         )}
-        {owner && !["confirmed", "cancelled"].includes(record.state) && (
-          <fieldset disabled={busy || refreshing}>
-            <legend>Owner transfer authorization</legend>
-            <p>
-              Confirm with an authenticator or email code when requested.
-              Outgoing payments must be enabled. A failed transfer needs fresh
-              provider reconciliation before approval of a new attempt.
-            </p>
-            <Text
-              name="reason"
-              label={`${noun} authorization reason`}
-              multiline
-              value={reason}
-              change={setReason}
+        {record.manual_receipt && <ManualPayoutEvidence record={record} />}
+        {owner &&
+          seller &&
+          record.manual_recording &&
+          !["confirmed", "cancelled"].includes(record.state) && (
+            <ManualPayoutForm
+              pendingManual={pendingManual}
+              onManualPending={onManualPending}
+              record={record}
+              refreshing={refreshing}
+              reload={reload}
+              {...(onManualSaved ? { onSaved: onManualSaved } : {})}
             />
-            {["verified", "failed", "awaiting_verification"].includes(
-              record.state,
-            ) && (
-              <Check
-                label="I reviewed the recipient, exact amount, fees and due conditions"
-                value={reviewed}
-                change={setReviewed}
+          )}
+        {owner &&
+          !(
+            seller &&
+            record.manual_recording &&
+            record.manual_recording.reason !== "automatic_enabled"
+          ) &&
+          !["confirmed", "cancelled"].includes(record.state) && (
+            <fieldset disabled={busy || refreshing}>
+              <legend>Owner transfer authorization</legend>
+              <p>
+                Confirm with an authenticator or email code when requested.
+                Outgoing payments must be enabled. A failed transfer needs fresh
+                provider reconciliation before approval of a new attempt.
+              </p>
+              <Text
+                name="reason"
+                label={`${noun} authorization reason`}
+                multiline
+                value={reason}
+                change={setReason}
               />
-            )}
-            {["verified", "failed"].includes(record.state) && (
-              <Action disabled={!reviewed} onClick={() => void act("approve")}>
-                {record.state === "failed"
-                  ? "Approve new attempt after failure"
-                  : `Approve exact ${noun.toLowerCase()}`}
-              </Action>
-            )}
-            {!seller &&
-              ["recipient_pending", "verified", "approved"].includes(
+              {["verified", "failed", "awaiting_verification"].includes(
                 record.state,
               ) && (
-                <Action onClick={() => void act("cancel")}>
-                  Cancel unissued refund proposal
+                <Check
+                  label="I reviewed the recipient, exact amount, fees and due conditions"
+                  value={reviewed}
+                  change={setReviewed}
+                />
+              )}
+              {["verified", "failed"].includes(record.state) && (
+                <Action
+                  disabled={!reviewed}
+                  onClick={() => void act("approve")}
+                >
+                  {record.state === "failed"
+                    ? "Approve new attempt after failure"
+                    : `Approve exact ${noun.toLowerCase()}`}
                 </Action>
               )}
-            {record.state === "awaiting_verification" && (
-              <>
-                <Text
-                  name="code"
-                  label="NOWPayments authenticator code"
-                  type="password"
-                  value={code}
-                  change={setCode}
-                  help="The merchant's current six-digit provider code. It is used once and never stored in the order."
-                />
-                <Action disabled={!reviewed} onClick={() => void act("verify")}>
-                  Authorize provider transfer
-                </Action>
-              </>
-            )}
-          </fieldset>
-        )}
+              {!seller &&
+                ["recipient_pending", "verified", "approved"].includes(
+                  record.state,
+                ) && (
+                  <Action onClick={() => void act("cancel")}>
+                    Cancel unissued refund proposal
+                  </Action>
+                )}
+              {record.state === "awaiting_verification" && (
+                <>
+                  <Text
+                    name="code"
+                    label="NOWPayments authenticator code"
+                    type="password"
+                    value={code}
+                    change={setCode}
+                    help="The merchant's current six-digit provider code. It is used once and never stored in the order."
+                  />
+                  <Action
+                    disabled={!reviewed}
+                    onClick={() => void act("verify")}
+                  >
+                    Authorize provider transfer
+                  </Action>
+                </>
+              )}
+            </fieldset>
+          )}
         <Action
           onClick={() => {
             setShowHistory((value) => !value);

@@ -212,3 +212,15 @@
   cursor: pointer;
   padding-block: 0.6rem;
 }
+
+.manual-payout-receipt dd {
+  margin: 0.25rem 0 1rem;
+  overflow-wrap: anywhere;
+}
+.manual-payout-form,
+.manual-payout-receipt {
+  min-width: 0;
+}
+.manual-payout-form fieldset {
+  min-width: 0;
+}

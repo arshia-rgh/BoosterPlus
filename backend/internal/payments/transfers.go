@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/manualpayout"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/identity"
 	"github.com/arshia-rgh/BoosterPlus/backend/internal/payments/nowpayments"
@@ -58,7 +59,11 @@ func (s *Store) transferEvent(ctx context.Context, tx *ent.Tx, p *identity.Princ
 	if err != nil {
 		return err
 	}
-	snapshot, err := document(TransferSnapshot{Amount: row.Amount, Currency: row.Currency, Network: row.Network, State: row.State, Recipient: recipient})
+	proof, err := readManualReceipt(ctx, tx.Client(), row.ID)
+	if err != nil {
+		return err
+	}
+	snapshot, err := document(TransferSnapshot{Amount: row.Amount, Currency: row.Currency, Network: row.Network, State: row.State, Recipient: recipient, ManualReceipt: proof})
 	if err != nil {
 		return err
 	}
@@ -107,7 +112,11 @@ func transferView(ctx context.Context, client *ent.Client, row *ent.MoneyTransfe
 		}
 		agreement = &SellerAgreement{ID: offer.ID, AcceptedAt: offer.AcceptedAt, Terms: terms}
 	}
-	return TransferView{SellerAgreement: agreement, ID: row.ID, CaseID: row.CaseID, ReceiptID: row.ReceiptID, OrderID: row.OrderID, Kind: row.Kind, Currency: row.Currency, Network: row.Network, Amount: row.Amount, Terms: row.Terms, State: row.State, Issue: issue, Version: row.Version, Recipient: recipient, RecipientAt: row.RecipientAt, ApprovedAt: row.ApprovedAt, CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt}, nil
+	proof, err := readManualReceipt(ctx, client, row.ID)
+	if err != nil {
+		return TransferView{}, err
+	}
+	return TransferView{ManualReceipt: proof, SellerAgreement: agreement, ID: row.ID, CaseID: row.CaseID, ReceiptID: row.ReceiptID, OrderID: row.OrderID, Kind: row.Kind, Currency: row.Currency, Network: row.Network, Amount: row.Amount, Terms: row.Terms, State: row.State, Issue: issue, Version: row.Version, Recipient: recipient, RecipientAt: row.RecipientAt, ApprovedAt: row.ApprovedAt, CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt}, nil
 }
 
 // ProposeRefund reserves an exact receipt-backed amount before any destination or approval.
@@ -309,4 +318,15 @@ func (s *Store) approveTransfer(ctx context.Context, p *identity.Principal, id, 
 func (s *Store) transferReason(ctx context.Context, tx *ent.Tx, p *identity.Principal, row *ent.MoneyTransfer, reason string) error {
 	_, err := tx.AuthAudit.Create().SetID(rand.Text()).SetActorID(p.User.ID).SetAction("payments.refund_reason").SetTargetID(row.ID).SetMetadata(map[string]string{"reason": reason}).SetCreatedAt(s.instant()).Save(ctx)
 	return err
+}
+
+func readManualReceipt(ctx context.Context, client *ent.Client, id string) (*ManualPayoutReceipt, error) {
+	row, err := client.ManualPayout.Query().Where(manualpayout.TransferIDEQ(id)).Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return manualReceipt(row), nil
 }

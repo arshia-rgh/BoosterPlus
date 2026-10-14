@@ -81,7 +81,11 @@ func (s *Store) sellerEvent(ctx context.Context, tx *ent.Tx, p *identity.Princip
 	if parent.Version >= maxVersion {
 		return ErrConflict
 	}
-	parent, err = tx.AccountSubmission.UpdateOneID(parent.ID).AddVersion(1).SetCurrentNote("Your direct seller payout record has an update. Review its status and any required action.").SetUpdatedAt(s.instant()).Save(ctx)
+	note := "Your direct seller payout record has an update. Review its status and any required action."
+	if transferAction == "manual_confirmed" {
+		note = "PLAYORA staff recorded completion of your external crypto payout. Review the transaction details in your payout record."
+	}
+	parent, err = tx.AccountSubmission.UpdateOneID(parent.ID).AddVersion(1).SetCurrentNote(note).SetUpdatedAt(s.instant()).Save(ctx)
 	if err != nil {
 		return err
 	}
@@ -246,6 +250,10 @@ func (s *Store) SellerPayouts(ctx context.Context, p *identity.Principal, id str
 		result = []TransferView{}
 		for _, row := range rows {
 			v, e := transferView(ctx, tx.Client(), row)
+			if e != nil {
+				return e
+			}
+			v.ManualRecording, e = s.manualRecording(ctx, tx, row)
 			if e != nil {
 				return e
 			}

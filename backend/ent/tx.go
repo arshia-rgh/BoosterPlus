@@ -84,6 +84,8 @@ type Tx struct {
 	Fulfillment *FulfillmentClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
+	// ManualPayout is the client for interacting with the ManualPayout builders.
+	ManualPayout *ManualPayoutClient
 	// MediaFile is the client for interacting with the MediaFile builders.
 	MediaFile *MediaFileClient
 	// MoneyTransfer is the client for interacting with the MoneyTransfer builders.
@@ -326,6 +328,7 @@ func (tx *Tx) init() {
 	tx.Favorite = NewFavoriteClient(tx.config)
 	tx.Fulfillment = NewFulfillmentClient(tx.config)
 	tx.Game = NewGameClient(tx.config)
+	tx.ManualPayout = NewManualPayoutClient(tx.config)
 	tx.MediaFile = NewMediaFileClient(tx.config)
 	tx.MoneyTransfer = NewMoneyTransferClient(tx.config)
 	tx.Notification = NewNotificationClient(tx.config)

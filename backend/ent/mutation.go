@@ -46,6 +46,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/manualpayout"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
@@ -131,6 +132,7 @@ const (
 	TypeFavorite                 = "Favorite"
 	TypeFulfillment              = "Fulfillment"
 	TypeGame                     = "Game"
+	TypeManualPayout             = "ManualPayout"
 	TypeMediaFile                = "MediaFile"
 	TypeMoneyTransfer            = "MoneyTransfer"
 	TypeNotification             = "Notification"
@@ -29115,6 +29117,770 @@ func (m *GameMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *GameMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Game edge %s", name)
+}
+
+// ManualPayoutMutation represents an operation that mutates the ManualPayout nodes in the graph.
+type ManualPayoutMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *string
+	transfer_id      *string
+	request_hash     *string
+	network          *string
+	transaction_hash *string
+	snapshot         *map[string]interface{}
+	recorded_by      *string
+	reason           *string
+	completed_at     *time.Time
+	created_at       *time.Time
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*ManualPayout, error)
+	predicates       []predicate.ManualPayout
+}
+
+var _ ent.Mutation = (*ManualPayoutMutation)(nil)
+
+// manualpayoutOption allows management of the mutation configuration using functional options.
+type manualpayoutOption func(*ManualPayoutMutation)
+
+// newManualPayoutMutation creates new mutation for the ManualPayout entity.
+func newManualPayoutMutation(c config, op Op, opts ...manualpayoutOption) *ManualPayoutMutation {
+	m := &ManualPayoutMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeManualPayout,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withManualPayoutID sets the ID field of the mutation.
+func withManualPayoutID(id string) manualpayoutOption {
+	return func(m *ManualPayoutMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ManualPayout
+		)
+		m.oldValue = func(ctx context.Context) (*ManualPayout, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ManualPayout.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withManualPayout sets the old ManualPayout of the mutation.
+func withManualPayout(node *ManualPayout) manualpayoutOption {
+	return func(m *ManualPayoutMutation) {
+		m.oldValue = func(context.Context) (*ManualPayout, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ManualPayoutMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ManualPayoutMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ManualPayout entities.
+func (m *ManualPayoutMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ManualPayoutMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ManualPayoutMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ManualPayout.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetTransferID sets the "transfer_id" field.
+func (m *ManualPayoutMutation) SetTransferID(s string) {
+	m.transfer_id = &s
+}
+
+// TransferID returns the value of the "transfer_id" field in the mutation.
+func (m *ManualPayoutMutation) TransferID() (r string, exists bool) {
+	v := m.transfer_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTransferID returns the old "transfer_id" field's value of the ManualPayout entity.
+// If the ManualPayout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ManualPayoutMutation) OldTransferID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTransferID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTransferID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTransferID: %w", err)
+	}
+	return oldValue.TransferID, nil
+}
+
+// ResetTransferID resets all changes to the "transfer_id" field.
+func (m *ManualPayoutMutation) ResetTransferID() {
+	m.transfer_id = nil
+}
+
+// SetRequestHash sets the "request_hash" field.
+func (m *ManualPayoutMutation) SetRequestHash(s string) {
+	m.request_hash = &s
+}
+
+// RequestHash returns the value of the "request_hash" field in the mutation.
+func (m *ManualPayoutMutation) RequestHash() (r string, exists bool) {
+	v := m.request_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestHash returns the old "request_hash" field's value of the ManualPayout entity.
+// If the ManualPayout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ManualPayoutMutation) OldRequestHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestHash: %w", err)
+	}
+	return oldValue.RequestHash, nil
+}
+
+// ResetRequestHash resets all changes to the "request_hash" field.
+func (m *ManualPayoutMutation) ResetRequestHash() {
+	m.request_hash = nil
+}
+
+// SetNetwork sets the "network" field.
+func (m *ManualPayoutMutation) SetNetwork(s string) {
+	m.network = &s
+}
+
+// Network returns the value of the "network" field in the mutation.
+func (m *ManualPayoutMutation) Network() (r string, exists bool) {
+	v := m.network
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNetwork returns the old "network" field's value of the ManualPayout entity.
+// If the ManualPayout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ManualPayoutMutation) OldNetwork(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNetwork is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNetwork requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNetwork: %w", err)
+	}
+	return oldValue.Network, nil
+}
+
+// ResetNetwork resets all changes to the "network" field.
+func (m *ManualPayoutMutation) ResetNetwork() {
+	m.network = nil
+}
+
+// SetTransactionHash sets the "transaction_hash" field.
+func (m *ManualPayoutMutation) SetTransactionHash(s string) {
+	m.transaction_hash = &s
+}
+
+// TransactionHash returns the value of the "transaction_hash" field in the mutation.
+func (m *ManualPayoutMutation) TransactionHash() (r string, exists bool) {
+	v := m.transaction_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTransactionHash returns the old "transaction_hash" field's value of the ManualPayout entity.
+// If the ManualPayout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ManualPayoutMutation) OldTransactionHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTransactionHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTransactionHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTransactionHash: %w", err)
+	}
+	return oldValue.TransactionHash, nil
+}
+
+// ResetTransactionHash resets all changes to the "transaction_hash" field.
+func (m *ManualPayoutMutation) ResetTransactionHash() {
+	m.transaction_hash = nil
+}
+
+// SetSnapshot sets the "snapshot" field.
+func (m *ManualPayoutMutation) SetSnapshot(value map[string]interface{}) {
+	m.snapshot = &value
+}
+
+// Snapshot returns the value of the "snapshot" field in the mutation.
+func (m *ManualPayoutMutation) Snapshot() (r map[string]interface{}, exists bool) {
+	v := m.snapshot
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapshot returns the old "snapshot" field's value of the ManualPayout entity.
+// If the ManualPayout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ManualPayoutMutation) OldSnapshot(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapshot is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapshot requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapshot: %w", err)
+	}
+	return oldValue.Snapshot, nil
+}
+
+// ResetSnapshot resets all changes to the "snapshot" field.
+func (m *ManualPayoutMutation) ResetSnapshot() {
+	m.snapshot = nil
+}
+
+// SetRecordedBy sets the "recorded_by" field.
+func (m *ManualPayoutMutation) SetRecordedBy(s string) {
+	m.recorded_by = &s
+}
+
+// RecordedBy returns the value of the "recorded_by" field in the mutation.
+func (m *ManualPayoutMutation) RecordedBy() (r string, exists bool) {
+	v := m.recorded_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordedBy returns the old "recorded_by" field's value of the ManualPayout entity.
+// If the ManualPayout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ManualPayoutMutation) OldRecordedBy(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordedBy: %w", err)
+	}
+	return oldValue.RecordedBy, nil
+}
+
+// ResetRecordedBy resets all changes to the "recorded_by" field.
+func (m *ManualPayoutMutation) ResetRecordedBy() {
+	m.recorded_by = nil
+}
+
+// SetReason sets the "reason" field.
+func (m *ManualPayoutMutation) SetReason(s string) {
+	m.reason = &s
+}
+
+// Reason returns the value of the "reason" field in the mutation.
+func (m *ManualPayoutMutation) Reason() (r string, exists bool) {
+	v := m.reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReason returns the old "reason" field's value of the ManualPayout entity.
+// If the ManualPayout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ManualPayoutMutation) OldReason(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReason: %w", err)
+	}
+	return oldValue.Reason, nil
+}
+
+// ResetReason resets all changes to the "reason" field.
+func (m *ManualPayoutMutation) ResetReason() {
+	m.reason = nil
+}
+
+// SetCompletedAt sets the "completed_at" field.
+func (m *ManualPayoutMutation) SetCompletedAt(t time.Time) {
+	m.completed_at = &t
+}
+
+// CompletedAt returns the value of the "completed_at" field in the mutation.
+func (m *ManualPayoutMutation) CompletedAt() (r time.Time, exists bool) {
+	v := m.completed_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCompletedAt returns the old "completed_at" field's value of the ManualPayout entity.
+// If the ManualPayout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ManualPayoutMutation) OldCompletedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCompletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCompletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCompletedAt: %w", err)
+	}
+	return oldValue.CompletedAt, nil
+}
+
+// ResetCompletedAt resets all changes to the "completed_at" field.
+func (m *ManualPayoutMutation) ResetCompletedAt() {
+	m.completed_at = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ManualPayoutMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ManualPayoutMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ManualPayout entity.
+// If the ManualPayout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ManualPayoutMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ManualPayoutMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the ManualPayoutMutation builder.
+func (m *ManualPayoutMutation) Where(ps ...predicate.ManualPayout) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ManualPayoutMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ManualPayoutMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ManualPayout, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ManualPayoutMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ManualPayoutMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ManualPayout).
+func (m *ManualPayoutMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ManualPayoutMutation) Fields() []string {
+	fields := make([]string, 0, 9)
+	if m.transfer_id != nil {
+		fields = append(fields, manualpayout.FieldTransferID)
+	}
+	if m.request_hash != nil {
+		fields = append(fields, manualpayout.FieldRequestHash)
+	}
+	if m.network != nil {
+		fields = append(fields, manualpayout.FieldNetwork)
+	}
+	if m.transaction_hash != nil {
+		fields = append(fields, manualpayout.FieldTransactionHash)
+	}
+	if m.snapshot != nil {
+		fields = append(fields, manualpayout.FieldSnapshot)
+	}
+	if m.recorded_by != nil {
+		fields = append(fields, manualpayout.FieldRecordedBy)
+	}
+	if m.reason != nil {
+		fields = append(fields, manualpayout.FieldReason)
+	}
+	if m.completed_at != nil {
+		fields = append(fields, manualpayout.FieldCompletedAt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, manualpayout.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ManualPayoutMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case manualpayout.FieldTransferID:
+		return m.TransferID()
+	case manualpayout.FieldRequestHash:
+		return m.RequestHash()
+	case manualpayout.FieldNetwork:
+		return m.Network()
+	case manualpayout.FieldTransactionHash:
+		return m.TransactionHash()
+	case manualpayout.FieldSnapshot:
+		return m.Snapshot()
+	case manualpayout.FieldRecordedBy:
+		return m.RecordedBy()
+	case manualpayout.FieldReason:
+		return m.Reason()
+	case manualpayout.FieldCompletedAt:
+		return m.CompletedAt()
+	case manualpayout.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ManualPayoutMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case manualpayout.FieldTransferID:
+		return m.OldTransferID(ctx)
+	case manualpayout.FieldRequestHash:
+		return m.OldRequestHash(ctx)
+	case manualpayout.FieldNetwork:
+		return m.OldNetwork(ctx)
+	case manualpayout.FieldTransactionHash:
+		return m.OldTransactionHash(ctx)
+	case manualpayout.FieldSnapshot:
+		return m.OldSnapshot(ctx)
+	case manualpayout.FieldRecordedBy:
+		return m.OldRecordedBy(ctx)
+	case manualpayout.FieldReason:
+		return m.OldReason(ctx)
+	case manualpayout.FieldCompletedAt:
+		return m.OldCompletedAt(ctx)
+	case manualpayout.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ManualPayout field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ManualPayoutMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case manualpayout.FieldTransferID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTransferID(v)
+		return nil
+	case manualpayout.FieldRequestHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestHash(v)
+		return nil
+	case manualpayout.FieldNetwork:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNetwork(v)
+		return nil
+	case manualpayout.FieldTransactionHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTransactionHash(v)
+		return nil
+	case manualpayout.FieldSnapshot:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapshot(v)
+		return nil
+	case manualpayout.FieldRecordedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordedBy(v)
+		return nil
+	case manualpayout.FieldReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReason(v)
+		return nil
+	case manualpayout.FieldCompletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCompletedAt(v)
+		return nil
+	case manualpayout.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ManualPayout field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ManualPayoutMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ManualPayoutMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ManualPayoutMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ManualPayout numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ManualPayoutMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ManualPayoutMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ManualPayoutMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ManualPayout nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ManualPayoutMutation) ResetField(name string) error {
+	switch name {
+	case manualpayout.FieldTransferID:
+		m.ResetTransferID()
+		return nil
+	case manualpayout.FieldRequestHash:
+		m.ResetRequestHash()
+		return nil
+	case manualpayout.FieldNetwork:
+		m.ResetNetwork()
+		return nil
+	case manualpayout.FieldTransactionHash:
+		m.ResetTransactionHash()
+		return nil
+	case manualpayout.FieldSnapshot:
+		m.ResetSnapshot()
+		return nil
+	case manualpayout.FieldRecordedBy:
+		m.ResetRecordedBy()
+		return nil
+	case manualpayout.FieldReason:
+		m.ResetReason()
+		return nil
+	case manualpayout.FieldCompletedAt:
+		m.ResetCompletedAt()
+		return nil
+	case manualpayout.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ManualPayout field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ManualPayoutMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ManualPayoutMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ManualPayoutMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ManualPayoutMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ManualPayoutMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ManualPayoutMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ManualPayoutMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ManualPayout unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ManualPayoutMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ManualPayout edge %s", name)
 }
 
 // MediaFileMutation represents an operation that mutates the MediaFile nodes in the graph.

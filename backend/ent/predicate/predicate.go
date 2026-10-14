@@ -111,6 +111,9 @@ type Fulfillment func(*sql.Selector)
 // Game is the predicate function for game builders.
 type Game func(*sql.Selector)
 
+// ManualPayout is the predicate function for manualpayout builders.
+type ManualPayout func(*sql.Selector)
+
 // MediaFile is the predicate function for mediafile builders.
 type MediaFile func(*sql.Selector)
 

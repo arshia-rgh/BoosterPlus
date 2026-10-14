@@ -16,11 +16,12 @@ import (
 // TransferSnapshot preserves the exact reviewed route and destination at an event revision.
 // Historical events without snapshots stay explicitly unknown; current values are never backfilled.
 type TransferSnapshot struct {
-	Amount    string                `json:"amount"`
-	Currency  string                `json:"currency"`
-	Network   string                `json:"network"`
-	State     string                `json:"state"`
-	Recipient nowpayments.Recipient `json:"recipient"`
+	ManualReceipt *ManualPayoutReceipt  `json:"manual_receipt,omitempty"`
+	Amount        string                `json:"amount"`
+	Currency      string                `json:"currency"`
+	Network       string                `json:"network"`
+	State         string                `json:"state"`
+	Recipient     nowpayments.Recipient `json:"recipient"`
 }
 
 // TransferEntry excludes staff identifiers and internal approval reasons.

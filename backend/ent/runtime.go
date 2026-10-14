@@ -40,6 +40,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/manualpayout"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
@@ -1509,6 +1510,36 @@ func init() {
 	game.DefaultID = gameDescID.Default.(func() string)
 	// game.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	game.IDValidator = gameDescID.Validators[0].(func(string) error)
+	manualpayoutFields := schema.ManualPayout{}.Fields()
+	_ = manualpayoutFields
+	// manualpayoutDescTransferID is the schema descriptor for transfer_id field.
+	manualpayoutDescTransferID := manualpayoutFields[1].Descriptor()
+	// manualpayout.TransferIDValidator is a validator for the "transfer_id" field. It is called by the builders before save.
+	manualpayout.TransferIDValidator = manualpayoutDescTransferID.Validators[0].(func(string) error)
+	// manualpayoutDescRequestHash is the schema descriptor for request_hash field.
+	manualpayoutDescRequestHash := manualpayoutFields[2].Descriptor()
+	// manualpayout.RequestHashValidator is a validator for the "request_hash" field. It is called by the builders before save.
+	manualpayout.RequestHashValidator = manualpayoutDescRequestHash.Validators[0].(func(string) error)
+	// manualpayoutDescNetwork is the schema descriptor for network field.
+	manualpayoutDescNetwork := manualpayoutFields[3].Descriptor()
+	// manualpayout.NetworkValidator is a validator for the "network" field. It is called by the builders before save.
+	manualpayout.NetworkValidator = manualpayoutDescNetwork.Validators[0].(func(string) error)
+	// manualpayoutDescTransactionHash is the schema descriptor for transaction_hash field.
+	manualpayoutDescTransactionHash := manualpayoutFields[4].Descriptor()
+	// manualpayout.TransactionHashValidator is a validator for the "transaction_hash" field. It is called by the builders before save.
+	manualpayout.TransactionHashValidator = manualpayoutDescTransactionHash.Validators[0].(func(string) error)
+	// manualpayoutDescRecordedBy is the schema descriptor for recorded_by field.
+	manualpayoutDescRecordedBy := manualpayoutFields[6].Descriptor()
+	// manualpayout.RecordedByValidator is a validator for the "recorded_by" field. It is called by the builders before save.
+	manualpayout.RecordedByValidator = manualpayoutDescRecordedBy.Validators[0].(func(string) error)
+	// manualpayoutDescReason is the schema descriptor for reason field.
+	manualpayoutDescReason := manualpayoutFields[7].Descriptor()
+	// manualpayout.ReasonValidator is a validator for the "reason" field. It is called by the builders before save.
+	manualpayout.ReasonValidator = manualpayoutDescReason.Validators[0].(func(string) error)
+	// manualpayoutDescID is the schema descriptor for id field.
+	manualpayoutDescID := manualpayoutFields[0].Descriptor()
+	// manualpayout.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	manualpayout.IDValidator = manualpayoutDescID.Validators[0].(func(string) error)
 	mediafileFields := schema.MediaFile{}.Fields()
 	_ = mediafileFields
 	// mediafileDescUserID is the schema descriptor for user_id field.

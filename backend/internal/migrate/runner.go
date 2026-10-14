@@ -146,6 +146,9 @@ func (r *Runner) Down(ctx context.Context, steps int) error {
 		if int64(steps) > current {
 			return errors.New("rollback exceeds applied migrations")
 		}
+		if current >= 42 && current-int64(steps) < 42 {
+			return errors.New("manual payout receipts are forward-only; rollback across schema 42 requires a separately verified pre-migration restore")
+		}
 		if current >= 41 && current-int64(steps) < 41 {
 			return errors.New("identity namespaces are forward-only; rollback across schema 41 requires a separately verified pre-migration restore")
 		}

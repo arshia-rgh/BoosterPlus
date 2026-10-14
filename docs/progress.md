@@ -1,5 +1,9 @@
 # Implementation progress
 
+### Manual seller payout recording — scoped qualification (14 October 2026)
+
+Implemented owner-recorded external crypto payouts with immutable accepted amounts/routes, seller-confirmed destinations, transaction hashes, completion timestamps and private verification notes. Normal contextual verification, eligibility holds, duplicate detection, idempotent retries and staff-attributed seller receipts are retained. No crypto is sent by the workflow; automatic outgoing transfers and customer deletion stay disabled. Four targeted race-enabled TiDB scenarios, 22 component/refund tests, 12 Chromium/WebKit cases and senior source/visual round trips passed. The normal lightweight commit/security/release checks and deployment remain pending. Schema 42 is forward-only to preserve financial receipts; previous exact-release backup exceptions are consumed. See `manual-seller-payouts-2026-10-14.md` for preserved failures, evidence and limits.
+
 ### Approved account policies and commissions — qualification candidate (13 October 2026)
 
 Implemented prospective 10% seller / 5% buyer account commissions, independent cent rounding, disclosed fixed crypto quotes, immutable purchase breakdowns and preserved historical prices/debts. Added approved editor wording for seller/buyer/shop/review policies and a versioned legal-publication payload while retaining prior approved snapshots. Scoped senior design review passed six corrective round trips across desktop/mobile. Focused arithmetic, policy, UI/security checks passed; the normal full server gate, signed deployment and authenticated policy publication remain pending. See `account-policy-release-2026-10-13.md`. Checkout/outgoing/deletion state is unchanged; no funds or mail test is authorized.

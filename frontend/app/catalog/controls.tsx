@@ -24,6 +24,7 @@ export function Text({
   help = "",
   error: localError,
   inputMode,
+  step,
 }: {
   name?: string | undefined;
   label: string;
@@ -34,6 +35,7 @@ export function Text({
   help?: string;
   error?: string | undefined;
   inputMode?: "numeric" | "decimal" | undefined;
+  step?: number;
 }) {
   const id = useId();
   const helpID = id + "-help";
@@ -73,6 +75,7 @@ export function Text({
           id={id}
           type={type}
           inputMode={inputMode}
+          step={step}
           value={value}
           onChange={(event) => {
             change(event.target.value);

@@ -1,3 +1,4 @@
+import { useManualPayoutConfirmation } from "../payments/manual-payout";
 import { SellerPriceInput, SellerBreakdown } from "./commission-fields";
 import { FieldValidation, ValidationSummary } from "../ui/form-validation";
 import { useActionValidation } from "../ui/action-validation";
@@ -664,6 +665,10 @@ export function SellerPayouts({
     resource.loading,
     resource.error,
   );
+  const manualConfirmation = useManualPayoutConfirmation(
+    `payout:${admin ? "admin" : "customer"}:${id}`,
+    resource.error,
+  );
   return (
     <section>
       <h3>Direct seller payouts</h3>
@@ -673,6 +678,7 @@ export function SellerPayouts({
       {resource.loading && <p role="status">Checking seller payouts…</p>}
       <ErrorNotice error={resource.error} />
       {confirmation.feedback}
+      {manualConfirmation.feedback}
       {resource.data?.transfers.map((row) => (
         <TransferRecord
           key={`${row.id}:${String(row.version)}`}
@@ -682,6 +688,8 @@ export function SellerPayouts({
           reload={resource.reload}
           refreshing={resource.loading}
           onRecipientSaved={confirmation.recipientSaved}
+          onManualSaved={manualConfirmation.manualSaved}
+          {...manualConfirmation.controls(row.id)}
         />
       ))}
       {resource.data?.transfers.length === 0 && (

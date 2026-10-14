@@ -48,6 +48,17 @@ export default function TransferHistory({
                       {event.snapshot.network} ·{" "}
                       {event.snapshot.state.replaceAll("_", " ")}
                     </p>
+                    {event.snapshot.manual_receipt && (
+                      <p className="payment-policy">
+                        Staff-recorded transaction:{" "}
+                        {event.snapshot.manual_receipt.transaction_hash} ·
+                        Completed{" "}
+                        {new Date(
+                          event.snapshot.manual_receipt.completed_at,
+                        ).toLocaleString()}
+                        . Not automatically verified on-chain.
+                      </p>
+                    )}
                     <p className="payment-policy">
                       {event.snapshot.recipient.address
                         ? `Destination at this revision: ${event.snapshot.recipient.address}`
@@ -84,8 +95,16 @@ export default function TransferHistory({
               More transfer events
             </Action>
           )}
-          <h4>Provider attempts</h4>
-          {!resource.data.attempts.length && (
+          {record.manual_receipt && (
+            <p>
+              Manual completion is recorded by staff. No provider attempt is
+              created for that external transfer.
+            </p>
+          )}
+          {(!record.manual_receipt || resource.data.attempts.length > 0) && (
+            <h4>Provider attempts</h4>
+          )}
+          {!record.manual_receipt && !resource.data.attempts.length && (
             <p>No outgoing attempt recorded.</p>
           )}
           {resource.data.attempts.map((attempt) => (

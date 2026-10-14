@@ -60,7 +60,7 @@ export default function CaseQueue() {
       )}
       <h3>Outgoing exceptions</h3>
       <p>
-        Outgoing transfers:{" "}
+        Automatic provider transfers:{" "}
         {outgoing.data
           ? outgoing.data.enabled
             ? "enabled"

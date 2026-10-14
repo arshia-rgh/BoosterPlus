@@ -458,7 +458,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -725,7 +725,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -794,7 +794,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -844,7 +844,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -4908,7 +4908,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           },
           {
             "name": "search",
@@ -4944,7 +4944,7 @@
       },
       "post": {
         "operationId": "customerCreateConversation",
-        "summary": "Create authenticated pre-sales support or an order’s single private thread. Idempotent, limited to 20 attempts/hour per address and account.",
+        "summary": "Create authenticated pre-sales support or an order\u2019s single private thread. Idempotent, limited to 20 attempts/hour per address and account.",
         "security": [
           {
             "sessionCookie": []
@@ -5022,7 +5022,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ],
         "requestBody": {
@@ -5110,7 +5110,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -5202,7 +5202,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       },
@@ -5294,7 +5294,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ],
         "requestBody": {
@@ -5391,7 +5391,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ],
         "requestBody": {
@@ -5493,7 +5493,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           },
           {
             "name": "portal",
@@ -5630,7 +5630,7 @@
       },
       "post": {
         "operationId": "staffCreateConversation",
-        "summary": "Create authenticated pre-sales support or an order’s single private thread. Idempotent, limited to 20 attempts/hour per address and account.",
+        "summary": "Create authenticated pre-sales support or an order\u2019s single private thread. Idempotent, limited to 20 attempts/hour per address and account.",
         "security": [
           {
             "adminSessionCookie": []
@@ -6433,7 +6433,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -6520,7 +6520,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -6711,7 +6711,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ],
         "requestBody": {
@@ -6799,7 +6799,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -6886,7 +6886,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ],
         "requestBody": {
@@ -6992,7 +6992,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -7086,7 +7086,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -7187,7 +7187,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           },
           {
             "name": "portal",
@@ -7283,7 +7283,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -7370,7 +7370,7 @@
             "schema": {
               "$ref": "#/components/schemas/AuthPortal"
             },
-            "description": "Select this endpoint’s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
+            "description": "Select this endpoint\u2019s portal; defaults to customer. Exactly one matching portal cookie is used. Conversation/media membership, staff route projection and MFA still apply; booster conversation listing/creation is not allowed."
           }
         ]
       }
@@ -20523,7 +20523,7 @@
     "/api/v1/me/order-requests/{key}": {
       "get": {
         "operationId": "recoverCustomerOrder",
-        "summary": "Recover only the signed-in customer’s order identifier by creation request reference",
+        "summary": "Recover only the signed-in customer\u2019s order identifier by creation request reference",
         "security": [
           {
             "sessionCookie": []
@@ -23852,6 +23852,67 @@
           },
           "403": {
             "description": "Staff permission required"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/payouts/{id}/manual": {
+      "post": {
+        "operationId": "recordManualSellerPayout",
+        "summary": "Record owner-confirmed external seller payout; sends no funds and does not verify the blockchain",
+        "security": [
+          {
+            "adminSessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated account commerce projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundTransfer"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Authorization, stale revision, inventory or financial evidence rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResaleProblem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualPayoutInput"
+              }
+            }
           }
         }
       }
@@ -29993,6 +30054,12 @@
           },
           "seller_agreement": {
             "$ref": "#/components/schemas/SellerPaymentAgreement"
+          },
+          "manual_receipt": {
+            "$ref": "#/components/schemas/ManualPayoutReceipt"
+          },
+          "manual_recording": {
+            "$ref": "#/components/schemas/ManualPayoutRecording"
           }
         }
       },
@@ -32308,6 +32375,9 @@
           },
           "recipient": {
             "$ref": "#/components/schemas/RefundRecipient"
+          },
+          "manual_receipt": {
+            "$ref": "#/components/schemas/ManualPayoutReceipt"
           }
         }
       },
@@ -34293,6 +34363,99 @@
           "review_policy",
           "boost_terms"
         ]
+      },
+      "ManualPayoutReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "transaction_hash", "completed_at", "recorded_at"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "transaction_hash": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ManualPayoutRecording": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["available", "reason"],
+        "properties": {
+          "available": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "ManualPayoutInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "request_key",
+          "version",
+          "amount",
+          "currency",
+          "network",
+          "recipient",
+          "transaction_hash",
+          "completed_at",
+          "reason",
+          "confirm"
+        ],
+        "properties": {
+          "request_key": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "amount": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "network": {
+            "type": "string",
+            "enum": ["bsc", "eth", "trx", "sol"]
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/RefundRecipient"
+          },
+          "transaction_hash": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 2000
+          },
+          "confirm": {
+            "type": "boolean",
+            "enum": [true]
+          }
+        }
       }
     },
     "securitySchemes": {

@@ -429,6 +429,18 @@ func (f GameFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GameMutation", m)
 }
 
+// The ManualPayoutFunc type is an adapter to allow the use of ordinary
+// function as ManualPayout mutator.
+type ManualPayoutFunc func(context.Context, *ent.ManualPayoutMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ManualPayoutFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ManualPayoutMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ManualPayoutMutation", m)
+}
+
 // The MediaFileFunc type is an adapter to allow the use of ordinary
 // function as MediaFile mutator.
 type MediaFileFunc func(context.Context, *ent.MediaFileMutation) (ent.Value, error)

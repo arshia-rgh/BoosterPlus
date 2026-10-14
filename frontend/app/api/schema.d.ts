@@ -5432,6 +5432,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/admin/payouts/{id}/manual": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Record owner-confirmed external seller payout; sends no funds and does not verify the blockchain */
+    post: operations["recordManualSellerPayout"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -7165,6 +7182,8 @@ export interface components {
       /** Format: date-time */
       updated_at: string;
       seller_agreement?: components["schemas"]["SellerPaymentAgreement"];
+      manual_receipt?: components["schemas"]["ManualPayoutReceipt"];
+      manual_recording?: components["schemas"]["ManualPayoutRecording"];
     };
     RefundHistory: {
       transfers: components["schemas"]["RefundTransfer"][];
@@ -7824,6 +7843,7 @@ export interface components {
       network: string;
       state: string;
       recipient: components["schemas"]["RefundRecipient"];
+      manual_receipt?: components["schemas"]["ManualPayoutReceipt"];
     };
     TransferEntry: {
       version: number;
@@ -8306,6 +8326,34 @@ export interface components {
       };
       review_policy: string;
       boost_terms: string;
+    };
+    ManualPayoutReceipt: {
+      id: string;
+      transaction_hash: string;
+      /** Format: date-time */
+      completed_at: string;
+      /** Format: date-time */
+      recorded_at: string;
+    };
+    ManualPayoutRecording: {
+      available: boolean;
+      reason: string;
+    };
+    ManualPayoutInput: {
+      /** Format: uuid */
+      request_key: string;
+      version: number;
+      amount: string;
+      currency: string;
+      /** @enum {string} */
+      network: "bsc" | "eth" | "trx" | "sol";
+      recipient: components["schemas"]["RefundRecipient"];
+      transaction_hash: string;
+      /** Format: date-time */
+      completed_at: string;
+      reason: string;
+      /** @enum {boolean} */
+      confirm: true;
     };
   };
   responses: never;
@@ -23844,6 +23892,43 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  recordManualSellerPayout: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-CSRF-Token": string;
+      };
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ManualPayoutInput"];
+      };
+    };
+    responses: {
+      /** @description Validated account commerce projection */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RefundTransfer"];
+        };
+      };
+      /** @description Authorization, stale revision, inventory or financial evidence rejection */
+      default: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ResaleProblem"];
+        };
       };
     };
   };

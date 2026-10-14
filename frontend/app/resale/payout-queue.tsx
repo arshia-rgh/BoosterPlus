@@ -1,3 +1,4 @@
+import { useManualPayoutConfirmation } from "../payments/manual-payout";
 import { Link, useSearchParams } from "../portal-router";
 import { z } from "../validation";
 import { Action, ErrorNotice } from "../catalog/controls";
@@ -33,17 +34,22 @@ export default function SellerPayoutQueue() {
     resource.loading,
     resource.error,
   );
+  const manualConfirmation = useManualPayoutConfirmation(
+    `payout-queue:${after}`,
+    resource.error,
+  );
   return (
     <section className="catalog-section">
       <h2>Seller payout obligations</h2>
       <p>
-        Outgoing transfers:{" "}
+        Automatic NOWPayments transfers:{" "}
         {resource.data
           ? resource.data.enabled
             ? "enabled"
-            : "paused"
+            : "off — manual seller payouts"
           : "status unavailable"}
-        . Eligibility and owner approval remain separate requirements.
+        . PLAYORA records completed external payouts; manual recording never
+        sends crypto. Eligibility and owner verification still apply.
       </p>
       {resource.loading && <p role="status">Checking payout obligations…</p>}
       <p>
@@ -56,6 +62,7 @@ export default function SellerPayoutQueue() {
       <Action onClick={resource.reload}>Refresh payout queue</Action>
       <ErrorNotice error={resource.error ?? session.error} />
       {confirmation.feedback}
+      {manualConfirmation.feedback}
       {resource.data?.items.map((item) => (
         <section key={item.transfer.id}>
           <Link
@@ -80,6 +87,8 @@ export default function SellerPayoutQueue() {
             reload={resource.reload}
             refreshing={resource.loading}
             onRecipientSaved={confirmation.recipientSaved}
+            onManualSaved={manualConfirmation.manualSaved}
+            {...manualConfirmation.controls(item.transfer.id)}
           />
         </section>
       ))}

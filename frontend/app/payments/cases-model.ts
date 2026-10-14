@@ -33,7 +33,17 @@ export const caseDetailSchema = z.object({
     }),
   ),
 });
+export const manualReceiptSchema = z.object({
+  id: z.string(),
+  transaction_hash: z.string(),
+  completed_at: z.string(),
+  recorded_at: z.string(),
+});
 export const transferSchema = z.object({
+  manual_receipt: manualReceiptSchema.optional(),
+  manual_recording: z
+    .object({ available: z.boolean(), reason: z.string() })
+    .optional(),
   seller_agreement: z
     .object({
       id: z.string(),
@@ -87,6 +97,7 @@ export const transferHistorySchema = z.object({
       created_at: z.string(),
       snapshot: z
         .object({
+          manual_receipt: manualReceiptSchema.optional(),
           amount: z.string(),
           currency: z.string(),
           network: z.string(),

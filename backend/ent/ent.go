@@ -47,6 +47,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/manualpayout"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
@@ -180,6 +181,7 @@ func checkColumn(t, c string) error {
 			favorite.Table:                 favorite.ValidColumn,
 			fulfillment.Table:              fulfillment.ValidColumn,
 			game.Table:                     game.ValidColumn,
+			manualpayout.Table:             manualpayout.ValidColumn,
 			mediafile.Table:                mediafile.ValidColumn,
 			moneytransfer.Table:            moneytransfer.ValidColumn,
 			notification.Table:             notification.ValidColumn,

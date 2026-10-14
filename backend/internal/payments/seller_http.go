@@ -28,6 +28,7 @@ func (s *Store) registerSellerPayouts(register func(string, string, bool, func(h
 		})
 	}
 	register("POST /api/v1/payouts/{id}/recipient", "account", true, actionJSON(s.ConfirmSellerRecipient))
+	register("POST /api/v1/admin/payouts/{id}/manual", "owner", true, actionJSON(s.RecordManualSellerPayout))
 	register("POST /api/v1/admin/payouts/{id}/approve", "owner", true, actionJSON(s.ApproveSellerPayout))
 	register("POST /api/v1/admin/payouts/{id}/verify", "owner", true, actionJSON(func(ctx context.Context, p *identity.Principal, id string, input TransferChange) (map[string]bool, error) {
 		err := s.VerifySellerPayout(ctx, p, id, input)
@@ -75,6 +76,10 @@ func (s *Store) sellerPayoutQueue(w http.ResponseWriter, r *http.Request, p *ide
 				return e
 			}
 			transfer, e := transferView(ctx, tx.Client(), row)
+			if e != nil {
+				return e
+			}
+			transfer.ManualRecording, e = s.manualRecording(ctx, tx, row)
 			if e != nil {
 				return e
 			}

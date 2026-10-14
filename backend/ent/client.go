@@ -49,6 +49,7 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/favorite"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/fulfillment"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/game"
+	"github.com/arshia-rgh/BoosterPlus/backend/ent/manualpayout"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/mediafile"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/moneytransfer"
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/notification"
@@ -166,6 +167,8 @@ type Client struct {
 	Fulfillment *FulfillmentClient
 	// Game is the client for interacting with the Game builders.
 	Game *GameClient
+	// ManualPayout is the client for interacting with the ManualPayout builders.
+	ManualPayout *ManualPayoutClient
 	// MediaFile is the client for interacting with the MediaFile builders.
 	MediaFile *MediaFileClient
 	// MoneyTransfer is the client for interacting with the MoneyTransfer builders.
@@ -288,6 +291,7 @@ func (c *Client) init() {
 	c.Favorite = NewFavoriteClient(c.config)
 	c.Fulfillment = NewFulfillmentClient(c.config)
 	c.Game = NewGameClient(c.config)
+	c.ManualPayout = NewManualPayoutClient(c.config)
 	c.MediaFile = NewMediaFileClient(c.config)
 	c.MoneyTransfer = NewMoneyTransferClient(c.config)
 	c.Notification = NewNotificationClient(c.config)
@@ -453,6 +457,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Favorite:                 NewFavoriteClient(cfg),
 		Fulfillment:              NewFulfillmentClient(cfg),
 		Game:                     NewGameClient(cfg),
+		ManualPayout:             NewManualPayoutClient(cfg),
 		MediaFile:                NewMediaFileClient(cfg),
 		MoneyTransfer:            NewMoneyTransferClient(cfg),
 		Notification:             NewNotificationClient(cfg),
@@ -545,6 +550,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Favorite:                 NewFavoriteClient(cfg),
 		Fulfillment:              NewFulfillmentClient(cfg),
 		Game:                     NewGameClient(cfg),
+		ManualPayout:             NewManualPayoutClient(cfg),
 		MediaFile:                NewMediaFileClient(cfg),
 		MoneyTransfer:            NewMoneyTransferClient(cfg),
 		Notification:             NewNotificationClient(cfg),
@@ -620,14 +626,14 @@ func (c *Client) Use(hooks ...Hook) {
 		c.AvailabilityTarget, c.AvailabilityWindow, c.Booking, c.BookingEvent,
 		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
 		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
-		c.Fulfillment, c.Game, c.MediaFile, c.MoneyTransfer, c.Notification, c.Order,
-		c.OrderContract, c.OrderEvent, c.OrderQuote, c.PaymentAllocation,
-		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
-		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
-		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
-		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
-		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
-		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
+		c.Fulfillment, c.Game, c.ManualPayout, c.MediaFile, c.MoneyTransfer,
+		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
+		c.PaymentAllocation, c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy,
+		c.PaymentReceipt, c.PaymentRecord, c.PaymentSettings, c.PaymentSignal,
+		c.PrivacyRequest, c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer,
+		c.SellerOfferEvent, c.ServiceCase, c.ShopDelivery, c.ShopProduct,
+		c.ShopProductEvent, c.ShopProductRelease, c.ShopRecipient, c.ShopReservation,
+		c.ShopStock, c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
 		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
 		c.User,
 	} {
@@ -647,14 +653,14 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.AvailabilityTarget, c.AvailabilityWindow, c.Booking, c.BookingEvent,
 		c.CaseEvent, c.CatalogRelease, c.Conversation, c.ConversationMessage,
 		c.ConversationRead, c.Coupon, c.CouponClaim, c.CouponRevision, c.Favorite,
-		c.Fulfillment, c.Game, c.MediaFile, c.MoneyTransfer, c.Notification, c.Order,
-		c.OrderContract, c.OrderEvent, c.OrderQuote, c.PaymentAllocation,
-		c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy, c.PaymentReceipt,
-		c.PaymentRecord, c.PaymentSettings, c.PaymentSignal, c.PrivacyRequest,
-		c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer, c.SellerOfferEvent,
-		c.ServiceCase, c.ShopDelivery, c.ShopProduct, c.ShopProductEvent,
-		c.ShopProductRelease, c.ShopRecipient, c.ShopReservation, c.ShopStock,
-		c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
+		c.Fulfillment, c.Game, c.ManualPayout, c.MediaFile, c.MoneyTransfer,
+		c.Notification, c.Order, c.OrderContract, c.OrderEvent, c.OrderQuote,
+		c.PaymentAllocation, c.PaymentAttempt, c.PaymentObservation, c.PaymentPolicy,
+		c.PaymentReceipt, c.PaymentRecord, c.PaymentSettings, c.PaymentSignal,
+		c.PrivacyRequest, c.Review, c.ReviewRevision, c.SecretBundle, c.SellerOffer,
+		c.SellerOfferEvent, c.ServiceCase, c.ShopDelivery, c.ShopProduct,
+		c.ShopProductEvent, c.ShopProductRelease, c.ShopRecipient, c.ShopReservation,
+		c.ShopStock, c.SiteRelease, c.SiteSetting, c.StaffProfile, c.SubmissionEvent,
 		c.TransferAttempt, c.TransferEvent, c.TransferObservation, c.TransferRecord,
 		c.User,
 	} {
@@ -735,6 +741,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Fulfillment.mutate(ctx, m)
 	case *GameMutation:
 		return c.Game.mutate(ctx, m)
+	case *ManualPayoutMutation:
+		return c.ManualPayout.mutate(ctx, m)
 	case *MediaFileMutation:
 		return c.MediaFile.mutate(ctx, m)
 	case *MoneyTransferMutation:
@@ -5468,6 +5476,139 @@ func (c *GameClient) mutate(ctx context.Context, m *GameMutation) (Value, error)
 		return (&GameDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Game mutation op: %q", m.Op())
+	}
+}
+
+// ManualPayoutClient is a client for the ManualPayout schema.
+type ManualPayoutClient struct {
+	config
+}
+
+// NewManualPayoutClient returns a client for the ManualPayout from the given config.
+func NewManualPayoutClient(c config) *ManualPayoutClient {
+	return &ManualPayoutClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `manualpayout.Hooks(f(g(h())))`.
+func (c *ManualPayoutClient) Use(hooks ...Hook) {
+	c.hooks.ManualPayout = append(c.hooks.ManualPayout, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `manualpayout.Intercept(f(g(h())))`.
+func (c *ManualPayoutClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ManualPayout = append(c.inters.ManualPayout, interceptors...)
+}
+
+// Create returns a builder for creating a ManualPayout entity.
+func (c *ManualPayoutClient) Create() *ManualPayoutCreate {
+	mutation := newManualPayoutMutation(c.config, OpCreate)
+	return &ManualPayoutCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ManualPayout entities.
+func (c *ManualPayoutClient) CreateBulk(builders ...*ManualPayoutCreate) *ManualPayoutCreateBulk {
+	return &ManualPayoutCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ManualPayoutClient) MapCreateBulk(slice any, setFunc func(*ManualPayoutCreate, int)) *ManualPayoutCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ManualPayoutCreateBulk{err: fmt.Errorf("calling to ManualPayoutClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ManualPayoutCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ManualPayoutCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ManualPayout.
+func (c *ManualPayoutClient) Update() *ManualPayoutUpdate {
+	mutation := newManualPayoutMutation(c.config, OpUpdate)
+	return &ManualPayoutUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ManualPayoutClient) UpdateOne(_m *ManualPayout) *ManualPayoutUpdateOne {
+	mutation := newManualPayoutMutation(c.config, OpUpdateOne, withManualPayout(_m))
+	return &ManualPayoutUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ManualPayoutClient) UpdateOneID(id string) *ManualPayoutUpdateOne {
+	mutation := newManualPayoutMutation(c.config, OpUpdateOne, withManualPayoutID(id))
+	return &ManualPayoutUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ManualPayout.
+func (c *ManualPayoutClient) Delete() *ManualPayoutDelete {
+	mutation := newManualPayoutMutation(c.config, OpDelete)
+	return &ManualPayoutDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ManualPayoutClient) DeleteOne(_m *ManualPayout) *ManualPayoutDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ManualPayoutClient) DeleteOneID(id string) *ManualPayoutDeleteOne {
+	builder := c.Delete().Where(manualpayout.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ManualPayoutDeleteOne{builder}
+}
+
+// Query returns a query builder for ManualPayout.
+func (c *ManualPayoutClient) Query() *ManualPayoutQuery {
+	return &ManualPayoutQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeManualPayout},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ManualPayout entity by its id.
+func (c *ManualPayoutClient) Get(ctx context.Context, id string) (*ManualPayout, error) {
+	return c.Query().Where(manualpayout.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ManualPayoutClient) GetX(ctx context.Context, id string) *ManualPayout {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ManualPayoutClient) Hooks() []Hook {
+	return c.hooks.ManualPayout
+}
+
+// Interceptors returns the client interceptors.
+func (c *ManualPayoutClient) Interceptors() []Interceptor {
+	return c.inters.ManualPayout
+}
+
+func (c *ManualPayoutClient) mutate(ctx context.Context, m *ManualPayoutMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ManualPayoutCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ManualPayoutUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ManualPayoutUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ManualPayoutDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ManualPayout mutation op: %q", m.Op())
 	}
 }
 
@@ -10535,14 +10676,15 @@ type (
 		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
 		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
-		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
-		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
-		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
-		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
-		SellerOfferEvent, ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent,
-		ShopProductRelease, ShopRecipient, ShopReservation, ShopStock, SiteRelease,
-		SiteSetting, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
-		TransferObservation, TransferRecord, User []ent.Hook
+		Game, ManualPayout, MediaFile, MoneyTransfer, Notification, Order,
+		OrderContract, OrderEvent, OrderQuote, PaymentAllocation, PaymentAttempt,
+		PaymentObservation, PaymentPolicy, PaymentReceipt, PaymentRecord,
+		PaymentSettings, PaymentSignal, PrivacyRequest, Review, ReviewRevision,
+		SecretBundle, SellerOffer, SellerOfferEvent, ServiceCase, ShopDelivery,
+		ShopProduct, ShopProductEvent, ShopProductRelease, ShopRecipient,
+		ShopReservation, ShopStock, SiteRelease, SiteSetting, StaffProfile,
+		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
+		TransferRecord, User []ent.Hook
 	}
 	inters struct {
 		AccountDelivery, AccountListing, AccountListingRelease, AccountReservation,
@@ -10552,14 +10694,15 @@ type (
 		AvailabilitySubscription, AvailabilityTarget, AvailabilityWindow, Booking,
 		BookingEvent, CaseEvent, CatalogRelease, Conversation, ConversationMessage,
 		ConversationRead, Coupon, CouponClaim, CouponRevision, Favorite, Fulfillment,
-		Game, MediaFile, MoneyTransfer, Notification, Order, OrderContract, OrderEvent,
-		OrderQuote, PaymentAllocation, PaymentAttempt, PaymentObservation,
-		PaymentPolicy, PaymentReceipt, PaymentRecord, PaymentSettings, PaymentSignal,
-		PrivacyRequest, Review, ReviewRevision, SecretBundle, SellerOffer,
-		SellerOfferEvent, ServiceCase, ShopDelivery, ShopProduct, ShopProductEvent,
-		ShopProductRelease, ShopRecipient, ShopReservation, ShopStock, SiteRelease,
-		SiteSetting, StaffProfile, SubmissionEvent, TransferAttempt, TransferEvent,
-		TransferObservation, TransferRecord, User []ent.Interceptor
+		Game, ManualPayout, MediaFile, MoneyTransfer, Notification, Order,
+		OrderContract, OrderEvent, OrderQuote, PaymentAllocation, PaymentAttempt,
+		PaymentObservation, PaymentPolicy, PaymentReceipt, PaymentRecord,
+		PaymentSettings, PaymentSignal, PrivacyRequest, Review, ReviewRevision,
+		SecretBundle, SellerOffer, SellerOfferEvent, ServiceCase, ShopDelivery,
+		ShopProduct, ShopProductEvent, ShopProductRelease, ShopRecipient,
+		ShopReservation, ShopStock, SiteRelease, SiteSetting, StaffProfile,
+		SubmissionEvent, TransferAttempt, TransferEvent, TransferObservation,
+		TransferRecord, User []ent.Interceptor
 	}
 )
 

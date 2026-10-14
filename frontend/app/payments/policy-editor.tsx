@@ -176,7 +176,7 @@ export default function PaymentPolicyEditor({
           Merchant configuration:{" "}
           {settings.configured ? "configured" : "pending"} · Checkout:{" "}
           {settings.enabled ? "enabled" : "disabled"}
-          {" · Outgoing payments: "}
+          {" · Automatic provider transfers: "}
           {settings.outgoing_enabled === undefined
             ? "status unavailable"
             : settings.outgoing_enabled

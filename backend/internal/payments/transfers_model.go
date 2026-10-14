@@ -56,6 +56,8 @@ type SellerAgreement struct {
 
 // TransferView is private to the beneficiary and authorized finance staff.
 type TransferView struct {
+	ManualReceipt   *ManualPayoutReceipt  `json:"manual_receipt,omitempty"`
+	ManualRecording *ManualRecording      `json:"manual_recording,omitempty"`
 	SellerAgreement *SellerAgreement      `json:"seller_agreement,omitempty"`
 	ID              string                `json:"id"`
 	CaseID          string                `json:"case_id"`

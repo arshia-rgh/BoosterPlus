@@ -203,7 +203,7 @@ it("warns before leaving finance even when the edited policy section is hidden",
 it("reports an unavailable outgoing status without inferring it from checkout", () => {
   mount();
   expect(
-    screen.getByText(/Outgoing payments: status unavailable/),
+    screen.getByText(/Automatic provider transfers: status unavailable/),
   ).toBeVisible();
 });
 
