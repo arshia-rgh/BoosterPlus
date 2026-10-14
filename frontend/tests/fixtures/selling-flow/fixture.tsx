@@ -14,6 +14,7 @@ import { emptyConfiguration, emptyField } from "../../../app/catalog/model";
 import type { Submission } from "../../../app/submissions/model";
 import type { SellingProgress } from "../../../app/submissions/selling-progress";
 import type { Listing, Offer, Product } from "../../../app/resale/model";
+import type { Transfer } from "../../../app/payments/cases-model";
 import type { Session } from "../../../app/identity/api";
 import "../../../app/styles.css";
 import "../../../app/admin/admin.css";
@@ -93,6 +94,7 @@ const received = [
   "received",
   "listing",
   "buy_first",
+  "buy_first_destination",
   "published",
   "reserved",
   "sold",
@@ -112,7 +114,7 @@ const progress: SellingProgress = {
         ? "expired"
         : "",
   offer_id: accepted || ["offered", "expired"].includes(stage) ? offerID : "",
-  arrangement: stage === "buy_first" ? "buy_first" : "consignment",
+  arrangement: stage.startsWith("buy_first") ? "buy_first" : "consignment",
   handover: {
     state:
       stage === "expired_handover"
@@ -137,11 +139,11 @@ const progress: SellingProgress = {
     : hasListing
       ? "draft"
       : "",
-  payout_state: "recipient_pending",
+  payout_state: stage === "buy_first" ? "verified" : "recipient_pending",
   blockers: accepted
     ? [
         ...(!received ? ["handover"] : []),
-        ...(stage === "buy_first" ? ["seller_payment"] : []),
+        ...(stage.startsWith("buy_first") ? ["seller_payment"] : []),
         ...(hasListing
           ? ["listing_details", "listing_terms", "publication"]
           : ["listing"]),
@@ -219,6 +221,25 @@ const session = {
     role: admin ? (owner ? "owner" : "administrator") : "customer",
   },
 } as Session;
+const payout: Transfer = {
+  id: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+  order_id: "",
+  case_id: "",
+  receipt_id: "",
+  kind: "seller_payout",
+  currency: "usdtbsc",
+  network: "bsc",
+  amount: "90.000000",
+  terms: "Synthetic agreed seller payout.",
+  state: progress.payout_state,
+  issue: "",
+  version: 1,
+  recipient: { address: "", memo: "" },
+  recipient_at: null,
+  approved_at: null,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+};
 const originalFetch = window.fetch.bind(window);
 window.fetch = async (input, init) => {
   const url = new URL(
@@ -255,7 +276,16 @@ window.fetch = async (input, init) => {
     return send(fixtureDefaults);
   if (path.endsWith("/offers"))
     return send({ offers: progress.offer_id ? [offer] : [] });
-  if (path.endsWith("/payouts")) return send({ transfers: [] });
+  if (path.endsWith("/payouts"))
+    return send({ transfers: stage.startsWith("buy_first") ? [payout] : [] });
+  if (path === `/api/v1/payouts/${payout.id}/recipient` && method === "POST") {
+    payout.state = "verified";
+    payout.version++;
+    payout.recipient = { address: "synthetic-confirmed-address", memo: "" };
+    payout.recipient_at = new Date().toISOString();
+    progress.payout_state = "verified";
+    return send(payout);
+  }
   if (path.endsWith("/history") || path.endsWith("/events"))
     return send({ events: [] });
   if (path.endsWith("/messages")) return send({ messages: [], next: 0 });

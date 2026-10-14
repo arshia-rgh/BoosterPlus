@@ -5,6 +5,7 @@ import {
   SaleProgress,
   ListingReadiness,
   saleNextStep,
+  publicationBlocker,
   type SellingProgress,
 } from "./selling-progress";
 const base: SellingProgress = {
@@ -171,4 +172,45 @@ it("reports incomplete saved listing fields even after preview and confirmation"
   expect(
     screen.queryByText("Ready for your final publication check."),
   ).not.toBeInTheDocument();
+});
+
+it("directs the seller to confirm a buy-first destination before asking the owner to pay", () => {
+  const pending: SellingProgress = {
+    ...base,
+    arrangement: "buy_first",
+    handover: { ...base.handover, state: "received" },
+    blockers: ["seller_payment", "publication"],
+  };
+  expect(saleNextStep(pending, false, false)).toMatchObject({
+    title: "Confirm your payout destination",
+    section: "payout",
+    actor: "You",
+  });
+  expect(saleNextStep(pending, true, true)).toMatchObject({
+    title: "Waiting for the seller's payout destination",
+    section: "payout",
+    actor: "Seller",
+  });
+  expect(
+    publicationBlocker("seller_payment", true, "recipient_pending"),
+  ).toMatchObject({
+    label: "Seller to confirm payout destination",
+    actor: "Seller",
+  });
+  expect(
+    saleNextStep({ ...pending, payout_state: "verified" }, true, true),
+  ).toMatchObject({
+    title: "Seller payout is needed before publication",
+    actor: "You",
+  });
+  expect(
+    saleNextStep({ ...pending, handover: base.handover }, false, false).section,
+  ).toBe("handover");
+  expect(
+    saleNextStep(
+      { ...pending, arrangement: "consignment", blockers: ["publication"] },
+      false,
+      false,
+    ).title,
+  ).toBe("PLAYORA is preparing your listing");
 });

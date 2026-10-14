@@ -164,9 +164,15 @@ it.each([
     vi.mocked(post)
       .mockRejectedValueOnce(new APIError("Confirmation unavailable"))
       .mockResolvedValueOnce(saved);
+    const progressChanged = vi.fn();
     function View({ id = "order" }: { id?: string }) {
       return seller ? (
-        <SellerPayouts id={id} admin={false} owner={false} />
+        <SellerPayouts
+          id={id}
+          admin={false}
+          owner={false}
+          changed={progressChanged}
+        />
       ) : (
         <Refunds orderID={id} caseID="" admin={false} owner={false} />
       );
@@ -195,12 +201,14 @@ it.each([
       screen.queryByRole("region", { name: `${title} destination saved` }),
     ).not.toBeInTheDocument();
     expect(post).toHaveBeenCalledOnce();
+    expect(progressChanged).not.toHaveBeenCalled();
     fireEvent.click(action);
     const confirmation = await screen.findByRole("region", {
       name: `${title} destination saved`,
     });
     await waitFor(() => expect(confirmation).toHaveFocus());
     expect(reload).toHaveBeenCalledOnce();
+    expect(progressChanged).toHaveBeenCalledTimes(seller ? 1 : 0);
     expect(confirmation).toHaveTextContent(
       "This does not mean the transfer is complete",
     );

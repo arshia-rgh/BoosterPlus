@@ -63,6 +63,7 @@ export function useSellingProgress(
 export const publicationBlocker = (
   code: string,
   admin: boolean,
+  payoutState = "",
 ): { label: string; section: string; actor: string } => {
   switch (code) {
     case "handover":
@@ -72,6 +73,14 @@ export const publicationBlocker = (
         actor: admin ? "Seller" : "You",
       };
     case "seller_payment":
+      if (payoutState === "recipient_pending")
+        return {
+          label: admin
+            ? "Seller to confirm payout destination"
+            : "Confirm payout destination",
+          section: "payout",
+          actor: admin ? "Seller" : "You",
+        };
       return {
         label: "Complete the agreed seller payout",
         section: "payout",
@@ -264,6 +273,32 @@ export function saleNextStep(
       "Seller",
       2,
     );
+  if (
+    admin &&
+    p.blockers.includes("seller_payment") &&
+    p.payout_state === "recipient_pending"
+  )
+    return step(
+      "Waiting for the seller's payout destination",
+      "The seller needs to confirm where to receive the agreed crypto payout.",
+      "payout",
+      "View seller payout",
+      "Seller",
+      2,
+    );
+  if (
+    !admin &&
+    p.blockers.includes("seller_payment") &&
+    p.payout_state === "recipient_pending"
+  )
+    return step(
+      "Confirm your payout destination",
+      "Add and confirm your crypto address in Payout. PLAYORA can then complete the agreed buy-first payment before publishing.",
+      "payout",
+      "Confirm payout destination",
+      "You",
+      2,
+    );
   if (admin && p.blockers.includes("seller_payment"))
     return step(
       "Seller payout is needed before publication",
@@ -435,7 +470,7 @@ export function SaleProgress({
           <h4>Before this account can go live</h4>
           <ul>
             {blockers.map((code) => {
-              const item = publicationBlocker(code, admin);
+              const item = publicationBlocker(code, admin, p.payout_state);
               const listingSection =
                 code.startsWith("listing_") || code === "publication";
               const href = listingSection
@@ -444,9 +479,13 @@ export function SaleProgress({
               const actionable =
                 code === "handover"
                   ? !admin
-                  : admin &&
-                    code !== "listing" &&
-                    (code !== "seller_payment" || owner);
+                  : code === "seller_payment" &&
+                      p.payout_state === "recipient_pending" &&
+                      !admin
+                    ? true
+                    : admin &&
+                      code !== "listing" &&
+                      (code !== "seller_payment" || owner);
               return (
                 <li key={code}>
                   <span>
@@ -514,7 +553,11 @@ export function ListingReadiness({
         <h3>Before publishing</h3>
         <ul>
           {external.map((code) => {
-            const b = publicationBlocker(code, true);
+            const b = publicationBlocker(
+              code,
+              true,
+              resource.data?.payout_state,
+            );
             return (
               <li key={code}>
                 <Link

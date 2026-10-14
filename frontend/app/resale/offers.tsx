@@ -701,10 +701,12 @@ export function SellerPayouts({
   id,
   admin,
   owner,
+  changed,
 }: {
   id: string;
   admin: boolean;
   owner: boolean;
+  changed?: (() => void) | undefined;
 }) {
   const resource = useResource(
     `${admin ? "/admin" : ""}/submissions/${id}/payouts`,
@@ -737,8 +739,14 @@ export function SellerPayouts({
           owner={owner}
           reload={resource.reload}
           refreshing={resource.loading}
-          onRecipientSaved={confirmation.recipientSaved}
-          onManualSaved={manualConfirmation.manualSaved}
+          onRecipientSaved={(saved) => {
+            confirmation.recipientSaved(saved);
+            changed?.();
+          }}
+          onManualSaved={(saved) => {
+            manualConfirmation.manualSaved(saved);
+            changed?.();
+          }}
           {...manualConfirmation.controls(row.id)}
         />
       ))}
@@ -795,7 +803,12 @@ export default function SellerOffers({
           Payouts follow the accepted arrangement and its eligibility, fees and
           timing. There is no account wallet.
         </p>
-        <SellerPayouts id={id} admin={admin} owner={owner} />
+        <SellerPayouts
+          id={id}
+          admin={admin}
+          owner={owner}
+          changed={progress?.reload}
+        />
       </section>
     );
   if (
@@ -814,7 +827,12 @@ export default function SellerOffers({
         <details>
           <summary>Agreement and payout history</summary>
           <Action onClick={resource.reload}>Refresh seller agreements</Action>
-          <SellerPayouts id={id} admin={admin} owner={owner} />
+          <SellerPayouts
+            id={id}
+            admin={admin}
+            owner={owner}
+            changed={progress?.reload}
+          />
         </details>
       </section>
     );
@@ -978,11 +996,21 @@ export default function SellerOffers({
       {view === "all" &&
         (admin ||
         resource.data?.offers.some((offer) => offer.state === "accepted") ? (
-          <SellerPayouts id={id} admin={admin} owner={owner} />
+          <SellerPayouts
+            id={id}
+            admin={admin}
+            owner={owner}
+            changed={progress?.reload}
+          />
         ) : (
           <details>
             <summary>Payout history</summary>
-            <SellerPayouts id={id} admin={admin} owner={owner} />
+            <SellerPayouts
+              id={id}
+              admin={admin}
+              owner={owner}
+              changed={progress?.reload}
+            />
           </details>
         ))}
       {admin && <Link to="/admin/accounts">Account inventory</Link>}

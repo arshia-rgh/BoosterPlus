@@ -236,3 +236,101 @@ test("new listing and new submission return to an explicit next step", async ({
   await expect(page).toHaveURL(new RegExp(`/sell/${id}\\?section=details$`));
   await expect(page.getByLabel("Account notes (optional)")).toBeVisible();
 });
+
+for (const width of [320, 1280]) {
+  test(`buy-first destination next step at ${String(width)}px`, async ({
+    page,
+  }, info) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${origin}/sell/${id}?stage=buy_first_destination`);
+    await expect(
+      page.getByRole("heading", {
+        name: "Confirm your payout destination",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      page
+        .getByRole("link", { name: "Confirm payout destination", exact: true })
+        .first(),
+    ).toHaveAttribute("href", /\/sell\/.*\?section=payout$/);
+    await page
+      .getByRole("link", { name: "Confirm payout destination", exact: true })
+      .first()
+      .click();
+    await page
+      .getByLabel("Seller payout destination address")
+      .fill("synthetic-confirmed-address");
+    await page
+      .getByLabel(
+        "I accept these seller payout terms and confirm this address, network and memo",
+      )
+      .check();
+    await page
+      .getByRole("button", { name: "Confirm seller payout recipient" })
+      .click();
+    await expect(
+      page.getByRole("region", { name: "Seller payout destination saved" }),
+    ).toBeVisible();
+    await page.getByRole("link", { name: "Overview", exact: true }).click();
+    await expect(
+      page.getByRole("heading", { name: "PLAYORA is preparing your listing" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", {
+        name: "Confirm payout destination",
+        exact: true,
+      }),
+    ).toHaveCount(0);
+
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth + 1,
+      ),
+    ).toBe(true);
+    await page.screenshot({
+      path: info.outputPath("customer-destination.png"),
+      fullPage: true,
+    });
+    await page.goto(
+      `${origin}/admin/submissions/${id}?stage=buy_first_destination`,
+    );
+    await expect(
+      page.getByRole("heading", {
+        name: "Waiting for the seller's payout destination",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await page.screenshot({
+      path: info.outputPath("admin-destination.png"),
+      fullPage: true,
+    });
+    await page.goto(
+      `${origin}/admin/accounts/${listing}?stage=buy_first_destination&section=publication`,
+    );
+    await expect(
+      page.getByRole("link", {
+        name: "Seller to confirm payout destination",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", {
+        name: "Publish account listing",
+        exact: true,
+      }),
+    ).toBeDisabled();
+    await page.screenshot({
+      path: info.outputPath("publication-destination.png"),
+      fullPage: true,
+    });
+    await page.goto(`${origin}/admin/submissions/${id}?stage=buy_first`);
+    await expect(
+      page.getByRole("heading", {
+        name: "Seller payout is needed before publication",
+        exact: true,
+      }),
+    ).toBeVisible();
+  });
+}
