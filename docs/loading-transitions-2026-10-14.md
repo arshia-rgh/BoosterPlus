@@ -14,14 +14,20 @@ Account purchase now withholds sign-in/reservation controls while its session is
 - Strict frontend type checking: passed.
 - Scoped Chromium and WebKit: four cases each passed; customer/admin/booster pending, no protected content, failure/retry/sign-out, narrow layout, reduced motion and axe; compact purchase surface.
 - Independent senior design review: passed; see `redesign/reviews/LOADING151_2026-10-14.md`.
-- Normal focused commit hook, exact CI, image scans/signature, server preflight and deployment verification: pending at preparation.
+- Normal focused commit hook: passed, including 189 frontend test files / 859 component tests, formatting/types/lint/contracts, dependency/secret checks, three builds, budgets and 14 frontend server cases.
+- Exact CI `38541554923`: passed, including the lightweight backend security/static/race/build and deployment-configuration checks. No real-database/full-suite repeat.
+- Image release `38543376954`, immutable scans and local signature verification: passed for `84b10e33fc2980418cbf92304cb18302df356336`.
+- Server preflight and runtime verification: passed. Eight application/mail services are healthy; schema 42, finance settings, public legal/disabled-retention responses, stable runtime files and private webmail are preserved.
+- Six post-deployment Chromium/WebKit cases passed across the actual customer/admin/pro hosts at 390/1280 px: loading presentation, no premature sign-in controls, no overflow, OS reduced motion and connection failure/retry presentation. These use synthetic session responses, not real account sign-ins or financial/email actions.
 - Complete suite: not requested, not run.
 
 ## Deployment boundaries
 
 Frontend presentation only. Preserve schema 42, manual payout recording, checkout enabled, automatic outgoing payments/deletion disabled, published policy revisions, latest owner catalog edits and stable 99f60bd runtime configuration/private webmail. No policy publication, provider purchase, live invoice, transfer or external email is part of this update.
 
-Off-host backups remain absent. Earlier approvals were exact-release decisions and are consumed. Prepare the signed candidate and server preflight before obtaining the required concrete recovery decision. The current signed schema-42 application must remain available for compatible UI rollback.
+Signed `84b10e33fc2980418cbf92304cb18302df356336` is deployed and verified at schema 42. The owner explicitly approved “Deploy 84b10e3 UI update without an off-host backup” after successful qualification/preflight. This exact-release recovery exception is consumed; off-host backups remain absent and recovery from server/data loss is not qualified. Prior signed `0c39963` and its schema-42 deployment manifest are retained for compatible application rollback.
+
+Current manifest: `/srv/playora/releases/84b10e3/deployment.env`. Private receipts: `/srv/playora-qualification/loading151/preflight`, local `.cache/loading151`. Temporary registry credentials were removed. The source is on `main`; delivery-record documentation is separate from the signed runtime commit. No supplier account, purchase/funding, live invoice, transfer or external message was created.
 
 ## Supplier work
 

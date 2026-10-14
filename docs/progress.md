@@ -1,8 +1,8 @@
 # Implementation progress
 
-## Loading151 prepared — 14 October 2026
+## Loading151 delivered — 14 October 2026
 
-Shared branded loading states replace visible access-checking text across workspace/form contexts without changing authorization. Pending/failed account purchases no longer flash sign-in/reservation controls. 29 focused component cases, type checking, eight Chromium/WebKit cases and independent senior design review passed. Normal focused hook/release checks and activation remain pending; full suite not run. See [release record](loading-transitions-2026-10-14.md). Supplier automation remains research only.
+Shared branded loading states replace visible access-checking text across workspace/form contexts without changing authorization. Pending/failed account purchases no longer flash sign-in/reservation controls. 29 focused component cases, type checking, eight Chromium/WebKit cases and independent senior design review passed. The normal focused hook (859 component tests), exact CI 38541554923, image release 38543376954, signatures, server preflight, eight-service runtime verification and six live-host browser cases passed. Signed `84b10e3` is live at schema 42 under the owner's exact “Deploy 84b10e3 UI update without an off-host backup” approval; that exception is consumed. Prior signed `0c39963` is retained for compatible application rollback; off-host recovery remains absent. The full suite was not run. See [release record](loading-transitions-2026-10-14.md). Supplier automation remains research only.
 
 ### Manual seller payout recording — delivered (14 October 2026)
 
