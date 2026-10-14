@@ -1,6 +1,12 @@
 import { useManualPayoutConfirmation } from "../payments/manual-payout";
 import { SellerPriceInput, SellerBreakdown } from "./commission-fields";
-import { FieldValidation, ValidationSummary } from "../ui/form-validation";
+import {
+  FieldValidation,
+  ValidationSummary,
+  focusValidationTarget,
+  issueField,
+} from "../ui/form-validation";
+import { SellerRoute, sellerRouteIssue, useSellerRoutes } from "./seller-route";
 import { useActionValidation } from "../ui/action-validation";
 import { sellerIssues } from "./validation";
 import { Button } from "../ui/primitives";
@@ -40,9 +46,11 @@ import "./marketplace.css";
 function SellerOfferError({
   error,
   hideIssues = false,
+  proposal = false,
 }: {
   error: unknown;
   hideIssues?: boolean;
+  proposal?: boolean;
 }) {
   return (
     <ErrorNotice
@@ -51,7 +59,12 @@ function SellerOfferError({
       message={
         error instanceof APIError && error.code === "resale_conflict"
           ? "This seller agreement or submission changed. Refresh seller agreements and review the current offer before deciding again."
-          : undefined
+          : proposal &&
+              error instanceof APIError &&
+              error.code === "resale_invalid" &&
+              error.issues.length === 0
+            ? "The seller offer was not sent. Review the payout route and commercial terms, then try again. Your entries are preserved."
+            : undefined
       }
     />
   );
@@ -106,6 +119,17 @@ function Proposal({
     [arrangementNeedsReview, setArrangementNeedsReview] = useState(false),
     [busy, setBusy] = useState(false);
   const validation = useActionValidation();
+  const routes = useSellerRoutes();
+  const feedback = useRef<HTMLDivElement>(null);
+  const hasFieldError =
+    error instanceof APIError &&
+    error.issues.some((issue) =>
+      issueField(issue.path, validation.validation.fields),
+    );
+  useEffect(() => {
+    if (!busy && error && !hasFieldError)
+      focusValidationTarget(feedback.current);
+  }, [busy, error, hasFieldError]);
   const defaults = useResource(
     "/admin/account-agreement-defaults",
     agreementDefaultsSchema,
@@ -144,10 +168,12 @@ function Proposal({
     setArrangementReviewed(!needsReview);
     setKey(crypto.randomUUID());
   }
-  function changeRoute(field: "currency" | "network", value: string) {
+  function changeRoute(currency: string, network: string) {
+    if (currency === terms.currency && network === terms.network) return;
     setTerms((terms) => ({
       ...terms,
-      [field]: value,
+      currency,
+      network,
       amount: "",
       commission: terms.commission
         ? {
@@ -162,7 +188,12 @@ function Proposal({
     setKey(crypto.randomUUID());
   }
   async function propose() {
-    const issues = sellerIssues(terms, expires);
+    const issues = sellerIssues(terms, expires).filter(
+      (issue) => !["terms.currency", "terms.network"].includes(issue.path),
+    );
+    const routeIssue = sellerRouteIssue(routes, terms);
+    if (routeIssue)
+      issues.unshift({ path: "terms.currency", message: routeIssue });
     if (!arrangementReviewed)
       issues.unshift({
         path: "arrangement_reviewed",
@@ -201,7 +232,6 @@ function Proposal({
           commercial terms. The seller must explicitly accept; acceptance does
           not itself move funds.
         </p>
-        <SellerOfferError error={error} hideIssues />
         <ValidationSummary
           issues={validation.validation.issues}
           fields={validation.validation.fields}
@@ -218,22 +248,7 @@ function Proposal({
             ["buy_first", "Pay seller before publishing for resale"],
           ]}
         />
-        <Text
-          name="terms.currency"
-          label="Seller payout asset code"
-          value={terms.currency}
-          change={(v) => {
-            changeRoute("currency", v);
-          }}
-        />
-        <Text
-          name="terms.network"
-          label="Seller payout network"
-          value={terms.network}
-          change={(v) => {
-            changeRoute("network", v);
-          }}
-        />
+        <SellerRoute resource={routes} terms={terms} change={changeRoute} />
         <SellerPriceInput
           key={`${terms.currency}/${terms.network}`}
           price={terms.commission}
@@ -257,8 +272,8 @@ function Proposal({
                 : defaults.data.seller_consignment;
             setTerms((v) => ({
               ...standard,
-              currency: v.currency || standard.currency,
-              network: v.network || standard.network,
+              currency: v.currency,
+              network: v.network,
               commission: v.commission,
               amount: v.amount,
             }));
@@ -327,7 +342,18 @@ function Proposal({
           and sender-paid network fees. The seller must receive the full
           accepted crypto amount.
         </p>
-        <Action disabled={busy} onClick={() => void propose()}>
+        <div ref={feedback} tabIndex={-1}>
+          <SellerOfferError error={error} hideIssues proposal />
+        </div>
+        <Action
+          disabled={
+            busy ||
+            routes.loading ||
+            !!routes.error ||
+            !routes.data?.published?.data.routes.length
+          }
+          onClick={() => void propose()}
+        >
           Propose exact seller terms
         </Action>
       </fieldset>

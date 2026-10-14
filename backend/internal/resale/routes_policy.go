@@ -4,7 +4,22 @@ import (
 	"context"
 
 	"github.com/arshia-rgh/BoosterPlus/backend/ent"
+	"github.com/arshia-rgh/BoosterPlus/backend/internal/catalog"
 )
+
+type sellerPayoutRoute struct {
+	Code    string `json:"code"`
+	Network string `json:"network"`
+}
+
+func validateSellerRoute(routes []sellerPayoutRoute, terms SellerTerms) error {
+	for _, route := range routes {
+		if route.Code == terms.Currency && route.Network == terms.Network {
+			return nil
+		}
+	}
+	return &catalog.Invalid{Issues: []catalog.Issue{{Path: "terms.currency", Message: "Choose a payout asset and network from the published payment policy. Refresh payout routes and select again."}}}
+}
 
 func sellerRoute(ctx context.Context, tx *ent.Tx, terms SellerTerms) error {
 	settings, err := tx.PaymentSettings.Get(ctx, 1)
@@ -19,18 +34,10 @@ func sellerRoute(ctx context.Context, tx *ent.Tx, terms SellerTerms) error {
 		return err
 	}
 	value, err := decode[struct {
-		Routes []struct {
-			Code    string `json:"code"`
-			Network string `json:"network"`
-		} `json:"routes"`
+		Routes []sellerPayoutRoute `json:"routes"`
 	}](policy.Data)
 	if err != nil {
 		return err
 	}
-	for _, route := range value.Routes {
-		if route.Code == terms.Currency && route.Network == terms.Network {
-			return nil
-		}
-	}
-	return ErrInvalid
+	return validateSellerRoute(value.Routes, terms)
 }

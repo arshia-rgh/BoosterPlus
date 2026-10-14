@@ -133,8 +133,9 @@ export async function resaleJourney(
     await page
       .getByLabel("Seller payment arrangement")
       .selectOption("consignment");
-    await page.getByLabel("Seller payout asset code").fill("usdttrc20");
-    await page.getByLabel("Seller payout network", { exact: true }).fill("trx");
+    await page
+      .getByLabel("Payout asset and network")
+      .selectOption(JSON.stringify(["usdttrc20", "trx"]));
     await page.getByLabel("Agreed account base price (USD)").fill("11.75");
     await page.getByLabel("Crypto units per USD").fill("1");
     await page

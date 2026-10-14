@@ -11,6 +11,26 @@ vi.mock("../identity/api", async (original) => ({
 }));
 vi.mock("../orders/resource", () => ({ useResource: vi.fn() }));
 afterEach(() => vi.clearAllMocks());
+const publishedRoutes = {
+  data: {
+    published: {
+      id: "published",
+      data: {
+        routes: [
+          {
+            code: "usdtbsc",
+            network: "bsc",
+            label: "USDT · BNB Smart Chain (BEP-20)",
+          },
+          { code: "usdttrc20", network: "trx", label: "USDT · TRON (TRC-20)" },
+        ],
+      },
+    },
+  },
+  loading: false,
+  error: null,
+  reload: vi.fn(),
+};
 it("keeps seller conflicts in the seller agreement and requires fresh review after refresh", async () => {
   const terms: SellerTerms = {
     model: "consignment",
@@ -106,6 +126,7 @@ it.each(["buy_first", "consignment"])(
     // Match the real hook: a resolved response retains its identity until refresh.
     const responses = new Map<string, ReturnType<typeof useResource>>();
     vi.mocked(useResource).mockImplementation((path) => {
+      if (path === "/admin/finance/policy") return publishedRoutes;
       const cached = responses.get(path);
       if (cached) return cached;
       const response = {
@@ -178,6 +199,7 @@ it.each(["buy_first", "consignment"])(
 it("explains invalid seller offer fields before any commercial request", async () => {
   const responses = new Map<string, ReturnType<typeof useResource>>();
   vi.mocked(useResource).mockImplementation((path) => {
+    if (path === "/admin/finance/policy") return publishedRoutes;
     const old = responses.get(path);
     if (old) return old;
     const result = {
@@ -209,17 +231,17 @@ it("explains invalid seller offer fields before any commercial request", async (
     screen.getByRole("button", { name: "Propose exact seller terms" }),
   );
   await waitFor(() => {
-    expect(screen.getByLabelText("Seller payout asset code")).toHaveFocus();
+    expect(screen.getByLabelText("Payout asset and network")).toHaveFocus();
   });
-  expect(screen.getByLabelText("Seller payout asset code")).toHaveAttribute(
+  expect(screen.getByLabelText("Payout asset and network")).toHaveAttribute(
     "aria-invalid",
     "true",
   );
   expect(post).not.toHaveBeenCalled();
-  fireEvent.change(screen.getByLabelText("Seller payout asset code"), {
-    target: { value: "usdtbsc" },
+  fireEvent.change(screen.getByLabelText("Payout asset and network"), {
+    target: { value: JSON.stringify(["usdtbsc", "bsc"]) },
   });
-  expect(screen.getByLabelText("Seller payout asset code")).not.toHaveAttribute(
+  expect(screen.getByLabelText("Payout asset and network")).not.toHaveAttribute(
     "aria-invalid",
   );
 });
@@ -249,6 +271,7 @@ it("switches approved arrangements but requires review of custom wording and inv
   };
   const responses = new Map<string, ReturnType<typeof useResource>>();
   vi.mocked(useResource).mockImplementation((path) => {
+    if (path === "/admin/finance/policy") return publishedRoutes;
     const previous = responses.get(path);
     if (previous) return previous;
     const value = {
@@ -306,8 +329,8 @@ it("switches approved arrangements but requires review of custom wording and inv
   fireEvent.change(screen.getByLabelText("Crypto units per USD"), {
     target: { value: "1.0001" },
   });
-  fireEvent.change(screen.getByLabelText("Seller payout asset code"), {
-    target: { value: "other" },
+  fireEvent.change(screen.getByLabelText("Payout asset and network"), {
+    target: { value: JSON.stringify(["usdttrc20", "trx"]) },
   });
   expect(screen.getByLabelText("Crypto units per USD")).toHaveValue("");
   expect(screen.getByLabelText("Agreed account base price (USD)")).toHaveValue(
