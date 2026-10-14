@@ -1,3 +1,4 @@
+import { Loading } from "../ui/loading";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "../portal-router";
 import { Action, ErrorNotice } from "../catalog/controls";
@@ -50,7 +51,7 @@ export default function IntakeImage({
       </p>
       <ErrorNotice error={session.error} />
       {session.loading ? (
-        <p role="status">Checking private upload access…</p>
+        <Loading compact label="Checking private upload access…" />
       ) : session.error ? (
         <Action onClick={session.reload}>Retry upload access</Action>
       ) : !session.data?.user || session.data.mfa_required ? (

@@ -1,3 +1,4 @@
+import { Loading } from "../ui/loading";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Link,
@@ -370,7 +371,7 @@ function BoosterOrderSession() {
     };
   }, [lost, reloadWork]);
   if (checkingAccess && resource.loading)
-    return <p role="status">Checking current assignment access…</p>;
+    return <Loading compact label="Checking current assignment access…" />;
   if (checkingAccess && !resource.loading) setCheckingAccess(false);
   if (lost) {
     const recovery = verification

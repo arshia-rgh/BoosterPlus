@@ -1,3 +1,4 @@
+import { Loading } from "../ui/loading";
 import { mediaReturn } from "../admin/directory-filters";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useParams, type Location } from "../portal-router";
@@ -383,7 +384,7 @@ function AdminOrderSession() {
     };
   }, [lost, reloadOrder]);
   if (checking && resource.loading)
-    return <p role="status">Checking current admin order access…</p>;
+    return <Loading compact label="Checking current admin order access…" />;
   if (checking && !resource.loading) setChecking(false);
   if (lost) {
     const recovery = verification

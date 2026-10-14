@@ -1,3 +1,4 @@
+import { Loading } from "../ui/loading";
 import { BuyerBreakdown } from "./commission-fields";
 import "../catalog/service-tiles.css";
 import { Anchor } from "../portal-router";
@@ -497,8 +498,10 @@ function Purchase({
       {!!session.error && (
         <Action onClick={session.reload}>Check sign-in again</Action>
       )}
-      {session.loading && <p role="status">Checking sign-in…</p>}
-      {!session.data?.user || session.data.mfa_required ? (
+      {session.loading ? (
+        <Loading compact label="Checking sign-in…" />
+      ) : session.error ? null : !session.data?.user ||
+        session.data.mfa_required ? (
         <Link
           to={`/login?returnTo=${encodeURIComponent(`${base}/${listing.id}?step=review`)}`}
         >

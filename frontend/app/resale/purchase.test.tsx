@@ -191,3 +191,32 @@ it("recovers a saved purchase after a lost response instead of creating a second
     expect(post).toHaveBeenCalledOnce();
   });
 });
+
+it.each(["loading", "failed"])(
+  "does not flash sign-in or reservation actions while session is %s",
+  (state) => {
+    vi.mocked(useResource).mockImplementation((path) => ({
+      data: path === "/auth/session" ? null : listing,
+      error:
+        path === "/auth/session" && state === "failed"
+          ? new Error("Offline")
+          : null,
+      loading: path === "/auth/session" && state === "loading",
+      reload: vi.fn(),
+    }));
+    mount("?step=review");
+    expect(
+      screen.queryByRole("link", { name: "Sign in to reserve this account" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Reserve and continue to payment" }),
+    ).not.toBeInTheDocument();
+    if (state === "loading")
+      expect(screen.getByRole("status")).toHaveTextContent("Checking sign-in");
+    else
+      expect(
+        screen.getByRole("button", { name: "Check sign-in again" }),
+      ).toBeVisible();
+    expect(post).not.toHaveBeenCalled();
+  },
+);

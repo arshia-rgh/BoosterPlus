@@ -1,3 +1,4 @@
+import { Loading } from "../ui/loading";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   Link,
@@ -83,7 +84,7 @@ function ProductSession({ id }: { id: string }) {
     };
   }, []);
   if (checking && resource.loading)
-    return <p role="status">Checking product access…</p>;
+    return <Loading compact label="Checking product access…" />;
   if (checking && !resource.loading) setChecking(false);
   if (lost)
     return (

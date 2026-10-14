@@ -1,3 +1,4 @@
+import { Loading } from "../ui/loading";
 import "../catalog/service-tiles.css";
 import ShopArtwork from "./artwork";
 import { useEffect, useState, useRef } from "react";
@@ -631,7 +632,7 @@ function ProductFlow({
                   Continue to recipient
                 </Action>
               ) : session.loading ? (
-                <p role="status">Checking sign-in…</p>
+                <Loading compact label="Checking sign-in…" />
               ) : (
                 <>
                   <p>

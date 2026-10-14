@@ -1,3 +1,4 @@
+import { Loading } from "../ui/loading";
 import { AgreementTemplate } from "./agreement-template";
 import { BuyerPriceInput } from "./commission-fields";
 import CoverEditor, { ReviewedImage } from "./cover-editor";
@@ -682,7 +683,7 @@ function InventorySession() {
         ? "?" + new URLSearchParams(location.state.inventorySearch).toString()
         : "");
   if (checking && resource.loading)
-    return <p role="status">Checking inventory access…</p>;
+    return <Loading compact label="Checking inventory access…" />;
   if (checking && !resource.loading) setChecking(false);
   if (lost)
     return (

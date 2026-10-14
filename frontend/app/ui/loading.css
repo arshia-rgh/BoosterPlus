@@ -1,0 +1,107 @@
+.playora-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  min-height: clamp(14rem, 35vh, 22rem);
+  margin-block: 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: var(--radius);
+  background: radial-gradient(ellipse at center, #b4e8cb0c, transparent 65%);
+}
+.playora-loading-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 6.5rem;
+  height: 6.5rem;
+  flex: 0 0 auto;
+}
+.playora-loading-art img {
+  display: block;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 2rem #b4e8cb14;
+}
+.playora-loading-orbit {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #b4e8cb24;
+  border-top-color: #b4e8cb;
+  border-right-color: #b4e8cb70;
+  border-radius: 50%;
+  animation: playora-loading-orbit 2.8s linear infinite;
+}
+.playora-loading-orbit::after {
+  content: "";
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: #b4e8cb;
+  box-shadow: 0 0 0.75rem #b4e8cb66;
+}
+.playora-loading-trail {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.playora-loading-trail span {
+  width: 1.25rem;
+  height: 0.1875rem;
+  border-radius: 1rem;
+  background: #b4e8cb;
+  opacity: 0.25;
+  animation: playora-loading-pulse 1.8s ease-in-out infinite;
+}
+.playora-loading-trail span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.playora-loading-trail span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.playora-loading[data-compact="true"] {
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 0.875rem;
+  min-height: 3.5rem;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0;
+  border: 0;
+  background: none;
+}
+.playora-loading[data-compact="true"] .playora-loading-art {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.playora-loading[data-compact="true"] img {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.375rem;
+}
+.playora-loading[data-compact="true"] .playora-loading-orbit::after {
+  top: 0.1875rem;
+  right: 0.1875rem;
+  width: 0.25rem;
+  height: 0.25rem;
+}
+@keyframes playora-loading-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes playora-loading-pulse {
+  50% {
+    opacity: 0.85;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .playora-loading-orbit,
+  .playora-loading-trail span {
+    animation: none;
+  }
+}

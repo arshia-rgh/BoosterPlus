@@ -1,5 +1,9 @@
 # Implementation progress
 
+## Loading151 prepared — 14 October 2026
+
+Shared branded loading states replace visible access-checking text across workspace/form contexts without changing authorization. Pending/failed account purchases no longer flash sign-in/reservation controls. 29 focused component cases, type checking, eight Chromium/WebKit cases and independent senior design review passed. Normal focused hook/release checks and activation remain pending; full suite not run. See [release record](loading-transitions-2026-10-14.md). Supplier automation remains research only.
+
 ### Manual seller payout recording — delivered (14 October 2026)
 
 Implemented owner-recorded external crypto payouts with immutable accepted amounts/routes, seller-confirmed destinations, transaction hashes, completion timestamps and private verification notes. Normal contextual verification, eligibility holds, duplicate detection, idempotent retries and staff-attributed seller receipts are retained. No crypto is sent by the workflow; automatic outgoing transfers and customer deletion stay disabled. Four targeted race-enabled TiDB scenarios, 22 focused component/refund tests, 12 Chromium/WebKit cases and senior source/visual round trips passed. Signed release `0c39963` also passed the normal lightweight hook (856 component tests and backend security/race/build checks), exact CI 38533278112, image release 38534993580, signatures and server preflight. It is now live and verified at schema 42 under the owner's exact “Deploy 0c39963 manual payout update with this recovery risk” approval; that exception is consumed. All eight checked services, public/portal access, private webmail and unchanged finance/privacy settings passed runtime verification. The complete suite was not run. Schema 42 is forward-only to preserve financial receipts and off-host recovery remains absent. See `manual-seller-payouts-2026-10-14.md` for preserved failures, evidence and limits.

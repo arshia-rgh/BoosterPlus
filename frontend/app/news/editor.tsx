@@ -1,3 +1,4 @@
+import { Loading } from "../ui/loading";
 import ArtworkUpload from "../artwork/upload";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
@@ -70,7 +71,7 @@ function ArticleSession({ id }: { id: string }) {
     };
   }, []);
   if (checking && resource.loading)
-    return <p role="status">Checking article access…</p>;
+    return <Loading compact label="Checking article access…" />;
   if (checking && !resource.loading) setChecking(false);
   if (lost)
     return (

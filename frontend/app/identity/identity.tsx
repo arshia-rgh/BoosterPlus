@@ -1,3 +1,4 @@
+import { Loading } from "../ui/loading";
 import { Anchor } from "../portal-router";
 import { DisplayPreferences } from "./display-preferences";
 import { MFASetup } from "./mfa-setup";
@@ -12,7 +13,7 @@ import {
   sessionEventMatches,
   type Portal,
 } from "./portal";
-import { Button, Skeleton } from "../ui/primitives";
+import { Button } from "../ui/primitives";
 import {
   FieldValidation,
   TextField as Text,
@@ -1289,12 +1290,7 @@ function PortalIdentity({
             </RetryButton>
           </PanelState>
         ) : !session ? (
-          <PanelState
-            title="Checking your sign-in"
-            description="Loading sign-in…"
-          >
-            <Skeleton label="" />
-          </PanelState>
+          <Loading label="Loading your workspace…" />
         ) : (
           <>
             {codes.length > 0 && (

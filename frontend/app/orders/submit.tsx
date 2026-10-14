@@ -1,3 +1,4 @@
+import { Loading } from "../ui/loading";
 import { useContext, useEffect, useRef, useState } from "react";
 import { clearConfigurationDraft } from "../catalog/configuration-draft";
 import { sessionEventMatches } from "../identity/portal";
@@ -181,11 +182,13 @@ export default function SubmitOrder({
       </p>
       <ErrorNotice error={error} />
       {!session ? (
-        <p role="status">
-          {error
-            ? "Sign-in could not be checked. Return to this tab to retry."
-            : "Checking sign-in…"}
-        </p>
+        error ? (
+          <p role="status">
+            Sign-in could not be checked. Return to this tab to retry.
+          </p>
+        ) : (
+          <Loading compact label="Checking sign-in…" />
+        )
       ) : !session.user || session.mfa_required ? (
         <p>
           <Link

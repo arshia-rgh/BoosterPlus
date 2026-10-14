@@ -1,3 +1,4 @@
+import { Loading } from "../ui/loading";
 import { RecordDraftBoundary } from "../ui/record-drafts";
 import { selectedLabel } from "../experience/selection-summary";
 import { optionsFor } from "../catalog/model";
@@ -259,7 +260,7 @@ function Session({ admin }: { admin: boolean }) {
     };
   }, [portal]);
   if (checking && resource.loading)
-    return <p role="status">Checking submission access…</p>;
+    return <Loading compact label="Checking submission access…" />;
   if (checking && !resource.loading) setChecking(false);
   if (lost)
     return (
