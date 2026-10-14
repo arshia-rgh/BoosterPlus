@@ -114,7 +114,9 @@ it("blocks validation until scanning completes, submits only the reference, and 
   fireEvent.change(await screen.findByLabelText("Choose rank screenshot"), {
     target: { files: [image()] },
   });
-  expect(screen.getByRole("button", { name: "Upload image" })).toHaveFocus();
+  await waitFor(() => {
+    expect(screen.getByRole("button", { name: "Upload image" })).toHaveFocus();
+  });
   expect(
     screen.getByRole("button", { name: "Check selections" }),
   ).toBeDisabled();
