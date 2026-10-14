@@ -1,6 +1,6 @@
 # Manual seller payouts — 14 October 2026
 
-Status: implementation, scoped database/browser checks and senior review complete; normal lightweight commit/release checks in progress. The live site is still signed `d4e19ba` at schema 41. This document does not claim deployment or a complete-suite pass.
+Status: signed release `0c39963e7ca78801e5059bb23ee7e73a7f125755` passed focused qualification and server preflight. Activation awaits the owner's exact recovery decision. The live site is still signed `d4e19ba` at schema 41. This document does not claim deployment or a complete-suite pass.
 
 ## Owner decision
 
@@ -44,3 +44,11 @@ Deployment must preserve the live owner’s catalog draft, legal/retention polic
 No complete gate has been requested or run for this change.
 
 The first normal lightweight hook stopped when both official Go vulnerability database endpoints returned HTTP 403 from the workstation. The official endpoint was reachable through the authorized server; a temporary loopback-only SSH proxy preserved HTTPS verification and the unchanged live scan then passed. The second hook found one older payment-policy component assertion still expecting “Outgoing payments,” while the interface now correctly distinguishes “Automatic provider transfers.” Only that assertion was updated; the other 855 component tests had passed. Original logs remain under `.cache/manual150/`; neither failed hook is a successful commit or a complete-suite pass.
+
+### Completed release preparation
+
+- Normal tracked focused commit hook passed for `0c39963`: golangci, standalone gosec, the live Go vulnerability scan, dependency/secret checks, race unit tests, all 856 frontend component tests, builds and 79 deployment-tool tests/configuration checks. A stale empty Git lock from the first failed attempt was verified inactive and preserved before retry. No hook was bypassed. The temporary scan tunnel and UI preview were closed afterward.
+- Exact-commit [CI 38533278112](https://github.com/arshia-rgh/BoosterPlus/actions/runs/38533278112) and [image release 38534993580](https://github.com/arshia-rgh/BoosterPlus/actions/runs/38534993580) passed. The five-image manifest is signed and locally/server verified; manifest SHA-256 `2f19d4aac0e194bf56b16c7ec05574e07c5688233b49084a918760287a1bb647`.
+- Read-only server preflight passed against live `d4e19ba`: exact source/test/review hashes, unchanged stable runtime files and financial settings, candidate configuration, gateway validation and the sole pending migration 42 all match. Migration 42 was **not** applied. Candidate manifest: `/srv/playora/releases/0c39963/deployment.env`. Preflight receipt SHA-256: `9f66938337970c20382eea8af3e203f8abd48ec1557a4ca64617b1d034b6cc77`.
+- Public legal release `62c96fe3-abc0-4f8c-a6db-7ae24b7f5c29` and disabled-retention release `f92734f1-c7e5-4a7b-a116-4b4f729cc997` remain unchanged. No policy was republished. Automatic outgoing payments, customer deletion and live financial test authority remain unchanged.
+- The owner was asked for a new exact-release recovery decision because off-host backups remain absent and migration 42 is forward-only. Pending confirmation is not approval. Production activation and post-deployment checks remain outstanding.
