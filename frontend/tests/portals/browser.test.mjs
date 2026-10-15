@@ -70,9 +70,9 @@ async function started(child, frontendPort, host) {
 async function healthySignInScene(page) {
   await expect(page.locator(".site-footer")).toHaveCount(0);
   await expect(page.locator(".site-ambient")).toHaveCount(0);
-  await expect(page.locator(".sign-in-gate-brand image")).toHaveAttribute(
-    "href",
-    "/brand/playora-dark.svg",
+  await expect(page.locator(".sign-in-art img")).toHaveAttribute(
+    "src",
+    "/artwork/sign-in-gate-carved-1672.jpg",
   );
   const scene = page.locator(".sign-in-layout");
   await expect(scene.locator(".sign-in-art img")).toBeVisible();
@@ -98,12 +98,34 @@ async function healthySignInScene(page) {
   );
   await expect(scene.locator(".sign-in-lightning-glow")).toHaveCSS(
     "animation-duration",
-    "22s",
+    "10s",
   );
   await expect(scene.locator(".sign-in-lightning-glow")).toHaveCSS(
     "pointer-events",
     "none",
   );
+  // Observe the live timeline: a declared animation alone did not prove visibility.
+  const bolt = scene.locator(".sign-in-lightning-bolt");
+  await expect
+    .poll(
+      () =>
+        bolt.evaluate((element) => Number(getComputedStyle(element).opacity)),
+      {
+        timeout: 4500,
+        intervals: [100],
+      },
+    )
+    .toBeGreaterThan(0.75);
+  await expect
+    .poll(
+      () =>
+        bolt.evaluate((element) => Number(getComputedStyle(element).opacity)),
+      {
+        timeout: 4500,
+        intervals: [100],
+      },
+    )
+    .toBeLessThan(0.05);
   const drop = rain.locator("span").first();
   await expect(drop).toHaveCSS("animation-name", "sign-in-rainfall");
   const before = await drop.evaluate(

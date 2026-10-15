@@ -292,7 +292,7 @@ for (const application of ["storefront", "admin", "both"]) {
             assert.match(html, /class="sign-in-story"/);
             assert.match(
               html,
-              /src="\/artwork\/sign-in-journey-wide-1672\.jpg"/,
+              /src="\/artwork\/sign-in-gate-carved-1672\.jpg"/,
             );
           }
           const assets = [

@@ -520,7 +520,6 @@ body:has(.sign-in-layout) .account-entry,
 .admin-entry:has(.sign-in-layout) .admin-body {
   padding-bottom: 0;
 }
-.sign-in-gate-brand,
 .sign-in-lightning-bolt,
 .sign-in-lightning-glow {
   position: absolute;
@@ -531,34 +530,69 @@ body:has(.sign-in-layout) .account-entry,
 }
 .sign-in-lightning-bolt {
   opacity: 0;
-  animation: sign-in-lightning 22s -10s ease-in-out infinite;
+  animation: sign-in-lightning 10s linear infinite;
+}
+.sign-in-bolt-core,
+.sign-in-bolt-middle,
+.sign-in-bolt-tip {
+  stroke: #f1f8ff;
+}
+.sign-in-bolt-core {
+  stroke-width: 2.5;
+}
+.sign-in-bolt-middle {
+  stroke-width: 1.7;
+}
+.sign-in-bolt-tip {
+  stroke-width: 0.85;
+}
+.sign-in-bolt-halo {
+  stroke: #a4cfe8;
+  stroke-width: 13;
+  opacity: 0.65;
+}
+.sign-in-bolt-branches {
+  stroke: #d6edff;
+  stroke-width: 0.8;
+  opacity: 0.8;
 }
 .sign-in-lightning-glow {
   z-index: -1;
-  background: radial-gradient(ellipse at 24% 10%, #e3eee0, transparent 65%);
+  background: radial-gradient(ellipse at 23% 4%, #d0e7fa, transparent 57%);
   opacity: 0;
-  animation: sign-in-thunder-glow 22s -10s ease-in-out infinite;
+  animation: sign-in-thunder-glow 10s linear infinite;
 }
+/* One local strike per ten seconds, with a quick arrival and long afterglow.
+   The first strike appears during the first two seconds, never over the form. */
 @keyframes sign-in-lightning {
   0%,
-  60%,
-  75%,
+  10%,
+  33%,
   100% {
     opacity: 0;
   }
-  65% {
-    opacity: 0.55;
+  14% {
+    opacity: 0.95;
+  }
+  18% {
+    opacity: 0.65;
+  }
+  24% {
+    opacity: 0.2;
   }
 }
 @keyframes sign-in-thunder-glow {
   0%,
-  60%,
-  76%,
+  10%,
+  38%,
   100% {
     opacity: 0;
   }
-  65% {
-    opacity: 0.12;
+  15% {
+    opacity: 0.28;
+  }
+  22% {
+    opacity: 0.14;
   }
 }
 @media (prefers-reduced-motion: reduce) {
