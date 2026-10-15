@@ -4,6 +4,7 @@ import { z } from "../validation";
 import { APIError, command, get, post, sessionSchema } from "../identity/api";
 import { Action, ErrorNotice } from "../catalog/controls";
 import "./attachment.css";
+import { uploadError } from "./upload-error";
 
 const mediaSchema = z.object({
   id: z.string(),
@@ -201,10 +202,7 @@ export function UploadImage({
             "Image upload failed. Retry the same image when your connection recovers.",
           );
         });
-        if (!response.ok)
-          throw new APIError(
-            "Image upload failed. Retry the same image or sign in again if your session ended.",
-          );
+        if (!response.ok) throw uploadError(response.status);
       }
       if (!active()) return;
       const next = await post(

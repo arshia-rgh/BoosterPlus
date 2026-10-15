@@ -109,7 +109,7 @@ func validateTerms(v SellerTerms) error {
 	return nil
 }
 
-// OfferInput binds an owner proposal to the reviewed submission revision.
+// OfferInput binds a staff proposal to the reviewed submission revision.
 type OfferInput struct {
 	RequestKey        string      `json:"request_key"`
 	SubmissionVersion int         `json:"submission_version"`
@@ -117,7 +117,7 @@ type OfferInput struct {
 	ExpiresAt         time.Time   `json:"expires_at"`
 }
 
-// OfferChange carries explicit acceptance or a versioned owner decision.
+// OfferChange carries explicit acceptance or a versioned staff decision.
 type OfferChange struct {
 	Version int    `json:"version"`
 	Accept  bool   `json:"accept"`

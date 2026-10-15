@@ -286,7 +286,7 @@ func (s *Service) verifyEmail(w http.ResponseWriter, r *http.Request, state requ
 		return err
 	}
 	if result.Token != "" {
-		s.cookie(w, state.portal, "session", result.Token, 7*24*3600)
+		s.cookie(w, state.portal, "session", result.Token, int(sessionLifetime(state.portal)/time.Second))
 	} else if result.Purpose == "email_change" {
 		s.cookie(w, state.portal, "session", "", -1)
 	}
@@ -323,7 +323,7 @@ func (s *Service) finishGoogle(w http.ResponseWriter, r *http.Request, state req
 		http.Redirect(w, r, s.config.portalLoginURL(state.portal)+"?error="+reason, http.StatusSeeOther)
 		return nil
 	}
-	s.cookie(w, state.portal, "session", token, 7*24*3600)
+	s.cookie(w, state.portal, "session", token, int(sessionLifetime(state.portal)/time.Second))
 	http.Redirect(w, r, s.config.portalHomeURL(state.portal), http.StatusSeeOther)
 	return nil
 }
@@ -418,7 +418,7 @@ func (s *Service) verifyMFA(w http.ResponseWriter, r *http.Request, state reques
 	if err != nil {
 		return err
 	}
-	s.cookie(w, state.portal, "session", result.Token, 7*24*3600)
+	s.cookie(w, state.portal, "session", result.Token, int(sessionLifetime(state.portal)/time.Second))
 	codes := result.RecoveryCodes
 	if codes == nil {
 		codes = []string{}
@@ -438,7 +438,7 @@ func (s *Service) regenerateCodes(w http.ResponseWriter, r *http.Request, state 
 	if err != nil {
 		return err
 	}
-	s.cookie(w, state.portal, "session", result.Token, 7*24*3600)
+	s.cookie(w, state.portal, "session", result.Token, int(sessionLifetime(state.portal)/time.Second))
 	return respond(w, http.StatusOK, map[string]any{"recovery_codes": result.RecoveryCodes})
 }
 func (s *Service) unlinkGoogle(w http.ResponseWriter, r *http.Request, state requestState) error {

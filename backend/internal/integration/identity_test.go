@@ -276,7 +276,7 @@ func TestIdentityCooldownTermsAndSessionBoundaries(t *testing.T) {
 	if _, err = f.service.Authenticate(t.Context(), result.Token, identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal("logout-all failed", err)
 	}
-	f.clock.Add(1801)
+	f.clock.Add(int64((30*24*time.Hour)/time.Second) + 1)
 	if _, err = f.service.Authenticate(t.Context(), victimToken, identity.PortalCustomer); !errors.Is(err, identity.ErrUnauthenticated) {
 		t.Fatal("idle expiry failed", err)
 	}

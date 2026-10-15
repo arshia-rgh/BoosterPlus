@@ -9,13 +9,29 @@ import (
 	"github.com/arshia-rgh/BoosterPlus/backend/ent/user"
 )
 
+// Customer sessions are long-lived; staff keep their short idle/absolute limits.
+// Stored expiry is never extended by activity or a sensitive-action check.
+func sessionLifetime(portal Portal) time.Duration {
+	if portal == PortalCustomer {
+		return 90 * 24 * time.Hour
+	}
+	return 12 * time.Hour
+}
+
+func sessionIdleTTL(portal Portal) time.Duration {
+	if portal == PortalCustomer {
+		return 30 * 24 * time.Hour
+	}
+	return IdleTTL
+}
+
 // Authenticate checks revocation, suspension, role-version changes, idle and absolute expiry on every request.
 func (s *Service) Authenticate(ctx context.Context, token string, portal Portal) (*Principal, error) {
 	if !portal.valid() || len(token) < 40 || len(token) > 128 {
 		return nil, ErrUnauthenticated
 	}
 	now := s.now()
-	session, err := s.client.AuthSession.Query().Where(authsession.PortalEQ(string(portal)), authsession.TokenHashEQ(s.sessionDigest(portal, token)), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(now), authsession.LastSeenAtGT(now.Add(-IdleTTL))).Only(ctx)
+	session, err := s.client.AuthSession.Query().Where(authsession.PortalEQ(string(portal)), authsession.TokenHashEQ(s.sessionDigest(portal, token)), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(now), authsession.LastSeenAtGT(now.Add(-sessionIdleTTL(portal)))).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, ErrUnauthenticated
@@ -36,7 +52,7 @@ func (s *Service) Authenticate(ctx context.Context, token string, portal Portal)
 	if !session.LastSeenAt.Before(now) {
 		return &Principal{User: account, Session: session}, nil
 	}
-	count, touchErr := s.client.AuthSession.Update().Where(authsession.IDEQ(session.ID), authsession.RevokedAtIsNil(), authsession.LastSeenAtGT(now.Add(-IdleTTL)), authsession.ExpiresAtGT(now)).SetLastSeenAt(now).Save(ctx)
+	count, touchErr := s.client.AuthSession.Update().Where(authsession.IDEQ(session.ID), authsession.RevokedAtIsNil(), authsession.LastSeenAtGT(now.Add(-sessionIdleTTL(portal))), authsession.ExpiresAtGT(now)).SetLastSeenAt(now).Save(ctx)
 	if touchErr != nil {
 		return nil, touchErr
 	}
@@ -61,10 +77,7 @@ func (s *Service) issueSessionAt(ctx context.Context, tx *ent.Tx, account *ent.U
 		}
 	}
 	token := randomToken()
-	lifetime := 7 * 24 * time.Hour
-	if account.Role != RoleCustomer {
-		lifetime = 12 * time.Hour
-	}
+	lifetime := sessionLifetime(portal)
 	_, err := tx.AuthSession.Create().SetID(randomToken()).SetPortal(string(portal)).SetUserID(account.ID).SetTokenHash(s.sessionDigest(portal, token)).SetAuthVersion(account.AuthVersion).SetAuthenticatedAt(authenticatedAt).SetCreatedAt(now).SetLastSeenAt(now).SetExpiresAt(now.Add(lifetime)).Save(ctx)
 	return token, err
 }
@@ -100,7 +113,7 @@ func (s *Service) Sessions(ctx context.Context, p *Principal) ([]*ent.AuthSessio
 	if err := Require(p, "self"); err != nil {
 		return nil, err
 	}
-	return s.client.AuthSession.Query().Where(authsession.UserIDEQ(p.User.ID), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(s.now()), authsession.LastSeenAtGT(s.now().Add(-IdleTTL))).Order(ent.Desc(authsession.FieldCreatedAt)).Limit(100).All(ctx)
+	return s.client.AuthSession.Query().Where(authsession.UserIDEQ(p.User.ID), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(s.now()), authsession.LastSeenAtGT(s.now().Add(-sessionIdleTTL(Portal(p.Session.Portal))))).Order(ent.Desc(authsession.FieldCreatedAt)).Limit(100).All(ctx)
 }
 
 // Revoke deliberately returns the same result for another user's/nonexistent session ID.
@@ -149,7 +162,7 @@ func (s *Service) fresh(ctx context.Context, tx *ent.Tx, p *Principal) (*Princip
 	if !portal.permitsUser(account) {
 		return nil, ErrUnauthenticated
 	}
-	session, sessionErr := tx.AuthSession.Query().Where(authsession.IDEQ(p.Session.ID), authsession.PortalEQ(string(portal)), authsession.TokenHashEQ(p.Session.TokenHash), authsession.UserIDEQ(account.ID), authsession.AuthVersionEQ(account.AuthVersion), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(s.now()), authsession.LastSeenAtGT(s.now().Add(-IdleTTL))).Only(ctx)
+	session, sessionErr := tx.AuthSession.Query().Where(authsession.IDEQ(p.Session.ID), authsession.PortalEQ(string(portal)), authsession.TokenHashEQ(p.Session.TokenHash), authsession.UserIDEQ(account.ID), authsession.AuthVersionEQ(account.AuthVersion), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(s.now()), authsession.LastSeenAtGT(s.now().Add(-sessionIdleTTL(Portal(p.Session.Portal))))).Only(ctx)
 	if sessionErr != nil {
 		if ent.IsNotFound(sessionErr) {
 			return nil, ErrUnauthenticated

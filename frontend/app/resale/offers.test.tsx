@@ -196,55 +196,58 @@ it.each(["buy_first", "consignment"])(
   },
 );
 
-it("explains invalid seller offer fields before any commercial request", async () => {
-  const responses = new Map<string, ReturnType<typeof useResource>>();
-  vi.mocked(useResource).mockImplementation((path) => {
-    if (path === "/admin/finance/policy") return publishedRoutes;
-    const old = responses.get(path);
-    if (old) return old;
-    const result = {
-      data: path.endsWith("/offers")
-        ? { offers: [] }
-        : path === "/auth/session"
-          ? { user: { role: "owner", portal: "admin" } }
-          : { transfers: [] },
-      error: null,
-      loading: false,
-      reload: vi.fn(),
-    };
-    responses.set(path, result);
-    return result;
-  });
-  render(
-    <MemoryRouter>
-      <SellerOffers
-        id="submission"
-        version={2}
-        state="approved_pending_terms"
-        admin
-        changed={vi.fn()}
-        view="agreement"
-      />
-    </MemoryRouter>,
-  );
-  fireEvent.click(
-    screen.getByRole("button", { name: "Propose exact seller terms" }),
-  );
-  await waitFor(() => {
-    expect(screen.getByLabelText("Payout asset and network")).toHaveFocus();
-  });
-  expect(screen.getByLabelText("Payout asset and network")).toHaveAttribute(
-    "aria-invalid",
-    "true",
-  );
-  expect(post).not.toHaveBeenCalled();
-  fireEvent.change(screen.getByLabelText("Payout asset and network"), {
-    target: { value: JSON.stringify(["usdtbsc", "bsc"]) },
-  });
-  expect(screen.getByLabelText("Payout asset and network")).not.toHaveAttribute(
-    "aria-invalid",
-  );
-});
+it.each(["owner", "administrator"])(
+  "lets %s propose and explains invalid seller offer fields",
+  async (role) => {
+    const responses = new Map<string, ReturnType<typeof useResource>>();
+    vi.mocked(useResource).mockImplementation((path) => {
+      if (path === "/admin/finance/policy") return publishedRoutes;
+      const old = responses.get(path);
+      if (old) return old;
+      const result = {
+        data: path.endsWith("/offers")
+          ? { offers: [] }
+          : path === "/auth/session"
+            ? { user: { role, portal: "admin" } }
+            : { transfers: [] },
+        error: null,
+        loading: false,
+        reload: vi.fn(),
+      };
+      responses.set(path, result);
+      return result;
+    });
+    render(
+      <MemoryRouter>
+        <SellerOffers
+          id="submission"
+          version={2}
+          state="approved_pending_terms"
+          admin
+          changed={vi.fn()}
+          view="agreement"
+        />
+      </MemoryRouter>,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Propose exact seller terms" }),
+    );
+    await waitFor(() => {
+      expect(screen.getByLabelText("Payout asset and network")).toHaveFocus();
+    });
+    expect(screen.getByLabelText("Payout asset and network")).toHaveAttribute(
+      "aria-invalid",
+      "true",
+    );
+    expect(post).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByLabelText("Payout asset and network"), {
+      target: { value: JSON.stringify(["usdtbsc", "bsc"]) },
+    });
+    expect(
+      screen.getByLabelText("Payout asset and network"),
+    ).not.toHaveAttribute("aria-invalid");
+  },
+);
 
 it("switches approved arrangements but requires review of custom wording and invalidates a changed route's quote", () => {
   const standard: SellerTerms = {

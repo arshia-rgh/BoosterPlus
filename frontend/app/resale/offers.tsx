@@ -219,7 +219,7 @@ function Proposal({
   return (
     <FieldValidation value={validation.validation}>
       <fieldset disabled={busy}>
-        <legend>Owner: propose seller agreement</legend>
+        <legend>Propose seller agreement</legend>
         <p>
           Choose the arrangement per offer. Enter the account base price and a
           real conversion quote. Review the resulting net crypto obligation and
@@ -685,7 +685,10 @@ export default function SellerOffers({
       offersSchema,
     ),
     session = useResource("/auth/session", sessionSchema),
-    owner = admin && session.data?.user?.role === "owner";
+    owner = admin && session.data?.user?.role === "owner",
+    canPropose =
+      admin &&
+      ["owner", "administrator"].includes(session.data?.user?.role ?? "");
   const [saved, setSaved] = useState<z.infer<typeof offersSchema> | null>(null);
   if (denied(resource.error) && saved) setSaved(null);
   else if (!resource.error && resource.data && saved !== resource.data)
@@ -888,7 +891,7 @@ export default function SellerOffers({
               </details>
             )}
           {view !== "handover" &&
-            owner &&
+            canPropose &&
             state === "approved_pending_terms" &&
             !current.offers.some(
               (v) => v.state === "offered" || v.state === "accepted",

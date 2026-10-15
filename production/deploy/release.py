@@ -88,6 +88,13 @@ def execute(manifest, bundle, *, rollback=False, resume=False, runner=None, smok
             version = runner(candidate, ["run", "--rm", "--no-deps", "migrate", "version"], capture=True)
             if not re.fullmatch(r"boosterplus [^;\n]+; supported schema: " + str(target["schema"]) + r"\s*", version):
                 raise ValueError("Signed schema does not match the packaged binary")
+            dependency_check = ["run", "--rm", "--no-deps", "--entrypoint", "/app/boosterplus", "api", "dependencies", "check"]
+            if old and receipt["state"] == "preflight":
+                # Probe using the currently deployed schema-aware binary before
+                # interrupting traffic. Readiness alone cannot detect storage
+                # refusing writes at its free-space safety threshold. The probe
+                # scans and round-trips only a temporary private object.
+                runner(images(manifest, old["release"]), dependency_check)
             record("quiescing")
             runner(candidate, ["stop", "--timeout", "120", *APPLICATION])
             record("migrating")
@@ -115,6 +122,7 @@ def execute(manifest, bundle, *, rollback=False, resume=False, runner=None, smok
             after = checked_schema(runner(candidate, migration + ["version"], capture=True))
             compatible_rollback(after, target)
             runner(candidate, migration + ["verify"])
+            runner(candidate, dependency_check)
             record("starting")
             # Workers stay stopped until the candidate serves correctly.
             runner(candidate, ["up", "-d", "--wait", "--wait-timeout", "240", "api", "storefront", "admin", "gateway"])

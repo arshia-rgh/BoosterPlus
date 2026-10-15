@@ -90,7 +90,7 @@ func (s *Store) ProposeOffer(ctx context.Context, p *identity.Principal, id stri
 		return OfferView{}, err
 	}
 	var result OfferView
-	err = s.auth.AuthorizedTransaction(ctx, p, "owner", true, func(tx *ent.Tx, current *identity.Principal) error {
+	err = s.auth.AuthorizedTransaction(ctx, p, "admin", true, func(tx *ent.Tx, current *identity.Principal) error {
 		parent, e := submission(ctx, tx, current, id, true)
 		if e != nil {
 			return e

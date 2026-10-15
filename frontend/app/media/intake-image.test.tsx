@@ -253,3 +253,57 @@ it("does not claim bytes were uploaded after only reserving a file intent", asyn
     expect.anything(),
   );
 });
+
+it("keeps a reserved image after storage failure and retries without creating another intent", async () => {
+  vi.mocked(get).mockResolvedValue(session);
+  vi.mocked(post).mockImplementation((path) =>
+    Promise.resolve({
+      ...fileRecord,
+      state: path.endsWith("/finalize") ? "ready" : "pending",
+    }),
+  );
+  const upload = vi
+    .fn()
+    .mockResolvedValueOnce(
+      new Response("private provider detail", { status: 500 }),
+    )
+    .mockResolvedValueOnce(new Response(null, { status: 204 }));
+  vi.stubGlobal("fetch", upload);
+  const change = vi.fn();
+  render(
+    <MemoryRouter>
+      <IntakeImage
+        scope={scope}
+        label="Rank screenshot"
+        value={undefined}
+        change={change}
+        pending={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  fireEvent.change(await screen.findByLabelText("Choose rank screenshot"), {
+    target: { files: [image()] },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Upload image" }));
+  await screen.findByText(/Image storage is temporarily unavailable/);
+  expect(
+    screen.queryByText(/private provider detail|session ended/),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByText("Local preview · upload not yet confirmed"),
+  ).toBeVisible();
+  expect(post).toHaveBeenCalledTimes(1);
+  fireEvent.click(
+    screen.getByRole("button", { name: /Upload image|Retry upload/i }),
+  );
+  await screen.findByText("Image checked and ready to send.");
+  expect(post).toHaveBeenCalledTimes(2);
+  expect(post).toHaveBeenLastCalledWith(
+    `/media/${id}/finalize`,
+    {},
+    expect.anything(),
+    "customer",
+  );
+  expect(upload).toHaveBeenCalledTimes(2);
+  expect(change).toHaveBeenLastCalledWith(id);
+});

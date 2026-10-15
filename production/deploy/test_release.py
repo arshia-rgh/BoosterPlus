@@ -67,6 +67,29 @@ class ReleaseLifecycle(unittest.TestCase):
                 execute(self.manifest, self.root, runner=lambda *a, **kw: (_ for _ in ()).throw(RuntimeError("pull")))
         self.assertEqual(pending(self.root / "operations", "boosterplus-fixture")["state"], "preflight")
 
+    def test_storage_outage_blocks_upgrade_before_quiescing(self):
+        self.run_release()
+        write(self.root / "operations", "boosterplus-fixture-backup.json",
+              {"project": "boosterplus-fixture", "state": "verified", "commit": "a" * 40, "consistent_at": time.time()})
+        self.calls.clear()
+        def failing_storage(manifest, args, **kwargs):
+            if args[-2:] == ["dependencies", "check"]:
+                raise RuntimeError("storage write unavailable")
+            return self.runner(manifest, args, **kwargs)
+        with patch("release.verify", return_value=self.target):
+            with self.assertRaisesRegex(RuntimeError, "storage write"):
+                execute(self.manifest, self.root, runner=failing_storage, smoke=lambda _: None)
+        self.assertFalse(any(call[0] in ("stop", "up") for call in self.calls))
+        self.assertEqual(pending(self.root / "operations", "boosterplus-fixture")["state"], "preflight")
+
+    def test_dependency_probe_precedes_first_traffic_after_migration(self):
+        self.run_release()
+        verify = next(i for i, call in enumerate(self.calls) if call[-3:] == ["db", "migrate", "verify"])
+        probe = next(i for i, call in enumerate(self.calls) if call[-2:] == ["dependencies", "check"])
+        serving = next(i for i, call in enumerate(self.calls) if call[-4:] == ["api", "storefront", "admin", "gateway"])
+        self.assertLess(verify, probe)
+        self.assertLess(probe, serving)
+
     def test_rollback_refuses_newer_schema_without_running_ddl(self):
         self.run_release()
         write(self.root / "operations", "boosterplus-fixture-backup.json",

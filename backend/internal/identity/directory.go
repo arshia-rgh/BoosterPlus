@@ -108,10 +108,11 @@ func (s *Service) RevokeUserSessions(ctx context.Context, p *Principal, id strin
 func (s *Service) UserSessions(ctx context.Context, p *Principal, id string) (out []map[string]any, err error) {
 	out = []map[string]any{}
 	err = s.AuthorizedTransaction(ctx, p, "users.read", false, func(tx *ent.Tx, current *Principal) error {
-		if _, e := tx.User.Get(ctx, id); e != nil {
+		target, e := tx.User.Get(ctx, id)
+		if e != nil {
 			return e
 		}
-		rows, e := tx.AuthSession.Query().Where(authsession.UserIDEQ(id), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(s.now()), authsession.LastSeenAtGT(s.now().Add(-IdleTTL))).Order(ent.Desc(authsession.FieldCreatedAt)).Limit(100).Select(authsession.FieldID, authsession.FieldPortal, authsession.FieldCreatedAt, authsession.FieldLastSeenAt, authsession.FieldExpiresAt).All(ctx)
+		rows, e := tx.AuthSession.Query().Where(authsession.UserIDEQ(id), authsession.RevokedAtIsNil(), authsession.ExpiresAtGT(s.now()), authsession.LastSeenAtGT(s.now().Add(-sessionIdleTTL(Portal(target.Portal))))).Order(ent.Desc(authsession.FieldCreatedAt)).Limit(100).Select(authsession.FieldID, authsession.FieldPortal, authsession.FieldCreatedAt, authsession.FieldLastSeenAt, authsession.FieldExpiresAt).All(ctx)
 		if e != nil {
 			return e
 		}

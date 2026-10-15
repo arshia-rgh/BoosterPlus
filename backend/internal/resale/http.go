@@ -203,7 +203,7 @@ func (s *Store) Register(mux *http.ServeMux) {
 			return write(w, value)
 		})
 	}
-	register("POST /api/v1/admin/submissions/{id}/offers", "owner", inputJSON[OfferInput, OfferView](s.ProposeOffer))
+	register("POST /api/v1/admin/submissions/{id}/offers", "admin", inputJSON[OfferInput, OfferView](s.ProposeOffer))
 	register("GET /api/v1/seller-offers/{id}/secret", "account", func(w http.ResponseWriter, r *http.Request, p *identity.Principal) error {
 		value, err := s.SellerSecretStatus(r.Context(), p, r.PathValue("id"))
 		if err != nil {
