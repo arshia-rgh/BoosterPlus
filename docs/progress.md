@@ -1,5 +1,9 @@
 # Implementation progress
 
+## Accent158 — smaller champagne details (15 October 2026)
+
+Applied the owner's requested preview refinement: original green emphasis is restored in all homepage headings, while champagne remains on service icons, small section labels, navigation markers and selected secondary links. Studio wording and the homepage screenshot are updated. The maintained regression now protects heading descendants, prices and statistic numbers; the two affected1440/390px cases passed without rerunning unchanged page families. Independent senior review returned PASS after inspecting four completed Chromium/WebKit cases and the scoped source. Application code and the live website remain unchanged. See [preview](redesign/color-study-2026-10-15/README.md) and [scoped review](redesign/reviews/ACCENT158_2026-10-15.md).
+
 ## Accent157 — keep green, add champagne (15 October 2026)
 
 The owner clarified that PLAYORA must retain its current theme and add champagne only in supporting details. The revised design studio now compares Current against Green + champagne across all seven page contexts; original green surfaces, image scrims, typography, primary actions and status meanings stay unchanged. The previous replacement-palette recommendation is superseded and retained as historical research. Senior visual and product reviewers returned PASS after20 paired rendered comparisons and six studio checks; the maintained14-case preservation regression and formatting passed. Eight full-size original/revised screenshots are saved. No application or live theme changes; owner review precedes implementation. See [revised proposal](redesign/color-study-2026-10-15/README.md) and [senior gate](redesign/reviews/ACCENT157_2026-10-15.md).

@@ -6,18 +6,14 @@ import assert from "node:assert/strict";
 const browser = await chromium.launch({ headless: true });
 const root = new URL("./", import.meta.url);
 const results = [];
+const homeOnly = process.argv.includes("--home-only");
+const pages = homeOnly
+  ? ["home"]
+  : ["home", "game", "boost", "customer", "admin", "booster", "states"];
 await mkdir(new URL("previews/accent/", root), { recursive: true });
 try {
   for (const width of [1440, 390]) {
-    for (const name of [
-      "home",
-      "game",
-      "boost",
-      "customer",
-      "admin",
-      "booster",
-      "states",
-    ]) {
+    for (const name of pages) {
       const page = await browser.newPage({
         viewport: { width, height: 900 },
         reducedMotion: "reduce",
@@ -49,7 +45,7 @@ try {
           });
           const protectedColors = [
             ...document.querySelectorAll(
-              ".button,.home-button,.status,.sample-state,.field-error,input[aria-invalid]",
+              ".button,.home-button,.status,.sample-state,.field-error,input[aria-invalid],h1,h2,h3,h4,h5,h6,h1 *,h2 *,h3 *,h4 *,h5 *,h6 *,.public-metric strong,.package-card-price",
             ),
           ].map((el) => {
             const style = getComputedStyle(el);
@@ -127,6 +123,7 @@ try {
         width,
         originalSurfacesAndTypography: true,
         primaryActionsAndSemanticsUnchanged: true,
+        headingsAndPricesUnchanged: true,
         errors,
         overflow: false,
         champagneElements: changes,
@@ -135,11 +132,16 @@ try {
     }
   }
   await writeFile(
-    new URL("previews/accent/results.json", root),
+    new URL(
+      homeOnly
+        ? "previews/accent/headline-results.json"
+        : "previews/accent/results.json",
+      root,
+    ),
     JSON.stringify(results, null, 2) + "\n",
   );
   console.log(
-    "14 original-theme preservation checks passed; comparison captures saved.",
+    `${results.length} original-theme preservation checks passed; comparison captures saved.`,
   );
 } finally {
   await browser.close();

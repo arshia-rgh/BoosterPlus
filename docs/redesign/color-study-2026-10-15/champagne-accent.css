@@ -6,7 +6,6 @@ html[data-palette="green-champagne"] {
 
 html[data-palette="green-champagne"]
   :is(
-    .plus-home em,
     .home-kicker,
     .hero-scroll span,
     .service-symbol,

@@ -1,0 +1,22 @@
+[
+  {
+    "page": "home",
+    "width": 1440,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "headingsAndPricesUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 134
+  },
+  {
+    "page": "home",
+    "width": 390,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "headingsAndPricesUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 134
+  }
+]

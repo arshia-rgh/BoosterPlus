@@ -3,7 +3,7 @@ const options = {
   "green-champagne": {
     name: "Green + champagne",
     accent: "#E7C78A",
-    copy: "Your current green backgrounds, cards and buttons. Champagne adds warmth to selected headlines, service icons and navigation details.",
+    copy: "Your current green headlines, backgrounds and buttons. Champagne stays in smaller details: service icons, section labels and navigation markers.",
   },
   current: {
     name: "Current theme",
