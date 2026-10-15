@@ -181,3 +181,9 @@
 .chat-legacy-access {
   margin-block: 1rem;
 }
+
+/* Approved champagne details; load with this page family. */
+html .form-secure-badge {
+  color: var(--champagne-detail);
+  border-color: var(--champagne-detail);
+}

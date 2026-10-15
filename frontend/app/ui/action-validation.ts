@@ -3,18 +3,23 @@ import { APIError } from "../identity/api";
 import { useFormValidation, type FieldIssue } from "./form-validation";
 
 /** Action-based editors share field focus/correction with native forms. */
-export function useActionValidation(reveal?: (target: HTMLElement) => void) {
+export function useActionValidation(
+  reveal?: (target: HTMLElement) => void,
+  active = true,
+) {
   const [issues, setIssues] = useState<FieldIssue[]>([]);
   const validation = useFormValidation(
     issues,
     (name) => {
-      setIssues((current) =>
-        current.filter(
+      setIssues((current) => {
+        const next = current.filter(
           (issue) => issue.path !== name && !issue.path.startsWith(name + "."),
-        ),
-      );
+        );
+        return next.length === current.length ? current : next;
+      });
     },
     reveal,
+    active,
   );
   return {
     validation,

@@ -1,3 +1,4 @@
+import { ActionFields, requireText } from "../ui/action-fields";
 import { useState } from "react";
 import { Action, ErrorNotice, Text } from "../catalog/controls";
 import { post } from "../identity/api";
@@ -72,6 +73,7 @@ export function ReviewActions({
     setBusy(true);
     setError(null);
     try {
+      if (admin) requireText("note", note);
       await post(
         `${admin ? "/admin" : ""}/submissions/${row.id}/${action}`,
         { version: row.version, note },
@@ -92,91 +94,94 @@ export function ReviewActions({
   )
     return null;
   return (
-    <section className="catalog-section">
-      <h3>{admin ? "Review decision" : "Before commercial acceptance"}</h3>
-      <ErrorNotice error={error} />
-      {admin ? (
-        <>
-          <Text
-            label="Seller-visible review reason"
-            value={note}
-            change={setNote}
-            multiline
-          />
-          <fieldset disabled={busy || !note.trim()}>
-            <legend>Review actions</legend>
-            {row.state !== "needs_information" && (
+    <ActionFields error={error} busy={busy}>
+      <section className="catalog-section">
+        <h3>{admin ? "Review decision" : "Before commercial acceptance"}</h3>
+        <ErrorNotice error={error} />
+        {admin ? (
+          <>
+            <Text
+              name="note"
+              label="Seller-visible review reason"
+              value={note}
+              change={setNote}
+              multiline
+            />
+            <fieldset disabled={busy}>
+              <legend>Review actions</legend>
+              {row.state !== "needs_information" && (
+                <Action
+                  onClick={() => {
+                    void change("clarify");
+                  }}
+                >
+                  Request account information
+                </Action>
+              )}
               <Action
                 onClick={() => {
-                  void change("clarify");
+                  void change("reject");
                 }}
               >
-                Request account information
+                Reject account submission
               </Action>
-            )}
+              {row.state === "submitted" && (
+                <Action
+                  onClick={() => {
+                    void change("approve_review");
+                  }}
+                >
+                  Approve review pending terms
+                </Action>
+              )}
+            </fieldset>
+            <p>
+              This decision does not verify a transfer, publish a listing,
+              accept commercial terms or create a payout.
+            </p>
+          </>
+        ) : (
+          <details>
+            <summary>Submission options</summary>
+            <p>
+              You may withdraw this submission before accepting any commercial
+              agreement.
+            </p>
             <Action
+              disabled={busy}
               onClick={() => {
-                void change("reject");
+                setWithdrawing(true);
               }}
             >
-              Reject account submission
+              Withdraw account submission
             </Action>
-            {row.state === "submitted" && (
-              <Action
-                onClick={() => {
-                  void change("approve_review");
-                }}
-              >
-                Approve review pending terms
-              </Action>
+            {withdrawing && (
+              <fieldset disabled={busy}>
+                <legend>Confirm withdrawal of {row.title}</legend>
+                <p>
+                  This removes the account from review before commercial
+                  acceptance. Its history remains available. This does not
+                  cancel an accepted agreement.
+                </p>
+                <Action
+                  onClick={() => {
+                    void change("withdraw");
+                  }}
+                >
+                  Confirm account withdrawal
+                </Action>
+                <Action
+                  onClick={() => {
+                    setWithdrawing(false);
+                  }}
+                >
+                  Keep this submission
+                </Action>
+              </fieldset>
             )}
-          </fieldset>
-          <p>
-            This decision does not verify a transfer, publish a listing, accept
-            commercial terms or create a payout.
-          </p>
-        </>
-      ) : (
-        <details>
-          <summary>Submission options</summary>
-          <p>
-            You may withdraw this submission before accepting any commercial
-            agreement.
-          </p>
-          <Action
-            disabled={busy}
-            onClick={() => {
-              setWithdrawing(true);
-            }}
-          >
-            Withdraw account submission
-          </Action>
-          {withdrawing && (
-            <fieldset disabled={busy}>
-              <legend>Confirm withdrawal of {row.title}</legend>
-              <p>
-                This removes the account from review before commercial
-                acceptance. Its history remains available. This does not cancel
-                an accepted agreement.
-              </p>
-              <Action
-                onClick={() => {
-                  void change("withdraw");
-                }}
-              >
-                Confirm account withdrawal
-              </Action>
-              <Action
-                onClick={() => {
-                  setWithdrawing(false);
-                }}
-              >
-                Keep this submission
-              </Action>
-            </fieldset>
-          )}
-        </details>
-      )}
-    </section>
+          </details>
+        )}
+      </section>
+    </ActionFields>
   );
 }

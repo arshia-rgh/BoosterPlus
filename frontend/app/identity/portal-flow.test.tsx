@@ -60,6 +60,10 @@ it("keeps role identity visible and blocks both methods during a server cooldown
   fireEvent.change(screen.getByLabelText("Work email address"), {
     target: { value: "staff@example.test" },
   });
+  fireEvent.change(screen.getByLabelText("Work email address"), {
+    target: { value: "staff@example.test" },
+  });
+  fireEvent.click(screen.getByRole("checkbox", { name: /account terms/ }));
   submit("Send verification code");
   await screen.findByText(/Too many attempts/);
   const buttons = screen.getAllByRole("button", {
@@ -129,6 +133,10 @@ it("moves focus from email verification into the staff authenticator step", asyn
   fireEvent.change(screen.getByLabelText("Work email address"), {
     target: { value: "staff@example.test" },
   });
+  fireEvent.change(screen.getByLabelText("Work email address"), {
+    target: { value: "staff@example.test" },
+  });
+  fireEvent.click(screen.getByRole("checkbox", { name: /account terms/ }));
   submit("Send verification code");
   const code = await screen.findByLabelText("Email verification code");
   await waitFor(() => expect(code).toHaveFocus());
@@ -160,6 +168,10 @@ it("blocks Google while email issuance is still in flight", async () => {
   );
   entry();
   await screen.findByLabelText("Work email address");
+  fireEvent.change(screen.getByLabelText("Work email address"), {
+    target: { value: "staff@example.test" },
+  });
+  fireEvent.click(screen.getByRole("checkbox", { name: /account terms/ }));
   submit("Send verification code");
   await waitFor(() =>
     expect(

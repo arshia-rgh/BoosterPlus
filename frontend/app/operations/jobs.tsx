@@ -1,3 +1,4 @@
+import { ActionFields, requireText } from "../ui/action-fields";
 import { AttemptHistory } from "./attempts";
 import "../ui/secondary.css";
 import { useState } from "react";
@@ -22,6 +23,7 @@ function Retry({ job, reload }: { job: Job; reload: () => void }) {
     setBusy(true);
     setError(null);
     try {
+      requireText("reason", reason);
       await post(
         `/admin/jobs/${encodeURIComponent(job.id)}/retry`,
         { generation: job.retry_generation, reason },
@@ -36,34 +38,37 @@ function Retry({ job, reload }: { job: Job; reload: () => void }) {
   }
   if (!job.retryable) return null;
   return (
-    <details>
-      <summary>Review and retry this task</summary>
-      <p>
-        Investigate the failure first. Another attempt may resend an email after
-        an ambiguous delivery result; the handler checks current eligibility and
-        expired references. If this action needs fresh verification, a dialog
-        lets you confirm it without leaving this task.
-      </p>
-      <ErrorNotice error={error} />
-      <fieldset disabled={busy}>
-        <legend>Audited task recovery</legend>
-        <Text
-          label="Reason for retry"
-          multiline
-          value={reason}
-          change={setReason}
-          help="Describe the investigation and why another attempt is appropriate. Do not include credentials or private message content."
-        />
-        <Action
-          disabled={!reason.trim()}
-          onClick={() => {
-            void retry();
-          }}
-        >
-          Queue another attempt
-        </Action>
-      </fieldset>
-    </details>
+    <ActionFields error={error} busy={busy}>
+      <details>
+        <summary>Review and retry this task</summary>
+        <p>
+          Investigate the failure first. Another attempt may resend an email
+          after an ambiguous delivery result; the handler checks current
+          eligibility and expired references. If this action needs fresh
+          verification, a dialog lets you confirm it without leaving this task.
+        </p>
+        <ErrorNotice error={error} />
+        <fieldset disabled={busy}>
+          <legend>Audited task recovery</legend>
+          <Text
+            name="reason"
+            label="Reason for retry"
+            multiline
+            value={reason}
+            change={setReason}
+            help="Describe the investigation and why another attempt is appropriate. Do not include credentials or private message content."
+          />
+          <Action
+            disabled={busy}
+            onClick={() => {
+              void retry();
+            }}
+          >
+            Queue another attempt
+          </Action>
+        </fieldset>
+      </details>
+    </ActionFields>
   );
 }
 export default function BackgroundJobs() {

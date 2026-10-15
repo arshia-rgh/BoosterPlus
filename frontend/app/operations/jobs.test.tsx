@@ -49,7 +49,9 @@ it("submits only the observed generation and an explicit audit reason", async ()
   vi.mocked(post).mockResolvedValue({});
   fireEvent.click(screen.getByText("Review and retry this task"));
   const submit = screen.getByRole("button", { name: "Queue another attempt" });
-  expect(submit).toBeDisabled();
+  expect(submit).toBeEnabled();
+  fireEvent.click(submit);
+  expect(screen.getByText("Use 1–2,000 characters.")).toBeVisible();
   fireEvent.change(screen.getByLabelText("Reason for retry"), {
     target: { value: "SMTP connectivity restored; retry reviewed." },
   });

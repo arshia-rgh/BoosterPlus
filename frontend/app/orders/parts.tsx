@@ -1,3 +1,4 @@
+import { ActionFields, requireText } from "../ui/action-fields";
 import { agreedDeliveryClock } from "../catalog/delivery-hours";
 import "../ui/secondary.css";
 import { DownloadImage } from "../media/attachment";
@@ -230,6 +231,8 @@ export function Decisions({
     setBusy(true);
     setError(null);
     try {
+      if (admin && ["clarify", "reject", "cancel"].includes(action))
+        requireText("message", message);
       await post(
         base + "/" + action,
         {
@@ -251,111 +254,108 @@ export function Decisions({
   }
   if (!admin && !cancellable && state !== "needs_information") return null;
   return (
-    <section className="catalog-section" aria-label="Order actions">
-      <h2>{admin ? "Next steps" : "Order options"}</h2>
-      <fieldset className="order-task-controls" disabled={busy}>
-        <legend className="sr-only">
-          {admin ? "Manage request" : "Your decision"}
-        </legend>
-        {!admin && state === "quoted" && detail.quote && (
-          <>
-            <p>
-              <Link
-                to={
-                  "/terms?version=" +
-                  encodeURIComponent(detail.quote.data.terms_version)
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Read terms
-              </Link>
-              . Review the amount, scope, delivery estimate, and expiry above.
-              Accepting creates an unpaid contract.
-            </p>
-            <Check
-              label="I accept this quote and its terms"
-              value={accepted}
-              change={setAccepted}
-            />
-            <Action
-              disabled={!accepted || !termsValid || expired}
-              onClick={() => void act("accept")}
-            >
-              Accept quote
-            </Action>
-            {expired && (
-              <p role="status">
-                This quote has expired. Ask support for an updated quote.
-              </p>
-            )}
-            <details>
-              <summary>Decline this quote</summary>
+    <ActionFields error={error} busy={busy}>
+      <section className="catalog-section" aria-label="Order actions">
+        <h2>{admin ? "Next steps" : "Order options"}</h2>
+        <fieldset className="order-task-controls" disabled={busy}>
+          <legend className="sr-only">
+            {admin ? "Manage request" : "Your decision"}
+          </legend>
+          {!admin && state === "quoted" && detail.quote && (
+            <>
               <p>
-                This returns the request for review without accepting a
-                contract.
+                <Link
+                  to={
+                    "/terms?version=" +
+                    encodeURIComponent(detail.quote.data.terms_version)
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Read terms
+                </Link>
+                . Review the amount, scope, delivery estimate, and expiry above.
+                Accepting creates an unpaid contract.
               </p>
-              <Action onClick={() => void act("decline")}>Decline quote</Action>
+              <Check
+                name="accept_terms"
+                label="I accept this quote and its terms"
+                value={accepted}
+                change={setAccepted}
+              />
+              <Action
+                disabled={!accepted || !termsValid || expired}
+                onClick={() => void act("accept")}
+              >
+                Accept quote
+              </Action>
+              {expired && (
+                <p role="status">
+                  This quote has expired. Ask support for an updated quote.
+                </p>
+              )}
+              <details>
+                <summary>Decline this quote</summary>
+                <p>
+                  This returns the request for review without accepting a
+                  contract.
+                </p>
+                <Action onClick={() => void act("decline")}>
+                  Decline quote
+                </Action>
+              </details>
+            </>
+          )}
+          {admin && (unaccepted || cancellable) && (
+            <Text
+              name="message"
+              label="Customer-visible explanation"
+              value={message}
+              change={setMessage}
+              multiline
+            />
+          )}
+          {admin && unaccepted && (
+            <div className="ui-state-actions">
+              <Action disabled={busy} onClick={() => void act("clarify")}>
+                Request clarification
+              </Action>
+              <Action disabled={busy} onClick={() => void act("reject")}>
+                Reject request
+              </Action>
+            </div>
+          )}
+          {cancellable && (
+            <details>
+              <summary>Cancel this unpaid order</summary>
+              <p>
+                This closes the unpaid order. A new order uses the current
+                catalog and prices.
+              </p>
+              <Action disabled={busy} onClick={() => void act("cancel")}>
+                Cancel unpaid order
+              </Action>
             </details>
-          </>
-        )}
-        {admin && (unaccepted || cancellable) && (
-          <Text
-            label="Customer-visible explanation"
-            value={message}
-            change={setMessage}
-            multiline
-          />
-        )}
-        {admin && unaccepted && (
-          <div className="ui-state-actions">
-            <Action
-              disabled={!message.trim()}
-              onClick={() => void act("clarify")}
-            >
-              Request clarification
-            </Action>
-            <Action
-              disabled={!message.trim()}
-              onClick={() => void act("reject")}
-            >
-              Reject request
-            </Action>
-          </div>
-        )}
-        {cancellable && (
-          <details>
-            <summary>Cancel this unpaid order</summary>
+          )}
+          {state === "needs_information" && !admin && (
             <p>
-              This closes the unpaid order. A new order uses the current catalog
-              and prices.
+              Read the requested clarification in your timeline, then revise
+              your selections below.
             </p>
-            <Action
-              disabled={admin && !message.trim()}
-              onClick={() => void act("cancel")}
-            >
-              Cancel unpaid order
-            </Action>
-          </details>
-        )}
-        {state === "needs_information" && !admin && (
-          <p>
-            Read the requested clarification in your timeline, then revise your
-            selections below.
-          </p>
-        )}
-        {detail.contract && (
-          <p>
-            {detail.contract.payment_state === "settled"
-              ? "Payment is verified. Follow the fulfillment updates above."
-              : detail.contract.payment_state === "retired"
-                ? "This unpaid contract was retired."
-                : "No payment has been verified for this order. See payment details below."}
-          </p>
-        )}
-      </fieldset>
-      <ErrorNotice error={error} />
-    </section>
+          )}
+          {detail.contract && (
+            <p>
+              {detail.contract.payment_state === "settled"
+                ? "Payment is verified. Follow the fulfillment updates above."
+                : detail.contract.payment_state === "retired"
+                  ? "This unpaid contract was retired."
+                  : "No payment has been verified for this order. See payment details below."}
+            </p>
+          )}
+        </fieldset>
+        <ErrorNotice error={error} />
+      </section>
+    </ActionFields>
   );
 }
 function ReorderForm({ draft }: { draft: Reorder }) {

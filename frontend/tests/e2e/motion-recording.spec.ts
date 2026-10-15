@@ -6,13 +6,21 @@ test("records native homepage reveals and persistent game atmosphere", async ({
 }, info) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
-  for (const kind of ["boost", "accounts", "shop", "payment", "news"]) {
+  for (const [index, kind] of [
+    "boost",
+    "accounts",
+    "shop",
+    "payment",
+    "news",
+  ].entries()) {
+    await page
+      .getByRole("tablist", { name: "Explore PLAYORA services" })
+      .getByRole("tab")
+      .nth(index)
+      .click();
     const section = page.locator(`.introduction-${kind}`);
     await section.scrollIntoViewIfNeeded();
-    await expect(section.locator(".service-visual")).toHaveAttribute(
-      "data-entered",
-      "true",
-    );
+    await expect(section).toHaveCSS("animation-name", "explorer-enter");
     // Record one complete finite entry interval. This is video evidence, not a
     // sleep used to make a functional assertion pass.
     await page.evaluate(

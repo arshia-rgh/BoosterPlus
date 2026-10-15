@@ -348,3 +348,23 @@ it("retains saved input and its actual revision when submission validation fails
     expect.anything(),
   );
 });
+
+it("shows API field errors under seller answers and focuses the first editable field", async () => {
+  const value = fixture();
+  value.ownership_declared = true;
+  const error = new APIError("Complete the highlighted account details.");
+  error.status = 422;
+  error.issues = [{ path: "region", message: "Select the account region." }];
+  vi.mocked(post).mockRejectedValueOnce(error);
+  render(<SubmissionEditor value={value} reload={vi.fn()} />);
+  fireEvent.click(
+    screen.getByRole("button", { name: "Save and submit for review" }),
+  );
+  const region = screen.getByLabelText("Region (required)");
+  await waitFor(() => expect(region).toHaveFocus());
+  expect(region).toHaveAttribute("aria-invalid", "true");
+  expect(region).toHaveAccessibleDescription("Select the account region.");
+  expect(screen.getByLabelText("Private account title")).toHaveValue(
+    "Private account",
+  );
+});

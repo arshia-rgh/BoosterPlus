@@ -1,8 +1,9 @@
 import "../ui/secondary.css";
+import { ActionFields } from "../ui/action-fields";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useBlocker, useSearchParams } from "../portal-router";
 import { z } from "../validation";
-import { Action, ErrorNotice } from "../catalog/controls";
+import { Action, ErrorNotice, Text, Check } from "../catalog/controls";
 import { AuthorizedIdentity } from "../identity/frame";
 import { Form } from "../identity/identity";
 import { APIError, post } from "../identity/api";
@@ -324,55 +325,49 @@ function ContentWorkspace({
                     </p>
                   )}
                   <ContentPreview content={saved} />
-                  <fieldset disabled={dirty || stale || busy || loading}>
-                    <legend>Publish this exact saved revision</legend>
-                    <label className="check">
-                      <input
-                        type="checkbox"
-                        checked={previewed === saved.version}
-                        onChange={(e) => {
-                          setPreviewed(e.target.checked ? saved.version : 0);
+                  <ActionFields error={error} busy={busy}>
+                    <ErrorNotice error={error} />
+                    <fieldset disabled={dirty || stale || busy || loading}>
+                      <legend>Publish this exact saved revision</legend>
+                      <Check
+                        name="reviewed"
+                        label="I reviewed this saved content preview"
+                        value={previewed === saved.version}
+                        change={(checked) => {
+                          setPreviewed(checked ? saved.version : 0);
                           setConfirm(false);
                         }}
                       />
-                      I reviewed this saved content preview
-                    </label>
-                    <label className="catalog-label">
-                      Unique published version
-                      <input
+                      <Text
+                        name="label"
+                        label="Unique published version"
                         value={label}
-                        onChange={(e) => {
-                          setLabel(e.target.value);
+                        change={(v) => {
+                          setLabel(v);
                           setConfirm(false);
                         }}
                         maxLength={64}
                       />
-                    </label>
-                    <label className="check">
-                      <input
-                        type="checkbox"
-                        checked={confirm}
-                        onChange={(e) => {
-                          setConfirm(e.target.checked);
-                        }}
+                      <Check
+                        name="confirm"
+                        label="I reviewed the complete content and approve publication."
+                        value={confirm}
+                        change={setConfirm}
                       />
-                      I reviewed the complete content and approve publication.
-                    </label>
-                    <Action
-                      disabled={
-                        !confirm || previewed !== saved.version || !label.trim()
-                      }
-                      onClick={() => {
-                        void publish();
-                      }}
-                    >
-                      Publish reviewed content
-                    </Action>
-                  </fieldset>
-                  <p>
-                    If this action needs fresh verification, confirm it in the
-                    dialog here.
-                  </p>
+                      <Action
+                        disabled={
+                          !confirm ||
+                          previewed !== saved.version ||
+                          !label.trim()
+                        }
+                        onClick={() => {
+                          void publish();
+                        }}
+                      >
+                        Publish reviewed content
+                      </Action>
+                    </fieldset>
+                  </ActionFields>
                 </>
               )}
               {active === "history" && (

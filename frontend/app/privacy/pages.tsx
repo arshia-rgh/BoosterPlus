@@ -1,7 +1,8 @@
+import { Confirmation } from "../ui/form-validation";
 import { useState } from "react";
 import { Link } from "../portal-router";
 import { z } from "../validation";
-import { Action, ErrorNotice } from "../catalog/controls";
+import { Action, ErrorNotice, Text } from "../catalog/controls";
 import { Form, value } from "../identity/identity";
 import { post } from "../identity/api";
 import { useResource } from "../orders/resource";
@@ -176,11 +177,11 @@ export default function Privacy({ admin = false }: { admin?: boolean }) {
               resource.reload();
             }}
           >
-            <label className="check">
-              <input type="checkbox" required />I read the current retention
-              policy and request removal of my profile and eligible private
-              content, subject to its retained-evidence and backup rules.
-            </label>
+            <Confirmation>
+              I read the current retention policy and request removal of my
+              profile and eligible private content, subject to its
+              retained-evidence and backup rules.
+            </Confirmation>
           </Form>
         ) : (
           <p>
@@ -266,6 +267,7 @@ function RequestAction({
   reload: () => void;
 }) {
   const [action, setAction] = useState("review");
+  const [reason, setReason] = useState("");
   const actionLabel =
     new Map([
       ["review", "Recheck holds and retention"],
@@ -325,10 +327,14 @@ function RequestAction({
           <p>
             <strong>Selected action: {actionLabel}</strong>
           </p>
-          <label>
-            Owner hold reason
-            <textarea name="reason" maxLength={2000} />
-          </label>
+          <Text
+            name="reason"
+            label="Owner hold reason"
+            multiline
+            maxLength={2000}
+            value={reason}
+            change={setReason}
+          />
           <p role="status">
             {action === "erase"
               ? "Erasure revokes sign-in and removes eligible live private data. Financial, dispute and audit evidence remains; files may still need purging and backups follow the published policy."
@@ -336,20 +342,17 @@ function RequestAction({
                 ? "Confirm only after private object purges are verified. Retained evidence and backups remain governed by the published policy."
                 : "Recheck current holds and policy before proceeding."}
           </p>
-          <label className="check">
-            <input key={action} type="checkbox" required />I reviewed this
-            action, current policy and retained records.
-          </label>
+          <Confirmation key={action}>
+            I reviewed this action, current policy and retained records.
+          </Confirmation>
         </>
       ) : (
-        <label className="check">
-          <input
-            type="checkbox"
-            required
-            disabled={request.state === "erased_pending_files"}
-          />
+        <Confirmation
+          name="cancel_confirm"
+          disabled={request.state === "erased_pending_files"}
+        >
           Cancel my pending request before erasure begins
-        </label>
+        </Confirmation>
       )}
     </Form>
   );

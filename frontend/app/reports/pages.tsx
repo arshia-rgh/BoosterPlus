@@ -1,7 +1,12 @@
+import {
+  ActionFields,
+  requireText,
+  rejectInvalidFields,
+} from "../ui/action-fields";
 import { TableRegion } from "../ui/primitives";
 import { useState, type SubmitEvent } from "react";
 import { Action, ErrorNotice, Select, Text } from "../catalog/controls";
-import { post } from "../identity/api";
+import { APIError, post } from "../identity/api";
 import {
   downloadReport,
   exportSchema,
@@ -79,6 +84,17 @@ export default function Reports() {
     setMessage("");
     setPreview(null);
     try {
+      rejectInvalidFields([
+        ...(!Number.isFinite(Date.parse(query.from)) ||
+        new Date(query.from).getUTCFullYear() < 1000
+          ? [{ path: "from", message: "Choose a valid start date." }]
+          : []),
+        ...(!Number.isFinite(Date.parse(query.to)) ||
+        Date.parse(query.to) <= Date.parse(query.from)
+          ? [{ path: "to", message: "Choose an end date after the start." }]
+          : []),
+      ]);
+      requireText("search", search, 0, 80);
       setPreview(await post("/admin/reports/preview", query, reportSchema));
     } catch (cause) {
       setError(cause);
@@ -103,6 +119,7 @@ export default function Reports() {
     setError(null);
     setMessage("");
     try {
+      requireText("reason", reason);
       const value = await post(
         "/admin/reports/export",
         { query: preview.query, digest: preview.digest, reason },
@@ -111,196 +128,193 @@ export default function Reports() {
       downloadReport(value);
       setMessage("Report page downloaded. Audit reference: " + value.audit_id);
     } catch (cause) {
-      setPreview(null);
+      if (!(cause instanceof APIError) || !cause.issues.length)
+        setPreview(null);
       setError(cause);
     } finally {
       setBusy(false);
     }
   }
   return (
-    <section>
-      <h2>Operational reports</h2>
-      <p>
-        Preview and download up to 100 records per page. Financial reports show
-        exact crypto quantities by asset and network and distinguish confirmed
-        evidence from pending obligations. Each report states its date and
-        recognition basis; no exchange conversion or revenue total is inferred.
-        Audit reports are restricted to the owner.
-      </p>
-      <p>
-        If this action needs fresh verification, confirm it in the dialog here.
-      </p>
-      <form className="report-form" onSubmit={submit}>
-        <fieldset disabled={busy}>
-          <legend>Report filters</legend>
-          <Select
-            label="Report"
-            value={kind}
-            change={(value) => {
-              const parsed = (
-                [
-                  "orders",
-                  "catalog",
-                  "staff",
-                  "audits",
-                  "receipts",
-                  "refunds",
-                  "payouts",
-                ] as const
-              ).find((item) => item === value);
-              if (parsed)
-                edit(() => {
-                  setKind(parsed);
-                  setState("");
-                });
-            }}
-            options={[
-              ["orders", "Orders"],
-              ["receipts", "Payment receipts"],
-              ["refunds", "Refund obligations"],
-              ["payouts", "Seller payouts"],
-              ["catalog", "Catalog"],
-              ["staff", "Staff"],
-              ["audits", "Audit events (owner)"],
-            ]}
-          />
-          <label>
-            From date (UTC, inclusive)
-            <input
+    <ActionFields error={error} busy={busy}>
+      <section>
+        <h2>Operational reports</h2>
+        <p>
+          Preview and download up to 100 records per page. Financial reports
+          show exact crypto quantities by asset and network and distinguish
+          confirmed evidence from pending obligations. Each report states its
+          date and recognition basis; no exchange conversion or revenue total is
+          inferred. Audit reports are restricted to the owner.
+        </p>
+        <form className="report-form" onSubmit={submit} noValidate>
+          <fieldset disabled={busy}>
+            <legend>Report filters</legend>
+            <Select
+              name="kind"
+              label="Report"
+              value={kind}
+              change={(value) => {
+                const parsed = (
+                  [
+                    "orders",
+                    "catalog",
+                    "staff",
+                    "audits",
+                    "receipts",
+                    "refunds",
+                    "payouts",
+                  ] as const
+                ).find((item) => item === value);
+                if (parsed)
+                  edit(() => {
+                    setKind(parsed);
+                    setState("");
+                  });
+              }}
+              options={[
+                ["orders", "Orders"],
+                ["receipts", "Payment receipts"],
+                ["refunds", "Refund obligations"],
+                ["payouts", "Seller payouts"],
+                ["catalog", "Catalog"],
+                ["staff", "Staff"],
+                ["audits", "Audit events (owner)"],
+              ]}
+            />
+            <Text
+              name="from"
+              label="From date (UTC, inclusive)"
               type="date"
-              required
               value={from}
-              onChange={(event) => {
+              change={(value) => {
                 edit(() => {
-                  setFrom(event.target.value);
+                  setFrom(value);
                 });
               }}
             />
-          </label>
-          <label>
-            Until date (UTC, exclusive)
-            <input
+            <Text
+              name="to"
+              label="Until date (UTC, exclusive)"
               type="date"
-              required
               value={to}
-              onChange={(event) => {
+              change={(value) => {
                 edit(() => {
-                  setTo(event.target.value);
+                  setTo(value);
                 });
               }}
             />
-          </label>
-          <Select
-            label="Current status"
-            value={state}
-            change={(value) => {
-              edit(() => {
-                setState(value);
-              });
-            }}
-            options={[
-              ["", "All"],
-              ...(filters.get(kind) ?? []).map(
-                (value) => [value, value] as [string, string],
-              ),
-            ]}
-          />
-          <Text
-            label="Search name, alias, action or exact record ID"
-            value={search}
-            change={(value) => {
-              edit(() => {
-                setSearch(value);
-              });
-            }}
-          />
-          <button type="submit" className="button">
-            Preview report
-          </button>
-        </fieldset>
-      </form>
-      <ErrorNotice error={error} />
-      {busy && <p role="status">Preparing report…</p>}
-      {message && <p role="status">{message}</p>}
-      {preview && (
-        <>
-          <h3>
-            Preview: {preview.count}{" "}
-            {preview.count === 1 ? "record" : "records"}
-          </h3>
-          <p>{preview.basis}</p>
-          <p>
-            Generated at {preview.observed_at}. Text is preserved exactly in the
-            JSON download.
-          </p>
-          {preview.count === 0 ? (
-            <p>No records match these filters.</p>
-          ) : (
-            <TableRegion
-              className="report-scroll"
-              label="Operational report table"
-            >
-              <table>
-                <caption>{preview.kind} report page</caption>
-                <thead>
-                  <tr>
-                    {preview.columns.map((column) => (
-                      <th key={column.key} scope="col">
-                        {column.label}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {preview.rows.map((row, index) => (
-                    <tr key={row[0] ?? String(index)}>
-                      {row.map((cell, i) => (
-                        <td key={preview.columns.at(i)?.key ?? String(i)}>
-                          {cell}
-                        </td>
+            <Select
+              name="state"
+              label="Current status"
+              value={state}
+              change={(value) => {
+                edit(() => {
+                  setState(value);
+                });
+              }}
+              options={[
+                ["", "All"],
+                ...(filters.get(kind) ?? []).map(
+                  (value) => [value, value] as [string, string],
+                ),
+              ]}
+            />
+            <Text
+              name="search"
+              label="Search name, alias, action or exact record ID"
+              value={search}
+              change={(value) => {
+                edit(() => {
+                  setSearch(value);
+                });
+              }}
+            />
+            <button type="submit" className="button">
+              Preview report
+            </button>
+          </fieldset>
+        </form>
+        <ErrorNotice error={error} />
+        {busy && <p role="status">Preparing report…</p>}
+        {message && <p role="status">{message}</p>}
+        {preview && (
+          <>
+            <h3>
+              Preview: {preview.count}{" "}
+              {preview.count === 1 ? "record" : "records"}
+            </h3>
+            <p>{preview.basis}</p>
+            <p>
+              Generated at {preview.observed_at}. Text is preserved exactly in
+              the JSON download.
+            </p>
+            {preview.count === 0 ? (
+              <p>No records match these filters.</p>
+            ) : (
+              <TableRegion
+                className="report-scroll"
+                label="Operational report table"
+              >
+                <table>
+                  <caption>{preview.kind} report page</caption>
+                  <thead>
+                    <tr>
+                      {preview.columns.map((column) => (
+                        <th key={column.key} scope="col">
+                          {column.label}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </TableRegion>
-          )}
-          <Text
-            label="Reason for export"
-            value={reason}
-            change={setReason}
-            multiline
-          />
-          <p>
-            Downloading requires recent authenticator or email verification. If
-            records change, refresh the preview before downloading.
-          </p>
-          <Action
-            disabled={busy || reason.trim() === ""}
-            onClick={() => void download()}
-          >
-            Download this page (.json)
-          </Action>
-          {preview.next && (
-            <Action
-              disabled={busy}
-              onClick={() =>
-                void load({ ...preview.query, after: preview.next })
-              }
-            >
-              Next report page
+                  </thead>
+                  <tbody>
+                    {preview.rows.map((row, index) => (
+                      <tr key={row[0] ?? String(index)}>
+                        {row.map((cell, i) => (
+                          <td key={preview.columns.at(i)?.key ?? String(i)}>
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TableRegion>
+            )}
+            <Text
+              name="reason"
+              label="Reason for export"
+              value={reason}
+              change={setReason}
+              multiline
+            />
+            <p>
+              Downloading requires recent authenticator or email verification.
+              If records change, refresh the preview before downloading.
+            </p>
+            <Action disabled={busy} onClick={() => void download()}>
+              Download this page (.json)
             </Action>
-          )}
-          {preview.query.after && (
-            <Action
-              disabled={busy}
-              onClick={() => void load({ ...preview.query, after: "" })}
-            >
-              First report page
-            </Action>
-          )}
-        </>
-      )}
-    </section>
+            {preview.next && (
+              <Action
+                disabled={busy}
+                onClick={() =>
+                  void load({ ...preview.query, after: preview.next })
+                }
+              >
+                Next report page
+              </Action>
+            )}
+            {preview.query.after && (
+              <Action
+                disabled={busy}
+                onClick={() => void load({ ...preview.query, after: "" })}
+              >
+                First report page
+              </Action>
+            )}
+          </>
+        )}
+      </section>
+    </ActionFields>
   );
 }

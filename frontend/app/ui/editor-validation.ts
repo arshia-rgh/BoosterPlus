@@ -25,7 +25,10 @@ export function boundedTextIssue(
 export function useEditorValidation() {
   const [issues, setIssues] = useState<FieldIssue[]>([]);
   const validation = useFormValidation(issues, (name) => {
-    setIssues((old) => old.filter((issue) => issue.path !== name));
+    setIssues((old) => {
+      const next = old.filter((issue) => issue.path !== name);
+      return next.length === old.length ? old : next;
+    });
   });
   function check(next: FieldIssue[]) {
     setIssues(next);

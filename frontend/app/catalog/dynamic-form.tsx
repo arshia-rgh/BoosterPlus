@@ -72,7 +72,7 @@ export function Input({
   field,
   config,
   value,
-  change,
+  change: changeValue,
   required,
   error: suppliedError,
   rangeError,
@@ -95,6 +95,10 @@ export function Input({
 }) {
   const validation = useContext(FieldValidation);
   const name = validationName ?? field.key;
+  const change = (next: Answers[string] | undefined) => {
+    changeValue(next);
+    validation?.correct(name);
+  };
   const [editing, setEditing] = useState(false);
   const error =
     suppliedError ||
@@ -399,14 +403,18 @@ function ConfigurationForm({
     };
   }, [service.fields]);
 
+  const [keepRejectedIssues, setKeepRejectedIssues] = useState(false);
   const [lastStage, setLastStage] = useState(stage);
   if (lastStage !== stage) {
     setLastStage(stage);
     setChanged(false);
     setValid(false);
     if (!journey) setEstimate(null);
-    setIssues([]);
-    setError(null);
+    if (!keepRejectedIssues) {
+      setIssues([]);
+      setError(null);
+    }
+    setKeepRejectedIssues(false);
   }
   const requestSequence = useRef(0);
   useEffect(
@@ -419,7 +427,10 @@ function ConfigurationForm({
   const validation = useFormValidation(
     issues,
     (name) => {
-      setIssues((current) => current.filter((issue) => issue.path !== name));
+      setIssues((current) => {
+        const next = current.filter((issue) => issue.path !== name);
+        return next.length === current.length ? current : next;
+      });
     },
     undefined,
     !busy,
@@ -987,6 +998,25 @@ function ConfigurationForm({
             </Action>
           ) : (
             <SubmitOrder
+              onIssues={(next) => {
+                setIssues(next);
+                if (
+                  next.some((issue) =>
+                    service.fields.some(
+                      (field) =>
+                        field.stage === "estimate" &&
+                        (issue.path === field.key ||
+                          issue.path.startsWith(field.key + ".")),
+                    ),
+                  )
+                ) {
+                  setValid(false);
+                  if (journey) {
+                    setKeepRejectedIssues(true);
+                    journey.edit();
+                  }
+                }
+              }}
               intakeKey={uploadScope}
               onSignIn={() => {
                 saveConfigurationDraft(

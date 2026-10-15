@@ -1,10 +1,18 @@
-import { useEffect, useId, useState, useRef } from "react";
+import {
+  useEffect,
+  useId,
+  useState,
+  useRef,
+  useContext,
+  useCallback,
+} from "react";
+import { FieldValidation, fieldError } from "../../ui/form-validation";
 import type { FormField } from "./model";
 export function AnswerInput({
   field,
   value,
   change,
-  error,
+  error: suppliedError,
   disabled = false,
 }: {
   disabled?: boolean;
@@ -14,8 +22,25 @@ export function AnswerInput({
   error?: string | undefined;
 }) {
   const id = useId();
+  const validation = useContext(FieldValidation);
+  const register = validation?.register;
+  const name = "answers." + field.key;
+  const error = suppliedError || fieldError(validation, name);
+  const fieldRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (node && register) return register({ name, id, label: field.label });
+    },
+    [name, id, field.label, register],
+  );
   const [show, setShow] = useState(false);
   const editor = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useCallback(
+    (node: HTMLTextAreaElement | null) => {
+      editor.current = node;
+      return fieldRef(node);
+    },
+    [fieldRef],
+  );
   useEffect(() => {
     if (show) editor.current?.focus();
   }, [show]);
@@ -32,6 +57,7 @@ export function AnswerInput({
   }, []);
   const props = {
     id,
+    ref: fieldRef,
     disabled,
     value,
     name: "answers." + field.key,
@@ -47,6 +73,7 @@ export function AnswerInput({
       >,
     ) => {
       change(e.target.value);
+      validation?.correct(name);
     },
   };
   return (
@@ -67,6 +94,7 @@ export function AnswerInput({
         <>
           <button
             className="chat-text-button"
+            ref={show ? undefined : fieldRef}
             id={show ? undefined : id}
             name={show ? undefined : "answers." + field.key}
             aria-describedby={props["aria-describedby"]}
@@ -84,7 +112,7 @@ export function AnswerInput({
                 : "Enter protected text"}
           </button>
           {show ? (
-            <textarea {...props} ref={editor} rows={4} />
+            <textarea {...props} ref={editorRef} rows={4} />
           ) : (
             <span>Protected text {value ? "entered" : "not entered"}</span>
           )}

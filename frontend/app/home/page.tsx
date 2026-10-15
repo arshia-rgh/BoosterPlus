@@ -8,8 +8,7 @@ import PublicMetrics from "../catalog/public-metrics";
 import { metricsSchema } from "../catalog/public-discovery";
 import { useResource } from "../orders/resource";
 import { useMotionPreference, useSectionReveals } from "./motion";
-import { introductionKinds, reviewedIntroduction } from "./introductions";
-import { ServiceSymbol } from "./service-symbol";
+import { ServiceExplorer } from "./service-explorer";
 import ReviewCarousel from "./review-carousel";
 import "./home.css";
 
@@ -76,52 +75,7 @@ export function HomePage({
           retry={statistics.reload}
         />
       </div>
-      {introductionKinds.map((kind, index) => {
-        const section = reviewedIntroduction(content, kind);
-        return (
-          <section
-            className={`home-content-width service-introduction introduction-${kind}`}
-            key={kind}
-            aria-labelledby={`introduction-${kind}`}
-          >
-            <div className="service-introduction-copy">
-              <p className="home-kicker">
-                0{index + 1} / {section.label}
-              </p>
-              <h2 id={`introduction-${kind}`}>{section.title}</h2>
-              <p>{section.description}</p>
-              {(kind === "shop" || kind === "news") && (
-                <p className="service-availability-note">
-                  Being prepared. Availability will be shown on each game page.
-                </p>
-              )}
-              <a
-                className="home-button"
-                href="#game-selection"
-                onClick={(event) => {
-                  event.preventDefault();
-                  chooseGame();
-                }}
-              >
-                Choose your game <span aria-hidden="true">↘</span>
-              </a>
-            </div>
-            <div className="service-visual">
-              <ServiceSymbol kind={kind} />
-              <p className="service-caption">{section.caption}</p>
-              {section.features.map(([title, body], i) => (
-                <article className="service-feature" key={title}>
-                  <span aria-hidden="true">0{i + 1}</span>
-                  <div>
-                    <h3>{title}</h3>
-                    <p>{body}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        );
-      })}
+      <ServiceExplorer content={content} chooseGame={chooseGame} />
       <ReviewCarousel />
       <section
         className="home-content-width home-faq"

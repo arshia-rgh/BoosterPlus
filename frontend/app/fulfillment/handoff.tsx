@@ -1,3 +1,4 @@
+import { ActionFields } from "../ui/action-fields";
 import { useState } from "react";
 import { Action, ErrorNotice } from "../catalog/controls";
 import { Input } from "../catalog/dynamic-form";
@@ -45,47 +46,51 @@ export default function Handoff({
   }
   if (!fields.length) return null;
   return (
-    <section className="catalog-section">
-      <h3>Fulfillment information</h3>
-      <p>
-        Provide ordinary player and coordination details. Use the separate
-        game-access form for temporary credentials.
-      </p>
-      <ErrorNotice error={error} />
-      <fieldset disabled={busy}>
-        <legend>Details for this service</legend>
-        {fields.map((field) => (
-          <Input
-            key={field.key}
-            field={field}
-            config={detail.offer.configuration}
-            value={values[field.key]}
-            required={
-              field.required ||
-              (!!field.required_when &&
-                matches(field.required_when, values, service.fields))
-            }
-            error={undefined}
-            change={(value) => {
-              setAnswers((current) => {
-                const next = Object.fromEntries(
-                  Object.entries(current).filter(([key]) => key !== field.key),
-                );
-                if (value !== undefined) next[field.key] = value;
-                return next;
-              });
-            }}
-          />
-        ))}
-      </fieldset>
-      <Action
-        disabled={busy}
-        onClick={() => {
-          void save();
-        }}
-      >
-        Save fulfillment information
-      </Action>
-    </section>
+    <ActionFields error={error} busy={busy}>
+      <section className="catalog-section">
+        <h3>Fulfillment information</h3>
+        <p>
+          Add player and coordination details here. Share credentials only in a
+          protected form requested in Messages.
+        </p>
+        <ErrorNotice error={error} />
+        <fieldset disabled={busy}>
+          <legend>Details for this service</legend>
+          {fields.map((field) => (
+            <Input
+              key={field.key}
+              field={field}
+              config={detail.offer.configuration}
+              value={values[field.key]}
+              required={
+                field.required ||
+                (!!field.required_when &&
+                  matches(field.required_when, values, service.fields))
+              }
+              error={undefined}
+              change={(value) => {
+                setAnswers((current) => {
+                  const next = Object.fromEntries(
+                    Object.entries(current).filter(
+                      ([key]) => key !== field.key,
+                    ),
+                  );
+                  if (value !== undefined) next[field.key] = value;
+                  return next;
+                });
+              }}
+            />
+          ))}
+        </fieldset>
+        <Action
+          disabled={busy}
+          onClick={() => {
+            void save();
+          }}
+        >
+          Save fulfillment information
+        </Action>
+      </section>
+    </ActionFields>
   );
 }

@@ -49,7 +49,9 @@ it("downloads the exact reviewed page only after an explicit audit reason", asyn
   const button = screen.getByRole("button", {
     name: "Download this page (.json)",
   });
-  expect(button).toBeDisabled();
+  expect(button).toBeEnabled();
+  fireEvent.click(button);
+  expect(screen.getByText("Use 1–2,000 characters.")).toBeVisible();
   fireEvent.change(screen.getByLabelText("Reason for export"), {
     target: { value: "Review operations" },
   });

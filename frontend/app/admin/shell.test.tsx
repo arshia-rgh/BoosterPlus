@@ -43,9 +43,10 @@ for (const [label, overrides] of [
     expect(
       screen.queryByRole("navigation", { name: "Staff navigation" }),
     ).not.toBeInTheDocument();
+    expect(screen.getByRole("main")).toHaveTextContent("Sign in");
     expect(
-      screen.getByRole("region", { name: "Staff sign-in guide" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("region", { name: "Staff sign-in guide" }),
+    ).not.toBeInTheDocument();
   });
 }
 it("shows authorized modules and highlights the order detail's parent", () => {

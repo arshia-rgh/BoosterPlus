@@ -298,3 +298,194 @@ it("focuses share-form answer errors and previews only safe values before return
   await waitFor(() => expect(screen.getByLabelText("Title")).toHaveFocus());
   expect(screen.getByLabelText("Title")).toHaveValue("Recovery details");
 });
+
+it("keeps focus while correcting one of multiple rejected response fields", async () => {
+  card({
+    ...row,
+    fields: [
+      {
+        key: "first",
+        label: "First detail",
+        kind: "text",
+        secure: false,
+        required: true,
+      },
+      {
+        key: "second",
+        label: "Second detail",
+        kind: "text",
+        secure: false,
+        required: true,
+      },
+    ],
+  });
+  fireEvent.click(await screen.findByRole("button", { name: "Complete form" }));
+  fireEvent.click(screen.getByRole("button", { name: "Send response" }));
+  const first = screen.getByRole("textbox", { name: /First detail/ });
+  await waitFor(() => expect(first).toHaveFocus());
+  fireEvent.change(first, { target: { value: "Keep typing" } });
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  expect(first).toHaveFocus();
+  expect(first).not.toHaveAttribute("aria-invalid");
+  fireEvent.change(screen.getByRole("textbox", { name: /Second detail/ }), {
+    target: { value: "Ready" },
+  });
+  const error = Object.assign(new APIError("Check your details."), {
+    status: 422,
+    issues: [{ path: "answers.first", message: "Use the registered value." }],
+  });
+  vi.mocked(post).mockRejectedValueOnce(error);
+  fireEvent.click(screen.getByRole("button", { name: "Send response" }));
+  await waitFor(() =>
+    expect(first).toHaveAccessibleDescription("Use the registered value."),
+  );
+  expect(first).toHaveFocus();
+  expect(first).toBeEnabled();
+  expect(first).toHaveValue("Keep typing");
+});
+
+it("reopens authoring and focuses a server-rejected share answer without losing it", async () => {
+  vi.mocked(get).mockResolvedValue({
+    open: true,
+    booster: false,
+    purposes: [
+      {
+        key: "information",
+        label: "Information",
+        modes: ["request", "share"],
+        max_hours: 720,
+      },
+    ],
+  });
+  render(
+    <MemoryRouter>
+      <CreateChatForm base="/admin/conversations/chat" changed={vi.fn()} />
+    </MemoryRouter>,
+  );
+  fireEvent.click(screen.getByRole("button", { name: /Send a form/ }));
+  fireEvent.change(await screen.findByLabelText("Title"), {
+    target: { value: "Instructions" },
+  });
+  fireEvent.change(screen.getByLabelText("Field label"), {
+    target: { value: "Note" },
+  });
+  fireEvent.change(screen.getByLabelText("Action"), {
+    target: { value: "share" },
+  });
+  fireEvent.change(screen.getByRole("textbox", { name: /^Note/ }), {
+    target: { value: "Retained note" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Preview form" }));
+  vi.mocked(post).mockRejectedValueOnce(
+    Object.assign(new APIError("Check the answer."), {
+      status: 422,
+      issues: [{ path: "answers.field_1", message: "Complete the note." }],
+    }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Send form" }));
+  const field = await screen.findByRole("textbox", { name: /^Note/ });
+  await waitFor(() => expect(field).toHaveFocus());
+  expect(field).toHaveValue("Retained note");
+  expect(field).toHaveAccessibleDescription("Complete the note.");
+});
+
+it("recalculates corrected expiry after a definitive rejection", async () => {
+  vi.mocked(get).mockResolvedValue({
+    open: true,
+    booster: false,
+    purposes: [
+      {
+        key: "information",
+        label: "Information",
+        modes: ["request"],
+        max_hours: 720,
+      },
+    ],
+  });
+  render(
+    <MemoryRouter>
+      <CreateChatForm base="/admin/conversations/chat" changed={vi.fn()} />
+    </MemoryRouter>,
+  );
+  fireEvent.click(screen.getByRole("button", { name: /Send a form/ }));
+  fireEvent.change(await screen.findByLabelText("Title"), {
+    target: { value: "Instructions" },
+  });
+  fireEvent.change(screen.getByLabelText("Field label"), {
+    target: { value: "Note" },
+  });
+  fireEvent.change(screen.getByLabelText(/Expires after/), {
+    target: { value: "48" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Preview form" }));
+  vi.mocked(post).mockRejectedValueOnce(
+    Object.assign(new APIError("Check expiry."), {
+      status: 422,
+      issues: [{ path: "expires_at", message: "Choose a later expiry." }],
+    }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Send form" }));
+  const hours = await screen.findByLabelText(/Expires after/);
+  await waitFor(() => expect(hours).toHaveFocus());
+  const first = vi.mocked(post).mock.calls.at(-1)?.[1] as {
+    expires_at: string;
+    request_key: string;
+  };
+  fireEvent.change(hours, { target: { value: "72" } });
+  fireEvent.click(screen.getByRole("button", { name: "Preview form" }));
+  fireEvent.click(screen.getByRole("button", { name: "Send form" }));
+  await waitFor(() => {
+    expect(post).toHaveBeenCalledTimes(2);
+  });
+  const second = vi.mocked(post).mock.calls.at(-1)?.[1] as {
+    expires_at: string;
+    request_key: string;
+  };
+  expect(
+    Date.parse(second.expires_at) - Date.parse(first.expires_at),
+  ).toBeGreaterThanOrEqual(24 * 3600000);
+  expect(second.request_key).not.toBe(first.request_key);
+});
+
+it("focuses an unknown rejection after the authoring registry remounts", async () => {
+  vi.mocked(get).mockResolvedValue({
+    open: true,
+    booster: false,
+    purposes: [
+      {
+        key: "information",
+        label: "Information",
+        modes: ["request"],
+        max_hours: 720,
+      },
+    ],
+  });
+  render(
+    <MemoryRouter>
+      <CreateChatForm base="/admin/conversations/chat" changed={vi.fn()} />
+    </MemoryRouter>,
+  );
+  fireEvent.click(screen.getByRole("button", { name: /Send a form/ }));
+  fireEvent.change(await screen.findByLabelText("Title"), {
+    target: { value: "Instructions" },
+  });
+  fireEvent.change(screen.getByLabelText("Field label"), {
+    target: { value: "Note" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Preview form" }));
+  vi.mocked(post).mockRejectedValueOnce(
+    Object.assign(new APIError("Check request."), {
+      status: 422,
+      issues: [{ path: "request", message: "Reload the conversation." }],
+    }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Send form" }));
+  await waitFor(() =>
+    expect(screen.getByRole("list", { name: "Fields to check" })).toHaveFocus(),
+  );
+  const title = screen.getByLabelText("Title");
+  title.focus();
+  fireEvent.change(title, { target: { value: "Keep editing" } });
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  expect(title).toHaveFocus();
+});

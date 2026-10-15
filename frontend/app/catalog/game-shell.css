@@ -323,3 +323,8 @@ a.game-service-card:focus-visible {
   width: 2.25rem;
   height: 2.25rem;
 }
+
+/* Approved champagne details; load with this page family. */
+html :is(.game-service-symbol, .service-card-action) {
+  color: var(--champagne-detail);
+}

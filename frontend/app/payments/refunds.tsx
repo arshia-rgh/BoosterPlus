@@ -330,6 +330,7 @@ export function TransferRecord({
               }}
             />
             <Check
+              name="accept"
               label={`I accept these ${noun.toLowerCase()} terms and confirm this address, network and memo`}
               value={accepted}
               change={setAccepted}
@@ -378,6 +379,7 @@ export function TransferRecord({
                 record.state,
               ) && (
                 <Check
+                  name="reviewed"
                   label="I reviewed the recipient, exact amount, fees and due conditions"
                   value={reviewed}
                   change={setReviewed}

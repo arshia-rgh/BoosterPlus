@@ -184,3 +184,21 @@
 .ui-button-label[data-visible="false"] {
   visibility: hidden;
 }
+
+.ui-action-fields {
+  display: contents;
+}
+.ui-confirmation .check {
+  align-items: flex-start;
+}
+.ui-confirmation .check > span {
+  min-width: 0;
+  line-height: 1.55;
+}
+.ui-confirmation .check input {
+  flex: 0 0 auto;
+  margin-top: 0.2rem;
+}
+.ui-confirmation .field-error {
+  margin: 0.45rem 0 0;
+}

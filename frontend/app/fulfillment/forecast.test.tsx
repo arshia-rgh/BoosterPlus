@@ -53,7 +53,7 @@ it("requires a reason and sends the observed versions and reviewed basis", async
   const apply = await screen.findByRole("button", {
     name: "Apply delivery forecast",
   });
-  expect(apply).toBeDisabled();
+  expect(apply).toBeEnabled();
   fireEvent.change(screen.getByLabelText("Delivery estimate reason"), {
     target: { value: "Reviewed calendar" },
   });

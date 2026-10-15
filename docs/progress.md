@@ -1,5 +1,9 @@
 # Implementation progress
 
+## UX159 — theme, sign-in, forms and homepage (qualification)
+
+Implemented the owner-approved champagne details over the green theme, one-panel split-screen sign-in for all three identities, clearer inline validation and retained drafts, shared spacing/copy improvements, and a horizontal five-service homepage selector. Focused component, validation and built-browser checks are being bound to the final source; the full suite remains paused. Senior scoped review and signed release preparation precede deployment. No application activation, policy publication, external message or funds test is claimed. See [release record](ux159-theme-auth-forms-home-2026-10-15.md).
+
 ## Accent158 — smaller champagne details (15 October 2026)
 
 Applied the owner's requested preview refinement: original green emphasis is restored in all homepage headings, while champagne remains on service icons, small section labels, navigation markers and selected secondary links. Studio wording and the homepage screenshot are updated. The maintained regression now protects heading descendants, prices and statistic numbers; the two affected1440/390px cases passed without rerunning unchanged page families. Independent senior review returned PASS after inspecting four completed Chromium/WebKit cases and the scoped source. Application code and the live website remain unchanged. See [preview](redesign/color-study-2026-10-15/README.md) and [scoped review](redesign/reviews/ACCENT158_2026-10-15.md).

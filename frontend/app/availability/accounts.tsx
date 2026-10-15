@@ -1,3 +1,4 @@
+import { Confirmation } from "../ui/form-validation";
 import { useState } from "react";
 import { Link } from "../portal-router";
 import { Form, Text, value } from "../identity/identity";
@@ -111,11 +112,10 @@ export default function AccountAlerts({
               />
             </>
           )}
-          <label className="check">
-            <input type="checkbox" name="consent" required />
+          <Confirmation name="consent">
             Email me about matching account availability. I can unsubscribe at
             any time.
-          </label>
+          </Confirmation>
         </Form>
       )}
     </section>

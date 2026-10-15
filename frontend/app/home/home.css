@@ -435,3 +435,23 @@
   width: 1.25rem;
   height: 1.25rem;
 }
+
+/* Approved champagne details; load with this page family. */
+html
+  :is(
+    .home-kicker,
+    .hero-scroll span,
+    .service-symbol,
+    .symbol-core,
+    .symbol-mark,
+    .service-feature > span,
+    .home-text-link
+  ) {
+  color: var(--champagne-detail);
+}
+html :is(.symbol-core, .symbol-mark) {
+  border-color: #e7c78a66;
+}
+html .home-text-link:hover {
+  color: #f4deb4;
+}

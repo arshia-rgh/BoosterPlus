@@ -381,9 +381,7 @@ it("links server validation to the matching field and preserves other inputs", a
     "aria-invalid",
   );
   expect(screen.getByLabelText("Note")).toHaveValue("Retain this");
-  expect(
-    screen.getByText("Changes entered. Submit again to check them."),
-  ).toBeVisible();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(screen.queryByText("Check these fields.")).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Profile" }));
   await screen.findByText("Request completed.");

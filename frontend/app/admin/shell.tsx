@@ -229,24 +229,6 @@ export default function AdminShell({
           )}
         </header>
         {children}
-        {!authorized && (
-          <section className="admin-welcome" aria-label="Staff sign-in guide">
-            <p className="eyebrow">PLAYORA STAFF</p>
-            <p>
-              Use your verified staff email or linked Google account, then your
-              authenticator. This page opens after both steps are complete.
-            </p>
-            <details>
-              <summary>Setting up your first owner?</summary>
-              <p>
-                An operator provisions the first owner using the backend CLI.
-                Sign in here with that admin email, then set up this account’s
-                authenticator. Customer signup does not create a staff account.
-                See the repository’s staff onboarding guide.
-              </p>
-            </details>
-          </section>
-        )}
       </div>
       {authorized && (
         <dialog

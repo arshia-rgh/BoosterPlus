@@ -1,3 +1,4 @@
+import { Confirmation } from "../ui/form-validation";
 import { useState } from "react";
 import { Link } from "../portal-router";
 import { APIError, post, userSchema, type User } from "../identity/api";
@@ -75,10 +76,7 @@ export default function StaffInvitation({ refresh }: { refresh: () => void }) {
           Only an owner can create staff access. If needed, a dialog asks for an
           authenticator or email code before creating the account.
         </p>
-        <label className="check">
-          <input type="checkbox" required />
-          Create this independent staff account
-        </label>
+        <Confirmation>Create this independent staff account</Confirmation>
       </Form>
       {created && (
         <div className="account-panel" role="status">

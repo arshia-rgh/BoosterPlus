@@ -1,3 +1,8 @@
+.account-nav a[aria-current="page"] {
+  color: var(--accent, #c8ff62);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.35em;
+}
 .account-layout {
   display: grid;
   grid-template-columns: 13rem minmax(0, 1fr);
@@ -381,4 +386,20 @@
 }
 .identity-page .account-work-list > li > a:hover {
   background: #203d2e;
+}
+
+/* Approved champagne details; load with this page family. */
+html :is(.account-next, .account-panel-heading a) {
+  color: var(--champagne-detail);
+}
+html
+  :is(
+    .account-sidebar a[aria-current="page"],
+    .account-drawer a[aria-current="page"],
+    .account-mobile-nav a[aria-current="page"]
+  ) {
+  box-shadow: inset 3px 0 var(--champagne-detail);
+}
+html .account-panel-heading a:hover {
+  color: #f4deb4;
 }

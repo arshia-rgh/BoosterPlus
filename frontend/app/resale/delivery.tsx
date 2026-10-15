@@ -263,6 +263,7 @@ export default function AccountDelivery({
                     help="Use 10–4,000 characters. Ordinary instructions only; never include credentials here."
                   />
                   <Check
+                    name="accept"
                     label={
                       admin
                         ? "I verified the buyer bundle and ownership checklist"

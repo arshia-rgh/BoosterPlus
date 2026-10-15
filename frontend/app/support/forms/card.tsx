@@ -1,3 +1,4 @@
+import { focusValidationTarget } from "../../ui/form-validation";
 import { useEffect, useRef, useState } from "react";
 import { Action, ErrorNotice } from "../../catalog/controls";
 import { APIError, post } from "../../identity/api";
@@ -161,6 +162,21 @@ function FormContent({
     { path: string; message: string }[]
   >([]);
   const issues = error instanceof APIError ? error.issues : localIssues;
+  const focusPending = useRef(false);
+  useEffect(() => {
+    if (busy || !issues.length || !focusPending.current) return;
+    const first = issues
+      .map((issue) =>
+        form.current?.querySelector<HTMLElement>(
+          `[name="${CSS.escape(issue.path)}"]`,
+        ),
+      )
+      .find(Boolean);
+    if (first) {
+      focusPending.current = false;
+      focusValidationTarget(first);
+    }
+  }, [busy, issues]);
   const cancelAction = useRef(false),
     cancelHeading = useRef<HTMLParagraphElement>(null);
   useEffect(() => {
@@ -172,16 +188,9 @@ function FormContent({
       const invalid = answerIssues(row.fields, answers);
       setLocalIssues(invalid);
       if (invalid.length) {
-        requestAnimationFrame(() =>
-          form.current
-            ?.querySelector<HTMLElement>(
-              `[name="${CSS.escape(invalid[0]?.path ?? "")}"]`,
-            )
-            ?.focus(),
-        );
+        focusPending.current = true;
         return;
       }
-      if (!form.current?.reportValidity()) return;
     }
     cancelAction.current = cancel;
     lock.current = true;
@@ -209,17 +218,12 @@ function FormContent({
       reveal.hide();
       changed();
     } catch (cause) {
+      focusPending.current =
+        cause instanceof APIError && cause.issues.length > 0;
       setError(cause);
       const ambiguous = uncertain(cause);
       setUnknown(ambiguous);
       if (!ambiguous) submitted.current = null;
-      if (cause instanceof APIError) {
-        const issue = cause.issues[0];
-        if (issue)
-          form.current
-            ?.querySelector<HTMLElement>(`[name="${CSS.escape(issue.path)}"]`)
-            ?.focus();
-      }
     } finally {
       lock.current = false;
       setBusy(false);
@@ -259,6 +263,7 @@ function FormContent({
       {row.can_respond ? (
         <form
           ref={form}
+          noValidate
           autoComplete="off"
           onSubmit={(e) => {
             e.preventDefault();
@@ -278,6 +283,13 @@ function FormContent({
                 }
                 change={(value) => {
                   setAnswers({ ...answers, [field.key]: value });
+                  setLocalIssues(
+                    issues.filter(
+                      (issue) => issue.path !== `answers.${field.key}`,
+                    ),
+                  );
+                  if (error instanceof APIError && error.issues.length)
+                    setError(null);
                 }}
               />
             ))}

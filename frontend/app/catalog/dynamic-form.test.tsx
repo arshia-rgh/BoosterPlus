@@ -418,7 +418,7 @@ it("keeps rejected input, labels errors and focuses a radio group without cleari
   });
   fireEvent.click(screen.getByRole("button", { name: "Check selections" }));
   await waitFor(() => {
-    expect(screen.getByLabelText("Play together")).toHaveFocus();
+    expect(screen.getByLabelText("Requested matches")).toHaveFocus();
   });
   expect(screen.getByLabelText("Requested matches")).toHaveValue(
     "not a number",
@@ -429,6 +429,12 @@ it("keeps rejected input, labels errors and focuses a radio group without cleari
   expect(
     screen.getByRole("link", { name: "Play method: Choose a play method." }),
   ).toBeVisible();
+  fireEvent.click(
+    screen.getByRole("link", { name: "Play method: Choose a play method." }),
+  );
+  await waitFor(() =>
+    expect(screen.getByLabelText("Play together")).toHaveFocus(),
+  );
   fireEvent.click(screen.getByLabelText("Play together"));
   expect(screen.getByLabelText("Requested matches")).toHaveAttribute(
     "aria-invalid",

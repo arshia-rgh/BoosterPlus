@@ -1,3 +1,4 @@
+import { ActionFields, rejectInvalidFields } from "../ui/action-fields";
 import { useState } from "react";
 import { z } from "../validation";
 import { post, userSchema } from "../identity/api";
@@ -32,6 +33,12 @@ export default function StaffControls({
     setBusy(true);
     setError(null);
     try {
+      if (action === "link")
+        rejectInvalidFields(
+          /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(order)
+            ? []
+            : [{ path: "order_id", message: "Enter the complete order ID." }],
+        );
       await post(
         `/admin/conversations/${thread.id}/${action}`,
         {
@@ -59,103 +66,105 @@ export default function StaffControls({
     }
   }
   return (
-    <section className="chat-staff-controls">
-      <h3>Manage conversation</h3>
-      {dirty && observed !== thread.version && (
-        <p role="status">
-          Conversation changed while you were editing. Review fresh controls
-          before saving.{" "}
-          <Action
-            onClick={() => {
-              setDirty(false);
-              setOrder("");
-              setError(null);
-            }}
-          >
-            Reload conversation controls
-          </Action>
-        </p>
-      )}
-      <fieldset disabled={busy}>
-        <legend>Staff controls</legend>
-        <Select
-          label="Set conversation status"
-          value={dirty ? state : thread.state}
-          change={(value) => {
-            if (
-              value === "open" ||
-              value === "waiting" ||
-              value === "resolved"
-            ) {
-              editing();
-              setState(value);
-            }
-          }}
-          options={[
-            ["open", "Needs staff reply"],
-            ["waiting", "Waiting for customer"],
-            ["resolved", "Resolved"],
-          ]}
-        />
-        <Action onClick={() => void change("state")}>
-          Save conversation status
-        </Action>
-        <Select
-          label="Assign support staff"
-          value={dirty ? assigned : (thread.assigned_to ?? "")}
-          change={(value) => {
-            editing();
-            setAssigned(value);
-          }}
-          options={[
-            ["", "Unassigned"],
-            ...(staff.data?.users
-              .filter(
-                (user) =>
-                  ["administrator", "owner"].includes(user.role) &&
-                  user.mfa_enabled &&
-                  !user.suspended,
-              )
-              .map(
-                (user) =>
-                  [
-                    user.id,
-                    user.staff_alias || user.display_name || user.email,
-                  ] as const,
-              ) ?? []),
-          ]}
-        />
-        <Action disabled={!staff.data} onClick={() => void change("assign")}>
-          Save assignment
-        </Action>
-        {thread.kind === "fulfillment" && (
-          <Action onClick={() => void change("sharing")}>
-            {thread.booster_shared
-              ? "Pause booster sharing"
-              : "Resume booster sharing"}
-          </Action>
-        )}
-        {thread.kind === "presales" && !thread.linked_order_id && (
-          <>
-            <Text
-              label="Link to customer order ID"
-              value={order}
-              change={(value) => {
-                editing();
-                setOrder(value);
-              }}
-              help="The order must belong to this conversation’s customer. The original conversation is preserved."
-            />
+    <ActionFields error={error} busy={busy}>
+      <section className="chat-staff-controls">
+        <h3>Manage conversation</h3>
+        {dirty && observed !== thread.version && (
+          <p role="status">
+            Conversation changed while you were editing. Review fresh controls
+            before saving.{" "}
             <Action
-              disabled={!order.trim()}
-              onClick={() => void change("link")}
+              onClick={() => {
+                setDirty(false);
+                setOrder("");
+                setError(null);
+              }}
             >
-              Link order
+              Reload conversation controls
             </Action>
-          </>
+          </p>
         )}
-      </fieldset>
-      <ErrorNotice error={error ?? staff.error} />
-    </section>
+        <fieldset disabled={busy}>
+          <legend>Staff controls</legend>
+          <Select
+            name="state"
+            label="Set conversation status"
+            value={dirty ? state : thread.state}
+            change={(value) => {
+              if (
+                value === "open" ||
+                value === "waiting" ||
+                value === "resolved"
+              ) {
+                editing();
+                setState(value);
+              }
+            }}
+            options={[
+              ["open", "Needs staff reply"],
+              ["waiting", "Waiting for customer"],
+              ["resolved", "Resolved"],
+            ]}
+          />
+          <Action onClick={() => void change("state")}>
+            Save conversation status
+          </Action>
+          <Select
+            name="assigned_to"
+            label="Assign support staff"
+            value={dirty ? assigned : (thread.assigned_to ?? "")}
+            change={(value) => {
+              editing();
+              setAssigned(value);
+            }}
+            options={[
+              ["", "Unassigned"],
+              ...(staff.data?.users
+                .filter(
+                  (user) =>
+                    ["administrator", "owner"].includes(user.role) &&
+                    user.mfa_enabled &&
+                    !user.suspended,
+                )
+                .map(
+                  (user) =>
+                    [
+                      user.id,
+                      user.staff_alias || user.display_name || user.email,
+                    ] as const,
+                ) ?? []),
+            ]}
+          />
+          <Action disabled={!staff.data} onClick={() => void change("assign")}>
+            Save assignment
+          </Action>
+          {thread.kind === "fulfillment" && (
+            <Action onClick={() => void change("sharing")}>
+              {thread.booster_shared
+                ? "Pause booster sharing"
+                : "Resume booster sharing"}
+            </Action>
+          )}
+          {thread.kind === "presales" && !thread.linked_order_id && (
+            <>
+              <Text
+                name="order_id"
+                label="Link to customer order ID"
+                value={order}
+                change={(value) => {
+                  editing();
+                  setOrder(value);
+                }}
+                help="The order must belong to this conversation’s customer. The original conversation is preserved."
+              />
+              <Action disabled={busy} onClick={() => void change("link")}>
+                Link order
+              </Action>
+            </>
+          )}
+        </fieldset>
+        <ErrorNotice error={error ?? staff.error} />
+      </section>
+    </ActionFields>
   );
 }

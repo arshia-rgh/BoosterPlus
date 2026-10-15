@@ -38,10 +38,10 @@ export function focusValidationTarget(target: HTMLElement | null) {
   const control = target.matches("input, select, textarea, button, [tabindex]")
     ? target
     : (target.querySelector<HTMLElement>(
-        'input[aria-invalid="true"]:not([disabled]), select[aria-invalid="true"]:not([disabled]), textarea[aria-invalid="true"]:not([disabled])',
+        'input[aria-invalid="true"]:not(:disabled), select[aria-invalid="true"]:not(:disabled), textarea[aria-invalid="true"]:not(:disabled)',
       ) ??
       target.querySelector<HTMLElement>(
-        "input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]",
+        "input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled), [tabindex]",
       ));
   (control ?? target).focus({ preventScroll: true });
   if (typeof (control ?? target).scrollIntoView === "function")
@@ -134,7 +134,17 @@ export function useFormValidation(
     }
     const first = issues
       .map((issue) => issueField(issue.path, fields))
-      .find(Boolean);
+      .filter((field): field is RegisteredField => !!field)
+      .sort((a, b) => {
+        const left = document.getElementById(a.id),
+          right = document.getElementById(b.id);
+        if (!left || !right) return 0;
+        return left.compareDocumentPosition(right) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+          ? -1
+          : 1;
+      })
+      .at(0);
     if (first || issues.length === 0) focused.current = fingerprint;
     if (first) focus(first);
   });
@@ -244,14 +254,45 @@ export function ValidationSummary({
   issues,
   fields,
   focus,
+  autoFocusUnknown = false,
 }: {
   issues: readonly FieldIssue[];
   fields: readonly RegisteredField[];
   focus?: ((field: RegisteredField) => void) | undefined;
+  autoFocusUnknown?: boolean;
 }) {
+  const summary = useRef<HTMLUListElement>(null);
+  const previousIssues = useRef<readonly FieldIssue[]>([]);
+  useEffect(() => {
+    const old = previousIssues.current;
+    if (
+      !autoFocusUnknown ||
+      !issues.length ||
+      old === issues ||
+      issues.length < old.length ||
+      issues.some((issue) => issueField(issue.path, fields))
+    ) {
+      previousIssues.current = issues;
+      return;
+    }
+    // Registry changes can cancel a pending frame while an editor reopens.
+    // Mark this attempt focused only once focus actually runs.
+    const frame = requestAnimationFrame(() => {
+      previousIssues.current = issues;
+      focusValidationTarget(summary.current);
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+    };
+  }, [issues, fields, autoFocusUnknown]);
   if (!issues.length) return null;
   return (
-    <ul className="ui-validation-summary" aria-label="Fields to check">
+    <ul
+      ref={summary}
+      tabIndex={-1}
+      className="ui-validation-summary"
+      aria-label="Fields to check"
+    >
       {issues.map((issue, index) => {
         const field = issueField(issue.path, fields);
         return (
@@ -274,5 +315,80 @@ export function ValidationSummary({
         );
       })}
     </ul>
+  );
+}
+
+/** Read native constraints without showing a transient browser tooltip. */
+export function nativeFieldIssues(form: HTMLFormElement): FieldIssue[] {
+  return Array.from(form.elements).flatMap((element) => {
+    if (
+      !(
+        element instanceof HTMLInputElement ||
+        element instanceof HTMLSelectElement ||
+        element instanceof HTMLTextAreaElement
+      ) ||
+      !element.willValidate ||
+      element.validity.valid
+    )
+      return [];
+    const message = element.validity.valueMissing
+      ? element instanceof HTMLInputElement && element.type === "checkbox"
+        ? "Confirm this before continuing."
+        : "Complete this field."
+      : element.validity.typeMismatch
+        ? "Enter a valid email address."
+        : element.validity.patternMismatch
+          ? element.inputMode === "numeric"
+            ? "Enter the complete verification code using numbers only."
+            : "Use the requested format."
+          : element.validationMessage;
+    return [{ path: element.name || element.id, message }];
+  });
+}
+
+/** Required confirmations participate in the same inline feedback as text fields. */
+export function Confirmation({
+  name,
+  disabled = false,
+  children,
+}: {
+  name?: string;
+  disabled?: boolean;
+  children: ReactNode;
+}) {
+  const id = useId();
+  const fieldName = name ?? `confirmation-${id}`;
+  const validation = useContext(FieldValidation);
+  const register = validation?.register;
+  const ref = useCallback(
+    (node: HTMLInputElement | null) => {
+      if (node && register)
+        return register({ name: fieldName, id, label: "Confirmation" });
+    },
+    [register, fieldName, id],
+  );
+  const error = fieldError(validation, fieldName);
+  return (
+    <div className="ui-confirmation">
+      <label className="check">
+        <input
+          ref={ref}
+          id={id}
+          type="checkbox"
+          name={fieldName}
+          disabled={disabled}
+          required
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
+          onChange={() => validation?.correct(fieldName)}
+        />
+        <span>{children}</span>
+      </label>
+      {error && (
+        <p className="field-error" id={`${id}-error`}>
+          {error}
+        </p>
+      )}
+    </div>
   );
 }

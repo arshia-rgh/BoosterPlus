@@ -1,4 +1,5 @@
 import "../ui/secondary.css";
+import { ActionFields } from "../ui/action-fields";
 import { useState } from "react";
 import { Link, useSearchParams } from "../portal-router";
 import { Action, Check, ErrorNotice } from "../catalog/controls";
@@ -50,25 +51,32 @@ export function Subscribe({
     }
   }
   return (
-    <aside aria-label="Package availability emails" className="panel">
-      <h2>Follow availability</h2>
-      <p>
-        Sign in to send future opening alerts to your verified account email.
-        This is separate from order update emails.
-      </p>
-      {saved ? (
-        <p role="status">Availability alerts enabled.</p>
-      ) : (
-        <>
-          <Check label={consentLabel} value={accept} change={setAccept} />
-          <Action disabled={!accept || busy} onClick={() => void save()}>
-            Enable availability emails
-          </Action>
-        </>
-      )}
-      <ErrorNotice error={error} />
-      <Link to="/availability">Manage availability alerts</Link>
-    </aside>
+    <ActionFields error={error} busy={busy}>
+      <aside aria-label="Package availability emails" className="panel">
+        <h2>Follow availability</h2>
+        <p>
+          Sign in to send future opening alerts to your verified account email.
+          This is separate from order update emails.
+        </p>
+        {saved ? (
+          <p role="status">Availability alerts enabled.</p>
+        ) : (
+          <>
+            <Check
+              name="accept"
+              label={consentLabel}
+              value={accept}
+              change={setAccept}
+            />
+            <Action disabled={!accept || busy} onClick={() => void save()}>
+              Enable availability emails
+            </Action>
+          </>
+        )}
+        <ErrorNotice error={error} />
+        <Link to="/availability">Manage availability alerts</Link>
+      </aside>
+    </ActionFields>
   );
 }
 function SubscriptionCard({
@@ -105,28 +113,38 @@ function SubscriptionCard({
   }
   return (
     <li className="panel availability-card">
-      <h3>
-        <Link to={destination(item)}>{item.label}</Link>
-      </h3>
-      <p>
-        {item.available
-          ? "Capacity is currently available; check the offer before ordering."
-          : "Currently unavailable."}
-      </p>
-      <p>Emails: {item.state}</p>
-      {item.state === "active" ? (
-        <Action disabled={busy} onClick={() => void change(false)}>
-          Stop emails for {item.label}
-        </Action>
-      ) : (
-        <>
-          <Check label={consentLabel} value={accept} change={setAccept} />
-          <Action disabled={busy || !accept} onClick={() => void change(true)}>
-            Reactivate emails for {item.label}
+      <ActionFields error={error} busy={busy}>
+        <h3>
+          <Link to={destination(item)}>{item.label}</Link>
+        </h3>
+        <p>
+          {item.available
+            ? "Capacity is currently available; check the offer before ordering."
+            : "Currently unavailable."}
+        </p>
+        <p>Emails: {item.state}</p>
+        {item.state === "active" ? (
+          <Action disabled={busy} onClick={() => void change(false)}>
+            Stop emails for {item.label}
           </Action>
-        </>
-      )}
-      <ErrorNotice error={error} />
+        ) : (
+          <>
+            <Check
+              name="accept"
+              label={consentLabel}
+              value={accept}
+              change={setAccept}
+            />
+            <Action
+              disabled={busy || !accept}
+              onClick={() => void change(true)}
+            >
+              Reactivate emails for {item.label}
+            </Action>
+          </>
+        )}
+        <ErrorNotice error={error} />
+      </ActionFields>
     </li>
   );
 }

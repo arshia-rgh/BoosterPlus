@@ -12,6 +12,27 @@
 .catalog-input .catalog-label {
   margin: 0;
 }
+/* Short task guidance aligns with its controls, while legal documents retain
+   their separately reviewed reading layout. */
+:is(.catalog-section, .account-panel, .record-section)
+  > p:not(.payment-total):not(.eyebrow):not([role]) {
+  max-width: 70ch;
+}
+:is(.catalog-section, .record-section) > :is(h2, h3, h4) {
+  line-height: 1.3;
+  margin-block: 0 1rem;
+}
+.catalog-label,
+.catalog-input {
+  min-width: 0;
+}
+.catalog-label > label {
+  line-height: 1.45;
+}
+.field-error {
+  max-width: 70ch;
+  line-height: 1.5;
+}
 fieldset {
   min-inline-size: 0;
 }
@@ -57,4 +78,10 @@ a + .button {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+}
+
+/* Native WebKit selects need an explicit touch target as padding is ignored. */
+:is(.catalog-label, .catalog-input, .identity-card) select {
+  min-height: 48px;
+  height: 3rem;
 }

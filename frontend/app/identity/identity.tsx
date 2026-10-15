@@ -1,3 +1,6 @@
+import { Text as EditableText } from "../catalog/controls";
+import { Confirmation } from "../ui/form-validation";
+import { SignInLayout } from "./sign-in-layout";
 import { Loading } from "../ui/loading";
 import { Anchor } from "../portal-router";
 import { DisplayPreferences } from "./display-preferences";
@@ -16,6 +19,7 @@ import {
 import { Button } from "../ui/primitives";
 import {
   FieldValidation,
+  nativeFieldIssues,
   TextField as Text,
   ValidationSummary,
   useFormValidation,
@@ -76,8 +80,30 @@ const EntryProgress = createContext<{
   release: () => void;
   retryAt: number | undefined;
   setRetryAt: (time: number | undefined) => void;
+  consent?: boolean;
+  checkConsent?: () => boolean;
 } | null>(null);
-function AuthEntryProgress({ children }: { children: ReactNode }) {
+function AuthEntryProgress({
+  children,
+  requireConsent = false,
+}: {
+  children: ReactNode;
+  requireConsent?: boolean;
+}) {
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState(false);
+  const consentRef = useRef<HTMLInputElement>(null);
+  function checkConsent() {
+    if (!requireConsent || consent) return true;
+    setConsentError(true);
+    consentRef.current?.focus();
+    if (typeof consentRef.current?.scrollIntoView === "function")
+      consentRef.current.scrollIntoView({
+        block: "center",
+        behavior: "instant",
+      });
+    return false;
+  }
   const [busy, setBusy] = useState(false);
   const [retryAt, setRetryAt] = useState<number | undefined>();
   const lock = useRef(false);
@@ -92,7 +118,49 @@ function AuthEntryProgress({ children }: { children: ReactNode }) {
     setBusy(false);
   }, []);
   return (
-    <EntryProgress value={{ busy, acquire, release, retryAt, setRetryAt }}>
+    <EntryProgress
+      value={{
+        busy,
+        acquire,
+        release,
+        retryAt,
+        setRetryAt,
+        ...(requireConsent ? { consent, checkConsent } : {}),
+      }}
+    >
+      {requireConsent && (
+        <div className="sign-in-consent">
+          <label>
+            <input
+              ref={consentRef}
+              type="checkbox"
+              name="terms"
+              checked={consent}
+              disabled={busy}
+              aria-invalid={consentError || undefined}
+              aria-describedby={
+                consentError ? "sign-in-terms-error" : undefined
+              }
+              onChange={(event) => {
+                setConsent(event.target.checked);
+                setConsentError(false);
+              }}
+            />
+            <span>
+              I accept the{" "}
+              <Link to="/terms" target="_blank" rel="noreferrer">
+                account terms
+              </Link>
+              .
+            </span>
+          </label>
+          {consentError && (
+            <p className="field-error" id="sign-in-terms-error">
+              Accept the account terms to continue.
+            </p>
+          )}
+        </div>
+      )}
       {children}
     </EntryProgress>
   );
@@ -105,6 +173,8 @@ export function Form({
   compact = false,
   success = "Request completed.",
   disabled = false,
+  google = false,
+  entryMethod = false,
 }: {
   title: string;
   children?: ReactNode;
@@ -113,6 +183,8 @@ export function Form({
   compact?: boolean;
   success?: string;
   disabled?: boolean;
+  google?: boolean;
+  entryMethod?: boolean;
 }) {
   const entry = useContext(EntryProgress);
   const [busy, setBusy] = useState(false),
@@ -139,7 +211,7 @@ export function Form({
       setIssues(remaining);
       if (remaining.length === 0) {
         setFailed(false);
-        setMessage("Changes entered. Submit again to check them.");
+        setMessage("");
       }
     },
     [issues],
@@ -159,6 +231,14 @@ export function Form({
   async function send(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (lock.current || cooling || disabled) return;
+    const invalid = nativeFieldIssues(event.currentTarget);
+    if (invalid.length) {
+      setIssues(invalid);
+      setMessage("Check the highlighted fields.");
+      setFailed(true);
+      return;
+    }
+    if (entryMethod && entry?.checkConsent && !entry.checkConsent()) return;
     if (entry && !entry.acquire()) return;
     lock.current = true;
     const data = new FormData(event.currentTarget);
@@ -187,18 +267,31 @@ export function Form({
     <FieldValidation value={validation}>
       <form
         method="post"
-        className={compact ? "identity-session-action" : "identity-card"}
+        noValidate
+        className={
+          compact
+            ? "identity-session-action"
+            : `identity-card${entryMethod ? " sign-in-method" : ""}`
+        }
         onSubmit={(event) => void send(event)}
       >
         {!compact && <h2>{title}</h2>}
         <fieldset disabled={busy || entry?.busy || disabled}>
           {children}
           <Button
-            className="button"
+            className={`button${google ? " google-sign-in" : ""}`}
             type="submit"
             disabled={cooling}
             busy={busy}
           >
+            {google && !cooling && (
+              <img
+                src="/brand/google-signin.png"
+                alt=""
+                width="20"
+                height="20"
+              />
+            )}
             {cooling ? "Wait before trying again" : label}
           </Button>
         </fieldset>
@@ -210,7 +303,7 @@ export function Form({
         <Feedback feedbackRef={feedback} kind={failed ? "error" : "status"}>
           {message}
         </Feedback>
-        <ValidationSummary issues={issues} fields={fields} />
+        <ValidationSummary issues={issues} fields={fields} autoFocusUnknown />
         <VerificationLink error={problem} />
       </form>
     </FieldValidation>
@@ -332,6 +425,7 @@ function EmailFormFields({
       {!challenge && (
         <Form
           title={title}
+          entryMethod={purpose === "login"}
           success="Check your inbox for the verification code."
           disabled={retrySeconds > 0}
           label={
@@ -346,7 +440,7 @@ function EmailFormFields({
               email: email || value(data, "email"),
               account_email: value(data, "account_email"),
               purpose,
-              accept_terms: data.get("terms") === "on",
+              accept_terms: entry?.consent ?? data.get("terms") === "on",
               terms_version: termsVersion,
             });
           }}
@@ -383,14 +477,14 @@ function EmailFormFields({
               defaultValue={request?.email}
             />
           )}
-          {purpose === "login" && (
-            <label className="check">
-              <input type="checkbox" name="terms" required />I accept the{" "}
+          {purpose === "login" && entry?.consent === undefined && (
+            <Confirmation name="terms">
+              I accept the{" "}
               <Link to="/terms" target="_blank" rel="noreferrer">
                 account terms
               </Link>
               .
-            </label>
+            </Confirmation>
           )}
           <p>
             We’ll email a short-lived verification code. No password is needed.
@@ -525,8 +619,11 @@ function Google({
   refresh: Refresh;
 }) {
   const location = useLocation();
+  const entry = useContext(EntryProgress);
   return (
     <Form
+      google
+      entryMethod={purpose === "login"}
       title={
         purpose === "login"
           ? "Continue with Google"
@@ -539,7 +636,7 @@ function Google({
           "/auth/google/start",
           {
             purpose,
-            accept_terms: data.get("terms") === "on",
+            accept_terms: entry?.consent ?? data.get("terms") === "on",
             terms_version: session.terms_version,
           },
           z.object({ url: z.url() }),
@@ -562,14 +659,14 @@ function Google({
         window.location.assign(target.href);
       }}
     >
-      {purpose === "login" && (
-        <label className="check">
-          <input type="checkbox" name="terms" required />I accept the{" "}
+      {purpose === "login" && entry?.consent === undefined && (
+        <Confirmation name="terms">
+          I accept the{" "}
           <Link to="/terms" target="_blank" rel="noreferrer">
             account terms
           </Link>
           .
-        </label>
+        </Confirmation>
       )}
       {!session.google_enabled && (
         <p>Google sign-in is currently unavailable. Continue with email.</p>
@@ -734,10 +831,7 @@ function Security({
               }}
             >
               <p>This signs out all your sessions.</p>
-              <label className="check">
-                <input type="checkbox" required />
-                Disable my second factor
-              </label>
+              <Confirmation>Disable my second factor</Confirmation>
             </Form>
           )}
         </>
@@ -766,10 +860,7 @@ function RecoveryCodes({
         {session.portal} sessions. It does not change a separate PLAYORA account
         in another workspace.
       </p>
-      <label className="check">
-        <input type="checkbox" required />
-        Replace my existing recovery codes
-      </label>
+      <Confirmation>Replace my existing recovery codes</Confirmation>
     </Form>
   );
 }
@@ -856,11 +947,10 @@ function SessionList({
           await refresh();
         }}
       >
-        <label className="check">
-          <input type="checkbox" required />
+        <Confirmation>
           End every session for this {session.portal} account, including this
           device
-        </label>
+        </Confirmation>
       </Form>
     </section>
   );
@@ -955,30 +1045,22 @@ function Account({
           <p className="quiet">
             Choose the name you want to use in your account.
           </p>
-          <label>
-            Display name
-            <input
-              name="display_name"
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value);
-              }}
-              maxLength={100}
-              autoComplete="nickname"
-            />
-          </label>
+          <EditableText
+            name="display_name"
+            label="Display name"
+            value={name}
+            change={setName}
+            maxLength={100}
+            autoComplete="nickname"
+          />
           {portal !== "customer" && (
-            <label>
-              Customer-facing staff alias
-              <input
-                name="staff_alias"
-                value={alias}
-                onChange={(event) => {
-                  setAlias(event.target.value);
-                }}
-                maxLength={80}
-              />
-            </label>
+            <EditableText
+              name="staff_alias"
+              label="Customer-facing staff alias"
+              value={alias}
+              change={setAlias}
+              maxLength={80}
+            />
           )}
           <p>{user.email} · Verified email</p>
           <Link to={`${base}/security`}>Manage email and sign-in methods</Link>
@@ -1063,10 +1145,7 @@ function Account({
                 <p>
                   Your verified email remains available. All sessions will end.
                 </p>
-                <label className="check">
-                  <input type="checkbox" required />
-                  Disconnect Google and sign out
-                </label>
+                <Confirmation>Disconnect Google and sign out</Confirmation>
               </Form>
             )}
           </details>
@@ -1257,199 +1336,216 @@ function PortalIdentity({
           }
         />
         <title>{`${title} | PLAYORA`}</title>
-        <PageHeader
-          title={title}
-          eyebrow={
-            portal === "admin"
-              ? "Admin workspace"
-              : portal === "booster"
-                ? "Booster workspace"
-                : "My account"
-          }
-        />
-        {entry && (
-          <ol className="portal-sign-in-steps" aria-label="Sign-in steps">
-            <li aria-current={!session?.user ? "step" : undefined}>
-              1 · Verify email or Google
-            </li>
-            {(portal !== "customer" || session?.mfa_required) && (
-              <li aria-current={session?.mfa_required ? "step" : undefined}>
-                2 · Verify authenticator
-              </li>
-            )}
-          </ol>
-        )}
-        {googleError && <p role="alert">{googleError}</p>}
-        {failure ? (
-          <PanelState
-            kind="error"
-            title={
-              failureStatus === 429
-                ? "Please wait before trying again"
-                : "Connection unavailable"
+        <SignInLayout enabled={entry} portal={portal}>
+          <PageHeader
+            title={title}
+            eyebrow={
+              portal === "admin"
+                ? "Admin workspace"
+                : portal === "booster"
+                  ? "Booster workspace"
+                  : "My account"
             }
-            description={failure}
-          >
-            <RetryButton
-              deadline={retryAt}
-              busy={refreshing}
-              onRetry={() => {
-                void refresh(false);
-              }}
+          />
+          {entry && (
+            <ol className="portal-sign-in-steps" aria-label="Sign-in steps">
+              <li aria-current={!session?.user ? "step" : undefined}>
+                1 · Verify email or Google
+              </li>
+              {(portal !== "customer" || session?.mfa_required) && (
+                <li aria-current={session?.mfa_required ? "step" : undefined}>
+                  2 · Verify authenticator
+                </li>
+              )}
+            </ol>
+          )}
+          {googleError && <p role="alert">{googleError}</p>}
+          {failure ? (
+            <PanelState
+              kind="error"
+              title={
+                failureStatus === 429
+                  ? "Please wait before trying again"
+                  : "Connection unavailable"
+              }
+              description={failure}
             >
-              {refreshing ? "Checking connection…" : "Retry connection"}
-            </RetryButton>
-          </PanelState>
-        ) : !session ? (
-          <Loading label="Loading your workspace…" />
-        ) : (
-          <>
-            {codes.length > 0 && (
-              <RecoveryResult
-                codes={codes}
-                acknowledge={() => {
-                  setCodes([]);
+              <RetryButton
+                deadline={retryAt}
+                busy={refreshing}
+                onRetry={() => {
+                  void refresh(false);
                 }}
-              />
-            )}
-            {!session.user ? (
-              <>
-                <p>
-                  {portal === "customer"
-                    ? "Sign in or create your account with Google or email. No password needed."
-                    : `Use your invited ${portal} account. Email or Google verification is followed by your authenticator.`}
-                </p>
-                {portal !== "customer" && (
-                  <p className="quiet">
-                    Ask the owner to add your email in Customers & staff and
-                    select the {portal === "booster" ? "Booster" : "Admin"}{" "}
-                    workspace first. An account in another workspace does not
-                    give access here.
+              >
+                {refreshing ? "Checking connection…" : "Retry connection"}
+              </RetryButton>
+            </PanelState>
+          ) : !session ? (
+            <Loading label="Loading your workspace…" />
+          ) : (
+            <>
+              {codes.length > 0 && (
+                <RecoveryResult
+                  codes={codes}
+                  acknowledge={() => {
+                    setCodes([]);
+                  }}
+                />
+              )}
+              {!session.user ? (
+                <>
+                  <p>
+                    {portal === "customer"
+                      ? "Sign in or create your account with Google or email. No password needed."
+                      : `Use your invited ${portal} account. Email or Google verification is followed by your authenticator.`}
                   </p>
-                )}
-                <AuthEntryProgress>
-                  <div className="identity-grid">
-                    <EmailForm
-                      purpose="login"
-                      refresh={refresh}
-                      termsVersion={session.terms_version}
-                    />
-                    {session.google_enabled ? (
-                      <Google
-                        session={session}
+                  <AuthEntryProgress requireConsent>
+                    <div className="identity-grid">
+                      {session.google_enabled ? (
+                        <>
+                          <Google
+                            session={session}
+                            purpose="login"
+                            refresh={refresh}
+                          />
+                          <div className="sign-in-divider">or use email</div>
+                        </>
+                      ) : (
+                        <p>
+                          Google sign-in is currently unavailable. Continue with
+                          email.
+                        </p>
+                      )}
+                      <EmailForm
                         purpose="login"
                         refresh={refresh}
+                        termsVersion={session.terms_version}
                       />
-                    ) : (
+                    </div>
+                  </AuthEntryProgress>
+                  {portal !== "customer" && (
+                    <details>
+                      <summary>Need access to this workspace?</summary>
                       <p>
-                        Google sign-in is currently unavailable. Continue with
-                        email.
+                        Ask the owner to add your email in Customers &amp; staff
+                        and select the{" "}
+                        {portal === "booster" ? "Booster" : "Admin"} workspace
+                        first. An account in another workspace does not give
+                        access here.
                       </p>
-                    )}
-                  </div>
-                </AuthEntryProgress>
-                <details>
-                  <summary>Lost access to your email?</summary>
-                  <EmailForm purpose="recovery" refresh={refresh} />
-                </details>
-              </>
-            ) : (
-              <>
-                {entry && (
-                  <Form
-                    compact
-                    title="Sign out"
-                    submit={async () => {
-                      await command("/auth/logout");
-                      clearGoogleReturn(portal);
-                      if (portal === "customer") clearConfigurationDraft();
-                      setCodes([]);
-                      await refresh();
-                    }}
-                  />
-                )}
-                {session.mfa_required ? (
-                  <>
-                    <p role="alert">
-                      Authenticator verification is required to finish signing
-                      in.
+                    </details>
+                  )}
+                  <details>
+                    <summary>Lost access to your email?</summary>
+                    <EmailForm purpose="recovery" refresh={refresh} />
+                  </details>
+                </>
+              ) : (
+                <>
+                  {entry && (
+                    <Form
+                      compact
+                      title="Sign out"
+                      submit={async () => {
+                        await command("/auth/logout");
+                        clearGoogleReturn(portal);
+                        if (portal === "customer") clearConfigurationDraft();
+                        setCodes([]);
+                        await refresh();
+                      }}
+                    />
+                  )}
+                  {session.mfa_required ? (
+                    <>
+                      <p role="alert">
+                        Authenticator verification is required to finish signing
+                        in.
+                      </p>
+                      <Security
+                        key={`${session.portal}:${session.user.id}:${session.user.email}:${String(session.user.mfa_enabled)}`}
+                        session={session}
+                        refresh={refresh}
+                        onCodes={setCodes}
+                      />
+                    </>
+                  ) : !session.capabilities.includes(capability) ? (
+                    <p role="alert">You do not have access to this portal.</p>
+                  ) : entry ? (
+                    <p role="status">
+                      {codes.length
+                        ? "Save your recovery codes to finish signing in."
+                        : "Opening your workspace…"}
                     </p>
-                    <Security
-                      key={`${session.portal}:${session.user.id}:${session.user.email}:${String(session.user.mfa_enabled)}`}
+                  ) : children ? (
+                    <AuthorizedIdentity
+                      key={`${portal}:${session.user.id}`}
+                      value={{ session, refresh }}
+                    >
+                      {children}
+                    </AuthorizedIdentity>
+                  ) : capability === "booster" && view === "overview" ? (
+                    <section
+                      className="booster-start"
+                      aria-label="Booster workspace shortcuts"
+                    >
+                      <h2>Your work, in focus.</h2>
+                      <p>
+                        Open your{" "}
+                        <Link to="/booster/orders">
+                          assigned-order workspace
+                        </Link>{" "}
+                        or your{" "}
+                        <Link to="/booster/calendar">
+                          availability calendar
+                        </Link>
+                        .
+                      </p>
+                      <div className="catalog-cards">
+                        <Link
+                          className="workspace-shortcut"
+                          to="/booster/orders"
+                        >
+                          <span className="eyebrow">01 · ASSIGNED WORK</span>
+                          <h3>Pick up where you left off ↗</h3>
+                          <p>
+                            Review the agreed scope, update progress and
+                            coordinate in the fulfillment conversation.
+                          </p>
+                        </Link>
+                        <Link
+                          className="workspace-shortcut"
+                          to="/booster/calendar"
+                        >
+                          <span className="eyebrow">02 · YOUR SCHEDULE</span>
+                          <h3>Make room for good work ↗</h3>
+                          <p>
+                            Manage availability and proposed sessions with an
+                            explicit time zone.
+                          </p>
+                        </Link>
+                      </div>
+                    </section>
+                  ) : view === "overview" ? (
+                    <AccountOverview key={`${portal}:${session.user.id}`} />
+                  ) : (
+                    <Account
+                      key={`${portal}:${session.user.id}`}
+                      section={view}
                       session={session}
                       refresh={refresh}
                       onCodes={setCodes}
                     />
-                  </>
-                ) : !session.capabilities.includes(capability) ? (
-                  <p role="alert">You do not have access to this portal.</p>
-                ) : entry ? (
-                  <p role="status">
-                    {codes.length
-                      ? "Save your recovery codes to finish signing in."
-                      : "Opening your workspace…"}
-                  </p>
-                ) : children ? (
-                  <AuthorizedIdentity
-                    key={`${portal}:${session.user.id}`}
-                    value={{ session, refresh }}
-                  >
-                    {children}
-                  </AuthorizedIdentity>
-                ) : capability === "booster" && view === "overview" ? (
-                  <section
-                    className="booster-start"
-                    aria-label="Booster workspace shortcuts"
-                  >
-                    <h2>Your work, in focus.</h2>
-                    <p>
-                      Open your{" "}
-                      <Link to="/booster/orders">assigned-order workspace</Link>{" "}
-                      or your{" "}
-                      <Link to="/booster/calendar">availability calendar</Link>.
-                    </p>
-                    <div className="catalog-cards">
-                      <Link className="workspace-shortcut" to="/booster/orders">
-                        <span className="eyebrow">01 · ASSIGNED WORK</span>
-                        <h3>Pick up where you left off ↗</h3>
-                        <p>
-                          Review the agreed scope, update progress and
-                          coordinate in the fulfillment conversation.
-                        </p>
-                      </Link>
-                      <Link
-                        className="workspace-shortcut"
-                        to="/booster/calendar"
-                      >
-                        <span className="eyebrow">02 · YOUR SCHEDULE</span>
-                        <h3>Make room for good work ↗</h3>
-                        <p>
-                          Manage availability and proposed sessions with an
-                          explicit time zone.
-                        </p>
-                      </Link>
-                    </div>
-                  </section>
-                ) : view === "overview" ? (
-                  <AccountOverview key={`${portal}:${session.user.id}`} />
-                ) : (
-                  <Account
-                    key={`${portal}:${session.user.id}`}
-                    section={view}
-                    session={session}
-                    refresh={refresh}
-                    onCodes={setCodes}
-                  />
-                )}
-              </>
-            )}
-          </>
-        )}
-        {entry && portal !== "customer" && (
-          <p className="portal-entry-help">
-            <Anchor href="/">Visit the PLAYORA website ↗</Anchor>
-          </p>
-        )}
+                  )}
+                </>
+              )}
+            </>
+          )}
+          {entry && portal !== "customer" && (
+            <p className="portal-entry-help">
+              <Anchor href="/">Visit the PLAYORA website ↗</Anchor>
+            </p>
+          )}
+        </SignInLayout>
       </main>
     ),
   });

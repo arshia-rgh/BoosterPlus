@@ -84,8 +84,11 @@ func (s *Store) Create(ctx context.Context, p *identity.Principal, input CreateI
 
 // Edit saves only a draft or explicitly requested clarification, never a reviewed submission.
 func (s *Store) Edit(ctx context.Context, p *identity.Principal, id string, input Edit) (View, error) {
-	if !validVersion(input.Version) || !text(input.Title, 1, 120) || !text(input.OwnershipNotes, 0, 2000) || len(input.Answers) > 40 {
+	if !validVersion(input.Version) || len(input.Answers) > 40 {
 		return View{}, ErrInvalid
+	}
+	if issues := editIssues(input); len(issues) > 0 {
+		return View{}, &catalog.Invalid{Issues: issues}
 	}
 	var result View
 	err := s.auth.AuthorizedTransaction(ctx, p, "account", false, func(tx *ent.Tx, current *identity.Principal) error {
@@ -124,8 +127,11 @@ func (s *Store) Edit(ctx context.Context, p *identity.Principal, id string, inpu
 
 // Transition records intake decisions only. Commercial acceptance and payout are separate gates.
 func (s *Store) Transition(ctx context.Context, p *identity.Principal, id string, admin bool, action string, input Action) (View, error) {
-	if !validVersion(input.Version) || !text(input.Note, 0, 2000) {
+	if !validVersion(input.Version) {
 		return View{}, ErrInvalid
+	}
+	if !text(input.Note, 0, 2000) {
+		return View{}, &catalog.Invalid{Issues: []catalog.Issue{{Path: "note", Message: "Use no more than 2,000 characters, without control characters."}}}
 	}
 	var result View
 	err := s.auth.AuthorizedTransaction(ctx, p, capability(admin), admin, func(tx *ent.Tx, current *identity.Principal) error {
@@ -140,7 +146,7 @@ func (s *Store) Transition(ctx context.Context, p *identity.Principal, id string
 		note := input.Note
 		if admin {
 			if !text(note, 1, 2000) {
-				return ErrInvalid
+				return &catalog.Invalid{Issues: []catalog.Issue{{Path: "note", Message: "Explain this review decision in 1–2,000 characters."}}}
 			}
 			if !slices.Contains([]accountsubmission.State{accountsubmission.StateSubmitted, accountsubmission.StateNeedsInformation, accountsubmission.StateApprovedPendingTerms}, row.State) {
 				return ErrConflict

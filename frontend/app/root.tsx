@@ -15,6 +15,7 @@ import type { LoaderFunctionArgs } from "react-router";
 import "./styles.css";
 import { AmbientBackdrop, SiteFooter, SiteHeader } from "./ui/site-chrome";
 import "./ui/design-system.css";
+import "./ui/champagne.css";
 import { PortalRoutingProvider } from "./portal-router";
 import { routingContext } from "./portal/routing.server";
 

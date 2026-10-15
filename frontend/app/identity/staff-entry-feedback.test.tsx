@@ -49,6 +49,7 @@ it.each(["admin", "booster"] as const)(
     });
     const form = button.closest("form");
     if (!form) throw new Error("Missing staff entry form");
+    fireEvent.click(screen.getByRole("checkbox", { name: /account terms/ }));
     fireEvent.submit(form);
     const error = await screen.findByText(/No verification code was sent/);
     expect(error).toBeVisible();

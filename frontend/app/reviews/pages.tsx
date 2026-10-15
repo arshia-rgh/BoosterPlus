@@ -1,3 +1,8 @@
+import {
+  ActionFields,
+  requireText,
+  rejectInvalidFields,
+} from "../ui/action-fields";
 import { denied } from "../support/chat-state";
 import { answerText } from "../catalog/model";
 import { RecordShell } from "../ui/record-shell";
@@ -202,6 +207,26 @@ function Moderation({
     setBusy(true);
     setError(null);
     try {
+      if (action !== "respond") requireText("note", note);
+      if (action === "respond") requireText("response", response);
+      rejectInvalidFields([
+        ...(["publish", "respond"].includes(action) && !checked
+          ? [
+              {
+                path: "policy_checked",
+                message: "Review and confirm the publication policy.",
+              },
+            ]
+          : []),
+        ...(["hide", "reject"].includes(action) && !reason
+          ? [
+              {
+                path: "reason_code",
+                message: "Choose the documented content-policy violation.",
+              },
+            ]
+          : []),
+      ]);
       const result = await post(
         `/admin/reviews/${value.review.id}/${action}`,
         {
@@ -224,90 +249,96 @@ function Moderation({
   if (state === "withdrawn")
     return <p>The customer withdrew this review. Staff cannot republish it.</p>;
   return (
-    <section className="catalog-section">
-      <h3>Publication decision</h3>
-      <ErrorNotice error={error} />
-      <fieldset disabled={busy}>
-        <legend>Moderation controls</legend>
-        <Text
-          label="Internal moderation explanation"
-          multiline
-          value={note}
-          change={setNote}
-          help="This stays private to administrators and must explain the content-policy decision."
-        />
-        <Check
-          label="I checked this content against its accepted publication policy"
-          value={checked}
-          change={setChecked}
-        />
-        {state !== "published" && (
-          <Action
-            disabled={!checked || !note.trim()}
-            onClick={() => {
-              void change("publish");
-            }}
-          >
-            Publish customer review
-          </Action>
-        )}
-        <Select
-          label="Content-policy violation"
-          value={reason}
-          change={setReason}
-          options={[
-            ["", "Choose a documented violation"],
-            ["privacy", "Personal data or credentials"],
-            ["spam", "Spam"],
-            ["abuse", "Abusive content"],
-            ["off_topic", "Unrelated content"],
-          ]}
-        />
-        {state === "published" ? (
-          <Action
-            disabled={!reason || !note.trim()}
-            onClick={() => {
-              void change("hide");
-            }}
-          >
-            Hide customer review
-          </Action>
-        ) : (
-          state !== "rejected" && (
+    <ActionFields error={error} busy={busy}>
+      <section className="catalog-section">
+        <h3>Publication decision</h3>
+        <ErrorNotice error={error} />
+        <fieldset disabled={busy}>
+          <legend>Moderation controls</legend>
+          <Text
+            name="note"
+            label="Internal moderation explanation"
+            multiline
+            value={note}
+            change={setNote}
+            help="This stays private to administrators and must explain the content-policy decision."
+          />
+          <Check
+            name="policy_checked"
+            label="I checked this content against its accepted publication policy"
+            value={checked}
+            change={setChecked}
+          />
+          {state !== "published" && (
             <Action
-              disabled={!reason || !note.trim()}
+              disabled={busy}
               onClick={() => {
-                void change("reject");
+                void change("publish");
               }}
             >
-              Reject customer review
+              Publish customer review
             </Action>
-          )
-        )}
-        <p>
-          A low rating alone is not a content-policy violation. Customer text
-          and ratings cannot be rewritten here.
-        </p>
-        {state === "published" && (
-          <>
-            <Text
-              label="Public PLAYORA response"
-              multiline
-              value={response}
-              change={setResponse}
-            />
+          )}
+          <Select
+            name="reason_code"
+            label="Content-policy violation"
+            value={reason}
+            change={setReason}
+            options={[
+              ["", "Choose a documented violation"],
+              ["privacy", "Personal data or credentials"],
+              ["spam", "Spam"],
+              ["abuse", "Abusive content"],
+              ["off_topic", "Unrelated content"],
+            ]}
+          />
+          {state === "published" ? (
             <Action
-              disabled={!checked || !response.trim()}
+              disabled={busy}
               onClick={() => {
-                void change("respond");
+                void change("hide");
               }}
             >
-              Publish staff response
+              Hide customer review
             </Action>
-          </>
-        )}
-      </fieldset>
-    </section>
+          ) : (
+            state !== "rejected" && (
+              <Action
+                disabled={busy}
+                onClick={() => {
+                  void change("reject");
+                }}
+              >
+                Reject customer review
+              </Action>
+            )
+          )}
+          <p>
+            A low rating alone is not a content-policy violation. Customer text
+            and ratings cannot be rewritten here.
+          </p>
+          {state === "published" && (
+            <>
+              <Text
+                name="response"
+                label="Public PLAYORA response"
+                multiline
+                value={response}
+                change={setResponse}
+              />
+              <Action
+                disabled={busy}
+                onClick={() => {
+                  void change("respond");
+                }}
+              >
+                Publish staff response
+              </Action>
+            </>
+          )}
+        </fieldset>
+      </section>
+    </ActionFields>
   );
 }
 export function ReviewDetail({ admin = false }: { admin?: boolean }) {

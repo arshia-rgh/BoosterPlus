@@ -607,3 +607,11 @@
 .admin-entry .admin-welcome details {
   margin: 0.75rem 0;
 }
+
+/* Approved champagne details; load with this page family. */
+html :is(.admin-external, .admin-navigation a[aria-current="page"] span) {
+  color: var(--champagne-detail);
+}
+html .admin-navigation a[aria-current="page"] {
+  box-shadow: inset 3px 0 var(--champagne-detail);
+}

@@ -1,3 +1,4 @@
+import { ActionFields } from "../ui/action-fields";
 import { useEffect, useRef, useState } from "react";
 import { Anchor } from "../portal-router";
 import { Action, Check, ErrorNotice, Select } from "../catalog/controls";
@@ -78,7 +79,8 @@ export default function Checkout({
   const paymentHeading = useRef<HTMLHeadingElement>(null);
   const feedback = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (error) focusValidationTarget(feedback.current);
+    if (error && !(error instanceof APIError && error.issues.length))
+      focusValidationTarget(feedback.current);
   }, [error]);
   useEffect(() => {
     // Only the customer's own newly-created attempt moves focus. Polling and
@@ -201,317 +203,333 @@ export default function Checkout({
     }
   }
   return (
-    <section
-      className="catalog-section payment-panel"
-      aria-label="Payment and receipts"
-    >
-      <p className="eyebrow">Direct crypto checkout</p>
-      <h2 ref={paymentHeading} tabIndex={-1}>
-        Payment and receipts
-      </h2>
-      <div ref={feedback} tabIndex={-1}>
-        <ErrorNotice error={resource.error ?? error} />
-        {error instanceof APIError &&
-          error.code === "payment_below_minimum" && (
-            <p>
-              <Anchor href={base + "?section=messages"}>
-                Ask support about this order
-              </Anchor>
-            </p>
-          )}
-      </div>
-      {!data && resource.loading && (
-        <p role="status">Loading payment information…</p>
-      )}
-      {!!resource.error && (
-        <div className="payment-status-unavailable">
-          <p role="status">
-            Payment status cannot be verified right now. This order remains
-            available. If you already sent funds, do not send again; retry the
-            status check or contact support from this order.
-          </p>
-          <Action disabled={resource.loading} onClick={reload}>
-            Try payment information again
-          </Action>
+    <ActionFields error={error} busy={busy}>
+      <section
+        className="catalog-section payment-panel"
+        aria-label="Payment and receipts"
+      >
+        <p className="eyebrow">Direct crypto checkout</p>
+        <h2 ref={paymentHeading} tabIndex={-1}>
+          Payment and receipts
+        </h2>
+        <div ref={feedback} tabIndex={-1}>
+          <ErrorNotice error={resource.error ?? error} />
+          {error instanceof APIError &&
+            error.code === "payment_below_minimum" && (
+              <p>
+                <Anchor href={base + "?section=messages"}>
+                  Ask support about this order
+                </Anchor>
+              </p>
+            )}
         </div>
-      )}
-      {data && (
-        <ol className="payment-steps" aria-label="Payment progress">
-          <li aria-current={!latest ? "step" : undefined}>1. Choose payment</li>
-          <li
-            aria-current={
-              latest &&
-              !["settled", "exception", "closed"].includes(latest.state)
-                ? "step"
-                : undefined
-            }
-          >
-            2. Complete payment
-          </li>
-          <li aria-current={latest?.state === "settled" ? "step" : undefined}>
-            3. Verified receipt
-          </li>
-        </ol>
-      )}
-      {data && !data.enabled && (
-        <p>
-          Checkout is currently unavailable. Your order remains unpaid until
-          funds are verified. If you already paid, do not pay again. Existing
-          payments continue to be reconciled; contact support for updates.
-        </p>
-      )}
-      {!admin &&
-        data?.enabled &&
-        !latest &&
-        detail.order.state === "awaiting_payment" &&
-        policy && (
-          <fieldset disabled={busy || resource.loading} key={policy.id}>
-            <legend>Choose how to pay</legend>
-            {detail.contract?.data && (
-              <p className="payment-total">
-                Agreed price: {detail.contract.data.currency}{" "}
-                {minorDisplay(detail.contract.data.amount_minor)}
-              </p>
-            )}
-            <p>
-              You’ll continue to NOWPayments to pay securely. Return to this
-              order to see your verified receipt.
-            </p>
-            <h3>{policy.data.label}</h3>
-            <p className="payment-policy">{policy.data.text}</p>
-            {policy.data.remedies && (
-              <details>
-                <summary>Cancellation, disputes and refunds</summary>
-                {remedyLabels.map(([key, label]) => (
-                  <div key={key}>
-                    <h4>{label}</h4>
-                    <p>
-                      {policy.data.remedies &&
-                        remedyText(policy.data.remedies, key)}
-                    </p>
-                  </div>
-                ))}
-                <p>
-                  Dispute window: {policy.data.remedies.dispute_hours} hours.
-                  Appeal window: {policy.data.remedies.appeal_hours} hours; up
-                  to {policy.data.remedies.max_appeals} appeals.
-                </p>
-              </details>
-            )}
-            <p>
-              Processing fees:{" "}
-              {policy.data.fee_mode === "customer"
-                ? "paid by you"
-                : "paid by PLAYORA"}
-              . Exchange rate: {policy.data.rate_mode}. Local checkout window:{" "}
-              {policy.data.window_minutes} minutes. The provider may impose a
-              shorter deposit window; follow its instructions.
-            </p>
-            <Select
-              label="Payment asset and network"
-              value={route}
-              change={(value) => {
-                setRoute(value);
-                setAcceptedPolicy("");
-              }}
-              options={[
-                ["", "Choose an asset and network"],
-                ...policy.data.routes.map(
-                  (v) => [v.code, `${v.label} · ${v.network}`] as const,
-                ),
-              ]}
-            />
-            {selectedRoute && (
-              <p className="payment-route-note">
-                Use {selectedRoute.label} on {selectedRoute.network} only. The
-                provider displays the exact crypto amount and destination before
-                you send.
-              </p>
-            )}
-            <Check
-              label="I accept this payment policy and the agreed order price"
-              value={accepted}
-              change={(value) => {
-                setAcceptedPolicy(value ? consentKey : "");
-              }}
-            />
-            <Action
-              disabled={!accepted || !selectedRoute}
-              onClick={() => void start()}
-            >
-              {busy ? "Preparing checkout…" : "Create secure checkout"}
-            </Action>
-          </fieldset>
+        {!data && resource.loading && (
+          <p role="status">Loading payment information…</p>
         )}
-      {data?.enabled && !latest && !policy && (
-        <p>
-          A payment policy must be published before checkout becomes available.
-        </p>
-      )}
-      {latest && (
-        <div className="payment-current">
-          <p className="eyebrow">Current payment</p>
-          <h3>
-            {nativeWaiting
-              ? instructionTitle(effectiveInstructions, expired)
-              : paymentTitle(latest.state, latest.issue, expired)}
-          </h3>
-          <p role="status">
-            {nativeWaiting
-              ? instructionMessage(effectiveInstructions, expired)
-              : expired && latest.state === "awaiting_payment" && !latest.issue
-                ? "Waiting for the provider to reconcile this checkout. Expiry alone does not confirm whether funds were received."
-                : paymentMessage(latest.state, latest.issue)}
+        {!!resource.error && (
+          <div className="payment-status-unavailable">
+            <p role="status">
+              Payment status cannot be verified right now. This order remains
+              available. If you already sent funds, do not send again; retry the
+              status check or contact support from this order.
+            </p>
+            <Action disabled={resource.loading} onClick={reload}>
+              Try payment information again
+            </Action>
+          </div>
+        )}
+        {data && (
+          <ol className="payment-steps" aria-label="Payment progress">
+            <li aria-current={!latest ? "step" : undefined}>
+              1. Choose payment
+            </li>
+            <li
+              aria-current={
+                latest &&
+                !["settled", "exception", "closed"].includes(latest.state)
+                  ? "step"
+                  : undefined
+              }
+            >
+              2. Complete payment
+            </li>
+            <li aria-current={latest?.state === "settled" ? "step" : undefined}>
+              3. Verified receipt
+            </li>
+          </ol>
+        )}
+        {data && !data.enabled && (
+          <p>
+            Checkout is currently unavailable. Your order remains unpaid until
+            funds are verified. If you already paid, do not pay again. Existing
+            payments continue to be reconciled; contact support for updates.
           </p>
-          <dl className="payment-facts">
-            <div>
-              <dt>Order amount</dt>
-              <dd>
-                {latest.currency} {minorDisplay(latest.amount_minor)}
-              </dd>
-            </div>
-            <div>
-              <dt>Payment asset</dt>
-              <dd>{latest.route.label}</dd>
-            </div>
-            <div>
-              <dt>Network</dt>
-              <dd>{latest.route.network}</dd>
-            </div>
-            {!latest.native_checkout && (
+        )}
+        {!admin &&
+          data?.enabled &&
+          !latest &&
+          detail.order.state === "awaiting_payment" &&
+          policy && (
+            <fieldset disabled={busy || resource.loading} key={policy.id}>
+              <legend>Choose how to pay</legend>
+              {detail.contract?.data && (
+                <p className="payment-total">
+                  Agreed price: {detail.contract.data.currency}{" "}
+                  {minorDisplay(detail.contract.data.amount_minor)}
+                </p>
+              )}
+              <p>
+                You’ll continue to NOWPayments to pay securely. Return to this
+                order to see your verified receipt.
+              </p>
+              <h3>{policy.data.label}</h3>
+              <p className="payment-policy">{policy.data.text}</p>
+              {policy.data.remedies && (
+                <details>
+                  <summary>Cancellation, disputes and refunds</summary>
+                  {remedyLabels.map(([key, label]) => (
+                    <div key={key}>
+                      <h4>{label}</h4>
+                      <p>
+                        {policy.data.remedies &&
+                          remedyText(policy.data.remedies, key)}
+                      </p>
+                    </div>
+                  ))}
+                  <p>
+                    Dispute window: {policy.data.remedies.dispute_hours} hours.
+                    Appeal window: {policy.data.remedies.appeal_hours} hours; up
+                    to {policy.data.remedies.max_appeals} appeals.
+                  </p>
+                </details>
+              )}
+              <p>
+                Processing fees:{" "}
+                {policy.data.fee_mode === "customer"
+                  ? "paid by you"
+                  : "paid by PLAYORA"}
+                . Exchange rate: {policy.data.rate_mode}. Local checkout window:{" "}
+                {policy.data.window_minutes} minutes. The provider may impose a
+                shorter deposit window; follow its instructions.
+              </p>
+              <Select
+                name="route"
+                label="Payment asset and network"
+                value={route}
+                change={(value) => {
+                  setRoute(value);
+                  setAcceptedPolicy("");
+                }}
+                options={[
+                  ["", "Choose an asset and network"],
+                  ...policy.data.routes.map(
+                    (v) => [v.code, `${v.label} · ${v.network}`] as const,
+                  ),
+                ]}
+              />
+              {selectedRoute && (
+                <p className="payment-route-note">
+                  Use {selectedRoute.label} on {selectedRoute.network} only. The
+                  provider displays the exact crypto amount and destination
+                  before you send.
+                </p>
+              )}
+              <Check
+                name="accept_policy"
+                label="I accept this payment policy and the agreed order price"
+                value={accepted}
+                change={(value) => {
+                  setAcceptedPolicy(value ? consentKey : "");
+                }}
+              />
+              <Action
+                disabled={!accepted || !selectedRoute}
+                onClick={() => void start()}
+              >
+                {busy ? "Preparing checkout…" : "Create secure checkout"}
+              </Action>
+            </fieldset>
+          )}
+        {data?.enabled && !latest && !policy && (
+          <p>
+            A payment policy must be published before checkout becomes
+            available.
+          </p>
+        )}
+        {latest && (
+          <div className="payment-current">
+            <p className="eyebrow">Current payment</p>
+            <h3>
+              {nativeWaiting
+                ? instructionTitle(effectiveInstructions, expired)
+                : paymentTitle(latest.state, latest.issue, expired)}
+            </h3>
+            <p role="status">
+              {nativeWaiting
+                ? instructionMessage(effectiveInstructions, expired)
+                : expired &&
+                    latest.state === "awaiting_payment" &&
+                    !latest.issue
+                  ? "Waiting for the provider to reconcile this checkout. Expiry alone does not confirm whether funds were received."
+                  : paymentMessage(latest.state, latest.issue)}
+            </p>
+            <dl className="payment-facts">
               <div>
-                <dt>Checkout deadline</dt>
+                <dt>Order amount</dt>
                 <dd>
-                  <time dateTime={latest.expires_at}>
-                    {new Date(latest.expires_at).toLocaleString()}
-                  </time>
+                  {latest.currency} {minorDisplay(latest.amount_minor)}
                 </dd>
               </div>
-            )}
-          </dl>
-          {latest.state === "awaiting_payment" && expired && (
-            <p className="payment-route-note">
-              This local checkout window has ended. Do not use the old payment
-              instructions or link. If you already sent funds, wait for
-              reconciliation or contact support.
-            </p>
-          )}
-          {latest.native_checkout && latest.deposit && !admin && (
-            <DepositInstructions
-              deposit={latest.deposit}
-              route={latest.route}
-              now={nativeNow}
-              currentTime={currentTime}
-              unavailable={
-                unavailable ||
-                !!resource.error ||
-                effectiveInstructions !== "ready"
-              }
-            />
-          )}
-          {latest.checkout_url &&
-            !latest.native_checkout &&
-            !latest.issue &&
-            !unavailable &&
-            !resource.error &&
-            latest.state === "awaiting_payment" &&
-            !expired &&
-            !admin && (
-              <a className="button" href={latest.checkout_url} rel="noreferrer">
-                Go to payment
-              </a>
-            )}
-          {!latest.native_checkout &&
-            !latest.checkout_url &&
-            latest.state === "awaiting_payment" &&
-            !latest.issue &&
-            !expired && (
               <div>
-                <p role="status">
-                  Your checkout exists, but its payment link is still being
-                  recovered.{" "}
-                  {unavailable || resource.error
-                    ? "Reconnect, then refresh payment information."
-                    : "We’re checking it automatically."}{" "}
-                  Do not create another payment.
-                </p>
-                <Anchor className="text-link" href={base + "?section=messages"}>
-                  Ask support about this checkout
-                </Anchor>
+                <dt>Payment asset</dt>
+                <dd>{latest.route.label}</dd>
               </div>
+              <div>
+                <dt>Network</dt>
+                <dd>{latest.route.network}</dd>
+              </div>
+              {!latest.native_checkout && (
+                <div>
+                  <dt>Checkout deadline</dt>
+                  <dd>
+                    <time dateTime={latest.expires_at}>
+                      {new Date(latest.expires_at).toLocaleString()}
+                    </time>
+                  </dd>
+                </div>
+              )}
+            </dl>
+            {latest.state === "awaiting_payment" && expired && (
+              <p className="payment-route-note">
+                This local checkout window has ended. Do not use the old payment
+                instructions or link. If you already sent funds, wait for
+                reconciliation or contact support.
+              </p>
             )}
-          {latest.issue && (
-            <Anchor className="text-link" href={base + "?section=messages"}>
-              Ask support about this payment
-            </Anchor>
-          )}
-          <p>
-            Returning from the provider does not confirm payment. This page
-            updates from verified provider evidence.
-          </p>
-          <Action disabled={resource.loading} onClick={resource.reload}>
-            {resource.loading ? "Checking payment…" : "Refresh payment"}
-          </Action>
-        </div>
-      )}
-      {data && data.attempts.length > 0 && (
-        <details className="payment-history">
-          <summary>
-            Checkout history & accepted policies ({data.attempts.length})
-          </summary>
-          {data.attempts.map((a) => (
-            <details key={a.id}>
-              <summary>
-                Checkout {new Date(a.created_at).toLocaleString()} ·{" "}
-                {a.state.replaceAll("_", " ")}
-              </summary>
-              <p>{paymentMessage(a.state, a.issue)}</p>
-              <p className="payment-policy">{a.policy.data.text}</p>
-              <p>
-                Local window ends{" "}
-                <time dateTime={a.expires_at}>
-                  {new Date(a.expires_at).toLocaleString()}
-                </time>
-              </p>
-            </details>
-          ))}
-        </details>
-      )}
-      {data && (
-        <section className="payment-receipts" aria-label="Received funds">
-          <h3>Received funds</h3>
-          {data.receipts.length === 0 && (
+            {latest.native_checkout && latest.deposit && !admin && (
+              <DepositInstructions
+                deposit={latest.deposit}
+                route={latest.route}
+                now={nativeNow}
+                currentTime={currentTime}
+                unavailable={
+                  unavailable ||
+                  !!resource.error ||
+                  effectiveInstructions !== "ready"
+                }
+              />
+            )}
+            {latest.checkout_url &&
+              !latest.native_checkout &&
+              !latest.issue &&
+              !unavailable &&
+              !resource.error &&
+              latest.state === "awaiting_payment" &&
+              !expired &&
+              !admin && (
+                <a
+                  className="button"
+                  href={latest.checkout_url}
+                  rel="noreferrer"
+                >
+                  Go to payment
+                </a>
+              )}
+            {!latest.native_checkout &&
+              !latest.checkout_url &&
+              latest.state === "awaiting_payment" &&
+              !latest.issue &&
+              !expired && (
+                <div>
+                  <p role="status">
+                    Your checkout exists, but its payment link is still being
+                    recovered.{" "}
+                    {unavailable || resource.error
+                      ? "Reconnect, then refresh payment information."
+                      : "We’re checking it automatically."}{" "}
+                    Do not create another payment.
+                  </p>
+                  <Anchor
+                    className="text-link"
+                    href={base + "?section=messages"}
+                  >
+                    Ask support about this checkout
+                  </Anchor>
+                </div>
+              )}
+            {latest.issue && (
+              <Anchor className="text-link" href={base + "?section=messages"}>
+                Ask support about this payment
+              </Anchor>
+            )}
             <p>
-              No received funds recorded. A payment link or provider redirect is
-              not a receipt.
+              Returning from the provider does not confirm payment. This page
+              updates from verified provider evidence.
             </p>
-          )}
-          {data.receipts.map((receipt) => (
-            <article key={receipt.id} className="payment-receipt">
-              <strong>
-                {receipt.amount} {receipt.currency.toUpperCase()}
-              </strong>
-              <p>
-                {receipt.network} · {receipt.state}
-              </p>
-              <p>
-                {receipt.allocated_minor
-                  ? `${receipt.allocated_currency} ${minorDisplay(receipt.allocated_minor)} allocated to this agreement.`
-                  : "No amount allocated to this agreement."}
-              </p>
-              <details>
-                <summary>Receipt reference</summary>
-                <small>{receipt.id}</small>
+            <Action disabled={resource.loading} onClick={resource.reload}>
+              {resource.loading ? "Checking payment…" : "Refresh payment"}
+            </Action>
+          </div>
+        )}
+        {data && data.attempts.length > 0 && (
+          <details className="payment-history">
+            <summary>
+              Checkout history & accepted policies ({data.attempts.length})
+            </summary>
+            {data.attempts.map((a) => (
+              <details key={a.id}>
+                <summary>
+                  Checkout {new Date(a.created_at).toLocaleString()} ·{" "}
+                  {a.state.replaceAll("_", " ")}
+                </summary>
+                <p>{paymentMessage(a.state, a.issue)}</p>
+                <p className="payment-policy">{a.policy.data.text}</p>
                 <p>
-                  <time dateTime={receipt.created_at}>
-                    {new Date(receipt.created_at).toLocaleString()}
+                  Local window ends{" "}
+                  <time dateTime={a.expires_at}>
+                    {new Date(a.expires_at).toLocaleString()}
                   </time>
                 </p>
               </details>
-            </article>
-          ))}
-        </section>
-      )}
-    </section>
+            ))}
+          </details>
+        )}
+        {data && (
+          <section className="payment-receipts" aria-label="Received funds">
+            <h3>Received funds</h3>
+            {data.receipts.length === 0 && (
+              <p>
+                No received funds recorded. A payment link or provider redirect
+                is not a receipt.
+              </p>
+            )}
+            {data.receipts.map((receipt) => (
+              <article key={receipt.id} className="payment-receipt">
+                <strong>
+                  {receipt.amount} {receipt.currency.toUpperCase()}
+                </strong>
+                <p>
+                  {receipt.network} · {receipt.state}
+                </p>
+                <p>
+                  {receipt.allocated_minor
+                    ? `${receipt.allocated_currency} ${minorDisplay(receipt.allocated_minor)} allocated to this agreement.`
+                    : "No amount allocated to this agreement."}
+                </p>
+                <details>
+                  <summary>Receipt reference</summary>
+                  <small>{receipt.id}</small>
+                  <p>
+                    <time dateTime={receipt.created_at}>
+                      {new Date(receipt.created_at).toLocaleString()}
+                    </time>
+                  </p>
+                </details>
+              </article>
+            ))}
+          </section>
+        )}
+      </section>
+    </ActionFields>
   );
 }

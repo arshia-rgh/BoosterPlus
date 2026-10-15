@@ -228,8 +228,20 @@ function FormEditor({ base, done }: { base: string; done: () => void }) {
       setError(cause);
       const ambiguous = uncertain(cause);
       setUnknown(ambiguous);
-      if (!ambiguous) submitted.current = null;
-      if (cause instanceof APIError) validation.check(cause.issues);
+      if (!ambiguous) {
+        submitted.current = null;
+        expires.current = "";
+        key.current = crypto.randomUUID();
+      }
+      if (cause instanceof APIError && cause.issues.length && !ambiguous) {
+        setPreview(false);
+        validation.check(
+          cause.issues.map((issue) => ({
+            ...issue,
+            path: issue.path === "expires_at" ? "hours" : issue.path,
+          })),
+        );
+      }
     } finally {
       lock.current = false;
       setBusy(false);
@@ -255,6 +267,7 @@ function FormEditor({ base, done }: { base: string; done: () => void }) {
       ) : (
         <form
           ref={editorForm}
+          noValidate
           autoComplete="off"
           onSubmit={(e) => {
             e.preventDefault();
@@ -331,6 +344,7 @@ function FormEditor({ base, done }: { base: string; done: () => void }) {
             ) : (
               <>
                 <Select
+                  name="purpose"
                   label="Purpose"
                   value={purpose}
                   options={options.data.purposes.map((p) => [p.key, p.label])}
@@ -338,6 +352,7 @@ function FormEditor({ base, done }: { base: string; done: () => void }) {
                 />
                 {selected && selected.modes.length > 1 && (
                   <Select
+                    name="mode"
                     label="Action"
                     value={mode}
                     options={[
@@ -348,6 +363,7 @@ function FormEditor({ base, done }: { base: string; done: () => void }) {
                   />
                 )}
                 <Select
+                  name="recipient"
                   label="Recipient"
                   value={recipient}
                   options={
@@ -428,6 +444,7 @@ function FormEditor({ base, done }: { base: string; done: () => void }) {
                       }}
                     />
                     <Select
+                      name={`fields.${String(i)}.kind`}
                       label="Input"
                       value={f.kind}
                       options={[

@@ -1,7 +1,8 @@
+import { ActionFields, requireText } from "../ui/action-fields";
 import { useState } from "react";
 import { z } from "../validation";
 import { Action, ErrorNotice, Text } from "../catalog/controls";
-import { post } from "../identity/api";
+import { APIError, post } from "../identity/api";
 import {
   forecastPreviewSchema,
   workSchema,
@@ -70,6 +71,7 @@ export default function ForecastControls({
     setBusy(true);
     setError(null);
     try {
+      requireText("note", note);
       await post(
         `/admin/fulfillment/${work.order_id}/forecast/apply`,
         {
@@ -86,58 +88,62 @@ export default function ForecastControls({
       reload();
     } catch (cause) {
       setError(cause);
-      setPreview(null);
+      if (!(cause instanceof APIError) || !cause.issues.length)
+        setPreview(null);
     } finally {
       setBusy(false);
     }
   }
   return (
-    <section className="catalog-section">
-      <h3>Calculate delivery range</h3>
-      <p>
-        Review a range from the purchased rules, current assigned queue and
-        confirmed sessions. Apply within ten minutes. If confirmation is needed,
-        verify here with an authenticator or email code. Changes require a fresh
-        preview.
-      </p>
-      <ErrorNotice error={error} />
-      <Action
-        disabled={busy}
-        onClick={() => {
-          void calculate();
-        }}
-      >
-        Calculate delivery forecast
-      </Action>
-      {preview && (
-        <div role="status">
-          <p>
-            {preview.status === "needs_review"
-              ? "Needs review. "
-              : "Ready for review. "}
-            {preview.reason}
-          </p>
-          {preview.forecast && (
-            <>
-              <ForecastRange forecast={preview.forecast} />
-              <Text
-                label="Delivery estimate reason"
-                value={note}
-                change={setNote}
-                multiline
-              />
-              <Action
-                disabled={busy || !note.trim()}
-                onClick={() => {
-                  void apply();
-                }}
-              >
-                Apply delivery forecast
-              </Action>
-            </>
-          )}
-        </div>
-      )}
-    </section>
+    <ActionFields error={error} busy={busy}>
+      <section className="catalog-section">
+        <h3>Calculate delivery range</h3>
+        <p>
+          Review a range from the purchased rules, current assigned queue and
+          confirmed sessions. Apply within ten minutes. If confirmation is
+          needed, verify here with an authenticator or email code. Changes
+          require a fresh preview.
+        </p>
+        <ErrorNotice error={error} />
+        <Action
+          disabled={busy}
+          onClick={() => {
+            void calculate();
+          }}
+        >
+          Calculate delivery forecast
+        </Action>
+        {preview && (
+          <div role="status">
+            <p>
+              {preview.status === "needs_review"
+                ? "Needs review. "
+                : "Ready for review. "}
+              {preview.reason}
+            </p>
+            {preview.forecast && (
+              <>
+                <ForecastRange forecast={preview.forecast} />
+                <Text
+                  name="note"
+                  label="Delivery estimate reason"
+                  value={note}
+                  change={setNote}
+                  multiline
+                />
+                <Action
+                  disabled={busy}
+                  onClick={() => {
+                    void apply();
+                  }}
+                >
+                  Apply delivery forecast
+                </Action>
+              </>
+            )}
+          </div>
+        )}
+      </section>
+    </ActionFields>
   );
 }

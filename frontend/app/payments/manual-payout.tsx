@@ -396,6 +396,7 @@ export function ManualPayoutForm({
             help="Describe how you checked completion (at least 10 characters). This note is for authorized staff; never enter wallet keys or passwords."
           />
           <Check
+            name="confirm"
             label="I checked that this transfer completed to the seller-confirmed destination for the exact agreed asset, network and net amount, with no fee deducted"
             value={confirmed}
             change={setConfirmed}

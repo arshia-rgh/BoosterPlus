@@ -1,3 +1,4 @@
+import { ActionFields, requireText } from "../ui/action-fields";
 import { useEffect, useRef, useState } from "react";
 import {
   Link,
@@ -241,18 +242,13 @@ function CreateForm({ search, close }: { search: string; close: () => void }) {
     };
   }, [dirty, busy]);
   async function create() {
-    if (
-      !game ||
-      !title.trim() ||
-      lock.current ||
-      resource.loading ||
-      resource.error
-    )
-      return;
+    if (lock.current || resource.loading || resource.error) return;
     lock.current = true;
     setBusy(true);
     setError(null);
     try {
+      requireText("game_id", game, 1, 100);
+      requireText("title", title, 1, 120);
       const row = await post(
         "/admin/shop/products",
         { game_id: game, definition: { ...emptyDefinition(), title } },
@@ -270,93 +266,97 @@ function CreateForm({ search, close }: { search: string; close: () => void }) {
     }
   }
   return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        void create();
-      }}
-    >
-      {(cancel || blocker.state === "blocked") && (
-        <section role="alert" ref={prompt} tabIndex={-1}>
-          <h3>Discard this new product?</h3>
-          <p>The game choice and title have not been saved.</p>
-          <div className="catalog-actions">
-            <Action
-              onClick={() => {
-                setCancel(false);
-                if (blocker.state === "blocked") blocker.reset();
-              }}
-            >
-              Keep new product
-            </Action>
-            <Action
-              disabled={busy}
-              onClick={() => {
-                if (blocker.state === "blocked") blocker.proceed();
-                else close();
-              }}
-            >
-              Discard new product
-            </Action>
-          </div>
-        </section>
-      )}
-      <Action
-        disabled={busy}
-        onClick={() => {
-          if (dirty) setCancel(true);
-          else close();
+    <ActionFields error={error} busy={busy}>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          void create();
         }}
       >
-        Cancel new product
-      </Action>
-      <ErrorNotice error={resource.error ?? error} />
-      {!!resource.error && (
-        <Action onClick={resource.reload}>Retry game choices</Action>
-      )}
-      <fieldset disabled={busy || resource.loading || !!resource.error}>
-        <legend>New private draft</legend>
-        <Select
-          label="Product game"
-          value={game}
-          change={setGame}
-          options={[
-            ["", "Choose game"],
-            ...(resource.data?.games
-              .filter((row) => !row.archived)
-              .map((row) => [row.id, row.name] as const) ?? []),
-          ]}
-        />
-        {!!resource.data?.next && (
-          <Action
-            onClick={() => {
-              setAfter(resource.data?.next ?? "");
-              setGame("");
-            }}
-          >
-            More games
-          </Action>
+        {(cancel || blocker.state === "blocked") && (
+          <section role="alert" ref={prompt} tabIndex={-1}>
+            <h3>Discard this new product?</h3>
+            <p>The game choice and title have not been saved.</p>
+            <div className="catalog-actions">
+              <Action
+                onClick={() => {
+                  setCancel(false);
+                  if (blocker.state === "blocked") blocker.reset();
+                }}
+              >
+                Keep new product
+              </Action>
+              <Action
+                disabled={busy}
+                onClick={() => {
+                  if (blocker.state === "blocked") blocker.proceed();
+                  else close();
+                }}
+              >
+                Discard new product
+              </Action>
+            </div>
+          </section>
         )}
-        {after && (
-          <Action
-            onClick={() => {
-              setAfter("");
-              setGame("");
-            }}
-          >
-            First games
-          </Action>
-        )}
-        <Text label="New product title" value={title} change={setTitle} />
-        <button
-          type="submit"
-          className="button compact"
-          disabled={!game || !title.trim()}
+        <Action
+          disabled={busy}
+          onClick={() => {
+            if (dirty) setCancel(true);
+            else close();
+          }}
         >
-          {busy ? "Creating draft…" : "Create product draft"}
-        </button>
-      </fieldset>
-    </form>
+          Cancel new product
+        </Action>
+        <ErrorNotice error={resource.error ?? error} />
+        {!!resource.error && (
+          <Action onClick={resource.reload}>Retry game choices</Action>
+        )}
+        <fieldset disabled={busy || resource.loading || !!resource.error}>
+          <legend>New private draft</legend>
+          <Select
+            name="game_id"
+            label="Product game"
+            value={game}
+            change={setGame}
+            options={[
+              ["", "Choose game"],
+              ...(resource.data?.games
+                .filter((row) => !row.archived)
+                .map((row) => [row.id, row.name] as const) ?? []),
+            ]}
+          />
+          {!!resource.data?.next && (
+            <Action
+              onClick={() => {
+                setAfter(resource.data?.next ?? "");
+                setGame("");
+              }}
+            >
+              More games
+            </Action>
+          )}
+          {after && (
+            <Action
+              onClick={() => {
+                setAfter("");
+                setGame("");
+              }}
+            >
+              First games
+            </Action>
+          )}
+          <Text
+            name="title"
+            label="New product title"
+            value={title}
+            change={setTitle}
+          />
+          <button type="submit" className="button compact" disabled={busy}>
+            {busy ? "Creating draft…" : "Create product draft"}
+          </button>
+        </fieldset>
+      </form>
+    </ActionFields>
   );
 }
 

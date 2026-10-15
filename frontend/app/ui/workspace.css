@@ -282,3 +282,12 @@ body:has(.workspace-experience) .site-ambient::after,
     font-size: max(1rem, 16px);
   }
 }
+
+/* Approved champagne details; load with this page family. */
+html
+  :is(
+    .order-advanced-filters summary,
+    .order-advanced-filters summary::marker
+  ) {
+  color: var(--champagne-detail);
+}

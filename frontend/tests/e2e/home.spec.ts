@@ -54,10 +54,17 @@ test("all homepage introductions reach the picker and enlarged text reflows", as
 }, info) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  for (const link of await page
-    .getByRole("link", { name: "Choose your game" })
-    .all()) {
-    await link.click();
+  const tabs = page
+    .getByRole("tablist", { name: "Explore PLAYORA services" })
+    .getByRole("tab");
+  await expect(tabs).toHaveCount(5);
+  for (let index = 0; index < 5; index++) {
+    await tabs.nth(index).click();
+    await expect(tabs.nth(index)).toHaveAttribute("aria-selected", "true");
+    await page
+      .getByRole("tabpanel")
+      .getByRole("link", { name: "Choose your game" })
+      .click();
     await expect(page.locator("#game-selection-title")).toBeFocused();
     await expect(page.locator("#game-selection-title")).toBeInViewport();
   }

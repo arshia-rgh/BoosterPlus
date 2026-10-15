@@ -284,7 +284,14 @@ for (const application of ["storefront", "admin", "both"]) {
           const html = await response.text();
           assert.match(html, /Admin workspace/);
           assert.match(html, /data-portal="admin"/);
-          assert.doesNotMatch(html, /ascension-1536/);
+          assert.doesNotMatch(
+            html,
+            /class="service-explorer"|class="home-hero"/,
+          );
+          if (route === "/admin/login") {
+            assert.match(html, /class="sign-in-story"/);
+            assert.match(html, /src="\/artwork\/ascension-1536\.jpg"/);
+          }
           const assets = [
             ...html.matchAll(/(?:src|href)="(\/admin\/assets\/[^"?]+)"/g),
           ].map((match) => match[1]);

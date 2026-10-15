@@ -1,3 +1,4 @@
+import { Confirmation } from "../ui/form-validation";
 import { Link } from "../portal-router";
 import { useState, type Ref } from "react";
 import { z } from "../validation";
@@ -75,10 +76,7 @@ export function UserControls({
             await refresh("All active sessions revoked.");
           }}
         >
-          <label className="check">
-            <input type="checkbox" required />
-            Confirm sign-out on all devices
-          </label>
+          <Confirmation>Confirm sign-out on all devices</Confirmation>
         </Form>
       )}
 
@@ -100,10 +98,7 @@ export function UserControls({
               <option value="owner">Owner</option>
             </select>
           </label>
-          <label className="check">
-            <input type="checkbox" required />
-            Apply this role and revoke their sessions
-          </label>
+          <Confirmation>Apply this role and revoke their sessions</Confirmation>
         </Form>
       )}
       {!user.deleted && (
@@ -121,10 +116,7 @@ export function UserControls({
             );
           }}
         >
-          <label className="check">
-            <input type="checkbox" required />
-            Confirm account access change
-          </label>
+          <Confirmation>Confirm account access change</Confirmation>
         </Form>
       )}
     </details>

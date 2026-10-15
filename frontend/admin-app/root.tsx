@@ -16,6 +16,7 @@ import AccountRouteFocus from "../app/account/route-focus";
 import "../app/styles.css";
 import "../app/admin/admin.css";
 import "../app/ui/design-system.css";
+import "../app/ui/champagne.css";
 import { AmbientBackdrop, SiteFooter } from "../app/ui/site-chrome";
 import { PortalRoutingProvider } from "../app/portal-router";
 import { routingContext } from "../app/portal/routing.server";

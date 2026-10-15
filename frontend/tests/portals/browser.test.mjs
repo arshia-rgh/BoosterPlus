@@ -79,6 +79,13 @@ async function healthyPage(page, expectedPortal) {
     false,
     "Portal page must not horizontally overflow",
   );
+  for (const select of await page.locator("select:visible").all()) {
+    const bounds = await select.boundingBox();
+    assert.ok(
+      bounds && bounds.height >= 44,
+      "Native selects retain a usable touch target",
+    );
+  }
   assert.equal(
     await page.evaluate(() => [...document.styleSheets].length > 0),
     true,
@@ -273,6 +280,27 @@ test(
             assetFailures.push(`${response.status()} ${response.url()}`);
         });
         try {
+          await page.goto(origins.customer + "/login");
+          await expect(page.locator(".sign-in-panel")).toHaveCount(1);
+          await expect(page.locator(".sign-in-story img")).toBeVisible();
+          await expect(page.locator(".google-sign-in img")).toHaveAttribute(
+            "src",
+            "/brand/google-signin.png",
+          );
+          await page
+            .getByRole("button", { name: "Send verification code" })
+            .click();
+          await expect(
+            page.getByLabel("Email address", { exact: true }),
+          ).toBeFocused();
+          await expect(
+            page.getByLabel("Email address", { exact: true }),
+          ).toHaveAccessibleDescription("Complete this field.");
+          await healthyPage(page, "customer");
+          await page.screenshot({
+            path: `${evidenceDirectory}/${viewport.name}-customer-login.png`,
+            fullPage: true,
+          });
           // A customer cookie must never make either staff entry authenticated.
           await context.addCookies([
             {
@@ -295,6 +323,23 @@ test(
             await expect(
               page.getByRole("link", { name: "account terms" }).first(),
             ).toHaveAttribute("href", origins.customer + "/terms");
+            await expect(page.locator(".sign-in-panel")).toHaveCount(1);
+            await expect(page.locator(".sign-in-story img")).toBeVisible();
+            await expect(page.locator(".google-sign-in img")).toHaveAttribute(
+              "src",
+              "/brand/google-signin.png",
+            );
+            await page
+              .getByRole("button", { name: "Send verification code" })
+              .click();
+            await expect(page.getByLabel("Work email address")).toBeFocused();
+            await expect(page.getByLabel("Work email address")).toHaveAttribute(
+              "aria-invalid",
+              "true",
+            );
+            await expect(
+              page.getByLabel("Work email address"),
+            ).toHaveAccessibleDescription("Complete this field.");
             await healthyPage(page, portal);
             await page.screenshot({
               path: `${evidenceDirectory}/${viewport.name}-${portal}-login.png`,
@@ -340,6 +385,9 @@ test(
             await expect(page.getByRole("heading", { level: 1 })).toHaveText(
               portal === "admin" ? "Order queue" : "Assigned work",
             );
+            await healthyPage(page, portal);
+            // Let fixture reads finish before deliberately replacing the document.
+            await page.waitForLoadState("networkidle");
             await page.goto(origins[portal] + "/unknown-route");
             await expect(page.getByRole("heading", { level: 1 })).toHaveText(
               "This page isn’t available.",
@@ -354,6 +402,7 @@ test(
               }),
             ).toHaveAttribute("href", "/");
             await healthyPage(page, portal);
+            await page.waitForLoadState("networkidle");
             await page.goto(origins[portal] + "/orders");
             const orderLink =
               portal === "admin"
@@ -452,6 +501,9 @@ test(
               new RegExp(`${cookieName(portal)}=verified-${portal}`),
             );
 
+            // Finish the current read-only view before intentionally replacing
+            // its document; WebKit reports aborted cross-host reads as page errors.
+            await page.waitForLoadState("networkidle");
             await page.goto(
               origins.customer + `/${portal}/orders?state=submitted`,
             );
@@ -462,6 +514,7 @@ test(
               portal === "admin" ? "Order queue" : "Assigned work",
             );
           }
+          await page.waitForLoadState("networkidle");
           await page
             .getByRole("link", { name: "Terms & policies", exact: true })
             .click();

@@ -52,14 +52,17 @@ export default function SubmissionEditor({
   );
   const [choiceNotice, setChoiceNotice] = useState(() =>
     restoreParents(value).size
-      ? "Saved categories match your choices. All choices remain available; use the limit button to narrow them."
+      ? "Categories match your saved choices. Use Limit choices to narrow them."
       : "",
   );
   const [issues, setIssues] = useState<FieldIssue[]>([]);
   const validation = useFormValidation(
     issues,
     (name) => {
-      setIssues((old) => old.filter((issue) => issue.path !== name));
+      setIssues((old) => {
+        const next = old.filter((issue) => issue.path !== name);
+        return next.length === old.length ? old : next;
+      });
     },
     undefined,
     !busy,
@@ -73,7 +76,7 @@ export default function SubmissionEditor({
     setAutomaticParents(restoreParents(current));
     setChoiceNotice(
       restoreParents(current).size
-        ? "Saved categories match your choices. All choices remain available; use the limit button to narrow them."
+        ? "Categories match your saved choices. Use Limit choices to narrow them."
         : "",
     );
     setNotes(current.ownership_notes);

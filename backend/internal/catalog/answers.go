@@ -225,7 +225,7 @@ func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submit
 			bad = invalidProgression(rule, fields, refs, result.Answers)
 		}
 		if bad {
-			add("rules."+rule.Key, rule.Message)
+			add(ruleAnswerPath(rule), rule.Message)
 		}
 	}
 	if variant != nil && collectionStage != "estimate" && !matches(variant.Eligibility, result.Answers, fields) {
@@ -239,6 +239,34 @@ func ValidateAnswers(c Configuration, serviceKey, collectionStage string, submit
 		}
 	}
 	return result
+}
+
+// Point combination failures at an editable answer, not an internal rule key.
+func ruleAnswerPath(rule Rule) string {
+	for _, key := range []string{rule.To, rule.From, rule.ToUnits, rule.FromUnits} {
+		if key != "" {
+			return key
+		}
+	}
+	var conditionField func(*Condition) string
+	conditionField = func(condition *Condition) string {
+		if condition == nil {
+			return ""
+		}
+		if condition.Field != "" {
+			return condition.Field
+		}
+		for i := range condition.Children {
+			if key := conditionField(&condition.Children[i]); key != "" {
+				return key
+			}
+		}
+		return ""
+	}
+	if key := conditionField(rule.When); key != "" {
+		return key
+	}
+	return "rules." + rule.Key
 }
 
 // ValidateNewAnswers validates newly selected order preferences. The ordinary

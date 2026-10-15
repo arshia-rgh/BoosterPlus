@@ -1,3 +1,4 @@
+import { Confirmation } from "../ui/form-validation";
 import { DirectoryFilters, useDirectoryFilters } from "./directory-filters";
 import { Link } from "../portal-router";
 import { z } from "../validation";
@@ -104,10 +105,9 @@ export function MediaDirectory() {
                 resource.reload();
               }}
             >
-              <label className="check">
-                <input type="checkbox" required />
+              <Confirmation>
                 Revoke this unattached file and queue object cleanup
-              </label>
+              </Confirmation>
             </Form>
           )}
           {!file.bound && file.state === "queued" && (
@@ -193,10 +193,9 @@ export function AlertDirectory() {
                 resource.reload();
               }}
             >
-              <label className="check">
-                <input type="checkbox" required />
+              <Confirmation>
                 Stop future deliveries for this subscription
-              </label>
+              </Confirmation>
             </Form>
           )}
         </article>

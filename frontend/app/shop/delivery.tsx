@@ -1,7 +1,8 @@
+import { ActionFields, requireText } from "../ui/action-fields";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, type Location } from "../portal-router";
 import { useRecordDraft } from "../ui/record-drafts";
-import { Action, ErrorNotice, Text } from "../catalog/controls";
+import { Select, Action, ErrorNotice, Text } from "../catalog/controls";
 import { APIError, post, sessionSchema } from "../identity/api";
 import { useResource } from "../orders/resource";
 import { conversationSchema, messagesSchema } from "../support/model";
@@ -114,23 +115,22 @@ function ProofList({
       {records.loading ? (
         <p role="status">Loading proof…</p>
       ) : (
-        <label className="catalog-label">
-          Delivery evidence
-          <select
-            value={chosen}
-            onChange={(e) => {
-              choose(e.target.value);
-            }}
-          >
-            <option value="">Choose published proof</option>
-            {proofs.map((m) => (
-              <option key={m.id} value={m.id}>
-                {new Date(m.created_at).toLocaleString()} ·{" "}
-                {m.body.slice(0, 100)}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Select
+          name="proof_message_id"
+          label="Delivery evidence"
+          value={chosen}
+          change={choose}
+          options={[
+            ["", "Choose published proof"],
+            ...proofs.map(
+              (m) =>
+                [
+                  m.id,
+                  `${new Date(m.created_at).toLocaleString()} · ${m.body.slice(0, 100)}`,
+                ] as const,
+            ),
+          ]}
+        />
       )}
       {!records.loading && !proofs.length && (
         <p>
@@ -220,6 +220,8 @@ function DeliveryWork({
     setBusy(true);
     setError(null);
     try {
+      requireText("note", note, 10, 2000);
+      if (action === "submit") requireText("proof_message_id", proof, 1, 100);
       await post(
         `/admin/orders/${id}/shop/${action}`,
         {
@@ -242,111 +244,107 @@ function DeliveryWork({
     }
   }
   return (
-    <section aria-label="Staff delivery actions">
-      <h4>Next delivery action</h4>
-      {stale && (
-        <div role="alert">
-          <p>
-            Delivery changed. Your update is retained; review the current status
-            before choosing an action again.
-          </p>
-          <Action
-            disabled={unavailable}
-            onClick={() => {
-              setRevision(
-                `${String(data.version)}:${String(data.order_version)}`,
-              );
-              setAction("");
-              setProof("");
-            }}
-          >
-            Review current delivery
-          </Action>
-        </div>
-      )}
-
-      <p>
-        {assigned
-          ? "Assigned to you."
-          : data.assigned_id
-            ? "Claimed by another staff member."
-            : "Unclaimed delivery."}
-      </p>
-      <ErrorNotice error={error} />
-      {active ? (
-        <fieldset
-          className="catalog-item"
-          disabled={busy || unavailable || stale}
-        >
-          <legend className="ui-visually-hidden">Delivery action</legend>
-          <label className="catalog-label">
-            Action
-            <select
-              value={action}
-              onChange={(e) => {
-                setAction(e.target.value);
+    <ActionFields error={error} busy={busy}>
+      <section aria-label="Staff delivery actions">
+        <h4>Next delivery action</h4>
+        {stale && (
+          <div role="alert">
+            <p>
+              Delivery changed. Your update is retained; review the current
+              status before choosing an action again.
+            </p>
+            <Action
+              disabled={unavailable}
+              onClick={() => {
+                setRevision(
+                  `${String(data.version)}:${String(data.order_version)}`,
+                );
+                setAction("");
+                setProof("");
               }}
             >
-              <option value="">Choose an action</option>
-              {actions
-                .filter(
-                  (a) =>
-                    data.version === 0 ||
-                    assigned ||
-                    owner ||
-                    ["approve", "return"].includes(a),
-                )
-                .map((a) => (
-                  <option key={a} value={a}>
-                    {label(a)}
-                  </option>
-                ))}
-              {owner &&
-                !assigned &&
-                ["processing", "held"].includes(data.state) && (
-                  <option value="take_over">Take over delivery</option>
-                )}
-            </select>
-          </label>
-          {action && (
-            <>
-              <Text
-                label="Customer-visible update"
-                value={note}
-                change={setNote}
-                multiline
-                help="Explain the outcome and next step. Do not include private delivery identifiers or credentials."
-              />
-              {action === "submit" && (
-                <EvidenceChoice
-                  id={id}
-                  chosen={proof}
-                  choose={setProof}
-                  user={user}
-                />
-              )}
-              <p>
-                {action === "approve"
-                  ? "Approval completes this delivery and notifies the customer. Verify the proof in Messages before confirming."
-                  : "This change is recorded in order history and sent to the customer."}
-              </p>
-              <Action
-                disabled={
-                  note.trim().length < 10 ||
-                  note.length > 2000 ||
-                  (action === "submit" && !proof)
-                }
-                onClick={() => void save()}
+              Review current delivery
+            </Action>
+          </div>
+        )}
+
+        <p>
+          {assigned
+            ? "Assigned to you."
+            : data.assigned_id
+              ? "Claimed by another staff member."
+              : "Unclaimed delivery."}
+        </p>
+        <ErrorNotice error={error} />
+        {active ? (
+          <fieldset
+            className="catalog-item"
+            disabled={busy || unavailable || stale}
+          >
+            <legend className="ui-visually-hidden">Delivery action</legend>
+            <label className="catalog-label">
+              Action
+              <select
+                value={action}
+                onChange={(e) => {
+                  setAction(e.target.value);
+                }}
               >
-                {busy ? "Saving…" : `Confirm: ${label(action)}`}
-              </Action>
-            </>
-          )}
-        </fieldset>
-      ) : (
-        <p>Delivery actions are unavailable for the current order state.</p>
-      )}
-    </section>
+                <option value="">Choose an action</option>
+                {actions
+                  .filter(
+                    (a) =>
+                      data.version === 0 ||
+                      assigned ||
+                      owner ||
+                      ["approve", "return"].includes(a),
+                  )
+                  .map((a) => (
+                    <option key={a} value={a}>
+                      {label(a)}
+                    </option>
+                  ))}
+                {owner &&
+                  !assigned &&
+                  ["processing", "held"].includes(data.state) && (
+                    <option value="take_over">Take over delivery</option>
+                  )}
+              </select>
+            </label>
+            {action && (
+              <>
+                <Text
+                  name="note"
+                  label="Customer-visible update"
+                  value={note}
+                  change={setNote}
+                  multiline
+                  help="Use 10–2,000 characters. Explain the outcome and next step, without private identifiers or credentials."
+                />
+                {action === "submit" && (
+                  <EvidenceChoice
+                    id={id}
+                    chosen={proof}
+                    choose={setProof}
+                    user={user}
+                  />
+                )}
+                <p>
+                  {action === "approve"
+                    ? "Approval completes this delivery and notifies the customer. Verify the proof in Messages before confirming."
+                    : "This change is recorded in order history and sent to the customer."}
+                </p>
+                <Action disabled={busy} onClick={() => void save()}>
+                  {busy ? "Saving…" : `Confirm: ${label(action)}`}
+                </Action>
+              </>
+            )}
+          </fieldset>
+        ) : (
+          <p>Delivery actions are unavailable for the current order state.</p>
+        )}
+      </section>
+    </ActionFields>
   );
 }
 export default function ShopDeliveryPanel({

@@ -1,0 +1,11 @@
+/* Additive accents only. Keep green surfaces, artwork, primary actions and
+   semantic states. Feature-specific accents load with their own page styles. */
+html {
+  --champagne-detail: #e7c78a;
+}
+html :is(.page-heading .eyebrow, .context-back) {
+  color: var(--champagne-detail);
+}
+html .context-back:hover {
+  color: #f4deb4;
+}

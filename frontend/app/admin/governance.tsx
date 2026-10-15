@@ -1,3 +1,4 @@
+import { Confirmation } from "../ui/form-validation";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "../portal-router";
 import { AuthorizedIdentity } from "../identity/frame";
@@ -181,10 +182,9 @@ function OwnerReview() {
                 </option>
               </select>
             </label>
-            <label className="check">
-              <input type="checkbox" required />I reviewed ownership evidence
-              and recorded the case
-            </label>
+            <Confirmation>
+              I reviewed ownership evidence and recorded the case
+            </Confirmation>
           </Form>
         ))}
     </section>

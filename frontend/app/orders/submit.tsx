@@ -8,10 +8,16 @@ import {
   useNavigate,
   useSearchParams,
 } from "../portal-router";
-import { get, post, sessionSchema, type Session } from "../identity/api";
+import {
+  APIError,
+  get,
+  post,
+  sessionSchema,
+  type Session,
+} from "../identity/api";
 import { Check, ErrorNotice, Action } from "../catalog/controls";
 import { minorDisplay } from "../catalog/dynamic-form";
-import type { Answers, Estimate, Variant } from "../catalog/model";
+import type { Answers, Estimate, Variant, Issue } from "../catalog/model";
 import { detailSchema } from "./model";
 import {
   recoverySchema,
@@ -31,6 +37,7 @@ export default function SubmitOrder({
   setBusy,
   onSignIn,
   intakeKey,
+  onIssues,
 }: {
   slug: string;
   service: string;
@@ -43,6 +50,7 @@ export default function SubmitOrder({
   setBusy: (busy: boolean) => void;
   onSignIn?: () => void;
   intakeKey?: string;
+  onIssues?: (issues: Issue[]) => void;
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -152,6 +160,12 @@ export default function SubmitOrder({
       await navigate(`/orders/${result.order.id}`);
     } catch (cause) {
       setError(cause);
+      if (
+        cause instanceof APIError &&
+        cause.status === 422 &&
+        cause.issues.length
+      )
+        onIssues?.(cause.issues);
     } finally {
       lock.current = false;
       submitting(false);
@@ -228,6 +242,7 @@ export default function SubmitOrder({
             · version {session.terms_version}
           </p>
           <Check
+            name="accept_terms"
             label={
               variant
                 ? "I accept the terms and fixed package price"

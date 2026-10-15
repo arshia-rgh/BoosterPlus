@@ -643,30 +643,6 @@ button:disabled {
   overflow-wrap: anywhere;
 }
 
-/* Keep account actions compact so the selected workflow is visible on small screens. */
-.identity-session-action {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin: 1rem 0 1.5rem;
-}
-.identity-session-action fieldset {
-  border: 0;
-  padding: 0;
-  margin: 0;
-}
-.identity-session-action .button {
-  padding: 0.6rem 1rem;
-}
-.identity-session-action p:empty {
-  display: none;
-}
-.account-nav a[aria-current="page"] {
-  color: var(--accent, #c8ff62);
-  text-decoration-thickness: 3px;
-  text-underline-offset: 0.35em;
-}
 .report-scroll {
   max-width: 100%;
   overflow: auto;

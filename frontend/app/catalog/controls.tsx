@@ -26,6 +26,8 @@ export function Text({
   error: localError,
   inputMode,
   step,
+  maxLength,
+  autoComplete,
 }: {
   name?: string | undefined;
   label: string;
@@ -37,6 +39,8 @@ export function Text({
   error?: string | undefined;
   inputMode?: "numeric" | "decimal" | undefined;
   step?: number;
+  maxLength?: number;
+  autoComplete?: string;
 }) {
   const id = useId();
   const helpID = id + "-help";
@@ -60,6 +64,8 @@ export function Text({
         <textarea
           ref={fieldRef}
           name={name}
+          maxLength={maxLength}
+          autoComplete={autoComplete}
           id={id}
           value={value}
           onChange={(event) => {
@@ -73,6 +79,8 @@ export function Text({
         <input
           ref={fieldRef}
           name={name}
+          maxLength={maxLength}
+          autoComplete={autoComplete}
           id={id}
           type={type}
           inputMode={inputMode}
@@ -283,7 +291,7 @@ export function Action({
     </>
   );
 }
-export function Issues({ issues }: { issues: Issue[] }) {
+export function Issues({ issues }: { issues: readonly Issue[] }) {
   const validation = useContext(FieldValidation);
   return issues.length > 0 ? (
     <div role="alert" className="catalog-issues">
@@ -292,6 +300,7 @@ export function Issues({ issues }: { issues: Issue[] }) {
         issues={issues}
         fields={validation?.fields ?? []}
         focus={validation?.focus}
+        autoFocusUnknown={!!validation?.fields}
       />
     </div>
   ) : null;
@@ -305,12 +314,21 @@ export function ErrorNotice({
   hideIssues?: boolean;
   message?: string | undefined;
 }) {
+  const validation = useContext(FieldValidation);
   return error ? (
     <>
       <p role="alert">{message ?? errorMessage(error)}</p>
       <VerificationLink error={error} />
       {!hideIssues && (
-        <Issues issues={error instanceof APIError ? error.issues : []} />
+        <Issues
+          issues={
+            validation
+              ? validation.issues
+              : error instanceof APIError
+                ? error.issues
+                : []
+          }
+        />
       )}
     </>
   ) : null;

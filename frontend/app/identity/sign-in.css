@@ -1,0 +1,283 @@
+/* Keep account actions compact so the selected workflow is visible on small screens. */
+.identity-session-action {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+}
+.identity-session-action fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.identity-session-action .button {
+  padding: 0.6rem 1rem;
+}
+.identity-session-action p:empty {
+  display: none;
+}
+.account-entry.customer-entry:has(.sign-in-layout) {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+.page.portal-sign-in {
+  max-width: 1280px;
+  padding: clamp(1rem, 3vw, 3rem);
+}
+.admin-entry .identity-page.portal-sign-in {
+  max-width: 1280px;
+  padding: clamp(1rem, 3vw, 3rem);
+}
+.admin-app .sign-in-panel .identity-card {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.admin-app .sign-in-panel .identity-card .button {
+  margin-top: 0;
+}
+.admin-app .sign-in-story h2 {
+  font-size: clamp(2rem, 3.4vw, 3.4rem);
+}
+.sign-in-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  align-items: center;
+}
+.sign-in-story {
+  position: relative;
+  min-height: 640px;
+  height: 100%;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  display: flex;
+  align-items: end;
+  isolation: isolate;
+}
+.sign-in-story picture,
+.sign-in-story img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 65% center;
+  z-index: -2;
+}
+.sign-in-story::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #06140d08 10%, #06140d66 45%, #06140df2);
+  z-index: -1;
+}
+.sign-in-story > div {
+  padding: clamp(1.5rem, 3vw, 3rem);
+}
+.sign-in-story .eyebrow {
+  color: var(--champagne-detail);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+}
+.sign-in-story h2 {
+  font-size: clamp(2rem, 3.4vw, 3.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: #effaf2;
+  margin: 1rem 0;
+}
+.sign-in-story p:last-child {
+  max-width: 30ch;
+  color: #c5d6ca;
+  line-height: 1.6;
+}
+.sign-in-panel {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid #a9d5ba36;
+  border-radius: 1.5rem;
+  background: #0c241de8;
+  min-width: 0;
+}
+.sign-in-panel .page-heading {
+  margin: 0 0 1rem;
+  padding: 0;
+}
+.sign-in-panel .page-heading h1 {
+  font-size: 2rem;
+}
+.sign-in-panel > p {
+  color: #c4d5ca;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.sign-in-panel .identity-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.sign-in-panel .identity-grid > .identity-section {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.sign-in-panel .identity-card {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  width: 100%;
+}
+.sign-in-panel .identity-card h2 {
+  font-size: 1.15rem;
+  margin: 1rem 0;
+}
+.sign-in-panel .identity-card.sign-in-method > h2 {
+  display: none;
+}
+.sign-in-panel .identity-card fieldset {
+  gap: 1rem;
+  min-width: 0;
+}
+.sign-in-panel .identity-card .button {
+  width: 100%;
+  min-height: 48px;
+}
+.sign-in-panel .identity-card p {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  margin: 0.7rem 0;
+}
+.sign-in-panel .portal-sign-in-steps {
+  font-size: 0.75rem;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+}
+.sign-in-panel .portal-sign-in-steps li {
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.4rem;
+  background: #173a2a;
+}
+.sign-in-panel details {
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+}
+.sign-in-panel details summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: #e7c78a;
+}
+.sign-in-panel details[open] {
+  padding-bottom: 1rem;
+}
+.sign-in-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #afc3b7;
+  font-size: 0.8rem;
+  margin: 1.25rem 0;
+}
+.sign-in-divider::before,
+.sign-in-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #b1cabb33;
+}
+.sign-in-consent {
+  margin: 1.1rem 0;
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+.sign-in-consent label {
+  display: flex;
+  gap: 0.6rem;
+  align-items: start;
+}
+.sign-in-consent input {
+  width: 18px;
+  height: 18px;
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+.sign-in-consent a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.identity-card .button.google-sign-in {
+  background: #fff;
+  color: #1f1f1f;
+  border: 1px solid #747775;
+  border-radius: 4px;
+  font-size: 14px;
+  box-shadow: none;
+}
+.google-sign-in .ui-button-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.google-sign-in img {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.identity-card .button.google-sign-in:hover:not(:disabled) {
+  background: #f2f2f2;
+}
+.sign-in-panel .portal-entry-help {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+@media (max-width: 900px) {
+  .sign-in-layout {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 580px;
+    margin: auto;
+  }
+  .sign-in-story {
+    min-height: 220px;
+  }
+  .sign-in-story > div {
+    padding: 1.5rem;
+  }
+  .sign-in-story h2 {
+    font-size: 2rem;
+  }
+  .sign-in-story h2 br {
+    display: none;
+  }
+  .sign-in-story p:last-child {
+    margin-bottom: 0;
+    max-width: none;
+  }
+  .sign-in-story img {
+    object-position: 65% 38%;
+  }
+}
+@media (max-width: 400px) {
+  .page.portal-sign-in {
+    padding: 0.75rem;
+  }
+  .sign-in-panel {
+    padding: 1.15rem;
+  }
+  .sign-in-story {
+    min-height: 180px;
+  }
+  .sign-in-story h2 {
+    font-size: 1.7rem;
+  }
+}
