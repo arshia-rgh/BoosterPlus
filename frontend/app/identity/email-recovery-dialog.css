@@ -1,0 +1,78 @@
+.email-recovery-trigger {
+  display: block;
+  margin-top: 1rem;
+  padding: 0.65rem 0;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  color: #e4c689;
+  font: inherit;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+}
+.email-recovery-trigger:hover {
+  color: #f3dfb9;
+}
+.email-recovery-dialog {
+  box-sizing: border-box;
+  width: min(32rem, calc(100vw - 1.5rem));
+  max-width: none;
+  max-height: calc(100dvh - 1.5rem);
+  margin: auto;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #54705f;
+  border-radius: 1.5rem;
+  color: #edf7f0;
+  background: #10251e;
+  box-shadow: 0 1.5rem 5rem #0008;
+}
+.email-recovery-dialog::backdrop {
+  background: #04110bbd;
+  backdrop-filter: blur(8px);
+}
+.email-recovery-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.sign-in-panel .email-recovery-heading h2 {
+  margin: 0;
+  font-size: clamp(1.2rem, 4vw, 1.5rem);
+  line-height: 1.25;
+}
+.email-recovery-close {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0.5rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: #e4c689;
+  font: inherit;
+  cursor: pointer;
+}
+.email-recovery-close:hover {
+  background: #e4c68914;
+}
+.email-recovery-trigger:focus-visible,
+.email-recovery-close:focus-visible {
+  outline: 2px solid #e4c689;
+  outline-offset: 3px;
+}
+.email-recovery-dialog p {
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.sign-in-panel .email-recovery-dialog .identity-section {
+  margin: 0;
+}
+
+/* The dialog title names the initial step; keep the later code-step heading. */
+.email-recovery-dialog .identity-section > .identity-card > h2 {
+  display: none;
+}

@@ -4,6 +4,9 @@ These rules record the owner's instructions from 9 September 2026 and apply to e
 
 ## Repository and delivery
 
+- Owner UX163 preview refinement (16 October 2026): make Lost access to your email open a modal across customer/admin/booster login instead of expanding the sign-in card. Preserve the recovery request, portal isolation, review/authenticator requirements and code flow; support keyboard dismissal, focus containment/return and mobile scrolling. Use focused checks and scoped senior rendered review. Keep deployment held for owner preview.
+
+
 - Owner UX162 preview correction (16 October 2026): replace the flat gate-logo overlay with PLAYORA lettering integrated into the gate's stone, and make animated lightning clearly visible with an early first appearance. Preserve the wide scene, unobscured traveler/gate, compact forms, top navbar only, gentle rain and device reduced-motion preference. This remains a preview revision; deployment is held. Use focused checks and independent senior review that observes actual animation progression, not just a paused peak. See the UX159 implementation notes and UX162 scoped review.
 
 

@@ -86,6 +86,72 @@ async function healthySignInScene(page) {
       panel.y + panel.height <= outer.y + outer.height - 8,
     "Login controls stay inset within the artwork on every viewport",
   );
+  const recoveryTrigger = scene.getByRole("button", {
+    name: "Lost access to your email?",
+  });
+  const documentBounds = () =>
+    scene.locator(".sign-in-panel").evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      return {
+        x: bounds.x + scrollX,
+        y: bounds.y + scrollY,
+        width: bounds.width,
+        height: bounds.height,
+      };
+    });
+  const beforeRecovery = await documentBounds();
+  await recoveryTrigger.click();
+  const recovery = page.getByRole("dialog", { name: "Recover your account" });
+  await expect(recovery).toBeVisible();
+  await expect(recovery.getByLabel("Current account email")).toBeFocused();
+  const modalBounds = await recovery.boundingBox();
+  const viewport = page.viewportSize();
+  assert.ok(modalBounds && viewport);
+  assert.ok(
+    modalBounds.x >= 0 && modalBounds.x + modalBounds.width <= viewport.width,
+  );
+  assert.deepEqual(
+    await documentBounds(),
+    beforeRecovery,
+    "Opening recovery must not resize or move the login card in the document",
+  );
+  await recovery.getByLabel("Current account email").fill("draft@example.test");
+  // Native dialogs allow the browser chrome boundary (BODY), never background controls.
+  for (let step = 0; step < 6; step += 1) {
+    await page.keyboard.press("Shift+Tab");
+    assert.equal(
+      await recovery.evaluate(
+        (element) =>
+          document.activeElement === document.body ||
+          element.contains(document.activeElement),
+      ),
+      true,
+    );
+  }
+  await page
+    .getByRole("button", { name: "Continue with Google", includeHidden: true })
+    .evaluate((element) => element.focus());
+  assert.equal(
+    await recovery.evaluate(
+      (element) =>
+        document.activeElement === document.body ||
+        element.contains(document.activeElement),
+    ),
+    true,
+    "The page behind the modal must be inert",
+  );
+  await page.keyboard.press("Escape");
+  await expect(recovery).not.toBeVisible();
+  await expect(recoveryTrigger).toBeFocused();
+  await recoveryTrigger.click();
+  await expect(recovery.getByLabel("Current account email")).toHaveValue(
+    "draft@example.test",
+  );
+  await recovery
+    .getByRole("button", { name: "Close account recovery" })
+    .click();
+  await expect(recoveryTrigger).toBeFocused();
+  assert.deepEqual(await documentBounds(), beforeRecovery);
   const rain = scene.locator(".sign-in-rain");
   await expect(rain).toHaveAttribute("aria-hidden", "true");
   await expect(rain).toHaveCSS("pointer-events", "none");

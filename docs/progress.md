@@ -1,5 +1,13 @@
 # Implementation progress
 
+## UX163 — email recovery modal preview (16 October 2026)
+
+Lost-email recovery now opens in a shared native modal across customer, admin and booster login. It preserves the existing recovery checks, request namespace and code flow; login-card dimensions remain unchanged, dismissal returns focus, and reopening retains entered fields/pending challenges. Six scoped component cases, three production builds, focused Chromium/WebKit portal checks and independent senior rendered review passed. Focused built-browser evidence and the normal focused commit hook are recorded in `.cache/ux163/`; initial harness assumptions and corrections are retained, not reported as application passes. See [review](redesign/reviews/UX163_2026-10-16.md) and [implementation record](ux159-theme-auth-forms-home-2026-10-15.md). No full suite, live email or deployment. Production stays on c664865; local preview awaits owner acceptance.
+
+## UX161–UX162 — wide storm login preview
+
+The pending login scene now has a wide artwork, unobscured traveler/gate, compact inset form, navbar-only shell, gentle rain and visible lightning. PLAYORA is integrated into the gate's stone; independent review refined bolt geometry and WebKit glow. Signed-in behavior and device reduced motion remain unchanged. Final focused checks and scoped reviews passed; revisions fd13570 and191cab7 were committed/pushed, not deployed. Owner preview hold remains in force.
+
 ## UX160 — final login refinement before combined deployment
 
 The owner amended the still-unactivated UX159 release: shorter login text, consent below email submission, dedicated fantasy artwork and a smaller layout. Related18 login regressions pass; independent rendered review and refreshed release qualification continue. The original signed923179e candidate is retained as superseded, not deployed. No full suite or live messages/funds tests. See [combined release record](ux159-theme-auth-forms-home-2026-10-15.md).

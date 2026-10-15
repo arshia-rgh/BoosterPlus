@@ -6,6 +6,7 @@ import { Anchor } from "../portal-router";
 import { DisplayPreferences } from "./display-preferences";
 import { MFASetup } from "./mfa-setup";
 import { RecoveryResult } from "./recovery-result";
+import { EmailRecoveryDialog } from "./email-recovery-dialog";
 import { countdownLabel, useCountdown } from "./countdown";
 import { parseMFAEnrollment, type MFAEnrollment } from "./mfa-enrollment";
 import {
@@ -1432,10 +1433,9 @@ function PortalIdentity({
                       </p>
                     </details>
                   )}
-                  <details>
-                    <summary>Lost access to your email?</summary>
+                  <EmailRecoveryDialog>
                     <EmailForm purpose="recovery" refresh={refresh} />
-                  </details>
+                  </EmailRecoveryDialog>
                 </>
               ) : (
                 <>
