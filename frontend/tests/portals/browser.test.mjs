@@ -67,6 +67,57 @@ async function started(child, frontendPort, host) {
   }
   throw new Error("Built portal frontend did not become ready");
 }
+async function healthySignInScene(page) {
+  await expect(page.locator(".site-footer")).toHaveCount(0);
+  await expect(page.locator(".site-ambient")).toHaveCount(0);
+  await expect(page.locator(".sign-in-gate-brand image")).toHaveAttribute(
+    "href",
+    "/brand/playora-dark.svg",
+  );
+  const scene = page.locator(".sign-in-layout");
+  await expect(scene.locator(".sign-in-art img")).toBeVisible();
+  const outer = await scene.boundingBox();
+  const panel = await scene.locator(".sign-in-panel").boundingBox();
+  assert.ok(outer && panel);
+  assert.ok(
+    panel.x >= outer.x + 8 &&
+      panel.y >= outer.y + 8 &&
+      panel.x + panel.width <= outer.x + outer.width - 8 &&
+      panel.y + panel.height <= outer.y + outer.height - 8,
+    "Login controls stay inset within the artwork on every viewport",
+  );
+  const rain = scene.locator(".sign-in-rain");
+  await expect(rain).toHaveAttribute("aria-hidden", "true");
+  await expect(rain).toHaveCSS("pointer-events", "none");
+  await expect(rain).toBeHidden();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(rain).toBeVisible();
+  await expect(scene.locator(".sign-in-lightning-bolt")).toHaveCSS(
+    "animation-name",
+    "sign-in-lightning",
+  );
+  await expect(scene.locator(".sign-in-lightning-glow")).toHaveCSS(
+    "animation-duration",
+    "22s",
+  );
+  await expect(scene.locator(".sign-in-lightning-glow")).toHaveCSS(
+    "pointer-events",
+    "none",
+  );
+  const drop = rain.locator("span").first();
+  await expect(drop).toHaveCSS("animation-name", "sign-in-rainfall");
+  const before = await drop.evaluate(
+    (element) => getComputedStyle(element).transform,
+  );
+  await expect
+    .poll(() => drop.evaluate((element) => getComputedStyle(element).transform))
+    .not.toBe(before);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(rain).toBeHidden();
+  await expect(drop).toHaveCSS("animation-name", "none");
+  await expect(scene.locator(".sign-in-lightning-bolt")).toBeHidden();
+  await expect(scene.locator(".sign-in-lightning-glow")).toBeHidden();
+}
 async function healthyPage(page, expectedPortal) {
   await expect(page.locator("body")).toHaveAttribute(
     "data-portal",
@@ -282,7 +333,7 @@ test(
         try {
           await page.goto(origins.customer + "/login");
           await expect(page.locator(".sign-in-panel")).toHaveCount(1);
-          await expect(page.locator(".sign-in-story img")).toBeVisible();
+          await healthySignInScene(page);
           await expect(page.locator(".google-sign-in img")).toHaveAttribute(
             "src",
             "/brand/google-signin.png",
@@ -324,7 +375,7 @@ test(
               page.getByRole("link", { name: "account terms" }).first(),
             ).toHaveAttribute("href", origins.customer + "/terms");
             await expect(page.locator(".sign-in-panel")).toHaveCount(1);
-            await expect(page.locator(".sign-in-story img")).toBeVisible();
+            await healthySignInScene(page);
             await expect(page.locator(".google-sign-in img")).toHaveAttribute(
               "src",
               "/brand/google-signin.png",

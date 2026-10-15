@@ -58,3 +58,40 @@ The first UX160 commit hook stopped at the security linter because a new test co
 The next hook passed906/907 component cases but exposed an unrelated activity-test initialization race: the test clicked the lazily mounted drawer before its responsive mount effect finished, which then closed it. All six isolated activity cases passed. The affected test now explicitly waits for the existing responsive initialization before testing failed-request/retry behavior; assertions and application code are unchanged. Original failed hook evidence remains under `hook-attempt2`. This test-only correction is included in the next focused run.
 
 The test-synchronization correction also needed the repository’s lint form: a retained local mock reference instead of an unbound DOM method, and an explicit callback block. The stopped third hook is retained under `hook-attempt3`; targeted lint and the nine activity/entry regressions then passed. No lint rule or behavioral assertion was removed.
+
+
+## UX161 — wide artwork and rain preview (15 October 2026)
+
+The owner requested a larger, wider artwork with the compact login card sitting inside it, softly animated rain, and a local preview before deployment. Activation is held for preview review. The earlier signed candidates remain unactivated; their results certify their own sources only.
+
+The shared three-portal layout now uses one scene up to 1280 px wide, a 420 px desktop card, and an inset stacked mobile layout within the same artwork. The existing generated fantasy artwork is retained. Twenty-eight decorative CSS rain streaks animate transforms only behind the content; they cannot intercept input or enter the accessibility tree. There is no motion setting or button. The device reduced-motion preference removes the rain automatically. Errors, recovery and authenticator content remain in normal document flow and can expand the scene.
+
+The customer introduction, explicit consent below the email action, Google mark, staff invitation rules and authenticator requirements are unchanged. No authentication, schema, production configuration, financial or policy behavior changes.
+
+Initial focused checks:19 login component cases passed. Built browser regression now verifies the form stays inside the scene, rain moves without intercepting input, and the device preference stops it. All three production builds and both scoped built Chromium/WebKit portal runs passed after correcting a strict-CSP issue: SSR inline rain variables were blocked, so rain variation now lives entirely in the stylesheet. The existing content-security policy is unchanged. The first failed browser evidence is retained. A later mobile/tablet-only scrim adjustment is undergoing final independent rendered review; its scope is contrast only. Evidence is retained in `.cache/ux161/`; unfinished checks are not claimed passed. The updated actual-component preview is at `http://127.0.0.1:4197/?page=login-customer`, with `login-admin` and `login-booster` variants. No deployment or live action occurred for this revision.
+
+
+### UX161 subject visibility amendment (16 October 2026)
+
+The owner then required the full character and gate to remain visible on both desktop and mobile. The original portrait crop has been replaced in this preview by a wider generated composition with both subjects in the left half and quiet forest on the right for the form. Desktop artwork keeps its own aspect ratio, so expanded help/MFA never zooms the image or moves a landmark under the form. At narrow desktop widths the form scales from320 to420px. Phone/tablet views reserve an unobstructed image band above story/form within the same scene. No deployment is authorized before the requested preview review.
+
+Built-in image generation edited the original approved scene; no external stock fetch or CLI API was used. Original output: `/Users/arshia/.codex/generated_images/01a08256-98cd-71d0-b95a-54bef2366657/exec-af9b33e8-1310-4135-895e-9fb9b133f926.png`, preserved also privately at `.cache/ux161/sign-in-wide-original.png`. Project assets: `frontend/public/artwork/sign-in-journey-wide-1672.jpg` and `frontend/public/artwork/sign-in-journey-wide-1000.jpg`. The older portrait assets are retained. JPEG compression/resizing used the platform image utility; scene composition was produced by the built-in image tool.
+
+Final image prompt:
+
+> Use case: precise-object-edit. Asset: PLAYORA fantasy login background, panoramic landscape 2048x1152. Edit target image1. Widen/recompose the SAME beautiful green fantasy citadel scene so an HTML login card can sit over the RIGHT THIRD without hiding either the cloaked adventurer or the large luminous arched gate. Preserve the recognizable cloaked character, stone bridge, ornate arched gate, castle, mist, green forest and muted champagne light and painterly realistic quality. Place the FULL cloaked figure (head to feet) around x25%, y45–73%. Place the complete MAIN ARCH GATE around x43%, y25–63%, fully within LEFT60% of image, with visible bridge leading to it. Zoom out moderately so both subjects have breathing room. Extend the RIGHT40% naturally into quiet dark forest/stone/mist without another focal character or gate, as low-detail negative space for a form. Leave bottom18% of LEFT60% shadowed for story text, without hiding figure feet. No text, letters, logos, interface, cards, buttons or border in image. Overcast soft rainy mood, wet stone, no bright sunlight, no thick rain baked in (rain added in CSS). Do not turn this into a different scene; preserve the source identity while widening its composition.
+
+
+Final wider-art scoped build checks: all three frontend builds, Chromium and WebKit built portal scenarios (desktop/mobile, customer/admin/booster), and7 server cases passed. These include real rain-transform progress under normal motion, hidden/nonanimated decoration under the device preference, image/card containment, existing consent/invitation/session checks, and serving the new image reference. The full suite was not run. Independent final composition review remains the last preview-stage check before commit; production remains unchanged.
+
+
+### UX161 navbar-only storm scene amendment (16 October 2026)
+
+The owner requested the PLAYORA logo at the gate, no login footer or separate page background, and animated thunder/lightning. The login scene now fills the space beneath the retained navbar. The existing exact `/brand/playora-dark.svg` is rendered as a small plaque registered to the source image's gate using the same aspect/crop coordinates, keeping the actual brand crisp at every size instead of approximating it through another raster generation. The wider illustration and prior portrait assets remain intact.
+
+`SiteFooter` and `AmbientBackdrop` omit themselves on the three normalized login routes, including their trailing-slash variants. This is route-scoped, so MFA and recovery retain the same shell while all other pages retain their normal footer/background. Consent/policy links and the top navbar stay available.
+
+Rain and localized lightning are decorative, noninteractive and behind the form. Lightning uses a single gradual22-second cycle with a small sky bolt and a maximum12%-opacity ambient illumination; there are no rapid flashes, sound effects or motion controls. Device reduced motion removes all storm animations. Twenty-six scoped login/chrome component cases, changed-file lint, all three production builds, both built Chromium/WebKit portal runs and7 server cases passed. The final shell/storm checks are retained separately as `storm-*` evidence. No complete suite or deployment was run for this amendment.
+
+
+Final independent scoped review: **PASS**, with no remaining actionable findings in the changed scene/shell. See `docs/redesign/reviews/UX161_2026-10-15.md` and its exact source hashes. Nine final rendered contexts cover all three portals, representative MFA, storm peak/reduced motion and zero horizontal overflow. Earlier complete scene/visibility rounds remain separately retained, not relabelled as the final candidate. The owner preview is the next step; activation remains held.

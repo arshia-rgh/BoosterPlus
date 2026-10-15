@@ -62,3 +62,13 @@ it("names the booster workspace and its existing assignment entry", () => {
     screen.getByRole("link", { name: "Assignment conversations" }),
   ).toHaveAttribute("href", "/booster/orders");
 });
+
+it.each(["/login", "/admin/login", "/booster/login", "/login/"])(
+  "keeps %s focused on its navbar and login scene",
+  (path) => {
+    const ui = show(path);
+    expect(screen.getByRole("banner")).toBeVisible();
+    expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
+    expect(ui.container.querySelector(".site-ambient")).toBeNull();
+  },
+);

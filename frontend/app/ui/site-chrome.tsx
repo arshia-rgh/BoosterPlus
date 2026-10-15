@@ -31,8 +31,16 @@ export function SiteHeader() {
   );
 }
 
+function isLoginPage(pathname: string) {
+  return ["/login", "/admin/login", "/booster/login"].includes(
+    pathname.replace(/\/$/, ""),
+  );
+}
+
 export function AmbientBackdrop() {
   const motion = useMotionPreference();
+  const { pathname } = useLocation();
+  if (isLoginPage(pathname)) return null;
   return (
     <div
       className="site-ambient"
@@ -44,6 +52,7 @@ export function AmbientBackdrop() {
 
 export function SiteFooter() {
   const { pathname } = useLocation();
+  if (isLoginPage(pathname)) return null;
   const staff = pathname.startsWith("/admin");
   const booster = pathname.startsWith("/booster");
   return (

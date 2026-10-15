@@ -18,17 +18,17 @@
   display: none;
 }
 .account-entry.customer-entry:has(.sign-in-layout) {
-  max-width: 1060px;
+  max-width: none;
   width: 100%;
   margin: 0 auto;
 }
 .page.portal-sign-in {
-  max-width: 1060px;
-  padding: clamp(1rem, 2.5vw, 2rem);
+  max-width: none;
+  padding: 0;
 }
 .admin-entry .identity-page.portal-sign-in {
-  max-width: 1060px;
-  padding: clamp(1rem, 2.5vw, 2rem);
+  max-width: none;
+  padding: 0;
 }
 .admin-app .portal-sign-in .sign-in-panel .identity-card {
   padding: 0;
@@ -45,40 +45,230 @@
   font-size: clamp(1.8rem, 2.6vw, 2.75rem);
 }
 .sign-in-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: clamp(1.25rem, 3vw, 2.5rem);
-  align-items: center;
-}
-.sign-in-story {
   position: relative;
-  min-height: 500px;
-  height: 100%;
-  border-radius: 1.5rem;
-  overflow: hidden;
-  display: flex;
-  align-items: end;
   isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, clamp(320px, 32vw, 420px));
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+  min-height: max(740px, calc(100svh - 90px), calc(36vw + 260px));
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  border-radius: 0;
+  overflow: hidden;
+  background: #0b201a;
 }
-.sign-in-story picture,
-.sign-in-story img {
+.sign-in-art,
+.sign-in-art img,
+.sign-in-layout::before,
+.sign-in-rain {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 40%;
-  z-index: -2;
+  pointer-events: none;
 }
-.sign-in-story::after {
+.sign-in-art {
+  z-index: -3;
+  height: auto;
+  aspect-ratio: 1672 / 941;
+  mask-image: linear-gradient(#000 75%, transparent);
+}
+.sign-in-art img {
+  object-fit: cover;
+  object-position: left top;
+}
+.sign-in-layout::before {
+  content: "";
+  z-index: -2;
+  background:
+    linear-gradient(0deg, #04140de8, #06140d08 70%),
+    linear-gradient(90deg, #06140d18 25%, #06140d70);
+}
+.sign-in-rain {
+  z-index: -1;
+  overflow: hidden;
+}
+.sign-in-rain span {
+  position: absolute;
+  top: 0;
+  left: var(--rain-x);
+  width: 1px;
+  height: 100%;
+  opacity: var(--rain-opacity);
+  animation: sign-in-rainfall var(--rain-duration) var(--rain-delay) linear
+    infinite;
+}
+.sign-in-rain span:nth-child(1) {
+  --rain-x: 0%;
+  --rain-delay: 0s;
+}
+.sign-in-rain span:nth-child(2) {
+  --rain-x: 37%;
+  --rain-delay: -1.7s;
+}
+.sign-in-rain span:nth-child(3) {
+  --rain-x: 74%;
+  --rain-delay: -3.4s;
+}
+.sign-in-rain span:nth-child(4) {
+  --rain-x: 10%;
+  --rain-delay: -5.1s;
+}
+.sign-in-rain span:nth-child(5) {
+  --rain-x: 47%;
+  --rain-delay: -6.8s;
+}
+.sign-in-rain span:nth-child(6) {
+  --rain-x: 84%;
+  --rain-delay: -8.5s;
+}
+.sign-in-rain span:nth-child(7) {
+  --rain-x: 20%;
+  --rain-delay: -1.2s;
+}
+.sign-in-rain span:nth-child(8) {
+  --rain-x: 57%;
+  --rain-delay: -2.9s;
+}
+.sign-in-rain span:nth-child(9) {
+  --rain-x: 94%;
+  --rain-delay: -4.6s;
+}
+.sign-in-rain span:nth-child(10) {
+  --rain-x: 30%;
+  --rain-delay: -6.3s;
+}
+.sign-in-rain span:nth-child(11) {
+  --rain-x: 67%;
+  --rain-delay: -8s;
+}
+.sign-in-rain span:nth-child(12) {
+  --rain-x: 3%;
+  --rain-delay: -0.7s;
+}
+.sign-in-rain span:nth-child(13) {
+  --rain-x: 40%;
+  --rain-delay: -2.4s;
+}
+.sign-in-rain span:nth-child(14) {
+  --rain-x: 77%;
+  --rain-delay: -4.1s;
+}
+.sign-in-rain span:nth-child(15) {
+  --rain-x: 13%;
+  --rain-delay: -5.8s;
+}
+.sign-in-rain span:nth-child(16) {
+  --rain-x: 50%;
+  --rain-delay: -7.5s;
+}
+.sign-in-rain span:nth-child(17) {
+  --rain-x: 87%;
+  --rain-delay: -0.2s;
+}
+.sign-in-rain span:nth-child(18) {
+  --rain-x: 23%;
+  --rain-delay: -1.9s;
+}
+.sign-in-rain span:nth-child(19) {
+  --rain-x: 60%;
+  --rain-delay: -3.6s;
+}
+.sign-in-rain span:nth-child(20) {
+  --rain-x: 97%;
+  --rain-delay: -5.3s;
+}
+.sign-in-rain span:nth-child(21) {
+  --rain-x: 33%;
+  --rain-delay: -7s;
+}
+.sign-in-rain span:nth-child(22) {
+  --rain-x: 70%;
+  --rain-delay: -8.7s;
+}
+.sign-in-rain span:nth-child(23) {
+  --rain-x: 6%;
+  --rain-delay: -1.4s;
+}
+.sign-in-rain span:nth-child(24) {
+  --rain-x: 43%;
+  --rain-delay: -3.1s;
+}
+.sign-in-rain span:nth-child(25) {
+  --rain-x: 80%;
+  --rain-delay: -4.8s;
+}
+.sign-in-rain span:nth-child(26) {
+  --rain-x: 16%;
+  --rain-delay: -6.5s;
+}
+.sign-in-rain span:nth-child(27) {
+  --rain-x: 53%;
+  --rain-delay: -8.2s;
+}
+.sign-in-rain span:nth-child(28) {
+  --rain-x: 90%;
+  --rain-delay: -0.9s;
+}
+.sign-in-rain span:nth-child(5n + 1) {
+  --rain-duration: 5s;
+}
+.sign-in-rain span:nth-child(5n + 2) {
+  --rain-duration: 5.8s;
+}
+.sign-in-rain span:nth-child(5n + 3) {
+  --rain-duration: 6.6s;
+}
+.sign-in-rain span:nth-child(5n + 4) {
+  --rain-duration: 7.4s;
+}
+.sign-in-rain span:nth-child(5n + 5) {
+  --rain-duration: 8.2s;
+}
+.sign-in-rain span:nth-child(4n + 1) {
+  --rain-opacity: 0.12;
+}
+.sign-in-rain span:nth-child(4n + 2) {
+  --rain-opacity: 0.165;
+}
+.sign-in-rain span:nth-child(4n + 3) {
+  --rain-opacity: 0.21;
+}
+.sign-in-rain span:nth-child(4n + 4) {
+  --rain-opacity: 0.255;
+}
+.sign-in-rain span::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, #06140d08 10%, #06140d66 45%, #06140df2);
-  z-index: -1;
+  width: 1px;
+  height: 72px;
+  background: linear-gradient(transparent, #dce9dc);
+  transform: rotate(7deg);
+  transform-origin: bottom;
+}
+@keyframes sign-in-rainfall {
+  from {
+    transform: translate3d(20px, -90px, 0);
+  }
+  to {
+    transform: translate3d(-60px, calc(100% + 90px), 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sign-in-rain {
+    display: none;
+  }
+  .sign-in-rain span {
+    animation: none;
+  }
+}
+.sign-in-story {
+  min-width: 0;
+  align-self: end;
+  padding-bottom: 0.75rem;
 }
 .sign-in-story > div {
-  padding: clamp(1.25rem, 2.5vw, 2rem);
+  max-width: 32rem;
 }
 .sign-in-story .eyebrow {
   color: var(--champagne-detail);
@@ -101,7 +291,9 @@
   padding: clamp(1.25rem, 2.3vw, 1.75rem);
   border: 1px solid #a9d5ba36;
   border-radius: 1.5rem;
-  background: #0c241de8;
+  background: #0c241df2;
+  box-shadow: 0 18px 60px #020d1040;
+  backdrop-filter: blur(12px);
   min-width: 0;
 }
 .sign-in-panel .page-heading {
@@ -246,16 +438,37 @@
   padding-bottom: 0;
 }
 @media (max-width: 900px) {
+  .sign-in-layout::before {
+    background: linear-gradient(
+      180deg,
+      #04140d08,
+      #04140d10 25%,
+      #04140d88 55%,
+      #04140de8
+    );
+  }
+  .sign-in-art {
+    height: var(--sign-in-art-height);
+    aspect-ratio: auto;
+    mask-image: linear-gradient(#000 80%, transparent);
+  }
   .sign-in-layout {
+    --sign-in-art-height: clamp(280px, 80vw, 460px);
     grid-template-columns: minmax(0, 1fr);
-    max-width: 500px;
-    margin: auto;
+    gap: 1.75rem;
+    min-height: 0;
+    padding: 2rem;
   }
   .sign-in-story {
-    min-height: 180px;
+    min-height: 0;
+    display: flex;
+    align-items: end;
+    padding: calc(var(--sign-in-art-height) - 4rem) 0 0;
   }
-  .sign-in-story > div {
-    padding: 1.5rem;
+  .sign-in-panel {
+    width: 100%;
+    max-width: 440px;
+    justify-self: end;
   }
   .sign-in-story h2 {
     font-size: 2rem;
@@ -265,23 +478,93 @@
   }
   .sign-in-story p:last-child {
     margin-bottom: 0;
-    max-width: none;
+    max-width: 38ch;
   }
-  .sign-in-story img {
-    object-position: center 40%;
+  .sign-in-art img {
+    object-position: left top;
   }
 }
-@media (max-width: 400px) {
-  .page.portal-sign-in {
+@media (max-width: 540px) {
+  .page.portal-sign-in,
+  .admin-entry .identity-page.portal-sign-in {
+    padding: 0;
+  }
+  .sign-in-layout {
+    --sign-in-art-height: clamp(280px, 88vw, 380px);
     padding: 0.75rem;
+    gap: 1.25rem;
+    border-radius: 0;
+  }
+  .sign-in-story {
+    min-height: 0;
+    padding: calc(var(--sign-in-art-height) - 2rem) 0.5rem 0;
   }
   .sign-in-panel {
     padding: 1.15rem;
+    border-radius: 1rem;
   }
-  .sign-in-story {
-    min-height: 180px;
+  .sign-in-story h2,
+  .admin-app .sign-in-story h2 {
+    font-size: 1.8rem;
   }
-  .sign-in-story h2 {
-    font-size: 1.7rem;
+  .sign-in-story p:last-child {
+    font-size: 0.9rem;
+  }
+}
+
+/* Login owns its whole scene; other pages keep their normal chrome. */
+body:has(.sign-in-layout) {
+  background: #0b201a;
+}
+body:has(.sign-in-layout) .account-entry,
+.admin-entry:has(.sign-in-layout) .admin-body {
+  padding-bottom: 0;
+}
+.sign-in-gate-brand,
+.sign-in-lightning-bolt,
+.sign-in-lightning-glow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.sign-in-lightning-bolt {
+  opacity: 0;
+  animation: sign-in-lightning 22s -10s ease-in-out infinite;
+}
+.sign-in-lightning-glow {
+  z-index: -1;
+  background: radial-gradient(ellipse at 24% 10%, #e3eee0, transparent 65%);
+  opacity: 0;
+  animation: sign-in-thunder-glow 22s -10s ease-in-out infinite;
+}
+@keyframes sign-in-lightning {
+  0%,
+  60%,
+  75%,
+  100% {
+    opacity: 0;
+  }
+  65% {
+    opacity: 0.55;
+  }
+}
+@keyframes sign-in-thunder-glow {
+  0%,
+  60%,
+  76%,
+  100% {
+    opacity: 0;
+  }
+  65% {
+    opacity: 0.12;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sign-in-lightning-bolt,
+  .sign-in-lightning-glow {
+    display: none;
+    animation: none;
   }
 }

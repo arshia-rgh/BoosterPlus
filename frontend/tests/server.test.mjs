@@ -290,7 +290,10 @@ for (const application of ["storefront", "admin", "both"]) {
           );
           if (route === "/admin/login") {
             assert.match(html, /class="sign-in-story"/);
-            assert.match(html, /src="\/artwork\/sign-in-journey-1280\.jpg"/);
+            assert.match(
+              html,
+              /src="\/artwork\/sign-in-journey-wide-1672\.jpg"/,
+            );
           }
           const assets = [
             ...html.matchAll(/(?:src|href)="(\/admin\/assets\/[^"?]+)"/g),
