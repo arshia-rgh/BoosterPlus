@@ -34,17 +34,19 @@ import content from "./public-content.json";
 import { PageHeader } from "../../../frontend/app/ui/page-header";
 import States from "./states";
 import "./palettes.css";
+import "./champagne-accent.css";
 const search = new URLSearchParams(location.search),
   screen = search.get("page") || "home";
-const palette = search.get("palette") || "glacier";
+const palette = search.get("palette") || "green-champagne";
 document.documentElement.dataset.palette = [
   "current",
+  "green-champagne",
   "glacier",
   "iris",
   "champagne",
 ].includes(palette)
   ? palette
-  : "glacier";
+  : "green-champagne";
 const portal =
   screen === "admin" ? "admin" : screen === "booster" ? "booster" : "customer";
 document.body.dataset.portal = portal;
@@ -343,7 +345,9 @@ window.addEventListener("message", (event) => {
   if (event.origin !== location.origin || event.source !== parent) return;
   if (
     event.data?.type === "palette" &&
-    ["current", "glacier", "iris", "champagne"].includes(event.data.value)
+    ["current", "green-champagne", "glacier", "iris", "champagne"].includes(
+      event.data.value,
+    )
   )
     document.documentElement.dataset.palette = event.data.value;
   if (event.data?.type === "section") {

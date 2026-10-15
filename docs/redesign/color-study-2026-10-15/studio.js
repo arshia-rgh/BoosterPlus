@@ -1,24 +1,14 @@
 const frame = document.getElementById("product-frame");
 const options = {
-  glacier: {
-    name: "Glacier",
-    accent: "#8EC5FF",
-    copy: "Cool slate surfaces and ice-blue details. The clearest all-round choice for shopping, support and staff work.",
-  },
-  iris: {
-    name: "Iris",
-    accent: "#C2AAFF",
-    copy: "Neutral ink with soft lavender. More expressive gaming character, while green keeps the primary actions familiar.",
-  },
-  champagne: {
-    name: "Champagne",
+  "green-champagne": {
+    name: "Green + champagne",
     accent: "#E7C78A",
-    copy: "Warm charcoal and restrained gold details. A quieter premium feel for the marketplace and featured content.",
+    copy: "Your current green backgrounds, cards and buttons. Champagne adds warmth to selected headlines, service icons and navigation details.",
   },
   current: {
     name: "Current theme",
     accent: "#B8F776",
-    copy: "The existing green theme on the same components and demo content. Use this to compare the overall balance, not just the accent swatch.",
+    copy: "Your existing green theme, unchanged. Switch to Green + champagne to compare only the accent details on the same page.",
   },
 };
 const pages = {
@@ -71,7 +61,7 @@ const pages = {
 const query = new URLSearchParams(location.search);
 let palette = Object.hasOwn(options, query.get("palette"))
   ? query.get("palette")
-  : "glacier";
+  : "green-champagne";
 let page = Object.hasOwn(pages, query.get("page")) ? query.get("page") : "home";
 let size = query.get("size") === "mobile" ? "mobile" : "desktop";
 function update(reload = false) {
@@ -96,7 +86,9 @@ function update(reload = false) {
     );
   document.getElementById("direction-copy").textContent = options[palette].copy;
   document.getElementById("palette-hex").textContent =
-    "#89EFB0 + " + options[palette].accent;
+    palette === "current"
+      ? "Original green palette"
+      : "Original green + #E7C78A";
   document.getElementById("preview-path").textContent = pages[page].path;
   document.getElementById("screen-status").textContent =
     options[palette].name +

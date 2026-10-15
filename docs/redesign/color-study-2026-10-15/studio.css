@@ -4,7 +4,7 @@
   background: #101115;
   color-scheme: dark;
   font-synthesis: none;
-  --accent: #8ec5ff;
+  --accent: #e7c78a;
 }
 * {
   box-sizing: border-box;
@@ -67,7 +67,7 @@ h1 {
 }
 .palette-options {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 .palette-options button {
@@ -117,13 +117,13 @@ h1 {
   position: absolute;
   right: 10px;
   top: -10px;
-  border: 1px solid #495d75;
-  background: #18283c;
+  border: 1px solid #796746;
+  background: #2b281f;
   border-radius: 6px;
   padding: 3px 7px;
   font-size: 10px;
   letter-spacing: 0.025em;
-  color: #b9d9ff;
+  color: #e7c78a;
 }
 .direction-note {
   display: flex;

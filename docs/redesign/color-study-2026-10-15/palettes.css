@@ -26,7 +26,11 @@ html[data-palette="champagne"] {
   --study-tint: #353023;
   --study-rgb: 231, 199, 138;
 }
-html[data-palette]:not([data-palette="current"]) {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  ) {
   --bg: var(--study-bg);
   --surface: var(--study-surface);
   --raised: var(--study-raised);
@@ -38,7 +42,11 @@ html[data-palette]:not([data-palette="current"]) {
   background: var(--bg);
   color: var(--text);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .experience,
     .plus-home,
@@ -55,11 +63,20 @@ html[data-palette]:not([data-palette="current"])
   --home-accent: var(--study-secondary);
   color: var(--text);
 }
-html[data-palette]:not([data-palette="current"]) body {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  body {
   background: var(--bg);
   color: var(--text);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .minimal-header,
     .site-footer,
@@ -75,13 +92,23 @@ html[data-palette]:not([data-palette="current"])
   border-color: var(--line);
   color: var(--text);
 }
-html[data-palette]:not([data-palette="current"]) :is(.site-ambient)::after {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  :is(.site-ambient)::after {
   background: linear-gradient(
     color-mix(in srgb, var(--bg) 91%, transparent),
     color-mix(in srgb, var(--bg) 97%, transparent)
   );
 }
-html[data-palette]:not([data-palette="current"]) .hero-veil {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  .hero-veil {
   background:
     linear-gradient(
       90deg,
@@ -91,7 +118,12 @@ html[data-palette]:not([data-palette="current"]) .hero-veil {
     ),
     linear-gradient(0deg, var(--bg), transparent 65%);
 }
-html[data-palette]:not([data-palette="current"]) .game-stage::after {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  .game-stage::after {
   background:
     linear-gradient(
       90deg,
@@ -101,13 +133,23 @@ html[data-palette]:not([data-palette="current"]) .game-stage::after {
     ),
     linear-gradient(0deg, var(--bg), transparent 70%);
 }
-html[data-palette]:not([data-palette="current"]) .game-backdrop > div {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  .game-backdrop
+  > div {
   background: linear-gradient(
     color-mix(in srgb, var(--bg) 91%, transparent),
     var(--bg)
   );
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.experience-glow, .symbol-halo) {
   background: radial-gradient(
     ellipse at center,
@@ -115,7 +157,11 @@ html[data-palette]:not([data-palette="current"])
     transparent 70%
   );
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     h1,
     h2,
@@ -129,7 +175,11 @@ html[data-palette]:not([data-palette="current"])
   ) {
   color: var(--text);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .hero-description,
     .hero-scroll,
@@ -156,7 +206,11 @@ html[data-palette]:not([data-palette="current"])
   ) {
   color: var(--muted);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .plus-home em,
     .home-text-link,
@@ -175,7 +229,11 @@ html[data-palette]:not([data-palette="current"])
   ) {
   color: var(--study-secondary);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .game-service-card,
     .game-card,
@@ -201,17 +259,30 @@ html[data-palette]:not([data-palette="current"])
   color: var(--text);
   box-shadow: none;
 }
-html[data-palette]:not([data-palette="current"]) .service-visual {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  .service-visual {
   background: linear-gradient(135deg, var(--surface), var(--bg));
   border-color: var(--line);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.game-service-symbol, .symbol-core) {
   background: var(--study-tint);
   border-color: rgba(var(--study-rgb), 0.36);
   box-shadow: 0 0 50px rgba(var(--study-rgb), 0.07);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.symbol-trail, .symbol-trail.second-trail) {
   background: linear-gradient(
     90deg,
@@ -220,7 +291,11 @@ html[data-palette]:not([data-palette="current"])
     transparent
   );
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .service-feature,
     .game-faq,
@@ -231,10 +306,19 @@ html[data-palette]:not([data-palette="current"])
   ) {
   border-color: var(--line);
 }
-html[data-palette]:not([data-palette="current"]) .account-nav-divider {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  .account-nav-divider {
   background: var(--line);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .admin-navigation a[aria-current="page"],
     .account-sidebar a[aria-current="page"],
@@ -246,17 +330,30 @@ html[data-palette]:not([data-palette="current"])
   box-shadow: inset 3px 0 var(--study-secondary);
   border-color: var(--study-secondary);
 }
-html[data-palette]:not([data-palette="current"]) :is(input, select, textarea) {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  :is(input, select, textarea) {
   background: var(--surface);
   border-color: #7a8592;
   color: var(--text);
   accent-color: #89efb0;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(input, textarea)::placeholder {
   color: #b5bec9;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .button,
     .home-button,
@@ -269,12 +366,20 @@ html[data-palette]:not([data-palette="current"])
   border-color: transparent;
   box-shadow: none;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.button, .home-button, .experience .button):hover:not(:disabled) {
   background: #b1f7cc;
   color: #092015;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .account-text-action,
     .offering-paths button,
@@ -286,31 +391,55 @@ html[data-palette]:not([data-palette="current"])
   border-color: var(--line);
   color: var(--study-secondary);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.offering-paths button[aria-pressed="true"]) {
   background: var(--study-tint);
   border-color: var(--study-secondary);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.status, .admin-app .status, .experience .status) {
   background: #252c35;
   color: #d1d8e2;
   border-color: #536171;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.custom-boost-action, .custom-boost-choices) {
   background: var(--surface);
   border-color: var(--line);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.public-metric strong, .package-card-price) {
   color: var(--text);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.attention-panel, .workspace-experience .attention-panel) {
   border-color: var(--study-secondary);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .service-feature > span,
     .symbol-mark,
@@ -320,22 +449,39 @@ html[data-palette]:not([data-palette="current"])
   ) {
   color: var(--study-secondary);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(a, button, input, select, textarea, summary):focus-visible {
   outline: 2px solid #f3f6f8;
   outline-offset: 4px;
   box-shadow: 0 0 0 4px var(--bg);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.game-service-card, .game-card):hover {
   border-color: var(--study-secondary);
   background: var(--raised);
 }
-html[data-palette]:not([data-palette="current"]) .admin-avatar {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  .admin-avatar {
   background: var(--study-tint);
   color: var(--study-secondary);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.admin-navigation a, .account-sidebar a):hover {
   background: var(--raised);
   color: var(--text);
@@ -368,7 +514,11 @@ html {
   }
 }
 /* Round 2: complete the same palette roles in operational surfaces. */
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .admin-app .order-filters,
     .admin-order-table-wrap,
@@ -383,19 +533,31 @@ html[data-palette]:not([data-palette="current"])
   border-color: var(--line);
   color: var(--text);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.admin-order-table th, .admin-order-table tr:hover td) {
   background: var(--raised);
   color: var(--muted);
   border-color: var(--line);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   .admin-order-table
   tr:hover
   td {
   color: var(--text);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .order-advanced-filters summary,
     .order-advanced-filters summary::marker,
@@ -403,7 +565,11 @@ html[data-palette]:not([data-palette="current"])
   ) {
   color: var(--study-secondary);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .order-toolbar .button,
     .catalog-actions .button,
@@ -416,7 +582,11 @@ html[data-palette]:not([data-palette="current"])
   color: var(--text);
   border-color: #7a8592;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .order-toolbar .button,
     .catalog-actions .button,
@@ -429,11 +599,20 @@ html[data-palette]:not([data-palette="current"])
   color: var(--text);
   border-color: var(--study-secondary);
 }
-html[data-palette]:not([data-palette="current"]) .attention-panel {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  .attention-panel {
   box-shadow: inset 3px 0 var(--study-secondary) !important;
   border-color: var(--line) !important;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   .minimal-header
   nav
   a[aria-current] {
@@ -441,7 +620,11 @@ html[data-palette]:not([data-palette="current"])
   color: var(--study-secondary);
   border-color: var(--line);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   .game-shell[data-copy-side="right"]
   .game-stage::after {
   background:
@@ -454,7 +637,11 @@ html[data-palette]:not([data-palette="current"])
     linear-gradient(0deg, var(--bg), transparent 70%);
 }
 @media (max-width: 700px) {
-  html[data-palette]:not([data-palette="current"])
+  html[data-palette]:is(
+      [data-palette="glacier"],
+      [data-palette="iris"],
+      [data-palette="champagne"]
+    )
     :is(
       .game-stage::after,
       .game-shell[data-copy-side="right"] .game-stage::after
@@ -467,14 +654,24 @@ html[data-palette]:not([data-palette="current"])
       transparent
     );
   }
-  html[data-palette]:not([data-palette="current"]) .game-backdrop > div {
+  html[data-palette]:is(
+      [data-palette="glacier"],
+      [data-palette="iris"],
+      [data-palette="champagne"]
+    )
+    .game-backdrop
+    > div {
     background: linear-gradient(
       color-mix(in srgb, var(--bg) 94%, transparent),
       var(--bg)
     );
   }
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .chat-workspace .chat-room,
     .chat-workspace .chat-room-header,
@@ -486,13 +683,21 @@ html[data-palette]:not([data-palette="current"])
   color: var(--text);
   border-color: var(--line);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.chat-workspace .message-bubble, .chat-form-card, .action-verification) {
   background: var(--raised);
   color: var(--text);
   border-color: #7a8592;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   .chat-workspace
   .outgoing-message
   .message-bubble {
@@ -500,7 +705,11 @@ html[data-palette]:not([data-palette="current"])
   color: var(--text);
   border-color: var(--study-secondary);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .message-meta,
     .chat-title > span,
@@ -509,30 +718,59 @@ html[data-palette]:not([data-palette="current"])
   ) {
   color: var(--muted);
 }
-html[data-palette]:not([data-palette="current"]) .form-secure-badge {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  .form-secure-badge {
   color: var(--study-secondary);
   border-color: var(--study-secondary);
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   .action-verification::backdrop {
   background: #06080ed9;
 }
-html[data-palette]:not([data-palette="current"]) .action-verification input {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  .action-verification
+  input {
   background: var(--surface);
   color: var(--text);
   border-color: #7a8592;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   .state-lab
   input[aria-invalid] {
   border-color: #ffb4be;
 }
-html[data-palette]:not([data-palette="current"]) .state-lab .button.secondary {
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
+  .state-lab
+  .button.secondary {
   background: var(--raised);
   color: var(--muted);
   border-color: #7a8592;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(
     .state-lab .identity-card input,
     .state-lab .identity-card textarea,
@@ -542,18 +780,30 @@ html[data-palette]:not([data-palette="current"])
   color: var(--text);
   border-color: #7a8592;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   .state-lab
   .identity-card
   input[aria-invalid] {
   border-color: #ffb4be;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   :is(.button, .home-button, .admin-module-search input, .admin-topbar input) {
   border-style: solid;
   border-width: 1px;
 }
-html[data-palette]:not([data-palette="current"])
+html[data-palette]:is(
+    [data-palette="glacier"],
+    [data-palette="iris"],
+    [data-palette="champagne"]
+  )
   .identity-page
   :is(.account-work-list, .booster-queue)
   a {

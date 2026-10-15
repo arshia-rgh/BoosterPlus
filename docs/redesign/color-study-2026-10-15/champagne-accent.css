@@ -1,0 +1,61 @@
+/* Preview-only additive accent. Keep all original surfaces, typography,
+   artwork/scrims, primary actions, focus styles and semantic states intact. */
+html[data-palette="green-champagne"] {
+  --champagne-detail: #e7c78a;
+}
+
+html[data-palette="green-champagne"]
+  :is(
+    .plus-home em,
+    .home-kicker,
+    .hero-scroll span,
+    .service-symbol,
+    .symbol-core,
+    .symbol-mark,
+    .service-feature > span,
+    .game-service-symbol,
+    .home-text-link,
+    .service-card-action,
+    .page-heading .eyebrow,
+    .account-next,
+    .account-panel-heading a,
+    .context-back,
+    .admin-external
+  ) {
+  color: var(--champagne-detail);
+}
+
+/* Keep the selected green fill and original label contrast. */
+html[data-palette="green-champagne"]
+  :is(
+    .account-sidebar a[aria-current="page"],
+    .account-drawer a[aria-current="page"],
+    .account-mobile-nav a[aria-current="page"],
+    .admin-navigation a[aria-current="page"]
+  ) {
+  box-shadow: inset 3px 0 var(--champagne-detail);
+}
+
+html[data-palette="green-champagne"]
+  :is(
+    .admin-navigation a[aria-current="page"] span,
+    .order-advanced-filters summary,
+    .order-advanced-filters summary::marker
+  ) {
+  color: var(--champagne-detail);
+}
+
+/* Only the small decorative symbol outlines; whole cards remain unchanged. */
+html[data-palette="green-champagne"] :is(.symbol-core, .symbol-mark) {
+  border-color: #e7c78a66;
+}
+
+html[data-palette="green-champagne"] .form-secure-badge {
+  color: var(--champagne-detail);
+  border-color: var(--champagne-detail);
+}
+
+html[data-palette="green-champagne"]
+  :is(.home-text-link, .context-back, .account-panel-heading a):hover {
+  color: #f4deb4;
+}

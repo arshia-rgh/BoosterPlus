@@ -1,0 +1,128 @@
+[
+  {
+    "page": "home",
+    "width": 1440,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 137
+  },
+  {
+    "page": "game",
+    "width": 1440,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 21
+  },
+  {
+    "page": "boost",
+    "width": 1440,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 2
+  },
+  {
+    "page": "customer",
+    "width": 1440,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 7
+  },
+  {
+    "page": "admin",
+    "width": 1440,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 5
+  },
+  {
+    "page": "booster",
+    "width": 1440,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 1
+  },
+  {
+    "page": "states",
+    "width": 1440,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 2
+  },
+  {
+    "page": "home",
+    "width": 390,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 137
+  },
+  {
+    "page": "game",
+    "width": 390,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 21
+  },
+  {
+    "page": "boost",
+    "width": 390,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 2
+  },
+  {
+    "page": "customer",
+    "width": 390,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 7
+  },
+  {
+    "page": "admin",
+    "width": 390,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 6
+  },
+  {
+    "page": "booster",
+    "width": 390,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 1
+  },
+  {
+    "page": "states",
+    "width": 390,
+    "originalSurfacesAndTypography": true,
+    "primaryActionsAndSemanticsUnchanged": true,
+    "errors": [],
+    "overflow": false,
+    "champagneElements": 2
+  }
+]
