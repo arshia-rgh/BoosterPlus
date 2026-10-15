@@ -18,13 +18,13 @@ export function SignInLayout({
         <picture>
           <source
             media="(max-width:700px)"
-            srcSet="/artwork/ascension-768.jpg"
+            srcSet="/artwork/sign-in-journey-768.jpg"
           />
           <img
-            src="/artwork/ascension-1536.jpg"
+            src="/artwork/sign-in-journey-1280.jpg"
             alt=""
-            width="1536"
-            height="1024"
+            width="1024"
+            height="1280"
           />
         </picture>
         <div>

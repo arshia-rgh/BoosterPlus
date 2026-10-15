@@ -1,5 +1,9 @@
 # Implementation progress
 
+## UX160 — final login refinement before combined deployment
+
+The owner amended the still-unactivated UX159 release: shorter login text, consent below email submission, dedicated fantasy artwork and a smaller layout. Related18 login regressions pass; independent rendered review and refreshed release qualification continue. The original signed923179e candidate is retained as superseded, not deployed. No full suite or live messages/funds tests. See [combined release record](ux159-theme-auth-forms-home-2026-10-15.md).
+
 ## UX159 — theme, sign-in, forms and homepage (qualification)
 
 Implemented the owner-approved champagne details over the green theme, one-panel split-screen sign-in for all three identities, clearer inline validation and retained drafts, shared spacing/copy improvements, and a horizontal five-service homepage selector. Focused component, validation and built-browser checks are being bound to the final source; the full suite remains paused. Senior scoped review and signed release preparation precede deployment. No application activation, policy publication, external message or funds test is claimed. See [release record](ux159-theme-auth-forms-home-2026-10-15.md).

@@ -128,6 +128,7 @@ function AuthEntryProgress({
         ...(requireConsent ? { consent, checkConsent } : {}),
       }}
     >
+      {children}
       {requireConsent && (
         <div className="sign-in-consent">
           <label>
@@ -161,7 +162,6 @@ function AuthEntryProgress({
           )}
         </div>
       )}
-      {children}
     </EntryProgress>
   );
 }
@@ -486,9 +486,9 @@ function EmailFormFields({
               .
             </Confirmation>
           )}
-          <p>
-            We’ll email a short-lived verification code. No password is needed.
-          </p>
+          {purpose !== "login" && (
+            <p>We’ll email a short-lived verification code.</p>
+          )}
           {retrySeconds > 0 && (
             <p role="timer" aria-live="off">
               Request another code in {countdownLabel(retrySeconds)}.
@@ -1396,20 +1396,17 @@ function PortalIdentity({
                 <>
                   <p>
                     {portal === "customer"
-                      ? "Sign in or create your account with Google or email. No password needed."
+                      ? "Sign in or create your account"
                       : `Use your invited ${portal} account. Email or Google verification is followed by your authenticator.`}
                   </p>
                   <AuthEntryProgress requireConsent>
                     <div className="identity-grid">
                       {session.google_enabled ? (
-                        <>
-                          <Google
-                            session={session}
-                            purpose="login"
-                            refresh={refresh}
-                          />
-                          <div className="sign-in-divider">or use email</div>
-                        </>
+                        <Google
+                          session={session}
+                          purpose="login"
+                          refresh={refresh}
+                        />
                       ) : (
                         <p>
                           Google sign-in is currently unavailable. Continue with

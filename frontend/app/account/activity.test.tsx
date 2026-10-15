@@ -38,14 +38,13 @@ const order = {
   updated_at: "2026-09-27T00:00:00Z",
 };
 function desktop() {
-  vi.stubGlobal(
-    "matchMedia",
-    vi.fn(() => ({
-      matches: false,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    })),
-  );
+  const measure = vi.fn(() => ({
+    matches: false,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }));
+  vi.stubGlobal("matchMedia", measure);
+  return measure;
 }
 afterEach(() => {
   vi.clearAllMocks();
@@ -126,7 +125,7 @@ it("shows only owned server-reported progress and clears it when the customer se
   ).not.toBeInTheDocument();
 });
 it("keeps failed activity distinct from empty work and provides retry", async () => {
-  desktop();
+  const measure = desktop();
   let failed = true;
   vi.mocked(get).mockImplementation((path) =>
     path === "/auth/session"
@@ -140,9 +139,15 @@ it("keeps failed activity distinct from empty work and provides retry", async ()
       <CustomerActivity />
     </MemoryRouter>,
   );
-  fireEvent.click(
-    await screen.findByRole("button", { name: /Orders & support/ }),
-  );
+  const trigger = await screen.findByRole("button", {
+    name: /Orders & support/,
+  });
+  // The lazy panel initializes its responsive state in a mount effect. Wait for
+  // that initialization before testing the separate failed-request retry flow.
+  await waitFor(() => {
+    expect(measure).toHaveBeenCalledWith("(max-width: 700px)");
+  });
+  fireEvent.click(trigger);
   await screen.findByText(/We could not load your current orders/);
   expect(screen.queryByText(/No active orders/)).not.toBeInTheDocument();
   failed = false;

@@ -18,19 +18,19 @@
   display: none;
 }
 .account-entry.customer-entry:has(.sign-in-layout) {
-  max-width: 1280px;
+  max-width: 1060px;
   width: 100%;
   margin: 0 auto;
 }
 .page.portal-sign-in {
-  max-width: 1280px;
-  padding: clamp(1rem, 3vw, 3rem);
+  max-width: 1060px;
+  padding: clamp(1rem, 2.5vw, 2rem);
 }
 .admin-entry .identity-page.portal-sign-in {
-  max-width: 1280px;
-  padding: clamp(1rem, 3vw, 3rem);
+  max-width: 1060px;
+  padding: clamp(1rem, 2.5vw, 2rem);
 }
-.admin-app .sign-in-panel .identity-card {
+.admin-app .portal-sign-in .sign-in-panel .identity-card {
   padding: 0;
   margin: 0;
   border: 0;
@@ -42,17 +42,17 @@
   margin-top: 0;
 }
 .admin-app .sign-in-story h2 {
-  font-size: clamp(2rem, 3.4vw, 3.4rem);
+  font-size: clamp(1.8rem, 2.6vw, 2.75rem);
 }
 .sign-in-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-  gap: clamp(1.5rem, 4vw, 4rem);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 2.5rem);
   align-items: center;
 }
 .sign-in-story {
   position: relative;
-  min-height: 640px;
+  min-height: 500px;
   height: 100%;
   border-radius: 1.5rem;
   overflow: hidden;
@@ -67,7 +67,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 65% center;
+  object-position: center 40%;
   z-index: -2;
 }
 .sign-in-story::after {
@@ -78,7 +78,7 @@
   z-index: -1;
 }
 .sign-in-story > div {
-  padding: clamp(1.5rem, 3vw, 3rem);
+  padding: clamp(1.25rem, 2.5vw, 2rem);
 }
 .sign-in-story .eyebrow {
   color: var(--champagne-detail);
@@ -86,7 +86,7 @@
   letter-spacing: 0.1em;
 }
 .sign-in-story h2 {
-  font-size: clamp(2rem, 3.4vw, 3.4rem);
+  font-size: clamp(1.8rem, 2.6vw, 2.75rem);
   line-height: 1.1;
   letter-spacing: -0.04em;
   color: #effaf2;
@@ -98,7 +98,7 @@
   line-height: 1.6;
 }
 .sign-in-panel {
-  padding: clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(1.25rem, 2.3vw, 1.75rem);
   border: 1px solid #a9d5ba36;
   border-radius: 1.5rem;
   background: #0c241de8;
@@ -109,7 +109,8 @@
   padding: 0;
 }
 .sign-in-panel .page-heading h1 {
-  font-size: 2rem;
+  font-size: 1.75rem;
+  margin: 0.5rem 0 0;
 }
 .sign-in-panel > p {
   color: #c4d5ca;
@@ -119,7 +120,7 @@
 .sign-in-panel .identity-grid {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 1.25rem;
 }
 .sign-in-panel .identity-grid > .identity-section {
   width: 100%;
@@ -143,13 +144,28 @@
 .sign-in-panel .identity-card.sign-in-method > h2 {
   display: none;
 }
+.admin-app .portal-sign-in .sign-in-panel .identity-card fieldset {
+  padding: 0;
+}
 .sign-in-panel .identity-card fieldset {
+  display: grid;
   gap: 1rem;
   min-width: 0;
 }
 .sign-in-panel .identity-card .button {
   width: 100%;
   min-height: 48px;
+  margin: 0;
+}
+.sign-in-panel .identity-card .ui-field {
+  margin: 0;
+}
+.sign-in-panel .identity-card input:not([type="checkbox"]) {
+  min-height: 48px;
+  font-size: 1rem;
+}
+.sign-in-panel .identity-card p:empty {
+  display: none;
 }
 .sign-in-panel .identity-card p {
   font-size: 0.85rem;
@@ -166,8 +182,11 @@
   border-radius: 0.4rem;
   background: #173a2a;
 }
-.sign-in-panel details {
-  margin-top: 1.25rem;
+.portal-sign-in .sign-in-panel details {
+  margin: 0.25rem 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
   font-size: 0.85rem;
 }
 .sign-in-panel details summary {
@@ -180,23 +199,8 @@
 .sign-in-panel details[open] {
   padding-bottom: 1rem;
 }
-.sign-in-divider {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  color: #afc3b7;
-  font-size: 0.8rem;
-  margin: 1.25rem 0;
-}
-.sign-in-divider::before,
-.sign-in-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: #b1cabb33;
-}
 .sign-in-consent {
-  margin: 1.1rem 0;
+  margin: 0.85rem 0 0.5rem;
   font-size: 0.83rem;
   line-height: 1.6;
 }
@@ -244,11 +248,11 @@
 @media (max-width: 900px) {
   .sign-in-layout {
     grid-template-columns: minmax(0, 1fr);
-    max-width: 580px;
+    max-width: 500px;
     margin: auto;
   }
   .sign-in-story {
-    min-height: 220px;
+    min-height: 180px;
   }
   .sign-in-story > div {
     padding: 1.5rem;
@@ -264,7 +268,7 @@
     max-width: none;
   }
   .sign-in-story img {
-    object-position: 65% 38%;
+    object-position: center 40%;
   }
 }
 @media (max-width: 400px) {
