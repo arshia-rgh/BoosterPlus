@@ -1,0 +1,86 @@
+[
+  {
+    "palette": "glacier",
+    "page": "home",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  },
+  {
+    "palette": "glacier",
+    "page": "game",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  },
+  {
+    "palette": "glacier",
+    "page": "customer",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  },
+  {
+    "palette": "glacier",
+    "page": "admin",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  },
+  {
+    "palette": "iris",
+    "page": "home",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  },
+  {
+    "palette": "iris",
+    "page": "game",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  },
+  {
+    "palette": "iris",
+    "page": "customer",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  },
+  {
+    "palette": "iris",
+    "page": "admin",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  },
+  {
+    "palette": "champagne",
+    "page": "home",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  },
+  {
+    "palette": "champagne",
+    "page": "game",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  },
+  {
+    "palette": "champagne",
+    "page": "customer",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  },
+  {
+    "palette": "champagne",
+    "page": "admin",
+    "overflow": false,
+    "errors": [],
+    "mutations": 0
+  }
+]

@@ -1,0 +1,157 @@
+.state-lab {
+  max-width: 1440px;
+  margin: auto;
+  padding: 48px;
+}
+.state-lab > p {
+  margin-bottom: 28px;
+}
+.state-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.state-demo-chat.chat-workspace {
+  display: block;
+  padding: 0;
+  min-height: 0;
+}
+.state-demo-chat .chat-room {
+  min-height: 0;
+}
+.state-demo-chat .chat-history {
+  height: auto;
+  max-height: none;
+  min-height: 0;
+  overflow: visible;
+}
+.state-demo-chat .chat-composer {
+  margin: 0;
+}
+.state-demo-chat .message-meta time {
+  margin-left: 12px;
+}
+.state-lab .state-samples {
+  display: grid;
+  gap: 20px;
+}
+.state-lab .identity-card {
+  margin: 0;
+  padding: 24px;
+}
+.state-lab .identity-card h2 {
+  font-size: 20px;
+  margin: 0 0 20px;
+}
+.sample-state {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.sample-state strong {
+  font-size: 14px;
+}
+.sample-state p {
+  font-size: 13px;
+  margin: 5px 0 0;
+}
+.state-lab .sample-state.success {
+  background: #142e23;
+  color: #89e6ae;
+}
+.state-lab .sample-state.info {
+  background: #172d43;
+  color: #a8ceff;
+}
+.state-lab .sample-state.warning {
+  background: #33291b;
+  color: #f5cc7c;
+}
+.state-lab .sample-state.danger {
+  background: #361c25;
+  color: #ffb4be;
+}
+.state-lab .sample-state strong {
+  color: inherit !important;
+}
+.state-lab .field-error {
+  color: #ffb4be;
+  font-size: 14px;
+}
+.state-lab label {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+}
+.state-lab input[aria-invalid] {
+  border: 2px solid #ffb4be;
+}
+.state-lab .form-actions {
+  margin: 20px 0 0;
+}
+.state-demo-chat .composer-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.state-demo-chat .outgoing-message {
+  margin-left: 32px;
+}
+.state-demo-chat .form-secure-badge {
+  margin-left: 0;
+}
+.state-demo-chat .chat-title h2 {
+  margin: 0;
+}
+.state-demo-chat .chat-title > span {
+  display: block;
+}
+.state-demo-chat .chat-history {
+  padding: 20px;
+}
+.state-demo-chat .chat-composer textarea {
+  width: 100%;
+  font: inherit;
+  resize: vertical;
+  min-height: 90px;
+}
+.state-demo-chat .message-list {
+  margin: 0;
+}
+.state-lab .identity-card input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font: inherit;
+}
+.state-lab .form-actions .button {
+  margin: 0;
+}
+.state-lab .action-verification-cancel {
+  color: inherit;
+  background: transparent;
+  border: 1px solid #7a8592;
+  border-radius: 10px;
+}
+.state-lab .action-verification {
+  font: inherit;
+}
+@media (max-width: 850px) {
+  .state-grid {
+    grid-template-columns: 1fr;
+  }
+  .state-lab {
+    padding: 24px 16px;
+  }
+  .state-demo-chat .chat-history {
+    padding: 16px;
+  }
+  .state-lab .identity-card {
+    padding: 20px;
+  }
+  .state-demo-chat .chat-room-header {
+    flex-wrap: wrap;
+  }
+}

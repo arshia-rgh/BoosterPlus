@@ -1,0 +1,2890 @@
+{
+  "game": {
+    "id": "dbccb8f0-74ed-4136-acc5-cc4e3d5428e6",
+    "game_id": "6faf485a-eab8-4700-8c87-3e30bf003001",
+    "slug": "mobile-legends",
+    "version": 277,
+    "paused": false,
+    "created_at": "2026-10-15T09:02:47.244886Z",
+    "configuration": {
+      "discovery": {
+        "capabilities": [
+          {
+            "service": "boost",
+            "state": "active",
+            "description": "Choose a fixed rank package or request a custom climb with your preferred heroes, lane and delivery window.",
+            "reason": ""
+          },
+          {
+            "service": "accounts",
+            "state": "active",
+            "description": "",
+            "reason": ""
+          },
+          {
+            "service": "shop",
+            "state": "paused",
+            "description": "",
+            "reason": "soon"
+          },
+          {
+            "service": "news",
+            "state": "active",
+            "description": "",
+            "reason": ""
+          }
+        ],
+        "metrics": {
+          "window_days": 30,
+          "minimum_sample": 20,
+          "maximum_age_seconds": 300
+        }
+      },
+      "hero_layout": {
+        "desktop_x": 75,
+        "desktop_y": 20,
+        "mobile_x": 85,
+        "mobile_y": 20,
+        "copy_side": "left"
+      },
+      "review_policy": {
+        "content": "Reviews must describe a real PLAYORA service experience. Positive and negative feedback are treated equally. Do not include credentials, private messages, personal contact information, threats, unlawful material, spam or fabricated evidence. Where a review is linked to an eligible order, that link verifies the connection, not every statement. PLAYORA may request a correction or remove violating content, explains the rule where contact is available, and offers review through support@playoragames.com. A rating is never changed to improve our reputation. A refund, payout or complaint response is not conditional on praise or removal of criticism. Public display is limited to the attribution and content explained by the form; private evidence is not advertising permission. Featured reviews are a curated selection, not every customer's opinion.",
+        "fields": [],
+        "rules": []
+      },
+      "schema_version": 1,
+      "name": "Mobile Legends",
+      "description": "Plan your next Mobile Legends climb, explore reviewed accounts and keep up with game guides and updates. Choose a service below; each offer explains its scope, price and delivery terms.",
+      "asset": "/catalog-assets/game-mlbb-1536.jpg",
+      "asset_alt": "Mobile Legends game artwork",
+      "reviewed": true,
+      "references": [
+        {
+          "key": "ranks",
+          "label": "Ranks and divisions",
+          "kind": "rank",
+          "options": [
+            {
+              "key": "option_0",
+              "label": "Warrior III",
+              "units": 3
+            },
+            {
+              "key": "option_1",
+              "label": "Warrior II",
+              "units": 3
+            },
+            {
+              "key": "option_2",
+              "label": "Warrior I",
+              "units": 3
+            },
+            {
+              "key": "option_3",
+              "label": "Elite III",
+              "units": 4
+            },
+            {
+              "key": "option_4",
+              "label": "Elite II",
+              "units": 4
+            },
+            {
+              "key": "option_5",
+              "label": "Elite I",
+              "units": 4
+            },
+            {
+              "key": "option_6",
+              "label": "Master IV",
+              "units": 4
+            },
+            {
+              "key": "option_7",
+              "label": "Master III",
+              "units": 4
+            },
+            {
+              "key": "option_8",
+              "label": "Master II",
+              "units": 4
+            },
+            {
+              "key": "option_9",
+              "label": "Master I",
+              "units": 4
+            },
+            {
+              "key": "option_10",
+              "label": "Grandmaster V",
+              "units": 5
+            },
+            {
+              "key": "option_11",
+              "label": "Grandmaster IV",
+              "units": 5
+            },
+            {
+              "key": "option_12",
+              "label": "Grandmaster III",
+              "units": 5
+            },
+            {
+              "key": "option_13",
+              "label": "Grandmaster II",
+              "units": 5
+            },
+            {
+              "key": "option_14",
+              "label": "Grandmaster I",
+              "units": 5
+            },
+            {
+              "key": "option_15",
+              "label": "Epic V",
+              "units": 5
+            },
+            {
+              "key": "option_16",
+              "label": "Epic IV",
+              "units": 5
+            },
+            {
+              "key": "option_17",
+              "label": "Epic III",
+              "units": 5
+            },
+            {
+              "key": "option_18",
+              "label": "Epic II",
+              "units": 5
+            },
+            {
+              "key": "option_19",
+              "label": "Epic I",
+              "units": 5
+            },
+            {
+              "key": "option_20",
+              "label": "Legend V",
+              "units": 5
+            },
+            {
+              "key": "option_21",
+              "label": "Legend IV",
+              "units": 5
+            },
+            {
+              "key": "option_22",
+              "label": "Legend III",
+              "units": 5
+            },
+            {
+              "key": "option_23",
+              "label": "Legend II",
+              "units": 5
+            },
+            {
+              "key": "option_24",
+              "label": "Legend I",
+              "units": 5
+            },
+            {
+              "key": "option_25",
+              "label": "Mythic",
+              "units": 25,
+              "unit_start": 0
+            },
+            {
+              "key": "option_26",
+              "label": "Mythical Honor",
+              "units": 25,
+              "unit_start": 25
+            },
+            {
+              "key": "option_27",
+              "label": "Mythical Glory",
+              "units": 50,
+              "unit_start": 50
+            },
+            {
+              "key": "option_28",
+              "label": "Mythical Immortal",
+              "units": 9901,
+              "unit_start": 100
+            }
+          ]
+        },
+        {
+          "key": "heroes",
+          "label": "Heroes",
+          "kind": "hero",
+          "options": [
+            {
+              "key": "option_109",
+              "label": "Aamon",
+              "units": 0
+            },
+            {
+              "key": "option_9",
+              "label": "Akai",
+              "units": 0
+            },
+            {
+              "key": "option_64",
+              "label": "Aldous",
+              "units": 0
+            },
+            {
+              "key": "option_4",
+              "label": "Alice",
+              "units": 0
+            },
+            {
+              "key": "option_28",
+              "label": "Alpha",
+              "units": 0
+            },
+            {
+              "key": "option_7",
+              "label": "Alucard",
+              "units": 0
+            },
+            {
+              "key": "option_55",
+              "label": "Angela",
+              "units": 0
+            },
+            {
+              "key": "option_45",
+              "label": "Argus",
+              "units": 0
+            },
+            {
+              "key": "option_120",
+              "label": "Arlott",
+              "units": 0
+            },
+            {
+              "key": "option_93",
+              "label": "Atlas",
+              "units": 0
+            },
+            {
+              "key": "option_108",
+              "label": "Aulus",
+              "units": 0
+            },
+            {
+              "key": "option_36",
+              "label": "Aurora",
+              "units": 0
+            },
+            {
+              "key": "option_77",
+              "label": "Badang",
+              "units": 0
+            },
+            {
+              "key": "option_2",
+              "label": "Balmond",
+              "units": 0
+            },
+            {
+              "key": "option_11",
+              "label": "Bane",
+              "units": 0
+            },
+            {
+              "key": "option_99",
+              "label": "Barats",
+              "units": 0
+            },
+            {
+              "key": "option_87",
+              "label": "Baxia",
+              "units": 0
+            },
+            {
+              "key": "option_105",
+              "label": "Beatrix",
+              "units": 0
+            },
+            {
+              "key": "option_70",
+              "label": "Belerick",
+              "units": 0
+            },
+            {
+              "key": "option_97",
+              "label": "Benedetta",
+              "units": 0
+            },
+            {
+              "key": "option_100",
+              "label": "Brody",
+              "units": 0
+            },
+            {
+              "key": "option_12",
+              "label": "Bruno",
+              "units": 0
+            },
+            {
+              "key": "option_92",
+              "label": "Carmilla",
+              "units": 0
+            },
+            {
+              "key": "option_91",
+              "label": "Cecilion",
+              "units": 0
+            },
+            {
+              "key": "option_61",
+              "label": "Chang'e",
+              "units": 0
+            },
+            {
+              "key": "option_124",
+              "label": "Chip",
+              "units": 0
+            },
+            {
+              "key": "option_26",
+              "label": "Chou",
+              "units": 0
+            },
+            {
+              "key": "option_123",
+              "label": "Cici",
+              "units": 0
+            },
+            {
+              "key": "option_65",
+              "label": "Claude",
+              "units": 0
+            },
+            {
+              "key": "option_13",
+              "label": "Clint",
+              "units": 0
+            },
+            {
+              "key": "option_33",
+              "label": "Cyclops",
+              "units": 0
+            },
+            {
+              "key": "option_48",
+              "label": "Diggie",
+              "units": 0
+            },
+            {
+              "key": "option_85",
+              "label": "Dyrroth",
+              "units": 0
+            },
+            {
+              "key": "option_111",
+              "label": "Edith",
+              "units": 0
+            },
+            {
+              "key": "option_81",
+              "label": "Esmeralda",
+              "units": 0
+            },
+            {
+              "key": "option_34",
+              "label": "Estes",
+              "units": 0
+            },
+            {
+              "key": "option_15",
+              "label": "Eudora",
+              "units": 0
+            },
+            {
+              "key": "option_17",
+              "label": "Fanny",
+              "units": 0
+            },
+            {
+              "key": "option_76",
+              "label": "Faramis",
+              "units": 0
+            },
+            {
+              "key": "option_112",
+              "label": "Floryn",
+              "units": 0
+            },
+            {
+              "key": "option_10",
+              "label": "Franco",
+              "units": 0
+            },
+            {
+              "key": "option_117",
+              "label": "Fredrinn",
+              "units": 0
+            },
+            {
+              "key": "option_22",
+              "label": "Freya",
+              "units": 0
+            },
+            {
+              "key": "option_41",
+              "label": "Gatotkaca",
+              "units": 0
+            },
+            {
+              "key": "option_104",
+              "label": "Gloo",
+              "units": 0
+            },
+            {
+              "key": "option_23",
+              "label": "Gord",
+              "units": 0
+            },
+            {
+              "key": "option_79",
+              "label": "Granger",
+              "units": 0
+            },
+            {
+              "key": "option_44",
+              "label": "Grock",
+              "units": 0
+            },
+            {
+              "key": "option_80",
+              "label": "Guinevere",
+              "units": 0
+            },
+            {
+              "key": "option_56",
+              "label": "Gusion",
+              "units": 0
+            },
+            {
+              "key": "option_60",
+              "label": "Hanabi",
+              "units": 0
+            },
+            {
+              "key": "option_69",
+              "label": "Hanzo",
+              "units": 0
+            },
+            {
+              "key": "option_73",
+              "label": "Harith",
+              "units": 0
+            },
+            {
+              "key": "option_42",
+              "label": "Harley",
+              "units": 0
+            },
+            {
+              "key": "option_21",
+              "label": "Hayabusa",
+              "units": 0
+            },
+            {
+              "key": "option_51",
+              "label": "Helcurt",
+              "units": 0
+            },
+            {
+              "key": "option_35",
+              "label": "Hilda",
+              "units": 0
+            },
+            {
+              "key": "option_133",
+              "label": "Hirara",
+              "units": 0
+            },
+            {
+              "key": "option_49",
+              "label": "Hylos",
+              "units": 0
+            },
+            {
+              "key": "option_43",
+              "label": "Irithel",
+              "units": 0
+            },
+            {
+              "key": "option_121",
+              "label": "Ixia",
+              "units": 0
+            },
+            {
+              "key": "option_54",
+              "label": "Jawhead",
+              "units": 0
+            },
+            {
+              "key": "option_32",
+              "label": "Johnson",
+              "units": 0
+            },
+            {
+              "key": "option_118",
+              "label": "Joy",
+              "units": 0
+            },
+            {
+              "key": "option_116",
+              "label": "Julian",
+              "units": 0
+            },
+            {
+              "key": "option_75",
+              "label": "Kadita",
+              "units": 0
+            },
+            {
+              "key": "option_25",
+              "label": "Kagura",
+              "units": 0
+            },
+            {
+              "key": "option_62",
+              "label": "Kaja",
+              "units": 0
+            },
+            {
+              "key": "option_128",
+              "label": "Kalea",
+              "units": 0
+            },
+            {
+              "key": "option_8",
+              "label": "Karina",
+              "units": 0
+            },
+            {
+              "key": "option_40",
+              "label": "Karrie",
+              "units": 0
+            },
+            {
+              "key": "option_98",
+              "label": "Khaleed",
+              "units": 0
+            },
+            {
+              "key": "option_78",
+              "label": "Khufra",
+              "units": 0
+            },
+            {
+              "key": "option_71",
+              "label": "Kimmy",
+              "units": 0
+            },
+            {
+              "key": "option_47",
+              "label": "Lancelot",
+              "units": 0
+            },
+            {
+              "key": "option_37",
+              "label": "Lapu-Lapu",
+              "units": 0
+            },
+            {
+              "key": "option_18",
+              "label": "Layla",
+              "units": 0
+            },
+            {
+              "key": "option_67",
+              "label": "Leomord",
+              "units": 0
+            },
+            {
+              "key": "option_53",
+              "label": "Lesley",
+              "units": 0
+            },
+            {
+              "key": "option_84",
+              "label": "Ling",
+              "units": 0
+            },
+            {
+              "key": "option_20",
+              "label": "Lolita",
+              "units": 0
+            },
+            {
+              "key": "option_127",
+              "label": "Lukas",
+              "units": 0
+            },
+            {
+              "key": "option_68",
+              "label": "Lunox",
+              "units": 0
+            },
+            {
+              "key": "option_96",
+              "label": "Luo Yi",
+              "units": 0
+            },
+            {
+              "key": "option_86",
+              "label": "Lylia",
+              "units": 0
+            },
+            {
+              "key": "option_132",
+              "label": "Marcel",
+              "units": 0
+            },
+            {
+              "key": "option_58",
+              "label": "Martis",
+              "units": 0
+            },
+            {
+              "key": "option_88",
+              "label": "Masha",
+              "units": 0
+            },
+            {
+              "key": "option_102",
+              "label": "Mathilda",
+              "units": 0
+            },
+            {
+              "key": "option_114",
+              "label": "Melissa",
+              "units": 0
+            },
+            {
+              "key": "option_19",
+              "label": "Minotaur",
+              "units": 0
+            },
+            {
+              "key": "option_74",
+              "label": "Minsitthar",
+              "units": 0
+            },
+            {
+              "key": "option_1",
+              "label": "Miya",
+              "units": 0
+            },
+            {
+              "key": "option_31",
+              "label": "Moskov",
+              "units": 0
+            },
+            {
+              "key": "option_5",
+              "label": "Nana",
+              "units": 0
+            },
+            {
+              "key": "option_24",
+              "label": "Natalia",
+              "units": 0
+            },
+            {
+              "key": "option_107",
+              "label": "Natan",
+              "units": 0
+            },
+            {
+              "key": "option_122",
+              "label": "Nolan",
+              "units": 0
+            },
+            {
+              "key": "option_119",
+              "label": "Novaria",
+              "units": 0
+            },
+            {
+              "key": "option_130",
+              "label": "Obsidia",
+              "units": 0
+            },
+            {
+              "key": "option_46",
+              "label": "Odette",
+              "units": 0
+            },
+            {
+              "key": "option_103",
+              "label": "Paquito",
+              "units": 0
+            },
+            {
+              "key": "option_52",
+              "label": "Pharsa",
+              "units": 0
+            },
+            {
+              "key": "option_106",
+              "label": "Phoveus",
+              "units": 0
+            },
+            {
+              "key": "option_94",
+              "label": "Popol and Kupa",
+              "units": 0
+            },
+            {
+              "key": "option_14",
+              "label": "Rafaela",
+              "units": 0
+            },
+            {
+              "key": "option_39",
+              "label": "Roger",
+              "units": 0
+            },
+            {
+              "key": "option_29",
+              "label": "Ruby",
+              "units": 0
+            },
+            {
+              "key": "option_3",
+              "label": "Saber",
+              "units": 0
+            },
+            {
+              "key": "option_63",
+              "label": "Selena",
+              "units": 0
+            },
+            {
+              "key": "option_90",
+              "label": "Silvanna",
+              "units": 0
+            },
+            {
+              "key": "option_131",
+              "label": "Sora",
+              "units": 0
+            },
+            {
+              "key": "option_27",
+              "label": "Sun",
+              "units": 0
+            },
+            {
+              "key": "option_126",
+              "label": "Suyou",
+              "units": 0
+            },
+            {
+              "key": "option_82",
+              "label": "Terizla",
+              "units": 0
+            },
+            {
+              "key": "option_72",
+              "label": "Thamuz",
+              "units": 0
+            },
+            {
+              "key": "option_6",
+              "label": "Tigreal",
+              "units": 0
+            },
+            {
+              "key": "option_59",
+              "label": "Uranus",
+              "units": 0
+            },
+            {
+              "key": "option_66",
+              "label": "Vale",
+              "units": 0
+            },
+            {
+              "key": "option_110",
+              "label": "Valentina",
+              "units": 0
+            },
+            {
+              "key": "option_57",
+              "label": "Valir",
+              "units": 0
+            },
+            {
+              "key": "option_38",
+              "label": "Vexana",
+              "units": 0
+            },
+            {
+              "key": "option_89",
+              "label": "Wanwan",
+              "units": 0
+            },
+            {
+              "key": "option_83",
+              "label": "X.Borg",
+              "units": 0
+            },
+            {
+              "key": "option_115",
+              "label": "Xavier",
+              "units": 0
+            },
+            {
+              "key": "option_30",
+              "label": "Yi Sun-shin",
+              "units": 0
+            },
+            {
+              "key": "option_113",
+              "label": "Yin",
+              "units": 0
+            },
+            {
+              "key": "option_95",
+              "label": "Yu Zhong",
+              "units": 0
+            },
+            {
+              "key": "option_101",
+              "label": "Yve",
+              "units": 0
+            },
+            {
+              "key": "option_129",
+              "label": "Zetian",
+              "units": 0
+            },
+            {
+              "key": "option_50",
+              "label": "Zhask",
+              "units": 0
+            },
+            {
+              "key": "option_125",
+              "label": "Zhuxin",
+              "units": 0
+            },
+            {
+              "key": "option_16",
+              "label": "Zilong",
+              "units": 0
+            }
+          ]
+        },
+        {
+          "key": "roles",
+          "label": "Playing lanes",
+          "kind": "role",
+          "options": [
+            {
+              "key": "option_1",
+              "label": "Jungle",
+              "units": 0
+            },
+            {
+              "key": "option_2",
+              "label": "Roam",
+              "units": 0
+            },
+            {
+              "key": "option_3",
+              "label": "Mid Lane",
+              "units": 0
+            },
+            {
+              "key": "option_4",
+              "label": "Gold Lane",
+              "units": 0
+            },
+            {
+              "key": "option_5",
+              "label": "EXP Lane",
+              "units": 0
+            }
+          ]
+        },
+        {
+          "key": "regions",
+          "label": "Regions",
+          "kind": "region",
+          "options": [
+            {
+              "key": "option_1",
+              "label": "Southeast Asia",
+              "units": 0
+            },
+            {
+              "key": "option_2",
+              "label": "Eastern Europe / Central Asia",
+              "units": 0
+            },
+            {
+              "key": "option_3",
+              "label": "Europe, Middle East & Africa",
+              "units": 0
+            },
+            {
+              "key": "option_4",
+              "label": "East Asia",
+              "units": 0
+            },
+            {
+              "key": "option_5",
+              "label": "Americas",
+              "units": 0
+            },
+            {
+              "key": "option_6",
+              "label": "South Asia",
+              "units": 0
+            },
+            {
+              "key": "oceania",
+              "label": "Oceania",
+              "units": 0
+            },
+            {
+              "key": "other",
+              "label": "Other / unsure",
+              "units": 0
+            }
+          ]
+        },
+        {
+          "key": "servers",
+          "label": "Usual server / play location",
+          "kind": "server",
+          "options": [
+            {
+              "key": "option_1",
+              "label": "Singapore",
+              "units": 0
+            },
+            {
+              "key": "option_2",
+              "label": "Philippines",
+              "units": 0
+            },
+            {
+              "key": "option_3",
+              "label": "Indonesia",
+              "units": 0
+            },
+            {
+              "key": "option_4",
+              "label": "Malaysia",
+              "units": 0
+            },
+            {
+              "key": "option_5",
+              "label": "Thailand",
+              "units": 0
+            },
+            {
+              "key": "option_6",
+              "label": "Myanmar",
+              "units": 0
+            },
+            {
+              "key": "option_7",
+              "label": "Cambodia",
+              "units": 0
+            },
+            {
+              "key": "option_8",
+              "label": "Vietnam",
+              "units": 0
+            },
+            {
+              "key": "option_9",
+              "label": "Brunei",
+              "units": 0
+            },
+            {
+              "key": "option_10",
+              "label": "Laos",
+              "units": 0
+            },
+            {
+              "key": "option_11",
+              "label": "Timor-Leste",
+              "units": 0
+            },
+            {
+              "key": "option_12",
+              "label": "China",
+              "units": 0
+            },
+            {
+              "key": "option_13",
+              "label": "Japan",
+              "units": 0
+            },
+            {
+              "key": "option_14",
+              "label": "South Korea",
+              "units": 0
+            },
+            {
+              "key": "option_15",
+              "label": "Mongolia",
+              "units": 0
+            },
+            {
+              "key": "option_16",
+              "label": "T\u00fcrkiye",
+              "units": 0
+            },
+            {
+              "key": "option_17",
+              "label": "Eastern Europe / Central Asia",
+              "units": 0
+            },
+            {
+              "key": "option_18",
+              "label": "Europe",
+              "units": 0
+            },
+            {
+              "key": "option_19",
+              "label": "Middle East",
+              "units": 0
+            },
+            {
+              "key": "option_20",
+              "label": "Africa",
+              "units": 0
+            },
+            {
+              "key": "option_21",
+              "label": "North America",
+              "units": 0
+            },
+            {
+              "key": "option_22",
+              "label": "Central America",
+              "units": 0
+            },
+            {
+              "key": "option_23",
+              "label": "Latin America",
+              "units": 0
+            },
+            {
+              "key": "option_24",
+              "label": "Brazil",
+              "units": 0
+            },
+            {
+              "key": "option_25",
+              "label": "India",
+              "units": 0
+            },
+            {
+              "key": "option_26",
+              "label": "Bangladesh",
+              "units": 0
+            },
+            {
+              "key": "option_27",
+              "label": "Nepal",
+              "units": 0
+            },
+            {
+              "key": "option_28",
+              "label": "Sri Lanka",
+              "units": 0
+            },
+            {
+              "key": "australia",
+              "label": "Australia",
+              "units": 0
+            },
+            {
+              "key": "new_zealand",
+              "label": "New Zealand / Pacific",
+              "units": 0
+            },
+            {
+              "key": "other",
+              "label": "Other / not sure",
+              "units": 0
+            }
+          ]
+        },
+        {
+          "key": "collection",
+          "label": "Collector Rank",
+          "kind": "choice",
+          "options": [
+            {
+              "key": "option_1",
+              "label": "Amateur",
+              "units": 5
+            },
+            {
+              "key": "option_2",
+              "label": "Junior",
+              "units": 5
+            },
+            {
+              "key": "option_3",
+              "label": "Seasoned",
+              "units": 5
+            },
+            {
+              "key": "option_4",
+              "label": "Expert",
+              "units": 5
+            },
+            {
+              "key": "option_5",
+              "label": "Renowned",
+              "units": 5
+            },
+            {
+              "key": "option_6",
+              "label": "Exalted",
+              "units": 5
+            },
+            {
+              "key": "option_7",
+              "label": "Mega",
+              "units": 5
+            },
+            {
+              "key": "option_8",
+              "label": "World",
+              "units": 5
+            }
+          ]
+        }
+      ],
+      "services": [
+        {
+          "key": "rank_boost",
+          "name": "Custom rank boost",
+          "description": "Choose your current rank, target, play mode and preferences. See a provisional USD estimate, then receive a reviewed quote before paying. Lane selection is included. Preferred heroes add 25%; play together adds 30% to that subtotal. Win-rate and delivery requests are confirmed individually in the final agreement.",
+          "evaluator": "pricing-v1",
+          "fields": [
+            {
+              "key": "from_rank",
+              "label": "Starting rank / division",
+              "help": "What is your current rank",
+              "type": "rank",
+              "stage": "estimate",
+              "required": true,
+              "reference": "ranks",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "from_units",
+              "label": "Current stars",
+              "help": "Below Mythic, enter the stars in your selected division. From Mythic onward, enter the total stars shown in game. Targets above 250 stars need a staff estimate.",
+              "type": "integer",
+              "stage": "estimate",
+              "required": true,
+              "reference": "",
+              "options": [],
+              "min": "0",
+              "max": "10000",
+              "step": "1",
+              "unit": "stars",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "to_rank",
+              "label": "Target rank / division",
+              "help": "What is your target rank",
+              "type": "rank",
+              "stage": "estimate",
+              "required": true,
+              "reference": "ranks",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "to_units",
+              "label": "Target stars",
+              "help": "Below Mythic, enter the stars in your selected division. From Mythic onward, enter the total stars shown in game. Targets above 250 stars need a staff estimate.",
+              "type": "integer",
+              "stage": "estimate",
+              "required": true,
+              "reference": "",
+              "options": [],
+              "min": "0",
+              "max": "10000",
+              "step": "1",
+              "unit": "stars",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "fulfillment_mode",
+              "label": "How would you like to play?",
+              "help": "Play on my account uses private access after payment. Play together means you stay on your account and join scheduled matches.",
+              "type": "select",
+              "stage": "estimate",
+              "required": true,
+              "reference": "",
+              "options": [
+                {
+                  "key": "account",
+                  "label": "Play on my account",
+                  "units": 0
+                },
+                {
+                  "key": "together",
+                  "label": "Play together",
+                  "units": 0
+                }
+              ],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20,
+              "default": "account"
+            },
+            {
+              "key": "region",
+              "label": "Region",
+              "help": "Choose where you normally play, or choose a server / play location first to match its region.",
+              "type": "select",
+              "stage": "estimate",
+              "required": true,
+              "reference": "regions",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "server",
+              "label": "Server / usual play location",
+              "help": "Choose your usual play location for matchmaking and scheduling. This is not your numeric MLBB Zone ID; we collect that separately after payment.",
+              "type": "select",
+              "stage": "estimate",
+              "required": true,
+              "reference": "servers",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "role",
+              "label": "Preferred lane",
+              "help": "Optional: choose a lane, or pick heroes first. A single common lane is matched automatically. Leave both preferences empty for unrestricted play.",
+              "type": "select",
+              "stage": "estimate",
+              "required": false,
+              "reference": "roles",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "hero",
+              "label": "Preferred heroes",
+              "help": "Optional: choose up to 5 heroes. Leave empty for no hero restriction. A lane filters compatible heroes; heroes from different lanes remove the lane restriction. These are our supported combinations, not restrictions imposed by the game.",
+              "type": "multiselect",
+              "stage": "estimate",
+              "required": false,
+              "reference": "heroes",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 5
+            },
+            {
+              "key": "requested_win_rate",
+              "label": "Win-rate preference",
+              "help": "Optional request for matches played during this boost. The estimate excludes any win-rate premium. Staff confirm the exact measurement, feasibility and final price in your quote; no account-wide win rate is promised.",
+              "type": "win_rate",
+              "stage": "estimate",
+              "required": false,
+              "reference": "",
+              "options": [],
+              "min": "0",
+              "max": "100",
+              "step": "0.1",
+              "unit": "%",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20,
+              "default": "any"
+            },
+            {
+              "key": "delivery_min_hours",
+              "label": "Earliest preferred completion (hours)",
+              "help": "Requested elapsed calendar hours after verified payment and the required information/access are ready. Staff confirm timing in the final quote; this request is not a guarantee.",
+              "type": "integer",
+              "stage": "estimate",
+              "required": true,
+              "reference": "",
+              "options": [],
+              "min": "1",
+              "max": "720",
+              "step": "1",
+              "unit": "hours",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "delivery_max_hours",
+              "label": "Latest preferred completion (hours)",
+              "help": "Requested elapsed calendar hours after verified payment and the required information/access are ready. Staff confirm timing in the final quote; this request is not a guarantee.",
+              "type": "integer",
+              "stage": "estimate",
+              "required": true,
+              "reference": "",
+              "options": [],
+              "min": "1",
+              "max": "720",
+              "step": "1",
+              "unit": "hours",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "timezone",
+              "label": "Your timezone",
+              "help": "For example Asia/Manila or Europe/London. Use your local timezone so we can arrange suitable sessions.",
+              "type": "short_text",
+              "stage": "order",
+              "required": false,
+              "reference": "",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 80,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "availability",
+              "label": "Preferred dates and times",
+              "help": "When can we access the account or play together? Include dates and local times. Staff confirm the schedule in your order.",
+              "type": "long_text",
+              "stage": "order",
+              "required": false,
+              "reference": "",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 2000,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "instructions",
+              "label": "Additional instructions",
+              "help": "Do not enter passwords, recovery codes or game credentials. Account access uses the dedicated secure handoff after payment.",
+              "type": "long_text",
+              "stage": "order",
+              "required": false,
+              "reference": "",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 2000,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "rank_screenshot",
+              "label": "Current-rank screenshot",
+              "help": "Optional private screenshot of your current rank. Hide personal information and never include passwords or recovery codes.",
+              "type": "attachment",
+              "stage": "order",
+              "required": false,
+              "reference": "",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 300,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "player_id",
+              "label": "MLBB User ID",
+              "help": "The player number shown in your profile. Never enter a password or recovery code here; private account access has its own secure handoff.",
+              "type": "short_text",
+              "stage": "fulfillment",
+              "required": true,
+              "reference": "",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 40,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "zone_id",
+              "label": "MLBB Zone ID",
+              "help": "The number in brackets next to your User ID. This is separate from your geographic play location.",
+              "type": "short_text",
+              "stage": "fulfillment",
+              "required": true,
+              "reference": "",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 20,
+              "min_selections": 0,
+              "max_selections": 20
+            },
+            {
+              "key": "coordination",
+              "label": "Play-together coordination",
+              "help": "Do not enter passwords, recovery codes or game credentials. Account access uses the dedicated secure handoff after payment.",
+              "type": "long_text",
+              "stage": "fulfillment",
+              "required": false,
+              "reference": "",
+              "options": [],
+              "min": "0",
+              "max": "1000000",
+              "step": "1",
+              "unit": "",
+              "min_length": 0,
+              "max_length": 2000,
+              "min_selections": 0,
+              "max_selections": 20,
+              "visible_when": {
+                "op": "eq",
+                "field": "fulfillment_mode",
+                "values": ["together"],
+                "children": []
+              },
+              "required_when": {
+                "op": "eq",
+                "field": "fulfillment_mode",
+                "values": ["together"],
+                "children": []
+              }
+            }
+          ],
+          "rules": [
+            {
+              "key": "forward_progress",
+              "kind": "progression",
+              "message": "Target must be ahead of the starting position, with stars/points inside the configured rank limits.",
+              "from": "from_rank",
+              "to": "to_rank",
+              "from_units": "from_units",
+              "to_units": "to_units"
+            },
+            {
+              "key": "delivery_hours",
+              "kind": "ordered_numbers",
+              "message": "The latest completion time must be at least the earliest time.",
+              "from": "delivery_min_hours",
+              "to": "delivery_max_hours",
+              "from_units": "",
+              "to_units": ""
+            },
+            {
+              "key": "server_region",
+              "kind": "linked_choices",
+              "message": "Choose a server / play location belonging to the selected region.",
+              "from": "region",
+              "to": "server",
+              "from_units": "",
+              "to_units": "",
+              "link_mode": "single_parent",
+              "links": [
+                {
+                  "parent": "option_1",
+                  "children": [
+                    "option_1",
+                    "option_2",
+                    "option_3",
+                    "option_4",
+                    "option_5",
+                    "option_6",
+                    "option_7",
+                    "option_8",
+                    "option_9",
+                    "option_10",
+                    "option_11"
+                  ]
+                },
+                {
+                  "parent": "option_2",
+                  "children": ["option_16", "option_17"]
+                },
+                {
+                  "parent": "option_3",
+                  "children": ["option_18", "option_19", "option_20"]
+                },
+                {
+                  "parent": "option_4",
+                  "children": [
+                    "option_12",
+                    "option_13",
+                    "option_14",
+                    "option_15"
+                  ]
+                },
+                {
+                  "parent": "option_5",
+                  "children": [
+                    "option_21",
+                    "option_22",
+                    "option_23",
+                    "option_24"
+                  ]
+                },
+                {
+                  "parent": "option_6",
+                  "children": [
+                    "option_25",
+                    "option_26",
+                    "option_27",
+                    "option_28"
+                  ]
+                },
+                {
+                  "parent": "oceania",
+                  "children": ["australia", "new_zealand"]
+                },
+                {
+                  "parent": "other",
+                  "children": ["other"]
+                }
+              ]
+            },
+            {
+              "key": "hero_lane",
+              "kind": "linked_choices",
+              "message": "Choose heroes supported in this lane, or clear the lane to mix heroes.",
+              "from": "role",
+              "to": "hero",
+              "from_units": "",
+              "to_units": "",
+              "link_mode": "shared_parent",
+              "links": [
+                {
+                  "parent": "option_2",
+                  "children": [
+                    "option_132",
+                    "option_128",
+                    "option_124",
+                    "option_112",
+                    "option_111",
+                    "option_104",
+                    "option_102",
+                    "option_98",
+                    "option_93",
+                    "option_92",
+                    "option_87",
+                    "option_78",
+                    "option_77",
+                    "option_76",
+                    "option_74",
+                    "option_70",
+                    "option_63",
+                    "option_62",
+                    "option_55",
+                    "option_54",
+                    "option_51",
+                    "option_49",
+                    "option_48",
+                    "option_44",
+                    "option_41",
+                    "option_35",
+                    "option_34",
+                    "option_32",
+                    "option_29",
+                    "option_26",
+                    "option_20",
+                    "option_19",
+                    "option_24",
+                    "option_14",
+                    "option_10",
+                    "option_9",
+                    "option_6",
+                    "option_3",
+                    "option_120",
+                    "option_80",
+                    "option_88",
+                    "option_90",
+                    "option_27",
+                    "option_59"
+                  ]
+                },
+                {
+                  "parent": "option_3",
+                  "children": [
+                    "option_129",
+                    "option_125",
+                    "option_119",
+                    "option_115",
+                    "option_110",
+                    "option_101",
+                    "option_96",
+                    "option_91",
+                    "option_86",
+                    "option_76",
+                    "option_75",
+                    "option_71",
+                    "option_68",
+                    "option_66",
+                    "option_63",
+                    "option_61",
+                    "option_57",
+                    "option_56",
+                    "option_52",
+                    "option_50",
+                    "option_46",
+                    "option_38",
+                    "option_36",
+                    "option_33",
+                    "option_25",
+                    "option_23",
+                    "option_15",
+                    "option_5",
+                    "option_4",
+                    "option_42",
+                    "option_73",
+                    "option_118",
+                    "option_116",
+                    "option_102"
+                  ]
+                },
+                {
+                  "parent": "option_4",
+                  "children": [
+                    "option_130",
+                    "option_121",
+                    "option_114",
+                    "option_107",
+                    "option_105",
+                    "option_100",
+                    "option_94",
+                    "option_89",
+                    "option_79",
+                    "option_73",
+                    "option_71",
+                    "option_65",
+                    "option_60",
+                    "option_53",
+                    "option_43",
+                    "option_40",
+                    "option_31",
+                    "option_18",
+                    "option_13",
+                    "option_12",
+                    "option_1",
+                    "option_51",
+                    "option_39",
+                    "option_30"
+                  ]
+                },
+                {
+                  "parent": "option_1",
+                  "children": [
+                    "option_117",
+                    "option_99",
+                    "option_87",
+                    "option_4",
+                    "option_127",
+                    "option_126",
+                    "option_116",
+                    "option_113",
+                    "option_108",
+                    "option_85",
+                    "option_67",
+                    "option_58",
+                    "option_39",
+                    "option_28",
+                    "option_27",
+                    "option_22",
+                    "option_11",
+                    "option_7",
+                    "option_2",
+                    "option_133",
+                    "option_122",
+                    "option_118",
+                    "option_109",
+                    "option_84",
+                    "option_69",
+                    "option_56",
+                    "option_51",
+                    "option_47",
+                    "option_42",
+                    "option_30",
+                    "option_24",
+                    "option_21",
+                    "option_17",
+                    "option_8",
+                    "option_3",
+                    "option_94",
+                    "option_9",
+                    "option_97",
+                    "option_33",
+                    "option_81",
+                    "option_80",
+                    "option_73",
+                    "option_54",
+                    "option_88",
+                    "option_103",
+                    "option_63",
+                    "option_90",
+                    "option_72",
+                    "option_83",
+                    "option_16"
+                  ]
+                },
+                {
+                  "parent": "option_5",
+                  "children": [
+                    "option_131",
+                    "option_127",
+                    "option_123",
+                    "option_120",
+                    "option_116",
+                    "option_113",
+                    "option_111",
+                    "option_108",
+                    "option_106",
+                    "option_104",
+                    "option_103",
+                    "option_99",
+                    "option_98",
+                    "option_97",
+                    "option_95",
+                    "option_90",
+                    "option_88",
+                    "option_85",
+                    "option_83",
+                    "option_82",
+                    "option_81",
+                    "option_80",
+                    "option_77",
+                    "option_74",
+                    "option_72",
+                    "option_64",
+                    "option_59",
+                    "option_58",
+                    "option_54",
+                    "option_45",
+                    "option_44",
+                    "option_41",
+                    "option_37",
+                    "option_35",
+                    "option_29",
+                    "option_28",
+                    "option_27",
+                    "option_26",
+                    "option_22",
+                    "option_16",
+                    "option_2",
+                    "option_11",
+                    "option_7",
+                    "option_67",
+                    "option_126",
+                    "option_24",
+                    "option_118",
+                    "option_49",
+                    "option_133",
+                    "option_117",
+                    "option_70",
+                    "option_9"
+                  ]
+                }
+              ]
+            }
+          ],
+          "pricing": {
+            "currency": "USD",
+            "base_minor": "0",
+            "minimum_minor": "1000",
+            "maximum_minor": "1000000",
+            "rules": [
+              {
+                "key": "high_stars",
+                "label": "Above 250 stars: staff estimate",
+                "kind": "manual_review",
+                "value": "",
+                "field": "",
+                "from": "",
+                "to": "",
+                "from_units": "",
+                "to_units": "",
+                "intervals": [],
+                "when": {
+                  "op": "gt",
+                  "field": "to_units",
+                  "values": ["250"],
+                  "children": []
+                }
+              },
+              {
+                "key": "urgent_review",
+                "label": "Under 24 hours: staff review",
+                "kind": "manual_review",
+                "value": "",
+                "field": "",
+                "from": "",
+                "to": "",
+                "from_units": "",
+                "to_units": "",
+                "intervals": [],
+                "when": {
+                  "op": "lt",
+                  "field": "delivery_max_hours",
+                  "values": ["24"],
+                  "children": []
+                }
+              },
+              {
+                "key": "location_review",
+                "label": "Unlisted location: staff review",
+                "kind": "manual_review",
+                "value": "",
+                "field": "",
+                "from": "",
+                "to": "",
+                "from_units": "",
+                "to_units": "",
+                "intervals": [],
+                "when": {
+                  "op": "eq",
+                  "field": "region",
+                  "values": ["other"],
+                  "children": []
+                }
+              },
+              {
+                "key": "rank_stars",
+                "label": "Rank and stars",
+                "kind": "rank_interval",
+                "value": "",
+                "field": "",
+                "from": "from_rank",
+                "to": "to_rank",
+                "from_units": "from_units",
+                "to_units": "to_units",
+                "intervals": [
+                  {
+                    "rank": "option_0",
+                    "amount_minor": "60"
+                  },
+                  {
+                    "rank": "option_1",
+                    "amount_minor": "60"
+                  },
+                  {
+                    "rank": "option_2",
+                    "amount_minor": "60"
+                  },
+                  {
+                    "rank": "option_3",
+                    "amount_minor": "100"
+                  },
+                  {
+                    "rank": "option_4",
+                    "amount_minor": "100"
+                  },
+                  {
+                    "rank": "option_5",
+                    "amount_minor": "100"
+                  },
+                  {
+                    "rank": "option_6",
+                    "amount_minor": "120"
+                  },
+                  {
+                    "rank": "option_7",
+                    "amount_minor": "120"
+                  },
+                  {
+                    "rank": "option_8",
+                    "amount_minor": "120"
+                  },
+                  {
+                    "rank": "option_9",
+                    "amount_minor": "120"
+                  },
+                  {
+                    "rank": "option_10",
+                    "amount_minor": "200"
+                  },
+                  {
+                    "rank": "option_11",
+                    "amount_minor": "200"
+                  },
+                  {
+                    "rank": "option_12",
+                    "amount_minor": "200"
+                  },
+                  {
+                    "rank": "option_13",
+                    "amount_minor": "200"
+                  },
+                  {
+                    "rank": "option_14",
+                    "amount_minor": "200"
+                  },
+                  {
+                    "rank": "option_15",
+                    "amount_minor": "350"
+                  },
+                  {
+                    "rank": "option_16",
+                    "amount_minor": "350"
+                  },
+                  {
+                    "rank": "option_17",
+                    "amount_minor": "350"
+                  },
+                  {
+                    "rank": "option_18",
+                    "amount_minor": "350"
+                  },
+                  {
+                    "rank": "option_19",
+                    "amount_minor": "350"
+                  },
+                  {
+                    "rank": "option_20",
+                    "amount_minor": "400"
+                  },
+                  {
+                    "rank": "option_21",
+                    "amount_minor": "400"
+                  },
+                  {
+                    "rank": "option_22",
+                    "amount_minor": "400"
+                  },
+                  {
+                    "rank": "option_23",
+                    "amount_minor": "400"
+                  },
+                  {
+                    "rank": "option_24",
+                    "amount_minor": "400"
+                  },
+                  {
+                    "rank": "option_25",
+                    "amount_minor": "2250"
+                  },
+                  {
+                    "rank": "option_26",
+                    "amount_minor": "2500"
+                  },
+                  {
+                    "rank": "option_27",
+                    "amount_minor": "5500"
+                  },
+                  {
+                    "rank": "option_28",
+                    "amount_minor": "1188120"
+                  }
+                ]
+              },
+              {
+                "key": "hero_preference",
+                "label": "Preferred heroes (+25%)",
+                "kind": "percentage",
+                "value": "25",
+                "field": "",
+                "from": "",
+                "to": "",
+                "from_units": "",
+                "to_units": "",
+                "intervals": [],
+                "when": {
+                  "op": "any",
+                  "field": "",
+                  "values": [],
+                  "children": [
+                    {
+                      "op": "in",
+                      "field": "hero",
+                      "values": [
+                        "option_1",
+                        "option_2",
+                        "option_3",
+                        "option_4",
+                        "option_5",
+                        "option_6",
+                        "option_7",
+                        "option_8",
+                        "option_9",
+                        "option_10",
+                        "option_11",
+                        "option_12",
+                        "option_13",
+                        "option_14",
+                        "option_15",
+                        "option_16",
+                        "option_17",
+                        "option_18",
+                        "option_19",
+                        "option_20",
+                        "option_21",
+                        "option_22",
+                        "option_23",
+                        "option_24",
+                        "option_25",
+                        "option_26",
+                        "option_27",
+                        "option_28",
+                        "option_29",
+                        "option_30"
+                      ],
+                      "children": []
+                    },
+                    {
+                      "op": "in",
+                      "field": "hero",
+                      "values": [
+                        "option_31",
+                        "option_32",
+                        "option_33",
+                        "option_34",
+                        "option_35",
+                        "option_36",
+                        "option_37",
+                        "option_38",
+                        "option_39",
+                        "option_40",
+                        "option_41",
+                        "option_42",
+                        "option_43",
+                        "option_44",
+                        "option_45",
+                        "option_46",
+                        "option_47",
+                        "option_48",
+                        "option_49",
+                        "option_50",
+                        "option_51",
+                        "option_52",
+                        "option_53",
+                        "option_54",
+                        "option_55",
+                        "option_56",
+                        "option_57",
+                        "option_58",
+                        "option_59",
+                        "option_60"
+                      ],
+                      "children": []
+                    },
+                    {
+                      "op": "in",
+                      "field": "hero",
+                      "values": [
+                        "option_61",
+                        "option_62",
+                        "option_63",
+                        "option_64",
+                        "option_65",
+                        "option_66",
+                        "option_67",
+                        "option_68",
+                        "option_69",
+                        "option_70",
+                        "option_71",
+                        "option_72",
+                        "option_73",
+                        "option_74",
+                        "option_75",
+                        "option_76",
+                        "option_77",
+                        "option_78",
+                        "option_79",
+                        "option_80",
+                        "option_81",
+                        "option_82",
+                        "option_83",
+                        "option_84",
+                        "option_85",
+                        "option_86",
+                        "option_87",
+                        "option_88",
+                        "option_89",
+                        "option_90"
+                      ],
+                      "children": []
+                    },
+                    {
+                      "op": "in",
+                      "field": "hero",
+                      "values": [
+                        "option_91",
+                        "option_92",
+                        "option_93",
+                        "option_94",
+                        "option_95",
+                        "option_96",
+                        "option_97",
+                        "option_98",
+                        "option_99",
+                        "option_100",
+                        "option_101",
+                        "option_102",
+                        "option_103",
+                        "option_104",
+                        "option_105",
+                        "option_106",
+                        "option_107",
+                        "option_108",
+                        "option_109",
+                        "option_110",
+                        "option_111",
+                        "option_112",
+                        "option_113",
+                        "option_114",
+                        "option_115",
+                        "option_116",
+                        "option_117",
+                        "option_118",
+                        "option_119",
+                        "option_120"
+                      ],
+                      "children": []
+                    },
+                    {
+                      "op": "in",
+                      "field": "hero",
+                      "values": [
+                        "option_121",
+                        "option_122",
+                        "option_123",
+                        "option_124",
+                        "option_125",
+                        "option_126",
+                        "option_127",
+                        "option_128",
+                        "option_129",
+                        "option_130",
+                        "option_131",
+                        "option_132",
+                        "option_133"
+                      ],
+                      "children": []
+                    }
+                  ]
+                }
+              },
+              {
+                "key": "together_play",
+                "label": "Play together (+30%)",
+                "kind": "percentage",
+                "value": "30",
+                "field": "",
+                "from": "",
+                "to": "",
+                "from_units": "",
+                "to_units": "",
+                "intervals": [],
+                "when": {
+                  "op": "eq",
+                  "field": "fulfillment_mode",
+                  "values": ["together"],
+                  "children": []
+                }
+              }
+            ],
+            "cases": null
+          },
+          "fulfillment": {
+            "mode": "selection",
+            "field": "fulfillment_mode",
+            "account_value": "account",
+            "together_value": "together",
+            "secret_hours": 24,
+            "share_fields": [
+              "region",
+              "server",
+              "from_rank",
+              "from_units",
+              "to_rank",
+              "to_units",
+              "hero",
+              "role",
+              "fulfillment_mode",
+              "requested_win_rate",
+              "delivery_min_hours",
+              "delivery_max_hours",
+              "timezone",
+              "availability",
+              "player_id",
+              "zone_id",
+              "coordination"
+            ]
+          },
+          "delivery_request": {
+            "minimum": "delivery_min_hours",
+            "maximum": "delivery_max_hours",
+            "basis": "payment_and_access_v1"
+          }
+        }
+      ],
+      "packages": [
+        {
+          "key": "package_1",
+          "name": "New season boosting",
+          "description": "Fixed climb from Epic II with 1 star to Mythic with 1 star. Play on your account; unrestricted lane and heroes; no win-rate target. The USD 50 price and 24\u201372-hour delivery window are fixed. Timing begins after verified payment and the required information/access are ready.",
+          "asset": "/catalog-assets/mlbb-legend-climb.webp",
+          "asset_alt": "Armored knight with an emerald-lit shield in a fantasy arena",
+          "service": "rank_boost",
+          "variants": [
+            {
+              "key": "variant_1",
+              "name": "Epic II to Mythic \u00b7 account play",
+              "currency": "USD",
+              "amount_minor": "5000",
+              "delivery_min_hours": 24,
+              "delivery_max_hours": 72,
+              "required_fields": [
+                "region",
+                "server",
+                "timezone",
+                "availability"
+              ],
+              "preset_answers": {
+                "from_rank": "option_18",
+                "from_units": "1",
+                "fulfillment_mode": "account",
+                "requested_win_rate": "any",
+                "to_rank": "option_25",
+                "to_units": "1"
+              },
+              "excluded_fields": [
+                "hero",
+                "role",
+                "instructions",
+                "rank_screenshot",
+                "delivery_min_hours",
+                "delivery_max_hours"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "epic_to_legend",
+          "name": "Epic to Legend",
+          "description": "Fixed climb from Epic V (0 stars) to Legend V (0 stars). Play on your account with unrestricted heroes and lanes. No win-rate target or play-together sessions included. Delivery: 48\u2013120 elapsed hours after verified payment and the required information/access are ready. Your current rank must match the stated starting point; choose a custom boost for different progress.",
+          "asset": "/catalog-assets/mlbb-legend-climb.webp",
+          "asset_alt": "Armored knight with an emerald-lit shield in a fantasy arena",
+          "service": "rank_boost",
+          "variants": [
+            {
+              "key": "standard",
+              "name": "25-star climb \u00b7 account play",
+              "currency": "USD",
+              "amount_minor": "1800",
+              "delivery_min_hours": 48,
+              "delivery_max_hours": 120,
+              "required_fields": [
+                "region",
+                "server",
+                "timezone",
+                "availability"
+              ],
+              "preset_answers": {
+                "from_rank": "option_15",
+                "from_units": "0",
+                "fulfillment_mode": "account",
+                "requested_win_rate": "any",
+                "to_rank": "option_20",
+                "to_units": "0"
+              },
+              "excluded_fields": [
+                "role",
+                "hero",
+                "delivery_min_hours",
+                "delivery_max_hours",
+                "instructions",
+                "rank_screenshot"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "legend_to_mythic",
+          "name": "Legend to Mythic",
+          "description": "Fixed climb from Legend V (0 stars) to Mythic (0 stars). Play on your account with unrestricted heroes and lanes. No win-rate target or play-together sessions included. Delivery: 48\u2013120 elapsed hours after verified payment and the required information/access are ready. Your current rank must match the stated starting point; choose a custom boost for different progress.",
+          "asset": "/catalog-assets/mlbb-mythic-climb.webp",
+          "asset_alt": "Parasol mage crossing a mint-lit fantasy bridge",
+          "service": "rank_boost",
+          "variants": [
+            {
+              "key": "standard",
+              "name": "25-star climb \u00b7 account play",
+              "currency": "USD",
+              "amount_minor": "2000",
+              "delivery_min_hours": 48,
+              "delivery_max_hours": 120,
+              "required_fields": [
+                "region",
+                "server",
+                "timezone",
+                "availability"
+              ],
+              "preset_answers": {
+                "from_rank": "option_20",
+                "from_units": "0",
+                "fulfillment_mode": "account",
+                "requested_win_rate": "any",
+                "to_rank": "option_25",
+                "to_units": "0"
+              },
+              "excluded_fields": [
+                "role",
+                "hero",
+                "delivery_min_hours",
+                "delivery_max_hours",
+                "instructions",
+                "rank_screenshot"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mythic_to_honor",
+          "name": "Mythic to Honor",
+          "description": "Fixed climb from Mythic (0 stars) to Mythical Honor (25 stars). Play on your account with unrestricted heroes and lanes. No win-rate target or play-together sessions included. Delivery: 48\u2013120 elapsed hours after verified payment and the required information/access are ready. Your current rank must match the stated starting point; choose a custom boost for different progress.",
+          "asset": "/catalog-assets/mlbb-honor-climb.webp",
+          "asset_alt": "Silver-haired moon elf casting an emerald spell",
+          "service": "rank_boost",
+          "variants": [
+            {
+              "key": "standard",
+              "name": "25-star climb \u00b7 account play",
+              "currency": "USD",
+              "amount_minor": "2300",
+              "delivery_min_hours": 48,
+              "delivery_max_hours": 120,
+              "required_fields": [
+                "region",
+                "server",
+                "timezone",
+                "availability"
+              ],
+              "preset_answers": {
+                "from_rank": "option_25",
+                "from_units": "0",
+                "fulfillment_mode": "account",
+                "requested_win_rate": "any",
+                "to_rank": "option_26",
+                "to_units": "25"
+              },
+              "excluded_fields": [
+                "role",
+                "hero",
+                "delivery_min_hours",
+                "delivery_max_hours",
+                "instructions",
+                "rank_screenshot"
+              ]
+            }
+          ]
+        }
+      ],
+      "faqs": [
+        {
+          "question": "How is a custom rank estimate calculated?",
+          "answer": "We total the stars between your current and target ranks using tier-specific USD rates. Lane selection is included. Preferred heroes add 25%; play together adds 30% to that subtotal. The minimum estimate is USD 10. Estimates exclude any win-rate or exceptional timing premium. Staff confirm the final price and exact agreement before you pay."
+        },
+        {
+          "question": "Do I enter total stars or stars within my tier?",
+          "answer": "Below Mythic, enter the stars shown in your current division. From Mythic onward, enter the total number shown in game: for example Mythical Glory 62. Mythic spans 0\u201324, Honor 25\u201349, Glory 50\u201399 and Immortal starts at 100. Targets above 250 receive a staff estimate."
+        },
+        {
+          "question": "Can I pick a lane or particular heroes?",
+          "answer": "Yes. Leave both choices empty for unrestricted play, select a lane to filter heroes, or pick up to five heroes first. A unique shared lane is matched automatically. Mixed-lane heroes remove the lane constraint. These are our service combinations and can change with a reviewed catalog update."
+        },
+        {
+          "question": "What is the difference between my region and Zone ID?",
+          "answer": "Region and usual play location help us coordinate matchmaking and timing. Your numeric Zone ID is shown in brackets beside your MLBB User ID. We ask for that separately after payment. Never put passwords or recovery codes in these fields."
+        },
+        {
+          "question": "When does the delivery clock start?",
+          "answer": "Agreed elapsed calendar hours start after payment is verified and required delivery information/access are ready. The hours requested in a custom form are preferences until confirmed in your quote. Fixed packages show their own delivery commitment."
+        },
+        {
+          "question": "Can you promise a particular win rate?",
+          "answer": "You can request no preference, a range, above/below a percentage or exactly 100%. Availability and the measurement window are confirmed per order. A displayed base estimate is not acceptance of that promise. Approved order protections and refund terms apply if we fail the accepted agreement."
+        }
+      ],
+      "intake": {
+        "name": "Selling account form",
+        "description": "Enter a title for your account",
+        "fields": [
+          {
+            "key": "attribute_1",
+            "label": "Hero",
+            "help": "How many heroes you have",
+            "type": "integer",
+            "stage": "order",
+            "required": true,
+            "reference": "",
+            "options": [],
+            "min": "1",
+            "max": "150",
+            "step": "1",
+            "unit": "1",
+            "min_length": 0,
+            "max_length": 100,
+            "min_selections": 0,
+            "max_selections": 10
+          },
+          {
+            "key": "attribute_2",
+            "label": "Highest rank",
+            "help": "what is your account highest rank",
+            "type": "rank",
+            "stage": "order",
+            "required": true,
+            "reference": "ranks",
+            "options": [],
+            "min": "0",
+            "max": "100",
+            "step": "1",
+            "unit": "",
+            "min_length": 0,
+            "max_length": 100,
+            "min_selections": 0,
+            "max_selections": 10
+          },
+          {
+            "key": "attribute_3",
+            "label": "Skin ",
+            "help": "Tell me about your skins",
+            "type": "cosmetics",
+            "stage": "order",
+            "required": true,
+            "reference": "",
+            "options": [
+              {
+                "key": "option_6",
+                "label": "Legend",
+                "units": 16
+              },
+              {
+                "key": "option_1",
+                "label": "Collector",
+                "units": 200
+              },
+              {
+                "key": "option_2",
+                "label": "Luckybox",
+                "units": 200
+              },
+              {
+                "key": "option_3",
+                "label": "Epic",
+                "units": 200
+              },
+              {
+                "key": "option_4",
+                "label": "Annual Starlight",
+                "units": 20
+              },
+              {
+                "key": "option_5",
+                "label": "Starlight",
+                "units": 200
+              },
+              {
+                "key": "option_7",
+                "label": "ANNIVERSARY",
+                "units": 3
+              },
+              {
+                "key": "option_8",
+                "label": "STREET FIGHTER",
+                "units": 4
+              },
+              {
+                "key": "option_9",
+                "label": "TIDES",
+                "units": 2
+              },
+              {
+                "key": "option_10",
+                "label": "MYTH",
+                "units": 3
+              },
+              {
+                "key": "option_11",
+                "label": "CREATE",
+                "units": 6
+              },
+              {
+                "key": "option_12",
+                "label": "MPL",
+                "units": 11
+              },
+              {
+                "key": "option_13",
+                "label": "MSC",
+                "units": 7
+              },
+              {
+                "key": "option_14",
+                "label": "Summer",
+                "units": 14
+              },
+              {
+                "key": "option_15",
+                "label": "Halloween",
+                "units": 9
+              },
+              {
+                "key": "option_16",
+                "label": "Christmas",
+                "units": 11
+              },
+              {
+                "key": "option_17",
+                "label": "Valentine",
+                "units": 16
+              },
+              {
+                "key": "option_18",
+                "label": "Lunar Fest",
+                "units": 8
+              },
+              {
+                "key": "option_19",
+                "label": "PRIME",
+                "units": 4
+              },
+              {
+                "key": "option_20",
+                "label": "M",
+                "units": 6
+              },
+              {
+                "key": "option_21",
+                "label": "COVENANT",
+                "units": 5
+              },
+              {
+                "key": "option_22",
+                "label": "Eternal Season",
+                "units": 2
+              },
+              {
+                "key": "option_23",
+                "label": "SpongeBob",
+                "units": 3
+              },
+              {
+                "key": "option_24",
+                "label": "Soul Vessels",
+                "units": 5
+              },
+              {
+                "key": "option_25",
+                "label": "Nexus Sea",
+                "units": 4
+              },
+              {
+                "key": "option_26",
+                "label": "P.ACE",
+                "units": 4
+              },
+              {
+                "key": "option_27",
+                "label": "Mystic Meow",
+                "units": 4
+              },
+              {
+                "key": "option_28",
+                "label": "Metro Zero",
+                "units": 3
+              },
+              {
+                "key": "option_29",
+                "label": "NARUTO",
+                "units": 7
+              },
+              {
+                "key": "option_30",
+                "label": "Neobeasts",
+                "units": 5
+              },
+              {
+                "key": "option_31",
+                "label": "Hunter x Hunter",
+                "units": 4
+              },
+              {
+                "key": "option_32",
+                "label": "KISHIN DENSETSU",
+                "units": 3
+              },
+              {
+                "key": "option_33",
+                "label": "EXORCISTS",
+                "units": 4
+              },
+              {
+                "key": "option_34",
+                "label": "KOF",
+                "units": 10
+              },
+              {
+                "key": "option_35",
+                "label": "ALLSTAR",
+                "units": 5
+              },
+              {
+                "key": "option_36",
+                "label": "Attack on Titan",
+                "units": 3
+              },
+              {
+                "key": "option_37",
+                "label": "MISTBENDERS",
+                "units": 2
+              },
+              {
+                "key": "option_38",
+                "label": "CLOUDS",
+                "units": 4
+              },
+              {
+                "key": "option_39",
+                "label": "DUCATI",
+                "units": 3
+              },
+              {
+                "key": "option_40",
+                "label": "ATOMIC",
+                "units": 3
+              },
+              {
+                "key": "option_41",
+                "label": "DAWNING",
+                "units": 5
+              },
+              {
+                "key": "option_42",
+                "label": "ABYSS",
+                "units": 4
+              },
+              {
+                "key": "option_43",
+                "label": "JUJUTSU KAISEN",
+                "units": 4
+              },
+              {
+                "key": "option_44",
+                "label": "Bronze SAINTS",
+                "units": 3
+              },
+              {
+                "key": "option_45",
+                "label": "Gold SAINTS",
+                "units": 3
+              },
+              {
+                "key": "option_46",
+                "label": "KUNG FU PANDA",
+                "units": 3
+              },
+              {
+                "key": "option_47",
+                "label": "TRANSFORMERS",
+                "units": 6
+              },
+              {
+                "key": "option_48",
+                "label": "M-World",
+                "units": 4
+              },
+              {
+                "key": "option_49",
+                "label": "Sanrio",
+                "units": 5
+              },
+              {
+                "key": "option_50",
+                "label": "STAR WARS",
+                "units": 4
+              },
+              {
+                "key": "option_51",
+                "label": "STUN",
+                "units": 4
+              },
+              {
+                "key": "option_52",
+                "label": "BLAZING",
+                "units": 5
+              },
+              {
+                "key": "option_53",
+                "label": "DRAGON TAMER",
+                "units": 6
+              },
+              {
+                "key": "option_54",
+                "label": "LIGHTBORN",
+                "units": 5
+              },
+              {
+                "key": "option_55",
+                "label": "VENOM",
+                "units": 6
+              },
+              {
+                "key": "option_56",
+                "label": "SABER",
+                "units": 6
+              },
+              {
+                "key": "option_57",
+                "label": "ZODIAC",
+                "units": 13
+              }
+            ],
+            "min": "1",
+            "max": "1000000",
+            "step": "1",
+            "unit": "1",
+            "min_length": 0,
+            "max_length": 100,
+            "min_selections": 0,
+            "max_selections": 10
+          },
+          {
+            "key": "attribute_4",
+            "label": "Collector rank",
+            "help": "What is your skin collection",
+            "type": "select",
+            "stage": "order",
+            "required": true,
+            "reference": "collection",
+            "options": [],
+            "min": "0",
+            "max": "100",
+            "step": "1",
+            "unit": "",
+            "min_length": 1,
+            "max_length": 50,
+            "min_selections": 0,
+            "max_selections": 10
+          },
+          {
+            "key": "attribute_5",
+            "label": "Matches",
+            "help": "All your rank matches",
+            "type": "integer",
+            "stage": "order",
+            "required": true,
+            "reference": "",
+            "options": [],
+            "min": "1",
+            "max": "1000000000",
+            "step": "1",
+            "unit": "1",
+            "min_length": 0,
+            "max_length": 100,
+            "min_selections": 0,
+            "max_selections": 10
+          }
+        ],
+        "rules": []
+      }
+    }
+  },
+  "home": {}
+}

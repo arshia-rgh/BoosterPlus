@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>PLAYORA · Color studio</title>
+    <link rel="stylesheet" href="/studio.css" />
+  </head>
+  <body>
+    <main class="studio" aria-label="Color direction studio">
+      <header class="studio-heading">
+        <div>
+          <p class="kicker">PLAYORA / DESIGN EXPLORATION</p>
+          <h1>More depth. Still PLAYORA.</h1>
+          <p class="intro">One familiar green. Three new perspectives.</p>
+        </div>
+        <span class="draft-label">Preview only · Nothing live has changed</span>
+      </header>
+      <section class="palette-options" aria-label="Color directions">
+        <button type="button" data-palette="glacier" aria-pressed="true">
+          <span class="swatch-group"
+            ><i style="background: #89efb0"></i
+            ><i style="background: #8ec5ff"></i
+            ><i style="background: #141c28"></i></span
+          ><span><strong>Glacier</strong><small>Mint + ice blue</small></span
+          ><span class="recommend">Recommended</span>
+        </button>
+        <button type="button" data-palette="iris" aria-pressed="false">
+          <span class="swatch-group"
+            ><i style="background: #89efb0"></i
+            ><i style="background: #c2aaff"></i
+            ><i style="background: #1b1926"></i></span
+          ><span><strong>Iris</strong><small>Mint + lavender</small></span>
+        </button>
+        <button type="button" data-palette="champagne" aria-pressed="false">
+          <span class="swatch-group"
+            ><i style="background: #89efb0"></i
+            ><i style="background: #e7c78a"></i
+            ><i style="background: #1e201f"></i></span
+          ><span
+            ><strong>Champagne</strong><small>Mint + warm gold</small></span
+          >
+        </button>
+        <button type="button" data-palette="current" aria-pressed="false">
+          <span class="swatch-group"
+            ><i style="background: #89efb0"></i
+            ><i style="background: #b8f776"></i
+            ><i style="background: #10241b"></i></span
+          ><span
+            ><strong>Current theme</strong><small>Green comparison</small></span
+          >
+        </button>
+      </section>
+      <div class="direction-note">
+        <p id="direction-copy">
+          Cool slate surfaces and ice-blue details. The clearest all-round
+          choice for shopping, support and staff work.
+        </p>
+        <span id="palette-hex">#89EFB0 + #8EC5FF</span>
+      </div>
+      <section class="preview-workspace" aria-label="Website previews">
+        <div class="preview-toolbar">
+          <div class="page-options" role="group" aria-label="Preview page">
+            <button data-page="home" aria-pressed="true">Homepage</button
+            ><button data-page="game" aria-pressed="false">MLBB services</button
+            ><button data-page="boost" aria-pressed="false">
+              Boost packages</button
+            ><button data-page="customer" aria-pressed="false">
+              Customer panel</button
+            ><button data-page="admin" aria-pressed="false">Admin panel</button
+            ><button data-page="booster" aria-pressed="false">Pro panel</button
+            ><button data-page="states" aria-pressed="false">
+              Chat & states
+            </button>
+          </div>
+          <div class="size-options" role="group" aria-label="Preview size">
+            <button data-size="desktop" aria-pressed="true">Desktop</button
+            ><button data-size="mobile" aria-pressed="false">Phone</button>
+          </div>
+        </div>
+        <div class="preview-location">
+          <span
+            ><span class="preview-dot"></span
+            ><span id="preview-path">playoragames.com</span></span
+          >
+          <div class="section-options">
+            <button data-section="top">Top</button
+            ><button data-section="services">Service sections ↓</button
+            ><button data-section="games">Game selection ↓</button>
+          </div>
+        </div>
+        <div class="frame-wrap">
+          <iframe
+            id="product-frame"
+            title="PLAYORA homepage — Glacier color preview"
+            src="/screen.html?page=home&amp;palette=glacier"
+            sandbox="allow-scripts allow-same-origin"
+            loading="eager"
+          ></iframe>
+        </div>
+        <div class="preview-caption">
+          <p>
+            Current PLAYORA components, artwork and type. Account details,
+            orders and activity figures are demo data.
+          </p>
+          <span id="screen-status" aria-live="polite"
+            >Glacier · Homepage · Desktop</span
+          >
+        </div>
+      </section>
+      <section class="principles" aria-label="Color roles">
+        <div>
+          <span class="role-dot mint"></span>
+          <h2>Green means go</h2>
+          <p>Keep mint for the logo and primary actions.</p>
+        </div>
+        <div>
+          <span class="role-dot secondary"></span>
+          <h2>A supporting accent</h2>
+          <p>Use the new color for navigation, icons and selected details.</p>
+        </div>
+        <div>
+          <span class="role-dot neutral"></span>
+          <h2>Room to breathe</h2>
+          <p>
+            Neutral cards and text give the artwork and actions more contrast.
+          </p>
+        </div>
+      </section>
+      <details class="research">
+        <summary>Benchmark notes & how to compare</summary>
+        <p>
+          Compare the same page and viewport across directions. A color preview
+          is not a feature redesign, and does not change real prices,
+          availability or policies.
+        </p>
+        <p>
+          Three independent agent perspectives: senior product direction, senior
+          visual design, and senior UX/accessibility. This is expert critique,
+          not a human usability study.
+        </p>
+        <p>
+          Visual references:
+          <a href="https://www.razer.com/" target="_blank" rel="noreferrer"
+            >Razer</a
+          >
+          and
+          <a
+            href="https://www.nvidia.com/en-us/geforce/"
+            target="_blank"
+            rel="noreferrer"
+            >NVIDIA GeForce</a
+          >
+          — neutral shells, green actions, naturally colored game artwork.
+          Additional boosting/marketplace pages were researched; inaccessible
+          browser renders were not treated as visual evidence.
+        </p>
+        <p>
+          Guidance:
+          <a
+            href="https://designsystem.digital.gov/design-tokens/color/theme-tokens/"
+            target="_blank"
+            rel="noreferrer"
+            >USWDS color roles</a
+          >,
+          <a
+            href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html"
+            target="_blank"
+            rel="noreferrer"
+            >W3C contrast</a
+          >
+          and
+          <a
+            href="https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html"
+            target="_blank"
+            rel="noreferrer"
+            >use of color</a
+          >.
+        </p>
+      </details>
+    </main>
+    <script type="module" src="/studio.js"></script>
+  </body>
+</html>
