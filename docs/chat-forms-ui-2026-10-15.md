@@ -32,3 +32,9 @@ Owner request, 15 October 2026. Base `dd5b698`; production `4d01c1b`, schema 42.
 ## Release and recovery boundary
 
 No live test messages, email, account publication, invoices or funds movement occurred. Preserve checkout enabled, automatic outgoing transfers and customer deletion disabled, existing policies/catalogs and private webmail. Migration43 is forward-only through the CLI; reverting the old application after chat-form data exists is unqualified. Off-host recovery is still absent. Obtain the exact-release recovery decision after signed-image checks and server preflight, then record the actual deployment result.
+
+## Activation incident and focused correction
+
+The owner approved exact release4395194 with the stated recovery risk. Its first activation stopped before migration43 because TiKV refused writes below its free-disk safety threshold. Only disposable compiler and old scanner caches were cleared; production data, images and original evidence were preserved. Read-only inspection confirmed schema42, no migration lock, no migration43 journal/DDL and no active application query before resuming.
+
+Migration43 then applied and verified, but API startup exposed a stale readiness expectation: `conversation_messages.purpose` still expected `varchar` although migration43 changes it to `enum`. The application remains stopped while a narrow forward correction is qualified and signed. The correction updates the startup type expectation, checks the new form references/unique keys, and adds a real-database regression covering schema42 rejection, successful schema43 startup and incompatible type drift. Migration SQL and data remain unchanged. Original failed deployment receipts are retained; 4395194 is not claimed deployed successfully.

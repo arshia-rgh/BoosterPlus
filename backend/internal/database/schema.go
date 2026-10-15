@@ -47,6 +47,8 @@ func Ready(ctx context.Context, db *sql.DB) error {
 
 func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"conversation_forms.fields": "json", "conversation_forms.answers": "json", "conversation_forms.recipient_id": "varchar", "conversation_forms.state": "enum", "conversation_forms.expires_at": "datetime",
+		"conversation_messages.form_id": "varchar", "account_deliveries.form_id": "varchar", "secret_bundles.purpose": "enum",
 		"manual_payouts.snapshot": "json", "manual_payouts.transaction_hash": "varchar", "manual_payouts.request_hash": "varchar", "manual_payouts.completed_at": "datetime",
 		"identity_namespace_splits.original_id": "varchar", "identity_namespace_splits.customer_id": "varchar", "identity_namespace_splits.booster_id": "varchar",
 		"users.portal": "varchar", "auth_identities.portal": "varchar", "secret_bundles.cipher_owner_id": "varchar",
@@ -64,7 +66,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 		"availability_targets.cycle": "bigint", "availability_subscriptions.email_fingerprint": "varchar", "availability_deliveries.state": "varchar", "jobs.retry_generation": "bigint", "reviews.body": "text", "reviews.rating": "tinyint", "reviews.policy": "json", "review_revisions.internal_reason": "text",
 		"account_submissions.answers": "json", "account_submissions.snapshot": "json", "account_submissions.ownership_declared": "tinyint", "account_submissions.version": "bigint", "submission_events.message": "text", "conversations.submission_id": "varchar",
 		"fulfillments.forecast":              "json",
-		"conversations.fulfillment_order_id": "varchar", "conversations.booster_shared": "tinyint", "conversation_messages.purpose": "varchar",
+		"conversations.fulfillment_order_id": "varchar", "conversations.booster_shared": "tinyint", "conversation_messages.purpose": "enum",
 		"staff_profiles.timezone": "varchar", "availability_windows.starts_at": "datetime", "bookings.starts_at": "datetime", "bookings.state": "varchar", "booking_events.note": "text",
 		"fulfillments.order_id": "varchar", "fulfillments.assigned_id": "varchar", "fulfillments.answers": "json", "fulfillments.version": "bigint", "fulfillments.access_version": "bigint",
 		"secret_bundles.encrypted_payload": "blob", "secret_bundles.wrapped_key": "blob", "secret_bundles.key_version": "varchar", "secret_bundles.expires_at": "datetime",
@@ -108,6 +110,7 @@ func checkColumns(ctx context.Context, db *sql.DB) (result error) {
 
 func checkIndexes(ctx context.Context, db *sql.DB) (result error) {
 	expected := map[string]string{
+		"conversation_forms.PRIMARY": "id", "conversation_forms.conversation_form_request": "conversation_id,created_by,request_key",
 		"manual_payouts.manual_payout_transfer": "transfer_id", "manual_payouts.manual_payout_transaction": "network,transaction_hash",
 		"identity_namespace_splits.PRIMARY": "original_id", "identity_namespace_splits.identity_split_customer": "customer_id", "identity_namespace_splits.identity_split_booster": "booster_id",
 		"job_attempts.PRIMARY":                     "job_id,retry_generation,attempt",
