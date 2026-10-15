@@ -29,15 +29,7 @@ export async function requestAccessForm(
   await recipient
     .getByLabel(/Login \/ account ID/)
     .fill("synthetic-fixture-login");
-  await recipient
-    .getByRole("button", {
-      name: "Edit Password / access details",
-      exact: true,
-    })
-    .click();
-  await recipient
-    .getByRole("textbox", { name: /Password \/ access details/ })
-    .fill(value);
+  await recipient.getByLabel(/Password \/ access details/).fill(value);
   await recipient
     .getByRole("button", { name: "Send response", exact: true })
     .click();
@@ -53,15 +45,7 @@ export async function sendBuyerAccess(admin: Page, value: string) {
     .getByLabel("Purpose", { exact: true })
     .selectOption("buyer_access");
   await admin.getByLabel(/Login \/ account ID/).fill("synthetic-buyer-login");
-  await admin
-    .getByRole("button", {
-      name: "Edit Password / access details",
-      exact: true,
-    })
-    .click();
-  await admin
-    .getByRole("textbox", { name: /Password \/ access details/ })
-    .fill(value);
+  await admin.getByLabel(/Password \/ access details/).fill(value);
   await admin
     .getByRole("button", { name: "Preview form", exact: true })
     .click();
